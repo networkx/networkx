@@ -12,7 +12,7 @@ from networkx.classes.reportviews import (
     OutMultiDegreeView,
     InMultiDegreeView,
 )
-from networkx.exception import NetworkXError
+from networkx.exception import Error
 import networkx.convert as convert
 
 __all__ = ["MultiDiGraph"]
@@ -46,7 +46,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         If True, `incoming_graph_data` is assumed to be a
         dict-of-dict-of-dict-of-dict structure keyed by
         node to neighbor to edge keys to edge data for multi-edges.
-        A NetworkXError is raised if this is not the case.
+        A Error is raised if this is not the case.
         If False, :func:`to_networkx_graph` is used to try to determine
         the dict's graph data structure as either a dict-of-dict-of-dict
         keyed by node to neighbor to edge data, or a dict-of-iterable
@@ -298,7 +298,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
             If True, `incoming_graph_data` is assumed to be a
             dict-of-dict-of-dict-of-dict structure keyed by
             node to neighbor to edge keys to edge data for multi-edges.
-            A NetworkXError is raised if this is not the case.
+            A Error is raised if this is not the case.
             If False, :func:`to_networkx_graph` is used to try to determine
             the dict's graph data structure as either a dict-of-dict-of-dict
             keyed by node to neighbor to edge data, or a dict-of-iterable
@@ -338,7 +338,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
                 self.graph.update(attr)
             except Exception as err:
                 if multigraph_input is True:
-                    raise nx.NetworkXError(
+                    raise nx.Error(
                         f"converting multigraph_input raised:\n{type(err)}: {err}"
                     )
                 DiGraph.__init__(self, incoming_graph_data, **attr)
@@ -507,7 +507,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
 
         Raises
         ------
-        NetworkXError
+        Error
             If there is not an edge between u and v, or
             if there is no edge with the specified key.
 
@@ -543,7 +543,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         try:
             d = self._adj[u][v]
         except KeyError as err:
-            raise NetworkXError(f"The edge {u}-{v} is not in the graph.") from err
+            raise Error(f"The edge {u}-{v} is not in the graph.") from err
         # remove the edge with specified data
         if key is None:
             d.popitem()
@@ -552,7 +552,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
                 del d[key]
             except KeyError as err:
                 msg = f"The edge {u}-{v} with key {key} is not in the graph."
-                raise NetworkXError(msg) from err
+                raise Error(msg) from err
         if len(d) == 0:
             # remove the key entries if last edge
             del self._succ[u][v]

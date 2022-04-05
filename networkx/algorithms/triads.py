@@ -335,7 +335,7 @@ def triad_type(G):
         https://web.archive.org/web/20170830032057/http://www.stats.ox.ac.uk/~snijders/Trans_Triads_ha.pdf
     """
     if not is_triad(G):
-        raise nx.NetworkXAlgorithmError("G is not a triad (order-3 DiGraph)")
+        raise nx.AlgorithmError("G is not a triad (order-3 DiGraph)")
     num_edges = len(G.edges())
     if num_edges == 0:
         return "003"

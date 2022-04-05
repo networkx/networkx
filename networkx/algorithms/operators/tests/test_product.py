@@ -4,7 +4,7 @@ from networkx.utils import edges_equal
 
 
 def test_tensor_product_raises():
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.Error):
         P = nx.tensor_product(nx.DiGraph(), nx.Graph())
 
 
@@ -122,7 +122,7 @@ def test_cartesian_product_multigraph():
 
 
 def test_cartesian_product_raises():
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.Error):
         P = nx.cartesian_product(nx.DiGraph(), nx.Graph())
 
 
@@ -206,7 +206,7 @@ def test_cartesian_product_random():
 
 
 def test_lexicographic_product_raises():
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.Error):
         P = nx.lexicographic_product(nx.DiGraph(), nx.Graph())
 
 
@@ -282,7 +282,7 @@ def test_lexicographic_product_random():
 
 
 def test_strong_product_raises():
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.Error):
         P = nx.strong_product(nx.DiGraph(), nx.Graph())
 
 
@@ -362,7 +362,7 @@ def test_strong_product_random():
 
 
 def test_graph_power_raises():
-    with pytest.raises(nx.NetworkXNotImplemented):
+    with pytest.raises(nx.NotImplemented):
         nx.power(nx.MultiDiGraph(), 2)
 
 
@@ -413,7 +413,7 @@ def test_graph_power_negative():
 
 
 def test_rooted_product_raises():
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.Error):
         nx.rooted_product(nx.Graph(), nx.path_graph(2), 10)
 
 

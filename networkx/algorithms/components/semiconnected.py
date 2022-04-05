@@ -27,10 +27,10 @@ def is_semiconnected(G, topo_order=None):
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
         If the input graph is undirected.
 
-    NetworkXPointlessConcept
+    PointlessConcept
         If the graph is empty.
 
     Examples
@@ -50,7 +50,7 @@ def is_semiconnected(G, topo_order=None):
     is_biconnected
     """
     if len(G) == 0:
-        raise nx.NetworkXPointlessConcept(
+        raise nx.PointlessConcept(
             "Connectivity is undefined for the null graph."
         )
 

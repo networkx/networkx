@@ -63,7 +63,7 @@ class TestNodeLink:
         assert H.nodes[1][q] == q
 
     def test_exception(self):
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             G = nx.MultiDiGraph()
             attrs = dict(name="node", source="node", target="node", key="node")
             node_link_data(G, attrs)

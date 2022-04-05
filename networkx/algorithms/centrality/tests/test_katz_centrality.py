@@ -91,7 +91,7 @@ class TestKatzCentrality:
                 assert b[n] == pytest.approx(b_answer[alpha][n], abs=1e-4)
 
     def test_multigraph(self):
-        with pytest.raises(nx.NetworkXException):
+        with pytest.raises(nx.Exception):
             e = nx.katz_centrality(nx.MultiGraph(), 0.1)
 
     def test_empty(self):
@@ -99,13 +99,13 @@ class TestKatzCentrality:
         assert e == {}
 
     def test_bad_beta(self):
-        with pytest.raises(nx.NetworkXException):
+        with pytest.raises(nx.Exception):
             G = nx.Graph([(0, 1)])
             beta = {0: 77}
             e = nx.katz_centrality(G, 0.1, beta=beta)
 
     def test_bad_beta_numbe(self):
-        with pytest.raises(nx.NetworkXException):
+        with pytest.raises(nx.Exception):
             G = nx.Graph([(0, 1)])
             e = nx.katz_centrality(G, 0.1, beta="foo")
 
@@ -199,7 +199,7 @@ class TestKatzCentralityNumpy:
                 assert b[n] == pytest.approx(b_answer[alpha][n], abs=1e-4)
 
     def test_multigraph(self):
-        with pytest.raises(nx.NetworkXException):
+        with pytest.raises(nx.Exception):
             e = nx.katz_centrality(nx.MultiGraph(), 0.1)
 
     def test_empty(self):
@@ -207,13 +207,13 @@ class TestKatzCentralityNumpy:
         assert e == {}
 
     def test_bad_beta(self):
-        with pytest.raises(nx.NetworkXException):
+        with pytest.raises(nx.Exception):
             G = nx.Graph([(0, 1)])
             beta = {0: 77}
             e = nx.katz_centrality_numpy(G, 0.1, beta=beta)
 
     def test_bad_beta_numbe(self):
-        with pytest.raises(nx.NetworkXException):
+        with pytest.raises(nx.Exception):
             G = nx.Graph([(0, 1)])
             e = nx.katz_centrality_numpy(G, 0.1, beta="foo")
 

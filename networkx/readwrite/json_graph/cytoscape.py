@@ -35,7 +35,7 @@ def cytoscape_data(G, attrs=None, name="name", ident="id"):
 
     Raises
     ------
-    NetworkXError
+    Error
         If the values for `name` and `ident` are identical.
 
     See Also
@@ -83,7 +83,7 @@ def cytoscape_data(G, attrs=None, name="name", ident="id"):
     # -------------------------------------------------- #
 
     if name == ident:
-        raise nx.NetworkXError("name and ident must be different.")
+        raise nx.Error("name and ident must be different.")
 
     jsondata = {"data": list(G.graph.items())}
     jsondata["directed"] = G.is_directed()
@@ -149,7 +149,7 @@ def cytoscape_graph(data, attrs=None, name="name", ident="id"):
 
     Raises
     ------
-    NetworkXError
+    Error
         If the `name` and `ident` attributes are identical.
 
     See Also
@@ -205,7 +205,7 @@ def cytoscape_graph(data, attrs=None, name="name", ident="id"):
     # -------------------------------------------------- #
 
     if name == ident:
-        raise nx.NetworkXError("name and ident must be different.")
+        raise nx.Error("name and ident must be different.")
 
     multigraph = data.get("multigraph")
     directed = data.get("directed")

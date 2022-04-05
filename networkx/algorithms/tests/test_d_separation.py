@@ -132,7 +132,7 @@ def test_undirected_graphs_are_not_supported():
 
     d-separation does not apply in the case of undirected graphs.
     """
-    with pytest.raises(nx.NetworkXNotImplemented):
+    with pytest.raises(nx.NotImplemented):
         g = nx.path_graph(3, nx.Graph)
         nx.d_separated(g, {0}, {1}, {2})
 
@@ -143,7 +143,7 @@ def test_cyclic_graphs_raise_error():
 
     This is because PGMs assume a directed acyclic graph.
     """
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.Error):
         g = nx.cycle_graph(3, nx.DiGraph)
         nx.d_separated(g, {0}, {1}, {2})
 

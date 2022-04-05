@@ -35,12 +35,12 @@ def test_star_graph():
 
 
 def test_not_bipartite():
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.Error):
         bipartite.clustering(nx.complete_graph(4))
 
 
 def test_bad_mode():
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.Error):
         bipartite.clustering(nx.path_graph(4), mode="foo")
 
 

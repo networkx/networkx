@@ -41,5 +41,5 @@ bidirectional_dijkstra()
 ^^^^^^^^^^^^^^^^^^^^^^^^
    These algorithms now raise an exception when a source and a target are
    specified and no path exist between these two nodes. The exception is
-   a NetworkXNoPath exception.
+   a NoPath exception.
 

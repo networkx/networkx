@@ -22,14 +22,14 @@ def test_valid_degree_sequence2():
 
 
 def test_string_input():
-    pytest.raises(nx.NetworkXException, nx.is_graphical, [], "foo")
-    pytest.raises(nx.NetworkXException, nx.is_graphical, ["red"], "hh")
-    pytest.raises(nx.NetworkXException, nx.is_graphical, ["red"], "eg")
+    pytest.raises(nx.Exception, nx.is_graphical, [], "foo")
+    pytest.raises(nx.Exception, nx.is_graphical, ["red"], "hh")
+    pytest.raises(nx.Exception, nx.is_graphical, ["red"], "eg")
 
 
 def test_non_integer_input():
-    pytest.raises(nx.NetworkXException, nx.is_graphical, [72.5], "eg")
-    pytest.raises(nx.NetworkXException, nx.is_graphical, [72.5], "hh")
+    pytest.raises(nx.Exception, nx.is_graphical, [72.5], "eg")
+    pytest.raises(nx.Exception, nx.is_graphical, [72.5], "hh")
 
 
 def test_negative_input():
@@ -158,5 +158,5 @@ def test_numpy_degree_sequence():
     assert nx.is_graphical(ds, "eg")
     assert nx.is_graphical(ds, "hh")
     ds = np.array([1.1, 2, 2, 2, 1], dtype=np.float64)
-    pytest.raises(nx.NetworkXException, nx.is_graphical, ds, "eg")
-    pytest.raises(nx.NetworkXException, nx.is_graphical, ds, "hh")
+    pytest.raises(nx.Exception, nx.is_graphical, ds, "eg")
+    pytest.raises(nx.Exception, nx.is_graphical, ds, "hh")

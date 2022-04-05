@@ -26,7 +26,7 @@ def weakly_connected_components(G):
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
         If G is undirected.
 
     Examples
@@ -80,7 +80,7 @@ def number_weakly_connected_components(G):
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
         If G is undirected.
 
     See Also
@@ -120,7 +120,7 @@ def is_weakly_connected(G):
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
         If G is undirected.
 
     See Also
@@ -137,7 +137,7 @@ def is_weakly_connected(G):
 
     """
     if len(G) == 0:
-        raise nx.NetworkXPointlessConcept(
+        raise nx.PointlessConcept(
             """Connectivity is undefined for the null graph."""
         )
 

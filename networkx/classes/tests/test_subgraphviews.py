@@ -345,7 +345,7 @@ class TestEdgeSubGraph:
 
     def test_readonly(self):
         """Tests that the subgraph cannot change the graph structure"""
-        pytest.raises(nx.NetworkXError, self.H.add_node, 5)
-        pytest.raises(nx.NetworkXError, self.H.remove_node, 0)
-        pytest.raises(nx.NetworkXError, self.H.add_edge, 5, 6)
-        pytest.raises(nx.NetworkXError, self.H.remove_edge, 0, 1)
+        pytest.raises(nx.Error, self.H.add_node, 5)
+        pytest.raises(nx.Error, self.H.remove_node, 0)
+        pytest.raises(nx.Error, self.H.add_edge, 5, 6)
+        pytest.raises(nx.Error, self.H.remove_edge, 0, 1)

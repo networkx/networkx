@@ -63,7 +63,7 @@ def gn_graph(n, kernel=None, create_using=None, seed=None):
     """
     G = empty_graph(1, create_using, default=nx.DiGraph)
     if not G.is_directed():
-        raise nx.NetworkXError("create_using must indicate a Directed Graph")
+        raise nx.Error("create_using must indicate a Directed Graph")
 
     if kernel is None:
 
@@ -127,7 +127,7 @@ def gnr_graph(n, p, create_using=None, seed=None):
     """
     G = empty_graph(1, create_using, default=nx.DiGraph)
     if not G.is_directed():
-        raise nx.NetworkXError("create_using must indicate a Directed Graph")
+        raise nx.Error("create_using must indicate a Directed Graph")
 
     if n == 1:
         return G
@@ -166,7 +166,7 @@ def gnc_graph(n, create_using=None, seed=None):
     """
     G = empty_graph(1, create_using, default=nx.DiGraph)
     if not G.is_directed():
-        raise nx.NetworkXError("create_using must indicate a Directed Graph")
+        raise nx.Error("create_using must indicate a Directed Graph")
 
     if n == 1:
         return G
@@ -252,7 +252,7 @@ def scale_free_graph(
     else:
         G = create_using
     if not (G.is_directed() and G.is_multigraph()):
-        raise nx.NetworkXError("MultiDiGraph required in create_using")
+        raise nx.Error("MultiDiGraph required in create_using")
 
     if alpha <= 0:
         raise ValueError("alpha must be > 0.")

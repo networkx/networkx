@@ -127,7 +127,7 @@ def intersection(G, H):
 
     Raises
     ------
-    NetworkXError
+    Error
         If one is a MultiGraph and the other one is a graph.
 
     Returns
@@ -198,11 +198,11 @@ def difference(G, H):
     """
     # create new graph
     if not G.is_multigraph() == H.is_multigraph():
-        raise nx.NetworkXError("G and H must both be graphs or multigraphs.")
+        raise nx.Error("G and H must both be graphs or multigraphs.")
     R = nx.create_empty_copy(G)
 
     if set(G) != set(H):
-        raise nx.NetworkXError("Node sets of graphs not equal")
+        raise nx.Error("Node sets of graphs not equal")
 
     if G.is_multigraph():
         edges = G.edges(keys=True)
@@ -245,11 +245,11 @@ def symmetric_difference(G, H):
     """
     # create new graph
     if not G.is_multigraph() == H.is_multigraph():
-        raise nx.NetworkXError("G and H must both be graphs or multigraphs.")
+        raise nx.Error("G and H must both be graphs or multigraphs.")
     R = nx.create_empty_copy(G)
 
     if set(G) != set(H):
-        raise nx.NetworkXError("Node sets of graphs not equal")
+        raise nx.Error("Node sets of graphs not equal")
 
     gnodes = set(G)  # set of nodes in G
     hnodes = set(H)  # set of nodes in H

@@ -85,10 +85,10 @@ def global_reaching_centrality(G, weight=None, normalized=True):
            https://doi.org/10.1371/journal.pone.0033799
     """
     if nx.is_negatively_weighted(G, weight=weight):
-        raise nx.NetworkXError("edge weights must be positive")
+        raise nx.Error("edge weights must be positive")
     total_weight = G.size(weight=weight)
     if total_weight <= 0:
-        raise nx.NetworkXError("Size of G must be positive")
+        raise nx.Error("Size of G must be positive")
 
     # If provided, weights must be interpreted as connection strength
     # (so higher weights are more likely to be chosen). However, the
@@ -179,10 +179,10 @@ def local_reaching_centrality(G, v, paths=None, weight=None, normalized=True):
     """
     if paths is None:
         if nx.is_negatively_weighted(G, weight=weight):
-            raise nx.NetworkXError("edge weights must be positive")
+            raise nx.Error("edge weights must be positive")
         total_weight = G.size(weight=weight)
         if total_weight <= 0:
-            raise nx.NetworkXError("Size of G must be positive")
+            raise nx.Error("Size of G must be positive")
         if weight is not None:
             # Interpret weights as lengths.
             def as_distance(u, v, d):

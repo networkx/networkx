@@ -80,7 +80,7 @@ class TestWriteGraph6:
         assert result.getvalue() == b"N??F~z{~Fw^_~?~?^_?\n"
 
     def test_no_directed_graphs(self):
-        with pytest.raises(nx.NetworkXNotImplemented):
+        with pytest.raises(nx.NotImplemented):
             nx.write_graph6(nx.DiGraph(), BytesIO())
 
     def test_length(self):

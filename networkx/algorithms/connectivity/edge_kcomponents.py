@@ -49,7 +49,7 @@ def k_edge_components(G, k):
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
         If the input graph is a multigraph.
 
     ValueError:
@@ -132,7 +132,7 @@ def k_edge_subgraphs(G, k):
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
         If the input graph is a multigraph.
 
     ValueError:
@@ -216,7 +216,7 @@ def bridge_components(G):
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
         If the input graph is directed or a multigraph.
 
     Notes

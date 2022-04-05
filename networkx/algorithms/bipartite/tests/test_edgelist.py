@@ -180,7 +180,7 @@ class TestEdgelist:
         os.unlink(fname)
 
     def test_empty_digraph(self):
-        with pytest.raises(nx.NetworkXNotImplemented):
+        with pytest.raises(nx.NotImplemented):
             bytesIO = io.BytesIO()
             bipartite.write_edgelist(nx.DiGraph(), bytesIO)
 

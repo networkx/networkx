@@ -5,7 +5,7 @@ pytest.importorskip("scipy")
 
 import networkx as nx
 from networkx.generators.degree_seq import havel_hakimi_graph
-from networkx.exception import NetworkXError
+from networkx.exception import Error
 
 
 def test_incidence_matrix_simple():
@@ -41,7 +41,7 @@ def test_incidence_matrix_simple():
     # fmt: on
     np.testing.assert_equal(I, expected)
 
-    with pytest.raises(NetworkXError):
+    with pytest.raises(Error):
         nx.incidence_matrix(G, nodelist=[0, 1])
 
 

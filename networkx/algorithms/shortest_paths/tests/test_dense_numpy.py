@@ -85,5 +85,5 @@ def test_nodelist():
     assert dist[0, 3] == 3
     assert dist[0, 1] == 2
     assert dist[6, 2] == 4
-    pytest.raises(nx.NetworkXError, nx.floyd_warshall_numpy, G, [1, 3])
-    pytest.raises(nx.NetworkXError, nx.floyd_warshall_numpy, G, list(range(9)))
+    pytest.raises(nx.Error, nx.floyd_warshall_numpy, G, [1, 3])
+    pytest.raises(nx.Error, nx.floyd_warshall_numpy, G, list(range(9)))

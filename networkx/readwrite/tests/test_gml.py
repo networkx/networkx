@@ -208,7 +208,7 @@ graph
 """
         fh = io.BytesIO(data.encode("UTF-8"))
         fh.seek(0)
-        pytest.raises(nx.NetworkXError, nx.read_gml, fh, label="label")
+        pytest.raises(nx.Error, nx.read_gml, fh, label="label")
 
     def test_tuplelabels(self):
         # https://github.com/networkx/networkx/pull/1048
@@ -486,10 +486,10 @@ graph
         with tempfile.TemporaryFile() as f:
             f.write(codecs.BOM_UTF8 + b"graph[]")
             f.seek(0)
-            pytest.raises(nx.NetworkXError, nx.read_gml, f)
+            pytest.raises(nx.Error, nx.read_gml, f)
 
         def assert_parse_error(gml):
-            pytest.raises(nx.NetworkXError, nx.parse_gml, gml)
+            pytest.raises(nx.Error, nx.parse_gml, gml)
 
         assert_parse_error(["graph [\n\n", "]"])
         assert_parse_error("")
@@ -557,7 +557,7 @@ graph
 
         def assert_generate_error(*args, **kwargs):
             pytest.raises(
-                nx.NetworkXError, lambda: list(nx.generate_gml(*args, **kwargs))
+                nx.Error, lambda: list(nx.generate_gml(*args, **kwargs))
             )
 
         G = nx.Graph()

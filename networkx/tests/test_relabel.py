@@ -83,7 +83,7 @@ class TestRelabel:
         assert H.nodes[3]["label"] == "D"
 
     def test_convert_to_integers_raise(self):
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             G = nx.Graph()
             H = nx.convert_node_labels_to_integers(G, ordering="increasing age")
 
@@ -297,5 +297,5 @@ class TestRelabel:
         G = nx.path_graph(3)
         mapping = {0: 1, 1: 0}
         H = nx.relabel_nodes(G, mapping, copy=True)
-        with pytest.raises(nx.NetworkXUnfeasible):
+        with pytest.raises(nx.Unfeasible):
             H = nx.relabel_nodes(G, mapping, copy=False)

@@ -31,7 +31,7 @@ def has_path(G, source, target):
     """
     try:
         nx.shortest_path(G, source, target)
-    except nx.NetworkXNoPath:
+    except nx.NoPath:
         return False
     return True
 
@@ -225,7 +225,7 @@ def shortest_path_length(G, source=None, target=None, weight=None, method="dijks
     NodeNotFound
         If `source` is not in `G`.
 
-    NetworkXNoPath
+    NoPath
         If no path exists between source and target.
 
     ValueError
@@ -350,10 +350,10 @@ def average_shortest_path_length(G, weight=None, method=None):
 
     Raises
     ------
-    NetworkXPointlessConcept
+    PointlessConcept
         If `G` is the null graph (that is, the graph on zero nodes).
 
-    NetworkXError
+    Error
         If `G` is not connected (or not weakly connected, in the case
         of a directed graph).
 
@@ -393,15 +393,15 @@ def average_shortest_path_length(G, weight=None, method=None):
             "the null graph has no paths, thus there is no average"
             "shortest path length"
         )
-        raise nx.NetworkXPointlessConcept(msg)
+        raise nx.PointlessConcept(msg)
     # For the special case of the trivial graph, return zero immediately.
     if n == 1:
         return 0
     # Shortest path length is undefined if the graph is disconnected.
     if G.is_directed() and not nx.is_weakly_connected(G):
-        raise nx.NetworkXError("Graph is not weakly connected.")
+        raise nx.Error("Graph is not weakly connected.")
     if not G.is_directed() and not nx.is_connected(G):
-        raise nx.NetworkXError("Graph is not connected.")
+        raise nx.Error("Graph is not connected.")
 
     # Compute all-pairs shortest paths.
     def path_length(v):
@@ -464,7 +464,7 @@ def all_shortest_paths(G, source, target, weight=None, method="dijkstra"):
     ValueError
         If `method` is not among the supported options.
 
-    NetworkXNoPath
+    NoPath
         If `target` cannot be reached from `source`.
 
     Examples
@@ -523,7 +523,7 @@ def _build_paths_from_predecessors(sources, target, pred):
 
     Raises
     ------
-    NetworkXNoPath
+    NoPath
         If `target` cannot be reached from `source`.
 
     Notes
@@ -542,7 +542,7 @@ def _build_paths_from_predecessors(sources, target, pred):
     bellman_ford_path
     """
     if target not in pred:
-        raise nx.NetworkXNoPath(
+        raise nx.NoPath(
             f"Target {target} cannot be reached" f"from given sources"
         )
 

@@ -302,7 +302,7 @@ def read_graphml(path, node_type=str, edge_key_type=int, force_multigraph=False)
         new_bytes = old_bytes.replace(b"<graphml>", header)
         glist = list(reader(string=new_bytes))
         if len(glist) == 0:
-            raise nx.NetworkXError("file not successfully read as graphml")
+            raise nx.Error("file not successfully read as graphml")
     return glist[0]
 
 
@@ -375,7 +375,7 @@ def parse_graphml(
         new_string = graphml_string.replace("<graphml>", header)
         glist = list(reader(string=new_string))
         if len(glist) == 0:
-            raise nx.NetworkXError("file not successfully read as graphml")
+            raise nx.Error("file not successfully read as graphml")
     return glist[0]
 
 
@@ -559,7 +559,7 @@ class GraphMLWriter(GraphML):
         type in the keys table.
         """
         if element_type not in self.xml_type:
-            raise nx.NetworkXError(
+            raise nx.Error(
                 f"GraphML writer does not support {element_type} as data values."
             )
         keyid = self.get_key(name, self.get_xml_type(element_type), scope, default)
@@ -880,7 +880,7 @@ class GraphMLReader(GraphML):
         # hyperedges are not supported
         hyperedge = graph_xml.find(f"{{{self.NS_GRAPHML}}}hyperedge")
         if hyperedge is not None:
-            raise nx.NetworkXError("GraphML reader doesn't support hyperedges")
+            raise nx.Error("GraphML reader doesn't support hyperedges")
         # add nodes
         for node_xml in graph_xml.findall(f"{{{self.NS_GRAPHML}}}node"):
             self.add_node(G, node_xml, graphml_keys, defaults)
@@ -927,10 +927,10 @@ class GraphMLReader(GraphML):
         directed = edge_element.get("directed")
         if G.is_directed() and directed == "false":
             msg = "directed=false edge found in directed graph."
-            raise nx.NetworkXError(msg)
+            raise nx.Error(msg)
         if (not G.is_directed()) and directed == "true":
             msg = "directed=true edge found in undirected graph."
-            raise nx.NetworkXError(msg)
+            raise nx.Error(msg)
 
         source = self.node_type(edge_element.get("source"))
         target = self.node_type(edge_element.get("target"))
@@ -966,7 +966,7 @@ class GraphMLReader(GraphML):
                 data_name = graphml_keys[key]["name"]
                 data_type = graphml_keys[key]["type"]
             except KeyError as err:
-                raise nx.NetworkXError(f"Bad GraphML data: no key {key}") from err
+                raise nx.Error(f"Bad GraphML data: no key {key}") from err
             text = data_element.text
             # assume anything with subelements is a yfiles extension
             if text is not None and len(list(data_element)) == 0:
@@ -1031,7 +1031,7 @@ class GraphMLReader(GraphML):
                 attr_type = "string"
                 warnings.warn(f"No key type for id {attr_id}. Using string")
             if attr_name is None:
-                raise nx.NetworkXError(f"Unknown key for id {attr_id}.")
+                raise nx.Error(f"Unknown key for id {attr_id}.")
             graphml_keys[attr_id] = {
                 "name": attr_name,
                 "type": self.python_type[attr_type],

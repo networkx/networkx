@@ -117,7 +117,7 @@ def dijkstra_path(G, source, target, weight="weight"):
     NodeNotFound
         If `source` is not in `G`.
 
-    NetworkXNoPath
+    NoPath
         If no path exists between source and target.
 
     Examples
@@ -198,7 +198,7 @@ def dijkstra_path_length(G, source, target, weight="weight"):
     NodeNotFound
         If `source` is not in `G`.
 
-    NetworkXNoPath
+    NoPath
         If no path exists between source and target.
 
     Examples
@@ -235,7 +235,7 @@ def dijkstra_path_length(G, source, target, weight="weight"):
     try:
         return length[target]
     except KeyError as err:
-        raise nx.NetworkXNoPath(f"Node {target} not reachable from {source}") from err
+        raise nx.NoPath(f"Node {target} not reachable from {source}") from err
 
 
 def single_source_dijkstra_path(G, source, cutoff=None, weight="weight"):
@@ -744,7 +744,7 @@ def multi_source_dijkstra(G, sources, target=None, cutoff=None, weight="weight")
     try:
         return (dist[target], paths[target])
     except KeyError as err:
-        raise nx.NetworkXNoPath(f"No path to {target}.") from err
+        raise nx.NoPath(f"No path to {target}.") from err
 
 
 def _dijkstra(G, source, weight, pred=None, paths=None, cutoff=None, target=None):
@@ -1170,7 +1170,7 @@ def bellman_ford_predecessor_and_distance(
     NodeNotFound
         If `source` is not in `G`.
 
-    NetworkXUnbounded
+    Unbounded
         If the (di)graph contains a negative (di)cycle, the
         algorithm raises an exception to indicate the presence of the
         negative (di)cycle.  Note: any negative weight edge in an
@@ -1196,7 +1196,7 @@ def bellman_ford_predecessor_and_distance(
     >>> nx.bellman_ford_predecessor_and_distance(G, 0)
     Traceback (most recent call last):
         ...
-    networkx.exception.NetworkXUnbounded: Negative cycle detected.
+    networkx.exception.Unbounded: Negative cycle detected.
 
     See Also
     --------
@@ -1221,7 +1221,7 @@ def bellman_ford_predecessor_and_distance(
         raise nx.NodeNotFound(f"Node {source} is not found in the graph")
     weight = _weight_function(G, weight)
     if any(weight(u, v, d) < 0 for u, v, d in nx.selfloop_edges(G, data=True)):
-        raise nx.NetworkXUnbounded("Negative cycle detected.")
+        raise nx.Unbounded("Negative cycle detected.")
 
     dist = {source: 0}
     pred = {source: []}
@@ -1298,7 +1298,7 @@ def _bellman_ford(
     NodeNotFound
         If any of `source` is not in `G`.
 
-    NetworkXUnbounded
+    Unbounded
         If the (di)graph contains a negative (di)cycle, the
         algorithm raises an exception to indicate the presence of the
         negative (di)cycle.  Note: any negative weight edge in an
@@ -1319,7 +1319,7 @@ def _bellman_ford(
         heuristic,
     )
     if negative_cycle_found is not None:
-        raise nx.NetworkXUnbounded("Negative cycle detected.")
+        raise nx.Unbounded("Negative cycle detected.")
 
     if paths is not None:
         sources = set(source)
@@ -1491,7 +1491,7 @@ def bellman_ford_path(G, source, target, weight="weight"):
     NodeNotFound
         If `source` is not in `G`.
 
-    NetworkXNoPath
+    NoPath
         If no path exists between source and target.
 
     Examples
@@ -1550,7 +1550,7 @@ def bellman_ford_path_length(G, source, target, weight="weight"):
     NodeNotFound
         If `source` is not in `G`.
 
-    NetworkXNoPath
+    NoPath
         If no path exists between source and target.
 
     Examples
@@ -1580,7 +1580,7 @@ def bellman_ford_path_length(G, source, target, weight="weight"):
     try:
         return length[target]
     except KeyError as err:
-        raise nx.NetworkXNoPath(f"node {target} not reachable from {source}") from err
+        raise nx.NoPath(f"node {target} not reachable from {source}") from err
 
 
 def single_source_bellman_ford_path(G, source, weight="weight"):
@@ -1790,7 +1790,7 @@ def single_source_bellman_ford(G, source, target=None, weight="weight"):
         return (dist[target], paths[target])
     except KeyError as err:
         msg = f"Node {target} not reachable from {source}"
-        raise nx.NetworkXNoPath(msg) from err
+        raise nx.NoPath(msg) from err
 
 
 def all_pairs_bellman_ford_path_length(G, weight="weight"):
@@ -1936,7 +1936,7 @@ def goldberg_radzik(G, source, weight="weight"):
     NodeNotFound
         If `source` is not in `G`.
 
-    NetworkXUnbounded
+    Unbounded
         If the (di)graph contains a negative (di)cycle, the
         algorithm raises an exception to indicate the presence of the
         negative (di)cycle.  Note: any negative weight edge in an
@@ -1956,7 +1956,7 @@ def goldberg_radzik(G, source, weight="weight"):
     >>> nx.goldberg_radzik(G, 0)
     Traceback (most recent call last):
         ...
-    networkx.exception.NetworkXUnbounded: Negative cycle detected.
+    networkx.exception.Unbounded: Negative cycle detected.
 
     Notes
     -----
@@ -1975,7 +1975,7 @@ def goldberg_radzik(G, source, weight="weight"):
         raise nx.NodeNotFound(f"Node {source} is not found in the graph")
     weight = _weight_function(G, weight)
     if any(weight(u, v, d) < 0 for u, v, d in nx.selfloop_edges(G, data=True)):
-        raise nx.NetworkXUnbounded("Negative cycle detected.")
+        raise nx.Unbounded("Negative cycle detected.")
 
     if len(G) == 1:
         return {source: None}, {source: 0}
@@ -2042,7 +2042,7 @@ def goldberg_radzik(G, source, weight="weight"):
                         # path v to u and (u, v) contains at least one edge of
                         # negative reduced cost. The cycle must be of negative
                         # cost.
-                        raise nx.NetworkXUnbounded("Negative cycle detected.")
+                        raise nx.Unbounded("Negative cycle detected.")
         to_scan.reverse()
         return to_scan
 
@@ -2133,7 +2133,7 @@ def negative_edge_cycle(G, weight="weight", heuristic=True):
         bellman_ford_predecessor_and_distance(
             G, newnode, weight=weight, heuristic=heuristic
         )
-    except nx.NetworkXUnbounded:
+    except nx.Unbounded:
         return True
     finally:
         G.remove_node(newnode)
@@ -2153,7 +2153,7 @@ def find_negative_cycle(G, source, weight="weight"):
     of multigraphs the relevant edge is the minimal weight edge between
     the nodes in the 2-tuple.
 
-    If the graph has no negative cycle, a NetworkXError is raised.
+    If the graph has no negative cycle, a Error is raised.
 
     Parameters
     ----------
@@ -2184,7 +2184,7 @@ def find_negative_cycle(G, source, weight="weight"):
 
     Raises
     ------
-    NetworkXError
+    Error
         If no negative cycle is found.
     """
     weight = _weight_function(G, weight)
@@ -2192,7 +2192,7 @@ def find_negative_cycle(G, source, weight="weight"):
 
     v = _inner_bellman_ford(G, [source], weight, pred=pred)
     if v is None:
-        raise nx.NetworkXError("No negative cycles detected.")
+        raise nx.Error("No negative cycles detected.")
 
     # negative cycle detected... find it
     neg_cycle = []
@@ -2220,10 +2220,10 @@ def find_negative_cycle(G, source, weight="weight"):
                 if v in G[v] and weight(G, v, v) < 0:
                     return [v, v]
                 # should not reach here
-                raise nx.NetworkXError("Negative cycle is detected but not found")
+                raise nx.Error("Negative cycle is detected but not found")
     # should not get here...
     msg = "negative cycle detected but not identified"
-    raise nx.NetworkXUnbounded(msg)
+    raise nx.Unbounded(msg)
 
 
 def bidirectional_dijkstra(G, source, target, weight="weight"):
@@ -2263,7 +2263,7 @@ def bidirectional_dijkstra(G, source, target, weight="weight"):
     NodeNotFound
         If either `source` or `target` is not in `G`.
 
-    NetworkXNoPath
+    NoPath
         If no path exists between source and target.
 
     Examples
@@ -2370,7 +2370,7 @@ def bidirectional_dijkstra(G, source, target, weight="weight"):
                         revpath = paths[1][w][:]
                         revpath.reverse()
                         finalpath = paths[0][w] + revpath[1:]
-    raise nx.NetworkXNoPath(f"No path between {source} and {target}.")
+    raise nx.NoPath(f"No path between {source} and {target}.")
 
 
 def johnson(G, weight="weight"):
@@ -2403,7 +2403,7 @@ def johnson(G, weight="weight"):
 
     Raises
     ------
-    NetworkXError
+    Error
         If given graph is not weighted.
 
     Examples
@@ -2441,7 +2441,7 @@ def johnson(G, weight="weight"):
 
     """
     if not nx.is_weighted(G, weight=weight):
-        raise nx.NetworkXError("Graph is not weighted.")
+        raise nx.Error("Graph is not weighted.")
 
     dist = {v: 0 for v in G}
     pred = {v: [] for v in G}

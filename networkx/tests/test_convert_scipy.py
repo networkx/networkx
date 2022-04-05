@@ -21,7 +21,7 @@ class TestConvertScipy:
         class G:
             format = None
 
-        pytest.raises(nx.NetworkXError, nx.to_networkx_graph, G)
+        pytest.raises(nx.Error, nx.to_networkx_graph, G)
 
     def create_weighted(self, G):
         g = cycle_graph(4)
@@ -66,7 +66,7 @@ class TestConvertScipy:
     def test_shape(self):
         "Conversion from non-square sparse array."
         A = sp.sparse.lil_array([[1, 2, 3], [4, 5, 6]])
-        pytest.raises(nx.NetworkXError, nx.from_scipy_sparse_array, A)
+        pytest.raises(nx.Error, nx.from_scipy_sparse_array, A)
 
     def test_identity_graph_matrix(self):
         "Conversion from graph to sparse matrix to graph."
@@ -97,14 +97,14 @@ class TestConvertScipy:
         GA = nx.Graph(A)
         assert nx.is_isomorphic(GA, P3)
 
-        pytest.raises(nx.NetworkXError, nx.to_scipy_sparse_array, P3, nodelist=[])
+        pytest.raises(nx.Error, nx.to_scipy_sparse_array, P3, nodelist=[])
         # Test nodelist duplicates.
         long_nl = nodelist + [0]
-        pytest.raises(nx.NetworkXError, nx.to_scipy_sparse_array, P3, nodelist=long_nl)
+        pytest.raises(nx.Error, nx.to_scipy_sparse_array, P3, nodelist=long_nl)
 
         # Test nodelist contains non-nodes
         non_nl = [-1, 0, 1, 2]
-        pytest.raises(nx.NetworkXError, nx.to_scipy_sparse_array, P3, nodelist=non_nl)
+        pytest.raises(nx.Error, nx.to_scipy_sparse_array, P3, nodelist=non_nl)
 
     def test_weight_keyword(self):
         WP4 = nx.Graph()
@@ -161,7 +161,7 @@ class TestConvertScipy:
         )
 
     def test_format_keyword_raise(self):
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             WP4 = nx.Graph()
             WP4.add_edges_from(
                 (n, n + 1, dict(weight=0.5, other=0.3)) for n in range(3)
@@ -170,7 +170,7 @@ class TestConvertScipy:
             nx.to_scipy_sparse_array(P4, format="any_other")
 
     def test_null_raise(self):
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             nx.to_scipy_sparse_array(nx.Graph())
 
     def test_empty(self):

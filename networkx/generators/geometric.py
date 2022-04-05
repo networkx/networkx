@@ -652,11 +652,11 @@ def navigable_small_world_graph(n, p=1, q=1, r=2, dim=2, seed=None):
        perspective. Proc. 32nd ACM Symposium on Theory of Computing, 2000.
     """
     if p < 1:
-        raise nx.NetworkXException("p must be >= 1")
+        raise nx.Exception("p must be >= 1")
     if q < 0:
-        raise nx.NetworkXException("q must be >= 0")
+        raise nx.Exception("q must be >= 0")
     if r < 0:
-        raise nx.NetworkXException("r must be >= 1")
+        raise nx.Exception("r must be >= 1")
 
     G = nx.DiGraph()
     nodes = list(product(range(n), repeat=dim))

@@ -133,8 +133,8 @@ def _relabel_inplace(G, mapping):
         D.remove_edges_from(nx.selfloop_edges(D))
         try:
             nodes = reversed(list(nx.topological_sort(D)))
-        except nx.NetworkXUnfeasible as err:
-            raise nx.NetworkXUnfeasible(
+        except nx.Unfeasible as err:
+            raise nx.Unfeasible(
                 "The node label sets are overlapping and no ordering can "
                 "resolve the mapping. Use copy=True."
             ) from err
@@ -274,7 +274,7 @@ def convert_node_labels_to_integers(
         dv_pairs.reverse()
         mapping = dict(zip([n for d, n in dv_pairs], range(first_label, N)))
     else:
-        raise nx.NetworkXError(f"Unknown node ordering: {ordering}")
+        raise nx.Error(f"Unknown node ordering: {ordering}")
     H = relabel_nodes(G, mapping)
     # create node attribute with the old label
     if label_attribute is not None:

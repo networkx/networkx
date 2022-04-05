@@ -1,16 +1,16 @@
 import pytest
-from networkx import Graph, NetworkXError
+from networkx import Graph, Error
 from networkx.algorithms.community.asyn_fluid import asyn_fluidc
 
 
 def test_exceptions():
     test = Graph()
     test.add_node("a")
-    pytest.raises(NetworkXError, asyn_fluidc, test, "hi")
-    pytest.raises(NetworkXError, asyn_fluidc, test, -1)
-    pytest.raises(NetworkXError, asyn_fluidc, test, 3)
+    pytest.raises(Error, asyn_fluidc, test, "hi")
+    pytest.raises(Error, asyn_fluidc, test, -1)
+    pytest.raises(Error, asyn_fluidc, test, 3)
     test.add_node("b")
-    pytest.raises(NetworkXError, asyn_fluidc, test, 1)
+    pytest.raises(Error, asyn_fluidc, test, 1)
 
 
 def test_single_node():

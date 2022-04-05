@@ -62,10 +62,10 @@ def stoer_wagner(G, weight="weight", heap=BinaryHeap):
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
         If the graph is directed or a multigraph.
 
-    NetworkXError
+    Error
         If the graph has less than two nodes, is not connected or has a
         negative-weighted edge.
 
@@ -86,9 +86,9 @@ def stoer_wagner(G, weight="weight", heap=BinaryHeap):
     """
     n = len(G)
     if n < 2:
-        raise nx.NetworkXError("graph has less than two nodes.")
+        raise nx.Error("graph has less than two nodes.")
     if not nx.is_connected(G):
-        raise nx.NetworkXError("graph is not connected.")
+        raise nx.Error("graph is not connected.")
 
     # Make a copy of the graph for internal use.
     G = nx.Graph(
@@ -97,7 +97,7 @@ def stoer_wagner(G, weight="weight", heap=BinaryHeap):
 
     for u, v, e in G.edges(data=True):
         if e["weight"] < 0:
-            raise nx.NetworkXError("graph has a negative-weighted edge.")
+            raise nx.Error("graph has a negative-weighted edge.")
 
     cut_value = float("inf")
     nodes = set(G)

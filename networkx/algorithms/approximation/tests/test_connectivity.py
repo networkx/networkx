@@ -98,27 +98,27 @@ def test_octahedral():
 
 def test_only_source():
     G = nx.complete_graph(5)
-    pytest.raises(nx.NetworkXError, approx.node_connectivity, G, s=0)
+    pytest.raises(nx.Error, approx.node_connectivity, G, s=0)
 
 
 def test_only_target():
     G = nx.complete_graph(5)
-    pytest.raises(nx.NetworkXError, approx.node_connectivity, G, t=0)
+    pytest.raises(nx.Error, approx.node_connectivity, G, t=0)
 
 
 def test_missing_source():
     G = nx.path_graph(4)
-    pytest.raises(nx.NetworkXError, approx.node_connectivity, G, 10, 1)
+    pytest.raises(nx.Error, approx.node_connectivity, G, 10, 1)
 
 
 def test_missing_target():
     G = nx.path_graph(4)
-    pytest.raises(nx.NetworkXError, approx.node_connectivity, G, 1, 10)
+    pytest.raises(nx.Error, approx.node_connectivity, G, 1, 10)
 
 
 def test_source_equals_target():
     G = nx.complete_graph(5)
-    pytest.raises(nx.NetworkXError, approx.local_node_connectivity, G, 0, 0)
+    pytest.raises(nx.Error, approx.local_node_connectivity, G, 0, 0)
 
 
 def test_directed_node_connectivity():

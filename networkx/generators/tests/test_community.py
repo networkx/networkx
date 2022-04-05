@@ -33,10 +33,10 @@ def test_random_partition_graph():
     assert len(G) == 15
 
     rpg = nx.random_partition_graph
-    pytest.raises(nx.NetworkXError, rpg, [1, 2, 3], 1.1, 0.1)
-    pytest.raises(nx.NetworkXError, rpg, [1, 2, 3], -0.1, 0.1)
-    pytest.raises(nx.NetworkXError, rpg, [1, 2, 3], 0.1, 1.1)
-    pytest.raises(nx.NetworkXError, rpg, [1, 2, 3], 0.1, -0.1)
+    pytest.raises(nx.Error, rpg, [1, 2, 3], 1.1, 0.1)
+    pytest.raises(nx.Error, rpg, [1, 2, 3], -0.1, 0.1)
+    pytest.raises(nx.Error, rpg, [1, 2, 3], 0.1, 1.1)
+    pytest.raises(nx.Error, rpg, [1, 2, 3], 0.1, -0.1)
 
 
 def test_planted_partition_graph():
@@ -75,10 +75,10 @@ def test_planted_partition_graph():
     assert len(G) == 40
 
     ppg = nx.planted_partition_graph
-    pytest.raises(nx.NetworkXError, ppg, 3, 3, 1.1, 0.1)
-    pytest.raises(nx.NetworkXError, ppg, 3, 3, -0.1, 0.1)
-    pytest.raises(nx.NetworkXError, ppg, 3, 3, 0.1, 1.1)
-    pytest.raises(nx.NetworkXError, ppg, 3, 3, 0.1, -0.1)
+    pytest.raises(nx.Error, ppg, 3, 3, 1.1, 0.1)
+    pytest.raises(nx.Error, ppg, 3, 3, -0.1, 0.1)
+    pytest.raises(nx.Error, ppg, 3, 3, 0.1, 1.1)
+    pytest.raises(nx.Error, ppg, 3, 3, 0.1, -0.1)
 
 
 def test_relaxed_caveman_graph():
@@ -102,7 +102,7 @@ def test_connected_caveman_graph():
     assert nx.is_isomorphic(G, K5)
 
     # need at least 2 nodes in each clique
-    pytest.raises(nx.NetworkXError, nx.connected_caveman_graph, 4, 1)
+    pytest.raises(nx.Error, nx.connected_caveman_graph, 4, 1)
 
 
 def test_caveman_graph():
@@ -130,7 +130,7 @@ def test_gaussian_random_partition_graph():
     assert len(G) == 100
     assert isinstance(G, nx.DiGraph)
     pytest.raises(
-        nx.NetworkXError, nx.gaussian_random_partition_graph, 100, 101, 10, 1, 0
+        nx.Error, nx.gaussian_random_partition_graph, 100, 101, 10, 1, 0
     )
 
 
@@ -145,8 +145,8 @@ def test_ring_of_cliques():
                 # the edge that already exists cannot be duplicated
                 expected_num_edges = i * (((j * (j - 1)) // 2) + 1) - 1
             assert G.number_of_edges() == expected_num_edges
-    pytest.raises(nx.NetworkXError, nx.ring_of_cliques, 1, 5)
-    pytest.raises(nx.NetworkXError, nx.ring_of_cliques, 3, 0)
+    pytest.raises(nx.Error, nx.ring_of_cliques, 1, 5)
+    pytest.raises(nx.Error, nx.ring_of_cliques, 3, 0)
 
 
 def test_windmill_graph():
@@ -158,8 +158,8 @@ def test_windmill_graph():
             assert G.degree(0) == G.number_of_nodes() - 1
             for i in range(1, G.number_of_nodes()):
                 assert G.degree(i) == k - 1
-    pytest.raises(nx.NetworkXError, nx.ring_of_cliques, 1, 3)
-    pytest.raises(nx.NetworkXError, nx.ring_of_cliques, 15, 0)
+    pytest.raises(nx.Error, nx.ring_of_cliques, 1, 3)
+    pytest.raises(nx.Error, nx.ring_of_cliques, 15, 0)
 
 
 def test_stochastic_block_model():
@@ -182,14 +182,14 @@ def test_stochastic_block_model():
     probs_rect1 = [[0.25, 0.05, 0.02], [0.05, -0.35, 0.07]]
     probs_rect2 = [[0.25, 0.05], [0.05, -0.35], [0.02, 0.07]]
     asymprobs = [[0.25, 0.05, 0.01], [0.05, -0.35, 0.07], [0.02, 0.07, 0.40]]
-    pytest.raises(nx.NetworkXException, sbm, sizes, badprobs1)
-    pytest.raises(nx.NetworkXException, sbm, sizes, badprobs2)
-    pytest.raises(nx.NetworkXException, sbm, sizes, probs_rect1, directed=True)
-    pytest.raises(nx.NetworkXException, sbm, sizes, probs_rect2, directed=True)
-    pytest.raises(nx.NetworkXException, sbm, sizes, asymprobs, directed=False)
-    pytest.raises(nx.NetworkXException, sbm, sizes, probs, badnodelist)
+    pytest.raises(nx.Exception, sbm, sizes, badprobs1)
+    pytest.raises(nx.Exception, sbm, sizes, badprobs2)
+    pytest.raises(nx.Exception, sbm, sizes, probs_rect1, directed=True)
+    pytest.raises(nx.Exception, sbm, sizes, probs_rect2, directed=True)
+    pytest.raises(nx.Exception, sbm, sizes, asymprobs, directed=False)
+    pytest.raises(nx.Exception, sbm, sizes, probs, badnodelist)
     nodelist = [0] + list(range(449))  # repeated node name in nodelist
-    pytest.raises(nx.NetworkXException, sbm, sizes, probs, nodelist)
+    pytest.raises(nx.Exception, sbm, sizes, probs, nodelist)
 
     # Extra keyword arguments test
     GG = nx.stochastic_block_model(sizes, probs, seed=0, selfloops=True)
@@ -214,7 +214,7 @@ def test_generator():
 
 
 def test_invalid_tau1():
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.Error):
         n = 100
         tau1 = 2
         tau2 = 1
@@ -223,7 +223,7 @@ def test_invalid_tau1():
 
 
 def test_invalid_tau2():
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.Error):
         n = 100
         tau1 = 1
         tau2 = 2
@@ -232,7 +232,7 @@ def test_invalid_tau2():
 
 
 def test_mu_too_large():
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.Error):
         n = 100
         tau1 = 2
         tau2 = 2
@@ -241,7 +241,7 @@ def test_mu_too_large():
 
 
 def test_mu_too_small():
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.Error):
         n = 100
         tau1 = 2
         tau2 = 2
@@ -250,7 +250,7 @@ def test_mu_too_small():
 
 
 def test_both_degrees_none():
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.Error):
         n = 100
         tau1 = 2
         tau2 = 2
@@ -259,7 +259,7 @@ def test_both_degrees_none():
 
 
 def test_neither_degrees_none():
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.Error):
         n = 100
         tau1 = 2
         tau2 = 2

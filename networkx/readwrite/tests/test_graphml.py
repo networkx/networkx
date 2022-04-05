@@ -405,8 +405,8 @@ class TestReadGraphML(BaseGraphML):
   </graph>
 </graphml>"""
         fh = io.BytesIO(s.encode("UTF-8"))
-        pytest.raises(nx.NetworkXError, nx.read_graphml, fh)
-        pytest.raises(nx.NetworkXError, nx.parse_graphml, s)
+        pytest.raises(nx.Error, nx.read_graphml, fh)
+        pytest.raises(nx.Error, nx.parse_graphml, s)
 
     def test_undirected_edge_in_directed(self):
         s = """<?xml version="1.0" encoding="UTF-8"?>
@@ -423,8 +423,8 @@ class TestReadGraphML(BaseGraphML):
   </graph>
 </graphml>"""
         fh = io.BytesIO(s.encode("UTF-8"))
-        pytest.raises(nx.NetworkXError, nx.read_graphml, fh)
-        pytest.raises(nx.NetworkXError, nx.parse_graphml, s)
+        pytest.raises(nx.Error, nx.read_graphml, fh)
+        pytest.raises(nx.Error, nx.parse_graphml, s)
 
     def test_key_raise(self):
         s = """<?xml version="1.0" encoding="UTF-8"?>
@@ -451,8 +451,8 @@ class TestReadGraphML(BaseGraphML):
 </graphml>
 """
         fh = io.BytesIO(s.encode("UTF-8"))
-        pytest.raises(nx.NetworkXError, nx.read_graphml, fh)
-        pytest.raises(nx.NetworkXError, nx.parse_graphml, s)
+        pytest.raises(nx.Error, nx.read_graphml, fh)
+        pytest.raises(nx.Error, nx.parse_graphml, s)
 
     def test_hyperedge_raise(self):
         s = """<?xml version="1.0" encoding="UTF-8"?>
@@ -481,8 +481,8 @@ class TestReadGraphML(BaseGraphML):
 </graphml>
 """
         fh = io.BytesIO(s.encode("UTF-8"))
-        pytest.raises(nx.NetworkXError, nx.read_graphml, fh)
-        pytest.raises(nx.NetworkXError, nx.parse_graphml, s)
+        pytest.raises(nx.Error, nx.read_graphml, fh)
+        pytest.raises(nx.Error, nx.parse_graphml, s)
 
     def test_multigraph_keys(self):
         # Test that reading multigraphs uses edge id attributes as keys
@@ -771,8 +771,8 @@ line2]]></data>
                 assert graph.nodes["n0"]["test"]
 
         fh = io.BytesIO(ugly.encode("UTF-8"))
-        pytest.raises(nx.NetworkXError, nx.read_graphml, fh)
-        pytest.raises(nx.NetworkXError, nx.parse_graphml, ugly)
+        pytest.raises(nx.Error, nx.read_graphml, fh)
+        pytest.raises(nx.Error, nx.parse_graphml, ugly)
 
     def test_read_attributes_with_groups(self):
         data = """\

@@ -69,7 +69,7 @@ def is_simple_path(G, nodes):
 
     """
     # The empty list is not a valid path. Could also return
-    # NetworkXPointlessConcept here.
+    # PointlessConcept here.
     if len(nodes) == 0:
         return False
     # If the list is a single node, just check that the node is actually
@@ -461,13 +461,13 @@ def shortest_simple_paths(G, source, target, weight=None):
 
     Raises
     ------
-    NetworkXNoPath
+    NoPath
        If no path exists between source and target.
 
-    NetworkXError
+    Error
        If source or target nodes are not in the input graph.
 
-    NetworkXNotImplemented
+    NotImplemented
        If the input graph is a Multi[Di]Graph.
 
     Examples
@@ -555,7 +555,7 @@ def shortest_simple_paths(G, source, target, weight=None):
                     )
                     path = root[:-1] + spur
                     listB.push(root_length + length, path)
-                except nx.NetworkXNoPath:
+                except nx.NoPath:
                     pass
                 ignore_nodes.add(root[-1])
 
@@ -626,7 +626,7 @@ def _bidirectional_shortest_path(
 
     Raises
     ------
-    NetworkXNoPath
+    NoPath
        If no path exists between source and target.
 
     See Also
@@ -661,7 +661,7 @@ def _bidirectional_pred_succ(G, source, target, ignore_nodes=None, ignore_edges=
     """
     # does BFS from both source and target and meets in the middle
     if ignore_nodes and (source in ignore_nodes or target in ignore_nodes):
-        raise nx.NetworkXNoPath(f"No path between {source} and {target}.")
+        raise nx.NoPath(f"No path between {source} and {target}.")
     if target == source:
         return ({target: None}, {source: None}, source)
 
@@ -755,7 +755,7 @@ def _bidirectional_pred_succ(G, source, target, ignore_nodes=None, ignore_edges=
                         # found path
                         return pred, succ, w
 
-    raise nx.NetworkXNoPath(f"No path between {source} and {target}.")
+    raise nx.NoPath(f"No path between {source} and {target}.")
 
 
 def _bidirectional_dijkstra(
@@ -800,7 +800,7 @@ def _bidirectional_dijkstra(
 
     Raises
     ------
-    NetworkXNoPath
+    NoPath
         If no path exists between source and target.
 
     Notes
@@ -828,7 +828,7 @@ def _bidirectional_dijkstra(
     shortest_path_length
     """
     if ignore_nodes and (source in ignore_nodes or target in ignore_nodes):
-        raise nx.NetworkXNoPath(f"No path between {source} and {target}.")
+        raise nx.NoPath(f"No path between {source} and {target}.")
     if source == target:
         if source not in G:
             raise nx.NodeNotFound(f"Node {source} not in graph")
@@ -953,4 +953,4 @@ def _bidirectional_dijkstra(
                         revpath = paths[1][w][:]
                         revpath.reverse()
                         finalpath = paths[0][w] + revpath[1:]
-    raise nx.NetworkXNoPath(f"No path between {source} and {target}.")
+    raise nx.NoPath(f"No path between {source} and {target}.")

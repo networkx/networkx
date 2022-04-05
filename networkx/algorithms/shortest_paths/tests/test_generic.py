@@ -251,7 +251,7 @@ class TestGenericPath:
         )
 
     def test_all_shortest_paths_raise(self):
-        with pytest.raises(nx.NetworkXNoPath):
+        with pytest.raises(nx.NoPath):
             G = nx.path_graph(4)
             G.add_node(4)
             list(nx.all_shortest_paths(G, 0, 4))
@@ -329,9 +329,9 @@ class TestAverageShortestPathLength:
         g = nx.Graph()
         g.add_nodes_from(range(3))
         g.add_edge(0, 1)
-        pytest.raises(nx.NetworkXError, nx.average_shortest_path_length, g)
+        pytest.raises(nx.Error, nx.average_shortest_path_length, g)
         g = g.to_directed()
-        pytest.raises(nx.NetworkXError, nx.average_shortest_path_length, g)
+        pytest.raises(nx.Error, nx.average_shortest_path_length, g)
 
     def test_trivial_graph(self):
         """Tests that the trivial graph has average path length zero,
@@ -345,7 +345,7 @@ class TestAverageShortestPathLength:
         assert nx.average_shortest_path_length(G) == 0
 
     def test_null_graph(self):
-        with pytest.raises(nx.NetworkXPointlessConcept):
+        with pytest.raises(nx.PointlessConcept):
             nx.average_shortest_path_length(nx.null_graph())
 
     def test_bad_method(self):

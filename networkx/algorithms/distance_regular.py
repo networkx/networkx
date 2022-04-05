@@ -59,7 +59,7 @@ def is_distance_regular(G):
     try:
         intersection_array(G)
         return True
-    except nx.NetworkXError:
+    except nx.Error:
         return False
 
 
@@ -148,7 +148,7 @@ def intersection_array(G):
     (_, k) = next(degree)
     for _, knext in degree:
         if knext != k:
-            raise nx.NetworkXError("Graph is not distance regular.")
+            raise nx.Error("Graph is not distance regular.")
         k = knext
     path_length = dict(nx.all_pairs_shortest_path_length(G))
     diameter = max(max(path_length[n].values()) for n in path_length)
@@ -159,14 +159,14 @@ def intersection_array(G):
             try:
                 i = path_length[u][v]
             except KeyError as err:  # graph must be connected
-                raise nx.NetworkXError("Graph is not distance regular.") from err
+                raise nx.Error("Graph is not distance regular.") from err
             # number of neighbors of v at a distance of i-1 from u
             c = len([n for n in G[v] if path_length[n][u] == i - 1])
             # number of neighbors of v at a distance of i+1 from u
             b = len([n for n in G[v] if path_length[n][u] == i + 1])
             # b,c are independent of u and v
             if cint.get(i, c) != c or bint.get(i, b) != b:
-                raise nx.NetworkXError("Graph is not distance regular")
+                raise nx.Error("Graph is not distance regular")
             bint[i] = b
             cint[i] = c
     return (

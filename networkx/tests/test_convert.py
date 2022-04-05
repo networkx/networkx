@@ -47,13 +47,13 @@ class TestConvert:
         class G:
             adj = None
 
-        pytest.raises(nx.NetworkXError, to_networkx_graph, G)
+        pytest.raises(nx.Error, to_networkx_graph, G)
 
         # pygraphviz  agraph
         class G:
             is_strict = None
 
-        pytest.raises(nx.NetworkXError, to_networkx_graph, G)
+        pytest.raises(nx.Error, to_networkx_graph, G)
 
         # Dict of [dicts, lists]
         G = {"a": 0}
@@ -63,10 +63,10 @@ class TestConvert:
         class G:
             next = None
 
-        pytest.raises(nx.NetworkXError, to_networkx_graph, G)
+        pytest.raises(nx.Error, to_networkx_graph, G)
 
         # no match
-        pytest.raises(nx.NetworkXError, to_networkx_graph, "a")
+        pytest.raises(nx.Error, to_networkx_graph, "a")
 
     def test_digraphs(self):
         for dest, source in [
@@ -317,5 +317,5 @@ def test_to_dict_of_dicts_with_edgedata_multigraph():
 
 def test_to_networkx_graph_non_edgelist():
     invalid_edgelist = [1, 2, 3]
-    with pytest.raises(nx.NetworkXError, match="Input is not a valid edge list"):
+    with pytest.raises(nx.Error, match="Input is not a valid edge list"):
         nx.to_networkx_graph(invalid_edgelist)

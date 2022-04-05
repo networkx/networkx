@@ -153,9 +153,9 @@ class TestWeightedPath(WeightedTestBase):
         validate_path(self.G, "s", "v", 2, nx.dijkstra_path(self.G, "s", "v"))
         assert nx.dijkstra_path_length(self.G, "s", "v") == 2
 
-        # NetworkXError: node s not reachable from moon
-        pytest.raises(nx.NetworkXNoPath, nx.dijkstra_path, self.G, "s", "moon")
-        pytest.raises(nx.NetworkXNoPath, nx.dijkstra_path_length, self.G, "s", "moon")
+        # Error: node s not reachable from moon
+        pytest.raises(nx.NoPath, nx.dijkstra_path, self.G, "s", "moon")
+        pytest.raises(nx.NoPath, nx.dijkstra_path_length, self.G, "s", "moon")
 
         validate_path(self.cycle, 0, 3, 3, nx.dijkstra_path(self.cycle, 0, 3))
         validate_path(self.cycle, 0, 4, 3, nx.dijkstra_path(self.cycle, 0, 4))
@@ -243,7 +243,7 @@ class TestWeightedPath(WeightedTestBase):
         vlp(G, s, t, length, astar, weight)
 
     def test_bidirectional_dijkstra_no_path(self):
-        with pytest.raises(nx.NetworkXNoPath):
+        with pytest.raises(nx.NoPath):
             G = nx.Graph()
             nx.add_path(G, [1, 2, 3])
             nx.add_path(G, [4, 5, 6])
@@ -557,40 +557,40 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         G.add_edge(1, 2, weight=-7)
         for i in range(5):
             pytest.raises(
-                nx.NetworkXUnbounded, nx.single_source_bellman_ford_path, G, i
+                nx.Unbounded, nx.single_source_bellman_ford_path, G, i
             )
             pytest.raises(
-                nx.NetworkXUnbounded, nx.single_source_bellman_ford_path_length, G, i
+                nx.Unbounded, nx.single_source_bellman_ford_path_length, G, i
             )
-            pytest.raises(nx.NetworkXUnbounded, nx.single_source_bellman_ford, G, i)
+            pytest.raises(nx.Unbounded, nx.single_source_bellman_ford, G, i)
             pytest.raises(
-                nx.NetworkXUnbounded, nx.bellman_ford_predecessor_and_distance, G, i
+                nx.Unbounded, nx.bellman_ford_predecessor_and_distance, G, i
             )
-            pytest.raises(nx.NetworkXUnbounded, nx.goldberg_radzik, G, i)
+            pytest.raises(nx.Unbounded, nx.goldberg_radzik, G, i)
         G = nx.cycle_graph(5)  # undirected Graph
         G.add_edge(1, 2, weight=-3)
         for i in range(5):
             pytest.raises(
-                nx.NetworkXUnbounded, nx.single_source_bellman_ford_path, G, i
+                nx.Unbounded, nx.single_source_bellman_ford_path, G, i
             )
             pytest.raises(
-                nx.NetworkXUnbounded, nx.single_source_bellman_ford_path_length, G, i
+                nx.Unbounded, nx.single_source_bellman_ford_path_length, G, i
             )
-            pytest.raises(nx.NetworkXUnbounded, nx.single_source_bellman_ford, G, i)
+            pytest.raises(nx.Unbounded, nx.single_source_bellman_ford, G, i)
             pytest.raises(
-                nx.NetworkXUnbounded, nx.bellman_ford_predecessor_and_distance, G, i
+                nx.Unbounded, nx.bellman_ford_predecessor_and_distance, G, i
             )
-            pytest.raises(nx.NetworkXUnbounded, nx.goldberg_radzik, G, i)
+            pytest.raises(nx.Unbounded, nx.goldberg_radzik, G, i)
         G = nx.DiGraph([(1, 1, {"weight": -1})])
-        pytest.raises(nx.NetworkXUnbounded, nx.single_source_bellman_ford_path, G, 1)
+        pytest.raises(nx.Unbounded, nx.single_source_bellman_ford_path, G, 1)
         pytest.raises(
-            nx.NetworkXUnbounded, nx.single_source_bellman_ford_path_length, G, 1
+            nx.Unbounded, nx.single_source_bellman_ford_path_length, G, 1
         )
-        pytest.raises(nx.NetworkXUnbounded, nx.single_source_bellman_ford, G, 1)
+        pytest.raises(nx.Unbounded, nx.single_source_bellman_ford, G, 1)
         pytest.raises(
-            nx.NetworkXUnbounded, nx.bellman_ford_predecessor_and_distance, G, 1
+            nx.Unbounded, nx.bellman_ford_predecessor_and_distance, G, 1
         )
-        pytest.raises(nx.NetworkXUnbounded, nx.goldberg_radzik, G, 1)
+        pytest.raises(nx.Unbounded, nx.goldberg_radzik, G, 1)
 
     def test_find_negative_cycle_longer_cycle(self):
         G = nx.cycle_graph(5, create_using=nx.DiGraph())
@@ -601,7 +601,7 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
 
     def test_find_negative_cycle_no_cycle(self):
         G = nx.path_graph(5, create_using=nx.DiGraph())
-        pytest.raises(nx.NetworkXError, nx.find_negative_cycle, G, 3)
+        pytest.raises(nx.Error, nx.find_negative_cycle, G, 3)
 
     def test_find_negative_cycle_single_edge(self):
         G = nx.Graph()
@@ -861,7 +861,7 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
 
 class TestJohnsonAlgorithm(WeightedTestBase):
     def test_single_node_graph(self):
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             G = nx.DiGraph()
             G.add_node(0)
             nx.johnson(G)
@@ -878,7 +878,7 @@ class TestJohnsonAlgorithm(WeightedTestBase):
                 ("2", "3", 1),
             ]
         )
-        pytest.raises(nx.NetworkXUnbounded, nx.johnson, G)
+        pytest.raises(nx.Unbounded, nx.johnson, G)
         G = nx.Graph()
         G.add_weighted_edges_from(
             [
@@ -890,7 +890,7 @@ class TestJohnsonAlgorithm(WeightedTestBase):
                 ("2", "3", 1),
             ]
         )
-        pytest.raises(nx.NetworkXUnbounded, nx.johnson, G)
+        pytest.raises(nx.Unbounded, nx.johnson, G)
 
     def test_negative_weights(self):
         G = nx.DiGraph()
@@ -911,7 +911,7 @@ class TestJohnsonAlgorithm(WeightedTestBase):
         }
 
     def test_unweighted_graph(self):
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             G = nx.path_graph(5)
             nx.johnson(G)
 

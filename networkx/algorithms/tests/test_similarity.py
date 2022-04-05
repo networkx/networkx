@@ -55,7 +55,7 @@ class TestSimilarity:
         assert graph_edit_distance(G0, G1, roots=(0, 1), timeout=5) == 8
         assert graph_edit_distance(G0, G1, roots=(0, 1), timeout=0.0001) is None
         # test raise on 0 timeout
-        pytest.raises(nx.NetworkXError, graph_edit_distance, G0, G1, timeout=0)
+        pytest.raises(nx.Error, graph_edit_distance, G0, G1, timeout=0)
 
     def test_graph_edit_distance(self):
         G0 = nx.Graph()

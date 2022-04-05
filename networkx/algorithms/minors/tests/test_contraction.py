@@ -188,7 +188,7 @@ class TestQuotient:
             assert M.nodes[n]["density"] == 0.5
 
     def test_overlapping_blocks(self):
-        with pytest.raises(nx.NetworkXException):
+        with pytest.raises(nx.Exception):
             G = nx.path_graph(6)
             partition = [{0, 1, 2}, {2, 3}, {4, 5}]
             nx.quotient_graph(G, partition)

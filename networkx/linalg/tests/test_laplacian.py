@@ -236,7 +236,7 @@ def test_directed_combinatorial_laplacian():
     # fmt: on
     np.testing.assert_almost_equal(L, expected, decimal=6)
 
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.Error):
         nx.directed_combinatorial_laplacian_matrix(G, walk_type="pagerank", alpha=100)
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.Error):
         nx.directed_combinatorial_laplacian_matrix(G, walk_type="silly")

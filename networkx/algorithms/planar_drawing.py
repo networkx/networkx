@@ -441,7 +441,7 @@ def make_bi_connected(embedding, starting_node, outgoing_node, edges_counted):
     # Move the nodes v1, v2, v3 around the face:
     while v2 != starting_node or v3 != outgoing_node:
         if v1 == v2:
-            raise nx.NetworkXException("Invalid half-edge")
+            raise nx.Exception("Invalid half-edge")
         # cycle is not completed yet
         if v2 in face_set:
             # v2 encountered twice: Add edge to ensure 2-connectedness

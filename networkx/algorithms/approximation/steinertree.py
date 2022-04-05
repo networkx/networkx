@@ -32,7 +32,7 @@ def metric_closure(G, weight="weight"):
     u, (distance, path) = next(all_paths_iter)
     if Gnodes - set(distance):
         msg = "G is not a connected graph. metric_closure is not defined."
-        raise nx.NetworkXError(msg)
+        raise nx.Error(msg)
     Gnodes.remove(u)
     for v in Gnodes:
         M.add_edge(u, v, distance=distance[v], path=path[v])

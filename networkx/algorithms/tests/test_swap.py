@@ -54,33 +54,33 @@ def test_connected_double_edge_swap_star_low_window_threshold():
 
 
 def test_double_edge_swap_small():
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.Error):
         G = nx.double_edge_swap(nx.path_graph(3))
 
 
 def test_double_edge_swap_tries():
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.Error):
         G = nx.double_edge_swap(nx.path_graph(10), nswap=1, max_tries=0)
 
 
 def test_double_edge_directed():
     graph = nx.DiGraph([(0, 1), (2, 3)])
-    with pytest.raises(nx.NetworkXError, match="not defined for directed graphs."):
+    with pytest.raises(nx.Error, match="not defined for directed graphs."):
         G = nx.double_edge_swap(graph)
 
 
 def test_double_edge_max_tries():
-    with pytest.raises(nx.NetworkXAlgorithmError):
+    with pytest.raises(nx.AlgorithmError):
         G = nx.double_edge_swap(nx.complete_graph(4), nswap=1, max_tries=5)
 
 
 def test_connected_double_edge_swap_small():
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.Error):
         G = nx.connected_double_edge_swap(nx.path_graph(3))
 
 
 def test_connected_double_edge_swap_not_connected():
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.Error):
         G = nx.path_graph(3)
         nx.add_path(G, [10, 11, 12])
         G = nx.connected_double_edge_swap(G)

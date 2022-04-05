@@ -18,16 +18,16 @@ __all__ = ["preflow_push"]
 def preflow_push_impl(G, s, t, capacity, residual, global_relabel_freq, value_only):
     """Implementation of the highest-label preflow-push algorithm."""
     if s not in G:
-        raise nx.NetworkXError(f"node {str(s)} not in graph")
+        raise nx.Error(f"node {str(s)} not in graph")
     if t not in G:
-        raise nx.NetworkXError(f"node {str(t)} not in graph")
+        raise nx.Error(f"node {str(t)} not in graph")
     if s == t:
-        raise nx.NetworkXError("source and sink are the same node")
+        raise nx.Error("source and sink are the same node")
 
     if global_relabel_freq is None:
         global_relabel_freq = 0
     if global_relabel_freq < 0:
-        raise nx.NetworkXError("global_relabel_freq must be nonnegative.")
+        raise nx.Error("global_relabel_freq must be nonnegative.")
 
     if residual is None:
         R = build_residual_network(G, capacity)
@@ -338,15 +338,15 @@ def preflow_push(
 
     Raises
     ------
-    NetworkXError
+    Error
         The algorithm does not support MultiGraph and MultiDiGraph. If
         the input graph is an instance of one of these two classes, a
-        NetworkXError is raised.
+        Error is raised.
 
-    NetworkXUnbounded
+    Unbounded
         If the graph has a path of infinite capacity, the value of a
         feasible flow on the graph is unbounded above and the function
-        raises a NetworkXUnbounded.
+        raises a Unbounded.
 
     See also
     --------

@@ -3,7 +3,7 @@
 """
 import pytest
 
-from networkx.exception import NetworkXError
+from networkx.exception import Error
 from networkx.generators.duplication import duplication_divergence_graph
 from networkx.generators.duplication import partial_duplication_graph
 
@@ -22,11 +22,11 @@ class TestDuplicationDivergenceGraph:
         assert len(G) == 3
 
     def test_probability_too_large(self):
-        with pytest.raises(NetworkXError):
+        with pytest.raises(Error):
             duplication_divergence_graph(3, 2)
 
     def test_probability_too_small(self):
-        with pytest.raises(NetworkXError):
+        with pytest.raises(Error):
             duplication_divergence_graph(3, -1)
 
 
@@ -56,7 +56,7 @@ class TestPartialDuplicationGraph:
         assert len(G) == n
 
     def test_invalid_initial_size(self):
-        with pytest.raises(NetworkXError):
+        with pytest.raises(Error):
             N = 5
             n = 10
             p = 0.5
@@ -68,4 +68,4 @@ class TestPartialDuplicationGraph:
         n = 1
         for p, q in [(0.5, 2), (0.5, -1), (2, 0.5), (-1, 0.5)]:
             args = (N, n, p, q)
-            pytest.raises(NetworkXError, partial_duplication_graph, *args)
+            pytest.raises(Error, partial_duplication_graph, *args)

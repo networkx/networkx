@@ -170,7 +170,7 @@ def christofides(G, weight="weight", tree=None):
     N = len(G) - 1
     # This check ignores selfloops which is what we want here.
     if any(len(nbrdict) != N for n, nbrdict in G.adj.items()):
-        raise nx.NetworkXError("G must be a complete graph.")
+        raise nx.Error("G must be a complete graph.")
 
     if tree is None:
         tree = nx.minimum_spanning_tree(G, weight=weight)
@@ -266,7 +266,7 @@ def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, metho
 
     Raises
     ------
-    NetworkXError
+    Error
         If `G` is a directed graph it has to be strongly connected or the
         complete version cannot be generated.
 
@@ -307,7 +307,7 @@ def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, metho
     if G.is_directed():
         # If the graph is not strongly connected, raise an exception
         if not nx.is_strongly_connected(G):
-            raise nx.NetworkXError("G is not strongly connected")
+            raise nx.Error("G is not strongly connected")
         GG = nx.DiGraph()
     else:
         GG = nx.Graph()
@@ -377,15 +377,15 @@ def asadpour_atsp(G, weight="weight", seed=None, source=None):
 
     Raises
     ------
-    NetworkXError
+    Error
         If `G` is not complete or has less than two nodes, the algorithm raises
         an exception.
 
-    NetworkXError
+    Error
         If 'source` is not `None` and is not a node in `G`, the algorithm raises
         an exception.
 
-    NetworkXNotImplemented
+    NotImplemented
         If `G` is an undirected graph.
 
     References
@@ -412,13 +412,13 @@ def asadpour_atsp(G, weight="weight", seed=None, source=None):
     # Check that G is a complete graph
     N = len(G) - 1
     if N < 2:
-        raise nx.NetworkXError("G must have at least two nodes")
+        raise nx.Error("G must have at least two nodes")
     # This check ignores selfloops which is what we want here.
     if any(len(nbrdict) - (n in nbrdict) != N for n, nbrdict in G.adj.items()):
-        raise nx.NetworkXError("G is not a complete DiGraph")
+        raise nx.Error("G is not a complete DiGraph")
     # Check that the source vertex, if given, is in the graph
     if source is not None and source not in G.nodes:
-        raise nx.NetworkXError("Given source node not in G.")
+        raise nx.Error("Given source node not in G.")
 
     opt_hk, z_star = held_karp_ascent(G, weight)
 
@@ -924,7 +924,7 @@ def spanning_tree_distribution(G, z):
                 new_q_e = q(e)
                 desired_q_e = (1 + EPSILON / 2) * z_e
                 if round(new_q_e, 8) != round(desired_q_e, 8):
-                    raise nx.NetworkXError(
+                    raise nx.Error(
                         f"Unable to modify probability for edge ({u}, {v})"
                     )
             else:
@@ -1122,7 +1122,7 @@ def greedy_tsp(G, weight="weight", source=None):
 
     Raises
     ------
-    NetworkXError
+    Error
         If `G` is not complete, the algorithm raises an exception.
 
     Examples
@@ -1160,7 +1160,7 @@ def greedy_tsp(G, weight="weight", source=None):
     N = len(G) - 1
     # This check ignores selfloops which is what we want here.
     if any(len(nbrdict) - (n in nbrdict) != N for n, nbrdict in G.adj.items()):
-        raise nx.NetworkXError("G must be a complete graph.")
+        raise nx.Error("G must be a complete graph.")
 
     if source is None:
         source = nx.utils.arbitrary_element(G)
@@ -1284,7 +1284,7 @@ def simulated_annealing_tsp(
 
     Raises
     ------
-    NetworkXError
+    Error
         If `G` is not complete the algorithm raises an exception.
 
     Examples
@@ -1351,18 +1351,18 @@ def simulated_annealing_tsp(
         if source is None:
             source = cycle[0]
         elif source != cycle[0]:
-            raise nx.NetworkXError("source must be first node in init_cycle")
+            raise nx.Error("source must be first node in init_cycle")
         if cycle[0] != cycle[-1]:
-            raise nx.NetworkXError("init_cycle must be a cycle. (return to start)")
+            raise nx.Error("init_cycle must be a cycle. (return to start)")
 
         if len(cycle) - 1 != len(G) or len(set(G.nbunch_iter(cycle))) != len(G):
-            raise nx.NetworkXError("init_cycle should be a cycle over all nodes in G.")
+            raise nx.Error("init_cycle should be a cycle over all nodes in G.")
 
         # Check that G is a complete graph
         N = len(G) - 1
         # This check ignores selfloops which is what we want here.
         if any(len(nbrdict) - (n in nbrdict) != N for n, nbrdict in G.adj.items()):
-            raise nx.NetworkXError("G must be a complete graph.")
+            raise nx.Error("G must be a complete graph.")
 
         if G.number_of_nodes() == 2:
             neighbor = next(G.neighbors(source))
@@ -1500,7 +1500,7 @@ def threshold_accepting_tsp(
 
     Raises
     ------
-    NetworkXError
+    Error
         If `G` is not complete the algorithm raises an exception.
 
     Examples
@@ -1574,18 +1574,18 @@ def threshold_accepting_tsp(
         if source is None:
             source = cycle[0]
         elif source != cycle[0]:
-            raise nx.NetworkXError("source must be first node in init_cycle")
+            raise nx.Error("source must be first node in init_cycle")
         if cycle[0] != cycle[-1]:
-            raise nx.NetworkXError("init_cycle must be a cycle. (return to start)")
+            raise nx.Error("init_cycle must be a cycle. (return to start)")
 
         if len(cycle) - 1 != len(G) or len(set(G.nbunch_iter(cycle))) != len(G):
-            raise nx.NetworkXError("init_cycle is not all and only nodes.")
+            raise nx.Error("init_cycle is not all and only nodes.")
 
         # Check that G is a complete graph
         N = len(G) - 1
         # This check ignores selfloops which is what we want here.
         if any(len(nbrdict) - (n in nbrdict) != N for n, nbrdict in G.adj.items()):
-            raise nx.NetworkXError("G must be a complete graph.")
+            raise nx.Error("G must be a complete graph.")
 
         if G.number_of_nodes() == 2:
             neighbor = list(G.neighbors(source))[0]

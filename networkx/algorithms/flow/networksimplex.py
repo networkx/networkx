@@ -376,18 +376,18 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
 
     Raises
     ------
-    NetworkXError
+    Error
         This exception is raised if the input graph is not directed or
         not connected.
 
-    NetworkXUnfeasible
+    Unfeasible
         This exception is raised in the following situations:
 
             * The sum of the demands is not zero. Then, there is no
               flow satisfying all demands.
             * There is no flow satisfying all demand.
 
-    NetworkXUnbounded
+    Unbounded
         This exception is raised if the digraph G has a cycle of
         negative cost and infinite capacity. Then, the cost of a flow
         satisfying all demands is unbounded below.
@@ -493,7 +493,7 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
     ###########################################################################
 
     if len(G) == 0:
-        raise nx.NetworkXError("graph has no nodes")
+        raise nx.Error("graph has no nodes")
 
     multigraph = G.is_multigraph()
 
@@ -509,34 +509,34 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
     inf = float("inf")
     for u, d in zip(DEAF.node_list, DEAF.node_demands):
         if abs(d) == inf:
-            raise nx.NetworkXError(f"node {u!r} has infinite demand")
+            raise nx.Error(f"node {u!r} has infinite demand")
     for e, w in zip(DEAF.edge_indices, DEAF.edge_weights):
         if abs(w) == inf:
-            raise nx.NetworkXError(f"edge {e!r} has infinite weight")
+            raise nx.Error(f"edge {e!r} has infinite weight")
     if not multigraph:
         edges = nx.selfloop_edges(G, data=True)
     else:
         edges = nx.selfloop_edges(G, data=True, keys=True)
     for e in edges:
         if abs(e[-1].get(weight, 0)) == inf:
-            raise nx.NetworkXError(f"edge {e[:-1]!r} has infinite weight")
+            raise nx.Error(f"edge {e[:-1]!r} has infinite weight")
 
     ###########################################################################
     # Quick Infeasibility Detection
     ###########################################################################
 
     if sum(DEAF.node_demands) != 0:
-        raise nx.NetworkXUnfeasible("total node demand is not zero")
+        raise nx.Unfeasible("total node demand is not zero")
     for e, c in zip(DEAF.edge_indices, DEAF.edge_capacities):
         if c < 0:
-            raise nx.NetworkXUnfeasible(f"edge {e!r} has negative capacity")
+            raise nx.Unfeasible(f"edge {e!r} has negative capacity")
     if not multigraph:
         edges = nx.selfloop_edges(G, data=True)
     else:
         edges = nx.selfloop_edges(G, data=True, keys=True)
     for e in edges:
         if e[-1].get(capacity, inf) < 0:
-            raise nx.NetworkXUnfeasible(f"edge {e[:-1]!r} has negative capacity")
+            raise nx.Unfeasible(f"edge {e[:-1]!r} has negative capacity")
 
     ###########################################################################
     # Initialization
@@ -603,13 +603,13 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
     ###########################################################################
 
     if any(DEAF.edge_flow[i] != 0 for i in range(-n, 0)):
-        raise nx.NetworkXUnfeasible("no flow satisfies all node demands")
+        raise nx.Unfeasible("no flow satisfies all node demands")
 
     if any(DEAF.edge_flow[i] * 2 >= faux_inf for i in range(DEAF.edge_count)) or any(
         e[-1].get(capacity, inf) == inf and e[-1].get(weight, 0) < 0
         for e in nx.selfloop_edges(G, data=True)
     ):
-        raise nx.NetworkXUnbounded("negative cycle with infinite capacity found")
+        raise nx.Unbounded("negative cycle with infinite capacity found")
 
     ###########################################################################
     # Flow cost calculation and flow dict construction

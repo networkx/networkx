@@ -41,7 +41,7 @@ def diameter(G, seed=None):
 
     Raises
     ------
-    NetworkXError
+    Error
         If the graph is empty or
         If the graph is undirected and not connected or
         If the graph is directed and not strongly connected.
@@ -63,7 +63,7 @@ def diameter(G, seed=None):
     """
     # if G is empty
     if not G:
-        raise nx.NetworkXError("Expected non-empty NetworkX graph!")
+        raise nx.Error("Expected non-empty NetworkX graph!")
     # if there's only a node
     if G.number_of_nodes() == 1:
         return 0
@@ -93,7 +93,7 @@ def _two_sweep_undirected(G, seed):
     distances = nx.shortest_path_length(G, source)
     # if some nodes have not been visited, then the graph is not connected
     if len(distances) != len(G):
-        raise nx.NetworkXError("Graph not connected.")
+        raise nx.Error("Graph not connected.")
     # take a node that is (one of) the farthest nodes from the source
     *_, node = distances
     # return the eccentricity of the node
@@ -131,7 +131,7 @@ def _two_sweep_directed(G, seed):
     # can reach the source, then the graph is not strongly connected
     n = len(G)
     if len(forward_distances) != n or len(backward_distances) != n:
-        raise nx.NetworkXError("DiGraph not strongly connected.")
+        raise nx.Error("DiGraph not strongly connected.")
     # take a node a_1 at the maximum distance from the source in G
     *_, a_1 = forward_distances
     # take a node a_2 at the maximum distance from the source in G_reversed

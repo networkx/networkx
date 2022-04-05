@@ -16,7 +16,7 @@ class BaseDiGraphTester(BaseGraphTester):
     def test_successors(self):
         G = self.K3
         assert sorted(G.successors(0)) == [1, 2]
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             G.successors(-1)
 
     def test_has_predecessor(self):
@@ -27,7 +27,7 @@ class BaseDiGraphTester(BaseGraphTester):
     def test_predecessors(self):
         G = self.K3
         assert sorted(G.predecessors(0)) == [1, 2]
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             G.predecessors(-1)
 
     def test_edges(self):
@@ -35,14 +35,14 @@ class BaseDiGraphTester(BaseGraphTester):
         assert sorted(G.edges()) == [(0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)]
         assert sorted(G.edges(0)) == [(0, 1), (0, 2)]
         assert sorted(G.edges([0, 1])) == [(0, 1), (0, 2), (1, 0), (1, 2)]
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             G.edges(-1)
 
     def test_out_edges(self):
         G = self.K3
         assert sorted(G.out_edges()) == [(0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)]
         assert sorted(G.out_edges(0)) == [(0, 1), (0, 2)]
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             G.out_edges(-1)
 
     def test_out_edges_dir(self):
@@ -117,7 +117,7 @@ class BaseDiGraphTester(BaseGraphTester):
         G = nx.DiGraph([(0, 1), (1, 2)])
         R = G.reverse(copy=False)
         assert sorted(R.edges()) == [(1, 0), (2, 1)]
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             R.remove_edge(1, 0)
 
     def test_reverse_hashable(self):
@@ -146,7 +146,7 @@ class BaseAttrDiGraphTester(BaseDiGraphTester, BaseAttrGraphTester):
         assert sorted(G.edges(data=True)) == all_edges
         assert sorted(G.edges(0, data=True)) == all_edges[:2]
         assert sorted(G.edges([0, 1], data=True)) == all_edges[:4]
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             G.edges(-1, True)
 
     def test_in_degree_weighted(self):
@@ -226,9 +226,9 @@ class TestDiGraph(BaseAttrDiGraphTester, _TestGraph):
         assert G.succ == {0: {1: {"data": 2}, 2: {"data": 3}}, 1: {}, 2: {}}
         assert G.pred == {0: {}, 1: {0: {"data": 2}}, 2: {0: {"data": 3}}}
 
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             G.add_edges_from([(0,)])  # too few in tuple
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             G.add_edges_from([(0, 1, 2, 3)])  # too many in tuple
         with pytest.raises(TypeError):
             G.add_edges_from([0])  # not a tuple
@@ -238,7 +238,7 @@ class TestDiGraph(BaseAttrDiGraphTester, _TestGraph):
         G.remove_edge(0, 1)
         assert G.succ == {0: {2: {}}, 1: {0: {}, 2: {}}, 2: {0: {}, 1: {}}}
         assert G.pred == {0: {1: {}, 2: {}}, 1: {2: {}}, 2: {0: {}, 1: {}}}
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             G.remove_edge(-1, 0)
 
     def test_remove_edges_from(self):

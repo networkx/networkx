@@ -78,16 +78,16 @@ def biadjacency_matrix(
 
     nlen = len(row_order)
     if nlen == 0:
-        raise nx.NetworkXError("row_order is empty list")
+        raise nx.Error("row_order is empty list")
     if len(row_order) != len(set(row_order)):
         msg = "Ambiguous ordering: `row_order` contained duplicates."
-        raise nx.NetworkXError(msg)
+        raise nx.Error(msg)
     if column_order is None:
         column_order = list(set(G) - set(row_order))
     mlen = len(column_order)
     if len(column_order) != len(set(column_order)):
         msg = "Ambiguous ordering: `column_order` contained duplicates."
-        raise nx.NetworkXError(msg)
+        raise nx.Error(msg)
 
     row_index = dict(zip(row_order, itertools.count()))
     col_index = dict(zip(column_order, itertools.count()))
@@ -114,7 +114,7 @@ def biadjacency_matrix(
         )
         return A.asformat(format)
     except ValueError as err:
-        raise nx.NetworkXError(f"Unknown sparse array format: {format}") from err
+        raise nx.Error(f"Unknown sparse array format: {format}") from err
 
 
 def from_biadjacency_matrix(A, create_using=None, edge_attribute="weight"):

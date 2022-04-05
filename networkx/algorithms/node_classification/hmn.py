@@ -33,7 +33,7 @@ def harmonic_function(G, max_iter=30, label_name="label"):
 
     Raises
     ------
-    NetworkXError
+    Error
         If no nodes in `G` have attribute `label_name`.
 
     Examples
@@ -64,7 +64,7 @@ def harmonic_function(G, max_iter=30, label_name="label"):
     labels, label_dict = _get_label_info(G, label_name)
 
     if labels.shape[0] == 0:
-        raise nx.NetworkXError(
+        raise nx.Error(
             f"No node on the input graph is labeled by '{label_name}'."
         )
 

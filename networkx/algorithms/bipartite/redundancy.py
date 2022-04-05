@@ -1,7 +1,7 @@
 """Node redundancy for bipartite graphs."""
 from itertools import combinations
 
-from networkx import NetworkXError
+from networkx import Error
 
 __all__ = ["node_redundancy"]
 
@@ -68,7 +68,7 @@ def node_redundancy(G, nodes=None):
 
     Raises
     ------
-    NetworkXError
+    Error
         If any of the nodes in the graph (or in `nodes`, if specified) has
         (out-)degree less than two (which would result in division by zero,
         according to the definition of the redundancy coefficient).
@@ -83,7 +83,7 @@ def node_redundancy(G, nodes=None):
     if nodes is None:
         nodes = G
     if any(len(G[v]) < 2 for v in nodes):
-        raise NetworkXError(
+        raise Error(
             "Cannot compute redundancy coefficient for a node"
             " that has fewer than two neighbors."
         )

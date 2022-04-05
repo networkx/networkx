@@ -31,7 +31,7 @@ def s_metric(G, normalized=True):
            https://arxiv.org/abs/cond-mat/0501169
     """
     if normalized:
-        raise nx.NetworkXError("Normalization not implemented")
+        raise nx.Error("Normalization not implemented")
     #        Gmax = li_smax_graph(list(G.degree().values()))
     #        return s_metric(G,normalized=False)/s_metric(Gmax,normalized=False)
     #    else:

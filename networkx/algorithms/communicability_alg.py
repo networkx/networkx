@@ -27,7 +27,7 @@ def communicability(G):
 
     Raises
     ------
-    NetworkXError
+    Error
        If the graph is not undirected and simple.
 
     See Also
@@ -108,7 +108,7 @@ def communicability_exp(G):
 
     Raises
     ------
-    NetworkXError
+    Error
         If the graph is not undirected and simple.
 
     See Also

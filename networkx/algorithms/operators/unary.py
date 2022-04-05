@@ -49,6 +49,6 @@ def reverse(G, copy=True):
 
     """
     if not G.is_directed():
-        raise nx.NetworkXError("Cannot reverse an undirected graph.")
+        raise nx.Error("Cannot reverse an undirected graph.")
     else:
         return G.reverse(copy=copy)

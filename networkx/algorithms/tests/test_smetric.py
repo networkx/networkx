@@ -18,5 +18,5 @@ def test_smetric():
 
 
 def test_normalized():
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.Error):
         sm = nx.s_metric(nx.Graph(), normalized=True)

@@ -60,7 +60,7 @@ def average_neighbor_degree(G, source="out", target="out", nodes=None, weight=No
 
     Raises
     ------
-    NetworkXError
+    Error
         If either `source` or `target` are not one of 'in', 'out', or 'in+out'.
         If either `source` or `target` is passed for an undirected graph.
 
@@ -101,7 +101,7 @@ def average_neighbor_degree(G, source="out", target="out", nodes=None, weight=No
         elif source == "in+out":
             source_degree = G.degree
         else:
-            raise nx.NetworkXError(
+            raise nx.Error(
                 f"source argument {source} must be 'in', 'out' or 'in+out'"
             )
 
@@ -112,12 +112,12 @@ def average_neighbor_degree(G, source="out", target="out", nodes=None, weight=No
         elif target == "in+out":
             target_degree = G.degree
         else:
-            raise nx.NetworkXError(
+            raise nx.Error(
                 f"target argument {target} must be 'in', 'out' or 'in+out'"
             )
     else:
         if source != "out" or target != "out":
-            raise nx.NetworkXError(
+            raise nx.Error(
                 f"source and target arguments are only supported for directed graphs"
             )
         source_degree = target_degree = G.degree

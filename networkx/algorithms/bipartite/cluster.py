@@ -106,12 +106,12 @@ def latapy_clustering(G, nodes=None, mode="dot"):
        Social Networks 30(1), 31--48.
     """
     if not nx.algorithms.bipartite.is_bipartite(G):
-        raise nx.NetworkXError("Graph is not bipartite")
+        raise nx.Error("Graph is not bipartite")
 
     try:
         cc_func = modes[mode]
     except KeyError as err:
-        raise nx.NetworkXError(
+        raise nx.Error(
             "Mode for bipartite clustering must be: dot, min or max"
         ) from err
 

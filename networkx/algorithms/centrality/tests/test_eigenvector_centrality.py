@@ -151,17 +151,17 @@ class TestEigenvectorCentralityDirected:
 
 class TestEigenvectorCentralityExceptions:
     def test_multigraph(self):
-        with pytest.raises(nx.NetworkXException):
+        with pytest.raises(nx.Exception):
             e = nx.eigenvector_centrality(nx.MultiGraph())
 
     def test_multigraph_numpy(self):
-        with pytest.raises(nx.NetworkXException):
+        with pytest.raises(nx.Exception):
             e = nx.eigenvector_centrality_numpy(nx.MultiGraph())
 
     def test_empty(self):
-        with pytest.raises(nx.NetworkXException):
+        with pytest.raises(nx.Exception):
             e = nx.eigenvector_centrality(nx.Graph())
 
     def test_empty_numpy(self):
-        with pytest.raises(nx.NetworkXException):
+        with pytest.raises(nx.Exception):
             e = nx.eigenvector_centrality_numpy(nx.Graph())

@@ -40,23 +40,23 @@ class TestBiadjacencyMatrix:
         assert M[1, 2] == 2
 
     def test_null_graph(self):
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             bipartite.biadjacency_matrix(nx.Graph(), [])
 
     def test_empty_graph(self):
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             bipartite.biadjacency_matrix(nx.Graph([(1, 0)]), [])
 
     def test_duplicate_row(self):
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             bipartite.biadjacency_matrix(nx.Graph([(1, 0)]), [1, 1])
 
     def test_duplicate_col(self):
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             bipartite.biadjacency_matrix(nx.Graph([(1, 0)]), [0], [1, 1])
 
     def test_format_keyword(self):
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             bipartite.biadjacency_matrix(nx.Graph([(1, 0)]), [0], format="foo")
 
     def test_from_biadjacency_roundtrip(self):

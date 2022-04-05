@@ -84,7 +84,7 @@ def katz_centrality(
 
     Raises
     ------
-    NetworkXError
+    Error
        If the parameter `beta` is not a scalar but lacks a value for at least
        one node
 
@@ -160,7 +160,7 @@ def katz_centrality(
     except (TypeError, ValueError, AttributeError) as err:
         b = beta
         if set(beta) != set(G):
-            raise nx.NetworkXError(
+            raise nx.Error(
                 "beta dictionary " "must have a value for every node"
             ) from err
 
@@ -252,7 +252,7 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True, weight=None):
 
     Raises
     ------
-    NetworkXError
+    Error
        If the parameter `beta` is not a scalar but lacks a value for at least
        one node
 
@@ -311,7 +311,7 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True, weight=None):
     try:
         nodelist = beta.keys()
         if set(nodelist) != set(G):
-            raise nx.NetworkXError(
+            raise nx.Error(
                 "beta dictionary " "must have a value for every node"
             )
         b = np.array(list(beta.values()), dtype=float)
@@ -320,7 +320,7 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True, weight=None):
         try:
             b = np.ones((len(nodelist), 1)) * float(beta)
         except (TypeError, ValueError, AttributeError) as err:
-            raise nx.NetworkXError("beta must be a number") from err
+            raise nx.Error("beta must be a number") from err
 
     A = nx.adjacency_matrix(G, nodelist=nodelist, weight=weight).todense().T
     n = A.shape[0]

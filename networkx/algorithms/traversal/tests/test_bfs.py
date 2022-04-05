@@ -55,7 +55,7 @@ class TestBFS:
             assert nx.descendants_at_distance(self.G, 0, distance) == descendants
 
     def test_descendants_at_distance_missing_source(self):
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             nx.descendants_at_distance(self.G, "abc", 0)
 
 

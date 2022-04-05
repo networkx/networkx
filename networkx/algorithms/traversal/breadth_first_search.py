@@ -399,7 +399,7 @@ def descendants_at_distance(G, source, distance):
     set()
     """
     if not G.has_node(source):
-        raise nx.NetworkXError(f"The node {source} is not in the graph.")
+        raise nx.Error(f"The node {source} is not in the graph.")
     current_distance = 0
     current_layer = {source}
     visited = {source}

@@ -41,7 +41,7 @@ class TestEdgeDFS:
     def test_digraph_orientation_invalid(self):
         G = nx.DiGraph(self.edges)
         edge_iterator = edge_dfs(G, self.nodes, orientation="hello")
-        pytest.raises(nx.NetworkXError, list, edge_iterator)
+        pytest.raises(nx.Error, list, edge_iterator)
 
     def test_digraph_orientation_none(self):
         G = nx.DiGraph(self.edges)

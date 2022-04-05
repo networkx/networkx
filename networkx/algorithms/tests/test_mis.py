@@ -52,14 +52,14 @@ class TestMaximalIndependantSet:
     def test_exception(self):
         """Bad input should raise exception."""
         G = self.florentine
-        pytest.raises(nx.NetworkXUnfeasible, nx.maximal_independent_set, G, ["Smith"])
+        pytest.raises(nx.Unfeasible, nx.maximal_independent_set, G, ["Smith"])
         pytest.raises(
-            nx.NetworkXUnfeasible, nx.maximal_independent_set, G, ["Salviati", "Pazzi"]
+            nx.Unfeasible, nx.maximal_independent_set, G, ["Salviati", "Pazzi"]
         )
 
     def test_digraph_exception(self):
         G = nx.DiGraph([(1, 2), (3, 4)])
-        pytest.raises(nx.NetworkXNotImplemented, nx.maximal_independent_set, G)
+        pytest.raises(nx.NotImplemented, nx.maximal_independent_set, G)
 
     def test_florentine_family(self):
         G = self.florentine

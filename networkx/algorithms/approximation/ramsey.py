@@ -31,7 +31,7 @@ def ramsey_R2(G):
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
         If the graph is directed or is a multigraph.
     """
     if not G:

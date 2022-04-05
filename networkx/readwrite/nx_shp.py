@@ -55,7 +55,7 @@ def read_shp(path, simplify=True, geom_attrs=True, strict=True):
         this method) and they change, your geomety will be out of sync.
 
     strict: bool
-        If True, raise NetworkXError when feature geometry is missing or
+        If True, raise Error when feature geometry is missing or
         GeometryType is not supported.
         If False, silently ignore missing or unsupported geometry in features.
 
@@ -71,7 +71,7 @@ def read_shp(path, simplify=True, geom_attrs=True, strict=True):
     RuntimeError
        If file cannot be open or read.
 
-    NetworkXError
+    Error
        If strict=True and feature is missing geometry or GeometryType is
        not supported.
 
@@ -106,7 +106,7 @@ def read_shp(path, simplify=True, geom_attrs=True, strict=True):
             g = f.geometry()
             if g is None:
                 if strict:
-                    raise nx.NetworkXError("Bad data: feature missing geometry")
+                    raise nx.Error("Bad data: feature missing geometry")
                 else:
                     continue
             flddata = [f.GetField(f.GetFieldIndex(x)) for x in fields]
@@ -122,7 +122,7 @@ def read_shp(path, simplify=True, geom_attrs=True, strict=True):
                     net[e1][e2].update(attr)
             else:
                 if strict:
-                    raise nx.NetworkXError(
+                    raise nx.Error(
                         f"GeometryType {g.GetGeometryType()} not supported"
                     )
 

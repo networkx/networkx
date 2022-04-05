@@ -87,14 +87,14 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
                 result._node[n].update(dd)
             return result
         except Exception as err:
-            raise nx.NetworkXError("Input is not a correct NetworkX graph.") from err
+            raise nx.Error("Input is not a correct NetworkX graph.") from err
 
     # pygraphviz  agraph
     if hasattr(data, "is_strict"):
         try:
             return nx.nx_agraph.from_agraph(data, create_using=create_using)
         except Exception as err:
-            raise nx.NetworkXError("Input is not a correct pygraphviz graph.") from err
+            raise nx.Error("Input is not a correct pygraphviz graph.") from err
 
     # dict of dicts/lists
     if isinstance(data, dict):
@@ -104,7 +104,7 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
             )
         except Exception as err:
             if multigraph_input is True:
-                raise nx.NetworkXError(
+                raise nx.Error(
                     f"converting multigraph_input raised:\n{type(err)}: {err}"
                 )
             try:
@@ -122,7 +122,7 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
                     return nx.from_pandas_adjacency(data, create_using=create_using)
                 except Exception as err:
                     msg = "Input is not a correct Pandas DataFrame adjacency matrix."
-                    raise nx.NetworkXError(msg) from err
+                    raise nx.Error(msg) from err
             else:
                 try:
                     return nx.from_pandas_edgelist(
@@ -130,7 +130,7 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
                     )
                 except Exception as err:
                     msg = "Input is not a correct Pandas DataFrame edge-list."
-                    raise nx.NetworkXError(msg) from err
+                    raise nx.Error(msg) from err
     except ImportError:
         warnings.warn("pandas not found, skipping conversion test.", ImportWarning)
 
@@ -142,7 +142,7 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
             try:
                 return nx.from_numpy_array(data, create_using=create_using)
             except Exception as err:
-                raise nx.NetworkXError(
+                raise nx.Error(
                     f"Failed to interpret array as an adjacency matrix."
                 ) from err
     except ImportError:
@@ -156,7 +156,7 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
             try:
                 return nx.from_scipy_sparse_matrix(data, create_using=create_using)
             except Exception as err:
-                raise nx.NetworkXError(
+                raise nx.Error(
                     "Input is not a correct scipy sparse matrix type."
                 ) from err
     except ImportError:
@@ -170,9 +170,9 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
         try:
             return from_edgelist(data, create_using=create_using)
         except Exception as err:
-            raise nx.NetworkXError("Input is not a valid edge list") from err
+            raise nx.Error("Input is not a valid edge list") from err
 
-    raise nx.NetworkXError("Input is not a known data type for conversion.")
+    raise nx.Error("Input is not a known data type for conversion.")
 
 
 def to_dict_of_lists(G, nodelist=None):

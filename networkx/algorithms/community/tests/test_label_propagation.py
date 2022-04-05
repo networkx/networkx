@@ -9,7 +9,7 @@ from networkx.algorithms.community import asyn_lpa_communities
 
 
 def test_directed_not_supported():
-    with pytest.raises(nx.NetworkXNotImplemented):
+    with pytest.raises(nx.NotImplemented):
         # not supported for directed graphs
         test = nx.DiGraph()
         test.add_edge("a", "b")

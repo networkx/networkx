@@ -115,7 +115,7 @@ def greedy_branching(G, attr="weight", default=1, kind="max", seed=None):
 
     """
     if kind not in KINDS:
-        raise nx.NetworkXException("Unknown value for `kind`.")
+        raise nx.Exception("Unknown value for `kind`.")
 
     if kind == "min":
         reverse = False
@@ -292,7 +292,7 @@ class Edmonds:
 
     def _init(self, attr, default, kind, style, preserve_attrs, seed, partition):
         if kind not in KINDS:
-            raise nx.NetworkXException("Unknown value for `kind`.")
+            raise nx.Exception("Unknown value for `kind`.")
 
         # Store inputs.
         self.attr = attr
@@ -727,7 +727,7 @@ def maximum_spanning_arborescence(
     )
     if not is_arborescence(B):
         msg = "No maximum spanning arborescence in G."
-        raise nx.exception.NetworkXException(msg)
+        raise nx.exception.Exception(msg)
     return B
 
 
@@ -745,7 +745,7 @@ def minimum_spanning_arborescence(
     )
     if not is_arborescence(B):
         msg = "No minimum spanning arborescence in G."
-        raise nx.exception.NetworkXException(msg)
+        raise nx.exception.Exception(msg)
     return B
 
 
@@ -780,7 +780,7 @@ docstring_arborescence = (
     + """
 Raises
 ------
-NetworkXException
+Exception
     If the graph does not contain a {kind} {style}.
 
 """
@@ -975,7 +975,7 @@ class ArborescenceIterator:
                     p1_mst_weight = p1_mst.size(weight=self.weight)
                     p1.mst_weight = p1_mst_weight if self.minimum else -p1_mst_weight
                     self.partition_queue.put(p1.__copy__())
-                except nx.NetworkXException:
+                except nx.Exception:
                     pass
 
                 p1.partition_dict = p2.partition_dict.copy()

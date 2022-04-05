@@ -1,6 +1,6 @@
 import pytest
 import networkx as nx
-from networkx import NetworkXNotImplemented
+from networkx import NotImplemented
 
 
 class TestAttractingComponents:
@@ -63,7 +63,7 @@ class TestAttractingComponents:
 
     def test_connected_raise(self):
         G = nx.Graph()
-        with pytest.raises(NetworkXNotImplemented):
+        with pytest.raises(NotImplemented):
             next(nx.attracting_components(G))
-        pytest.raises(NetworkXNotImplemented, nx.number_attracting_components, G)
-        pytest.raises(NetworkXNotImplemented, nx.is_attracting_component, G)
+        pytest.raises(NotImplemented, nx.number_attracting_components, G)
+        pytest.raises(NotImplemented, nx.is_attracting_component, G)

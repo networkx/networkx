@@ -16,7 +16,7 @@ class TestBipartiteBasic:
         assert c == {0: 1, 1: 0, 2: 1, 3: 0}
 
     def test_not_bipartite_color(self):
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             c = bipartite.color(nx.complete_graph(4))
 
     def test_bipartite_directed(self):

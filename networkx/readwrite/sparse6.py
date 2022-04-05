@@ -12,7 +12,7 @@ For more information, see the `sparse6`_ homepage.
 
 """
 import networkx as nx
-from networkx.exception import NetworkXError
+from networkx.exception import Error
 from networkx.utils import open_file, not_implemented_for
 from networkx.readwrite.graph6 import data_to_n, n_to_data
 
@@ -115,7 +115,7 @@ def from_sparse6_bytes(string):
 
     Raises
     ------
-    NetworkXError
+    Error
         If the string is unable to be parsed in sparse6 format
 
     Examples
@@ -137,7 +137,7 @@ def from_sparse6_bytes(string):
     if string.startswith(b">>sparse6<<"):
         string = string[11:]
     if not string.startswith(b":"):
-        raise NetworkXError("Expected leading colon in sparse6")
+        raise Error("Expected leading colon in sparse6")
 
     chars = [c - 63 for c in string[1:]]
     n, data = data_to_n(chars)
@@ -214,7 +214,7 @@ def to_sparse6_bytes(G, nodes=None, header=True):
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
         If the graph is directed.
 
     ValueError
@@ -264,7 +264,7 @@ def read_sparse6(path):
 
     Raises
     ------
-    NetworkXError
+    Error
         If the string is unable to be parsed in sparse6 format
 
     Examples
@@ -332,7 +332,7 @@ def write_sparse6(G, path, nodes=None, header=True):
 
     Raises
     ------
-    NetworkXError
+    Error
         If the graph is directed
 
     Examples

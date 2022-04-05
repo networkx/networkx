@@ -35,8 +35,8 @@ class TestMinCostFlow:
         G.add_edge("b", "d", weight=1)
         G.add_edge("d", "c", weight=-2)
         G.add_edge("d", "t", weight=1, capacity=3)
-        pytest.raises(nx.NetworkXUnfeasible, nx.network_simplex, G)
-        pytest.raises(nx.NetworkXUnbounded, nx.capacity_scaling, G)
+        pytest.raises(nx.Unfeasible, nx.network_simplex, G)
+        pytest.raises(nx.Unbounded, nx.capacity_scaling, G)
 
     def test_sum_demands_not_zero(self):
         G = nx.DiGraph()
@@ -48,8 +48,8 @@ class TestMinCostFlow:
         G.add_edge("b", "d", weight=1)
         G.add_edge("c", "d", weight=-2)
         G.add_edge("d", "t", weight=1, capacity=3)
-        pytest.raises(nx.NetworkXUnfeasible, nx.network_simplex, G)
-        pytest.raises(nx.NetworkXUnfeasible, nx.capacity_scaling, G)
+        pytest.raises(nx.Unfeasible, nx.network_simplex, G)
+        pytest.raises(nx.Unfeasible, nx.capacity_scaling, G)
 
     def test_no_flow_satisfying_demands(self):
         G = nx.DiGraph()
@@ -61,8 +61,8 @@ class TestMinCostFlow:
         G.add_edge("b", "d", weight=1)
         G.add_edge("c", "d", weight=-2)
         G.add_edge("d", "t", weight=1, capacity=3)
-        pytest.raises(nx.NetworkXUnfeasible, nx.network_simplex, G)
-        pytest.raises(nx.NetworkXUnfeasible, nx.capacity_scaling, G)
+        pytest.raises(nx.Unfeasible, nx.network_simplex, G)
+        pytest.raises(nx.Unfeasible, nx.capacity_scaling, G)
 
     def test_transshipment(self):
         G = nx.DiGraph()
@@ -332,7 +332,7 @@ class TestMinCostFlow:
         G.nodes[3]["demand"] = 13
 
         G.add_edges_from([(0, 2), (0, 3), (2, 1)], capacity=20, weight=0.1)
-        pytest.raises(nx.NetworkXUnfeasible, nx.min_cost_flow, G)
+        pytest.raises(nx.Unfeasible, nx.min_cost_flow, G)
 
     def test_infinite_capacity_neg_digon(self):
         """An infinite capacity negative cost digon results in an unbounded
@@ -346,8 +346,8 @@ class TestMinCostFlow:
         ]
         G = nx.DiGraph(edges)
         G.add_nodes_from(nodes)
-        pytest.raises(nx.NetworkXUnbounded, nx.network_simplex, G)
-        pytest.raises(nx.NetworkXUnbounded, nx.capacity_scaling, G)
+        pytest.raises(nx.Unbounded, nx.network_simplex, G)
+        pytest.raises(nx.Unbounded, nx.capacity_scaling, G)
 
     def test_finite_capacity_neg_digon(self):
         """The digon should receive the maximum amount of flow it can handle.
@@ -381,8 +381,8 @@ class TestMinCostFlow:
         """
         G = nx.DiGraph()
         G.add_edge(1, 1, weight=-1)
-        pytest.raises(nx.NetworkXUnbounded, nx.network_simplex, G)
-        pytest.raises(nx.NetworkXUnbounded, nx.capacity_scaling, G)
+        pytest.raises(nx.Unbounded, nx.network_simplex, G)
+        pytest.raises(nx.Unbounded, nx.capacity_scaling, G)
         G[1][1]["capacity"] = 2
         flowCost, H = nx.network_simplex(G)
         assert flowCost == -2
@@ -394,8 +394,8 @@ class TestMinCostFlow:
         G = nx.MultiDiGraph()
         G.add_edge(1, 1, "x", weight=-1)
         G.add_edge(1, 1, "y", weight=1)
-        pytest.raises(nx.NetworkXUnbounded, nx.network_simplex, G)
-        pytest.raises(nx.NetworkXUnbounded, nx.capacity_scaling, G)
+        pytest.raises(nx.Unbounded, nx.network_simplex, G)
+        pytest.raises(nx.Unbounded, nx.capacity_scaling, G)
         G[1][1]["x"]["capacity"] = 2
         flowCost, H = nx.network_simplex(G)
         assert flowCost == -2
@@ -427,34 +427,34 @@ class TestMinCostFlow:
 
     def test_exceptions(self):
         G = nx.Graph()
-        pytest.raises(nx.NetworkXNotImplemented, nx.network_simplex, G)
-        pytest.raises(nx.NetworkXNotImplemented, nx.capacity_scaling, G)
+        pytest.raises(nx.NotImplemented, nx.network_simplex, G)
+        pytest.raises(nx.NotImplemented, nx.capacity_scaling, G)
         G = nx.MultiGraph()
-        pytest.raises(nx.NetworkXNotImplemented, nx.network_simplex, G)
-        pytest.raises(nx.NetworkXNotImplemented, nx.capacity_scaling, G)
+        pytest.raises(nx.NotImplemented, nx.network_simplex, G)
+        pytest.raises(nx.NotImplemented, nx.capacity_scaling, G)
         G = nx.DiGraph()
-        pytest.raises(nx.NetworkXError, nx.network_simplex, G)
-        pytest.raises(nx.NetworkXError, nx.capacity_scaling, G)
+        pytest.raises(nx.Error, nx.network_simplex, G)
+        pytest.raises(nx.Error, nx.capacity_scaling, G)
         G.add_node(0, demand=float("inf"))
-        pytest.raises(nx.NetworkXError, nx.network_simplex, G)
-        pytest.raises(nx.NetworkXUnfeasible, nx.capacity_scaling, G)
+        pytest.raises(nx.Error, nx.network_simplex, G)
+        pytest.raises(nx.Unfeasible, nx.capacity_scaling, G)
         G.nodes[0]["demand"] = 0
         G.add_node(1, demand=0)
         G.add_edge(0, 1, weight=-float("inf"))
-        pytest.raises(nx.NetworkXError, nx.network_simplex, G)
-        pytest.raises(nx.NetworkXUnfeasible, nx.capacity_scaling, G)
+        pytest.raises(nx.Error, nx.network_simplex, G)
+        pytest.raises(nx.Unfeasible, nx.capacity_scaling, G)
         G[0][1]["weight"] = 0
         G.add_edge(0, 0, weight=float("inf"))
-        pytest.raises(nx.NetworkXError, nx.network_simplex, G)
-        # pytest.raises(nx.NetworkXError, nx.capacity_scaling, G)
+        pytest.raises(nx.Error, nx.network_simplex, G)
+        # pytest.raises(nx.Error, nx.capacity_scaling, G)
         G[0][0]["weight"] = 0
         G[0][1]["capacity"] = -1
-        pytest.raises(nx.NetworkXUnfeasible, nx.network_simplex, G)
-        # pytest.raises(nx.NetworkXUnfeasible, nx.capacity_scaling, G)
+        pytest.raises(nx.Unfeasible, nx.network_simplex, G)
+        # pytest.raises(nx.Unfeasible, nx.capacity_scaling, G)
         G[0][1]["capacity"] = 0
         G[0][0]["capacity"] = -1
-        pytest.raises(nx.NetworkXUnfeasible, nx.network_simplex, G)
-        # pytest.raises(nx.NetworkXUnfeasible, nx.capacity_scaling, G)
+        pytest.raises(nx.Unfeasible, nx.network_simplex, G)
+        # pytest.raises(nx.Unfeasible, nx.capacity_scaling, G)
 
     def test_large(self):
         fname = os.path.join(os.path.dirname(__file__), "netgen-2.gpickle.bz2")

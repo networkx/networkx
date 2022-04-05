@@ -36,7 +36,7 @@ def attracting_components(G):
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
         If the input graph is undirected.
 
     See Also
@@ -68,7 +68,7 @@ def number_attracting_components(G):
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
         If the input graph is undirected.
 
     See Also
@@ -96,7 +96,7 @@ def is_attracting_component(G):
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
         If the input graph is undirected.
 
     See Also

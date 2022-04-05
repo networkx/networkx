@@ -66,7 +66,7 @@ class AntiGraph(Graph):
         try:
             return iter(set(self.adj) - set(self.adj[n]) - {n})
         except KeyError as err:
-            raise nx.NetworkXError(f"The node {n} is not in the graph.") from err
+            raise nx.Error(f"The node {n} is not in the graph.") from err
 
     def degree(self, nbunch=None, weight=None):
         """Return an iterator for (node, degree) in the dense graph.

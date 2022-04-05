@@ -73,7 +73,7 @@ def torrents_and_ferraro_graph():
 
 
 def test_directed():
-    with pytest.raises(nx.NetworkXNotImplemented):
+    with pytest.raises(nx.NotImplemented):
         G = nx.gnp_random_graph(10, 0.2, directed=True, seed=42)
         nx.k_components(G)
 

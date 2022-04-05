@@ -154,7 +154,7 @@ class TestWriteSparse6:
             assert edges_equal(g2.edges(), g.edges())
 
     def test_no_directed_graphs(self):
-        with pytest.raises(nx.NetworkXNotImplemented):
+        with pytest.raises(nx.NotImplemented):
             nx.write_sparse6(nx.DiGraph(), BytesIO())
 
     def test_write_path(self):

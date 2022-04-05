@@ -193,7 +193,7 @@ def local_node_connectivity(
 
     mapping = H.graph.get("mapping", None)
     if mapping is None:
-        raise nx.NetworkXError("Invalid auxiliary digraph.")
+        raise nx.Error("Invalid auxiliary digraph.")
 
     kwargs = dict(flow_func=flow_func, residual=residual)
     if flow_func is shortest_augmenting_path:
@@ -300,14 +300,14 @@ def node_connectivity(G, s=None, t=None, flow_func=None):
 
     """
     if (s is not None and t is None) or (s is None and t is not None):
-        raise nx.NetworkXError("Both source and target must be specified.")
+        raise nx.Error("Both source and target must be specified.")
 
     # Local node connectivity
     if s is not None and t is not None:
         if s not in G:
-            raise nx.NetworkXError(f"node {s} not in graph")
+            raise nx.Error(f"node {s} not in graph")
         if t not in G:
-            raise nx.NetworkXError(f"node {t} not in graph")
+            raise nx.Error(f"node {t} not in graph")
         return local_node_connectivity(G, s, t, flow_func=flow_func)
 
     # Global node connectivity
@@ -750,14 +750,14 @@ def edge_connectivity(G, s=None, t=None, flow_func=None, cutoff=None):
 
     """
     if (s is not None and t is None) or (s is None and t is not None):
-        raise nx.NetworkXError("Both source and target must be specified.")
+        raise nx.Error("Both source and target must be specified.")
 
     # Local edge connectivity
     if s is not None and t is not None:
         if s not in G:
-            raise nx.NetworkXError(f"node {s} not in graph")
+            raise nx.Error(f"node {s} not in graph")
         if t not in G:
-            raise nx.NetworkXError(f"node {t} not in graph")
+            raise nx.Error(f"node {t} not in graph")
         return local_edge_connectivity(G, s, t, flow_func=flow_func, cutoff=cutoff)
 
     # Global edge connectivity

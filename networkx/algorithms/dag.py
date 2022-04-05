@@ -50,7 +50,7 @@ def descendants(G, source):
 
     Raises
     ------
-    NetworkXError
+    Error
         If node `source` is not in `G`.
 
     Examples
@@ -81,7 +81,7 @@ def ancestors(G, source):
 
     Raises
     ------
-    NetworkXError
+    Error
         If node `source` is not in `G`.
 
     Examples
@@ -102,7 +102,7 @@ def has_cycle(G):
     try:
         # Feed the entire iterator into a zero-length deque.
         deque(topological_sort(G), maxlen=0)
-    except nx.NetworkXUnfeasible:
+    except nx.Unfeasible:
         return True
     else:
         return False
@@ -168,13 +168,13 @@ def topological_generations(G):
 
     Raises
     ------
-    NetworkXError
+    Error
         Generations are defined for directed graphs only. If the graph
-        `G` is undirected, a :exc:`NetworkXError` is raised.
+        `G` is undirected, a :exc:`Error` is raised.
 
-    NetworkXUnfeasible
+    Unfeasible
         If `G` is not a directed acyclic graph (DAG) no topological generations
-        exist and a :exc:`NetworkXUnfeasible` exception is raised.  This can also
+        exist and a :exc:`Unfeasible` exception is raised.  This can also
         be raised if `G` is changed while the returned iterator is being processed
 
     RuntimeError
@@ -197,7 +197,7 @@ def topological_generations(G):
     topological_sort
     """
     if not G.is_directed():
-        raise nx.NetworkXError("Topological sort not defined on undirected graphs.")
+        raise nx.Error("Topological sort not defined on undirected graphs.")
 
     multigraph = G.is_multigraph()
     indegree_map = {v: d for v, d in G.in_degree() if d > 0}
@@ -220,7 +220,7 @@ def topological_generations(G):
         yield this_generation
 
     if indegree_map:
-        raise nx.NetworkXUnfeasible(
+        raise nx.Unfeasible(
             "Graph contains a cycle or graph changed during iteration"
         )
 
@@ -245,13 +245,13 @@ def topological_sort(G):
 
     Raises
     ------
-    NetworkXError
+    Error
         Topological sort is defined for directed graphs only. If the graph `G`
-        is undirected, a :exc:`NetworkXError` is raised.
+        is undirected, a :exc:`Error` is raised.
 
-    NetworkXUnfeasible
+    Unfeasible
         If `G` is not a directed acyclic graph (DAG) no topological sort exists
-        and a :exc:`NetworkXUnfeasible` exception is raised.  This can also be
+        and a :exc:`Unfeasible` exception is raised.  This can also be
         raised if `G` is changed while the returned iterator is being processed
 
     RuntimeError
@@ -317,13 +317,13 @@ def lexicographical_topological_sort(G, key=None):
 
     Raises
     ------
-    NetworkXError
+    Error
         Topological sort is defined for directed graphs only. If the graph `G`
-        is undirected, a :exc:`NetworkXError` is raised.
+        is undirected, a :exc:`Error` is raised.
 
-    NetworkXUnfeasible
+    Unfeasible
         If `G` is not a directed acyclic graph (DAG) no topological sort exists
-        and a :exc:`NetworkXUnfeasible` exception is raised.  This can also be
+        and a :exc:`Unfeasible` exception is raised.  This can also be
         raised if `G` is changed while the returned iterator is being processed
 
     RuntimeError
@@ -353,7 +353,7 @@ def lexicographical_topological_sort(G, key=None):
     """
     if not G.is_directed():
         msg = "Topological sort not defined on undirected graphs."
-        raise nx.NetworkXError(msg)
+        raise nx.Error(msg)
 
     if key is None:
 
@@ -388,7 +388,7 @@ def lexicographical_topological_sort(G, key=None):
 
     if indegree_map:
         msg = "Graph contains a cycle or graph changed during iteration"
-        raise nx.NetworkXUnfeasible(msg)
+        raise nx.Unfeasible(msg)
 
 
 @not_implemented_for("undirected")
@@ -411,9 +411,9 @@ def all_topological_sorts(G):
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
         If `G` is not directed
-    NetworkXUnfeasible
+    Unfeasible
         If `G` is not acyclic
 
     Examples
@@ -438,7 +438,7 @@ def all_topological_sorts(G):
        Elsevier (North-Holland), Amsterdam
     """
     if not G.is_directed():
-        raise nx.NetworkXError("Topological sort not defined on undirected graphs.")
+        raise nx.Error("Topological sort not defined on undirected graphs.")
 
     # the names of count and D are chosen to match the global variables in [1]
     # number of edges originating in a vertex v
@@ -488,7 +488,7 @@ def all_topological_sorts(G):
 
         else:
             if len(D) == 0:
-                raise nx.NetworkXUnfeasible("Graph contains a cycle.")
+                raise nx.Unfeasible("Graph contains a cycle.")
 
             # choose next node
             q = D.pop()
@@ -528,7 +528,7 @@ def is_aperiodic(G):
 
     Raises
     ------
-    NetworkXError
+    Error
         If `G` is not directed
 
     Examples
@@ -577,7 +577,7 @@ def is_aperiodic(G):
        A Multidisciplinary Approach, CRC Press.
     """
     if not G.is_directed():
-        raise nx.NetworkXError("is_aperiodic not defined for undirected graphs")
+        raise nx.Error("is_aperiodic not defined for undirected graphs")
 
     s = arbitrary_element(G)
     levels = {s: 0}
@@ -632,7 +632,7 @@ def transitive_closure(G, reflexive=False):
 
     Raises
     ------
-    NetworkXError
+    Error
         If `reflexive` not in `{None, True, False}`
 
     Examples
@@ -677,7 +677,7 @@ def transitive_closure(G, reflexive=False):
     TC = G.copy()
 
     if reflexive not in {None, True, False}:
-        raise nx.NetworkXError("Incorrect value for the parameter `reflexive`")
+        raise nx.Error("Incorrect value for the parameter `reflexive`")
 
     for v in G:
         if reflexive is None:
@@ -718,9 +718,9 @@ def transitive_closure_dag(G, topo_order=None):
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
         If `G` is not directed
-    NetworkXUnfeasible
+    Unfeasible
         If `G` has a cycle
 
     Examples
@@ -768,9 +768,9 @@ def transitive_reduction(G):
 
     Raises
     ------
-    NetworkXError
+    Error
         If `G` is not a directed acyclic graph (DAG) transitive reduction is
-        not uniquely defined and a :exc:`NetworkXError` exception is raised.
+        not uniquely defined and a :exc:`Error` exception is raised.
 
     Examples
     --------
@@ -800,7 +800,7 @@ def transitive_reduction(G):
     """
     if not is_directed_acyclic_graph(G):
         msg = "Directed Acyclic Graph required for transitive_reduction"
-        raise nx.NetworkXError(msg)
+        raise nx.Error(msg)
     TR = nx.DiGraph()
     TR.add_nodes_from(G.nodes())
     descendants = {}
@@ -842,10 +842,10 @@ def antichains(G, topo_order=None):
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
         If `G` is not directed
 
-    NetworkXUnfeasible
+    Unfeasible
         If `G` contains a cycle
 
     Examples
@@ -914,7 +914,7 @@ def dag_longest_path(G, weight="weight", default_weight=1, topo_order=None):
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
         If `G` is not directed
 
     Examples
@@ -984,7 +984,7 @@ def dag_longest_path_length(G, weight="weight", default_weight=1):
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
         If `G` is not directed
 
     Examples
@@ -1065,7 +1065,7 @@ def dag_to_branching(G):
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
         If `G` is not directed, or if `G` is a multigraph.
 
     HasACycle

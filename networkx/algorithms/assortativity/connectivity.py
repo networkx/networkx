@@ -48,7 +48,7 @@ def average_degree_connectivity(
 
     Raises
     ------
-    NetworkXError
+    Error
         If either `source` or `target` are not one of 'in',
         'out', or 'in+out'.
         If either `source` or `target` is passed for an undirected graph.
@@ -75,9 +75,9 @@ def average_degree_connectivity(
     # First, determine the type of neighbors and the type of degree to use.
     if G.is_directed():
         if source not in ("in", "out", "in+out"):
-            raise nx.NetworkXError('source must be one of "in", "out", or "in+out"')
+            raise nx.Error('source must be one of "in", "out", or "in+out"')
         if target not in ("in", "out", "in+out"):
-            raise nx.NetworkXError('target must be one of "in", "out", or "in+out"')
+            raise nx.Error('target must be one of "in", "out", or "in+out"')
         direction = {"out": G.out_degree, "in": G.in_degree, "in+out": G.degree}
         neighbor_funcs = {
             "out": G.successors,
@@ -92,7 +92,7 @@ def average_degree_connectivity(
         reverse = source == "in"
     else:
         if source != "in+out" or target != "in+out":
-            raise nx.NetworkXError(
+            raise nx.Error(
                 f"source and target arguments are only supported for directed graphs"
             )
         source_degree = G.degree

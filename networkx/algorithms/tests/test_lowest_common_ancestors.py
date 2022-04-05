@@ -76,7 +76,7 @@ class TestTreeLCA:
     def test_tree_all_pairs_lowest_common_ancestor5(self):
         """Handles invalid input correctly."""
         empty_digraph = tree_all_pairs_lca(nx.DiGraph())
-        pytest.raises(nx.NetworkXPointlessConcept, list, empty_digraph)
+        pytest.raises(nx.PointlessConcept, list, empty_digraph)
 
         bad_pairs_digraph = tree_all_pairs_lca(self.DG, pairs=[(-1, -2)])
         pytest.raises(nx.NodeNotFound, list, bad_pairs_digraph)
@@ -101,16 +101,16 @@ class TestTreeLCA:
         assert {(1, 1): 1} == dict(tree_all_pairs_lca(G, 1))
         assert {(0, 0): 0} == dict(tree_all_pairs_lca(G, 0))
 
-        pytest.raises(nx.NetworkXError, list, tree_all_pairs_lca(G))
+        pytest.raises(nx.Error, list, tree_all_pairs_lca(G))
 
     def test_tree_all_pairs_lowest_common_ancestor8(self):
         """Raises right errors if not a tree."""
         # Cycle
         G = nx.DiGraph([(1, 2), (2, 1)])
-        pytest.raises(nx.NetworkXError, list, tree_all_pairs_lca(G))
+        pytest.raises(nx.Error, list, tree_all_pairs_lca(G))
         # DAG
         G = nx.DiGraph([(0, 2), (1, 2)])
-        pytest.raises(nx.NetworkXError, list, tree_all_pairs_lca(G))
+        pytest.raises(nx.Error, list, tree_all_pairs_lca(G))
 
     def test_tree_all_pairs_lowest_common_ancestor9(self):
         """Test that pairs works correctly as a generator."""
@@ -130,10 +130,10 @@ class TestTreeLCA:
     def test_tree_all_pairs_lowest_common_ancestor12(self):
         """Test that tree routine bails on DAGs."""
         G = nx.DiGraph([(3, 4), (5, 4)])
-        pytest.raises(nx.NetworkXError, list, tree_all_pairs_lca(G))
+        pytest.raises(nx.Error, list, tree_all_pairs_lca(G))
 
     def test_not_implemented_for(self):
-        NNI = nx.NetworkXNotImplemented
+        NNI = nx.NotImplemented
         G = nx.Graph([(0, 1)])
         with pytest.raises(NNI):
             next(tree_all_pairs_lca(G))
@@ -280,11 +280,11 @@ class TestDAGLCA:
 
     def test_all_pairs_lowest_common_ancestor7(self):
         """Test that LCA on null graph bails."""
-        pytest.raises(nx.NetworkXPointlessConcept, all_pairs_lca, nx.DiGraph())
+        pytest.raises(nx.PointlessConcept, all_pairs_lca, nx.DiGraph())
 
     def test_all_pairs_lowest_common_ancestor8(self):
         """Test that LCA on non-dags bails."""
-        pytest.raises(nx.NetworkXError, all_pairs_lca, nx.DiGraph([(3, 4), (4, 3)]))
+        pytest.raises(nx.Error, all_pairs_lca, nx.DiGraph([(3, 4), (4, 3)]))
 
     def test_all_pairs_lowest_common_ancestor9(self):
         """Test that it works on non-empty graphs with no LCAs."""

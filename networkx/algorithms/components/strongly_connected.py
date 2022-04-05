@@ -29,7 +29,7 @@ def strongly_connected_components(G):
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
         If G is undirected.
 
     Examples
@@ -127,7 +127,7 @@ def kosaraju_strongly_connected_components(G, source=None):
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
         If G is undirected.
 
     Examples
@@ -190,7 +190,7 @@ def strongly_connected_components_recursive(G):
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
         If G is undirected.
 
     Examples
@@ -280,7 +280,7 @@ def number_strongly_connected_components(G):
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
         If G is undirected.
 
     See Also
@@ -315,7 +315,7 @@ def is_strongly_connected(G):
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
         If G is undirected.
 
     See Also
@@ -331,7 +331,7 @@ def is_strongly_connected(G):
     For directed graphs only.
     """
     if len(G) == 0:
-        raise nx.NetworkXPointlessConcept(
+        raise nx.PointlessConcept(
             """Connectivity is undefined for the null graph."""
         )
 
@@ -368,7 +368,7 @@ def condensation(G, scc=None):
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
         If G is undirected.
 
     Notes

@@ -86,7 +86,7 @@ def all_node_cuts(G, k=None, flow_func=None):
 
     """
     if not nx.is_connected(G):
-        raise nx.NetworkXError("Input graph is disconnected.")
+        raise nx.Error("Input graph is disconnected.")
 
     # Address some corner cases first.
     # For complete Graphs

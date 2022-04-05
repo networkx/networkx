@@ -97,7 +97,7 @@ def build_residual_network(G, capacity):
 
     """
     if G.is_multigraph():
-        raise nx.NetworkXError("MultiGraph and MultiDiGraph not supported (yet).")
+        raise nx.Error("MultiGraph and MultiDiGraph not supported (yet).")
 
     R = nx.DiGraph()
     R.add_nodes_from(G)
@@ -162,7 +162,7 @@ def detect_unboundedness(R, s, t):
         for v, attr in R[u].items():
             if attr["capacity"] == inf and v not in seen:
                 if v == t:
-                    raise nx.NetworkXUnbounded(
+                    raise nx.Unbounded(
                         "Infinite capacity path, flow unbounded above."
                     )
                 seen.add(v)

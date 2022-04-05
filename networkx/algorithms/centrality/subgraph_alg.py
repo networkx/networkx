@@ -33,7 +33,7 @@ def subgraph_centrality_exp(G):
 
     Raises
     ------
-    NetworkXError
+    Error
         If the graph is not undirected and simple.
 
     See Also
@@ -117,7 +117,7 @@ def subgraph_centrality(G):
 
     Raises
     ------
-    NetworkXError
+    Error
        If the graph is not undirected and simple.
 
     See Also
@@ -206,7 +206,7 @@ def communicability_betweenness_centrality(G):
 
     Raises
     ------
-    NetworkXError
+    Error
         If the graph is not undirected and simple.
 
     Notes
@@ -305,7 +305,7 @@ def estrada_index(G):
 
     Raises
     ------
-    NetworkXError
+    Error
         If the graph is not undirected and simple.
 
     Notes

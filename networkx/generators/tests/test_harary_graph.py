@@ -66,20 +66,20 @@ class TestHararyGraph:
             assert set(G2.edges) < set(G1.edges)
             assert G1.number_of_edges() == m
 
-        # Raise NetworkXError if n<1
+        # Raise Error if n<1
         n = 0
         m = 0
-        pytest.raises(nx.NetworkXError, hnm_harary_graph, n, m)
+        pytest.raises(nx.Error, hnm_harary_graph, n, m)
 
-        # Raise NetworkXError if m < n-1
+        # Raise Error if m < n-1
         n = 6
         m = 4
-        pytest.raises(nx.NetworkXError, hnm_harary_graph, n, m)
+        pytest.raises(nx.Error, hnm_harary_graph, n, m)
 
-        # Raise NetworkXError if m > n(n-1)/2
+        # Raise Error if m > n(n-1)/2
         n = 6
         m = 16
-        pytest.raises(nx.NetworkXError, hnm_harary_graph, n, m)
+        pytest.raises(nx.Error, hnm_harary_graph, n, m)
 
     """
         Suppose connectivity k, number of nodes n
@@ -124,12 +124,12 @@ class TestHararyGraph:
                 eSet3.add((i, (i + half) % n))
             assert eSet1 == eSet2 | eSet3
 
-        # Raise NetworkXError if k<1
+        # Raise Error if k<1
         k = 0
         n = 0
-        pytest.raises(nx.NetworkXError, hkn_harary_graph, k, n)
+        pytest.raises(nx.Error, hkn_harary_graph, k, n)
 
-        # Raise NetworkXError if n<k+1
+        # Raise Error if n<k+1
         k = 6
         n = 6
-        pytest.raises(nx.NetworkXError, hkn_harary_graph, k, n)
+        pytest.raises(nx.Error, hkn_harary_graph, k, n)

@@ -258,7 +258,7 @@ class GEXF:
     def set_version(self, version):
         d = self.versions.get(version)
         if d is None:
-            raise nx.NetworkXError(f"Unknown GEXF version {version}.")
+            raise nx.Error(f"Unknown GEXF version {version}.")
         self.NS_GEXF = d["NS_GEXF"]
         self.NS_VIZ = d["NS_VIZ"]
         self.NS_XSI = d["NS_XSI"]
@@ -649,7 +649,7 @@ class GEXFWriter(GEXF):
                 elif isinstance(start_or_end, int):
                     timeformat = "long"
                 else:
-                    raise nx.NetworkXError(
+                    raise nx.Error(
                         "timeformat should be of the type int, float or str"
                     )
                 self.graph_element.set("timeformat", timeformat)
@@ -700,7 +700,7 @@ class GEXFReader(GEXF):
             g = self.xml.find(f"{{{self.NS_GEXF}}}graph")
             if g is not None:
                 return self.make_graph(g)
-        raise nx.NetworkXError("No <graph> element in GEXF file.")
+        raise nx.Error("No <graph> element in GEXF file.")
 
     def make_graph(self, graph_xml):
         # start with empty DiGraph or MultiDiGraph
@@ -908,9 +908,9 @@ class GEXFReader(GEXF):
         # raise error if we find mixed directed and undirected edges
         edge_direction = edge_element.get("type")
         if G.is_directed() and edge_direction == "undirected":
-            raise nx.NetworkXError("Undirected edge found in directed graph.")
+            raise nx.Error("Undirected edge found in directed graph.")
         if (not G.is_directed()) and edge_direction == "directed":
-            raise nx.NetworkXError("Directed edge found in undirected graph.")
+            raise nx.Error("Directed edge found in undirected graph.")
 
         # Get source and target and recast type if required
         source = edge_element.get("source")
@@ -966,7 +966,7 @@ class GEXFReader(GEXF):
                 try:  # should be in our gexf_keys dictionary
                     title = gexf_keys[key]["title"]
                 except KeyError as err:
-                    raise nx.NetworkXError(f"No attribute defined for={key}.") from err
+                    raise nx.Error(f"No attribute defined for={key}.") from err
                 atype = gexf_keys[key]["type"]
                 value = a.get("value")
                 if atype == "boolean":
@@ -1024,7 +1024,7 @@ def relabel_gexf_graph(G):
 
     Raises
     ------
-    NetworkXError
+    Error
         If node labels are missing or not unique while relabel=True.
 
     Notes
@@ -1037,12 +1037,12 @@ def relabel_gexf_graph(G):
     try:
         mapping = [(u, G.nodes[u]["label"]) for u in G]
     except KeyError as err:
-        raise nx.NetworkXError(
+        raise nx.Error(
             "Failed to relabel nodes: missing node labels found. Use relabel=False."
         ) from err
     x, y = zip(*mapping)
     if len(set(y)) != len(G):
-        raise nx.NetworkXError(
+        raise nx.Error(
             "Failed to relabel nodes: "
             "duplicate node labels found. "
             "Use relabel=False."

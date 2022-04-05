@@ -49,7 +49,7 @@ def extrema_bounding(G, compute="diameter"):
 
     Raises
     ------
-    NetworkXError
+    Error
         If the graph consists of multiple components
     ValueError
         If `compute` is not one of "diameter", "radius", "periphery", "center", or "eccentricities".
@@ -112,7 +112,7 @@ def _extrema_bounding(G, compute="diameter"):
 
     Raises
     ------
-    NetworkXError
+    Error
         If the graph consists of multiple components
     ValueError
         If `compute` is not one of "diameter", "radius", "periphery", "center", or "eccentricities".
@@ -164,7 +164,7 @@ def _extrema_bounding(G, compute="diameter"):
         dist = dict(nx.single_source_shortest_path_length(G, current))
         if len(dist) != N:
             msg = "Cannot compute metric because graph is not connected."
-            raise nx.NetworkXError(msg)
+            raise nx.Error(msg)
         current_ecc = max(dist.values())
 
         # print status update
@@ -323,7 +323,7 @@ def eccentricity(G, v=None, sp=None):
                 length = sp[n]
                 L = len(length)
             except TypeError as err:
-                raise nx.NetworkXError('Format of "sp" is invalid.') from err
+                raise nx.Error('Format of "sp" is invalid.') from err
         if L != order:
             if G.is_directed():
                 msg = (
@@ -332,7 +332,7 @@ def eccentricity(G, v=None, sp=None):
                 )
             else:
                 msg = "Found infinite path length because the graph is not" " connected"
-            raise nx.NetworkXError(msg)
+            raise nx.Error(msg)
 
         e[n] = max(length.values())
 
@@ -496,7 +496,7 @@ def barycenter(G, weight=None, attr=None, sp=None):
 
     Raises
     ------
-    NetworkXNoPath
+    NoPath
         If `G` is disconnected. `G` may appear disconnected to
         :func:`barycenter` if `sp` is given but is missing shortest path
         lengths for any pairs.
@@ -517,7 +517,7 @@ def barycenter(G, weight=None, attr=None, sp=None):
     smallest, barycenter_vertices, n = float("inf"), [], len(G)
     for v, dists in sp:
         if len(dists) < n:
-            raise nx.NetworkXNoPath(
+            raise nx.NoPath(
                 f"Input graph {G} is disconnected, so every induced subgraph "
                 "has infinite barycentricity."
             )
@@ -598,16 +598,16 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
 
     if not nx.is_connected(G):
         msg = "Graph G must be strongly connected."
-        raise nx.NetworkXError(msg)
+        raise nx.Error(msg)
     elif nodeA not in G:
         msg = "Node A is not in graph G."
-        raise nx.NetworkXError(msg)
+        raise nx.Error(msg)
     elif nodeB not in G:
         msg = "Node B is not in graph G."
-        raise nx.NetworkXError(msg)
+        raise nx.Error(msg)
     elif nodeA == nodeB:
         msg = "Node A and Node B cannot be the same."
-        raise nx.NetworkXError(msg)
+        raise nx.Error(msg)
 
     G = G.copy()
     node_list = list(G)

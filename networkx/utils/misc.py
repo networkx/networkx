@@ -130,9 +130,9 @@ def make_list_of_ints(sequence):
             try:
                 ii = int(i)
             except ValueError:
-                raise nx.NetworkXError(errmsg) from None
+                raise nx.Error(errmsg) from None
             if ii != i:
-                raise nx.NetworkXError(errmsg)
+                raise nx.Error(errmsg)
             result.append(ii)
         return result
     # original sequence is a list... in-place conversion to ints
@@ -143,9 +143,9 @@ def make_list_of_ints(sequence):
         try:
             ii = int(i)
         except ValueError:
-            raise nx.NetworkXError(errmsg) from None
+            raise nx.Error(errmsg) from None
         if ii != i:
-            raise nx.NetworkXError(errmsg)
+            raise nx.Error(errmsg)
         sequence[indx] = ii
     return sequence
 

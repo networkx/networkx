@@ -326,7 +326,7 @@ def newman_watts_strogatz_graph(n, k, p, seed=None):
        https://doi.org/10.1016/S0375-9601(99)00757-4
     """
     if k > n:
-        raise nx.NetworkXError("k>=n, choose smaller k or larger n")
+        raise nx.Error("k>=n, choose smaller k or larger n")
 
     # If k == n the graph return is a complete graph
     if k == n:
@@ -399,7 +399,7 @@ def watts_strogatz_graph(n, k, p, seed=None):
        Nature, 393, pp. 440--442, 1998.
     """
     if k > n:
-        raise nx.NetworkXError("k>n, choose smaller k or larger n")
+        raise nx.Error("k>n, choose smaller k or larger n")
 
     # If k == n, the graph is complete not Watts-Strogatz
     if k == n:
@@ -480,7 +480,7 @@ def connected_watts_strogatz_graph(n, k, p, tries=100, seed=None):
         G = watts_strogatz_graph(n, k, p, seed)
         if nx.is_connected(G):
             return G
-    raise nx.NetworkXError("Maximum number of tries exceeded")
+    raise nx.Error("Maximum number of tries exceeded")
 
 
 @py_random_state(2)
@@ -510,7 +510,7 @@ def random_regular_graph(d, n, seed=None):
     Raises
     ------
 
-    NetworkXError
+    Error
         If $n \times d$ is odd or $d$ is greater than or equal to $n$.
 
     References
@@ -527,10 +527,10 @@ def random_regular_graph(d, n, seed=None):
        http://portal.acm.org/citation.cfm?id=780542.780576
     """
     if (n * d) % 2 != 0:
-        raise nx.NetworkXError("n * d must be even")
+        raise nx.Error("n * d must be even")
 
     if not 0 <= d < n:
-        raise nx.NetworkXError("the 0 <= d < n inequality must be satisfied")
+        raise nx.Error("the 0 <= d < n inequality must be satisfied")
 
     if d == 0:
         return empty_graph(n)
@@ -639,7 +639,7 @@ def barabasi_albert_graph(n, m, seed=None, initial_graph=None):
 
     Raises
     ------
-    NetworkXError
+    Error
         If `m` does not satisfy ``1 <= m < n``, or
         the initial graph number of nodes m0 does not satisfy ``m <= m0 <= n``.
 
@@ -650,7 +650,7 @@ def barabasi_albert_graph(n, m, seed=None, initial_graph=None):
     """
 
     if m < 1 or m >= n:
-        raise nx.NetworkXError(
+        raise nx.Error(
             f"Barabási–Albert network must have m >= 1 and m < n, m = {m}, n = {n}"
         )
 
@@ -659,7 +659,7 @@ def barabasi_albert_graph(n, m, seed=None, initial_graph=None):
         G = star_graph(m)
     else:
         if len(initial_graph) < m or len(initial_graph) > n:
-            raise nx.NetworkXError(
+            raise nx.Error(
                 f"Barabási–Albert initial graph needs between m={m} and n={n} nodes"
             )
         G = initial_graph.copy()
@@ -716,7 +716,7 @@ def dual_barabasi_albert_graph(n, m1, m2, p, seed=None, initial_graph=None):
 
     Raises
     ------
-    NetworkXError
+    Error
         If `m1` and `m2` do not satisfy ``1 <= m1,m2 < n``, or
         `p` does not satisfy ``0 <= p <= 1``, or
         the initial graph number of nodes m0 does not satisfy m1, m2 <= m0 <= n.
@@ -727,15 +727,15 @@ def dual_barabasi_albert_graph(n, m1, m2, p, seed=None, initial_graph=None):
     """
 
     if m1 < 1 or m1 >= n:
-        raise nx.NetworkXError(
+        raise nx.Error(
             f"Dual Barabási–Albert must have m1 >= 1 and m1 < n, m1 = {m1}, n = {n}"
         )
     if m2 < 1 or m2 >= n:
-        raise nx.NetworkXError(
+        raise nx.Error(
             f"Dual Barabási–Albert must have m2 >= 1 and m2 < n, m2 = {m2}, n = {n}"
         )
     if p < 0 or p > 1:
-        raise nx.NetworkXError(
+        raise nx.Error(
             f"Dual Barabási–Albert network must have 0 <= p <= 1, p = {p}"
         )
 
@@ -750,7 +750,7 @@ def dual_barabasi_albert_graph(n, m1, m2, p, seed=None, initial_graph=None):
         G = star_graph(max(m1, m2))
     else:
         if len(initial_graph) < max(m1, m2) or len(initial_graph) > n:
-            raise nx.NetworkXError(
+            raise nx.Error(
                 f"Barabási–Albert initial graph must have between "
                 f"max(m1, m2) = {max(m1, m2)} and n = {n} nodes"
             )
@@ -822,7 +822,7 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
 
     Raises
     ------
-    NetworkXError
+    Error
         If `m` does not satisfy ``1 <= m < n`` or ``1 >= p + q``
 
     References
@@ -833,10 +833,10 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
     """
     if m < 1 or m >= n:
         msg = f"Extended Barabasi-Albert network needs m>=1 and m<n, m={m}, n={n}"
-        raise nx.NetworkXError(msg)
+        raise nx.Error(msg)
     if p + q >= 1:
         msg = f"Extended Barabasi-Albert network needs p + q <= 1, p={p}, q={q}"
-        raise nx.NetworkXError(msg)
+        raise nx.Error(msg)
 
     # Add m initial nodes (m0 in barabasi-speak)
     G = empty_graph(m)
@@ -982,7 +982,7 @@ def powerlaw_cluster_graph(n, m, p, seed=None):
 
     Raises
     ------
-    NetworkXError
+    Error
         If `m` does not satisfy ``1 <= m <= n`` or `p` does not
         satisfy ``0 <= p <= 1``.
 
@@ -994,10 +994,10 @@ def powerlaw_cluster_graph(n, m, p, seed=None):
     """
 
     if m < 1 or n < m:
-        raise nx.NetworkXError(f"NetworkXError must have m>1 and m<n, m={m},n={n}")
+        raise nx.Error(f"Error must have m>1 and m<n, m={m},n={n}")
 
     if p > 1 or p < 0:
-        raise nx.NetworkXError(f"NetworkXError p must be in [0,1], p={p}")
+        raise nx.Error(f"Error p must be in [0,1], p={p}")
 
     G = empty_graph(m)  # add m initial nodes (m0 in barabasi-speak)
     repeated_nodes = list(G.nodes())  # list of existing nodes to sample from
@@ -1061,12 +1061,12 @@ def random_lobster(n, p1, p2, seed=None):
 
     Raises
     ------
-    NetworkXError
+    Error
         If `p1` or `p2` parameters are >= 1 because the while loops would never finish.
     """
     p1, p2 = abs(p1), abs(p2)
     if any([p >= 1 for p in [p1, p2]]):
-        raise nx.NetworkXError("Probability values for `p1` and `p2` must both be < 1.")
+        raise nx.Error("Probability values for `p1` and `p2` must both be < 1.")
 
     # a necessary ingredient in any self-respecting graph library
     llen = int(2 * seed.random() * n + 0.5)
@@ -1159,7 +1159,7 @@ def random_powerlaw_tree(n, gamma=3, seed=None, tries=100):
 
     Raises
     ------
-    NetworkXError
+    Error
         If no valid sequence is found within the maximum number of
         attempts.
 
@@ -1171,7 +1171,7 @@ def random_powerlaw_tree(n, gamma=3, seed=None, tries=100):
     edges is one smaller than the number of nodes).
 
     """
-    # This call may raise a NetworkXError if the number of tries is succeeded.
+    # This call may raise a Error if the number of tries is succeeded.
     seq = random_powerlaw_tree_sequence(n, gamma=gamma, seed=seed, tries=tries)
     G = degree_sequence_tree(seq)
     return G
@@ -1195,7 +1195,7 @@ def random_powerlaw_tree_sequence(n, gamma=3, seed=None, tries=100):
 
     Raises
     ------
-    NetworkXError
+    Error
         If no valid sequence is found within the maximum number of
         attempts.
 
@@ -1228,7 +1228,7 @@ def random_powerlaw_tree_sequence(n, gamma=3, seed=None, tries=100):
         index = seed.randint(0, n - 1)
         zseq[index] = swap.pop()
 
-    raise nx.NetworkXError(
+    raise nx.Error(
         f"Exceeded max ({tries}) attempts for a valid tree sequence."
     )
 

@@ -222,7 +222,7 @@ class TestClosenessCentrality:
         return (u, v)
 
     def test_directed_raises(self):
-        with pytest.raises(nx.NetworkXNotImplemented):
+        with pytest.raises(nx.NotImplemented):
             dir_G = nx.gn_graph(n=5)
             prev_cc = None
             edge = self.pick_add_edge(dir_G)
@@ -230,7 +230,7 @@ class TestClosenessCentrality:
             nx.incremental_closeness_centrality(dir_G, edge, prev_cc, insert)
 
     def test_wrong_size_prev_cc_raises(self):
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             G = self.undirected_G.copy()
             edge = self.pick_add_edge(G)
             insert = True
@@ -239,7 +239,7 @@ class TestClosenessCentrality:
             nx.incremental_closeness_centrality(G, edge, prev_cc, insert)
 
     def test_wrong_nodes_prev_cc_raises(self):
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             G = self.undirected_G.copy()
             edge = self.pick_add_edge(G)
             insert = True

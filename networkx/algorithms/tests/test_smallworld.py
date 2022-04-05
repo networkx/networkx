@@ -17,9 +17,9 @@ def test_random_reference():
     Cr = nx.average_clustering(Gr)
     assert C > Cr
 
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.Error):
         next(random_reference(nx.Graph()))
-    with pytest.raises(nx.NetworkXNotImplemented):
+    with pytest.raises(nx.NotImplemented):
         next(random_reference(nx.DiGraph()))
 
     H = nx.Graph(((0, 1), (2, 3)))
@@ -33,8 +33,8 @@ def test_lattice_reference():
     Ll = nx.average_shortest_path_length(Gl)
     assert Ll > L
 
-    pytest.raises(nx.NetworkXError, lattice_reference, nx.Graph())
-    pytest.raises(nx.NetworkXNotImplemented, lattice_reference, nx.DiGraph())
+    pytest.raises(nx.Error, lattice_reference, nx.Graph())
+    pytest.raises(nx.NotImplemented, lattice_reference, nx.DiGraph())
 
     H = nx.Graph(((0, 1), (2, 3)))
     Hl = lattice_reference(H, niter=1)

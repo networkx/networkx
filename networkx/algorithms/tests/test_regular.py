@@ -30,13 +30,13 @@ class TestKFactor:
 
     def test_k_factor3(self):
         g = gen.grid_2d_graph(4, 4)
-        with pytest.raises(nx.NetworkXUnfeasible):
+        with pytest.raises(nx.Unfeasible):
             reg.k_factor(g, 3)
 
     def test_k_factor4(self):
         g = gen.lattice.hexagonal_lattice_graph(4, 4)
         # Perfect matching doesn't exist for 4,4 hexagonal lattice graph
-        with pytest.raises(nx.NetworkXUnfeasible):
+        with pytest.raises(nx.Unfeasible):
             reg.k_factor(g, 2)
 
     def test_k_factor5(self):

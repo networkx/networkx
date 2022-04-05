@@ -209,7 +209,7 @@ def test_missing_source():
     G = nx.path_graph(4)
     for flow_func in flow_funcs:
         pytest.raises(
-            nx.NetworkXError, nx.node_connectivity, G, 10, 1, flow_func=flow_func
+            nx.Error, nx.node_connectivity, G, 10, 1, flow_func=flow_func
         )
 
 
@@ -217,7 +217,7 @@ def test_missing_target():
     G = nx.path_graph(4)
     for flow_func in flow_funcs:
         pytest.raises(
-            nx.NetworkXError, nx.node_connectivity, G, 1, 10, flow_func=flow_func
+            nx.Error, nx.node_connectivity, G, 1, 10, flow_func=flow_func
         )
 
 
@@ -225,7 +225,7 @@ def test_edge_missing_source():
     G = nx.path_graph(4)
     for flow_func in flow_funcs:
         pytest.raises(
-            nx.NetworkXError, nx.edge_connectivity, G, 10, 1, flow_func=flow_func
+            nx.Error, nx.edge_connectivity, G, 10, 1, flow_func=flow_func
         )
 
 
@@ -233,7 +233,7 @@ def test_edge_missing_target():
     G = nx.path_graph(4)
     for flow_func in flow_funcs:
         pytest.raises(
-            nx.NetworkXError, nx.edge_connectivity, G, 1, 10, flow_func=flow_func
+            nx.Error, nx.edge_connectivity, G, 1, 10, flow_func=flow_func
         )
 
 
@@ -284,19 +284,19 @@ def test_cutoff():
 
 def test_invalid_auxiliary():
     G = nx.complete_graph(5)
-    pytest.raises(nx.NetworkXError, local_node_connectivity, G, 0, 3, auxiliary=G)
+    pytest.raises(nx.Error, local_node_connectivity, G, 0, 3, auxiliary=G)
 
 
 def test_interface_only_source():
     G = nx.complete_graph(5)
     for interface_func in [nx.node_connectivity, nx.edge_connectivity]:
-        pytest.raises(nx.NetworkXError, interface_func, G, s=0)
+        pytest.raises(nx.Error, interface_func, G, s=0)
 
 
 def test_interface_only_target():
     G = nx.complete_graph(5)
     for interface_func in [nx.node_connectivity, nx.edge_connectivity]:
-        pytest.raises(nx.NetworkXError, interface_func, G, t=3)
+        pytest.raises(nx.Error, interface_func, G, t=3)
 
 
 def test_edge_connectivity_flow_vs_stoer_wagner():

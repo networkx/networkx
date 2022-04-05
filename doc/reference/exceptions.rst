@@ -5,27 +5,27 @@ Exceptions
 .. automodule:: networkx.exception
 .. currentmodule:: networkx
 
-.. autoclass:: networkx.NetworkXException
+.. autoclass:: networkx.Exception
 
-.. autoclass:: networkx.NetworkXError
+.. autoclass:: networkx.Error
 
-.. autoclass:: networkx.NetworkXPointlessConcept
+.. autoclass:: networkx.PointlessConcept
 
-.. autoclass:: networkx.NetworkXAlgorithmError
+.. autoclass:: networkx.AlgorithmError
 
-.. autoclass:: networkx.NetworkXUnfeasible
+.. autoclass:: networkx.Unfeasible
 
-.. autoclass:: networkx.NetworkXNoPath
+.. autoclass:: networkx.NoPath
 
-.. autoclass:: networkx.NetworkXNoCycle
+.. autoclass:: networkx.NoCycle
 
 .. autoclass:: networkx.NodeNotFound
 
 .. autoclass:: networkx.HasACycle
 
-.. autoclass:: networkx.NetworkXUnbounded
+.. autoclass:: networkx.Unbounded
 
-.. autoclass:: networkx.NetworkXNotImplemented
+.. autoclass:: networkx.NotImplemented
 
 .. autoclass:: networkx.AmbiguousSolution
 

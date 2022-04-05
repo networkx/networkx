@@ -204,7 +204,7 @@ The listed alternatives are not mutually exclusive.
      >>> G.nodes[0:10]
      Traceback (most recent call last)
         ...
-     NetworkXError: NodeView does not support slicing. Try list(G.nodes)[0:10].
+     Error: NodeView does not support slicing. Try list(G.nodes)[0:10].
 
 - Instead of changing the behavior of ``__getitem__`` we can impelment a new
   method, something like ``G.nodes.head(x)`` (insipired by pandas) which
@@ -308,13 +308,13 @@ Resolution
 ----------
 
 To make slicing intuitive for new users, we went ahead with **Option 1** in the
-discussion above. Users will now see `NetworkXError` when they try to slice a
+discussion above. Users will now see `Error` when they try to slice a
 `*View` object.::
 
    >>> G.edges()[0:10]
    Traceback (most recent call last)
       ...
-   NetworkXError: EdgeView does not support slicing, try list(G.edges)[0:10:None]
+   Error: EdgeView does not support slicing, try list(G.edges)[0:10:None]
 
 
 The implementation is available at https://github.com/networkx/networkx/pull/4300 and

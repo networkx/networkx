@@ -62,7 +62,7 @@ class TestColoring:
         graph = one_node_graph()
         for strategy in INTERCHANGE_INVALID:
             pytest.raises(
-                nx.NetworkXPointlessConcept,
+                nx.PointlessConcept,
                 nx.coloring.greedy_color,
                 graph,
                 strategy=strategy,
@@ -72,7 +72,7 @@ class TestColoring:
     def test_bad_inputs(self):
         graph = one_node_graph()
         pytest.raises(
-            nx.NetworkXError,
+            nx.Error,
             nx.coloring.greedy_color,
             graph,
             strategy="invalid strategy",
@@ -117,7 +117,7 @@ class TestColoring:
     def test_num_colors(self):
         G = nx.Graph()
         G.add_edges_from([(0, 1), (0, 2), (0, 3)])
-        pytest.raises(nx.NetworkXAlgorithmError, nx.coloring.equitable_color, G, 2)
+        pytest.raises(nx.AlgorithmError, nx.coloring.equitable_color, G, 2)
 
     def test_equitable_color(self):
         G = nx.fast_gnp_random_graph(n=10, p=0.2, seed=42)

@@ -30,7 +30,7 @@ def adjacency_data(G, attrs=_attrs):
 
     Raises
     ------
-    NetworkXError
+    Error
         If values in attrs are not unique.
 
     Examples
@@ -61,7 +61,7 @@ def adjacency_data(G, attrs=_attrs):
     # Allow 'key' to be omitted from attrs if the graph is not a multigraph.
     key = None if not multigraph else attrs["key"]
     if id_ == key:
-        raise nx.NetworkXError("Attribute names are not unique.")
+        raise nx.Error("Attribute names are not unique.")
     data = {}
     data["directed"] = G.is_directed()
     data["multigraph"] = multigraph

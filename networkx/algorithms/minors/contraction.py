@@ -6,7 +6,7 @@ from itertools import product
 
 import networkx as nx
 from networkx import density
-from networkx.exception import NetworkXException
+from networkx.exception import Exception
 from networkx.utils import arbitrary_element
 
 __all__ = [
@@ -188,7 +188,7 @@ def quotient_graph(
 
     Raises
     ------
-    NetworkXException
+    Exception
         If the given partition is not a valid partition of the nodes of
         `G`.
 
@@ -302,7 +302,7 @@ def quotient_graph(
         # equivalence_classes always return partition of whole G.
         partition = equivalence_classes(G, partition)
         if not nx.community.is_partition(G, partition):
-            raise nx.NetworkXException(
+            raise nx.Exception(
                 "Input `partition` is not an equivalence relation for nodes of G"
             )
         return _quotient_graph(
@@ -322,7 +322,7 @@ def quotient_graph(
         G = G.subgraph(partition_nodes)
     # Each node in the graph/subgraph must be in exactly one block.
     if not nx.community.is_partition(G, partition):
-        raise NetworkXException("each node must be in exactly one part of `partition`")
+        raise Exception("each node must be in exactly one part of `partition`")
     return _quotient_graph(
         G, partition, edge_relation, node_data, edge_data, relabel, create_using
     )

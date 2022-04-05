@@ -5,7 +5,7 @@
 import pytest
 
 from networkx import cycle_graph
-from networkx import NetworkXError
+from networkx import Error
 from networkx.algorithms.bipartite import complete_bipartite_graph
 from networkx.algorithms.bipartite import node_redundancy
 
@@ -28,6 +28,6 @@ def test_redundant_nodes():
 
 
 def test_not_enough_neighbors():
-    with pytest.raises(NetworkXError):
+    with pytest.raises(Error):
         G = complete_bipartite_graph(1, 2)
         node_redundancy(G)

@@ -204,7 +204,7 @@ def bidirectional_shortest_path(G, source, target):
 
     Raises
     ------
-    NetworkXNoPath
+    NoPath
        If no path exists between source and target.
 
     See Also
@@ -289,7 +289,7 @@ def _bidirectional_pred_succ(G, source, target):
                     if w in pred:  # found path
                         return pred, succ, w
 
-    raise nx.NetworkXNoPath(f"No path between {source} and {target}.")
+    raise nx.NoPath(f"No path between {source} and {target}.")
 
 
 def single_source_shortest_path(G, source, cutoff=None):

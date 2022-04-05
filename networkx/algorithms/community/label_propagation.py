@@ -127,7 +127,7 @@ def label_propagation_communities(G):
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
        If the graph is directed
 
     References

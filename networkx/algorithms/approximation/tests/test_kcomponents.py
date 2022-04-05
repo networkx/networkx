@@ -213,7 +213,7 @@ def test_example_1_detail_3_and_4():
 
 
 def test_directed():
-    with pytest.raises(nx.NetworkXNotImplemented):
+    with pytest.raises(nx.NotImplemented):
         G = nx.gnp_random_graph(10, 0.4, directed=True)
         kc = k_components(G)
 
@@ -282,8 +282,8 @@ class TestAntiGraph:
     def test_node_not_in_graph(self):
         for G, A in self.GA:
             node = "non_existent_node"
-            pytest.raises(nx.NetworkXError, A.neighbors, node)
-            pytest.raises(nx.NetworkXError, G.neighbors, node)
+            pytest.raises(nx.Error, A.neighbors, node)
+            pytest.raises(nx.Error, G.neighbors, node)
 
     def test_degree_thingraph(self):
         for G, A in self.GA:

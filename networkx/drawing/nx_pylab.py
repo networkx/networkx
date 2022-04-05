@@ -453,7 +453,7 @@ def draw_networkx_nodes(
     try:
         xy = np.asarray([pos[v] for v in nodelist])
     except KeyError as err:
-        raise nx.NetworkXError(f"Node {err} has no position.") from err
+        raise nx.Error(f"Node {err} has no position.") from err
 
     if isinstance(alpha, Iterable):
         node_color = apply_alpha(node_color, alpha, nodelist, cmap, vmin, vmax)
@@ -1133,7 +1133,7 @@ def draw_networkx_edge_labels(
         try:
             (u, v) = next(iter(labels))  # ensures no edge key provided
         except ValueError as err:
-            raise nx.NetworkXError(
+            raise nx.Error(
                 "draw_networkx_edge_labels does not support multiedges."
             ) from err
         except StopIteration:
@@ -1434,7 +1434,7 @@ def draw_planar(G, **kwargs):
 
     Raises
     ------
-    NetworkXException
+    Exception
         When `G` is not planar
 
     Notes

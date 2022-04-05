@@ -88,5 +88,5 @@ class TestZacharyKarateClub:
 
 
 def test_bad_k():
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.Error):
         list(k_clique_communities(nx.Graph(), 1))

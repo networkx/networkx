@@ -14,7 +14,7 @@ def test_algebraic_connectivity_tracemin_chol():
     """Test that "tracemin_chol" raises an exception."""
     pytest.importorskip("scipy")
     G = nx.barbell_graph(5, 4)
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.Error):
         nx.algebraic_connectivity(G, method="tracemin_chol")
 
 
@@ -22,7 +22,7 @@ def test_fiedler_vector_tracemin_chol():
     """Test that "tracemin_chol" raises an exception."""
     pytest.importorskip("scipy")
     G = nx.barbell_graph(5, 4)
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.Error):
         nx.fiedler_vector(G, method="tracemin_chol")
 
 
@@ -30,7 +30,7 @@ def test_spectral_ordering_tracemin_chol():
     """Test that "tracemin_chol" raises an exception."""
     pytest.importorskip("scipy")
     G = nx.barbell_graph(5, 4)
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.Error):
         nx.spectral_ordering(G, method="tracemin_chol")
 
 
@@ -40,7 +40,7 @@ def test_fiedler_vector_tracemin_unknown():
     G = nx.barbell_graph(5, 4)
     L = nx.laplacian_matrix(G)
     X = np.asarray(np.random.normal(size=(1, L.shape[0]))).T
-    with pytest.raises(nx.NetworkXError, match="Unknown linear system solver"):
+    with pytest.raises(nx.Error, match="Unknown linear system solver"):
         nx.linalg.algebraicconnectivity._tracemin_fiedler(
             L, X, normalized=False, tol=1e-8, method="tracemin_unknown"
         )
@@ -63,34 +63,34 @@ class TestAlgebraicConnectivity:
     def test_directed(self, method):
         G = nx.DiGraph()
         pytest.raises(
-            nx.NetworkXNotImplemented, nx.algebraic_connectivity, G, method=method
+            nx.NotImplemented, nx.algebraic_connectivity, G, method=method
         )
-        pytest.raises(nx.NetworkXNotImplemented, nx.fiedler_vector, G, method=method)
+        pytest.raises(nx.NotImplemented, nx.fiedler_vector, G, method=method)
 
     @pytest.mark.parametrize("method", methods)
     def test_null_and_singleton(self, method):
         G = nx.Graph()
-        pytest.raises(nx.NetworkXError, nx.algebraic_connectivity, G, method=method)
-        pytest.raises(nx.NetworkXError, nx.fiedler_vector, G, method=method)
+        pytest.raises(nx.Error, nx.algebraic_connectivity, G, method=method)
+        pytest.raises(nx.Error, nx.fiedler_vector, G, method=method)
         G.add_edge(0, 0)
-        pytest.raises(nx.NetworkXError, nx.algebraic_connectivity, G, method=method)
-        pytest.raises(nx.NetworkXError, nx.fiedler_vector, G, method=method)
+        pytest.raises(nx.Error, nx.algebraic_connectivity, G, method=method)
+        pytest.raises(nx.Error, nx.fiedler_vector, G, method=method)
 
     @pytest.mark.parametrize("method", methods)
     def test_disconnected(self, method):
         G = nx.Graph()
         G.add_nodes_from(range(2))
         assert nx.algebraic_connectivity(G) == 0
-        pytest.raises(nx.NetworkXError, nx.fiedler_vector, G, method=method)
+        pytest.raises(nx.Error, nx.fiedler_vector, G, method=method)
         G.add_edge(0, 1, weight=0)
         assert nx.algebraic_connectivity(G) == 0
-        pytest.raises(nx.NetworkXError, nx.fiedler_vector, G, method=method)
+        pytest.raises(nx.Error, nx.fiedler_vector, G, method=method)
 
     def test_unrecognized_method(self):
         pytest.importorskip("scipy")
         G = nx.path_graph(4)
-        pytest.raises(nx.NetworkXError, nx.algebraic_connectivity, G, method="unknown")
-        pytest.raises(nx.NetworkXError, nx.fiedler_vector, G, method="unknown")
+        pytest.raises(nx.Error, nx.algebraic_connectivity, G, method="unknown")
+        pytest.raises(nx.Error, nx.fiedler_vector, G, method="unknown")
 
     @pytest.mark.parametrize("method", methods)
     def test_two_nodes(self, method):
@@ -284,7 +284,7 @@ class TestAlgebraicConnectivity:
             ) == pytest.approx(sigma, abs=1e-7)
             x = nx.fiedler_vector(G, normalized=normalized, tol=1e-12, method=method)
             check_eigenvector(A, sigma, x)
-        except nx.NetworkXError as err:
+        except nx.Error as err:
             if err.args not in (
                 ("Cholesky solver unavailable.",),
                 ("LU solver unavailable.",),
@@ -298,7 +298,7 @@ class TestSpectralOrdering:
     @pytest.mark.parametrize("graph", _graphs)
     def test_nullgraph(self, graph):
         G = graph()
-        pytest.raises(nx.NetworkXError, nx.spectral_ordering, G)
+        pytest.raises(nx.Error, nx.spectral_ordering, G)
 
     @pytest.mark.parametrize("graph", _graphs)
     def test_singleton(self, graph):
@@ -311,7 +311,7 @@ class TestSpectralOrdering:
 
     def test_unrecognized_method(self):
         G = nx.path_graph(4)
-        pytest.raises(nx.NetworkXError, nx.spectral_ordering, G, method="unknown")
+        pytest.raises(nx.Error, nx.spectral_ordering, G, method="unknown")
 
     @pytest.mark.parametrize("method", methods)
     def test_three_nodes(self, method):

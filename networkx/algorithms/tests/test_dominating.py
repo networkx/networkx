@@ -21,7 +21,7 @@ def test_complete():
 
 
 def test_raise_dominating_set():
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.Error):
         G = nx.path_graph(4)
         D = nx.dominating_set(G, start_with=10)
 

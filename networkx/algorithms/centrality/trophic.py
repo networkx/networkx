@@ -63,7 +63,7 @@ def trophic_levels(G, weight="weight"):
             + "node has a path from a basal node (basal nodes are nodes "
             + "with no incoming edges)."
         )
-        raise nx.NetworkXError(msg) from err
+        raise nx.Error(msg) from err
     y = n.sum(axis=1) + 1
 
     levels = {}

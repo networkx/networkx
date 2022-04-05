@@ -37,7 +37,7 @@ def not_implemented_for(*graph_types):
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
     If any of the packages cannot be imported
 
     Notes
@@ -83,7 +83,7 @@ def not_implemented_for(*graph_types):
         if (mval is None or mval == g.is_multigraph()) and (
             dval is None or dval == g.is_directed()
         ):
-            raise nx.NetworkXNotImplemented(errmsg)
+            raise nx.NotImplemented(errmsg)
 
         return g
 
@@ -246,7 +246,7 @@ def nodes_or_number(which_args):
         else:
             if n < 0:
                 msg = "Negative number of nodes not valid: {n}"
-                raise nx.NetworkXError(msg)
+                raise nx.Error(msg)
         return (n, nodes)
 
     try:
@@ -1035,19 +1035,19 @@ class argmap:
                 name = ", ".join(get_name(x, False) for x in arg)
                 return name if first else f"({name})"
             if arg in applied:
-                raise nx.NetworkXError(f"argument {arg} is specified multiple times")
+                raise nx.Error(f"argument {arg} is specified multiple times")
             applied.add(arg)
             if arg in sig.names:
                 return sig.names[arg]
             elif isinstance(arg, str):
                 if sig.kwargs is None:
-                    raise nx.NetworkXError(
+                    raise nx.Error(
                         f"name {arg} is not a named parameter and this function doesn't have kwargs"
                     )
                 return f"{sig.kwargs}[{arg!r}]"
             else:
                 if sig.args is None:
-                    raise nx.NetworkXError(
+                    raise nx.Error(
                         f"index {arg} not a parameter index and this function doesn't have args"
                     )
                 mutable_args = True

@@ -53,7 +53,7 @@ def union_all(graphs, rename=(None,)):
     U = graphs[0]
 
     if any(G.is_multigraph() != U.is_multigraph() for G in graphs):
-        raise nx.NetworkXError("All graphs must be graphs or multigraphs.")
+        raise nx.Error("All graphs must be graphs or multigraphs.")
 
     # rename graph to obtain disjoint node labels
     def add_prefix(graph, prefix):
@@ -72,7 +72,7 @@ def union_all(graphs, rename=(None,)):
     graphs = [add_prefix(G, name) for G, name in zip_longest(graphs, rename)]
 
     if sum(len(G) for G in graphs) != len(set().union(*graphs)):
-        raise nx.NetworkXError(
+        raise nx.Error(
             "The node sets of the graphs are not disjoint.",
             "Use appropriate rename"
             "=(G1prefix,G2prefix,...,GNprefix)"
@@ -184,7 +184,7 @@ def compose_all(graphs):
     U = graphs[0]
 
     if any(G.is_multigraph() != U.is_multigraph() for G in graphs):
-        raise nx.NetworkXError("All graphs must be graphs or multigraphs.")
+        raise nx.Error("All graphs must be graphs or multigraphs.")
 
     R = U.__class__()
     # add graph attributes, H attributes take precedent over G attributes
@@ -234,7 +234,7 @@ def intersection_all(graphs):
     U = graphs[0]
 
     if any(G.is_multigraph() != U.is_multigraph() for G in graphs):
-        raise nx.NetworkXError("All graphs must be graphs or multigraphs.")
+        raise nx.Error("All graphs must be graphs or multigraphs.")
 
     # create new graph
     node_intersection = set.intersection(*[set(G.nodes) for G in graphs])

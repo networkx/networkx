@@ -33,7 +33,7 @@ class TestReverseView:
     def test_exceptions(self):
         nxg = nx.graphviews
         G = nx.Graph()
-        pytest.raises(nx.NetworkXNotImplemented, nxg.reverse_view, G)
+        pytest.raises(nx.NotImplemented, nxg.reverse_view, G)
 
     def test_subclass(self):
         class MyGraph(nx.DiGraph):
@@ -84,16 +84,16 @@ class TestMultiReverseView:
     def test_exceptions(self):
         nxg = nx.graphviews
         MG = nx.MultiGraph(self.G)
-        pytest.raises(nx.NetworkXNotImplemented, nxg.reverse_view, MG)
+        pytest.raises(nx.NotImplemented, nxg.reverse_view, MG)
 
 
 def test_generic_multitype():
     nxg = nx.graphviews
     G = nx.DiGraph([(1, 2)])
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.Error):
         nxg.generic_graph_view(G, create_using=nx.MultiGraph)
     G = nx.MultiDiGraph([(1, 2)])
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.Error):
         nxg.generic_graph_view(G, create_using=nx.DiGraph)
 
 

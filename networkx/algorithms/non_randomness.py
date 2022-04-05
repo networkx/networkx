@@ -46,9 +46,9 @@ def non_randomness(G, k=None, weight="weight"):
 
     Raises
     ------
-    NetworkXException
+    Exception
         if the input graph is not connected.
-    NetworkXError
+    Error
         if the input graph contains self-loops.
 
     Examples
@@ -73,9 +73,9 @@ def non_randomness(G, k=None, weight="weight"):
     import numpy as np
 
     if not nx.is_connected(G):
-        raise nx.NetworkXException("Non connected graph.")
+        raise nx.Exception("Non connected graph.")
     if len(list(nx.selfloop_edges(G))) > 0:
-        raise nx.NetworkXError("Graph must not contain self-loops")
+        raise nx.Error("Graph must not contain self-loops")
 
     if k is None:
         k = len(tuple(nx.community.label_propagation_communities(G)))

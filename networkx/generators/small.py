@@ -38,7 +38,7 @@ from networkx.generators.classic import (
     path_graph,
     complete_graph,
 )
-from networkx.exception import NetworkXError
+from networkx.exception import Error
 
 
 def _raise_on_directed(func):
@@ -53,7 +53,7 @@ def _raise_on_directed(func):
         if kwargs.get("create_using") is not None:
             G = nx.empty_graph(create_using=kwargs["create_using"])
             if G.is_directed():
-                raise NetworkXError("Directed Graph not supported")
+                raise Error("Directed Graph not supported")
         return func(*args, **kwargs)
 
     return wrapper
@@ -85,7 +85,7 @@ def make_small_undirected_graph(graph_description, create_using=None):
 
     G = empty_graph(0, create_using)
     if G.is_directed():
-        raise NetworkXError("Directed Graph not supported")
+        raise Error("Directed Graph not supported")
     return make_small_graph(graph_description, G)
 
 
@@ -141,7 +141,7 @@ def make_small_graph(graph_description, create_using=None):
     warnings.warn(msg, category=DeprecationWarning, stacklevel=2)
 
     if graph_description[0] not in ("adjacencylist", "edgelist"):
-        raise NetworkXError("ltype must be either adjacencylist or edgelist")
+        raise Error("ltype must be either adjacencylist or edgelist")
 
     ltype = graph_description[0]
     name = graph_description[1]
@@ -153,7 +153,7 @@ def make_small_graph(graph_description, create_using=None):
     if ltype == "adjacencylist":
         adjlist = graph_description[3]
         if len(adjlist) != n:
-            raise NetworkXError("invalid graph_description")
+            raise Error("invalid graph_description")
         G.add_edges_from([(u - 1, v) for v in nodes for u in adjlist[v]])
     elif ltype == "edgelist":
         edgelist = graph_description[3]
@@ -161,7 +161,7 @@ def make_small_graph(graph_description, create_using=None):
             v1 = e[0] - 1
             v2 = e[1] - 1
             if v1 < 0 or v1 > n - 1 or v2 < 0 or v2 > n - 1:
-                raise NetworkXError("invalid graph_description")
+                raise Error("invalid graph_description")
             else:
                 G.add_edge(v1, v2)
     G.name = name
@@ -210,7 +210,7 @@ def LCF_graph(n, shift_list, repeats, create_using=None):
     # start with the n-cycle
     G = cycle_graph(n, create_using)
     if G.is_directed():
-        raise NetworkXError("Directed Graph not supported")
+        raise Error("Directed Graph not supported")
     G.name = "LCF_graph"
     nodes = sorted(list(G))
 

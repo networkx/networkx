@@ -52,9 +52,9 @@ def tree_all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
     lowest_common_ancestor: just a single pair for general DAGs
     """
     if len(G) == 0:
-        raise nx.NetworkXPointlessConcept("LCA meaningless on null graphs.")
+        raise nx.PointlessConcept("LCA meaningless on null graphs.")
     elif None in G:
-        raise nx.NetworkXError("None is not a valid node.")
+        raise nx.Error("None is not a valid node.")
 
     # Index pairs of interest for efficient lookup from either side.
     if pairs is not None:
@@ -79,13 +79,13 @@ def tree_all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
             if deg == 0:
                 if root is not None:
                     msg = "No root specified and tree has multiple sources."
-                    raise nx.NetworkXError(msg)
+                    raise nx.Error(msg)
                 root = n
             elif deg > 1:
                 msg = "Tree LCA only defined on trees; use DAG routine."
-                raise nx.NetworkXError(msg)
+                raise nx.Error(msg)
     if root is None:
-        raise nx.NetworkXError("Graph contains a cycle.")
+        raise nx.Error("Graph contains a cycle.")
 
     # Iterative implementation of Tarjan's offline lca algorithm
     # as described in CLRS on page 521 (2nd edition)/page 584 (3rd edition)
@@ -185,11 +185,11 @@ def all_pairs_lowest_common_ancestor(G, pairs=None):
     lowest_common_ancestor
     """
     if not nx.is_directed_acyclic_graph(G):
-        raise nx.NetworkXError("LCA only defined on directed acyclic graphs.")
+        raise nx.Error("LCA only defined on directed acyclic graphs.")
     elif len(G) == 0:
-        raise nx.NetworkXPointlessConcept("LCA meaningless on null graphs.")
+        raise nx.PointlessConcept("LCA meaningless on null graphs.")
     elif None in G:
-        raise nx.NetworkXError("None is not a valid node.")
+        raise nx.Error("None is not a valid node.")
 
     # The copy isn't ideal, neither is the switch-on-type, but without it users
     # passing an iterable will encounter confusing errors, and itertools.tee

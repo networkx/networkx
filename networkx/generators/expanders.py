@@ -60,14 +60,14 @@ def margulis_gabber_galil_graph(n, create_using=None):
 
     Raises
     ------
-    NetworkXError
+    Error
         If the graph is directed or not a multigraph.
 
     """
     G = nx.empty_graph(0, create_using, default=nx.MultiGraph)
     if G.is_directed() or not G.is_multigraph():
         msg = "`create_using` must be an undirected multigraph."
-        raise nx.NetworkXError(msg)
+        raise nx.Error(msg)
 
     for (x, y) in itertools.product(range(n), repeat=2):
         for (u, v) in (
@@ -107,7 +107,7 @@ def chordal_cycle_graph(p, create_using=None):
 
     Raises
     ------
-    NetworkXError
+    Error
 
         If `create_using` indicates directed or not a multigraph.
 
@@ -122,7 +122,7 @@ def chordal_cycle_graph(p, create_using=None):
     G = nx.empty_graph(0, create_using, default=nx.MultiGraph)
     if G.is_directed() or not G.is_multigraph():
         msg = "`create_using` must be an undirected multigraph."
-        raise nx.NetworkXError(msg)
+        raise nx.Error(msg)
 
     for x in range(p):
         left = (x - 1) % p
@@ -176,7 +176,7 @@ def paley_graph(p, create_using=None):
 
     Raises
     ------
-    NetworkXError
+    Error
         If the graph is a multigraph.
 
     References
@@ -188,7 +188,7 @@ def paley_graph(p, create_using=None):
     G = nx.empty_graph(0, create_using, default=nx.DiGraph)
     if G.is_multigraph():
         msg = "`create_using` cannot be a multigraph."
-        raise nx.NetworkXError(msg)
+        raise nx.Error(msg)
 
     # Compute the squares in Z/pZ.
     # Make it a set to uniquify (there are exactly (p-1)/2 squares in Z/pZ

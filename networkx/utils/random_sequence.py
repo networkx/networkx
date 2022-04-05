@@ -125,7 +125,7 @@ def discrete_sequence(n, distribution=None, cdistribution=None, seed=None):
     elif distribution is not None:
         cdf = cumulative_distribution(distribution)
     else:
-        raise nx.NetworkXError(
+        raise nx.Error(
             "discrete_sequence: distribution or cdistribution missing"
         )
 

@@ -185,9 +185,9 @@ class TestTriangularLatticeGraph:
         assert len([n for n, d in G.degree() if d != 6]) == 0
         G = nx.triangular_lattice_graph(5, 7, periodic=True)
         TLG = nx.triangular_lattice_graph
-        pytest.raises(nx.NetworkXError, TLG, 2, 4, periodic=True)
-        pytest.raises(nx.NetworkXError, TLG, 4, 4, periodic=True)
-        pytest.raises(nx.NetworkXError, TLG, 2, 6, periodic=True)
+        pytest.raises(nx.Error, TLG, 2, 4, periodic=True)
+        pytest.raises(nx.Error, TLG, 4, 4, periodic=True)
+        pytest.raises(nx.Error, TLG, 2, 6, periodic=True)
 
 
 class TestHexagonalLatticeGraph:
@@ -234,6 +234,6 @@ class TestHexagonalLatticeGraph:
         assert len([n for n, d in G.degree() if d != 3]) == 0
         G = nx.hexagonal_lattice_graph(5, 8, periodic=True)
         HLG = nx.hexagonal_lattice_graph
-        pytest.raises(nx.NetworkXError, HLG, 2, 7, periodic=True)
-        pytest.raises(nx.NetworkXError, HLG, 1, 4, periodic=True)
-        pytest.raises(nx.NetworkXError, HLG, 2, 1, periodic=True)
+        pytest.raises(nx.Error, HLG, 2, 7, periodic=True)
+        pytest.raises(nx.Error, HLG, 1, 4, periodic=True)
+        pytest.raises(nx.Error, HLG, 2, 1, periodic=True)

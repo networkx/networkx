@@ -126,7 +126,7 @@ def edge_dfs(G, source=None, orientation=None):
                 yield e + (REVERSE,)
 
     else:
-        raise nx.NetworkXError("invalid orientation argument.")
+        raise nx.Error("invalid orientation argument.")
 
     # set up formation of edge_id to easily look up if edge already returned
     if directed:

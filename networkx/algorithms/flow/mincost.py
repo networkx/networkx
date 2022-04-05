@@ -50,18 +50,18 @@ def min_cost_flow_cost(G, demand="demand", capacity="capacity", weight="weight")
 
     Raises
     ------
-    NetworkXError
+    Error
         This exception is raised if the input graph is not directed or
         not connected.
 
-    NetworkXUnfeasible
+    Unfeasible
         This exception is raised in the following situations:
 
             * The sum of the demands is not zero. Then, there is no
               flow satisfying all demands.
             * There is no flow satisfying all demand.
 
-    NetworkXUnbounded
+    Unbounded
         This exception is raised if the digraph G has a cycle of
         negative cost and infinite capacity. Then, the cost of a flow
         satisfying all demands is unbounded below.
@@ -140,18 +140,18 @@ def min_cost_flow(G, demand="demand", capacity="capacity", weight="weight"):
 
     Raises
     ------
-    NetworkXError
+    Error
         This exception is raised if the input graph is not directed or
         not connected.
 
-    NetworkXUnfeasible
+    Unfeasible
         This exception is raised in the following situations:
 
             * The sum of the demands is not zero. Then, there is no
               flow satisfying all demands.
             * There is no flow satisfying all demand.
 
-    NetworkXUnbounded
+    Unbounded
         This exception is raised if the digraph G has a cycle of
         negative cost and infinite capacity. Then, the cost of a flow
         satisfying all demands is unbounded below.
@@ -267,11 +267,11 @@ def max_flow_min_cost(G, s, t, capacity="capacity", weight="weight"):
 
     Raises
     ------
-    NetworkXError
+    Error
         This exception is raised if the input graph is not directed or
         not connected.
 
-    NetworkXUnbounded
+    Unbounded
         This exception is raised if there is an infinite capacity path
         from s to t in G. In this case there is no maximum flow. This
         exception is also raised if the digraph G has a cycle of

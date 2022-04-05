@@ -152,7 +152,7 @@ def test_union_all_and_compose_all():
     H = nx.compose_all([G1, G2])
     assert edges_equal(G.edges(), H.edges())
     assert not G.has_edge("A", "1")
-    pytest.raises(nx.NetworkXError, nx.union, K3, P3)
+    pytest.raises(nx.Error, nx.union, K3, P3)
     H1 = nx.union_all([H, G1], rename=("H", "G1"))
     assert sorted(H1.nodes()) == [
         "G1A",
@@ -248,7 +248,7 @@ def test_input_output():
 
 
 def test_mixed_type_union():
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.Error):
         G = nx.Graph()
         H = nx.MultiGraph()
         I = nx.Graph()
@@ -256,7 +256,7 @@ def test_mixed_type_union():
 
 
 def test_mixed_type_disjoint_union():
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.Error):
         G = nx.Graph()
         H = nx.MultiGraph()
         I = nx.Graph()
@@ -264,7 +264,7 @@ def test_mixed_type_disjoint_union():
 
 
 def test_mixed_type_intersection():
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.Error):
         G = nx.Graph()
         H = nx.MultiGraph()
         I = nx.Graph()
@@ -272,7 +272,7 @@ def test_mixed_type_intersection():
 
 
 def test_mixed_type_compose():
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.Error):
         G = nx.Graph()
         H = nx.MultiGraph()
         I = nx.Graph()

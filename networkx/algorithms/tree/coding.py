@@ -23,7 +23,7 @@ __all__ = [
 ]
 
 
-class NotATree(nx.NetworkXException):
+class NotATree(nx.Exception):
     """Raised when a function expects a tree (that is, a connected
     undirected graph with no cycles) but gets a non-tree graph as input
     instead.
@@ -232,7 +232,7 @@ def to_prufer_sequence(T):
 
     Raises
     ------
-    NetworkXPointlessConcept
+    PointlessConcept
         If the number of nodes in `T` is less than two.
 
     NotATree
@@ -287,7 +287,7 @@ def to_prufer_sequence(T):
     n = len(T)
     if n < 2:
         msg = "Prüfer sequence undefined for trees with fewer than two nodes"
-        raise nx.NetworkXPointlessConcept(msg)
+        raise nx.PointlessConcept(msg)
     if not nx.is_tree(T):
         raise nx.NotATree("provided graph is not a tree")
     if set(T) != set(range(n)):

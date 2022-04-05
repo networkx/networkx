@@ -656,7 +656,7 @@ def group_degree_centrality(G, S):
 
     Raises
     ------
-    NetworkXError
+    Error
        If node(s) in S are not in G.
 
     Returns
@@ -712,7 +712,7 @@ def group_in_degree_centrality(G, S):
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
        If G is undirected.
 
     NodeNotFound
@@ -758,7 +758,7 @@ def group_out_degree_centrality(G, S):
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
        If G is undirected.
 
     NodeNotFound

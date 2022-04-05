@@ -29,10 +29,10 @@ def immediate_dominators(G, start):
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
         If `G` is undirected.
 
-    NetworkXError
+    Error
         If `start` is not in `G`.
 
     Notes
@@ -53,7 +53,7 @@ def immediate_dominators(G, start):
            Software Practice & Experience, 4:110, 2001.
     """
     if start not in G:
-        raise nx.NetworkXError("start is not in G")
+        raise nx.Error("start is not in G")
 
     idom = {start: start}
 
@@ -101,10 +101,10 @@ def dominance_frontiers(G, start):
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
         If `G` is undirected.
 
-    NetworkXError
+    Error
         If `start` is not in `G`.
 
     Examples

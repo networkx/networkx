@@ -48,7 +48,7 @@ def complete_bipartite_graph(n1, n2, create_using=None):
     """
     G = nx.empty_graph(0, create_using)
     if G.is_directed():
-        raise nx.NetworkXError("Directed Graph not supported")
+        raise nx.Error("Directed Graph not supported")
 
     n1, top = n1
     n2, bottom = n2
@@ -97,7 +97,7 @@ def configuration_model(aseq, bseq, create_using=None, seed=None):
     """
     G = nx.empty_graph(0, create_using, default=nx.MultiGraph)
     if G.is_directed():
-        raise nx.NetworkXError("Directed Graph not supported")
+        raise nx.Error("Directed Graph not supported")
 
     # length and sum of each sequence
     lena = len(aseq)
@@ -106,7 +106,7 @@ def configuration_model(aseq, bseq, create_using=None, seed=None):
     sumb = sum(bseq)
 
     if not suma == sumb:
-        raise nx.NetworkXError(
+        raise nx.Error(
             f"invalid degree sequences, sum(aseq)!=sum(bseq),{suma},{sumb}"
         )
 
@@ -166,7 +166,7 @@ def havel_hakimi_graph(aseq, bseq, create_using=None):
     """
     G = nx.empty_graph(0, create_using, default=nx.MultiGraph)
     if G.is_directed():
-        raise nx.NetworkXError("Directed Graph not supported")
+        raise nx.Error("Directed Graph not supported")
 
     # length of the each sequence
     naseq = len(aseq)
@@ -176,7 +176,7 @@ def havel_hakimi_graph(aseq, bseq, create_using=None):
     sumb = sum(bseq)
 
     if not suma == sumb:
-        raise nx.NetworkXError(
+        raise nx.Error(
             f"invalid degree sequences, sum(aseq)!=sum(bseq),{suma},{sumb}"
         )
 
@@ -240,7 +240,7 @@ def reverse_havel_hakimi_graph(aseq, bseq, create_using=None):
     """
     G = nx.empty_graph(0, create_using, default=nx.MultiGraph)
     if G.is_directed():
-        raise nx.NetworkXError("Directed Graph not supported")
+        raise nx.Error("Directed Graph not supported")
 
     # length of the each sequence
     lena = len(aseq)
@@ -249,7 +249,7 @@ def reverse_havel_hakimi_graph(aseq, bseq, create_using=None):
     sumb = sum(bseq)
 
     if not suma == sumb:
-        raise nx.NetworkXError(
+        raise nx.Error(
             f"invalid degree sequences, sum(aseq)!=sum(bseq),{suma},{sumb}"
         )
 
@@ -314,7 +314,7 @@ def alternating_havel_hakimi_graph(aseq, bseq, create_using=None):
     """
     G = nx.empty_graph(0, create_using, default=nx.MultiGraph)
     if G.is_directed():
-        raise nx.NetworkXError("Directed Graph not supported")
+        raise nx.Error("Directed Graph not supported")
 
     # length of the each sequence
     naseq = len(aseq)
@@ -323,7 +323,7 @@ def alternating_havel_hakimi_graph(aseq, bseq, create_using=None):
     sumb = sum(bseq)
 
     if not suma == sumb:
-        raise nx.NetworkXError(
+        raise nx.Error(
             f"invalid degree sequences, sum(aseq)!=sum(bseq),{suma},{sumb}"
         )
 
@@ -398,10 +398,10 @@ def preferential_attachment_graph(aseq, p, create_using=None, seed=None):
     """
     G = nx.empty_graph(0, create_using, default=nx.MultiGraph)
     if G.is_directed():
-        raise nx.NetworkXError("Directed Graph not supported")
+        raise nx.Error("Directed Graph not supported")
 
     if p > 1:
-        raise nx.NetworkXError(f"probability {p} > 1")
+        raise nx.Error(f"probability {p} > 1")
 
     naseq = len(aseq)
     G = _add_nodes_with_bipartite_label(G, naseq, 0)

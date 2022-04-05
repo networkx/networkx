@@ -60,7 +60,7 @@ def in_degree_centrality(G):
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
         If G is undirected.
 
     See Also
@@ -103,7 +103,7 @@ def out_degree_centrality(G):
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
         If G is undirected.
 
     See Also

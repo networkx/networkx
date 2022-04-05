@@ -36,7 +36,7 @@ def wiener_index(G, weight=None):
 
     Raises
     ------
-    NetworkXError
+    Error
         If the graph `G` is not connected.
 
     Notes

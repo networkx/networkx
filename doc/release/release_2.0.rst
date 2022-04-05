@@ -474,7 +474,7 @@ Merged PRs
 - Update predecessors/successors in edge subgraph (#2373)
 - Fix for #2364 (#2372)
 - Raise an Exception for disconnected Graphs in bipartite.sets (#2375)
-- fixes typo in NetworkXNotImplemented (#2385)
+- fixes typo in NotImplemented (#2385)
 - Check alternating paths using iterative DFS in to_vertex_cover. (#2386)
 - Fix typos in generating NXError in networkx.linalg.graphmatrix.incidence_matrix (#2395)
 - [Fixes #2342] remove calls to plt.hold(), deprecated in mpl2.0 (#2397)

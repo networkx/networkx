@@ -16,7 +16,7 @@ References
 """
 
 import networkx as nx
-from networkx.exception import NetworkXError
+from networkx.exception import Error
 
 __all__ = ["hnm_harary_graph", "hkn_harary_graph"]
 
@@ -66,11 +66,11 @@ def hnm_harary_graph(n, m, create_using=None):
     """
 
     if n < 1:
-        raise NetworkXError("The number of nodes must be >= 1!")
+        raise Error("The number of nodes must be >= 1!")
     if m < n - 1:
-        raise NetworkXError("The number of edges must be >= n - 1 !")
+        raise Error("The number of edges must be >= n - 1 !")
     if m > n * (n - 1) // 2:
-        raise NetworkXError("The number of edges must be <= n(n-1)/2")
+        raise Error("The number of edges must be <= n(n-1)/2")
 
     # Construct an empty graph with n nodes first
     H = nx.empty_graph(n, create_using)
@@ -156,9 +156,9 @@ def hkn_harary_graph(k, n, create_using=None):
     """
 
     if k < 1:
-        raise NetworkXError("The node connectivity must be >= 1!")
+        raise Error("The node connectivity must be >= 1!")
     if n < k + 1:
-        raise NetworkXError("The number of nodes must be >= k+1 !")
+        raise Error("The number of nodes must be >= k+1 !")
 
     # in case of connectivity 1, simply return the path graph
     if k == 1:

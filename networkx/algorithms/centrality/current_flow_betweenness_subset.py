@@ -93,7 +93,7 @@ def current_flow_betweenness_centrality_subset(
     import numpy as np
 
     if not nx.is_connected(G):
-        raise nx.NetworkXError("Graph not connected.")
+        raise nx.Error("Graph not connected.")
     n = G.number_of_nodes()
     ordering = list(reverse_cuthill_mckee_ordering(G))
     # make a copy with integer labels according to rcm ordering
@@ -200,7 +200,7 @@ def edge_current_flow_betweenness_centrality_subset(
     import numpy as np
 
     if not nx.is_connected(G):
-        raise nx.NetworkXError("Graph not connected.")
+        raise nx.Error("Graph not connected.")
     n = G.number_of_nodes()
     ordering = list(reverse_cuthill_mckee_ordering(G))
     # make a copy with integer labels according to rcm ordering

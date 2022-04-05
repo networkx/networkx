@@ -80,7 +80,7 @@ def local_node_connectivity(G, source, target, cutoff=None):
 
     """
     if target == source:
-        raise nx.NetworkXError("source and target have to be different nodes.")
+        raise nx.Error("source and target have to be different nodes.")
 
     # Maximum possible node independent paths
     if G.is_directed():
@@ -101,7 +101,7 @@ def local_node_connectivity(G, source, target, cutoff=None):
             path = _bidirectional_shortest_path(G, source, target, exclude)
             exclude.update(set(path))
             K += 1
-        except nx.NetworkXNoPath:
+        except nx.NoPath:
             break
 
     return K
@@ -171,14 +171,14 @@ def node_connectivity(G, s=None, t=None):
 
     """
     if (s is not None and t is None) or (s is None and t is not None):
-        raise nx.NetworkXError("Both source and target must be specified.")
+        raise nx.Error("Both source and target must be specified.")
 
     # Local node connectivity
     if s is not None and t is not None:
         if s not in G:
-            raise nx.NetworkXError(f"node {s} not in graph")
+            raise nx.Error(f"node {s} not in graph")
         if t not in G:
-            raise nx.NetworkXError(f"node {t} not in graph")
+            raise nx.Error(f"node {t} not in graph")
         return local_node_connectivity(G, s, t)
 
     # Global node connectivity
@@ -302,7 +302,7 @@ def _bidirectional_shortest_path(G, source, target, exclude):
 
     Raises
     ------
-    NetworkXNoPath
+    NoPath
         If there is no path or if nodes are adjacent and have only one path
         between them
 
@@ -344,7 +344,7 @@ def _bidirectional_pred_succ(G, source, target, exclude):
     # does BFS from both source and target and meets in the middle
     # excludes nodes in the container "exclude" from the search
     if source is None or target is None:
-        raise nx.NetworkXException(
+        raise nx.Exception(
             "Bidirectional shortest path called without source or target"
         )
     if target == source:
@@ -398,4 +398,4 @@ def _bidirectional_pred_succ(G, source, target, exclude):
                     if w in pred:
                         return pred, succ, w  # found path
 
-    raise nx.NetworkXNoPath(f"No path between {source} and {target}.")
+    raise nx.NoPath(f"No path between {source} and {target}.")

@@ -424,7 +424,7 @@ def equitable_color(G, num_colors):
 
     Raises
     ------
-    NetworkXAlgorithmError
+    AlgorithmError
         If the maximum degree of the graph ``G`` is greater than
         ``num_colors``.
 
@@ -452,7 +452,7 @@ def equitable_color(G, num_colors):
         r_ = 0
 
     if r_ >= num_colors:
-        raise nx.NetworkXAlgorithmError(
+        raise nx.AlgorithmError(
             f"Graph has maximum degree {r_}, needs "
             f"{r_ + 1} (> {num_colors}) colors for guaranteed coloring."
         )

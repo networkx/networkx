@@ -50,11 +50,11 @@ def double_edge_swap(G, nswap=1, max_tries=100, seed=None):
     The graph G is modified in place.
     """
     if G.is_directed():
-        raise nx.NetworkXError("double_edge_swap() not defined for directed graphs.")
+        raise nx.Error("double_edge_swap() not defined for directed graphs.")
     if nswap > max_tries:
-        raise nx.NetworkXError("Number of swaps > number of tries allowed.")
+        raise nx.Error("Number of swaps > number of tries allowed.")
     if len(G) < 4:
-        raise nx.NetworkXError("Graph has less than four nodes.")
+        raise nx.Error("Graph has less than four nodes.")
     # Instead of choosing uniformly at random from a generated edge list,
     # this algorithm chooses nonuniformly from the set of nodes with
     # probability weighted by degree.
@@ -88,7 +88,7 @@ def double_edge_swap(G, nswap=1, max_tries=100, seed=None):
                 f"Maximum number of swap attempts ({n}) exceeded "
                 f"before desired swaps achieved ({nswap})."
             )
-            raise nx.NetworkXAlgorithmError(e)
+            raise nx.AlgorithmError(e)
         n += 1
     return G
 
@@ -144,7 +144,7 @@ def connected_double_edge_swap(G, nswap=1, _window_threshold=3, seed=None):
     Raises
     ------
 
-    NetworkXError
+    Error
 
        If the input graph is not connected, or if the graph has fewer than four
        nodes.
@@ -163,9 +163,9 @@ def connected_double_edge_swap(G, nswap=1, _window_threshold=3, seed=None):
            http://citeseer.ist.psu.edu/gkantsidis03markov.html
     """
     if not nx.is_connected(G):
-        raise nx.NetworkXError("Graph not connected")
+        raise nx.Error("Graph not connected")
     if len(G) < 4:
-        raise nx.NetworkXError("Graph has less than four nodes.")
+        raise nx.Error("Graph has less than four nodes.")
     n = 0
     swapcount = 0
     deg = G.degree()

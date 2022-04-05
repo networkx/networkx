@@ -308,7 +308,7 @@ def random_tree(n, seed=None, create_using=None):
 
     Raises
     ------
-    NetworkXPointlessConcept
+    PointlessConcept
         If `n` is zero (because the null graph is not a tree).
 
     Notes
@@ -349,7 +349,7 @@ def random_tree(n, seed=None, create_using=None):
             └─╼ 9
     """
     if n == 0:
-        raise nx.NetworkXPointlessConcept("the null graph is not a tree")
+        raise nx.PointlessConcept("the null graph is not a tree")
     # Cannot create a Prüfer sequence unless `n` is at least two.
     if n == 1:
         utree = nx.empty_graph(1, create_using)

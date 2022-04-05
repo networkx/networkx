@@ -5,7 +5,7 @@ import networkx as nx
 from networkx.classes.graph import Graph
 from networkx.classes.coreviews import MultiAdjacencyView
 from networkx.classes.reportviews import MultiEdgeView, MultiDegreeView
-from networkx import NetworkXError
+from networkx import Error
 import networkx.convert as convert
 
 __all__ = ["MultiGraph"]
@@ -42,7 +42,7 @@ class MultiGraph(Graph):
         If True, `incoming_graph_data` is assumed to be a
         dict-of-dict-of-dict-of-dict structure keyed by
         node to neighbor to edge keys to edge data for multi-edges.
-        A NetworkXError is raised if this is not the case.
+        A Error is raised if this is not the case.
         If False, :func:`to_networkx_graph` is used to try to determine
         the dict's graph data structure as either a dict-of-dict-of-dict
         keyed by node to neighbor to edge data, or a dict-of-iterable
@@ -307,7 +307,7 @@ class MultiGraph(Graph):
             If True, `incoming_graph_data` is assumed to be a
             dict-of-dict-of-dict-of-dict structure keyed by
             node to neighbor to edge keys to edge data for multi-edges.
-            A NetworkXError is raised if this is not the case.
+            A Error is raised if this is not the case.
             If False, :func:`to_networkx_graph` is used to try to determine
             the dict's graph data structure as either a dict-of-dict-of-dict
             keyed by node to neighbor to edge data, or a dict-of-iterable
@@ -347,7 +347,7 @@ class MultiGraph(Graph):
                 self.graph.update(attr)
             except Exception as err:
                 if multigraph_input is True:
-                    raise nx.NetworkXError(
+                    raise nx.Error(
                         f"converting multigraph_input raised:\n{type(err)}: {err}"
                     )
                 Graph.__init__(self, incoming_graph_data, **attr)
@@ -572,7 +572,7 @@ class MultiGraph(Graph):
                 key = None
             else:
                 msg = f"Edge tuple {e} must be a 2-tuple, 3-tuple or 4-tuple."
-                raise NetworkXError(msg)
+                raise Error(msg)
             ddd = {}
             ddd.update(attr)
             try:
@@ -599,7 +599,7 @@ class MultiGraph(Graph):
 
         Raises
         ------
-        NetworkXError
+        Error
             If there is not an edge between u and v, or
             if there is no edge with the specified key.
 
@@ -636,7 +636,7 @@ class MultiGraph(Graph):
         try:
             d = self._adj[u][v]
         except KeyError as err:
-            raise NetworkXError(f"The edge {u}-{v} is not in the graph.") from err
+            raise Error(f"The edge {u}-{v} is not in the graph.") from err
         # remove the edge with specified data
         if key is None:
             d.popitem()
@@ -645,7 +645,7 @@ class MultiGraph(Graph):
                 del d[key]
             except KeyError as err:
                 msg = f"The edge {u}-{v} with key {key} is not in the graph."
-                raise NetworkXError(msg) from err
+                raise Error(msg) from err
         if len(d) == 0:
             # remove the key entries if last edge
             del self._adj[u][v]
@@ -693,7 +693,7 @@ class MultiGraph(Graph):
         for e in ebunch:
             try:
                 self.remove_edge(*e[:3])
-            except NetworkXError:
+            except Error:
                 pass
 
     def has_edge(self, u, v, key=None):

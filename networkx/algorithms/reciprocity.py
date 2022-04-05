@@ -1,5 +1,5 @@
 """Algorithms to calculate reciprocity in a directed graph."""
-from networkx import NetworkXError
+from networkx import Error
 from ..utils import not_implemented_for
 
 __all__ = ["reciprocity", "overall_reciprocity"]
@@ -45,7 +45,7 @@ def reciprocity(G, nodes=None):
     if nodes in G:
         reciprocity = next(_reciprocity_iter(G, nodes))[1]
         if reciprocity is None:
-            raise NetworkXError("Not defined for isolated nodes.")
+            raise Error("Not defined for isolated nodes.")
         else:
             return reciprocity
 
@@ -88,6 +88,6 @@ def overall_reciprocity(G):
     n_overlap_edge = (n_all_edge - G.to_undirected().number_of_edges()) * 2
 
     if n_all_edge == 0:
-        raise NetworkXError("Not defined for empty graphs")
+        raise Error("Not defined for empty graphs")
 
     return float(n_overlap_edge) / float(n_all_edge)

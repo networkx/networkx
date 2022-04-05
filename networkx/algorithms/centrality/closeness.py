@@ -3,7 +3,7 @@ Closeness centrality measures.
 """
 import functools
 import networkx as nx
-from networkx.exception import NetworkXError
+from networkx.exception import Error
 from networkx.utils.decorators import not_implemented_for
 
 __all__ = ["closeness_centrality", "incremental_closeness_centrality"]
@@ -222,7 +222,7 @@ def incremental_closeness_centrality(
        http://sariyuce.com/papers/bigdata13.pdf
     """
     if prev_cc is not None and set(prev_cc.keys()) != set(G.nodes()):
-        raise NetworkXError("prev_cc and G do not have the same nodes")
+        raise Error("prev_cc and G do not have the same nodes")
 
     # Unpack edge
     (u, v) = edge

@@ -186,7 +186,7 @@ class NodeView(Mapping, Set):
 
     def __getitem__(self, n):
         if isinstance(n, slice):
-            raise nx.NetworkXError(
+            raise nx.Error(
                 f"{type(self).__name__} does not support slicing, "
                 f"try list(G.nodes)[{n.start}:{n.stop}:{n.step}]"
             )
@@ -352,7 +352,7 @@ class NodeDataView(Set):
 
     def __getitem__(self, n):
         if isinstance(n, slice):
-            raise nx.NetworkXError(
+            raise nx.Error(
                 f"{type(self).__name__} does not support slicing, "
                 f"try list(G.nodes.data())[{n.start}:{n.stop}:{n.step}]"
             )
@@ -1085,7 +1085,7 @@ class OutEdgeView(Set, Mapping):
     # Mapping Methods
     def __getitem__(self, e):
         if isinstance(e, slice):
-            raise nx.NetworkXError(
+            raise nx.Error(
                 f"{type(self).__name__} does not support slicing, "
                 f"try list(G.edges)[{e.start}:{e.stop}:{e.step}]"
             )
@@ -1311,7 +1311,7 @@ class InEdgeView(OutEdgeView):
 
     def __getitem__(self, e):
         if isinstance(e, slice):
-            raise nx.NetworkXError(
+            raise nx.Error(
                 f"{type(self).__name__} does not support slicing, "
                 f"try list(G.in_edges)[{e.start}:{e.stop}:{e.step}]"
             )
@@ -1353,7 +1353,7 @@ class OutMultiEdgeView(OutEdgeView):
 
     def __getitem__(self, e):
         if isinstance(e, slice):
-            raise nx.NetworkXError(
+            raise nx.Error(
                 f"{type(self).__name__} does not support slicing, "
                 f"try list(G.edges)[{e.start}:{e.stop}:{e.step}]"
             )
@@ -1431,7 +1431,7 @@ class InMultiEdgeView(OutMultiEdgeView):
 
     def __getitem__(self, e):
         if isinstance(e, slice):
-            raise nx.NetworkXError(
+            raise nx.Error(
                 f"{type(self).__name__} does not support slicing, "
                 f"try list(G.in_edges)[{e.start}:{e.stop}:{e.step}]"
             )

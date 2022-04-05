@@ -215,7 +215,7 @@ Merged PRs
 - Speedups for subgraph and copy methods (#2744)
 - fix typo in tutorial (#2746)
 - Expand documentation regarding strong connectivity (#2732)
-- Correct when we raise NetworkXNotImplemented (#2731)
+- Correct when we raise NotImplemented (#2731)
 - removed list conversion from _triangles_and_degree_iter (#2725)
 - nx_shp fixes (#2721)
 - removed reference to create_using from union docs (#2722)

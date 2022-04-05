@@ -375,7 +375,7 @@ def find_cycle(G, source=None, orientation=None):
 
     Raises
     ------
-    NetworkXNoCycle
+    NoCycle
         If no cycle was found.
 
     Examples
@@ -392,7 +392,7 @@ def find_cycle(G, source=None, orientation=None):
     >>> nx.find_cycle(G, orientation="original")
     Traceback (most recent call last):
         ...
-    networkx.exception.NetworkXNoCycle: No cycle found.
+    networkx.exception.NoCycle: No cycle found.
     >>> list(nx.find_cycle(G, orientation="ignore"))
     [(0, 1, 'forward'), (1, 2, 'forward'), (0, 2, 'reverse')]
 
@@ -479,7 +479,7 @@ def find_cycle(G, source=None, orientation=None):
 
     else:
         assert len(cycle) == 0
-        raise nx.exception.NetworkXNoCycle("No cycle found.")
+        raise nx.exception.NoCycle("No cycle found.")
 
     # We now have a list of edges which ends on a cycle.
     # So we need to remove from the beginning edges that are not relevant.

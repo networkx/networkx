@@ -46,7 +46,7 @@ def tree_data(G, root, attrs=None, ident="id", children="children"):
 
     Raises
     ------
-    NetworkXError
+    Error
         If `children` and `ident` attributes are identical.
 
     Examples
@@ -101,7 +101,7 @@ def tree_data(G, root, attrs=None, ident="id", children="children"):
         children = attrs["children"]
 
     if ident == children:
-        raise nx.NetworkXError("The values for `id` and `children` must be different.")
+        raise nx.Error("The values for `id` and `children` must be different.")
 
     def add_children(n, G):
         nbrs = G[n]

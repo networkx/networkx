@@ -170,7 +170,7 @@ def dedensify(G, threshold, prefix=None, copy=True):
        http://www.cs.umd.edu/~abadi/papers/graph-dedense.pdf
     """
     if threshold < 2:
-        raise nx.NetworkXError("The degree threshold must be >= 2")
+        raise nx.Error("The degree threshold must be >= 2")
 
     degrees = G.in_degree if G.is_directed() else G.degree
     # Group nodes based on degree threshold

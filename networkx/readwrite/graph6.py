@@ -13,7 +13,7 @@ For more information, see the `graph6`_ homepage.
 from itertools import islice
 
 import networkx as nx
-from networkx.exception import NetworkXError
+from networkx.exception import Error
 from networkx.utils import open_file, not_implemented_for
 
 __all__ = ["from_graph6_bytes", "read_graph6", "to_graph6_bytes", "write_graph6"]
@@ -74,7 +74,7 @@ def from_graph6_bytes(bytes_in):
 
     Raises
     ------
-    NetworkXError
+    Error
         If bytes_in is unable to be parsed in graph6 format
 
     ValueError
@@ -115,7 +115,7 @@ def from_graph6_bytes(bytes_in):
     n, data = data_to_n(data)
     nd = (n * (n - 1) // 2 + 5) // 6
     if len(data) != nd:
-        raise NetworkXError(
+        raise Error(
             f"Expected {n * (n - 1) // 2} bits but got {len(data) * 6} in graph6"
         )
 
@@ -144,7 +144,7 @@ def to_graph6_bytes(G, nodes=None, header=True):
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
         If the graph is directed or is a multigraph.
 
     ValueError
@@ -196,7 +196,7 @@ def read_graph6(path):
 
     Raises
     ------
-    NetworkXError
+    Error
         If the string is unable to be parsed in graph6 format
 
     Examples
@@ -265,7 +265,7 @@ def write_graph6(G, path, nodes=None, header=True):
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
         If the graph is directed or is a multigraph.
 
     ValueError
@@ -325,7 +325,7 @@ def write_graph6_file(G, f, nodes=None, header=True):
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
         If the graph is directed or is a multigraph.
 
     ValueError

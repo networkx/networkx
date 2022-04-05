@@ -40,7 +40,7 @@ def test_exceptions():
         G.add_edge(2, 0)
         G.add_node(3)
         tree_data(G, 0)
-    with pytest.raises(nx.NetworkXError, match="must be different."):
+    with pytest.raises(nx.Error, match="must be different."):
         G = nx.MultiDiGraph()
         G.add_node(0)
         tree_data(G, 0, ident="node", children="node")

@@ -535,7 +535,7 @@ def test_np_edgelist():
 def test_draw_nodes_missing_node_from_position():
     G = nx.path_graph(3)
     pos = {0: (0, 0), 1: (1, 1)}  # No position for node 2
-    with pytest.raises(nx.NetworkXError, match="has no position"):
+    with pytest.raises(nx.Error, match="has no position"):
         nx.draw_networkx_nodes(G, pos)
 
 
@@ -714,7 +714,7 @@ def test_draw_networkx_edge_label_multiedge_exception():
     G.add_edge(0, 1, weight=20)
     edge_labels = nx.get_edge_attributes(G, "weight")  # Includes edge keys
     pos = {n: (n, n) for n in G}
-    with pytest.raises(nx.NetworkXError, match=exception_msg):
+    with pytest.raises(nx.Error, match=exception_msg):
         nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)
 
 

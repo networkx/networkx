@@ -80,7 +80,7 @@ def check_planarity_recursive(G, counterexample=False):
 def get_counterexample(G):
     """Obtains a Kuratowski subgraph.
 
-    Raises nx.NetworkXException if G is planar.
+    Raises nx.Exception if G is planar.
 
     The function removes edges such that the graph is still not planar.
     At some point the removal of any edge would make the graph planar.
@@ -100,7 +100,7 @@ def get_counterexample(G):
     G = nx.Graph(G)
 
     if check_planarity(G)[0]:
-        raise nx.NetworkXException("G is planar - no counter example.")
+        raise nx.Exception("G is planar - no counter example.")
 
     # find Kuratowski subgraph
     subgraph = nx.Graph()
@@ -122,7 +122,7 @@ def get_counterexample_recursive(G):
     G = nx.Graph(G)
 
     if check_planarity_recursive(G)[0]:
-        raise nx.NetworkXException("G is planar - no counter example.")
+        raise nx.Exception("G is planar - no counter example.")
 
     # find Kuratowski subgraph
     subgraph = nx.Graph()
@@ -867,7 +867,7 @@ class PlanarEmbedding(nx.DiGraph):
 
         Raises
         ------
-        NetworkXException
+        Exception
             This exception is raised with a short explanation if the
             PlanarEmbedding is invalid.
         """
@@ -877,17 +877,17 @@ class PlanarEmbedding(nx.DiGraph):
                 sorted_nbrs = set(self.neighbors_cw_order(v))
             except KeyError as err:
                 msg = f"Bad embedding. Missing orientation for a neighbor of {v}"
-                raise nx.NetworkXException(msg) from err
+                raise nx.Exception(msg) from err
 
             unsorted_nbrs = set(self[v])
             if sorted_nbrs != unsorted_nbrs:
                 msg = "Bad embedding. Edge orientations not set correctly."
-                raise nx.NetworkXException(msg)
+                raise nx.Exception(msg)
             for w in self[v]:
                 # Check if opposite half-edge exists
                 if not self.has_edge(w, v):
                     msg = "Bad embedding. Opposite half-edge is missing."
-                    raise nx.NetworkXException(msg)
+                    raise nx.Exception(msg)
 
         # Check planarity
         counted_half_edges = set()
@@ -910,7 +910,7 @@ class PlanarEmbedding(nx.DiGraph):
             if num_nodes - num_edges + num_faces != 2:
                 # The result does not match Euler's formula
                 msg = "Bad embedding. The graph does not match Euler's formula"
-                raise nx.NetworkXException(msg)
+                raise nx.Exception(msg)
 
     def add_half_edge_ccw(self, start_node, end_node, reference_neighbor):
         """Adds a half-edge from start_node to end_node.
@@ -929,7 +929,7 @@ class PlanarEmbedding(nx.DiGraph):
 
         Raises
         ------
-        NetworkXException
+        Exception
             If the reference_neighbor does not exist.
 
         See Also
@@ -970,7 +970,7 @@ class PlanarEmbedding(nx.DiGraph):
 
         Raises
         ------
-        NetworkXException
+        Exception
             If the reference_neighbor does not exist.
 
         See Also
@@ -989,7 +989,7 @@ class PlanarEmbedding(nx.DiGraph):
             return
 
         if reference_neighbor not in self[start_node]:
-            raise nx.NetworkXException(
+            raise nx.Exception(
                 "Cannot add edge. Reference neighbor does not exist"
             )
 
@@ -1098,7 +1098,7 @@ class PlanarEmbedding(nx.DiGraph):
             face_nodes.append(cur_node)
             prev_node, cur_node = self.next_face_half_edge(prev_node, cur_node)
             if (prev_node, cur_node) in mark_half_edges:
-                raise nx.NetworkXException("Bad planar embedding. Impossible face.")
+                raise nx.Exception("Bad planar embedding. Impossible face.")
             mark_half_edges.add((prev_node, cur_node))
 
         return face_nodes

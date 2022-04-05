@@ -79,7 +79,7 @@ def kernighan_lin_bisection(G, partition=None, max_iter=10, weight="weight", see
 
     Raises
     ------
-    NetworkXError
+    Error
         If partition is not a valid partition of the nodes of the graph.
 
     References
@@ -101,9 +101,9 @@ def kernighan_lin_bisection(G, partition=None, max_iter=10, weight="weight", see
         try:
             A, B = partition
         except (TypeError, ValueError) as err:
-            raise nx.NetworkXError("partition must be two sets") from err
+            raise nx.Error("partition must be two sets") from err
         if not is_partition(G, (A, B)):
-            raise nx.NetworkXError("partition invalid")
+            raise nx.Error("partition invalid")
         side = [0] * n
         for a in A:
             side[index[a]] = 1

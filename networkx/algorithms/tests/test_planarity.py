@@ -261,14 +261,14 @@ class TestLRPlanarity:
         self.check_graph(G, is_planar=False)
 
     def test_counterexample_planar(self):
-        with pytest.raises(nx.NetworkXException):
+        with pytest.raises(nx.Exception):
             # Try to get a counterexample of a planar graph
             G = nx.Graph()
             G.add_node(1)
             get_counterexample(G)
 
     def test_counterexample_planar_recursive(self):
-        with pytest.raises(nx.NetworkXException):
+        with pytest.raises(nx.Exception):
             # Try to get a counterexample of a planar graph
             G = nx.Graph()
             G.add_node(1)
@@ -295,7 +295,7 @@ def check_embedding(G, embedding):
     """
 
     if not isinstance(embedding, nx.PlanarEmbedding):
-        raise nx.NetworkXException("Bad embedding. Not of type nx.PlanarEmbedding")
+        raise nx.Exception("Bad embedding. Not of type nx.PlanarEmbedding")
 
     # Check structure
     embedding.check_structure()
@@ -360,12 +360,12 @@ def check_counterexample(G, sub_graph):
     # 4. Check for isomorphism with K5 or K3_3 graphs
     if len(sub_graph) == 5:
         if not nx.is_isomorphic(nx.complete_graph(5), sub_graph):
-            raise nx.NetworkXException("Bad counter example.")
+            raise nx.Exception("Bad counter example.")
     elif len(sub_graph) == 6:
         if not nx.is_isomorphic(nx.complete_bipartite_graph(3, 3), sub_graph):
-            raise nx.NetworkXException("Bad counter example.")
+            raise nx.Exception("Bad counter example.")
     else:
-        raise nx.NetworkXException("Bad counter example.")
+        raise nx.Exception("Bad counter example.")
 
 
 class TestPlanarEmbeddingClass:
@@ -376,7 +376,7 @@ class TestPlanarEmbeddingClass:
         assert data == data_cmp
 
     def test_missing_edge_orientation(self):
-        with pytest.raises(nx.NetworkXException):
+        with pytest.raises(nx.Exception):
             embedding = nx.PlanarEmbedding()
             embedding.add_edge(1, 2)
             embedding.add_edge(2, 1)
@@ -384,7 +384,7 @@ class TestPlanarEmbeddingClass:
             embedding.check_structure()
 
     def test_invalid_edge_orientation(self):
-        with pytest.raises(nx.NetworkXException):
+        with pytest.raises(nx.Exception):
             embedding = nx.PlanarEmbedding()
             embedding.add_half_edge_first(1, 2)
             embedding.add_half_edge_first(2, 1)
@@ -392,14 +392,14 @@ class TestPlanarEmbeddingClass:
             embedding.check_structure()
 
     def test_missing_half_edge(self):
-        with pytest.raises(nx.NetworkXException):
+        with pytest.raises(nx.Exception):
             embedding = nx.PlanarEmbedding()
             embedding.add_half_edge_first(1, 2)
             # Invalid structure because other half edge is missing
             embedding.check_structure()
 
     def test_not_fulfilling_euler_formula(self):
-        with pytest.raises(nx.NetworkXException):
+        with pytest.raises(nx.Exception):
             embedding = nx.PlanarEmbedding()
             for i in range(5):
                 for j in range(5):
@@ -408,7 +408,7 @@ class TestPlanarEmbeddingClass:
             embedding.check_structure()
 
     def test_missing_reference(self):
-        with pytest.raises(nx.NetworkXException):
+        with pytest.raises(nx.Exception):
             embedding = nx.PlanarEmbedding()
             embedding.add_half_edge_cw(1, 2, 3)
 
@@ -424,7 +424,7 @@ class TestPlanarEmbeddingClass:
         assert face == [1, 2]
 
     def test_unsuccessful_face_traversal(self):
-        with pytest.raises(nx.NetworkXException):
+        with pytest.raises(nx.Exception):
             embedding = nx.PlanarEmbedding()
             embedding.add_edge(1, 2, ccw=2, cw=3)
             embedding.add_edge(2, 1, ccw=1, cw=3)

@@ -27,7 +27,7 @@ def edmonds_karp_core(R, s, t, cutoff):
             flow = min(flow, attr["capacity"] - attr["flow"])
             u = v
         if flow * 2 > inf:
-            raise nx.NetworkXUnbounded("Infinite capacity path, flow unbounded above.")
+            raise nx.Unbounded("Infinite capacity path, flow unbounded above.")
         # Augment flow along the path.
         it = iter(path)
         u = next(it)
@@ -94,11 +94,11 @@ def edmonds_karp_core(R, s, t, cutoff):
 def edmonds_karp_impl(G, s, t, capacity, residual, cutoff):
     """Implementation of the Edmonds-Karp algorithm."""
     if s not in G:
-        raise nx.NetworkXError(f"node {str(s)} not in graph")
+        raise nx.Error(f"node {str(s)} not in graph")
     if t not in G:
-        raise nx.NetworkXError(f"node {str(t)} not in graph")
+        raise nx.Error(f"node {str(t)} not in graph")
     if s == t:
-        raise nx.NetworkXError("source and sink are the same node")
+        raise nx.Error("source and sink are the same node")
 
     if residual is None:
         R = build_residual_network(G, capacity)
@@ -169,15 +169,15 @@ def edmonds_karp(
 
     Raises
     ------
-    NetworkXError
+    Error
         The algorithm does not support MultiGraph and MultiDiGraph. If
         the input graph is an instance of one of these two classes, a
-        NetworkXError is raised.
+        Error is raised.
 
-    NetworkXUnbounded
+    Unbounded
         If the graph has a path of infinite capacity, the value of a
         feasible flow on the graph is unbounded above and the function
-        raises a NetworkXUnbounded.
+        raises a Unbounded.
 
     See also
     --------

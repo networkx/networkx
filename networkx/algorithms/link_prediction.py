@@ -282,7 +282,7 @@ def common_neighbor_centrality(G, ebunch=None, alpha=0.8):
 
         def predict(u, v):
             if u == v:
-                raise nx.NetworkXAlgorithmError("Self links are not supported")
+                raise nx.AlgorithmError("Self links are not supported")
 
             return sum(1 for _ in nx.common_neighbors(G, u, v))
 
@@ -292,7 +292,7 @@ def common_neighbor_centrality(G, ebunch=None, alpha=0.8):
 
         def predict(u, v):
             if u == v:
-                raise nx.NetworkXAlgorithmError("Self links are not supported")
+                raise nx.AlgorithmError("Self links are not supported")
             path_len = spl[u].get(v, inf)
 
             return alpha * sum(1 for _ in nx.common_neighbors(G, u, v)) + (
@@ -572,7 +572,7 @@ def within_inter_cluster(G, ebunch=None, delta=0.001, community="community"):
        https://doi.org/10.1007/978-3-642-34459-6_10
     """
     if delta <= 0:
-        raise nx.NetworkXAlgorithmError("Delta must be greater than zero")
+        raise nx.AlgorithmError("Delta must be greater than zero")
 
     def predict(u, v):
         Cu = _community(G, u, community)
@@ -593,4 +593,4 @@ def _community(G, u, community):
     try:
         return node_u[community]
     except KeyError as err:
-        raise nx.NetworkXAlgorithmError("No community information") from err
+        raise nx.AlgorithmError("No community information") from err

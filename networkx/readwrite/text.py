@@ -113,7 +113,7 @@ def forest_str(graph, with_labels=True, sources=None, write=None, ascii_only=Fal
         _write(glyph_empty)
     else:
         if not nx.is_forest(graph):
-            raise nx.NetworkXNotImplemented("input must be a forest or the empty graph")
+            raise nx.NotImplemented("input must be a forest or the empty graph")
 
         is_directed = graph.is_directed()
         succ = graph.succ if is_directed else graph.adj

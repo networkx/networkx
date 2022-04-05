@@ -102,7 +102,7 @@ class TestEulerianCircuit:
         assert edges[5:] == [(1, 0, 0)]
 
     def test_not_eulerian(self):
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             f = list(nx.eulerian_circuit(nx.complete_graph(4)))
 
 
@@ -187,11 +187,11 @@ class TestEulerianPath:
         G.add_edges_from(result)
         assert result == list(nx.eulerian_path(G))
         assert result == list(nx.eulerian_path(G, source=1))
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             list(nx.eulerian_path(G, source=3))
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             list(nx.eulerian_path(G, source=4))
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             list(nx.eulerian_path(G, source=5))
 
     def test_eulerian_path_multigraph(self):
@@ -200,9 +200,9 @@ class TestEulerianPath:
         G.add_edges_from(result)
         assert result == list(nx.eulerian_path(G))
         assert result == list(nx.eulerian_path(G, source=2))
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             list(nx.eulerian_path(G, source=3))
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             list(nx.eulerian_path(G, source=4))
 
     def test_eulerian_path_eulerian_circuit(self):
@@ -224,9 +224,9 @@ class TestEulerianPath:
         assert list(nx.eulerian_path(G)) in (result, result2)
         assert result == list(nx.eulerian_path(G, source=1))
         assert result2 == list(nx.eulerian_path(G, source=5))
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             list(nx.eulerian_path(G, source=3))
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             list(nx.eulerian_path(G, source=2))
 
     def test_eulerian_path_multigraph_undirected(self):
@@ -235,28 +235,28 @@ class TestEulerianPath:
         G.add_edges_from(result)
         assert result == list(nx.eulerian_path(G))
         assert result == list(nx.eulerian_path(G, source=2))
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             list(nx.eulerian_path(G, source=3))
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             list(nx.eulerian_path(G, source=1))
 
 
 class TestEulerize:
     def test_disconnected(self):
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             G = nx.from_edgelist([(0, 1), (2, 3)])
             nx.eulerize(G)
 
     def test_null_graph(self):
-        with pytest.raises(nx.NetworkXPointlessConcept):
+        with pytest.raises(nx.PointlessConcept):
             nx.eulerize(nx.Graph())
 
     def test_null_multigraph(self):
-        with pytest.raises(nx.NetworkXPointlessConcept):
+        with pytest.raises(nx.PointlessConcept):
             nx.eulerize(nx.MultiGraph())
 
     def test_on_empty_graph(self):
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             nx.eulerize(nx.empty_graph(3))
 
     def test_on_eulerian(self):

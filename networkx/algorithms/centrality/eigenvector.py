@@ -57,10 +57,10 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None, weight=None
 
     Raises
     ------
-    NetworkXPointlessConcept
+    PointlessConcept
         If the graph `G` is the null graph.
 
-    NetworkXError
+    Error
         If each value in `nstart` is zero.
 
     PowerIterationFailedConvergence
@@ -103,14 +103,14 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None, weight=None
 
     """
     if len(G) == 0:
-        raise nx.NetworkXPointlessConcept(
+        raise nx.PointlessConcept(
             "cannot compute centrality for the null graph"
         )
     # If no initial vector is provided, start with the all-ones vector.
     if nstart is None:
         nstart = {v: 1 for v in G}
     if all(v == 0 for v in nstart.values()):
-        raise nx.NetworkXError("initial vector cannot have all zero values")
+        raise nx.Error("initial vector cannot have all zero values")
     # Normalize the initial vector so that each entry is in [0, 1]. This is
     # guaranteed to never have a divide-by-zero error by the previous line.
     nstart_sum = sum(nstart.values())
@@ -199,7 +199,7 @@ def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
 
     Raises
     ------
-    NetworkXPointlessConcept
+    PointlessConcept
         If the graph ``G`` is the null graph.
 
     References
@@ -217,7 +217,7 @@ def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
     import scipy.sparse.linalg  # call as sp.sparse.linalg
 
     if len(G) == 0:
-        raise nx.NetworkXPointlessConcept(
+        raise nx.PointlessConcept(
             "cannot compute centrality for the null graph"
         )
     M = nx.to_scipy_sparse_array(G, nodelist=list(G), weight=weight, dtype=float)

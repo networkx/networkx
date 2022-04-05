@@ -43,7 +43,7 @@ class MinHeap:
 
         Raises
         ------
-        NetworkXError
+        Error
             If the heap is empty.
         """
         raise NotImplementedError
@@ -58,7 +58,7 @@ class MinHeap:
 
         Raises
         ------
-        NetworkXError
+        Error
             If the heap is empty.
         """
         raise NotImplementedError
@@ -158,12 +158,12 @@ class PairingHeap(MinHeap):
 
     def min(self):
         if self._root is None:
-            raise nx.NetworkXError("heap is empty.")
+            raise nx.Error("heap is empty.")
         return (self._root.key, self._root.value)
 
     def pop(self):
         if self._root is None:
-            raise nx.NetworkXError("heap is empty.")
+            raise nx.Error("heap is empty.")
         min_node = self._root
         self._root = self._merge_children(self._root)
         del self._dict[min_node.key]
@@ -289,7 +289,7 @@ class BinaryHeap(MinHeap):
     def min(self):
         dict = self._dict
         if not dict:
-            raise nx.NetworkXError("heap is empty")
+            raise nx.Error("heap is empty")
         heap = self._heap
         pop = heappop
         # Repeatedly remove stale key-value pairs until a up-to-date one is
@@ -304,7 +304,7 @@ class BinaryHeap(MinHeap):
     def pop(self):
         dict = self._dict
         if not dict:
-            raise nx.NetworkXError("heap is empty")
+            raise nx.Error("heap is empty")
         heap = self._heap
         pop = heappop
         # Repeatedly remove stale key-value pairs until a up-to-date one is

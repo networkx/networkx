@@ -155,7 +155,7 @@ def is_directed(G):
 
 def frozen(*args, **kwargs):
     """Dummy method for raising errors when trying to modify frozen graphs"""
-    raise nx.NetworkXError("Frozen graph can't be modified")
+    raise nx.Error("Frozen graph can't be modified")
 
 
 def freeze(G):
@@ -175,7 +175,7 @@ def freeze(G):
     >>> G = nx.freeze(G)
     >>> try:
     ...     G.add_edge(4, 5)
-    ... except nx.NetworkXError as err:
+    ... except nx.Error as err:
     ...     print(str(err))
     Frozen graph can't be modified
 
@@ -571,7 +571,7 @@ def info(G, n=None):
 
     Raises
     ------
-    NetworkXError
+    Error
         If n is not in the graph G
 
     .. deprecated:: 2.7
@@ -587,7 +587,7 @@ def info(G, n=None):
     if n is None:
         return str(G)
     if n not in G:
-        raise nx.NetworkXError(f"node {n} not in graph")
+        raise nx.Error(f"node {n} not in graph")
     info = ""  # append this all to a string
     info += f"Node {n} has the following properties:\n"
     info += f"Degree: {G.degree(n)}\n"
@@ -950,7 +950,7 @@ def common_neighbors(G, u, v):
 
     Raises
     ------
-    NetworkXError
+    Error
         If u or v is not a node in the graph.
 
     Examples
@@ -960,9 +960,9 @@ def common_neighbors(G, u, v):
     [2, 3, 4]
     """
     if u not in G:
-        raise nx.NetworkXError("u is not in the graph.")
+        raise nx.Error("u is not in the graph.")
     if v not in G:
-        raise nx.NetworkXError("v is not in the graph.")
+        raise nx.Error("v is not in the graph.")
 
     # Return a generator explicitly instead of yielding so that the above
     # checks are executed eagerly.
@@ -991,7 +991,7 @@ def is_weighted(G, edge=None, weight="weight"):
 
     Raises
     ------
-    NetworkXError
+    Error
         If the specified edge does not exist.
 
     Examples
@@ -1012,7 +1012,7 @@ def is_weighted(G, edge=None, weight="weight"):
         data = G.get_edge_data(*edge)
         if data is None:
             msg = f"Edge {edge!r} does not exist."
-            raise nx.NetworkXError(msg)
+            raise nx.Error(msg)
         return weight in data
 
     if is_empty(G):
@@ -1045,7 +1045,7 @@ def is_negatively_weighted(G, edge=None, weight="weight"):
 
     Raises
     ------
-    NetworkXError
+    Error
         If the specified edge does not exist.
 
     Examples
@@ -1069,7 +1069,7 @@ def is_negatively_weighted(G, edge=None, weight="weight"):
         data = G.get_edge_data(*edge)
         if data is None:
             msg = f"Edge {edge!r} does not exist."
-            raise nx.NetworkXError(msg)
+            raise nx.Error(msg)
         return weight in data and data[weight] < 0
 
     return any(weight in data and data[weight] < 0 for u, v, data in G.edges(data=True))
@@ -1294,14 +1294,14 @@ def path_weight(G, path, weight):
 
     Raises
     ------
-    NetworkXNoPath
+    NoPath
         If the specified edge does not exist.
     """
     multigraph = G.is_multigraph()
     cost = 0
 
     if not nx.is_path(G, path):
-        raise nx.NetworkXNoPath("path does not exist")
+        raise nx.NoPath("path does not exist")
     for node, nbr in nx.utils.pairwise(path):
         if multigraph:
             cost += min(v[weight] for v in G[node][nbr].values())

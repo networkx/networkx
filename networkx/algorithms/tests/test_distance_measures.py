@@ -52,7 +52,7 @@ class TestDistance:
         assert e[0] == 0
         e = nx.eccentricity(G, v=0)
         assert e == 0
-        pytest.raises(nx.NetworkXError, nx.eccentricity, G, 1)
+        pytest.raises(nx.Error, nx.eccentricity, G, 1)
 
         # test against empty graph
         G = nx.empty_graph()
@@ -89,20 +89,20 @@ class TestDistance:
         G = nx.Graph()
         G.add_edge(1, 2)
         G.add_edge(3, 4)
-        pytest.raises(nx.NetworkXError, nx.diameter, G)
+        pytest.raises(nx.Error, nx.diameter, G)
 
     def test_eccentricity_infinite(self):
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             G = nx.Graph([(1, 2), (3, 4)])
             e = nx.eccentricity(G)
 
     def test_eccentricity_undirected_not_connected(self):
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             G = nx.Graph([(1, 2), (3, 4)])
             e = nx.eccentricity(G, sp=1)
 
     def test_eccentricity_directed_weakly_connected(self):
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             DG = nx.DiGraph([(1, 2), (1, 3)])
             nx.eccentricity(DG)
 
@@ -158,20 +158,20 @@ class TestResistanceDistance:
             nx.resistance_distance(self.G, 1, 3, "weight")
 
     def test_resistance_distance_not_connected(self):
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             self.G.add_node(5)
             nx.resistance_distance(self.G, 1, 5)
 
     def test_resistance_distance_same_node(self):
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             nx.resistance_distance(self.G, 1, 1)
 
     def test_resistance_distance_nodeA_not_in_graph(self):
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             nx.resistance_distance(self.G, 9, 1)
 
     def test_resistance_distance_nodeB_not_in_graph(self):
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             nx.resistance_distance(self.G, 1, 9)
 
 
@@ -186,7 +186,7 @@ class TestBarycenter:
         return g.subgraph(b)
 
     def test_must_be_connected(self):
-        pytest.raises(nx.NetworkXNoPath, nx.barycenter, nx.empty_graph(5))
+        pytest.raises(nx.NoPath, nx.barycenter, nx.empty_graph(5))
 
     def test_sp_kwarg(self):
         # Complete graph K_5. Normally it works...
@@ -201,7 +201,7 @@ class TestBarycenter:
 
         # ...and a corrupted sp can make it seem like K_5 is disconnected
         del sp[0][1]
-        pytest.raises(nx.NetworkXNoPath, nx.barycenter, K_5, sp=sp)
+        pytest.raises(nx.NoPath, nx.barycenter, K_5, sp=sp)
 
     def test_trees(self):
         """The barycenter of a tree is a single vertex or an edge.

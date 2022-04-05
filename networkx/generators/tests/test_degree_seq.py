@@ -75,7 +75,7 @@ class TestConfigurationModel:
         using a directed graph yields an exception.
 
         """
-        with pytest.raises(nx.NetworkXNotImplemented):
+        with pytest.raises(nx.NotImplemented):
             nx.configuration_model([], create_using=nx.DiGraph())
 
     def test_odd_degree_sum(self):
@@ -83,12 +83,12 @@ class TestConfigurationModel:
         exception.
 
         """
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             nx.configuration_model([1, 2])
 
 
 def test_directed_configuation_raise_unequal():
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.Error):
         zin = [5, 3, 3, 3, 3, 2, 2, 2, 1, 1]
         zout = [5, 3, 3, 3, 3, 2, 2, 2, 1, 2]
         nx.directed_configuration_model(zin, zout)
@@ -146,21 +146,21 @@ def test_havel_hakimi_construction():
     assert len(G) == 0
 
     z = [1000, 3, 3, 3, 3, 2, 2, 2, 1, 1, 1]
-    pytest.raises(nx.NetworkXError, nx.havel_hakimi_graph, z)
+    pytest.raises(nx.Error, nx.havel_hakimi_graph, z)
     z = ["A", 3, 3, 3, 3, 2, 2, 2, 1, 1, 1]
-    pytest.raises(nx.NetworkXError, nx.havel_hakimi_graph, z)
+    pytest.raises(nx.Error, nx.havel_hakimi_graph, z)
 
     z = [5, 4, 3, 3, 3, 2, 2, 2]
     G = nx.havel_hakimi_graph(z)
     G = nx.configuration_model(z)
     z = [6, 5, 4, 4, 2, 1, 1, 1]
-    pytest.raises(nx.NetworkXError, nx.havel_hakimi_graph, z)
+    pytest.raises(nx.Error, nx.havel_hakimi_graph, z)
 
     z = [10, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2]
 
     G = nx.havel_hakimi_graph(z)
 
-    pytest.raises(nx.NetworkXError, nx.havel_hakimi_graph, z, create_using=nx.DiGraph())
+    pytest.raises(nx.Error, nx.havel_hakimi_graph, z, create_using=nx.DiGraph())
 
 
 def test_directed_havel_hakimi():
@@ -180,7 +180,7 @@ def test_directed_havel_hakimi():
     # Test non-graphical sequence
     dout = [1000, 3, 3, 3, 3, 2, 2, 2, 1, 1, 1]
     din = [103, 102, 102, 102, 102, 102, 102, 102, 102, 102]
-    pytest.raises(nx.exception.NetworkXError, nx.directed_havel_hakimi_graph, din, dout)
+    pytest.raises(nx.exception.Error, nx.directed_havel_hakimi_graph, din, dout)
     # Test valid sequences
     dout = [1, 1, 1, 1, 1, 2, 2, 2, 3, 4]
     din = [2, 2, 2, 2, 2, 2, 2, 2, 0, 2]
@@ -191,10 +191,10 @@ def test_directed_havel_hakimi():
     assert sorted(din) == sorted(din2)
     # Test unequal sums
     din = [2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
-    pytest.raises(nx.exception.NetworkXError, nx.directed_havel_hakimi_graph, din, dout)
+    pytest.raises(nx.exception.Error, nx.directed_havel_hakimi_graph, din, dout)
     # Test for negative values
     din = [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, -2]
-    pytest.raises(nx.exception.NetworkXError, nx.directed_havel_hakimi_graph, din, dout)
+    pytest.raises(nx.exception.Error, nx.directed_havel_hakimi_graph, din, dout)
 
 
 def test_degree_sequence_tree():
@@ -204,11 +204,11 @@ def test_degree_sequence_tree():
     assert len(list(G.edges())) == sum(z) / 2
 
     pytest.raises(
-        nx.NetworkXError, nx.degree_sequence_tree, z, create_using=nx.DiGraph()
+        nx.Error, nx.degree_sequence_tree, z, create_using=nx.DiGraph()
     )
 
     z = [1, 1, 1, 1, 1, 1, 2, 2, 2, 3, 4]
-    pytest.raises(nx.NetworkXError, nx.degree_sequence_tree, z)
+    pytest.raises(nx.Error, nx.degree_sequence_tree, z)
 
 
 def test_random_degree_sequence_graph():
@@ -219,7 +219,7 @@ def test_random_degree_sequence_graph():
 
 def test_random_degree_sequence_graph_raise():
     z = [1, 1, 1, 1, 1, 1, 2, 2, 2, 3, 4]
-    pytest.raises(nx.NetworkXUnfeasible, nx.random_degree_sequence_graph, z)
+    pytest.raises(nx.Unfeasible, nx.random_degree_sequence_graph, z)
 
 
 def test_random_degree_sequence_large():

@@ -18,11 +18,11 @@ class TestPruferSequence:
             nx.to_prufer_sequence(G)
 
     def test_null_graph(self):
-        with pytest.raises(nx.NetworkXPointlessConcept):
+        with pytest.raises(nx.PointlessConcept):
             nx.to_prufer_sequence(nx.null_graph())
 
     def test_trivial_graph(self):
-        with pytest.raises(nx.NetworkXPointlessConcept):
+        with pytest.raises(nx.PointlessConcept):
             nx.to_prufer_sequence(nx.trivial_graph())
 
     def test_bad_integer_labels(self):

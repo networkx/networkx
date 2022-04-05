@@ -42,12 +42,12 @@ class TestCycles:
         assert sort_cy == [[0, 1, 2, 3], [0, 1, 6, 7, 8], [0, 3, 4, 5], ["A", "B", "C"]]
 
     def test_cycle_basis2(self):
-        with pytest.raises(nx.NetworkXNotImplemented):
+        with pytest.raises(nx.NotImplemented):
             G = nx.DiGraph()
             cy = networkx.cycle_basis(G, 0)
 
     def test_cycle_basis3(self):
-        with pytest.raises(nx.NetworkXNotImplemented):
+        with pytest.raises(nx.NotImplemented):
             G = nx.MultiGraph()
             cy = networkx.cycle_basis(G, 0)
 
@@ -61,7 +61,7 @@ class TestCycles:
             assert any(self.is_cyclic_permutation(c, rc) for rc in ca)
 
     def test_simple_cycles_graph(self):
-        with pytest.raises(nx.NetworkXNotImplemented):
+        with pytest.raises(nx.NotImplemented):
             G = nx.Graph()
             c = sorted(nx.simple_cycles(G))
 
@@ -174,7 +174,7 @@ class TestFindCycle:
 
     def test_graph_nocycle(self):
         G = nx.Graph(self.edges)
-        pytest.raises(nx.exception.NetworkXNoCycle, find_cycle, G, self.nodes)
+        pytest.raises(nx.exception.NoCycle, find_cycle, G, self.nodes)
 
     def test_graph_cycle(self):
         G = nx.Graph(self.edges)
@@ -264,7 +264,7 @@ class TestFindCycle:
         # is not visited from 2, and hence, we respect the edge orientation).
         G = nx.MultiDiGraph([(0, 1), (1, 2), (2, 3), (4, 2)])
         pytest.raises(
-            nx.exception.NetworkXNoCycle,
+            nx.exception.NoCycle,
             find_cycle,
             G,
             [0, 1, 2, 3, 4],
@@ -274,7 +274,7 @@ class TestFindCycle:
     def test_dag(self):
         G = nx.DiGraph([(0, 1), (0, 2), (1, 2)])
         pytest.raises(
-            nx.exception.NetworkXNoCycle, find_cycle, G, orientation="original"
+            nx.exception.NoCycle, find_cycle, G, orientation="original"
         )
         x = list(find_cycle(G, orientation="ignore"))
         assert x == [(0, 1, FORWARD), (1, 2, FORWARD), (0, 2, REVERSE)]
@@ -284,7 +284,7 @@ class TestFindCycle:
 
         G = nx.DiGraph()
         G.add_edges_from([(1, 0), (2, 0), (1, 2), (2, 1)])
-        pytest.raises(nx.NetworkXNoCycle, find_cycle, G, source=0)
+        pytest.raises(nx.NoCycle, find_cycle, G, source=0)
         x = list(nx.find_cycle(G, 1))
         x_ = [(1, 2), (2, 1)]
         assert x == x_
@@ -302,8 +302,8 @@ class TestFindCycle:
 
         G = nx.DiGraph()
         G.add_edges_from([(1, 2), (2, 0), (3, 1), (3, 2)])
-        pytest.raises(nx.NetworkXNoCycle, find_cycle, G, source=0)
-        pytest.raises(nx.NetworkXNoCycle, find_cycle, G)
+        pytest.raises(nx.NoCycle, find_cycle, G, source=0)
+        pytest.raises(nx.NoCycle, find_cycle, G)
 
 
 def assert_basis_equal(a, b):

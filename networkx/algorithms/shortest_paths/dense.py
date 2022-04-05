@@ -48,14 +48,14 @@ def floyd_warshall_numpy(G, nodelist=None, weight="weight"):
 
     Raises
     ------
-    NetworkXError
+    Error
         If nodelist is not a list of the nodes in G.
     """
     import numpy as np
 
     if nodelist is not None:
         if not (len(nodelist) == len(G) == len(set(nodelist))):
-            raise nx.NetworkXError(
+            raise nx.Error(
                 "nodelist must contain every node in G with no repeats."
                 "If you wanted a subgraph of G use G.subgraph(nodelist)"
             )

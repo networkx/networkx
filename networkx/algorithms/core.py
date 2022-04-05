@@ -29,7 +29,7 @@ http://doi.org/10.1038/srep31708
 
 """
 import networkx as nx
-from networkx.exception import NetworkXError
+from networkx.exception import Error
 from networkx.utils import not_implemented_for
 
 __all__ = [
@@ -65,7 +65,7 @@ def core_number(G):
 
     Raises
     ------
-    NetworkXError
+    Error
         The k-core is not implemented for graphs with self loops
         or parallel edges.
 
@@ -87,7 +87,7 @@ def core_number(G):
             "Input graph has self loops which is not permitted; "
             "Consider using G.remove_edges_from(nx.selfloop_edges(G))."
         )
-        raise NetworkXError(msg)
+        raise Error(msg)
     degrees = dict(G.degree())
     # Sort nodes by degree.
     nodes = sorted(degrees, key=degrees.get)
@@ -175,7 +175,7 @@ def k_core(G, k=None, core_number=None):
 
     Raises
     ------
-    NetworkXError
+    Error
       The k-core is not defined for graphs with self loops or parallel edges.
 
     Notes
@@ -229,7 +229,7 @@ def k_shell(G, k=None, core_number=None):
 
     Raises
     ------
-    NetworkXError
+    Error
         The k-shell is not implemented for graphs with self loops
         or parallel edges.
 
@@ -287,7 +287,7 @@ def k_crust(G, k=None, core_number=None):
 
     Raises
     ------
-    NetworkXError
+    Error
         The k-crust is not implemented for graphs with self loops
         or parallel edges.
 
@@ -346,7 +346,7 @@ def k_corona(G, k, core_number=None):
 
     Raises
     ------
-    NetworkXError
+    Error
         The k-cornoa is not defined for graphs with self loops or
         parallel edges.
 
@@ -400,7 +400,7 @@ def k_truss(G, k):
 
     Raises
     ------
-    NetworkXError
+    Error
 
       The k-truss is not defined for graphs with self loops or parallel edges
       or directed graphs.
@@ -469,7 +469,7 @@ def onion_layers(G):
 
     Raises
     ------
-    NetworkXError
+    Error
         The onion decomposition is not implemented for graphs with self loops
         or parallel edges or for directed graphs.
 
@@ -500,7 +500,7 @@ def onion_layers(G):
             "Input graph contains self loops which is not permitted; "
             "Consider using G.remove_edges_from(nx.selfloop_edges(G))."
         )
-        raise NetworkXError(msg)
+        raise Error(msg)
     # Dictionaries to register the k-core/onion decompositions.
     od_layers = {}
     # Adjacency list

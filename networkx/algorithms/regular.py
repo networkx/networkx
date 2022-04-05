@@ -159,7 +159,7 @@ def k_factor(G, k, matching_weight="weight"):
 
     # Step 1
     if any(d < k for _, d in G.degree):
-        raise nx.NetworkXUnfeasible("Graph contains a vertex with degree less than k")
+        raise nx.Unfeasible("Graph contains a vertex with degree less than k")
     g = G.copy()
 
     # Step 2
@@ -177,7 +177,7 @@ def k_factor(G, k, matching_weight="weight"):
 
     # Step 4
     if not is_perfect_matching(g, matching):
-        raise nx.NetworkXUnfeasible(
+        raise nx.Unfeasible(
             "Cannot find k-factor because no perfect matching exists"
         )
 

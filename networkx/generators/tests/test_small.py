@@ -21,7 +21,7 @@ class TestGeneratorsSmall:
 
         # Test small graph creation error with wrong ltype
         d[0] = "erroneouslist"
-        pytest.raises(nx.NetworkXError, nx.make_small_graph, graph_description=d)
+        pytest.raises(nx.Error, nx.make_small_graph, graph_description=d)
 
     def test__LCF_graph(self):
         # If n<=0, then return the null_graph
@@ -183,7 +183,7 @@ class TestGeneratorsSmall:
         assert list(d for n, d in G.degree()) == 46 * [3]
 
         # Test create_using with directed or multigraphs on small graphs
-        pytest.raises(nx.NetworkXError, nx.tutte_graph, create_using=nx.DiGraph)
+        pytest.raises(nx.Error, nx.tutte_graph, create_using=nx.DiGraph)
         MG = nx.tutte_graph(create_using=nx.MultiGraph)
         assert sorted(MG.edges()) == sorted(G.edges())
 
@@ -209,5 +209,5 @@ class TestGeneratorsSmall:
     "create_using", (nx.DiGraph, nx.MultiDiGraph, nx.DiGraph([(0, 1)]))
 )
 def tests_raises_with_directed_create_using(fn, create_using):
-    with pytest.raises(nx.NetworkXError, match="Directed Graph not supported"):
+    with pytest.raises(nx.Error, match="Directed Graph not supported"):
         fn(create_using=create_using)

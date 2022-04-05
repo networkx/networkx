@@ -91,10 +91,10 @@ def d_separated(G, x, y, z):
 
     Raises
     ------
-    NetworkXError
+    Error
         The *d-separation* test is commonly used with directed
         graphical models which are acyclic.  Accordingly, the algorithm
-        raises a :exc:`NetworkXError` if the input graph is not a DAG.
+        raises a :exc:`Error` if the input graph is not a DAG.
 
     NodeNotFound
         If any of the input nodes are not found in the graph,
@@ -103,7 +103,7 @@ def d_separated(G, x, y, z):
     """
 
     if not nx.is_directed_acyclic_graph(G):
-        raise nx.NetworkXError("graph should be directed acyclic")
+        raise nx.Error("graph should be directed acyclic")
 
     union_xyz = x.union(y).union(z)
 

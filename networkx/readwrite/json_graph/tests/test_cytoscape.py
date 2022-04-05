@@ -88,6 +88,6 @@ def test_multigraph():
 
 
 def test_exception():
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.Error):
         G = nx.MultiDiGraph()
         cytoscape_data(G, name="foo", ident="foo")

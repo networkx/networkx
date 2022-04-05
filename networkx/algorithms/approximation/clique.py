@@ -42,7 +42,7 @@ def maximum_independent_set(G):
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
         If the graph is directed or is a multigraph.
 
     Notes
@@ -81,7 +81,7 @@ def max_clique(G):
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
         If the graph is directed or is a multigraph.
 
     Notes
@@ -137,7 +137,7 @@ def clique_removal(G):
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
         If the graph is directed or is a multigraph.
 
     References
@@ -182,7 +182,7 @@ def large_clique_size(G):
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
         If the graph is directed or is a multigraph.
 
     Notes

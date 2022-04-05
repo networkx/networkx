@@ -45,13 +45,13 @@ class TestGeneratorsBipartite:
             assert nx.number_of_edges(G) == m1 * m2
 
         pytest.raises(
-            nx.NetworkXError, complete_bipartite_graph, 7, 3, create_using=nx.DiGraph
+            nx.Error, complete_bipartite_graph, 7, 3, create_using=nx.DiGraph
         )
         pytest.raises(
-            nx.NetworkXError, complete_bipartite_graph, 7, 3, create_using=nx.DiGraph
+            nx.Error, complete_bipartite_graph, 7, 3, create_using=nx.DiGraph
         )
         pytest.raises(
-            nx.NetworkXError,
+            nx.Error,
             complete_bipartite_graph,
             7,
             3,
@@ -96,7 +96,7 @@ class TestGeneratorsBipartite:
 
         aseq = [3, 3, 3, 3]
         bseq = [2, 2, 2, 2, 2]
-        pytest.raises(nx.NetworkXError, configuration_model, aseq, bseq)
+        pytest.raises(nx.Error, configuration_model, aseq, bseq)
 
         aseq = [3, 3, 3, 3]
         bseq = [2, 2, 2, 2, 2, 2]
@@ -126,13 +126,13 @@ class TestGeneratorsBipartite:
         assert not G.is_directed()
 
         pytest.raises(
-            nx.NetworkXError, configuration_model, aseq, bseq, create_using=nx.DiGraph()
+            nx.Error, configuration_model, aseq, bseq, create_using=nx.DiGraph()
         )
         pytest.raises(
-            nx.NetworkXError, configuration_model, aseq, bseq, create_using=nx.DiGraph
+            nx.Error, configuration_model, aseq, bseq, create_using=nx.DiGraph
         )
         pytest.raises(
-            nx.NetworkXError,
+            nx.Error,
             configuration_model,
             aseq,
             bseq,
@@ -153,7 +153,7 @@ class TestGeneratorsBipartite:
 
         aseq = [3, 3, 3, 3]
         bseq = [2, 2, 2, 2, 2]
-        pytest.raises(nx.NetworkXError, havel_hakimi_graph, aseq, bseq)
+        pytest.raises(nx.Error, havel_hakimi_graph, aseq, bseq)
 
         bseq = [2, 2, 2, 2, 2, 2]
         G = havel_hakimi_graph(aseq, bseq)
@@ -177,13 +177,13 @@ class TestGeneratorsBipartite:
         assert not G.is_directed()
 
         pytest.raises(
-            nx.NetworkXError, havel_hakimi_graph, aseq, bseq, create_using=nx.DiGraph
+            nx.Error, havel_hakimi_graph, aseq, bseq, create_using=nx.DiGraph
         )
         pytest.raises(
-            nx.NetworkXError, havel_hakimi_graph, aseq, bseq, create_using=nx.DiGraph
+            nx.Error, havel_hakimi_graph, aseq, bseq, create_using=nx.DiGraph
         )
         pytest.raises(
-            nx.NetworkXError,
+            nx.Error,
             havel_hakimi_graph,
             aseq,
             bseq,
@@ -204,7 +204,7 @@ class TestGeneratorsBipartite:
 
         aseq = [3, 3, 3, 3]
         bseq = [2, 2, 2, 2, 2]
-        pytest.raises(nx.NetworkXError, reverse_havel_hakimi_graph, aseq, bseq)
+        pytest.raises(nx.Error, reverse_havel_hakimi_graph, aseq, bseq)
 
         bseq = [2, 2, 2, 2, 2, 2]
         G = reverse_havel_hakimi_graph(aseq, bseq)
@@ -233,21 +233,21 @@ class TestGeneratorsBipartite:
         assert not G.is_directed()
 
         pytest.raises(
-            nx.NetworkXError,
+            nx.Error,
             reverse_havel_hakimi_graph,
             aseq,
             bseq,
             create_using=nx.DiGraph,
         )
         pytest.raises(
-            nx.NetworkXError,
+            nx.Error,
             reverse_havel_hakimi_graph,
             aseq,
             bseq,
             create_using=nx.DiGraph,
         )
         pytest.raises(
-            nx.NetworkXError,
+            nx.Error,
             reverse_havel_hakimi_graph,
             aseq,
             bseq,
@@ -268,7 +268,7 @@ class TestGeneratorsBipartite:
 
         aseq = [3, 3, 3, 3]
         bseq = [2, 2, 2, 2, 2]
-        pytest.raises(nx.NetworkXError, alternating_havel_hakimi_graph, aseq, bseq)
+        pytest.raises(nx.Error, alternating_havel_hakimi_graph, aseq, bseq)
 
         bseq = [2, 2, 2, 2, 2, 2]
         G = alternating_havel_hakimi_graph(aseq, bseq)
@@ -297,21 +297,21 @@ class TestGeneratorsBipartite:
         assert not G.is_directed()
 
         pytest.raises(
-            nx.NetworkXError,
+            nx.Error,
             alternating_havel_hakimi_graph,
             aseq,
             bseq,
             create_using=nx.DiGraph,
         )
         pytest.raises(
-            nx.NetworkXError,
+            nx.Error,
             alternating_havel_hakimi_graph,
             aseq,
             bseq,
             create_using=nx.DiGraph,
         )
         pytest.raises(
-            nx.NetworkXError,
+            nx.Error,
             alternating_havel_hakimi_graph,
             aseq,
             bseq,
@@ -329,21 +329,21 @@ class TestGeneratorsBipartite:
         assert not G.is_directed()
 
         pytest.raises(
-            nx.NetworkXError,
+            nx.Error,
             preferential_attachment_graph,
             aseq,
             0.5,
             create_using=nx.DiGraph(),
         )
         pytest.raises(
-            nx.NetworkXError,
+            nx.Error,
             preferential_attachment_graph,
             aseq,
             0.5,
             create_using=nx.DiGraph(),
         )
         pytest.raises(
-            nx.NetworkXError,
+            nx.Error,
             preferential_attachment_graph,
             aseq,
             0.5,

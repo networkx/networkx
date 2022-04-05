@@ -99,7 +99,7 @@ def spectral_graph_forge(G, alpha, transformation="identity", seed=None):
 
     Raises
     ------
-    NetworkXError
+    Error
         If transformation has a value different from 'identity' or 'modularity'
 
     Notes
@@ -153,7 +153,7 @@ def spectral_graph_forge(G, alpha, transformation="identity", seed=None):
     if transformation not in available_transformations:
         msg = f"{transformation!r} is not a valid transformation. "
         msg += f"Transformations: {available_transformations}"
-        raise nx.NetworkXError(msg)
+        raise nx.Error(msg)
 
     K = np.ones((1, n)) @ A
 

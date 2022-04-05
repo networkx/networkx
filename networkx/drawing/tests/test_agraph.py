@@ -117,7 +117,7 @@ class TestAGraph:
 
     def test_view_pygraphviz(self):
         G = nx.Graph()  # "An empty graph cannot be drawn."
-        pytest.raises(nx.NetworkXException, nx.nx_agraph.view_pygraphviz, G)
+        pytest.raises(nx.Exception, nx.nx_agraph.view_pygraphviz, G)
         G = nx.barbell_graph(4, 6)
         nx.nx_agraph.view_pygraphviz(G, show=False)
 

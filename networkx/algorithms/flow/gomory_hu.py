@@ -59,10 +59,10 @@ def gomory_hu_tree(G, capacity="capacity", flow_func=None):
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
         Raised if the input graph is directed.
 
-    NetworkXError
+    Error
         Raised if the input graph is an empty Graph.
 
     Examples
@@ -134,7 +134,7 @@ def gomory_hu_tree(G, capacity="capacity", flow_func=None):
 
     if len(G) == 0:  # empty graph
         msg = "Empty Graph does not have a Gomory-Hu tree representation"
-        raise nx.NetworkXError(msg)
+        raise nx.Error(msg)
 
     # Start the tree as a star graph with an arbitrary node at the center
     tree = {}

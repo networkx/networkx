@@ -16,7 +16,7 @@ be found about `Triangular Tiling`_, and `Square, Hex and Triangle Grids`_
 from math import sqrt
 
 from networkx.classes import set_node_attributes
-from networkx.exception import NetworkXError
+from networkx.exception import Error
 from networkx.relabel import relabel_nodes
 from networkx.utils import flatten, nodes_or_number, pairwise
 from networkx.generators.classic import cycle_graph
@@ -230,7 +230,7 @@ def triangular_lattice_graph(
     if periodic:
         if n < 5 or m < 3:
             msg = f"m > 2 and n > 4 required for periodic. m={m}, n={n}"
-            raise NetworkXError(msg)
+            raise Error(msg)
 
     N = (n + 1) // 2  # number of nodes in row
     rows = range(m + 1)
@@ -322,7 +322,7 @@ def hexagonal_lattice_graph(
         return G
     if periodic and (n % 2 == 1 or m < 2 or n < 2):
         msg = "periodic hexagonal lattice needs m > 1, n > 1 and even n"
-        raise NetworkXError(msg)
+        raise Error(msg)
 
     M = 2 * m  # twice as many nodes as hexagons vertically
     rows = range(M + 2)

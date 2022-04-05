@@ -591,14 +591,14 @@ def test_ssp_target_missing():
 
 
 def test_ssp_multigraph():
-    with pytest.raises(nx.NetworkXNotImplemented):
+    with pytest.raises(nx.NotImplemented):
         G = nx.MultiGraph()
         nx.add_path(G, [1, 2, 3])
         list(nx.shortest_simple_paths(G, 1, 4))
 
 
 def test_ssp_source_missing2():
-    with pytest.raises(nx.NetworkXNoPath):
+    with pytest.raises(nx.NoPath):
         G = nx.Graph()
         nx.add_path(G, [0, 1, 2])
         nx.add_path(G, [3, 4, 5])
@@ -632,7 +632,7 @@ def test_bidirectional_shortest_path_restricted_directed_cycle():
     length, path = _bidirectional_shortest_path(directed_cycle, 0, 3)
     assert path == [0, 1, 2, 3]
     pytest.raises(
-        nx.NetworkXNoPath,
+        nx.NoPath,
         _bidirectional_shortest_path,
         directed_cycle,
         0,
@@ -644,7 +644,7 @@ def test_bidirectional_shortest_path_restricted_directed_cycle():
     )
     assert path == [0, 1, 2, 3]
     pytest.raises(
-        nx.NetworkXNoPath,
+        nx.NoPath,
         _bidirectional_shortest_path,
         directed_cycle,
         0,
@@ -659,17 +659,17 @@ def test_bidirectional_shortest_path_ignore():
     nx.add_path(G, [1, 3])
     nx.add_path(G, [1, 4])
     pytest.raises(
-        nx.NetworkXNoPath, _bidirectional_shortest_path, G, 1, 2, ignore_nodes=[1]
+        nx.NoPath, _bidirectional_shortest_path, G, 1, 2, ignore_nodes=[1]
     )
     pytest.raises(
-        nx.NetworkXNoPath, _bidirectional_shortest_path, G, 1, 2, ignore_nodes=[2]
+        nx.NoPath, _bidirectional_shortest_path, G, 1, 2, ignore_nodes=[2]
     )
     G = nx.Graph()
     nx.add_path(G, [1, 3])
     nx.add_path(G, [1, 4])
     nx.add_path(G, [3, 2])
     pytest.raises(
-        nx.NetworkXNoPath, _bidirectional_shortest_path, G, 1, 2, ignore_nodes=[1, 2]
+        nx.NoPath, _bidirectional_shortest_path, G, 1, 2, ignore_nodes=[1, 2]
     )
 
 
@@ -719,7 +719,7 @@ def test_bidirectional_dijksta_restricted():
         *_bidirectional_dijkstra(XG, "s", "v", ignore_edges=[("s", "x")])
     )
     pytest.raises(
-        nx.NetworkXNoPath,
+        nx.NoPath,
         _bidirectional_dijkstra,
         XG,
         "s",
@@ -735,7 +735,7 @@ def test_bidirectional_dijksta_restricted():
         XG3, 0, 3, 16, *_bidirectional_dijkstra(XG3, 0, 3, ignore_edges=[(2, 3)])
     )
     pytest.raises(
-        nx.NetworkXNoPath,
+        nx.NoPath,
         _bidirectional_dijkstra,
         XG3,
         0,
@@ -746,7 +746,7 @@ def test_bidirectional_dijksta_restricted():
 
 
 def test_bidirectional_dijkstra_no_path():
-    with pytest.raises(nx.NetworkXNoPath):
+    with pytest.raises(nx.NoPath):
         G = nx.Graph()
         nx.add_path(G, [1, 2, 3])
         nx.add_path(G, [4, 5, 6])
@@ -757,8 +757,8 @@ def test_bidirectional_dijkstra_ignore():
     G = nx.Graph()
     nx.add_path(G, [1, 2, 10])
     nx.add_path(G, [1, 3, 10])
-    pytest.raises(nx.NetworkXNoPath, _bidirectional_dijkstra, G, 1, 2, ignore_nodes=[1])
-    pytest.raises(nx.NetworkXNoPath, _bidirectional_dijkstra, G, 1, 2, ignore_nodes=[2])
+    pytest.raises(nx.NoPath, _bidirectional_dijkstra, G, 1, 2, ignore_nodes=[1])
+    pytest.raises(nx.NoPath, _bidirectional_dijkstra, G, 1, 2, ignore_nodes=[2])
     pytest.raises(
-        nx.NetworkXNoPath, _bidirectional_dijkstra, G, 1, 2, ignore_nodes=[1, 2]
+        nx.NoPath, _bidirectional_dijkstra, G, 1, 2, ignore_nodes=[1, 2]
     )

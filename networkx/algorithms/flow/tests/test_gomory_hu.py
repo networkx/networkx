@@ -115,11 +115,11 @@ class TestGomoryHuTree:
                 assert nx.minimum_cut_value(G, u, v, capacity="weight") == cut_value
 
     def test_directed_raises(self):
-        with pytest.raises(nx.NetworkXNotImplemented):
+        with pytest.raises(nx.NotImplemented):
             G = nx.DiGraph()
             T = nx.gomory_hu_tree(G)
 
     def test_empty_raises(self):
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             G = nx.empty_graph()
             T = nx.gomory_hu_tree(G)

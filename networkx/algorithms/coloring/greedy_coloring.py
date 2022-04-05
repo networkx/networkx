@@ -189,7 +189,7 @@ def strategy_connected_sequential(G, colors, traversal="bfs"):
     elif traversal == "dfs":
         traverse = nx.dfs_edges
     else:
-        raise nx.NetworkXError(
+        raise nx.Error(
             "Please specify one of the strings 'bfs' or"
             " 'dfs' for connected sequential ordering"
         )
@@ -312,7 +312,7 @@ def greedy_color(G, strategy="largest_first", interchange=False):
 
     Raises
     ------
-    NetworkXPointlessConcept
+    PointlessConcept
         If ``strategy`` is ``saturation_largest_first`` or
         ``independent_set`` and ``interchange`` is ``True``.
 
@@ -334,7 +334,7 @@ def greedy_color(G, strategy="largest_first", interchange=False):
     # Determine the strategy provided by the caller.
     strategy = STRATEGIES.get(strategy, strategy)
     if not callable(strategy):
-        raise nx.NetworkXError(
+        raise nx.Error(
             "strategy must be callable or a valid string. " f"{strategy} not valid."
         )
     # Perform some validation on the arguments before executing any
@@ -342,10 +342,10 @@ def greedy_color(G, strategy="largest_first", interchange=False):
     if interchange:
         if strategy is strategy_independent_set:
             msg = "interchange cannot be used with independent_set"
-            raise nx.NetworkXPointlessConcept(msg)
+            raise nx.PointlessConcept(msg)
         if strategy is strategy_saturation_largest_first:
             msg = "interchange cannot be used with" " saturation_largest_first"
-            raise nx.NetworkXPointlessConcept(msg)
+            raise nx.PointlessConcept(msg)
     colors = {}
     nodes = strategy(G, colors)
     if interchange:

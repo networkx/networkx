@@ -52,7 +52,7 @@ class TestAdjacency:
         assert H[1][2]["second"]["color"] == "blue"
 
     def test_exception(self):
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             G = nx.MultiDiGraph()
             attrs = dict(id="node", key="node")
             adjacency_data(G, attrs)

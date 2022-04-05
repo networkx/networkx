@@ -1165,7 +1165,7 @@ def optimize_edit_paths(
 
     if timeout is not None:
         if timeout <= 0:
-            raise nx.NetworkXError("Timeout value must be greater than 0")
+            raise nx.Error("Timeout value must be greater than 0")
         start = time.perf_counter()
 
     def prune(cost):

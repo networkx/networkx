@@ -14,7 +14,7 @@ import itertools
 
 import networkx as nx
 from networkx.classes import Graph
-from networkx.exception import NetworkXError
+from networkx.exception import Error
 from networkx.utils import nodes_or_number
 from networkx.utils import pairwise
 
@@ -164,14 +164,14 @@ def barbell_graph(m1, m2, create_using=None):
 
     """
     if m1 < 2:
-        raise NetworkXError("Invalid graph description, m1 should be >=2")
+        raise Error("Invalid graph description, m1 should be >=2")
     if m2 < 0:
-        raise NetworkXError("Invalid graph description, m2 should be >=0")
+        raise Error("Invalid graph description, m2 should be >=0")
 
     # left barbell
     G = complete_graph(m1, create_using)
     if G.is_directed():
-        raise NetworkXError("Directed Graph not supported")
+        raise Error("Directed Graph not supported")
 
     # connecting path
     G.add_nodes_from(range(m1, m1 + m2 - 1))
@@ -384,9 +384,9 @@ def dorogovtsev_goltsev_mendes_graph(n, create_using=None):
     """
     G = empty_graph(0, create_using)
     if G.is_directed():
-        raise NetworkXError("Directed Graph not supported")
+        raise Error("Directed Graph not supported")
     if G.is_multigraph():
-        raise NetworkXError("Multigraph not supported")
+        raise Error("Multigraph not supported")
 
     G.add_edge(0, 1)
     if n == 0:
@@ -506,7 +506,7 @@ def ladder_graph(n, create_using=None):
     """
     G = empty_graph(2 * n, create_using)
     if G.is_directed():
-        raise NetworkXError("Directed Graph not supported")
+        raise Error("Directed Graph not supported")
     G.add_edges_from(pairwise(range(n)))
     G.add_edges_from(pairwise(range(n, 2 * n)))
     G.add_edges_from((v, v + n) for v in range(n))
@@ -546,14 +546,14 @@ def lollipop_graph(m, n, create_using=None):
     if isinstance(m, int):
         n_nodes = [len(m_nodes) + i for i in n_nodes]
     if M < 2:
-        raise NetworkXError("Invalid graph description, m should be >=2")
+        raise Error("Invalid graph description, m should be >=2")
     if N < 0:
-        raise NetworkXError("Invalid graph description, n should be >=0")
+        raise Error("Invalid graph description, n should be >=0")
 
     # the ball
     G = complete_graph(m_nodes, create_using)
     if G.is_directed():
-        raise NetworkXError("Directed Graph not supported")
+        raise Error("Directed Graph not supported")
     # the stick
     G.add_nodes_from(n_nodes)
     if N > 1:
@@ -618,7 +618,7 @@ def star_graph(n, create_using=None):
     first = nodes[0]
     G = empty_graph(nodes, create_using)
     if G.is_directed():
-        raise NetworkXError("Directed Graph not supported")
+        raise Error("Directed Graph not supported")
     G.add_edges_from((first, v) for v in nodes[1:])
     return G
 
@@ -655,7 +655,7 @@ def turan_graph(n, r):
     """
 
     if not 1 <= r <= n:
-        raise NetworkXError("Must satisfy 1 <= r <= n")
+        raise Error("Must satisfy 1 <= r <= n")
 
     partitions = [n // r] * (r - (n % r)) + [n // r + 1] * (n % r)
     G = complete_multipartite_graph(*partitions)
@@ -763,7 +763,7 @@ def complete_multipartite_graph(*subset_sizes):
         for (i, subset) in enumerate(subsets):
             G.add_nodes_from(subset, subset=i)
     except TypeError as err:
-        raise NetworkXError("Arguments must be all ints or all iterables") from err
+        raise Error("Arguments must be all ints or all iterables") from err
 
     # Across subsets, all nodes should be adjacent.
     # We can use itertools.combinations() because undirected.

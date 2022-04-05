@@ -39,11 +39,11 @@ def maximal_independent_set(G, nodes=None, seed=None):
 
     Raises
     ------
-    NetworkXUnfeasible
+    Unfeasible
        If the nodes in the provided list are not part of the graph or
        do not form an independent set, an exception is raised.
 
-    NetworkXNotImplemented
+    NotImplemented
         If `G` is directed.
 
     Examples
@@ -64,10 +64,10 @@ def maximal_independent_set(G, nodes=None, seed=None):
     else:
         nodes = set(nodes)
     if not nodes.issubset(G):
-        raise nx.NetworkXUnfeasible(f"{nodes} is not a subset of the nodes of G")
+        raise nx.Unfeasible(f"{nodes} is not a subset of the nodes of G")
     neighbors = set.union(*[set(G.adj[v]) for v in nodes])
     if set.intersection(neighbors, nodes):
-        raise nx.NetworkXUnfeasible(f"{nodes} is not an independent set of G")
+        raise nx.Unfeasible(f"{nodes} is not an independent set of G")
     indep_nodes = list(nodes)
     available_nodes = set(G.nodes()).difference(neighbors.union(nodes))
     while available_nodes:

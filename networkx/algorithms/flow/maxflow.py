@@ -71,15 +71,15 @@ def maximum_flow(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
 
     Raises
     ------
-    NetworkXError
+    Error
         The algorithm does not support MultiGraph and MultiDiGraph. If
         the input graph is an instance of one of these two classes, a
-        NetworkXError is raised.
+        Error is raised.
 
-    NetworkXUnbounded
+    Unbounded
         If the graph has a path of infinite capacity, the value of a
         feasible flow on the graph is unbounded above and the function
-        raises a NetworkXUnbounded.
+        raises a Unbounded.
 
     See also
     --------
@@ -155,14 +155,14 @@ def maximum_flow(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     """
     if flow_func is None:
         if kwargs:
-            raise nx.NetworkXError(
+            raise nx.Error(
                 "You have to explicitly set a flow_func if"
                 " you need to pass parameters via kwargs."
             )
         flow_func = default_flow_func
 
     if not callable(flow_func):
-        raise nx.NetworkXError("flow_func has to be callable.")
+        raise nx.Error("flow_func has to be callable.")
 
     R = flow_func(flowG, _s, _t, capacity=capacity, value_only=False, **kwargs)
     flow_dict = build_flow_dict(flowG, R)
@@ -213,15 +213,15 @@ def maximum_flow_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwa
 
     Raises
     ------
-    NetworkXError
+    Error
         The algorithm does not support MultiGraph and MultiDiGraph. If
         the input graph is an instance of one of these two classes, a
-        NetworkXError is raised.
+        Error is raised.
 
-    NetworkXUnbounded
+    Unbounded
         If the graph has a path of infinite capacity, the value of a
         feasible flow on the graph is unbounded above and the function
-        raises a NetworkXUnbounded.
+        raises a Unbounded.
 
     See also
     --------
@@ -295,14 +295,14 @@ def maximum_flow_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwa
     """
     if flow_func is None:
         if kwargs:
-            raise nx.NetworkXError(
+            raise nx.Error(
                 "You have to explicitly set a flow_func if"
                 " you need to pass parameters via kwargs."
             )
         flow_func = default_flow_func
 
     if not callable(flow_func):
-        raise nx.NetworkXError("flow_func has to be callable.")
+        raise nx.Error("flow_func has to be callable.")
 
     R = flow_func(flowG, _s, _t, capacity=capacity, value_only=True, **kwargs)
 
@@ -358,9 +358,9 @@ def minimum_cut(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
 
     Raises
     ------
-    NetworkXUnbounded
+    Unbounded
         If the graph has a path of infinite capacity, all cuts have
-        infinite capacity and the function raises a NetworkXError.
+        infinite capacity and the function raises a Error.
 
     See also
     --------
@@ -443,17 +443,17 @@ def minimum_cut(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     """
     if flow_func is None:
         if kwargs:
-            raise nx.NetworkXError(
+            raise nx.Error(
                 "You have to explicitly set a flow_func if"
                 " you need to pass parameters via kwargs."
             )
         flow_func = default_flow_func
 
     if not callable(flow_func):
-        raise nx.NetworkXError("flow_func has to be callable.")
+        raise nx.Error("flow_func has to be callable.")
 
     if kwargs.get("cutoff") is not None and flow_func in flow_funcs:
-        raise nx.NetworkXError("cutoff should not be specified.")
+        raise nx.Error("cutoff should not be specified.")
 
     R = flow_func(flowG, _s, _t, capacity=capacity, value_only=True, **kwargs)
     # Remove saturated edges from the residual network
@@ -518,9 +518,9 @@ def minimum_cut_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwar
 
     Raises
     ------
-    NetworkXUnbounded
+    Unbounded
         If the graph has a path of infinite capacity, all cuts have
-        infinite capacity and the function raises a NetworkXError.
+        infinite capacity and the function raises a Error.
 
     See also
     --------
@@ -594,17 +594,17 @@ def minimum_cut_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwar
     """
     if flow_func is None:
         if kwargs:
-            raise nx.NetworkXError(
+            raise nx.Error(
                 "You have to explicitly set a flow_func if"
                 " you need to pass parameters via kwargs."
             )
         flow_func = default_flow_func
 
     if not callable(flow_func):
-        raise nx.NetworkXError("flow_func has to be callable.")
+        raise nx.Error("flow_func has to be callable.")
 
     if kwargs.get("cutoff") is not None and flow_func in flow_funcs:
-        raise nx.NetworkXError("cutoff should not be specified.")
+        raise nx.Error("cutoff should not be specified.")
 
     R = flow_func(flowG, _s, _t, capacity=capacity, value_only=True, **kwargs)
 

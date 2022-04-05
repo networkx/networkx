@@ -1,7 +1,7 @@
 """Asynchronous Fluid Communities algorithm for community detection."""
 
 from collections import Counter
-from networkx.exception import NetworkXError
+from networkx.exception import Error
 from networkx.algorithms.components import is_connected
 from networkx.utils import groups
 from networkx.utils import not_implemented_for
@@ -66,13 +66,13 @@ def asyn_fluidc(G, k, max_iter=100, seed=None):
     """
     # Initial checks
     if not isinstance(k, int):
-        raise NetworkXError("k must be an integer.")
+        raise Error("k must be an integer.")
     if not k > 0:
-        raise NetworkXError("k must be greater than 0.")
+        raise Error("k must be greater than 0.")
     if not is_connected(G):
-        raise NetworkXError("Fluid Communities require connected Graphs.")
+        raise Error("Fluid Communities require connected Graphs.")
     if len(G) < k:
-        raise NetworkXError("k cannot be bigger than the number of nodes.")
+        raise Error("k cannot be bigger than the number of nodes.")
     # Initialization
     max_density = 1.0
     vertices = list(G)

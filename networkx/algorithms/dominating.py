@@ -47,7 +47,7 @@ def dominating_set(G, start_with=None):
     if start_with is None:
         start_with = arbitrary_element(all_nodes)
     if start_with not in G:
-        raise nx.NetworkXError(f"node {start_with} is not in G")
+        raise nx.Error(f"node {start_with} is not in G")
     dominating_set = {start_with}
     dominated_nodes = set(G[start_with])
     remaining_nodes = all_nodes - dominated_nodes - dominating_set

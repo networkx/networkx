@@ -45,19 +45,19 @@ class TestTreeRecognition:
         cls.NF1 = nx.compose(cls.T6, cls.N6)
 
     def test_null_tree(self):
-        with pytest.raises(nx.NetworkXPointlessConcept):
+        with pytest.raises(nx.PointlessConcept):
             nx.is_tree(self.graph())
 
     def test_null_tree2(self):
-        with pytest.raises(nx.NetworkXPointlessConcept):
+        with pytest.raises(nx.PointlessConcept):
             nx.is_tree(self.multigraph())
 
     def test_null_forest(self):
-        with pytest.raises(nx.NetworkXPointlessConcept):
+        with pytest.raises(nx.PointlessConcept):
             nx.is_forest(self.graph())
 
     def test_null_forest2(self):
-        with pytest.raises(nx.NetworkXPointlessConcept):
+        with pytest.raises(nx.PointlessConcept):
             nx.is_forest(self.multigraph())
 
     def test_is_tree(self):

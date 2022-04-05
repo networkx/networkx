@@ -278,7 +278,7 @@ def minimum_st_node_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
 
     mapping = H.graph.get("mapping", None)
     if mapping is None:
-        raise nx.NetworkXError("Invalid auxiliary digraph.")
+        raise nx.Error("Invalid auxiliary digraph.")
     if G.has_edge(s, t) or G.has_edge(t, s):
         return {}
     kwargs = dict(flow_func=flow_func, residual=residual, auxiliary=H)
@@ -385,21 +385,21 @@ def minimum_node_cut(G, s=None, t=None, flow_func=None):
 
     """
     if (s is not None and t is None) or (s is None and t is not None):
-        raise nx.NetworkXError("Both source and target must be specified.")
+        raise nx.Error("Both source and target must be specified.")
 
     # Local minimum node cut.
     if s is not None and t is not None:
         if s not in G:
-            raise nx.NetworkXError(f"node {s} not in graph")
+            raise nx.Error(f"node {s} not in graph")
         if t not in G:
-            raise nx.NetworkXError(f"node {t} not in graph")
+            raise nx.Error(f"node {t} not in graph")
         return minimum_st_node_cut(G, s, t, flow_func=flow_func)
 
     # Global minimum node cut.
     # Analog to the algorithm 11 for global node connectivity in [1].
     if G.is_directed():
         if not nx.is_weakly_connected(G):
-            raise nx.NetworkXError("Input graph is not connected")
+            raise nx.Error("Input graph is not connected")
         iter_func = itertools.permutations
 
         def neighbors(v):
@@ -407,7 +407,7 @@ def minimum_node_cut(G, s=None, t=None, flow_func=None):
 
     else:
         if not nx.is_connected(G):
-            raise nx.NetworkXError("Input graph is not connected")
+            raise nx.Error("Input graph is not connected")
         iter_func = itertools.combinations
         neighbors = G.neighbors
 
@@ -532,7 +532,7 @@ def minimum_edge_cut(G, s=None, t=None, flow_func=None):
 
     """
     if (s is not None and t is None) or (s is None and t is not None):
-        raise nx.NetworkXError("Both source and target must be specified.")
+        raise nx.Error("Both source and target must be specified.")
 
     # reuse auxiliary digraph and residual network
     H = build_auxiliary_edge_connectivity(G)
@@ -542,9 +542,9 @@ def minimum_edge_cut(G, s=None, t=None, flow_func=None):
     # Local minimum edge cut if s and t are not None
     if s is not None and t is not None:
         if s not in G:
-            raise nx.NetworkXError(f"node {s} not in graph")
+            raise nx.Error(f"node {s} not in graph")
         if t not in G:
-            raise nx.NetworkXError(f"node {t} not in graph")
+            raise nx.Error(f"node {t} not in graph")
         return minimum_st_edge_cut(H, s, t, **kwargs)
 
     # Global minimum edge cut
@@ -552,7 +552,7 @@ def minimum_edge_cut(G, s=None, t=None, flow_func=None):
     if G.is_directed():
         # Based on algorithm 8 in [1]
         if not nx.is_weakly_connected(G):
-            raise nx.NetworkXError("Input graph is not connected")
+            raise nx.Error("Input graph is not connected")
 
         # Initial cutset is all edges of a node with minimum degree
         node = min(G, key=G.degree)
@@ -574,7 +574,7 @@ def minimum_edge_cut(G, s=None, t=None, flow_func=None):
     else:  # undirected
         # Based on algorithm 6 in [1]
         if not nx.is_connected(G):
-            raise nx.NetworkXError("Input graph is not connected")
+            raise nx.Error("Input graph is not connected")
 
         # Initial cutset is all edges of a node with minimum degree
         node = min(G, key=G.degree)

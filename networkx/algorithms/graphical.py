@@ -61,7 +61,7 @@ def is_graphical(sequence, method="eg"):
         valid = is_valid_degree_sequence_havel_hakimi(list(sequence))
     else:
         msg = "`method` must be 'eg' or 'hh'"
-        raise nx.NetworkXException(msg)
+        raise nx.Exception(msg)
     return valid
 
 
@@ -74,14 +74,14 @@ def _basic_graphical_tests(deg_sequence):
     for d in deg_sequence:
         # Reject if degree is negative or larger than the sequence length
         if d < 0 or d >= p:
-            raise nx.NetworkXUnfeasible
+            raise nx.Unfeasible
         # Process only the non-zero integers
         elif d > 0:
             dmax, dmin, dsum, n = max(dmax, d), min(dmin, d), dsum + d, n + 1
             num_degs[d] += 1
     # Reject sequence if it has odd sum or is oversaturated
     if dsum % 2 or dsum > n * (n - 1):
-        raise nx.NetworkXUnfeasible
+        raise nx.Unfeasible
     return dmax, dmin, dsum, n, num_degs
 
 
@@ -125,7 +125,7 @@ def is_valid_degree_sequence_havel_hakimi(deg_sequence):
     """
     try:
         dmax, dmin, dsum, n, num_degs = _basic_graphical_tests(deg_sequence)
-    except nx.NetworkXUnfeasible:
+    except nx.Unfeasible:
         return False
     # Accept if sequence has no non-zero degrees or passes the ZZ condition
     if n == 0 or 4 * dmin * n >= (dmax + dmin + 1) * (dmax + dmin + 1):
@@ -213,7 +213,7 @@ def is_valid_degree_sequence_erdos_gallai(deg_sequence):
     """
     try:
         dmax, dmin, dsum, n, num_degs = _basic_graphical_tests(deg_sequence)
-    except nx.NetworkXUnfeasible:
+    except nx.Unfeasible:
         return False
     # Accept if sequence has no non-zero degrees or passes the ZZ condition
     if n == 0 or 4 * dmin * n >= (dmax + dmin + 1) * (dmax + dmin + 1):
@@ -263,7 +263,7 @@ def is_multigraphical(sequence):
     """
     try:
         deg_sequence = nx.utils.make_list_of_ints(sequence)
-    except nx.NetworkXError:
+    except nx.Error:
         return False
     dsum, dmax = 0, 0
     for d in deg_sequence:
@@ -303,7 +303,7 @@ def is_pseudographical(sequence):
     """
     try:
         deg_sequence = nx.utils.make_list_of_ints(sequence)
-    except nx.NetworkXError:
+    except nx.Error:
         return False
     return sum(deg_sequence) % 2 == 0 and min(deg_sequence) >= 0
 
@@ -340,7 +340,7 @@ def is_digraphical(in_sequence, out_sequence):
     try:
         in_deg_sequence = nx.utils.make_list_of_ints(in_sequence)
         out_deg_sequence = nx.utils.make_list_of_ints(out_sequence)
-    except nx.NetworkXError:
+    except nx.Error:
         return False
     # Process the sequences and form two heaps to store degree pairs with
     # either zero or non-zero out degrees

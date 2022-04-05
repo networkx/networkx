@@ -247,12 +247,12 @@ def test_undirected_tree_str():
 def test_forest_str_errors():
     ugraph = nx.complete_graph(3, create_using=nx.Graph)
 
-    with pytest.raises(nx.NetworkXNotImplemented):
+    with pytest.raises(nx.NotImplemented):
         nx.forest_str(ugraph)
 
     dgraph = nx.complete_graph(3, create_using=nx.DiGraph)
 
-    with pytest.raises(nx.NetworkXNotImplemented):
+    with pytest.raises(nx.NotImplemented):
         nx.forest_str(dgraph)
 
 

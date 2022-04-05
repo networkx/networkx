@@ -12,7 +12,7 @@ from copy import deepcopy
 import networkx as nx
 from networkx.classes.coreviews import AdjacencyView
 from networkx.classes.reportviews import NodeView, EdgeView, DegreeView
-from networkx.exception import NetworkXError
+from networkx.exception import Error
 import networkx.convert as convert
 
 __all__ = ["Graph"]
@@ -596,7 +596,7 @@ class Graph:
 
         Raises
         ------
-        NetworkXError
+        Error
            If n is not in the graph.
 
         See Also
@@ -617,8 +617,8 @@ class Graph:
         try:
             nbrs = list(adj[n])  # list handles self-loops (allows mutation)
             del self._node[n]
-        except KeyError as err:  # NetworkXError if n not in self
-            raise NetworkXError(f"The node {n} is not in the graph.") from err
+        except KeyError as err:  # Error if n not in self
+            raise Error(f"The node {n} is not in the graph.") from err
         for u in nbrs:
             del adj[u][n]  # remove all edges n-u in graph
         del adj[n]  # now remove node
@@ -938,7 +938,7 @@ class Graph:
                 u, v = e
                 dd = {}  # doesn't need edge_attr_dict_factory
             else:
-                raise NetworkXError(f"Edge tuple {e} must be a 2-tuple or 3-tuple.")
+                raise Error(f"Edge tuple {e} must be a 2-tuple or 3-tuple.")
             if u not in self._node:
                 if u is None:
                     raise ValueError("None cannot be a node")
@@ -997,7 +997,7 @@ class Graph:
 
         Raises
         ------
-        NetworkXError
+        Error
             If there is not an edge between u and v.
 
         See Also
@@ -1018,7 +1018,7 @@ class Graph:
             if u != v:  # self-loop needs only one entry removed
                 del self._adj[v][u]
         except KeyError as err:
-            raise NetworkXError(f"The edge {u}-{v} is not in the graph") from err
+            raise Error(f"The edge {u}-{v} is not in the graph") from err
 
     def remove_edges_from(self, ebunch):
         """Remove all edges specified in ebunch.
@@ -1168,7 +1168,7 @@ class Graph:
         elif nodes is not None:
             self.add_nodes_from(nodes)
         else:
-            raise NetworkXError("update needs nodes or edges input")
+            raise Error("update needs nodes or edges input")
 
     def has_edge(self, u, v):
         """Returns True if the edge (u, v) is in the graph.
@@ -1228,7 +1228,7 @@ class Graph:
 
         Raises
         ------
-        NetworkXError
+        Error
             If the node n is not in the graph.
 
         Examples
@@ -1252,7 +1252,7 @@ class Graph:
         try:
             return iter(self._adj[n])
         except KeyError as err:
-            raise NetworkXError(f"The node {n} is not in the graph.") from err
+            raise Error(f"The node {n} is not in the graph.") from err
 
     @property
     def edges(self):
@@ -1880,7 +1880,7 @@ class Graph:
 
         Raises
         ------
-        NetworkXError
+        Error
             If nbunch is not a node or sequence of nodes.
             If a node in nbunch is not hashable.
 
@@ -1897,8 +1897,8 @@ class Graph:
         "if nbunch in self:", even after processing with this routine.
 
         If nbunch is not a node or a (possibly empty) sequence/iterator
-        or None, a :exc:`NetworkXError` is raised.  Also, if any object in
-        nbunch is not hashable, a :exc:`NetworkXError` is raised.
+        or None, a :exc:`Error` is raised.  Also, if any object in
+        nbunch is not hashable, a :exc:`Error` is raised.
         """
         if nbunch is None:  # include all nodes via iterator
             bunch = iter(self._adj)
@@ -1915,12 +1915,12 @@ class Graph:
                     exc, message = err, err.args[0]
                     # capture error for non-sequence/iterator nbunch.
                     if "iter" in message:
-                        exc = NetworkXError(
+                        exc = Error(
                             "nbunch is not a node or a sequence of nodes."
                         )
                     # capture error for unhashable node.
                     if "hashable" in message:
-                        exc = NetworkXError(
+                        exc = Error(
                             f"Node {n} in sequence nbunch is not a valid node."
                         )
                     raise exc

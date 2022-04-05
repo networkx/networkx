@@ -11,7 +11,7 @@ from networkx.classes.reportviews import (
     InDegreeView,
     OutDegreeView,
 )
-from networkx.exception import NetworkXError
+from networkx.exception import Error
 import networkx.convert as convert
 
 __all__ = ["DiGraph"]
@@ -499,7 +499,7 @@ class DiGraph(Graph):
 
         Raises
         ------
-        NetworkXError
+        Error
            If n is not in the graph.
 
         See Also
@@ -519,8 +519,8 @@ class DiGraph(Graph):
         try:
             nbrs = self._succ[n]
             del self._node[n]
-        except KeyError as err:  # NetworkXError if n not in self
-            raise NetworkXError(f"The node {n} is not in the digraph.") from err
+        except KeyError as err:  # Error if n not in self
+            raise Error(f"The node {n} is not in the digraph.") from err
         for u in nbrs:
             del self._pred[u][n]  # remove all edges n-u in digraph
         del self._succ[n]  # remove node from succ
@@ -681,7 +681,7 @@ class DiGraph(Graph):
                 u, v = e
                 dd = {}
             else:
-                raise NetworkXError(f"Edge tuple {e} must be a 2-tuple or 3-tuple.")
+                raise Error(f"Edge tuple {e} must be a 2-tuple or 3-tuple.")
             if u not in self._succ:
                 if u is None:
                     raise ValueError("None cannot be a node")
@@ -710,7 +710,7 @@ class DiGraph(Graph):
 
         Raises
         ------
-        NetworkXError
+        Error
             If there is not an edge between u and v.
 
         See Also
@@ -731,7 +731,7 @@ class DiGraph(Graph):
             del self._succ[u][v]
             del self._pred[v][u]
         except KeyError as err:
-            raise NetworkXError(f"The edge {u}-{v} not in graph.") from err
+            raise Error(f"The edge {u}-{v} not in graph.") from err
 
     def remove_edges_from(self, ebunch):
         """Remove all edges specified in ebunch.
@@ -792,7 +792,7 @@ class DiGraph(Graph):
 
         Raises
         ------
-        NetworkXError
+        Error
            If n is not in the graph.
 
         See Also
@@ -806,7 +806,7 @@ class DiGraph(Graph):
         try:
             return iter(self._succ[n])
         except KeyError as err:
-            raise NetworkXError(f"The node {n} is not in the digraph.") from err
+            raise Error(f"The node {n} is not in the digraph.") from err
 
     # digraph definitions
     neighbors = successors
@@ -824,7 +824,7 @@ class DiGraph(Graph):
 
         Raises
         ------
-        NetworkXError
+        Error
            If n is not in the graph.
 
         See Also
@@ -834,7 +834,7 @@ class DiGraph(Graph):
         try:
             return iter(self._pred[n])
         except KeyError as err:
-            raise NetworkXError(f"The node {n} is not in the digraph.") from err
+            raise Error(f"The node {n} is not in the digraph.") from err
 
     @property
     def edges(self):

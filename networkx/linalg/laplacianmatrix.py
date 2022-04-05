@@ -372,7 +372,7 @@ def _transition_matrix(G, nodelist=None, weight="weight", walk_type=None, alpha=
 
     Raises
     ------
-    NetworkXError
+    Error
         If walk_type not specified or alpha not in valid range
     """
     import numpy as np
@@ -402,7 +402,7 @@ def _transition_matrix(G, nodelist=None, weight="weight", walk_type=None, alpha=
 
     elif walk_type == "pagerank":
         if not (0 < alpha < 1):
-            raise nx.NetworkXError("alpha must be between 0 and 1")
+            raise nx.Error("alpha must be between 0 and 1")
         # this is using a dense representation. NOTE: This should be sparsified!
         A = A.toarray()
         # add constant to dangling nodes' row
@@ -411,6 +411,6 @@ def _transition_matrix(G, nodelist=None, weight="weight", walk_type=None, alpha=
         A = A / A.sum(axis=1)[np.newaxis, :].T
         P = alpha * A + (1 - alpha) / n
     else:
-        raise nx.NetworkXError("walk_type must be random, lazy, or pagerank")
+        raise nx.Error("walk_type must be random, lazy, or pagerank")
 
     return P

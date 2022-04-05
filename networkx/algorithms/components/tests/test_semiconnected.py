@@ -5,13 +5,13 @@ import pytest
 
 class TestIsSemiconnected:
     def test_undirected(self):
-        pytest.raises(nx.NetworkXNotImplemented, nx.is_semiconnected, nx.Graph())
-        pytest.raises(nx.NetworkXNotImplemented, nx.is_semiconnected, nx.MultiGraph())
+        pytest.raises(nx.NotImplemented, nx.is_semiconnected, nx.Graph())
+        pytest.raises(nx.NotImplemented, nx.is_semiconnected, nx.MultiGraph())
 
     def test_empty(self):
-        pytest.raises(nx.NetworkXPointlessConcept, nx.is_semiconnected, nx.DiGraph())
+        pytest.raises(nx.PointlessConcept, nx.is_semiconnected, nx.DiGraph())
         pytest.raises(
-            nx.NetworkXPointlessConcept, nx.is_semiconnected, nx.MultiDiGraph()
+            nx.PointlessConcept, nx.is_semiconnected, nx.MultiDiGraph()
         )
 
     def test_single_node_graph(self):

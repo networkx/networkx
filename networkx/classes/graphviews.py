@@ -31,7 +31,7 @@ from networkx.classes.coreviews import (
     FilterMultiAdjacency,
 )
 from networkx.classes.filters import no_filter
-from networkx.exception import NetworkXError
+from networkx.exception import Error
 from networkx.utils import not_implemented_for
 
 import networkx as nx
@@ -45,7 +45,7 @@ def generic_graph_view(G, create_using=None):
     else:
         newG = nx.empty_graph(0, create_using)
     if G.is_multigraph() != newG.is_multigraph():
-        raise NetworkXError("Multigraph for G must agree with create_using")
+        raise Error("Multigraph for G must agree with create_using")
     newG = nx.freeze(newG)
 
     # create view by assigning attributes from G

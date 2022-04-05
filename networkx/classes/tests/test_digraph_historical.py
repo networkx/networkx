@@ -58,8 +58,8 @@ class TestDiGraphHistorical(HistoricalTests):
         assert sorted(G.neighbors("C")) == ["D"]
         assert sorted(G["C"]) == ["D"]
         assert sorted(G.neighbors("A")) == ["B", "C"]
-        pytest.raises(nx.NetworkXError, G.neighbors, "j")
-        pytest.raises(nx.NetworkXError, G.neighbors, "j")
+        pytest.raises(nx.Error, G.neighbors, "j")
+        pytest.raises(nx.Error, G.neighbors, "j")
 
     def test_successors(self):
         G = self.G()
@@ -70,8 +70,8 @@ class TestDiGraphHistorical(HistoricalTests):
         assert sorted(G.successors("G")) == []
         assert sorted(G.successors("D")) == []
         assert sorted(G.successors("G")) == []
-        pytest.raises(nx.NetworkXError, G.successors, "j")
-        pytest.raises(nx.NetworkXError, G.successors, "j")
+        pytest.raises(nx.Error, G.successors, "j")
+        pytest.raises(nx.Error, G.successors, "j")
 
     def test_predecessors(self):
         G = self.G()
@@ -85,8 +85,8 @@ class TestDiGraphHistorical(HistoricalTests):
         assert sorted(G.predecessors("A")) == []
         assert sorted(G.successors("D")) == []
 
-        pytest.raises(nx.NetworkXError, G.predecessors, "j")
-        pytest.raises(nx.NetworkXError, G.predecessors, "j")
+        pytest.raises(nx.Error, G.predecessors, "j")
+        pytest.raises(nx.Error, G.predecessors, "j")
 
     def test_reverse(self):
         G = nx.complete_graph(10)

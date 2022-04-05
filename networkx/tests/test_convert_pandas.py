@@ -22,11 +22,11 @@ class TestConvertPandas:
 
     def test_exceptions(self):
         G = pd.DataFrame(["a"])  # adj
-        pytest.raises(nx.NetworkXError, nx.to_networkx_graph, G)
+        pytest.raises(nx.Error, nx.to_networkx_graph, G)
         G = pd.DataFrame(["a", 0.0])  # elist
-        pytest.raises(nx.NetworkXError, nx.to_networkx_graph, G)
+        pytest.raises(nx.Error, nx.to_networkx_graph, G)
         df = pd.DataFrame([[1, 1], [1, 0]], dtype=int, index=[1, 2], columns=["a", "b"])
-        pytest.raises(nx.NetworkXError, nx.from_pandas_adjacency, df)
+        pytest.raises(nx.Error, nx.from_pandas_adjacency, df)
 
     def test_from_edgelist_all_attr(self):
         Gtrue = nx.Graph(
@@ -123,19 +123,19 @@ class TestConvertPandas:
 
     def test_from_edgelist_invalid_attr(self):
         pytest.raises(
-            nx.NetworkXError, nx.from_pandas_edgelist, self.df, 0, "b", "misspell"
+            nx.Error, nx.from_pandas_edgelist, self.df, 0, "b", "misspell"
         )
-        pytest.raises(nx.NetworkXError, nx.from_pandas_edgelist, self.df, 0, "b", 1)
+        pytest.raises(nx.Error, nx.from_pandas_edgelist, self.df, 0, "b", 1)
         # see Issue #3562
         edgeframe = pd.DataFrame([[0, 1], [1, 2], [2, 0]], columns=["s", "t"])
         pytest.raises(
-            nx.NetworkXError, nx.from_pandas_edgelist, edgeframe, "s", "t", True
+            nx.Error, nx.from_pandas_edgelist, edgeframe, "s", "t", True
         )
         pytest.raises(
-            nx.NetworkXError, nx.from_pandas_edgelist, edgeframe, "s", "t", "weight"
+            nx.Error, nx.from_pandas_edgelist, edgeframe, "s", "t", "weight"
         )
         pytest.raises(
-            nx.NetworkXError,
+            nx.Error,
             nx.from_pandas_edgelist,
             edgeframe,
             "s",
@@ -171,14 +171,14 @@ class TestConvertPandas:
         G = nx.path_graph(10)
         G.add_weighted_edges_from((u, v, u) for u, v in list(G.edges))
         nx.set_edge_attributes(G, 0, name="source")
-        pytest.raises(nx.NetworkXError, nx.to_pandas_edgelist, G)
+        pytest.raises(nx.Error, nx.to_pandas_edgelist, G)
 
         # drop source column to test an exception raised for the target column
         for u, v, d in G.edges(data=True):
             d.pop("source", None)
 
         nx.set_edge_attributes(G, 0, name="target")
-        pytest.raises(nx.NetworkXError, nx.to_pandas_edgelist, G)
+        pytest.raises(nx.Error, nx.to_pandas_edgelist, G)
 
     def test_to_edgelist_custom_source_or_target_col_exists(self):
 
@@ -186,7 +186,7 @@ class TestConvertPandas:
         G.add_weighted_edges_from((u, v, u) for u, v in list(G.edges))
         nx.set_edge_attributes(G, 0, name="source_col_name")
         pytest.raises(
-            nx.NetworkXError, nx.to_pandas_edgelist, G, source="source_col_name"
+            nx.Error, nx.to_pandas_edgelist, G, source="source_col_name"
         )
 
         # drop source column to test an exception raised for the target column
@@ -195,7 +195,7 @@ class TestConvertPandas:
 
         nx.set_edge_attributes(G, 0, name="target_col_name")
         pytest.raises(
-            nx.NetworkXError, nx.to_pandas_edgelist, G, target="target_col_name"
+            nx.Error, nx.to_pandas_edgelist, G, target="target_col_name"
         )
 
     def test_to_edgelist_edge_key_col_exists(self):
@@ -203,7 +203,7 @@ class TestConvertPandas:
         G.add_weighted_edges_from((u, v, u) for u, v in list(G.edges()))
         nx.set_edge_attributes(G, 0, name="edge_key_name")
         pytest.raises(
-            nx.NetworkXError, nx.to_pandas_edgelist, G, edge_key="edge_key_name"
+            nx.Error, nx.to_pandas_edgelist, G, edge_key="edge_key_name"
         )
 
     def test_from_adjacency(self):
@@ -290,7 +290,7 @@ class TestConvertPandas:
         assert graphs_equal(G, Gtrue)
 
     def test_nonexisting_edgekey_raises(self):
-        with pytest.raises(nx.exception.NetworkXError):
+        with pytest.raises(nx.exception.Error):
             nx.from_pandas_edgelist(
                 self.df,
                 source="source",

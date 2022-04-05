@@ -41,7 +41,7 @@ def random_clustered_graph(joint_degree_sequence, create_using=None, seed=None):
 
     Raises
     ------
-    NetworkXError
+    Error
         If the independent edge degree sequence sum is not even
         or the triangle degree sequence sum is not divisible by 3.
 
@@ -90,7 +90,7 @@ def random_clustered_graph(joint_degree_sequence, create_using=None, seed=None):
     N = len(joint_degree_sequence)
     G = nx.empty_graph(N, create_using, default=nx.MultiGraph)
     if G.is_directed():
-        raise nx.NetworkXError("Directed Graph not supported")
+        raise nx.Error("Directed Graph not supported")
 
     ilist = []
     tlist = []
@@ -102,7 +102,7 @@ def random_clustered_graph(joint_degree_sequence, create_using=None, seed=None):
             tlist.append(n)
 
     if len(ilist) % 2 != 0 or len(tlist) % 3 != 0:
-        raise nx.NetworkXError("Invalid degree sequence")
+        raise nx.Error("Invalid degree sequence")
 
     seed.shuffle(ilist)
     seed.shuffle(tlist)

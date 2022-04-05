@@ -65,7 +65,7 @@ def second_order_centrality(G):
 
     Raises
     ------
-    NetworkXException
+    Exception
         If the graph G is empty, non connected or has negative weights.
 
     See Also
@@ -100,11 +100,11 @@ def second_order_centrality(G):
     n = len(G)
 
     if n == 0:
-        raise nx.NetworkXException("Empty graph.")
+        raise nx.Exception("Empty graph.")
     if not nx.is_connected(G):
-        raise nx.NetworkXException("Non connected graph.")
+        raise nx.Exception("Non connected graph.")
     if any(d.get("weight", 0) < 0 for u, v, d in G.edges(data=True)):
-        raise nx.NetworkXException("Graph has negative edge weights.")
+        raise nx.Exception("Graph has negative edge weights.")
 
     # balancing G for Metropolis-Hastings random walks
     G = nx.DiGraph(G)

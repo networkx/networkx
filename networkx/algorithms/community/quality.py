@@ -6,7 +6,7 @@ communities).
 from itertools import combinations
 
 import networkx as nx
-from networkx import NetworkXError
+from networkx import Error
 from networkx.utils import not_implemented_for
 from networkx.utils.decorators import argmap
 from networkx.algorithms.community.community_utils import is_partition
@@ -14,7 +14,7 @@ from networkx.algorithms.community.community_utils import is_partition
 __all__ = ["coverage", "modularity", "performance", "partition_quality"]
 
 
-class NotAPartition(NetworkXError):
+class NotAPartition(Error):
     """Raised if a given collection is not a partition."""
 
     def __init__(self, G, collection):
@@ -25,7 +25,7 @@ class NotAPartition(NetworkXError):
 def _require_partition(G, partition):
     """Decorator to check that a valid partition is input to a function
 
-    Raises :exc:`networkx.NetworkXError` if the partition is not valid.
+    Raises :exc:`networkx.Error` if the partition is not valid.
 
     This decorator should be used on functions whose first two arguments
     are a graph and a partition of the nodes of that graph (in that
@@ -43,17 +43,17 @@ def _require_partition(G, partition):
         >>> foo(G, partition)
         Traceback (most recent call last):
           ...
-        networkx.exception.NetworkXError: `partition` is not a valid partition of the nodes of G
+        networkx.exception.Error: `partition` is not a valid partition of the nodes of G
         >>> partition = [{0, 1}, {1, 2, 3}, {4}]
         >>> foo(G, partition)
         Traceback (most recent call last):
           ...
-        networkx.exception.NetworkXError: `partition` is not a valid partition of the nodes of G
+        networkx.exception.Error: `partition` is not a valid partition of the nodes of G
 
     """
     if is_partition(G, partition):
         return G, partition
-    raise nx.NetworkXError("`partition` is not a valid partition of the nodes of G")
+    raise nx.Error("`partition` is not a valid partition of the nodes of G")
 
 
 require_partition = argmap(_require_partition, (0, 1))
@@ -168,7 +168,7 @@ def performance(G, partition):
 
     Raises
     ------
-    NetworkXError
+    Error
         If `partition` is not a valid partition of the nodes of `G`.
 
     References
@@ -222,7 +222,7 @@ def coverage(G, partition):
 
     Raises
     ------
-    NetworkXError
+    Error
         If `partition` is not a valid partition of the nodes of `G`.
 
     Notes
@@ -382,7 +382,7 @@ def partition_quality(G, partition):
 
     Raises
     ------
-    NetworkXError
+    Error
         If `partition` is not a valid partition of the nodes of `G`.
 
     Notes

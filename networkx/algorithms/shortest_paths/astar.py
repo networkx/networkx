@@ -44,7 +44,7 @@ def astar_path(G, source, target, heuristic=None, weight="weight"):
 
     Raises
     ------
-    NetworkXNoPath
+    NoPath
         If no path exists between source and target.
 
     Examples
@@ -135,7 +135,7 @@ def astar_path(G, source, target, heuristic=None, weight="weight"):
             enqueued[neighbor] = ncost, h
             push(queue, (ncost + h, next(c), neighbor, ncost, curnode))
 
-    raise nx.NetworkXNoPath(f"Node {target} not reachable from {source}")
+    raise nx.NoPath(f"Node {target} not reachable from {source}")
 
 
 def astar_path_length(G, source, target, heuristic=None, weight="weight"):
@@ -170,7 +170,7 @@ def astar_path_length(G, source, target, heuristic=None, weight="weight"):
        return a number.
     Raises
     ------
-    NetworkXNoPath
+    NoPath
         If no path exists between source and target.
 
     See Also

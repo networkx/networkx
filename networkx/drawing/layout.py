@@ -511,7 +511,7 @@ def _fruchterman_reingold(
         nnodes, _ = A.shape
     except AttributeError as err:
         msg = "fruchterman_reingold() takes an adjacency matrix as input"
-        raise nx.NetworkXError(msg) from err
+        raise nx.Error(msg) from err
 
     if pos is None:
         # random initial positions
@@ -576,7 +576,7 @@ def _sparse_fruchterman_reingold(
         nnodes, _ = A.shape
     except AttributeError as err:
         msg = "fruchterman_reingold() takes an adjacency matrix as input"
-        raise nx.NetworkXError(msg) from err
+        raise nx.Error(msg) from err
     # make sure we have a LIst of Lists representation
     try:
         A = A.tolil()
@@ -848,7 +848,7 @@ def _spectral(A, dim=2):
         nnodes, _ = A.shape
     except AttributeError as err:
         msg = "spectral() takes an adjacency matrix as input"
-        raise nx.NetworkXError(msg) from err
+        raise nx.Error(msg) from err
 
     # form Laplacian matrix where D is diagonal of degrees
     D = np.identity(nnodes, dtype=A.dtype) * np.sum(A, axis=1)
@@ -873,7 +873,7 @@ def _sparse_spectral(A, dim=2):
         nnodes, _ = A.shape
     except AttributeError as err:
         msg = "sparse_spectral() takes an adjacency matrix as input"
-        raise nx.NetworkXError(msg) from err
+        raise nx.Error(msg) from err
 
     # form Laplacian matrix
     # TODO: Rm csr_array wrapper in favor of spdiags array constructor when available
@@ -914,7 +914,7 @@ def planar_layout(G, scale=1, center=None, dim=2):
 
     Raises
     ------
-    NetworkXException
+    Exception
         If G is not planar
 
     Examples
@@ -937,7 +937,7 @@ def planar_layout(G, scale=1, center=None, dim=2):
     else:
         is_planar, embedding = nx.check_planarity(G)
         if not is_planar:
-            raise nx.NetworkXException("G is not planar.")
+            raise nx.Exception("G is not planar.")
     pos = nx.combinatorial_embedding_to_pos(embedding)
     node_list = list(embedding)
     pos = np.row_stack([pos[x] for x in node_list])

@@ -30,9 +30,9 @@ x = X()
 
 
 data = [  # min should not invent an element.
-    ("min", nx.NetworkXError),
+    ("min", nx.Error),
     # Popping an empty heap should fail.
-    ("pop", nx.NetworkXError),
+    ("pop", nx.Error),
     # Getting nonexisting elements should return None.
     ("get", 0, None),
     ("get", x, None),
@@ -59,8 +59,8 @@ data = [  # min should not invent an element.
     ("pop", (4, -60)),
     ("pop", (x, 1)),
     # Popping all elements should empty the heap.
-    ("min", nx.NetworkXError),
-    ("pop", nx.NetworkXError),
+    ("min", nx.Error),
+    ("pop", nx.Error),
     # Non-value-changing insert should fail.
     ("insert", x, 0, True),
     ("insert", x, 0, False, False),
@@ -69,7 +69,7 @@ data = [  # min should not invent an element.
     ("min", (x, 0)),
     # Failed insert should not create duplicate keys.
     ("pop", (x, 0)),
-    ("pop", nx.NetworkXError),
+    ("pop", nx.Error),
     # Increase-insert should succeed when allowed.
     ("insert", None, 0, True),
     ("insert", 2, -1, True),
@@ -82,8 +82,8 @@ data = [  # min should not invent an element.
     # Failed increase-insert should not create duplicate keys.
     ("pop", (None, 0)),
     ("pop", (2, 1)),
-    ("min", nx.NetworkXError),
-    ("pop", nx.NetworkXError),
+    ("min", nx.Error),
+    ("pop", nx.Error),
 ]
 
 
@@ -91,7 +91,7 @@ def _test_heap_class(cls, *args, **kwargs):
     heap = cls(*args, **kwargs)
     # Basic behavioral test
     for op in data:
-        if op[-1] is not nx.NetworkXError:
+        if op[-1] is not nx.Error:
             assert op[-1] == getattr(heap, op[0])(*op[1:-1])
         else:
             pytest.raises(op[-1], getattr(heap, op[0]), *op[1:-1])
@@ -119,7 +119,7 @@ def _test_heap_class(cls, *args, **kwargs):
         assert heap.insert(i, i)
     for i in range(100):
         assert heap.pop() == (i, i)
-    pytest.raises(nx.NetworkXError, heap.pop)
+    pytest.raises(nx.Error, heap.pop)
 
 
 def test_PairingHeap():

@@ -99,7 +99,7 @@ def approximate_current_flow_betweenness_centrality(
     import numpy as np
 
     if not nx.is_connected(G):
-        raise nx.NetworkXError("Graph not connected.")
+        raise nx.Error("Graph not connected.")
     solvername = {
         "full": FullInverseLaplacian,
         "lu": SuperLUInverseLaplacian,
@@ -120,7 +120,7 @@ def approximate_current_flow_betweenness_centrality(
     k = l * int(np.ceil((cstar / epsilon) ** 2 * np.log(n)))
     if k > kmax:
         msg = f"Number random pairs k>kmax ({k}>{kmax}) "
-        raise nx.NetworkXError(msg, "Increase kmax or epsilon")
+        raise nx.Error(msg, "Increase kmax or epsilon")
     cstar2k = cstar / (2 * k)
     for i in range(k):
         s, t = seed.sample(range(n), 2)
@@ -217,7 +217,7 @@ def current_flow_betweenness_centrality(
        M. E. J. Newman, Social Networks 27, 39-54 (2005).
     """
     if not nx.is_connected(G):
-        raise nx.NetworkXError("Graph not connected.")
+        raise nx.Error("Graph not connected.")
     n = G.number_of_nodes()
     ordering = list(reverse_cuthill_mckee_ordering(G))
     # make a copy with integer labels according to rcm ordering
@@ -282,9 +282,9 @@ def edge_current_flow_betweenness_centrality(
 
     Raises
     ------
-    NetworkXError
+    Error
         The algorithm does not support DiGraphs.
-        If the input graph is an instance of DiGraph class, NetworkXError
+        If the input graph is an instance of DiGraph class, Error
         is raised.
 
     See Also
@@ -321,7 +321,7 @@ def edge_current_flow_betweenness_centrality(
     from networkx.utils import reverse_cuthill_mckee_ordering
 
     if not nx.is_connected(G):
-        raise nx.NetworkXError("Graph not connected.")
+        raise nx.Error("Graph not connected.")
     n = G.number_of_nodes()
     ordering = list(reverse_cuthill_mckee_ordering(G))
     # make a copy with integer labels according to rcm ordering

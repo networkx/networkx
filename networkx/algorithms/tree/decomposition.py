@@ -45,7 +45,7 @@ def junction_tree(G):
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
         Raised if `G` is an instance of `MultiGraph` or `MultiDiGraph`.
 
     References

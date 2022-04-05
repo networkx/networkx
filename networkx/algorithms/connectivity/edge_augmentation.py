@@ -184,10 +184,10 @@ def k_edge_augmentation(G, k, avail=None, weight=None, partial=False):
 
     Raises
     ------
-    NetworkXUnfeasible
+    Unfeasible
         If partial is False and no k-edge-augmentation exists.
 
-    NetworkXNotImplemented
+    NotImplemented
         If the input graph is directed or a multigraph.
 
     ValueError:
@@ -245,10 +245,10 @@ def k_edge_augmentation(G, k, avail=None, weight=None, partial=False):
             raise ValueError(f"k must be a positive integer, not {k}")
         elif G.number_of_nodes() < k + 1:
             msg = f"impossible to {k} connect in graph with less than {k + 1} nodes"
-            raise nx.NetworkXUnfeasible(msg)
+            raise nx.Unfeasible(msg)
         elif avail is not None and len(avail) == 0:
             if not nx.is_k_edge_connected(G, k):
-                raise nx.NetworkXUnfeasible("no available edges")
+                raise nx.Unfeasible("no available edges")
             aug_edges = []
         elif k == 1:
             aug_edges = one_edge_augmentation(
@@ -264,7 +264,7 @@ def k_edge_augmentation(G, k, avail=None, weight=None, partial=False):
         # Do eager evaulation so we can catch any exceptions
         # Before executing partial code.
         yield from list(aug_edges)
-    except nx.NetworkXUnfeasible:
+    except nx.Unfeasible:
         if partial:
             # Return all available edges
             if avail is None:
@@ -412,7 +412,7 @@ def one_edge_augmentation(G, avail=None, weight=None, partial=False):
 
     Raises
     ------
-    NetworkXUnfeasible
+    Unfeasible
         If partial is False and no one-edge-augmentation exists.
 
     Notes
@@ -463,7 +463,7 @@ def bridge_augmentation(G, avail=None, weight=None):
 
     Raises
     ------
-    NetworkXUnfeasible
+    Unfeasible
         If no bridge-augmentation exists.
 
     Notes
@@ -478,7 +478,7 @@ def bridge_augmentation(G, avail=None, weight=None):
     :func:`k_edge_augmentation`
     """
     if G.number_of_nodes() < 3:
-        raise nx.NetworkXUnfeasible("impossible to bridge connect less than 3 nodes")
+        raise nx.Unfeasible("impossible to bridge connect less than 3 nodes")
     if avail is None:
         return unconstrained_bridge_augmentation(G)
     else:
@@ -673,7 +673,7 @@ def weighted_one_edge_augmentation(G, avail, weight=None, partial=False):
     # Find MST of the meta graph
     meta_mst = nx.minimum_spanning_tree(C)
     if not partial and not nx.is_connected(meta_mst):
-        raise nx.NetworkXUnfeasible("Not possible to connect G with available edges")
+        raise nx.Unfeasible("Not possible to connect G with available edges")
     # Yield the edge that generated the meta-edge
     for mu, mv, d in meta_mst.edges(data=True):
         if "generator" in d:
@@ -916,7 +916,7 @@ def weighted_bridge_augmentation(G, avail, weight=None):
 
     if len(avail) == 0:
         if nx.has_bridges(H):
-            raise nx.NetworkXUnfeasible("no augmentation possible")
+            raise nx.Unfeasible("no augmentation possible")
 
     avail_uv, avail_w = _unpack_available_edges(avail, weight=weight, G=H)
 
@@ -985,9 +985,9 @@ def weighted_bridge_augmentation(G, avail, weight=None):
         # Note the original edges must be directed towards to root for the
         # branching to give us a bridge-augmentation.
         A = _minimum_rooted_branching(D, root)
-    except nx.NetworkXException as err:
+    except nx.Exception as err:
         # If there is no branching then augmentation is not possible
-        raise nx.NetworkXUnfeasible("no 2-edge-augmentation possible") from err
+        raise nx.Unfeasible("no 2-edge-augmentation possible") from err
 
     # For each edge e, in the branching that did not belong to the directed
     # tree T, add the corresponding edge that **GENERATED** it (this is not
@@ -1236,7 +1236,7 @@ def greedy_k_edge_augmentation(G, k, avail=None, weight=None, seed=None):
 
     # Check for feasibility
     if not done:
-        raise nx.NetworkXUnfeasible("not able to k-edge-connect with available edges")
+        raise nx.Unfeasible("not able to k-edge-connect with available edges")
 
     # Randomized attempt to reduce the size of the solution
     _compat_shuffle(seed, aug_edges)

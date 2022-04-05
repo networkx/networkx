@@ -82,7 +82,7 @@ def test_multiple_component_graph2():
 
 
 def test_invalid_half_edge():
-    with pytest.raises(nx.NetworkXException):
+    with pytest.raises(nx.Exception):
         embedding_data = {1: [2, 3, 4], 2: [1, 3, 4], 3: [1, 2, 4], 4: [1, 2, 3]}
         embedding = nx.PlanarEmbedding()
         embedding.set_data(embedding_data)
@@ -181,7 +181,7 @@ def check_edge_intersections(G, pos):
                         pos[c], pos[d], (px, py)
                     ):
                         msg = f"There is an intersection at {px},{py}"
-                        raise nx.NetworkXException(msg)
+                        raise nx.Exception(msg)
 
                 #  Check overlap
                 msg = "A node lies on a edge connecting two other nodes"
@@ -191,7 +191,7 @@ def check_edge_intersections(G, pos):
                     or point_in_between(pos[c], pos[d], pos[a])
                     or point_in_between(pos[c], pos[d], pos[b])
                 ):
-                    raise nx.NetworkXException(msg)
+                    raise nx.Exception(msg)
     # No edge intersection found
 
 

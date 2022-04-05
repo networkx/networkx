@@ -98,7 +98,7 @@ def kl_connected_subgraph(G, k, l, low_memory=False, same_as_graph=False):
                 #                path = shortest_path(G2, u, v, k) # ??? should "Cutoff" be k+1?
                 try:
                     path = nx.shortest_path(G2, u, v)  # ??? should "Cutoff" be k+1?
-                except nx.NetworkXNoPath:
+                except nx.NoPath:
                     path = False
             # No Other Paths
             if accept == 0:
@@ -182,7 +182,7 @@ def is_kl_connected(G, k, l, low_memory=False):
             #            path = shortest_path(G2, u, v, k) # ??? should "Cutoff" be k+1?
             try:
                 path = nx.shortest_path(G2, u, v)  # ??? should "Cutoff" be k+1?
-            except nx.NetworkXNoPath:
+            except nx.NoPath:
                 path = False
         # No Other Paths
         if accept == 0:

@@ -1,6 +1,6 @@
 """Flow based node and edge disjoint paths."""
 import networkx as nx
-from networkx.exception import NetworkXNoPath
+from networkx.exception import NoPath
 
 # Define the default maximum flow function to use for the undelying
 # maximum flow computations
@@ -72,10 +72,10 @@ def edge_disjoint_paths(
 
     Raises
     ------
-    NetworkXNoPath
+    NoPath
         If there is no path between source and target.
 
-    NetworkXError
+    Error
         If source or target are not in the graph G.
 
     See also
@@ -150,9 +150,9 @@ def edge_disjoint_paths(
 
     """
     if s not in G:
-        raise nx.NetworkXError(f"node {s} not in graph")
+        raise nx.Error(f"node {s} not in graph")
     if t not in G:
-        raise nx.NetworkXError(f"node {t} not in graph")
+        raise nx.Error(f"node {t} not in graph")
 
     if flow_func is None:
         flow_func = default_flow_func
@@ -165,7 +165,7 @@ def edge_disjoint_paths(
     # Maximum possible edge disjoint paths
     possible = min(H.out_degree(s), H.in_degree(t))
     if not possible:
-        raise NetworkXNoPath
+        raise NoPath
 
     if cutoff is None:
         cutoff = possible
@@ -184,7 +184,7 @@ def edge_disjoint_paths(
     R = flow_func(H, s, t, **kwargs)
 
     if R.graph["flow_value"] == 0:
-        raise NetworkXNoPath
+        raise NoPath
 
     # Saturated edges in the residual network form the edge disjoint paths
     # between source and target
@@ -278,10 +278,10 @@ def node_disjoint_paths(
 
     Raises
     ------
-    NetworkXNoPath
+    NoPath
         If there is no path between source and target.
 
-    NetworkXError
+    Error
         If source or target are not in the graph G.
 
     Examples
@@ -349,9 +349,9 @@ def node_disjoint_paths(
 
     """
     if s not in G:
-        raise nx.NetworkXError(f"node {s} not in graph")
+        raise nx.Error(f"node {s} not in graph")
     if t not in G:
-        raise nx.NetworkXError(f"node {t} not in graph")
+        raise nx.Error(f"node {t} not in graph")
 
     if auxiliary is None:
         H = build_auxiliary_node_connectivity(G)
@@ -360,12 +360,12 @@ def node_disjoint_paths(
 
     mapping = H.graph.get("mapping", None)
     if mapping is None:
-        raise nx.NetworkXError("Invalid auxiliary digraph.")
+        raise nx.Error("Invalid auxiliary digraph.")
 
     # Maximum possible edge disjoint paths
     possible = min(H.out_degree(f"{mapping[s]}B"), H.in_degree(f"{mapping[t]}A"))
     if not possible:
-        raise NetworkXNoPath
+        raise NoPath
 
     if cutoff is None:
         cutoff = possible

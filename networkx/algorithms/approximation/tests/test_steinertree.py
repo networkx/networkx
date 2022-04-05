@@ -22,7 +22,7 @@ class TestSteinerTree:
     def test_connected_metric_closure(self):
         G = self.G.copy()
         G.add_node(100)
-        pytest.raises(nx.NetworkXError, metric_closure, G)
+        pytest.raises(nx.Error, metric_closure, G)
 
     def test_metric_closure(self):
         M = metric_closure(self.G)

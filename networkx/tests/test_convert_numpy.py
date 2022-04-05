@@ -32,7 +32,7 @@ class TestConvertNumpyMatrix:
 
     def test_exceptions(self):
         G = np.array("a")
-        pytest.raises(nx.NetworkXError, nx.to_networkx_graph, G)
+        pytest.raises(nx.Error, nx.to_networkx_graph, G)
 
     def create_weighted(self, G):
         g = cycle_graph(4)
@@ -56,7 +56,7 @@ class TestConvertNumpyMatrix:
     def test_shape(self):
         "Conversion from non-square array."
         A = np.array([[1, 2, 3], [4, 5, 6]])
-        pytest.raises(nx.NetworkXError, nx.from_numpy_matrix, A)
+        pytest.raises(nx.Error, nx.from_numpy_matrix, A)
 
     def test_identity_graph_matrix(self):
         "Conversion from graph to matrix to graph."
@@ -114,11 +114,11 @@ class TestConvertNumpyMatrix:
         assert nx.to_numpy_matrix(P3, nodelist=[]).shape == (0, 0)
         # Test nodelist duplicates.
         long_nodelist = nodelist + [0]
-        pytest.raises(nx.NetworkXError, nx.to_numpy_matrix, P3, nodelist=long_nodelist)
+        pytest.raises(nx.Error, nx.to_numpy_matrix, P3, nodelist=long_nodelist)
 
         # Test nodelist contains non-nodes
         nonnodelist = [-1, 0, 1, 2]
-        pytest.raises(nx.NetworkXError, nx.to_numpy_matrix, P3, nodelist=nonnodelist)
+        pytest.raises(nx.Error, nx.to_numpy_matrix, P3, nodelist=nonnodelist)
 
     def test_weight_keyword(self):
         WP4 = nx.Graph()
@@ -289,7 +289,7 @@ class TestConvertNumpyArray:
     def test_shape(self):
         "Conversion from non-square array."
         A = np.array([[1, 2, 3], [4, 5, 6]])
-        pytest.raises(nx.NetworkXError, nx.from_numpy_array, A)
+        pytest.raises(nx.Error, nx.from_numpy_array, A)
 
     def test_identity_graph_array(self):
         "Conversion from graph to array to graph."
@@ -322,7 +322,7 @@ class TestConvertNumpyArray:
 
         # Make nodelist ambiguous by containing duplicates.
         nodelist += [nodelist[0]]
-        pytest.raises(nx.NetworkXError, nx.to_numpy_array, P3, nodelist=nodelist)
+        pytest.raises(nx.Error, nx.to_numpy_array, P3, nodelist=nodelist)
 
     def test_weight_keyword(self):
         WP4 = nx.Graph()
@@ -499,7 +499,7 @@ def test_to_numpy_recarray_nodelist(recarray_nodelist_test_graph):
     (([2, 3], "in nodelist is not in G"), ([1, 1], "nodelist contains duplicates")),
 )
 def test_to_numpy_recarray_bad_nodelist(recarray_nodelist_test_graph, nodelist, errmsg):
-    with pytest.raises(nx.NetworkXError, match=errmsg):
+    with pytest.raises(nx.Error, match=errmsg):
         A = nx.to_numpy_recarray(recarray_nodelist_test_graph, nodelist=nodelist)
 
 
@@ -670,5 +670,5 @@ def test_to_numpy_array_structured_dtype_with_weight_raises():
 def test_to_numpy_array_structured_multigraph_raises(graph_type):
     G = nx.path_graph(3, create_using=graph_type)
     dtype = np.dtype([("weight", int), ("cost", int)])
-    with pytest.raises(nx.NetworkXError, match="Structured arrays are not supported"):
+    with pytest.raises(nx.Error, match="Structured arrays are not supported"):
         nx.to_numpy_array(G, dtype=dtype, weight=None)

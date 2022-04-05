@@ -222,7 +222,7 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
         A[i, i] = float("inf")
         solver = _LUSolver(A)
     else:
-        raise nx.NetworkXError(f"Unknown linear system solver: {method}")
+        raise nx.Error(f"Unknown linear system solver: {method}")
 
     # Initialize.
     Lnorm = abs(L).sum(axis=1).flatten().max()
@@ -304,7 +304,7 @@ def _get_fiedler_func(method):
                 return sigma[0], X[:, 0]
 
     else:
-        raise nx.NetworkXError(f"unknown method {method!r}.")
+        raise nx.Error(f"unknown method {method!r}.")
 
     return find_fiedler
 
@@ -360,10 +360,10 @@ def algebraic_connectivity(
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
         If G is directed.
 
-    NetworkXError
+    Error
         If G has less than two nodes.
 
     Notes
@@ -376,7 +376,7 @@ def algebraic_connectivity(
     laplacian_matrix
     """
     if len(G) < 2:
-        raise nx.NetworkXError("graph has less than two nodes.")
+        raise nx.Error("graph has less than two nodes.")
     G = _preprocess_graph(G, weight)
     if not nx.is_connected(G):
         return 0.0
@@ -443,10 +443,10 @@ def fiedler_vector(
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
         If G is directed.
 
-    NetworkXError
+    Error
         If G has less than two nodes or is not connected.
 
     Notes
@@ -461,10 +461,10 @@ def fiedler_vector(
     import numpy as np
 
     if len(G) < 2:
-        raise nx.NetworkXError("graph has less than two nodes.")
+        raise nx.Error("graph has less than two nodes.")
     G = _preprocess_graph(G, weight)
     if not nx.is_connected(G):
-        raise nx.NetworkXError("graph is not connected.")
+        raise nx.Error("graph is not connected.")
 
     if len(G) == 2:
         return np.array([1.0, -1.0])
@@ -527,7 +527,7 @@ def spectral_ordering(
 
     Raises
     ------
-    NetworkXError
+    Error
         If G is empty.
 
     Notes
@@ -540,7 +540,7 @@ def spectral_ordering(
     laplacian_matrix
     """
     if len(G) == 0:
-        raise nx.NetworkXError("graph is empty.")
+        raise nx.Error("graph is empty.")
     G = _preprocess_graph(G, weight)
 
     find_fiedler = _get_fiedler_func(method)

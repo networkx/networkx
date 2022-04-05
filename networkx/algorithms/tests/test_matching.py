@@ -389,7 +389,7 @@ class TestMaxWeightMatching:
         assert edges_equal(nx.min_weight_matching(G), answer)
 
     def test_wrong_graph_type(self):
-        error = nx.NetworkXNotImplemented
+        error = nx.NotImplemented
         raises(error, nx.max_weight_matching, nx.MultiGraph())
         raises(error, nx.max_weight_matching, nx.MultiDiGraph())
         raises(error, nx.max_weight_matching, nx.DiGraph())
@@ -426,7 +426,7 @@ class TestIsMatching:
         assert nx.is_matching(G, {(0, 1), (2, 3)})
 
     def test_invalid_input(self):
-        error = nx.NetworkXError
+        error = nx.Error
         G = nx.path_graph(4)
         # edge to node not in G
         raises(error, nx.is_matching, G, {(0, 5), (2, 3)})
@@ -435,7 +435,7 @@ class TestIsMatching:
         raises(error, nx.is_matching, G, {(0,), (2, 3)})
 
     def test_selfloops(self):
-        error = nx.NetworkXError
+        error = nx.Error
         G = nx.path_graph(4)
         # selfloop for node not in G
         raises(error, nx.is_matching, G, {(5, 5), (2, 3)})
@@ -452,7 +452,7 @@ class TestIsMatching:
     def test_invalid_edge(self):
         G = nx.path_graph(4)
         assert not nx.is_matching(G, {(0, 3), (1, 2)})
-        raises(nx.NetworkXError, nx.is_matching, G, {(0, 55)})
+        raises(nx.Error, nx.is_matching, G, {(0, 55)})
 
         G = nx.DiGraph(G.edges)
         assert nx.is_matching(G, {(0, 1)})
@@ -559,7 +559,7 @@ class TestMaximalMatching:
             assert nx.is_maximal_matching(G, matching)
 
     def test_wrong_graph_type(self):
-        error = nx.NetworkXNotImplemented
+        error = nx.NotImplemented
         raises(error, nx.maximal_matching, nx.MultiGraph())
         raises(error, nx.maximal_matching, nx.MultiDiGraph())
         raises(error, nx.maximal_matching, nx.DiGraph())

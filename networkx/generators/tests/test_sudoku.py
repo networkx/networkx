@@ -6,7 +6,7 @@ import networkx as nx
 
 def test_sudoku_negative():
     """Raise an error when generating a Sudoku graph of order -1."""
-    pytest.raises(nx.NetworkXError, nx.sudoku_graph, n=-1)
+    pytest.raises(nx.Error, nx.sudoku_graph, n=-1)
 
 
 @pytest.mark.parametrize("n", [0, 1, 2, 3, 4])

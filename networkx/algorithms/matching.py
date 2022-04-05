@@ -70,7 +70,7 @@ def matching_dict_to_set(matching):
         if (v, u) in edges or edge in edges:
             continue
         if u == v:
-            raise nx.NetworkXError(f"Selfloops cannot appear in matchings {edge}")
+            raise nx.Error(f"Selfloops cannot appear in matchings {edge}")
         edges.add(edge)
     return edges
 
@@ -101,7 +101,7 @@ def is_matching(G, matching):
 
     Raises
     ------
-    NetworkXError
+    Error
         If the proposed matching has an edge to a node not in G.
         Or if the matching is not a collection of 2-tuple edges.
 
@@ -112,10 +112,10 @@ def is_matching(G, matching):
     nodes = set()
     for edge in matching:
         if len(edge) != 2:
-            raise nx.NetworkXError(f"matching has non-2-tuple edge {edge}")
+            raise nx.Error(f"matching has non-2-tuple edge {edge}")
         u, v = edge
         if u not in G or v not in G:
-            raise nx.NetworkXError(f"matching contains edge {edge} with node not in G")
+            raise nx.Error(f"matching contains edge {edge} with node not in G")
         if u == v:
             return False
         if not G.has_edge(u, v):
@@ -157,10 +157,10 @@ def is_maximal_matching(G, matching):
     nodes = set()
     for edge in matching:
         if len(edge) != 2:
-            raise nx.NetworkXError(f"matching has non-2-tuple edge {edge}")
+            raise nx.Error(f"matching has non-2-tuple edge {edge}")
         u, v = edge
         if u not in G or v not in G:
-            raise nx.NetworkXError(f"matching contains edge {edge} with node not in G")
+            raise nx.Error(f"matching contains edge {edge} with node not in G")
         if u == v:
             return False
         if not G.has_edge(u, v):
@@ -211,10 +211,10 @@ def is_perfect_matching(G, matching):
     nodes = set()
     for edge in matching:
         if len(edge) != 2:
-            raise nx.NetworkXError(f"matching has non-2-tuple edge {edge}")
+            raise nx.Error(f"matching has non-2-tuple edge {edge}")
         u, v = edge
         if u not in G or v not in G:
-            raise nx.NetworkXError(f"matching contains edge {edge} with node not in G")
+            raise nx.Error(f"matching contains edge {edge} with node not in G")
         if u == v:
             return False
         if not G.has_edge(u, v):

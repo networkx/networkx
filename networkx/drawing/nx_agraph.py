@@ -347,7 +347,7 @@ def view_pygraphviz(
 
     """
     if not len(G):
-        raise nx.NetworkXException("An empty graph cannot be drawn.")
+        raise nx.Exception("An empty graph cannot be drawn.")
 
     # If we are providing default values for graphviz, these must be set
     # before any nodes or edges are added to the PyGraphviz graph object.

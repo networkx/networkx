@@ -32,7 +32,7 @@ def _detect_unboundedness(R):
                 G.add_edge(u, v, weight=w)
 
     if nx.negative_edge_cycle(G):
-        raise nx.NetworkXUnbounded(
+        raise nx.Unbounded(
             "Negative cost cycle of infinite capacity found. "
             "Min cost flow may be unbounded below."
         )
@@ -42,7 +42,7 @@ def _detect_unboundedness(R):
 def _build_residual_network(G, demand, capacity, weight):
     """Build a residual network and initialize a zero flow."""
     if sum(G.nodes[u].get(demand, 0) for u in G) != 0:
-        raise nx.NetworkXUnfeasible("Sum of the demands should be 0.")
+        raise nx.Unfeasible("Sum of the demands should be 0.")
 
     R = nx.MultiDiGraph()
     R.add_nodes_from(
@@ -53,7 +53,7 @@ def _build_residual_network(G, demand, capacity, weight):
     # Detect selfloops with infinite capacities and negative weights.
     for u, v, e in nx.selfloop_edges(G, data=True):
         if e.get(weight, 0) < 0 and e.get(capacity, inf) == inf:
-            raise nx.NetworkXUnbounded(
+            raise nx.Unbounded(
                 "Negative cost cycle of infinite capacity found. "
                 "Min cost flow may be unbounded below."
             )
@@ -213,18 +213,18 @@ def capacity_scaling(
 
     Raises
     ------
-    NetworkXError
+    Error
         This exception is raised if the input graph is not directed,
         not connected.
 
-    NetworkXUnfeasible
+    Unfeasible
         This exception is raised in the following situations:
 
             * The sum of the demands is not zero. Then, there is no
               flow satisfying all demands.
             * There is no flow satisfying all demand.
 
-    NetworkXUnbounded
+    Unbounded
         This exception is raised if the digraph G has a cycle of
         negative cost and infinite capacity. Then, the cost of a flow
         satisfying all demands is unbounded below.
@@ -391,7 +391,7 @@ def capacity_scaling(
         delta //= 2
 
     if any(R.nodes[u]["excess"] != 0 for u in R):
-        raise nx.NetworkXUnfeasible("No flow satisfying all demands.")
+        raise nx.Unfeasible("No flow satisfying all demands.")
 
     # Calculate the flow cost.
     for u in R:

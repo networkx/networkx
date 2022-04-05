@@ -110,7 +110,7 @@ class TestLayout:
 
     def test_planar_layout_non_planar_input(self):
         G = nx.complete_graph(9)
-        pytest.raises(nx.NetworkXException, nx.planar_layout, G)
+        pytest.raises(nx.Exception, nx.planar_layout, G)
 
     def test_smoke_planar_layout_embedding_input(self):
         embedding = nx.PlanarEmbedding()

@@ -111,7 +111,7 @@ def _edges_cross_nodes_and_nodes(G, H):
 def _init_product_graph(G, H):
     if not G.is_directed() == H.is_directed():
         msg = "G and H must be both directed or both undirected"
-        raise nx.NetworkXError(msg)
+        raise nx.Error(msg)
     if G.is_multigraph() or H.is_multigraph():
         GH = nx.MultiGraph()
     else:
@@ -147,7 +147,7 @@ def tensor_product(G, H):
 
     Raises
     ------
-    NetworkXError
+    Error
      If G and H are not both directed or both undirected.
 
     Notes
@@ -199,7 +199,7 @@ def cartesian_product(G, H):
 
     Raises
     ------
-    NetworkXError
+    Error
      If G and H are not both directed or both undirected.
 
     Notes
@@ -249,7 +249,7 @@ def lexicographic_product(G, H):
 
     Raises
     ------
-    NetworkXError
+    Error
      If G and H are not both directed or both undirected.
 
     Notes
@@ -303,7 +303,7 @@ def strong_product(G, H):
 
     Raises
     ------
-    NetworkXError
+    Error
      If G and H are not both directed or both undirected.
 
     Notes
@@ -362,7 +362,7 @@ def power(G, k):
     ValueError
         If the exponent `k` is not positive.
 
-    NetworkXNotImplemented
+    NotImplemented
         If `G` is not a simple graph.
 
     Examples
@@ -450,7 +450,7 @@ def rooted_product(G, H, root):
     The nodes of G and H are not relabeled.
     """
     if root not in H:
-        raise nx.NetworkXError("root must be a vertex in H")
+        raise nx.Error("root must be a vertex in H")
 
     R = nx.Graph()
     R.add_nodes_from(product(G, H))

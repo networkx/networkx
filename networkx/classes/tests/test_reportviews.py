@@ -43,7 +43,7 @@ class TestNodeView:
         assert nv[7] == {}
         assert nv[3] == {"foo": "bar"}
         # slicing
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             G.nodes[0:5]
 
     def test_iter(self):
@@ -133,7 +133,7 @@ class TestNodeDataView:
         assert nwv_def[7], "biz"
         assert nwv_def[3] == "bar"
         # slicing
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             G.nodes.data()[0:5]
 
     def test_iter(self):
@@ -593,7 +593,7 @@ class TestEdgeView:
         assert ev[0, 1] == {"foo": "bar"}
 
         # slicing
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             G.edges[0:5]
 
     def test_call(self):
@@ -785,7 +785,7 @@ class TestMultiEdgeView(TestEdgeView):
         assert ev[0, 1, 0] == {"foo": "bar"}
 
         # slicing
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             G.edges[0:5]
 
     def test_repr(self):
@@ -1383,7 +1383,7 @@ class TestInMultiDegreeView(TestDegreeView):
 def test_slicing_reportviews(reportview, err_msg_terms):
     G = nx.complete_graph(3)
     view = reportview(G)
-    with pytest.raises(nx.NetworkXError) as exc:
+    with pytest.raises(nx.Error) as exc:
         view[0:2]
     errmsg = str(exc.value)
     assert type(view).__name__ in errmsg

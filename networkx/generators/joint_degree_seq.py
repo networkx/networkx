@@ -160,7 +160,7 @@ def joint_degree_graph(joint_degrees, seed=None):
 
     Raises
     ------
-    NetworkXError
+    Error
         If *joint_degrees* dictionary is not realizable.
 
     Notes
@@ -200,7 +200,7 @@ def joint_degree_graph(joint_degrees, seed=None):
 
     if not is_valid_joint_degree(joint_degrees):
         msg = "Input joint degree dict not realizable as a simple graph"
-        raise nx.NetworkXError(msg)
+        raise nx.Error(msg)
 
     # compute degree count from joint_degrees
     degree_count = {k: sum(l.values()) // k for k, l in joint_degrees.items() if k > 0}
@@ -498,7 +498,7 @@ def directed_joint_degree_graph(in_degrees, out_degrees, nkk, seed=None):
 
     Raises
     ------
-    NetworkXError
+    Error
         If degree_seq and nkk are not realizable as a simple directed graph.
 
 
@@ -542,7 +542,7 @@ def directed_joint_degree_graph(in_degrees, out_degrees, nkk, seed=None):
     """
     if not is_valid_directed_joint_degree(in_degrees, out_degrees, nkk):
         msg = "Input is not realizable as a simple graph"
-        raise nx.NetworkXError(msg)
+        raise nx.Error(msg)
 
     # start with an empty directed graph.
     G = nx.DiGraph()

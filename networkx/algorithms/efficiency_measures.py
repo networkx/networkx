@@ -1,7 +1,7 @@
 """Provides functions for computing the efficiency of nodes and graphs."""
 
 import networkx as nx
-from networkx.exception import NetworkXNoPath
+from networkx.exception import NoPath
 from ..utils import not_implemented_for
 
 __all__ = ["efficiency", "local_efficiency", "global_efficiency"]
@@ -46,7 +46,7 @@ def efficiency(G, u, v):
     """
     try:
         eff = 1 / nx.shortest_path_length(G, u, v)
-    except NetworkXNoPath:
+    except NoPath:
         eff = 0
     return eff
 

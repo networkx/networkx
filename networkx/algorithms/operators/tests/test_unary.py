@@ -51,4 +51,4 @@ def test_complement_2():
 def test_reverse1():
     # Other tests for reverse are done by the DiGraph and MultiDigraph.
     G1 = nx.Graph()
-    pytest.raises(nx.NetworkXError, nx.reverse, G1)
+    pytest.raises(nx.Error, nx.reverse, G1)

@@ -23,7 +23,7 @@ __all__ = [
 ]
 
 
-class NetworkXTreewidthBoundExceeded(nx.NetworkXException):
+class NetworkXTreewidthBoundExceeded(nx.Exception):
     """Exception raised when a treewidth bound has been provided and it has
     been exceeded"""
 
@@ -48,7 +48,7 @@ def is_chordal(G):
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
         The algorithm does not support DiGraph, MultiGraph and MultiDiGraph.
 
     Examples
@@ -107,12 +107,12 @@ def find_induced_nodes(G, s, t, treewidth_bound=sys.maxsize):
 
     Raises
     ------
-    NetworkXError
+    Error
         The algorithm does not support DiGraph, MultiGraph and MultiDiGraph.
         If the input graph is an instance of one of these classes, a
-        :exc:`NetworkXError` is raised.
+        :exc:`Error` is raised.
         The algorithm can only be applied to chordal graphs. If the input
-        graph is found to be non-chordal, a :exc:`NetworkXError` is raised.
+        graph is found to be non-chordal, a :exc:`Error` is raised.
 
     Examples
     --------
@@ -139,7 +139,7 @@ def find_induced_nodes(G, s, t, treewidth_bound=sys.maxsize):
        http://jmlr.csail.mit.edu/papers/volume9/elidan08a/elidan08a.pdf
     """
     if not is_chordal(G):
-        raise nx.NetworkXError("Input graph is not chordal.")
+        raise nx.Error("Input graph is not chordal.")
 
     H = nx.Graph(G)
     H.add_edge(s, t)
@@ -179,10 +179,10 @@ def chordal_graph_cliques(G):
 
     Raises
     ------
-    NetworkXError
+    Error
         The algorithm does not support DiGraph, MultiGraph and MultiDiGraph.
         The algorithm can only be applied to chordal graphs. If the input
-        graph is found to be non-chordal, a :exc:`NetworkXError` is raised.
+        graph is found to be non-chordal, a :exc:`Error` is raised.
 
     Examples
     --------
@@ -223,10 +223,10 @@ def chordal_graph_treewidth(G):
 
     Raises
     ------
-    NetworkXError
+    Error
         The algorithm does not support DiGraph, MultiGraph and MultiDiGraph.
         The algorithm can only be applied to chordal graphs. If the input
-        graph is found to be non-chordal, a :exc:`NetworkXError` is raised.
+        graph is found to be non-chordal, a :exc:`Error` is raised.
 
     Examples
     --------
@@ -253,7 +253,7 @@ def chordal_graph_treewidth(G):
     .. [1] https://en.wikipedia.org/wiki/Tree_decomposition#Treewidth
     """
     if not is_chordal(G):
-        raise nx.NetworkXError("Input graph is not chordal.")
+        raise nx.Error("Input graph is not chordal.")
 
     max_clique = -1
     for clique in nx.chordal_graph_cliques(G):
@@ -264,7 +264,7 @@ def chordal_graph_treewidth(G):
 def _is_complete_graph(G):
     """Returns True if G is a complete graph."""
     if nx.number_of_selfloops(G) > 0:
-        raise nx.NetworkXError("Self loop found in _is_complete_graph()")
+        raise nx.Error("Self loop found in _is_complete_graph()")
     n = G.number_of_nodes()
     if n < 2:
         return True
@@ -304,7 +304,7 @@ def _find_chordality_breaker(G, s=None, treewidth_bound=sys.maxsize):
     nodes that together with s are involved in the cycle.
     """
     if nx.number_of_selfloops(G) > 0:
-        raise nx.NetworkXError("Input graph is not chordal.")
+        raise nx.Error("Input graph is not chordal.")
     unnumbered = set(G)
     if s is None:
         s = arbitrary_element(G)
@@ -351,10 +351,10 @@ def _chordal_graph_cliques(G):
 
     Raises
     ------
-    NetworkXError
+    Error
         The algorithm does not support DiGraph, MultiGraph and MultiDiGraph.
         The algorithm can only be applied to chordal graphs. If the input
-        graph is found to be non-chordal, a :exc:`NetworkXError` is raised.
+        graph is found to be non-chordal, a :exc:`Error` is raised.
 
     Examples
     --------
@@ -380,7 +380,7 @@ def _chordal_graph_cliques(G):
     for C in (G.subgraph(c).copy() for c in connected_components(G)):
         if C.number_of_nodes() == 1:
             if nx.number_of_selfloops(C) > 0:
-                raise nx.NetworkXError("Input graph is not chordal.")
+                raise nx.Error("Input graph is not chordal.")
             yield frozenset(C.nodes())
         else:
             unnumbered = set(C.nodes())
@@ -400,7 +400,7 @@ def _chordal_graph_cliques(G):
                         yield frozenset(clique_wanna_be)
                     clique_wanna_be = new_clique_wanna_be
                 else:
-                    raise nx.NetworkXError("Input graph is not chordal.")
+                    raise nx.Error("Input graph is not chordal.")
             yield frozenset(clique_wanna_be)
 
 

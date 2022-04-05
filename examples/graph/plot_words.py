@@ -71,7 +71,7 @@ for (source, target) in [("chaos", "order"), ("nodes", "graph"), ("pound", "mark
         shortest_path = nx.shortest_path(G, source, target)
         for n in shortest_path:
             print(n)
-    except nx.NetworkXNoPath:
+    except nx.NoPath:
         print("None")
 
 

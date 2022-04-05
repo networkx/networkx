@@ -159,7 +159,7 @@ def eulerian_circuit(G, source=None, keys=False):
 
     Raises
     ------
-    NetworkXError
+    Error
        If the graph is not Eulerian.
 
     See Also
@@ -196,7 +196,7 @@ def eulerian_circuit(G, source=None, keys=False):
 
     """
     if not is_eulerian(G):
-        raise nx.NetworkXError("G is not Eulerian.")
+        raise nx.Error("G is not Eulerian.")
     if G.is_directed():
         G = G.reverse()
     else:
@@ -317,7 +317,7 @@ def eulerian_path(G, source=None, keys=False):
     will raise error even if an Euler Path exists.
     """
     if not has_eulerian_path(G, source):
-        raise nx.NetworkXError("Graph has no Eulerian paths.")
+        raise nx.Error("Graph has no Eulerian paths.")
     if G.is_directed():
         G = G.reverse()
         if source is None or nx.is_eulerian(G) is False:
@@ -364,7 +364,7 @@ def eulerize(G):
 
     Raises
     ------
-    NetworkXError
+    Error
        If the graph is not connected.
 
     See Also
@@ -389,9 +389,9 @@ def eulerize(G):
 
     """
     if G.order() == 0:
-        raise nx.NetworkXPointlessConcept("Cannot Eulerize null graph")
+        raise nx.PointlessConcept("Cannot Eulerize null graph")
     if not nx.is_connected(G):
-        raise nx.NetworkXError("G is not connected")
+        raise nx.Error("G is not connected")
     odd_degree_nodes = [n for n, d in G.degree() if d % 2 == 1]
     G = nx.MultiGraph(G)
     if len(odd_degree_nodes) == 0:

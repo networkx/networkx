@@ -229,7 +229,7 @@ class TestCliques:
         assert H1.adj == H2.adj
 
     def test_directed(self):
-        with pytest.raises(nx.NetworkXNotImplemented):
+        with pytest.raises(nx.NotImplemented):
             next(nx.find_cliques(nx.DiGraph()))
 
 

@@ -5,7 +5,7 @@ from collections import defaultdict
 from collections.abc import Mapping
 
 import networkx as nx
-from networkx.exception import NetworkXError
+from networkx.exception import Error
 from networkx.utils import not_implemented_for
 
 from networkx.algorithms.approximation import local_node_connectivity
@@ -46,7 +46,7 @@ def k_components(G, min_density=0.95):
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
         If G is directed.
 
     Examples
@@ -241,7 +241,7 @@ class _AntiGraph(nx.Graph):
         try:
             return iter(set(self._adj) - set(self._adj[n]) - {n})
         except KeyError as err:
-            raise NetworkXError(f"The node {n} is not in the graph.") from err
+            raise Error(f"The node {n} is not in the graph.") from err
 
     class AntiAtlasView(Mapping):
         """An adjacency inner dict for AntiGraph"""

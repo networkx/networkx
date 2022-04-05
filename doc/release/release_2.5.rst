@@ -297,7 +297,7 @@ A total of 256 changes have been committed.
 - Add negative cycle detection heuristic (#3879)
 - Remove unused imports (#3855)
 - Fixed Bug in generate_gml(G, stringizer=None) (#3841)
-- Raise NetworkXError when k < 2 (#3761)
+- Raise Error when k < 2 (#3761)
 - MAINT: rm np.matrix from alg. conn. module
 - MAINT: rm np.matrix from attribute_ac.
 - MAINT,TST: Parametrize methods in TestAlgebraicConnectivity.

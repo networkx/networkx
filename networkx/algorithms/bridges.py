@@ -184,5 +184,5 @@ def local_bridges(G, with_span=True, weight=None):
                 try:
                     span = nx.shortest_path_length(G, u, v, weight=hide_edge)
                     yield u, v, span
-                except nx.NetworkXNoPath:
+                except nx.NoPath:
                     yield u, v, float("inf")

@@ -52,8 +52,8 @@ def test_weight_key():
 
 
 def test_is_locally_k_edge_connected_exceptions():
-    pytest.raises(nx.NetworkXNotImplemented, is_k_edge_connected, nx.DiGraph(), k=0)
-    pytest.raises(nx.NetworkXNotImplemented, is_k_edge_connected, nx.MultiGraph(), k=0)
+    pytest.raises(nx.NotImplemented, is_k_edge_connected, nx.DiGraph(), k=0)
+    pytest.raises(nx.NotImplemented, is_k_edge_connected, nx.MultiGraph(), k=0)
     pytest.raises(ValueError, is_k_edge_connected, nx.Graph(), k=0)
 
 
@@ -76,10 +76,10 @@ def test_is_k_edge_connected():
 
 def test_is_k_edge_connected_exceptions():
     pytest.raises(
-        nx.NetworkXNotImplemented, is_locally_k_edge_connected, nx.DiGraph(), 1, 2, k=0
+        nx.NotImplemented, is_locally_k_edge_connected, nx.DiGraph(), 1, 2, k=0
     )
     pytest.raises(
-        nx.NetworkXNotImplemented,
+        nx.NotImplemented,
         is_locally_k_edge_connected,
         nx.MultiGraph(),
         1,
@@ -137,12 +137,12 @@ def test_invalid_k():
 
 def test_unfeasible():
     G = tarjan_bridge_graph()
-    pytest.raises(nx.NetworkXUnfeasible, list, k_edge_augmentation(G, k=1, avail=[]))
+    pytest.raises(nx.Unfeasible, list, k_edge_augmentation(G, k=1, avail=[]))
 
-    pytest.raises(nx.NetworkXUnfeasible, list, k_edge_augmentation(G, k=2, avail=[]))
+    pytest.raises(nx.Unfeasible, list, k_edge_augmentation(G, k=2, avail=[]))
 
     pytest.raises(
-        nx.NetworkXUnfeasible, list, k_edge_augmentation(G, k=2, avail=[(7, 9)])
+        nx.Unfeasible, list, k_edge_augmentation(G, k=2, avail=[(7, 9)])
     )
 
     # partial solutions should not error if real solutions are infeasible
@@ -275,7 +275,7 @@ def _augment_and_check(
     if orig_k is None:
         try:
             orig_k = nx.edge_connectivity(G)
-        except nx.NetworkXPointlessConcept:
+        except nx.PointlessConcept:
             orig_k = 0
     info = {}
     try:
@@ -291,7 +291,7 @@ def _augment_and_check(
             aug_edges = []
             for edge in generator:
                 aug_edges.append(edge)
-        except nx.NetworkXUnfeasible:
+        except nx.Unfeasible:
             infeasible = True
             info["infeasible"] = True
             assert len(aug_edges) == 0, "should not generate anything if unfeasible"
@@ -308,7 +308,7 @@ def _augment_and_check(
                     G_aug_all.add_edges_from(avail_dict.keys())
                     try:
                         max_aug_k = nx.edge_connectivity(G_aug_all)
-                    except nx.NetworkXPointlessConcept:
+                    except nx.PointlessConcept:
                         max_aug_k = 0
 
                 assert max_aug_k < k, (
@@ -363,7 +363,7 @@ def _augment_and_check(
         G_aug.add_edges_from(aug_edges)
         try:
             aug_k = nx.edge_connectivity(G_aug)
-        except nx.NetworkXPointlessConcept:
+        except nx.PointlessConcept:
             aug_k = 0
         info["aug_k"] = aug_k
 
@@ -396,7 +396,7 @@ def _check_augmentations(G, avail=None, max_k=None, weight=None, verbose=False):
     # Using all available edges, find the maximum edge-connectivity
     try:
         orig_k = nx.edge_connectivity(G)
-    except nx.NetworkXPointlessConcept:
+    except nx.PointlessConcept:
         orig_k = 0
 
     if avail is not None:
@@ -405,7 +405,7 @@ def _check_augmentations(G, avail=None, max_k=None, weight=None, verbose=False):
         G_aug_all.add_edges_from(all_aug_edges)
         try:
             max_aug_k = nx.edge_connectivity(G_aug_all)
-        except nx.NetworkXPointlessConcept:
+        except nx.PointlessConcept:
             max_aug_k = 0
     else:
         max_aug_k = G.number_of_nodes() - 1

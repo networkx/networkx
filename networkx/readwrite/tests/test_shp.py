@@ -249,7 +249,7 @@ class TestMissingGeometry:
             drv.DeleteDataSource(self.path)
 
     def test_missing_geometry(self):
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             G = nx.read_shp(self.path)
 
 

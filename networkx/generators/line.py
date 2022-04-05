@@ -209,7 +209,7 @@ def inverse_line_graph(G):
     Then H is the inverse line graph of G.
 
     Not all graphs are line graphs and these do not have an inverse line graph.
-    In these cases this function raises a NetworkXError.
+    In these cases this function raises a Error.
 
     Parameters
     ----------
@@ -223,10 +223,10 @@ def inverse_line_graph(G):
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
         If G is directed or a multigraph
 
-    NetworkXError
+    Error
         If G is not a line graph
 
     Notes
@@ -264,7 +264,7 @@ def inverse_line_graph(G):
             "inverse_line_graph() doesn't work on an edgeless graph. "
             "Please use this function on each component seperately."
         )
-        raise nx.NetworkXError(msg)
+        raise nx.Error(msg)
 
     starting_cell = _select_starting_cell(G)
     P = _find_partition(G, starting_cell)
@@ -276,7 +276,7 @@ def inverse_line_graph(G):
 
     if max(P_count.values()) > 2:
         msg = "G is not a line graph (vertex found in more than two partition cells)"
-        raise nx.NetworkXError(msg)
+        raise nx.Error(msg)
     W = tuple((u,) for u in P_count if P_count[u] == 1)
     H = nx.Graph()
     H.add_nodes_from(P)
@@ -291,9 +291,9 @@ def _triangles(G, e):
     """Return list of all triangles containing edge e"""
     u, v = e
     if u not in G:
-        raise nx.NetworkXError(f"Vertex {u} not in graph")
+        raise nx.Error(f"Vertex {u} not in graph")
     if v not in G[u]:
-        raise nx.NetworkXError(f"Edge ({u}, {v}) not in graph")
+        raise nx.Error(f"Edge ({u}, {v}) not in graph")
     triangle_list = []
     for x in G[u]:
         if x in G[v]:
@@ -316,7 +316,7 @@ def _odd_triangle(G, T):
 
     Raises
     ------
-    NetworkXError
+    Error
         T is not a triangle in G
 
     Notes
@@ -328,10 +328,10 @@ def _odd_triangle(G, T):
     """
     for u in T:
         if u not in G.nodes():
-            raise nx.NetworkXError(f"Vertex {u} not in graph")
+            raise nx.Error(f"Vertex {u} not in graph")
     for e in list(combinations(T, 2)):
         if e[0] not in G[e[1]]:
-            raise nx.NetworkXError(f"Edge ({e[0]}, {e[1]}) not in graph")
+            raise nx.Error(f"Edge ({e[0]}, {e[1]}) not in graph")
 
     T_neighbors = defaultdict(int)
     for t in T:
@@ -358,7 +358,7 @@ def _find_partition(G, starting_cell):
 
     Raises
     ------
-    NetworkXError
+    Error
         If a cell is not a complete subgraph then G is not a line graph
     """
     G_partition = G.copy()
@@ -386,7 +386,7 @@ def _find_partition(G, starting_cell):
                             "G is not a line graph"
                             "(partition cell not a complete subgraph)"
                         )
-                        raise nx.NetworkXError(msg)
+                        raise nx.Error(msg)
             P.append(tuple(new_cell))
             G_partition.remove_edges_from(list(combinations(new_cell, 2)))
             partitioned_vertices += new_cell
@@ -407,7 +407,7 @@ def _select_starting_cell(G, starting_edge=None):
 
     Raises
     ------
-    NetworkXError
+    Error
         If it is determined that G is not a line graph
 
     Notes
@@ -423,7 +423,7 @@ def _select_starting_cell(G, starting_edge=None):
         e = starting_edge
         if e[1] not in G[e[0]]:
             msg = f"starting_edge ({e[0]}, {e[1]}) is not in the Graph"
-            raise nx.NetworkXError(msg)
+            raise nx.Error(msg)
     e_triangles = _triangles(G, e)
     r = len(e_triangles)
     if r == 0:
@@ -471,7 +471,7 @@ def _select_starting_cell(G, starting_edge=None):
                                 "G is not a line graph (odd triangles "
                                 "do not form complete subgraph)"
                             )
-                            raise nx.NetworkXError(msg)
+                            raise nx.Error(msg)
                 # otherwise then we can use this as the starting cell
                 starting_cell = tuple(triangle_nodes)
             else:
@@ -479,11 +479,11 @@ def _select_starting_cell(G, starting_edge=None):
                     "G is not a line graph (odd triangles "
                     "do not form complete subgraph)"
                 )
-                raise nx.NetworkXError(msg)
+                raise nx.Error(msg)
         else:
             msg = (
                 "G is not a line graph (incorrect number of "
                 "odd triangles around starting edge)"
             )
-            raise nx.NetworkXError(msg)
+            raise nx.Error(msg)
     return starting_cell

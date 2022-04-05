@@ -76,7 +76,7 @@ def incidence_matrix(G, nodelist=None, edgelist=None, oriented=False, weight=Non
             ui = node_index[u]
             vi = node_index[v]
         except KeyError as err:
-            raise nx.NetworkXError(
+            raise nx.Error(
                 f"node {u} or {v} in edgelist but not in nodelist"
             ) from err
         if weight is None:

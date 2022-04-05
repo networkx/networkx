@@ -330,7 +330,7 @@ def threshold_graph(creation_sequence, create_using=None):
 
     G = nx.empty_graph(0, create_using)
     if G.is_directed():
-        raise nx.NetworkXError("Directed Graph not supported")
+        raise nx.Error("Directed Graph not supported")
 
     G.name = "Threshold Graph"
 

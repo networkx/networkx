@@ -242,15 +242,15 @@ class TestFunction:
     def test_freeze(self):
         G = nx.freeze(self.G)
         assert G.frozen
-        pytest.raises(nx.NetworkXError, G.add_node, 1)
-        pytest.raises(nx.NetworkXError, G.add_nodes_from, [1])
-        pytest.raises(nx.NetworkXError, G.remove_node, 1)
-        pytest.raises(nx.NetworkXError, G.remove_nodes_from, [1])
-        pytest.raises(nx.NetworkXError, G.add_edge, 1, 2)
-        pytest.raises(nx.NetworkXError, G.add_edges_from, [(1, 2)])
-        pytest.raises(nx.NetworkXError, G.remove_edge, 1, 2)
-        pytest.raises(nx.NetworkXError, G.remove_edges_from, [(1, 2)])
-        pytest.raises(nx.NetworkXError, G.clear)
+        pytest.raises(nx.Error, G.add_node, 1)
+        pytest.raises(nx.Error, G.add_nodes_from, [1])
+        pytest.raises(nx.Error, G.remove_node, 1)
+        pytest.raises(nx.Error, G.remove_nodes_from, [1])
+        pytest.raises(nx.Error, G.add_edge, 1, 2)
+        pytest.raises(nx.Error, G.add_edges_from, [(1, 2)])
+        pytest.raises(nx.Error, G.remove_edge, 1, 2)
+        pytest.raises(nx.Error, G.remove_edges_from, [(1, 2)])
+        pytest.raises(nx.Error, G.clear)
 
     def test_is_frozen(self):
         assert not nx.is_frozen(self.G)
@@ -273,7 +273,7 @@ class TestFunction:
         assert info == expected_node_info
 
         # must raise an error for a non-existent node
-        pytest.raises(nx.NetworkXError, nx.info, G, 1248)
+        pytest.raises(nx.Error, nx.info, G, 1248)
 
     def test_info_digraph(self):
         G = nx.DiGraph(name="path_graph(5)")
@@ -288,7 +288,7 @@ class TestFunction:
         )
         assert info == expected_node_info
 
-        pytest.raises(nx.NetworkXError, nx.info, G, n=-1)
+        pytest.raises(nx.Error, nx.info, G, n=-1)
 
     def test_neighbors_complete_graph(self):
         graph = nx.complete_graph(100)
@@ -395,7 +395,7 @@ class TestFunction:
         assert nx.is_weighted(G)
         assert nx.is_weighted(G, ("1", "0"))
 
-        pytest.raises(nx.NetworkXError, nx.is_weighted, G, (1, 2))
+        pytest.raises(nx.Error, nx.is_weighted, G, (1, 2))
 
     def test_is_negatively_weighted(self):
         G = nx.Graph()
@@ -432,7 +432,7 @@ class TestFunction:
         assert not nx.is_negatively_weighted(G, ("0", "3"))
         assert nx.is_negatively_weighted(G, ("1", "0"))
 
-        pytest.raises(nx.NetworkXError, nx.is_negatively_weighted, G, (1, 4))
+        pytest.raises(nx.Error, nx.is_negatively_weighted, G, (1, 4))
 
 
 class TestCommonNeighbors:
@@ -459,16 +459,16 @@ class TestCommonNeighbors:
         self.test(G, 1, 2, [0])
 
     def test_digraph(self):
-        with pytest.raises(nx.NetworkXNotImplemented):
+        with pytest.raises(nx.NotImplemented):
             G = nx.DiGraph()
             G.add_edges_from([(0, 1), (1, 2)])
             self.func(G, 0, 2)
 
     def test_nonexistent_nodes(self):
         G = nx.complete_graph(5)
-        pytest.raises(nx.NetworkXError, nx.common_neighbors, G, 5, 4)
-        pytest.raises(nx.NetworkXError, nx.common_neighbors, G, 4, 5)
-        pytest.raises(nx.NetworkXError, nx.common_neighbors, G, 5, 6)
+        pytest.raises(nx.Error, nx.common_neighbors, G, 5, 4)
+        pytest.raises(nx.Error, nx.common_neighbors, G, 4, 5)
+        pytest.raises(nx.Error, nx.common_neighbors, G, 5, 6)
 
     def test_custom1(self):
         """Case of no common neighbors."""
@@ -763,7 +763,7 @@ def test_pathweight():
         graph.add_edges_from(edges)
         assert nx.path_weight(graph, valid_path, "cost") == 4
         assert nx.path_weight(graph, valid_path, "dist") == 6
-        pytest.raises(nx.NetworkXNoPath, nx.path_weight, graph, invalid_path, "cost")
+        pytest.raises(nx.NoPath, nx.path_weight, graph, invalid_path, "cost")
 
 
 def test_ispath():

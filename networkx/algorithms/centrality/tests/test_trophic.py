@@ -149,7 +149,7 @@ def test_trophic_levels_singular_matrix():
     """Should raise an error with graphs with only non-basal nodes"""
     matrix = np.identity(4)
     G = nx.from_numpy_array(matrix, create_using=nx.DiGraph)
-    with pytest.raises(nx.NetworkXError) as e:
+    with pytest.raises(nx.Error) as e:
         nx.trophic_levels(G)
     msg = (
         "Trophic levels are only defined for graphs where every node "
@@ -175,7 +175,7 @@ def test_trophic_levels_singular_with_basal():
     G.add_edge("c", "d")
     G.add_edge("d", "c")
 
-    with pytest.raises(nx.NetworkXError) as e:
+    with pytest.raises(nx.Error) as e:
         nx.trophic_levels(G)
     msg = (
         "Trophic levels are only defined for graphs where every node "
@@ -189,7 +189,7 @@ def test_trophic_levels_singular_with_basal():
     G.add_edge("a", "b")  # a has in-degree zero
     G.add_edge("c", "b")  # b is one level above a and c
     G.add_edge("c", "c")  # c has a self-loop
-    with pytest.raises(nx.NetworkXError) as e:
+    with pytest.raises(nx.Error) as e:
         nx.trophic_levels(G)
     msg = (
         "Trophic levels are only defined for graphs where every node "

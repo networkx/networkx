@@ -44,14 +44,14 @@ def test_infinite_demand_raise(simple_flow_graph):
     G = simple_flow_graph
     inf = float("inf")
     nx.set_node_attributes(G, {"a": {"demand": inf}})
-    pytest.raises(nx.NetworkXError, nx.network_simplex, G)
+    pytest.raises(nx.Error, nx.network_simplex, G)
 
 
 def test_neg_infinite_demand_raise(simple_flow_graph):
     G = simple_flow_graph
     inf = float("inf")
     nx.set_node_attributes(G, {"a": {"demand": -inf}})
-    pytest.raises(nx.NetworkXError, nx.network_simplex, G)
+    pytest.raises(nx.Error, nx.network_simplex, G)
 
 
 def test_infinite_weight_raise(simple_flow_graph):
@@ -60,30 +60,30 @@ def test_infinite_weight_raise(simple_flow_graph):
     nx.set_edge_attributes(
         G, {("a", "b"): {"weight": inf}, ("b", "d"): {"weight": inf}}
     )
-    pytest.raises(nx.NetworkXError, nx.network_simplex, G)
+    pytest.raises(nx.Error, nx.network_simplex, G)
 
 
 def test_nonzero_net_demand_raise(simple_flow_graph):
     G = simple_flow_graph
     nx.set_node_attributes(G, {"b": {"demand": -4}})
-    pytest.raises(nx.NetworkXUnfeasible, nx.network_simplex, G)
+    pytest.raises(nx.Unfeasible, nx.network_simplex, G)
 
 
 def test_negative_capacity_raise(simple_flow_graph):
     G = simple_flow_graph
     nx.set_edge_attributes(G, {("a", "b"): {"weight": 1}, ("b", "d"): {"capacity": -9}})
-    pytest.raises(nx.NetworkXUnfeasible, nx.network_simplex, G)
+    pytest.raises(nx.Unfeasible, nx.network_simplex, G)
 
 
 def test_no_flow_satisfying_demands(simple_no_flow_graph):
     G = simple_no_flow_graph
-    pytest.raises(nx.NetworkXUnfeasible, nx.network_simplex, G)
+    pytest.raises(nx.Unfeasible, nx.network_simplex, G)
 
 
 def test_sum_demands_not_zero(simple_no_flow_graph):
     G = simple_no_flow_graph
     nx.set_node_attributes(G, {"t": {"demand": 4}})
-    pytest.raises(nx.NetworkXUnfeasible, nx.network_simplex, G)
+    pytest.raises(nx.Unfeasible, nx.network_simplex, G)
 
 
 def test_google_or_tools_example():
@@ -169,7 +169,7 @@ def test_negcycle_infcap():
     G.add_edge("b", "d", weight=1)
     G.add_edge("d", "c", weight=-2)
     G.add_edge("d", "t", weight=1, capacity=3)
-    pytest.raises(nx.NetworkXUnfeasible, nx.network_simplex, G)
+    pytest.raises(nx.Unfeasible, nx.network_simplex, G)
 
 
 def test_transshipment():
@@ -298,7 +298,7 @@ def test_deadend():
     G.nodes[3]["demand"] = 13
 
     G.add_edges_from([(0, 2), (0, 3), (2, 1)], capacity=20, weight=0.1)
-    pytest.raises(nx.NetworkXUnfeasible, nx.network_simplex, G)
+    pytest.raises(nx.Unfeasible, nx.network_simplex, G)
 
 
 def test_infinite_capacity_neg_digon():
@@ -313,7 +313,7 @@ def test_infinite_capacity_neg_digon():
     ]
     G = nx.DiGraph(edges)
     G.add_nodes_from(nodes)
-    pytest.raises(nx.NetworkXUnbounded, nx.network_simplex, G)
+    pytest.raises(nx.Unbounded, nx.network_simplex, G)
 
 
 def test_multidigraph():
@@ -331,7 +331,7 @@ def test_negative_selfloops():
     """
     G = nx.DiGraph()
     G.add_edge(1, 1, weight=-1)
-    pytest.raises(nx.NetworkXUnbounded, nx.network_simplex, G)
+    pytest.raises(nx.Unbounded, nx.network_simplex, G)
 
     G[1][1]["capacity"] = 2
     flowCost, H = nx.network_simplex(G)
@@ -341,7 +341,7 @@ def test_negative_selfloops():
     G = nx.MultiDiGraph()
     G.add_edge(1, 1, "x", weight=-1)
     G.add_edge(1, 1, "y", weight=1)
-    pytest.raises(nx.NetworkXUnbounded, nx.network_simplex, G)
+    pytest.raises(nx.Unbounded, nx.network_simplex, G)
 
     G[1][1]["x"]["capacity"] = 2
     flowCost, H = nx.network_simplex(G)
@@ -370,8 +370,8 @@ def test_bone_shaped():
 
 def test_graphs_type_exceptions():
     G = nx.Graph()
-    pytest.raises(nx.NetworkXNotImplemented, nx.network_simplex, G)
+    pytest.raises(nx.NotImplemented, nx.network_simplex, G)
     G = nx.MultiGraph()
-    pytest.raises(nx.NetworkXNotImplemented, nx.network_simplex, G)
+    pytest.raises(nx.NotImplemented, nx.network_simplex, G)
     G = nx.DiGraph()
-    pytest.raises(nx.NetworkXError, nx.network_simplex, G)
+    pytest.raises(nx.Error, nx.network_simplex, G)

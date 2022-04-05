@@ -7,7 +7,7 @@ generally inspired by biological networks.
 """
 import networkx as nx
 from networkx.utils import py_random_state
-from networkx.exception import NetworkXError
+from networkx.exception import Error
 
 __all__ = ["partial_duplication_graph", "duplication_divergence_graph"]
 
@@ -62,9 +62,9 @@ def partial_duplication_graph(N, n, p, q, seed=None):
     """
     if p < 0 or p > 1 or q < 0 or q > 1:
         msg = "partial duplication graph must have 0 <= p, q <= 1."
-        raise NetworkXError(msg)
+        raise Error(msg)
     if n > N:
-        raise NetworkXError("partial duplication graph must have n <= N.")
+        raise Error("partial duplication graph must have n <= N.")
 
     G = nx.complete_graph(n)
     for new_node in range(n, N):
@@ -110,7 +110,7 @@ def duplication_divergence_graph(n, p, seed=None):
 
     Raises
     ------
-    NetworkXError
+    Error
         If `p` is not a valid probability.
         If `n` is less than 2.
 
@@ -129,11 +129,11 @@ def duplication_divergence_graph(n, p, seed=None):
 
     """
     if p > 1 or p < 0:
-        msg = f"NetworkXError p={p} is not in [0,1]."
-        raise nx.NetworkXError(msg)
+        msg = f"Error p={p} is not in [0,1]."
+        raise nx.Error(msg)
     if n < 2:
         msg = "n must be greater than or equal to 2"
-        raise nx.NetworkXError(msg)
+        raise nx.Error(msg)
 
     G = nx.Graph()
 

@@ -51,7 +51,7 @@ def node_link_data(G, attrs=None):
 
     Raises
     ------
-    NetworkXError
+    Error
         If values in attrs are not unique.
 
     Examples
@@ -96,7 +96,7 @@ def node_link_data(G, attrs=None):
     # Allow 'key' to be omitted from attrs if the graph is not a multigraph.
     key = None if not multigraph else attrs["key"]
     if len({source, target, key}) < 3:
-        raise nx.NetworkXError("Attribute names are not unique.")
+        raise nx.Error("Attribute names are not unique.")
     data = {
         "directed": G.is_directed(),
         "multigraph": multigraph,

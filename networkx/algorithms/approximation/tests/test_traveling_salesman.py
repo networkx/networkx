@@ -28,7 +28,7 @@ def test_christofides_hamiltonian():
 def test_christofides_incomplete_graph():
     G = nx.complete_graph(10)
     G.remove_edge(0, 1)
-    pytest.raises(nx.NetworkXError, nx_app.christofides, G)
+    pytest.raises(nx.Error, nx_app.christofides, G)
 
 
 def test_christofides_ignore_selfloops():
@@ -148,8 +148,8 @@ class TestGreedyTSP(TestBase):
         validate_solution(cycle, cost, ["D", "C", "A", "B", "D"], 27.0)
 
     def test_not_complete_graph(self):
-        pytest.raises(nx.NetworkXError, nx_app.greedy_tsp, self.incompleteUG)
-        pytest.raises(nx.NetworkXError, nx_app.greedy_tsp, self.incompleteDG)
+        pytest.raises(nx.Error, nx_app.greedy_tsp, self.incompleteUG)
+        pytest.raises(nx.Error, nx_app.greedy_tsp, self.incompleteDG)
 
     def test_not_weighted_graph(self):
         nx_app.greedy_tsp(self.unweightedUG)
@@ -211,11 +211,11 @@ class TestSimulatedAnnealingTSP(TestBase):
     def test_error_on_input_order_mistake(self):
         # see issue #4846 https://github.com/networkx/networkx/issues/4846
         pytest.raises(TypeError, self.tsp, self.UG, weight="weight")
-        pytest.raises(nx.NetworkXError, self.tsp, self.UG, "weight")
+        pytest.raises(nx.Error, self.tsp, self.UG, "weight")
 
     def test_not_complete_graph(self):
-        pytest.raises(nx.NetworkXError, self.tsp, self.incompleteUG, "greedy", source=0)
-        pytest.raises(nx.NetworkXError, self.tsp, self.incompleteDG, "greedy", source=0)
+        pytest.raises(nx.Error, self.tsp, self.incompleteUG, "greedy", source=0)
+        pytest.raises(nx.Error, self.tsp, self.incompleteDG, "greedy", source=0)
 
     def test_ignore_selfloops(self):
         G = nx.complete_graph(5)
@@ -1001,7 +1001,7 @@ def test_asadpour_disconnected_graph():
     nx.set_edge_attributes(G, 1, "weight")
     G.add_node(5)
 
-    pytest.raises(nx.NetworkXError, nx_app.asadpour_atsp, G)
+    pytest.raises(nx.Error, nx_app.asadpour_atsp, G)
 
 
 def test_asadpour_incomplete_graph():
@@ -1016,7 +1016,7 @@ def test_asadpour_incomplete_graph():
     nx.set_edge_attributes(G, 1, "weight")
     G.remove_edge(0, 1)
 
-    pytest.raises(nx.NetworkXError, nx_app.asadpour_atsp, G)
+    pytest.raises(nx.Error, nx_app.asadpour_atsp, G)
 
 
 def test_asadpour_empty_graph():
@@ -1025,7 +1025,7 @@ def test_asadpour_empty_graph():
     """
     G = nx.DiGraph()
 
-    pytest.raises(nx.NetworkXError, nx_app.asadpour_atsp, G)
+    pytest.raises(nx.Error, nx_app.asadpour_atsp, G)
 
 
 @pytest.mark.slow
@@ -1086,4 +1086,4 @@ def test_directed_tsp_impossible():
     G = nx.DiGraph()
     G.add_weighted_edges_from(edges)
 
-    pytest.raises(nx.NetworkXError, nx_app.traveling_salesman_problem, G)
+    pytest.raises(nx.Error, nx_app.traveling_salesman_problem, G)

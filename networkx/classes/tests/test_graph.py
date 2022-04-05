@@ -55,7 +55,7 @@ class BaseGraphTester:
     def test_neighbors(self):
         G = self.K3
         assert sorted(G.neighbors(0)) == [1, 2]
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             G.neighbors(-1)
 
     @pytest.mark.skipif(
@@ -91,7 +91,7 @@ class BaseGraphTester:
         assert edges_equal(G.edges(), [(0, 1), (0, 2), (1, 2)])
         assert edges_equal(G.edges(0), [(0, 1), (0, 2)])
         assert edges_equal(G.edges([0, 1]), [(0, 1), (0, 2), (1, 2)])
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             G.edges(-1)
 
     def test_degree(self):
@@ -99,7 +99,7 @@ class BaseGraphTester:
         assert sorted(G.degree()) == [(0, 2), (1, 2), (2, 2)]
         assert dict(G.degree()) == {0: 2, 1: 2, 2: 2}
         assert G.degree(0) == 2
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             G.degree(-1)  # node not in graph
 
     def test_size(self):
@@ -119,25 +119,25 @@ class BaseGraphTester:
         # node not in graph doesn't get caught upon creation of iterator
         bunch = G.nbunch_iter(-1)
         # but gets caught when iterator used
-        with pytest.raises(nx.NetworkXError, match="is not a node or a sequence"):
+        with pytest.raises(nx.Error, match="is not a node or a sequence"):
             list(bunch)
         # unhashable doesn't get caught upon creation of iterator
         bunch = G.nbunch_iter([0, 1, 2, {}])
         # but gets caught when iterator hits the unhashable
         with pytest.raises(
-            nx.NetworkXError, match="in sequence nbunch is not a valid node"
+            nx.Error, match="in sequence nbunch is not a valid node"
         ):
             list(bunch)
 
     def test_nbunch_iter_node_format_raise(self):
         # Tests that a node that would have failed string formatting
         # doesn't cause an error when attempting to raise a
-        # :exc:`nx.NetworkXError`.
+        # :exc:`nx.Error`.
 
         # For more information, see pull request #1813.
         G = self.Graph()
         nbunch = [("x", set())]
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             list(G.nbunch_iter(nbunch))
 
     def test_selfloop_degree(self):
@@ -459,8 +459,8 @@ class BaseAttrGraphTester(BaseGraphTester):
         assert H is H2._graph
         assert H2.has_edge(0, 1)
         assert H2.has_edge(1, 0) or H.is_directed()
-        pytest.raises(nx.NetworkXError, H2.add_node, -1)
-        pytest.raises(nx.NetworkXError, H2.add_edge, 1, 2)
+        pytest.raises(nx.Error, H2.add_node, -1)
+        pytest.raises(nx.Error, H2.add_edge, 1, 2)
         H.add_edge(1, 2)
         assert H2.has_edge(1, 2)
         assert H2.has_edge(2, 1) or H.is_directed()
@@ -471,8 +471,8 @@ class BaseAttrGraphTester(BaseGraphTester):
         assert H is H2._graph
         assert H2.has_edge(0, 1)
         assert H2.has_edge(1, 0)
-        pytest.raises(nx.NetworkXError, H2.add_node, -1)
-        pytest.raises(nx.NetworkXError, H2.add_edge, 1, 2)
+        pytest.raises(nx.Error, H2.add_node, -1)
+        pytest.raises(nx.Error, H2.add_edge, 1, 2)
         H.add_edge(1, 2)
         assert H2.has_edge(1, 2)
         assert H2.has_edge(2, 1)
@@ -631,7 +631,7 @@ class TestGraph(BaseAttrGraphTester):
         G = self.K3.copy()
         G.remove_node(0)
         assert G.adj == {1: {2: {}}, 2: {1: {}}}
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             G.remove_node(-1)
 
         # generator here to implement list,set,string...
@@ -666,9 +666,9 @@ class TestGraph(BaseAttrGraphTester):
             2: {0: {"weight": 3, "data": 2}, 1: {"data": 4}},
         }
 
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             G.add_edges_from([(0,)])  # too few in tuple
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             G.add_edges_from([(0, 1, 2, 3)])  # too many in tuple
         with pytest.raises(TypeError):
             G.add_edges_from([0])  # not a tuple
@@ -677,7 +677,7 @@ class TestGraph(BaseAttrGraphTester):
         G = self.K3.copy()
         G.remove_edge(0, 1)
         assert G.adj == {0: {2: {}}, 1: {2: {}}, 2: {0: {}, 1: {}}}
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             G.remove_edge(-1, 0)
 
     def test_remove_edges_from(self):
@@ -710,7 +710,7 @@ class TestGraph(BaseAttrGraphTester):
         assert edges_equal(G.edges(data=True), all_edges)
         assert edges_equal(G.edges(0, data=True), [(0, 1, {}), (0, 2, {})])
         assert edges_equal(G.edges([0, 1], data=True), all_edges)
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             G.edges(-1, True)
 
     def test_get_edge_data(self):
@@ -790,7 +790,7 @@ class TestGraph(BaseAttrGraphTester):
         assert H.size() == 1
 
         # No inputs -> exception
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.Error):
             nx.Graph().update()
 
 

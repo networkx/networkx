@@ -12,27 +12,27 @@ __all__ = [
     "PowerIterationFailedConvergence",
     "ExceededMaxIterations",
     "AmbiguousSolution",
-    "NetworkXAlgorithmError",
-    "NetworkXException",
-    "NetworkXError",
-    "NetworkXNoCycle",
-    "NetworkXNoPath",
-    "NetworkXNotImplemented",
-    "NetworkXPointlessConcept",
-    "NetworkXUnbounded",
-    "NetworkXUnfeasible",
+    "AlgorithmError",
+    "Exception",
+    "Error",
+    "NoCycle",
+    "NoPath",
+    "NotImplemented",
+    "PointlessConcept",
+    "Unbounded",
+    "Unfeasible",
 ]
 
 
-class NetworkXException(Exception):
+class Exception(Exception):
     """Base class for exceptions in NetworkX."""
 
 
-class NetworkXError(NetworkXException):
+class Error(Exception):
     """Exception for a serious error in NetworkX"""
 
 
-class NetworkXPointlessConcept(NetworkXException):
+class PointlessConcept(Exception):
     """Raised when a null graph is provided as input to an algorithm
     that cannot use it.
 
@@ -48,46 +48,46 @@ class NetworkXPointlessConcept(NetworkXException):
     """
 
 
-class NetworkXAlgorithmError(NetworkXException):
+class AlgorithmError(Exception):
     """Exception for unexpected termination of algorithms."""
 
 
-class NetworkXUnfeasible(NetworkXAlgorithmError):
+class Unfeasible(AlgorithmError):
     """Exception raised by algorithms trying to solve a problem
     instance that has no feasible solution."""
 
 
-class NetworkXNoPath(NetworkXUnfeasible):
+class NoPath(Unfeasible):
     """Exception for algorithms that should return a path when running
     on graphs where such a path does not exist."""
 
 
-class NetworkXNoCycle(NetworkXUnfeasible):
+class NoCycle(Unfeasible):
     """Exception for algorithms that should return a cycle when running
     on graphs where such a cycle does not exist."""
 
 
-class HasACycle(NetworkXException):
+class HasACycle(Exception):
     """Raised if a graph has a cycle when an algorithm expects that it
     will have no cycles.
 
     """
 
 
-class NetworkXUnbounded(NetworkXAlgorithmError):
+class Unbounded(AlgorithmError):
     """Exception raised by algorithms trying to solve a maximization
     or a minimization problem instance that is unbounded."""
 
 
-class NetworkXNotImplemented(NetworkXException):
+class NotImplemented(Exception):
     """Exception raised by algorithms not implemented for a type of graph."""
 
 
-class NodeNotFound(NetworkXException):
+class NodeNotFound(Exception):
     """Exception raised if requested node is not present in the graph"""
 
 
-class AmbiguousSolution(NetworkXException):
+class AmbiguousSolution(Exception):
     """Raised if more than one valid solution exists for an intermediary step
     of an algorithm.
 
@@ -99,7 +99,7 @@ class AmbiguousSolution(NetworkXException):
     """
 
 
-class ExceededMaxIterations(NetworkXException):
+class ExceededMaxIterations(Exception):
     """Raised if a loop iterates too many times without breaking.
 
     This may occur, for example, in an algorithm that computes

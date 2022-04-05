@@ -60,15 +60,15 @@ def dinitz(G, s, t, capacity="capacity", residual=None, value_only=False, cutoff
 
     Raises
     ------
-    NetworkXError
+    Error
         The algorithm does not support MultiGraph and MultiDiGraph. If
         the input graph is an instance of one of these two classes, a
-        NetworkXError is raised.
+        Error is raised.
 
-    NetworkXUnbounded
+    Unbounded
         If the graph has a path of infinite capacity, the value of a
         feasible flow on the graph is unbounded above and the function
-        raises a NetworkXUnbounded.
+        raises a Unbounded.
 
     See also
     --------
@@ -139,11 +139,11 @@ def dinitz(G, s, t, capacity="capacity", residual=None, value_only=False, cutoff
 
 def dinitz_impl(G, s, t, capacity, residual, cutoff):
     if s not in G:
-        raise nx.NetworkXError(f"node {str(s)} not in graph")
+        raise nx.Error(f"node {str(s)} not in graph")
     if t not in G:
-        raise nx.NetworkXError(f"node {str(t)} not in graph")
+        raise nx.Error(f"node {str(t)} not in graph")
     if s == t:
-        raise nx.NetworkXError("source and sink are the same node")
+        raise nx.Error("source and sink are the same node")
 
     if residual is None:
         R = build_residual_network(G, capacity)
@@ -204,7 +204,7 @@ def dinitz_impl(G, s, t, capacity, residual, cutoff):
             break
         this_flow = depth_first_search(parents)
         if this_flow * 2 > INF:
-            raise nx.NetworkXUnbounded("Infinite capacity path, flow unbounded above.")
+            raise nx.Unbounded("Infinite capacity path, flow unbounded above.")
         flow_value += this_flow
 
     R.graph["flow_value"] = flow_value

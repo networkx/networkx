@@ -84,7 +84,7 @@ def projected_graph(B, nodes, multigraph=False):
     generic_weighted_projected_graph
     """
     if B.is_multigraph():
-        raise nx.NetworkXError("not defined for multigraphs")
+        raise nx.Error("not defined for multigraphs")
     if B.is_directed():
         directed = True
         if multigraph:

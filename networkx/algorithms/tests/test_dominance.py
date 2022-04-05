@@ -6,11 +6,11 @@ class TestImmediateDominators:
     def test_exceptions(self):
         G = nx.Graph()
         G.add_node(0)
-        pytest.raises(nx.NetworkXNotImplemented, nx.immediate_dominators, G, 0)
+        pytest.raises(nx.NotImplemented, nx.immediate_dominators, G, 0)
         G = nx.MultiGraph(G)
-        pytest.raises(nx.NetworkXNotImplemented, nx.immediate_dominators, G, 0)
+        pytest.raises(nx.NotImplemented, nx.immediate_dominators, G, 0)
         G = nx.DiGraph([[0, 0]])
-        pytest.raises(nx.NetworkXError, nx.immediate_dominators, G, 1)
+        pytest.raises(nx.Error, nx.immediate_dominators, G, 1)
 
     def test_singleton(self):
         G = nx.DiGraph()
@@ -82,11 +82,11 @@ class TestDominanceFrontiers:
     def test_exceptions(self):
         G = nx.Graph()
         G.add_node(0)
-        pytest.raises(nx.NetworkXNotImplemented, nx.dominance_frontiers, G, 0)
+        pytest.raises(nx.NotImplemented, nx.dominance_frontiers, G, 0)
         G = nx.MultiGraph(G)
-        pytest.raises(nx.NetworkXNotImplemented, nx.dominance_frontiers, G, 0)
+        pytest.raises(nx.NotImplemented, nx.dominance_frontiers, G, 0)
         G = nx.DiGraph([[0, 0]])
-        pytest.raises(nx.NetworkXError, nx.dominance_frontiers, G, 1)
+        pytest.raises(nx.Error, nx.dominance_frontiers, G, 1)
 
     def test_singleton(self):
         G = nx.DiGraph()

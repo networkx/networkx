@@ -138,7 +138,7 @@ def edge_bfs(G, source=None, orientation=None):
                 yield e + (REVERSE,)
 
     else:
-        raise nx.NetworkXError("invalid orientation argument.")
+        raise nx.Error("invalid orientation argument.")
 
     if directed:
         neighbors = G.successors

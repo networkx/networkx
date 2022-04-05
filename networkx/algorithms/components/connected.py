@@ -27,7 +27,7 @@ def connected_components(G):
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
         If G is directed.
 
     Examples
@@ -109,7 +109,7 @@ def is_connected(G):
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
         If G is directed.
 
     Examples
@@ -132,7 +132,7 @@ def is_connected(G):
 
     """
     if len(G) == 0:
-        raise nx.NetworkXPointlessConcept(
+        raise nx.PointlessConcept(
             "Connectivity is undefined ", "for the null graph."
         )
     return sum(1 for node in _plain_bfs(G, arbitrary_element(G))) == len(G)
@@ -157,7 +157,7 @@ def node_connected_component(G, n):
 
     Raises
     ------
-    NetworkXNotImplemented
+    NotImplemented
         If G is directed.
 
     See Also

@@ -1,6 +1,6 @@
 import pytest
 import networkx as nx
-from networkx import NetworkXNotImplemented
+from networkx import NotImplemented
 
 
 class TestStronglyConnected:
@@ -170,22 +170,22 @@ class TestStronglyConnected:
         assert list(nx.strongly_connected_components_recursive(G)) == []
         assert len(nx.condensation(G)) == 0
         pytest.raises(
-            nx.NetworkXPointlessConcept, nx.is_strongly_connected, nx.DiGraph()
+            nx.PointlessConcept, nx.is_strongly_connected, nx.DiGraph()
         )
 
     def test_connected_raise(self):
         G = nx.Graph()
-        with pytest.raises(NetworkXNotImplemented):
+        with pytest.raises(NotImplemented):
             next(nx.strongly_connected_components(G))
-        with pytest.raises(NetworkXNotImplemented):
+        with pytest.raises(NotImplemented):
             next(nx.kosaraju_strongly_connected_components(G))
-        with pytest.raises(NetworkXNotImplemented):
+        with pytest.raises(NotImplemented):
             next(nx.strongly_connected_components_recursive(G))
-        pytest.raises(NetworkXNotImplemented, nx.is_strongly_connected, G)
+        pytest.raises(NotImplemented, nx.is_strongly_connected, G)
         pytest.raises(
-            nx.NetworkXPointlessConcept, nx.is_strongly_connected, nx.DiGraph()
+            nx.PointlessConcept, nx.is_strongly_connected, nx.DiGraph()
         )
-        pytest.raises(NetworkXNotImplemented, nx.condensation, G)
+        pytest.raises(NotImplemented, nx.condensation, G)
 
     strong_cc_methods = (
         nx.strongly_connected_components,

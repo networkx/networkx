@@ -1,7 +1,7 @@
 import pytest
 import networkx as nx
 from networkx import convert_node_labels_to_integers as cnlti
-from networkx import NetworkXNotImplemented
+from networkx import NotImplemented
 
 
 class TestConnected:
@@ -96,12 +96,12 @@ class TestConnected:
         assert not nx.is_connected(G)
 
     def test_connected_raise(self):
-        with pytest.raises(NetworkXNotImplemented):
+        with pytest.raises(NotImplemented):
             next(nx.connected_components(self.DG))
-        pytest.raises(NetworkXNotImplemented, nx.number_connected_components, self.DG)
-        pytest.raises(NetworkXNotImplemented, nx.node_connected_component, self.DG, 1)
-        pytest.raises(NetworkXNotImplemented, nx.is_connected, self.DG)
-        pytest.raises(nx.NetworkXPointlessConcept, nx.is_connected, nx.Graph())
+        pytest.raises(NotImplemented, nx.number_connected_components, self.DG)
+        pytest.raises(NotImplemented, nx.node_connected_component, self.DG, 1)
+        pytest.raises(NotImplemented, nx.is_connected, self.DG)
+        pytest.raises(nx.PointlessConcept, nx.is_connected, nx.Graph())
 
     def test_connected_mutability(self):
         G = self.grid

@@ -77,7 +77,7 @@ def connected_caveman_graph(l, k):
     l : int
       number of cliques
     k : int
-      size of cliques (k at least 2 or NetworkXError is raised)
+      size of cliques (k at least 2 or Error is raised)
 
     Returns
     -------
@@ -86,7 +86,7 @@ def connected_caveman_graph(l, k):
 
     Raises
     ------
-    NetworkXError
+    Error
         If the size of cliques `k` is smaller than 2.
 
     Notes
@@ -107,7 +107,7 @@ def connected_caveman_graph(l, k):
        Amer. J. Soc. 105, 493-527, 1999.
     """
     if k < 2:
-        raise nx.NetworkXError(
+        raise nx.Error(
             "The size of cliques in a connected caveman graph " "must be at least 2."
         )
 
@@ -144,7 +144,7 @@ def relaxed_caveman_graph(l, k, p, seed=None):
 
     Raises
     ------
-    NetworkXError
+    Error
      If p is not in [0,1]
 
     Examples
@@ -199,7 +199,7 @@ def random_partition_graph(sizes, p_in, p_out, seed=None, directed=False):
 
     Raises
     ------
-    NetworkXError
+    Error
       If p_in or p_out is not in [0,1]
 
     Examples
@@ -226,9 +226,9 @@ def random_partition_graph(sizes, p_in, p_out, seed=None, directed=False):
     # Use geometric method for O(n+m) complexity algorithm
     # partition = nx.community_sets(nx.get_node_attributes(G, 'affiliation'))
     if not 0.0 <= p_in <= 1.0:
-        raise nx.NetworkXError("p_in must be in [0,1]")
+        raise nx.Error("p_in must be in [0,1]")
     if not 0.0 <= p_out <= 1.0:
-        raise nx.NetworkXError("p_out must be in [0,1]")
+        raise nx.Error("p_out must be in [0,1]")
 
     # create connection matrix
     num_blocks = len(sizes)
@@ -279,7 +279,7 @@ def planted_partition_graph(l, k, p_in, p_out, seed=None, directed=False):
 
     Raises
     ------
-    NetworkXError
+    Error
       If p_in,p_out are not in [0,1] or
 
     Examples
@@ -336,7 +336,7 @@ def gaussian_random_partition_graph(n, s, v, p_in, p_out, directed=False, seed=N
 
     Raises
     ------
-    NetworkXError
+    Error
       If s is > n
       If p_in or p_out is not in [0,1]
 
@@ -363,7 +363,7 @@ def gaussian_random_partition_graph(n, s, v, p_in, p_out, directed=False, seed=N
        In the proceedings of the 11th Europ. Symp. Algorithms, 2003.
     """
     if s > n:
-        raise nx.NetworkXError("s must be <= n")
+        raise nx.Error("s must be <= n")
     assigned = 0
     sizes = []
     while True:
@@ -398,7 +398,7 @@ def ring_of_cliques(num_cliques, clique_size):
 
     Raises
     ------
-    NetworkXError
+    Error
         If the number of cliques is lower than 2 or
         if the size of cliques is smaller than 2.
 
@@ -417,9 +417,9 @@ def ring_of_cliques(num_cliques, clique_size):
     simply adds the link without removing any link from the cliques.
     """
     if num_cliques < 2:
-        raise nx.NetworkXError("A ring of cliques must have at least " "two cliques")
+        raise nx.Error("A ring of cliques must have at least " "two cliques")
     if clique_size < 2:
-        raise nx.NetworkXError("The cliques must have at least two nodes")
+        raise nx.Error("The cliques must have at least two nodes")
 
     G = nx.Graph()
     for i in range(num_cliques):
@@ -456,7 +456,7 @@ def windmill_graph(n, k):
 
     Raises
     ------
-    NetworkXError
+    Error
         If the number of cliques is less than two
         If the size of the cliques are less than two
 
@@ -472,9 +472,9 @@ def windmill_graph(n, k):
     """
     if n < 2:
         msg = "A windmill graph must have at least two cliques"
-        raise nx.NetworkXError(msg)
+        raise nx.Error(msg)
     if k < 2:
-        raise nx.NetworkXError("The cliques must have at least two nodes")
+        raise nx.Error("The cliques must have at least two nodes")
 
     G = nx.disjoint_union_all(
         itertools.chain(
@@ -525,7 +525,7 @@ def stochastic_block_model(
 
     Raises
     ------
-    NetworkXError
+    Error
       If probabilities are not in [0,1].
       If the probability matrix is not square (directed case).
       If the probability matrix is not symmetric (undirected case).
@@ -568,28 +568,28 @@ def stochastic_block_model(
     """
     # Check if dimensions match
     if len(sizes) != len(p):
-        raise nx.NetworkXException("'sizes' and 'p' do not match.")
+        raise nx.Exception("'sizes' and 'p' do not match.")
     # Check for probability symmetry (undirected) and shape (directed)
     for row in p:
         if len(p) != len(row):
-            raise nx.NetworkXException("'p' must be a square matrix.")
+            raise nx.Exception("'p' must be a square matrix.")
     if not directed:
         p_transpose = [list(i) for i in zip(*p)]
         for i in zip(p, p_transpose):
             for j in zip(i[0], i[1]):
                 if abs(j[0] - j[1]) > 1e-08:
-                    raise nx.NetworkXException("'p' must be symmetric.")
+                    raise nx.Exception("'p' must be symmetric.")
     # Check for probability range
     for row in p:
         for prob in row:
             if prob < 0 or prob > 1:
-                raise nx.NetworkXException("Entries of 'p' not in [0,1].")
+                raise nx.Exception("Entries of 'p' not in [0,1].")
     # Check for nodelist consistency
     if nodelist is not None:
         if len(nodelist) != sum(sizes):
-            raise nx.NetworkXException("'nodelist' and 'sizes' do not match.")
+            raise nx.Exception("'nodelist' and 'sizes' do not match.")
         if len(nodelist) != len(set(nodelist)):
-            raise nx.NetworkXException("nodelist contains duplicate.")
+            raise nx.Exception("nodelist contains duplicate.")
     else:
         nodelist = range(0, sum(sizes))
 
@@ -866,13 +866,13 @@ def LFR_benchmark_graph(
         Desired average degree of nodes in the created graph. This value
         must be in the interval [0, *n*]. Exactly one of this and
         ``min_degree`` must be specified, otherwise a
-        :exc:`NetworkXError` is raised.
+        :exc:`Error` is raised.
 
     min_degree : int
         Minimum degree of nodes in the created graph. This value must be
         in the interval [0, *n*]. Exactly one of this and
         ``average_degree`` must be specified, otherwise a
-        :exc:`NetworkXError` is raised.
+        :exc:`Error` is raised.
 
     max_degree : int
         Maximum degree of nodes in the created graph. If not specified,
@@ -910,7 +910,7 @@ def LFR_benchmark_graph(
 
     Raises
     ------
-    NetworkXError
+    Error
         If any of the parameters do not meet their upper and lower bounds:
 
         - ``tau1`` and ``tau2`` must be strictly greater than 1.
@@ -983,19 +983,19 @@ def LFR_benchmark_graph(
     """
     # Perform some basic parameter validation.
     if not tau1 > 1:
-        raise nx.NetworkXError("tau1 must be greater than one")
+        raise nx.Error("tau1 must be greater than one")
     if not tau2 > 1:
-        raise nx.NetworkXError("tau2 must be greater than one")
+        raise nx.Error("tau2 must be greater than one")
     if not 0 <= mu <= 1:
-        raise nx.NetworkXError("mu must be in the interval [0, 1]")
+        raise nx.Error("mu must be in the interval [0, 1]")
 
     # Validate parameters for generating the degree sequence.
     if max_degree is None:
         max_degree = n
     elif not 0 < max_degree <= n:
-        raise nx.NetworkXError("max_degree must be in the interval (0, n]")
+        raise nx.Error("max_degree must be in the interval (0, n]")
     if not ((min_degree is None) ^ (average_degree is None)):
-        raise nx.NetworkXError(
+        raise nx.Error(
             "Must assign exactly one of min_degree and" " average_degree"
         )
     if min_degree is None:

@@ -205,7 +205,7 @@ def from_pandas_adjacency(df, create_using=None):
     except Exception as err:
         missing = list(set(df.index).difference(set(df.columns)))
         msg = f"{missing} not in columns"
-        raise nx.NetworkXError("Columns must match Indices.", msg) from err
+        raise nx.Error("Columns must match Indices.", msg) from err
 
     A = df.values
     G = from_numpy_array(A, create_using=create_using)
@@ -293,16 +293,16 @@ def to_pandas_edgelist(
 
     all_attrs = set().union(*(d.keys() for _, _, d in edgelist))
     if source in all_attrs:
-        raise nx.NetworkXError(f"Source name {source!r} is an edge attr name")
+        raise nx.Error(f"Source name {source!r} is an edge attr name")
     if target in all_attrs:
-        raise nx.NetworkXError(f"Target name {target!r} is an edge attr name")
+        raise nx.Error(f"Target name {target!r} is an edge attr name")
 
     nan = float("nan")
     edge_attr = {k: [d.get(k, nan) for _, _, d in edgelist] for k in all_attrs}
 
     if G.is_multigraph() and edge_key is not None:
         if edge_key in all_attrs:
-            raise nx.NetworkXError(f"Edge key name {edge_key!r} is an edge attr name")
+            raise nx.Error(f"Edge key name {edge_key!r} is an edge attr name")
         edge_keys = [k for _, _, k in G.edges(keys=True)]
         edgelistdict = {source: source_nodes, target: target_nodes, edge_key: edge_keys}
     else:
@@ -439,7 +439,7 @@ def from_pandas_edgelist(
     else:
         attr_col_headings = [edge_attr]
     if len(attr_col_headings) == 0:
-        raise nx.NetworkXError(
+        raise nx.Error(
             f"Invalid edge_attr argument: No columns found with name: {attr_col_headings}"
         )
 
@@ -447,7 +447,7 @@ def from_pandas_edgelist(
         attribute_data = zip(*[df[col] for col in attr_col_headings])
     except (KeyError, TypeError) as err:
         msg = f"Invalid edge_attr argument: {edge_attr}"
-        raise nx.NetworkXError(msg) from err
+        raise nx.Error(msg) from err
 
     if g.is_multigraph():
         # => append the edge keys from the df to the bundled data
@@ -457,7 +457,7 @@ def from_pandas_edgelist(
                 attribute_data = zip(attribute_data, multigraph_edge_keys)
             except (KeyError, TypeError) as err:
                 msg = f"Invalid edge_key argument: {edge_key}"
-                raise nx.NetworkXError(msg) from err
+                raise nx.Error(msg) from err
 
         for s, t, attrs in zip(df[source], df[target], attribute_data):
             if edge_key is not None:
@@ -772,8 +772,8 @@ def to_numpy_recarray(G, nodelist=None, dtype=None, order=None):
         if nlen != len(nodeset):
             for n in nodelist:
                 if n not in G:
-                    raise nx.NetworkXError(f"Node {n} in nodelist is not in G")
-            raise nx.NetworkXError("nodelist contains duplicates.")
+                    raise nx.Error(f"Node {n} in nodelist is not in G")
+            raise nx.Error("nodelist contains duplicates.")
 
     undirected = not G.is_directed()
     index = dict(zip(nodelist, range(nlen)))
@@ -875,7 +875,7 @@ def to_scipy_sparse_array(G, nodelist=None, dtype=None, weight="weight", format=
     import scipy.sparse  # call as sp.sparse
 
     if len(G) == 0:
-        raise nx.NetworkXError("Graph has no nodes or edges")
+        raise nx.Error("Graph has no nodes or edges")
 
     if nodelist is None:
         nodelist = list(G)
@@ -883,13 +883,13 @@ def to_scipy_sparse_array(G, nodelist=None, dtype=None, weight="weight", format=
     else:
         nlen = len(nodelist)
         if nlen == 0:
-            raise nx.NetworkXError("nodelist has no nodes")
+            raise nx.Error("nodelist has no nodes")
         nodeset = set(G.nbunch_iter(nodelist))
         if nlen != len(nodeset):
             for n in nodelist:
                 if n not in G:
-                    raise nx.NetworkXError(f"Node {n} in nodelist is not in G")
-            raise nx.NetworkXError("nodelist contains duplicates.")
+                    raise nx.Error(f"Node {n} in nodelist is not in G")
+            raise nx.Error("nodelist contains duplicates.")
         if nlen < len(G):
             G = G.subgraph(nodelist)
 
@@ -922,7 +922,7 @@ def to_scipy_sparse_array(G, nodelist=None, dtype=None, weight="weight", format=
     try:
         return A.asformat(format)
     except ValueError as err:
-        raise nx.NetworkXError(f"Unknown sparse matrix format: {format}") from err
+        raise nx.Error(f"Unknown sparse matrix format: {format}") from err
 
 
 def to_scipy_sparse_matrix(G, nodelist=None, dtype=None, weight="weight", format="csr"):
@@ -1236,7 +1236,7 @@ def from_scipy_sparse_array(
     G = nx.empty_graph(0, create_using)
     n, m = A.shape
     if n != m:
-        raise nx.NetworkXError(f"Adjacency matrix not square: nx,ny={A.shape}")
+        raise nx.Error(f"Adjacency matrix not square: nx,ny={A.shape}")
     # Make sure we get even the isolated nodes of the graph.
     G.add_nodes_from(range(n))
     # Create an iterable over (u, v, w) triples and for each triple, add an
@@ -1328,7 +1328,7 @@ def to_numpy_array(
 
     Raises
     ------
-    NetworkXError
+    Error
         If `dtype` is a structured dtype and `G` is a multigraph
     ValueError
         If `dtype` is a structured dtype and `weight` is not `None`
@@ -1411,9 +1411,9 @@ def to_numpy_array(
     # Input validation
     nodeset = set(nodelist)
     if nodeset - set(G):
-        raise nx.NetworkXError(f"Nodes {nodeset - set(G)} in nodelist is not in G")
+        raise nx.Error(f"Nodes {nodeset - set(G)} in nodelist is not in G")
     if len(nodeset) < nlen:
-        raise nx.NetworkXError("nodelist contains duplicates.")
+        raise nx.Error("nodelist contains duplicates.")
 
     A = np.full((nlen, nlen), fill_value=nonedge, dtype=dtype, order=order)
 
@@ -1441,7 +1441,7 @@ def to_numpy_array(
     # Collect all edge weights and reduce with `multigraph_weights`
     if G.is_multigraph():
         if edge_attrs:
-            raise nx.NetworkXError(
+            raise nx.Error(
                 "Structured arrays are not supported for MultiGraphs"
             )
         d = defaultdict(list)
@@ -1580,10 +1580,10 @@ def from_numpy_array(A, parallel_edges=False, create_using=None):
     }
     G = nx.empty_graph(0, create_using)
     if A.ndim != 2:
-        raise nx.NetworkXError(f"Input array must be 2D, not {A.ndim}")
+        raise nx.Error(f"Input array must be 2D, not {A.ndim}")
     n, m = A.shape
     if n != m:
-        raise nx.NetworkXError(f"Adjacency matrix not square: nx,ny={A.shape}")
+        raise nx.Error(f"Adjacency matrix not square: nx,ny={A.shape}")
     dt = A.dtype
     try:
         python_type = kind_to_python_type[dt.kind]

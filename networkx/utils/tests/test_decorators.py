@@ -23,7 +23,7 @@ def test_not_implemented_decorator():
         pass
 
     test_d(nx.Graph())
-    with pytest.raises(nx.NetworkXNotImplemented):
+    with pytest.raises(nx.NotImplemented):
         test_d(nx.DiGraph())
 
     @not_implemented_for("undirected")
@@ -31,7 +31,7 @@ def test_not_implemented_decorator():
         pass
 
     test_u(nx.DiGraph())
-    with pytest.raises(nx.NetworkXNotImplemented):
+    with pytest.raises(nx.NotImplemented):
         test_u(nx.Graph())
 
     @not_implemented_for("multigraph")
@@ -39,7 +39,7 @@ def test_not_implemented_decorator():
         pass
 
     test_m(nx.Graph())
-    with pytest.raises(nx.NetworkXNotImplemented):
+    with pytest.raises(nx.NotImplemented):
         test_m(nx.MultiGraph())
 
     @not_implemented_for("graph")
@@ -47,7 +47,7 @@ def test_not_implemented_decorator():
         pass
 
     test_g(nx.MultiGraph())
-    with pytest.raises(nx.NetworkXNotImplemented):
+    with pytest.raises(nx.NotImplemented):
         test_g(nx.Graph())
 
     # not MultiDiGraph  (multiple arguments => AND)
@@ -58,7 +58,7 @@ def test_not_implemented_decorator():
     test_not_md(nx.Graph())
     test_not_md(nx.DiGraph())
     test_not_md(nx.MultiGraph())
-    with pytest.raises(nx.NetworkXNotImplemented):
+    with pytest.raises(nx.NotImplemented):
         test_not_md(nx.MultiDiGraph())
 
     # Graph only      (multiple decorators =>  OR)
@@ -68,11 +68,11 @@ def test_not_implemented_decorator():
         pass
 
     test_graph_only(nx.Graph())
-    with pytest.raises(nx.NetworkXNotImplemented):
+    with pytest.raises(nx.NotImplemented):
         test_graph_only(nx.DiGraph())
-    with pytest.raises(nx.NetworkXNotImplemented):
+    with pytest.raises(nx.NotImplemented):
         test_graph_only(nx.MultiGraph())
-    with pytest.raises(nx.NetworkXNotImplemented):
+    with pytest.raises(nx.NotImplemented):
         test_graph_only(nx.MultiDiGraph())
 
     with pytest.raises(ValueError):
@@ -93,7 +93,7 @@ def test_not_implemented_decorator_key():
 
 
 def test_not_implemented_decorator_raise():
-    with pytest.raises(nx.NetworkXNotImplemented):
+    with pytest.raises(nx.NotImplemented):
 
         @not_implemented_for("graph")
         def test1(G):
@@ -301,7 +301,7 @@ class TestRandomState:
 
 
 def test_random_state_string_arg_index():
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.Error):
 
         @np_random_state("a")
         def make_random_state(rs):
@@ -311,7 +311,7 @@ def test_random_state_string_arg_index():
 
 
 def test_py_random_state_string_arg_index():
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.Error):
 
         @py_random_state("a")
         def make_random_state(rs):
@@ -321,7 +321,7 @@ def test_py_random_state_string_arg_index():
 
 
 def test_random_state_invalid_arg_index():
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.Error):
 
         @np_random_state(2)
         def make_random_state(rs):
@@ -331,7 +331,7 @@ def test_random_state_invalid_arg_index():
 
 
 def test_py_random_state_invalid_arg_index():
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.Error):
 
         @py_random_state(2)
         def make_random_state(rs):

@@ -51,9 +51,9 @@ class TestStochasticGraph:
         ]
 
     def test_graph_disallowed(self):
-        with pytest.raises(nx.NetworkXNotImplemented):
+        with pytest.raises(nx.NotImplemented):
             nx.stochastic_graph(nx.Graph())
 
     def test_multigraph_disallowed(self):
-        with pytest.raises(nx.NetworkXNotImplemented):
+        with pytest.raises(nx.NotImplemented):
             nx.stochastic_graph(nx.MultiGraph())

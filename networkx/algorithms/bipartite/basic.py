@@ -32,7 +32,7 @@ def color(G):
 
     Raises
     ------
-    NetworkXError
+    Error
         If the graph is not two-colorable.
 
     Examples
@@ -72,7 +72,7 @@ def color(G):
             for w in neighbors(v):
                 if w in color:
                     if color[w] == color[v]:
-                        raise nx.NetworkXError("Graph is not bipartite.")
+                        raise nx.Error("Graph is not bipartite.")
                 else:
                     color[w] = c
                     queue.append(w)
@@ -102,7 +102,7 @@ def is_bipartite(G):
     try:
         color(G)
         return True
-    except nx.NetworkXError:
+    except nx.Error:
         return False
 
 
@@ -170,7 +170,7 @@ def sets(G, top_nodes=None):
       with all nodes in one bipartite set is provided. When determining
       the nodes in each bipartite set more than one valid solution is
       possible if the input graph is disconnected.
-    NetworkXError
+    Error
       Raised if the input graph is not bipartite.
 
     Examples
