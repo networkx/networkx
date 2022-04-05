@@ -52,9 +52,9 @@ class TestCoverage:
 def test_modularity():
     G = nx.barbell_graph(3, 0)
     C = [{0, 1, 4}, {2, 3, 5}]
-    assert (-16 / (14 ** 2)) == pytest.approx(modularity(G, C), abs=1e-7)
+    assert (-16 / (14**2)) == pytest.approx(modularity(G, C), abs=1e-7)
     C = [{0, 1, 2}, {3, 4, 5}]
-    assert (35 * 2) / (14 ** 2) == pytest.approx(modularity(G, C), abs=1e-7)
+    assert (35 * 2) / (14**2) == pytest.approx(modularity(G, C), abs=1e-7)
 
     n = 1000
     G = nx.erdos_renyi_graph(n, 0.09, seed=42, directed=True)
@@ -76,59 +76,59 @@ def test_modularity():
 def test_modularity_resolution():
     G = nx.barbell_graph(3, 0)
     C = [{0, 1, 4}, {2, 3, 5}]
-    assert modularity(G, C) == pytest.approx(3 / 7 - 100 / 14 ** 2)
+    assert modularity(G, C) == pytest.approx(3 / 7 - 100 / 14**2)
     gamma = 2
     result = modularity(G, C, resolution=gamma)
-    assert result == pytest.approx(3 / 7 - gamma * 100 / 14 ** 2)
+    assert result == pytest.approx(3 / 7 - gamma * 100 / 14**2)
     gamma = 0.2
     result = modularity(G, C, resolution=gamma)
-    assert result == pytest.approx(3 / 7 - gamma * 100 / 14 ** 2)
+    assert result == pytest.approx(3 / 7 - gamma * 100 / 14**2)
 
     C = [{0, 1, 2}, {3, 4, 5}]
-    assert modularity(G, C) == pytest.approx(6 / 7 - 98 / 14 ** 2)
+    assert modularity(G, C) == pytest.approx(6 / 7 - 98 / 14**2)
     gamma = 2
     result = modularity(G, C, resolution=gamma)
-    assert result == pytest.approx(6 / 7 - gamma * 98 / 14 ** 2)
+    assert result == pytest.approx(6 / 7 - gamma * 98 / 14**2)
     gamma = 0.2
     result = modularity(G, C, resolution=gamma)
-    assert result == pytest.approx(6 / 7 - gamma * 98 / 14 ** 2)
+    assert result == pytest.approx(6 / 7 - gamma * 98 / 14**2)
 
     G = nx.barbell_graph(5, 3)
     C = [frozenset(range(5)), frozenset(range(8, 13)), frozenset(range(5, 8))]
     gamma = 1
     result = modularity(G, C, resolution=gamma)
     # This C is maximal for gamma=1:  modularity = 0.518229
-    assert result == pytest.approx((22 / 24) - gamma * (918 / (48 ** 2)))
+    assert result == pytest.approx((22 / 24) - gamma * (918 / (48**2)))
     gamma = 2
     result = modularity(G, C, resolution=gamma)
-    assert result == pytest.approx((22 / 24) - gamma * (918 / (48 ** 2)))
+    assert result == pytest.approx((22 / 24) - gamma * (918 / (48**2)))
     gamma = 0.2
     result = modularity(G, C, resolution=gamma)
-    assert result == pytest.approx((22 / 24) - gamma * (918 / (48 ** 2)))
+    assert result == pytest.approx((22 / 24) - gamma * (918 / (48**2)))
 
     C = [{0, 1, 2, 3}, {9, 10, 11, 12}, {5, 6, 7}, {4}, {8}]
     gamma = 1
     result = modularity(G, C, resolution=gamma)
-    assert result == pytest.approx((14 / 24) - gamma * (598 / (48 ** 2)))
+    assert result == pytest.approx((14 / 24) - gamma * (598 / (48**2)))
     gamma = 2.5
     result = modularity(G, C, resolution=gamma)
     # This C is maximal for gamma=2.5:  modularity = -0.06553819
-    assert result == pytest.approx((14 / 24) - gamma * (598 / (48 ** 2)))
+    assert result == pytest.approx((14 / 24) - gamma * (598 / (48**2)))
     gamma = 0.2
     result = modularity(G, C, resolution=gamma)
-    assert result == pytest.approx((14 / 24) - gamma * (598 / (48 ** 2)))
+    assert result == pytest.approx((14 / 24) - gamma * (598 / (48**2)))
 
     C = [frozenset(range(8)), frozenset(range(8, 13))]
     gamma = 1
     result = modularity(G, C, resolution=gamma)
-    assert result == pytest.approx((23 / 24) - gamma * (1170 / (48 ** 2)))
+    assert result == pytest.approx((23 / 24) - gamma * (1170 / (48**2)))
     gamma = 2
     result = modularity(G, C, resolution=gamma)
-    assert result == pytest.approx((23 / 24) - gamma * (1170 / (48 ** 2)))
+    assert result == pytest.approx((23 / 24) - gamma * (1170 / (48**2)))
     gamma = 0.3
     result = modularity(G, C, resolution=gamma)
     # This C is maximal for gamma=0.3:  modularity = 0.805990
-    assert result == pytest.approx((23 / 24) - gamma * (1170 / (48 ** 2)))
+    assert result == pytest.approx((23 / 24) - gamma * (1170 / (48**2)))
 
 
 def test_inter_community_edges_with_digraphs():
