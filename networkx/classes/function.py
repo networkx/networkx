@@ -796,12 +796,11 @@ def set_edge_attributes(G, values, name=None):
     For multigraphs, the `values` dict is expected to be keyed by 3-tuples
     including the edge key::
 
-        >>> G = nx.MultiDiGraph()
-        >>> edges = [(0,1), (0,1), (1,0), (2,2), (3, 4), (1,3)]
-        >>> G.add_edges_from(edges)
-        [0, 1, 0, 0, 0, 0]
-        >>>
-        >>> attributes = {(0,1,0): {"weight": 20, "cost": 21}, (2,2,4): {"weight": 10, "cost": 3}, (0,1,1): {"cost":7}}
+        >>> G = nx.MultiGraph()
+        >>> edges = [(0,1), (0,1)]
+        >>> G.add_edges_from(edges)  # Returns list of edge keys
+        [0, 1]
+        >>> attributes = {(0,1,0): {"cost": 21}, (0,1,1): {"cost": 7}}
         >>> nx.set_edge_attributes(G, attributes)
         >>> G[0][1][0]["cost"]
         21
