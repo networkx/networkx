@@ -55,6 +55,11 @@ def min_edge_cover(G, matching_algorithm=None):
 
     Minimum edge cover for bipartite graph can also be found using the
     function present in :mod:`networkx.algorithms.bipartite.covering`
+
+    Examples
+    --------
+    >>> G = nx.Graph([(0, 1), (1, 2), (1, 5), (5, 4), (2, 4), (2, 3), (4, 3)])
+    >>> edge_cover = nx.min_edge_cover(G)
     """
     if nx.number_of_isolates(G) > 0:
         # ``min_cover`` does not exist as there is an isolated node
@@ -111,5 +116,11 @@ def is_edge_cover(G, cover):
     -----
     An edge cover of a graph is a set of edges such that every node of
     the graph is incident to at least one edge of the set.
+
+    Examples
+    --------
+    >>> G = nx.Graph([(0, 1), (1, 2), (1, 5), (5, 4), (2, 4), (2, 3), (4, 3)])
+    >>> edge_cover = nx.min_edge_cover(G)
+    >>> nx.is_edge_cover(G, e_cover)
     """
     return set(G) <= set(chain.from_iterable(cover))
