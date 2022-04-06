@@ -31,7 +31,7 @@ class TestJoin:
 
     def test_basic(self):
         """Tests for joining multiple subtrees at a root node."""
-        trees = [(nx.full_rary_tree(2, 2 ** 2 - 1), 0) for i in range(2)]
+        trees = [(nx.full_rary_tree(2, 2**2 - 1), 0) for i in range(2)]
         actual = nx.join(trees)
-        expected = nx.full_rary_tree(2, 2 ** 3 - 1)
+        expected = nx.full_rary_tree(2, 2**3 - 1)
         assert nx.is_isomorphic(actual, expected)

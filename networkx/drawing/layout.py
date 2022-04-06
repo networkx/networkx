@@ -544,7 +544,7 @@ def _fruchterman_reingold(
         np.clip(distance, 0.01, None, out=distance)
         # displacement "force"
         displacement = np.einsum(
-            "ijk,ij->ik", delta, (k * k / distance ** 2 - A * distance / k)
+            "ijk,ij->ik", delta, (k * k / distance**2 - A * distance / k)
         )
         # update positions
         length = np.linalg.norm(displacement, axis=-1)
@@ -614,17 +614,17 @@ def _sparse_fruchterman_reingold(
             # difference between this row's node position and all others
             delta = (pos[i] - pos).T
             # distance between points
-            distance = np.sqrt((delta ** 2).sum(axis=0))
+            distance = np.sqrt((delta**2).sum(axis=0))
             # enforce minimum distance of 0.01
             distance = np.where(distance < 0.01, 0.01, distance)
             # the adjacency matrix row
             Ai = A.getrowview(i).toarray()  # TODO: revisit w/ sparse 1D container
             # displacement "force"
             displacement[:, i] += (
-                delta * (k * k / distance ** 2 - Ai * distance / k)
+                delta * (k * k / distance**2 - Ai * distance / k)
             ).sum(axis=1)
         # update positions
-        length = np.sqrt((displacement ** 2).sum(axis=0))
+        length = np.sqrt((displacement**2).sum(axis=0))
         length = np.where(length < 0.01, 0.1, length)
         delta_pos = (displacement * t / length).T
         pos += delta_pos
@@ -747,14 +747,14 @@ def _kamada_kawai_costfn(pos_vec, np, invdist, meanweight, dim):
     offset = nodesep * invdist - 1.0
     offset[np.diag_indices(nNodes)] = 0
 
-    cost = 0.5 * np.sum(offset ** 2)
+    cost = 0.5 * np.sum(offset**2)
     grad = np.einsum("ij,ij,ijk->ik", invdist, offset, direction) - np.einsum(
         "ij,ij,ijk->jk", invdist, offset, direction
     )
 
     # Additional parabolic term to encourage mean position to be near origin:
     sumpos = np.sum(pos_arr, axis=0)
-    cost += 0.5 * meanweight * np.sum(sumpos ** 2)
+    cost += 0.5 * meanweight * np.sum(sumpos**2)
     grad += meanweight * sumpos
 
     return (cost, grad.ravel())

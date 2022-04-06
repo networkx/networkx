@@ -139,7 +139,7 @@ class TestHypercubeGraph:
     def test_degree_distribution(self):
         for n in range(1, 10):
             G = nx.hypercube_graph(n)
-            expected_histogram = [0] * n + [2 ** n]
+            expected_histogram = [0] * n + [2**n]
             assert nx.degree_histogram(G) == expected_histogram
 
 
