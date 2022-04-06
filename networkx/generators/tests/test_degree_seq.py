@@ -163,6 +163,23 @@ def test_havel_hakimi_construction():
     pytest.raises(nx.NetworkXError, nx.havel_hakimi_graph, z, create_using=nx.DiGraph())
 
 
+def test_connected_havel_hakimi_construction():
+    z = [0, 1, 1]
+    pytest.raises(nx.NetworkXError, nx.havel_hakimi_graph, z, force_connected=True)
+
+    # Make sure the graph is built without errors
+    z = [2, 2, 2]
+    nx.havel_hakimi_graph(z, force_connected=True)
+
+    # Make sure the graph is connected
+    z = [1, 1, 2, 2, 2]
+    assert nx.is_connected(nx.havel_hakimi_graph(z, force_connected=True))
+    z = [1, 1, 1, 2, 2, 3]
+    assert nx.is_connected(nx.havel_hakimi_graph(z, force_connected=True))
+    z = [5, 1, 2, 2, 1, 2, 1, 1, 1]
+    assert nx.is_connected(nx.havel_hakimi_graph(z, force_connected=True))
+
+
 def test_directed_havel_hakimi():
     # Test range of valid directed degree sequences
     n, r = 100, 10
