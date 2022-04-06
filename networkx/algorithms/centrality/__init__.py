@@ -17,3 +17,4 @@ from .percolation import *
 from .second_order import *
 from .trophic import *
 from .voterank_alg import *
+from .decay import *
