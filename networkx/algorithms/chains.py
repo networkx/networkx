@@ -49,6 +49,11 @@ def chain_decomposition(G, root=None):
     The worst-case running time of this implementation is linear in the
     number of nodes and number of edges [1]_.
 
+    Examples
+    --------
+    >>> G = nx.path_graph(5)
+    >>> chain_d = nx.chain_decomposition(G)
+
     References
     ----------
     .. [1] Jens M. Schmidt (2013). "A simple test on 2-vertex-
