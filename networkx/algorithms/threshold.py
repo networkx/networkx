@@ -564,6 +564,11 @@ def cluster_sequence(creation_sequence):
 def degree_sequence(creation_sequence):
     """Return degree sequence for the threshold graph with the given creation sequence
 
+    Parameters
+    ----------
+    creation_sequence
+        The degree sequence
+
     Returns
     -------
     seq : list
@@ -586,6 +591,11 @@ def density(creation_sequence):
 
     The density is the fraction of possible edges present.
 
+    Parameters
+    ----------
+    creation_sequence
+        The degree sequence
+
     Returns
     -------
     den : float
@@ -599,8 +609,16 @@ def density(creation_sequence):
 
 
 def degree_correlation(creation_sequence):
-    """
-    Return the degree-degree correlation over all edges.
+    """Return the degree-degree correlation over all edges.
+
+    Parameters
+    ----------
+    creation_sequence
+        The degree sequence
+
+    Returns
+    -------
+    The degree-degree correlation over all edges
     """
     cs = creation_sequence
     s1 = 0  # deg_i*deg_j
@@ -633,10 +651,10 @@ def degree_correlation(creation_sequence):
 
 
 def shortest_path(creation_sequence, u, v):
-    """
-    Find the shortest path between u and v in a
-    threshold graph G with the given creation_sequence.
+    """Find the shortest path between u and v in a threshold graph G with the given creation_sequence.
 
+    Notes
+    -----
     For an unlabeled creation_sequence, the vertices
     u and v must be integers in (0,len(sequence)) referring
     to the position of the desired vertices in the sequence.
@@ -646,8 +664,20 @@ def shortest_path(creation_sequence, u, v):
     Use cs=creation_sequence(degree_sequence,with_labels=True)
     to convert a degree sequence to a creation sequence.
 
-    Returns a list of vertices from u to v.
-    Example: if they are neighbors, it returns [u,v]
+    If u, v are neighbors, it returns [u,v]
+
+    Parameters
+    ----------
+    creation_sequence
+        The degree sequence
+    u
+        The starting node.
+    v
+        The ending node.
+
+    Returns
+    -------
+    List of vertices from u to v.
     """
     # Turn input sequence into a labeled creation sequence
     first = creation_sequence[0]
@@ -686,16 +716,27 @@ def shortest_path(creation_sequence, u, v):
 
 
 def shortest_path_length(creation_sequence, i):
-    """
-    Return the shortest path length from indicated node to
-    every other node for the threshold graph with the given
-    creation sequence.
-    Node is indicated by index i in creation_sequence unless
-    creation_sequence is labeled in which case, i is taken to
-    be the label of the node.
+    """Shortest path length from input node to every other, for the threshold graph with the given creation sequence.
+
+    Notes
+    -----
+    Node is indicated by index i in creation_sequence unless creation_sequence
+    is labeled in which case, i is taken to be the label of the node.
 
     Paths lengths in threshold graphs are at most 2.
     Length to unreachable nodes is set to -1.
+
+    Parameters
+    ----------
+    creation_sequence
+        The degree sequence
+    i
+        Node from which to calculate the shortest path.
+
+    Returns
+    -------
+    spl : list
+        Contains the shortest path length from the input node, to every other.
     """
     # Turn input sequence into a labeled creation sequence
     first = creation_sequence[0]
@@ -732,10 +773,23 @@ def shortest_path_length(creation_sequence, i):
 
 
 def betweenness_sequence(creation_sequence, normalized=True):
-    """
-    Return betweenness for the threshold graph with the given creation
-    sequence.  The result is unscaled.  To scale the values
-    to the iterval [0,1] divide by (n-1)*(n-2).
+    """Betweenness for the threshold graph with the given creation sequence.
+
+    Notes
+    -----
+    The result is unscaled.  To scale the values to the iterval [0,1] divide by (n-1)*(n-2).
+
+    Parameters
+    ----------
+    creation_sequence
+        The degree sequence
+    normalized : bool
+        Normalizes by the number of possible shortest paths
+
+    Returns
+    -------
+    seq : list
+        Betweenness of the graph
     """
     cs = creation_sequence
     seq = []  # betweenness
@@ -772,9 +826,10 @@ def betweenness_sequence(creation_sequence, normalized=True):
 
 
 def eigenvectors(creation_sequence):
-    """
-    Return a 2-tuple of Laplacian eigenvalues and eigenvectors
-    for the threshold network with creation_sequence.
+    """Return a 2-tuple of Laplacian eigenvalues and eigenvectors for the threshold network with creation_sequence.
+
+    Notes
+    -----
     The first value is a list of eigenvalues.
     The second value is a list of eigenvectors.
     The lists are in the same order so corresponding eigenvectors
@@ -782,6 +837,15 @@ def eigenvectors(creation_sequence):
 
     Notice that the order of the eigenvalues returned by eigenvalues(cs)
     may not correspond to the order of these eigenvectors.
+
+    Parameters
+    ----------
+    creation_sequence
+        The degree sequence
+
+    Returns
+    -------
+    2-tuple containing the eigenvalues and eigenvectors.
     """
     ccs = make_compact(creation_sequence)
     N = sum(ccs)
@@ -830,17 +894,29 @@ def eigenvectors(creation_sequence):
 
 
 def spectral_projection(u, eigenpairs):
-    """
-    Returns the coefficients of each eigenvector
-    in a projection of the vector u onto the normalized
+    """Returns the coefficients of each eigenvector in a projection of the vector u onto the normalized
     eigenvectors which are contained in eigenpairs.
 
+    Notes
+    -----
     eigenpairs should be a list of two objects.  The
     first is a list of eigenvalues and the second a list
     of eigenvectors.  The eigenvectors should be lists.
 
     There's not a lot of error checking on lengths of
     arrays, etc. so be careful.
+
+    Parameters
+    ----------
+    u
+        Vector being projected
+    eigenpairs
+        Eigenpairs containing the normalized eigenvectors.
+
+    Returns
+    -------
+    coeff : list
+        The coefficients of each eigenvector in the projection of the vector u.
     """
     coeff = []
     evect = eigenpairs[1]
@@ -851,15 +927,14 @@ def spectral_projection(u, eigenpairs):
 
 
 def eigenvalues(creation_sequence):
-    """
-    Return sequence of eigenvalues of the Laplacian of the threshold
-    graph for the given creation_sequence.
+    """Return sequence of eigenvalues of the Laplacian of the threshold graph for the given creation_sequence.
 
     Based on the Ferrer's diagram method.  The spectrum is integral
     and is the conjugate of the degree sequence.
 
+    Notes
+    -----
     See::
-
       @Article{degree-merris-1994,
        author = {Russel Merris},
        title = {Degree maximal graphs are Laplacian integral},
@@ -869,6 +944,15 @@ def eigenvalues(creation_sequence):
        pages = {381--389},
       }
 
+    Parameters
+    ----------
+    creation_sequence
+        The degree sequence
+
+    Returns
+    -------
+    eiglist : list
+        Contains the eigenvalues of the Laplacian of the threshold graph.
     """
     degseq = degree_sequence(creation_sequence)
     degseq.sort()
@@ -894,11 +978,13 @@ def eigenvalues(creation_sequence):
 
 @py_random_state(2)
 def random_threshold_sequence(n, p, seed=None):
-    """
-    Create a random threshold sequence of size n.
-    A creation sequence is built by randomly choosing d's with
-    probabiliy p and i's with probability 1-p.
+    """Create a random threshold sequence of size n.
 
+    A creation sequence is built by randomly choosing d's with
+    probability p and i's with probability 1-p.
+
+    Notes
+    -----
     s=nx.random_threshold_sequence(10,0.5)
 
     returns a threshold sequence of length 10 with equal
@@ -908,9 +994,20 @@ def random_threshold_sequence(n, p, seed=None):
 
     G=nx.threshold_graph(s)
 
+    Parameters
+    ----------
+    n : integer
+        The size of the threshold sequence.
+    p : float
+        Probability to choose a 'd' instead of an 'i'
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
+
+    Returns
+    -------
+    cs : list
+        The random threshold sequence.
     """
     if not (0 <= p <= 1):
         raise ValueError("p must be in [0,1]")
@@ -928,15 +1025,24 @@ def random_threshold_sequence(n, p, seed=None):
 # be (or be called from) a single routine with a more descriptive name
 # and a keyword parameter?
 def right_d_threshold_sequence(n, m):
-    """
-    Create a skewed threshold graph with a given number
-    of vertices (n) and a given number of edges (m).
+    """Create a skewed threshold graph with a given number of vertices (n) and a given number of edges (m).
 
     The routine returns an unlabeled creation sequence
     for the threshold graph.
 
+    Parameters
+    ----------
+    n : integer
+        Number of insolated nodes
+    m : integer
+        Number of edges
+
     FIXME: describe algorithm
 
+    Returns
+    -------
+    cs : list
+        The skewed threshold graph sequence.
     """
     cs = ["d"] + ["i"] * (n - 1)  # create sequence with n insolated nodes
 
@@ -962,15 +1068,24 @@ def right_d_threshold_sequence(n, m):
 
 
 def left_d_threshold_sequence(n, m):
-    """
-    Create a skewed threshold graph with a given number
-    of vertices (n) and a given number of edges (m).
+    """Create a skewed threshold graph with a given number of vertices (n) and a given number of edges (m).
 
     The routine returns an unlabeled creation sequence
     for the threshold graph.
 
+    Parameters
+    ----------
+    n : integer
+        Number of insolated nodes
+    m : integer
+        Number of edges
+
     FIXME: describe algorithm
 
+    Returns
+    -------
+    cs : list
+        The skewed threshold graph sequence.
     """
     cs = ["d"] + ["i"] * (n - 1)  # create sequence with n insolated nodes
 
@@ -998,8 +1113,7 @@ def left_d_threshold_sequence(n, m):
 
 @py_random_state(3)
 def swap_d(cs, p_split=1.0, p_combine=1.0, seed=None):
-    """
-    Perform a "swap" operation on a threshold sequence.
+    """Perform a "swap" operation on a threshold sequence.
 
     The swap preserves the number of nodes and edges
     in the graph for the given sequence.
@@ -1011,9 +1125,22 @@ def swap_d(cs, p_split=1.0, p_combine=1.0, seed=None):
     in the graph, but shifts the edges from node to node
     maintaining the threshold quality of the graph.
 
+    Parameters
+    ----------
+    cs : list
+        The degree sequence.
+    p_split
+        The probability to split.
+    p_combine
+        The probability to combine.
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
+
+    Returns
+    -------
+    cs : list
+        The threshold sequence, after the "swap" operation.
     """
     # preprocess the creation sequence
     dlist = [i for (i, node_type) in enumerate(cs[1:-1]) if node_type == "d"]
