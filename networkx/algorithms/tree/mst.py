@@ -352,7 +352,7 @@ ALGORITHMS = {
 
 @not_implemented_for("directed")
 def minimum_spanning_edges(
-    G, algorithm="kruskal", weight="weight", keys=True, data=True, ignore_nan=False
+    G, algorithm="prim", weight="weight", keys=True, data=True, ignore_nan=False
 ):
     """Generate edges in a minimum spanning forest of an undirected
     weighted graph.
@@ -369,7 +369,7 @@ def minimum_spanning_edges(
 
     algorithm : string
        The algorithm to use when finding a minimum spanning tree. Valid
-       choices are 'kruskal', 'prim', or 'boruvka'. The default is 'kruskal'.
+       choices are 'kruskal', 'prim', or 'boruvka'. The default is 'prim'.
 
     weight : string
        Edge data key to use for weight (default 'weight').
@@ -446,7 +446,7 @@ def minimum_spanning_edges(
 
 @not_implemented_for("directed")
 def maximum_spanning_edges(
-    G, algorithm="kruskal", weight="weight", keys=True, data=True, ignore_nan=False
+    G, algorithm="prim", weight="weight", keys=True, data=True, ignore_nan=False
 ):
     """Generate edges in a maximum spanning forest of an undirected
     weighted graph.
@@ -463,7 +463,7 @@ def maximum_spanning_edges(
 
     algorithm : string
        The algorithm to use when finding a maximum spanning tree. Valid
-       choices are 'kruskal', 'prim', or 'boruvka'. The default is 'kruskal'.
+       choices are 'kruskal', 'prim', or 'boruvka'. The default is 'prim'.
 
     weight : string
        Edge data key to use for weight (default 'weight').
@@ -537,7 +537,7 @@ def maximum_spanning_edges(
     )
 
 
-def minimum_spanning_tree(G, weight="weight", algorithm="kruskal", ignore_nan=False):
+def minimum_spanning_tree(G, weight="weight", algorithm="prim", ignore_nan=False):
     """Returns a minimum spanning tree or forest on an undirected graph `G`.
 
     Parameters
@@ -552,7 +552,7 @@ def minimum_spanning_tree(G, weight="weight", algorithm="kruskal", ignore_nan=Fa
     algorithm : string
        The algorithm to use when finding a minimum spanning tree. Valid
        choices are 'kruskal', 'prim', or 'boruvka'. The default is
-       'kruskal'.
+       'prim'.
 
     ignore_nan : bool (default: False)
         If a NaN is found as an edge weight normally an exception is raised.
@@ -659,7 +659,7 @@ def partition_spanning_tree(
     return T
 
 
-def maximum_spanning_tree(G, weight="weight", algorithm="kruskal", ignore_nan=False):
+def maximum_spanning_tree(G, weight="weight", algorithm="prim", ignore_nan=False):
     """Returns a maximum spanning tree or forest on an undirected graph `G`.
 
     Parameters
@@ -674,7 +674,7 @@ def maximum_spanning_tree(G, weight="weight", algorithm="kruskal", ignore_nan=Fa
     algorithm : string
        The algorithm to use when finding a maximum spanning tree. Valid
        choices are 'kruskal', 'prim', or 'boruvka'. The default is
-       'kruskal'.
+       'prim'.
 
     ignore_nan : bool (default: False)
         If a NaN is found as an edge weight normally an exception is raised.
