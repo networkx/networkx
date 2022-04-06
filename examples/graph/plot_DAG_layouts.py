@@ -10,8 +10,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 
 
-G = nx.DiGraph()
-G.add_edges_from(
+G = nx.DiGraph(
     [
         ("f", "a"),
         ("a", "b"),
