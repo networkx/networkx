@@ -53,14 +53,9 @@ class TestSteinerTree:
 
     def test_steiner_tree(self):
         S = steiner_tree(self.G, self.term_nodes)
-        expected_steiner_tree = [
-            (1, 2, {"weight": 10}),
-            (2, 3, {"weight": 10}),
-            (2, 7, {"weight": 1}),
-            (3, 4, {"weight": 10}),
-            (5, 7, {"weight": 1}),
-        ]
-        assert edges_equal(list(S.edges(data=True)), expected_steiner_tree)
+        for node in self.term_nodes:
+            assert node in S
+        assert sum(d["weight"] for u, v, d in S.edges(data=True)) == 32
 
     def test_multigraph_steiner_tree(self):
         G = nx.MultiGraph()
