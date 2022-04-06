@@ -144,11 +144,9 @@ def shortest_path(G, source=None, target=None, weight=None, method="dijkstra"):
             if method == "unweighted":
                 paths = nx.single_source_shortest_path(G, target)
             elif method == "dijkstra":
-                paths = nx.single_source_dijkstra_path(
-                    G, target, weight=weight)
+                paths = nx.single_source_dijkstra_path(G, target, weight=weight)
             else:  # method == 'bellman-ford':
-                paths = nx.single_source_bellman_ford_path(
-                    G, target, weight=weight)
+                paths = nx.single_source_bellman_ford_path(G, target, weight=weight)
             # Now flip the paths so they go from a source to the target.
             for target in paths:
                 paths[target] = list(reversed(paths[target]))
@@ -158,11 +156,9 @@ def shortest_path(G, source=None, target=None, weight=None, method="dijkstra"):
             if method == "unweighted":
                 paths = nx.single_source_shortest_path(G, source)
             elif method == "dijkstra":
-                paths = nx.single_source_dijkstra_path(
-                    G, source, weight=weight)
+                paths = nx.single_source_dijkstra_path(G, source, weight=weight)
             else:  # method == 'bellman-ford':
-                paths = nx.single_source_bellman_ford_path(
-                    G, source, weight=weight)
+                paths = nx.single_source_bellman_ford_path(G, source, weight=weight)
         else:
             # Find shortest source-target path.
             if method == "unweighted":
@@ -174,12 +170,7 @@ def shortest_path(G, source=None, target=None, weight=None, method="dijkstra"):
     return paths
 
 
-def shortest_path_length(
-        G,
-        source=None,
-        target=None,
-        weight=None,
-        method="dijkstra"):
+def shortest_path_length(G, source=None, target=None, weight=None, method="dijkstra"):
     """Compute shortest path lengths in the graph.
 
     Parameters
@@ -243,17 +234,17 @@ def shortest_path_length(
     Examples
     --------
     >>> G = nx.path_graph(5)
-    >>> print(nx.shortest_path(G, source=0, target=4)) # shortest path from source=0 to target=4
-    [0, 1, 2, 3, 4]
-    >>> p = nx.shortest_path(G, source=1)  # target not specified
-    >>> p[3] # shortest path from source=1 to target=3
-    [1, 2, 3]
-    >>> p = nx.shortest_path(G, target=4)  # source not specified
-    >>> p[1] # shortest path from source=1 to target=4
-    [1, 2, 3, 4]
-    >>> p = nx.shortest_path(G)  # source, target not specified
-    >>> p[2][4] # shortest path from source=2 to target=4
-    [2, 3, 4]
+    >>> nx.shortest_path_length(G, source=0, target=4)
+    4
+    >>> p = nx.shortest_path_length(G, source=0)  # target not specified
+    >>> p[4]
+    4
+    >>> p = nx.shortest_path_length(G, target=4)  # source not specified
+    >>> p[0]
+    4
+    >>> p = dict(nx.shortest_path_length(G))  # source,target not specified
+    >>> p[0][4]
+    4
 
     Notes
     -----
@@ -419,8 +410,7 @@ def average_shortest_path_length(G, weight=None, method=None):
         elif method == "dijkstra":
             return nx.single_source_dijkstra_path_length(G, v, weight=weight)
         elif method == "bellman-ford":
-            return nx.single_source_bellman_ford_path_length(
-                G, v, weight=weight)
+            return nx.single_source_bellman_ford_path_length(G, v, weight=weight)
 
     if method in single_source_methods:
         # Sum the distances for each (ordered) pair of source and target node.
@@ -502,11 +492,9 @@ def all_shortest_paths(G, source, target, weight=None, method="dijkstra"):
     if method == "unweighted":
         pred = nx.predecessor(G, source)
     elif method == "dijkstra":
-        pred, dist = nx.dijkstra_predecessor_and_distance(
-            G, source, weight=weight)
+        pred, dist = nx.dijkstra_predecessor_and_distance(G, source, weight=weight)
     elif method == "bellman-ford":
-        pred, dist = nx.bellman_ford_predecessor_and_distance(
-            G, source, weight=weight)
+        pred, dist = nx.bellman_ford_predecessor_and_distance(G, source, weight=weight)
     else:
         raise ValueError(f"method not supported: {method}")
 
