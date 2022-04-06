@@ -245,7 +245,7 @@ def shortest_path_length(G, source=None, target=None, weight=None, method="dijks
     >>> p = nx.shortest_path(G)  # source, target not specified
     >>> p[2][4] # shortest path from source=2 to target=4
     [2, 3, 4]
-    
+
     Notes
     -----
     The length of the path is always 1 less than the number of nodes involved
