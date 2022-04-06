@@ -1,6 +1,8 @@
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
 
+__all__ = ["decay_centrality"]
+
 
 @not_implemented_for("directed")
 def decay_centrality(G, u=None, delta=0.5):
