@@ -793,9 +793,8 @@ def set_edge_attributes(G, values, name=None):
         >>> (1, 2) in G.edges()
         False
 
-    Note for multigraphs , values argument should be dicts with 3-tuples key
-    instead of 2-tuples key commonly used in non-multigraphs. The edge key has
-    to be passed as the third value in the tuple::
+    For multigraphs, the `values` dict is expected to be keyed by 3-tuples
+    including the edge key::
 
         >>> import networkx as nx
         >>> G = nx.MultiDiGraph()
