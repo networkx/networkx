@@ -55,11 +55,6 @@ def min_edge_cover(G, matching_algorithm=None):
 
     Minimum edge cover for bipartite graph can also be found using the
     function present in :mod:`networkx.algorithms.bipartite.covering`
-
-    Examples
-    --------
-    >>> G = nx.Graph([(0, 1), (1, 2), (1, 5), (5, 4), (2, 4), (2, 3), (4, 3)])
-    >>> edge_cover = nx.min_edge_cover(G)
     """
     if nx.number_of_isolates(G) > 0:
         # ``min_cover`` does not exist as there is an isolated node
