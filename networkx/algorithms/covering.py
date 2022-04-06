@@ -121,6 +121,6 @@ def is_edge_cover(G, cover):
     --------
     >>> G = nx.Graph([(0, 1), (1, 2), (1, 5), (5, 4), (2, 4), (2, 3), (4, 3)])
     >>> edge_cover = nx.min_edge_cover(G)
-    >>> nx.is_edge_cover(G, e_cover)
+    >>> nx.is_edge_cover(G, edge_cover)
     """
     return set(G) <= set(chain.from_iterable(cover))
