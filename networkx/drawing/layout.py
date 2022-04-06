@@ -984,6 +984,7 @@ def spiral_layout(G, scale=1, center=None, dim=2, resolution=0.35, equidistant=F
     >>> G = nx.path_graph(4)
     >>> pos = nx.spiral_layout(G)
     >>> nx.draw(G, pos=pos)
+
     References
     ----------
     .. [1] Cheong, Se-Hang, and Yain-Whar Si. "Force-directed algorithms for schematic drawings and
