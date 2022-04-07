@@ -273,7 +273,9 @@ def creation_sequence_to_weights(creation_sequence):
     # return wseq
 
 
-def weights_to_creation_sequence(weights, threshold=1, with_labels=False, compact=False):
+def weights_to_creation_sequence(
+        weights, threshold=1, with_labels=False, compact=False
+):
     """Returns a creation sequence for a threshold graph determined by the weights and threshold given as input.
 
     Notes
@@ -668,7 +670,7 @@ def degree_correlation(creation_sequence):
         for dj in rdi:
             degj = ds[dj]
             s1 += degj * degi
-            s2 += degi**2 + degj**2
+            s2 += degi ** 2 + degj ** 2
             s3 += degi + degj
             m += 1
     denom = 2 * m * s2 - s3 * s3
