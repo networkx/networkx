@@ -15,10 +15,9 @@ def is_threshold_graph(G):
     G : NetworkX graph instance
         An instance of `Graph`, `DiGraph`, `MultiGraph` or `MultiDiGraph`
 
-    Returns
-    -------
-    bool
-        `True` if `G` is a threshold graph, `False` otherwise.
+    Notes
+        ----------
+        .. [1] Threshold graphs: https://en.wikipedia.org/wiki/Threshold_graph
 
     Examples
     --------
@@ -30,9 +29,9 @@ def is_threshold_graph(G):
     >>> is_threshold_graph(G)
     False
 
-    References
-    ----------
-    .. [1] Threshold graphs: https://en.wikipedia.org/wiki/Threshold_graph
+    Returns
+    -------
+    True if `G` is a threshold graph, `False` otherwise.
     """
     return is_threshold_sequence(list(d for n, d in G.degree()))
 
@@ -49,7 +48,7 @@ def is_threshold_sequence(degree_sequence):
     Parameters
     ----------
     degree_sequence
-                    the sequence containing the degrees of the Graph's nodes
+        The degree sequence
 
     Returns
     -------
@@ -98,7 +97,7 @@ def creation_sequence(degree_sequence, with_labels=False, compact=False):
     Parameters
     ----------
     degree_sequence
-                    the sequence containing the degrees of the Graph's nodes
+        The sequence containing the degrees of the Graph's nodes
 
     Returns
     -------
@@ -274,9 +273,7 @@ def creation_sequence_to_weights(creation_sequence):
     # return wseq
 
 
-def weights_to_creation_sequence(
-    weights, threshold=1, with_labels=False, compact=False
-):
+def weights_to_creation_sequence(weights, threshold=1, with_labels=False, compact=False):
     """Returns a creation sequence for a threshold graph determined by the weights and threshold given as input.
 
     Notes
@@ -289,13 +286,6 @@ def weights_to_creation_sequence(
     Dominating vertices are connected to all vertices present
     when it is added.  The first node added is by convention 'd'.
 
-    If with_labels==True:
-    Returns a list of 2-tuples containing the vertex number
-    and a character 'd' or 'i' which describes the type of vertex.
-
-    If compact==True:
-    Returns the creation sequence in a compact form that is the number
-    of 'i's and 'd's alternating.
     Examples:
     [1,2,2,3] represents d,i,i,d,d,i,i,i
     [3,1,2] represents d,d,d,i,d,d
@@ -308,7 +298,14 @@ def weights_to_creation_sequence(
     Parameters
     ----------
     weights
-            The node weights
+        The node weights
+    threshold : integer, optional
+        Determines the threshold which, if is smaller than the sum of two node weights, an edge is created
+    with_labels : bool, optional
+        If True, returns a list of 2-tuples containing the vertex number and a character 'd' or 'i' describing the
+        vertex type.
+    compact : bool, optional
+        If True, returns the creation sequence in a compact form that is the number of 'i's and 'd's alternating.
 
     Returns
     -------
@@ -361,8 +358,17 @@ def threshold_graph(creation_sequence, create_using=None):
     Use cs=creation_sequence(degree_sequence,labeled=True)
     to convert a degree sequence to a creation sequence.
 
+    Parameters
+    ----------
+    creation_sequence
+        The degree sequence.
+    create_using : NetworkX graph container, optional
+        Use given NetworkX graph for holding nodes or edges.
+
     Returns
     -------
+    G : NetworkX graph
+        The threshold graph, if the sequence is valid.
     None if the sequence is not valid
     """
     # Turn input sequence into a labeled creation sequence
@@ -403,6 +409,11 @@ def threshold_graph(creation_sequence, create_using=None):
 def find_alternating_4_cycle(G):
     """Checks if there are any alternating 4 cycles.
 
+    Parameters
+    ----------
+    G : NetworkX graph
+        The graph to examine for existing, alternating 4 cycles.
+
     Returns
     -------
     False if there aren't any alternating 4 cycles.
@@ -431,11 +442,6 @@ def find_threshold_graph(G, create_using=None):
         Type of graph to use when constructing the threshold graph.
         If `None`, infer the appropriate graph type from the input.
 
-    Returns
-    -------
-    graph :
-        A graph instance representing the threshold graph
-
     Examples
     --------
     >>> from networkx.algorithms.threshold import find_threshold_graph
@@ -447,12 +453,21 @@ def find_threshold_graph(G, create_using=None):
     References
     ----------
     .. [1] Threshold graphs: https://en.wikipedia.org/wiki/Threshold_graph
+    Returns
+    -------
+    graph :
+        A graph instance representing the threshold graph
     """
     return threshold_graph(find_creation_sequence(G), create_using)
 
 
 def find_creation_sequence(G):
     """Find a threshold subgraph that is close to largest in G.
+
+    Parameters
+    ----------
+    G : NetworkX graph instance
+        An instance of `Graph`, or `MultiDiGraph`
 
     Returns
     -------
@@ -489,9 +504,14 @@ def find_creation_sequence(G):
 def triangles(creation_sequence):
     """Compute number of triangles in the threshold graph with the given creation sequence.
 
+    Parameters
+    ----------
+    creation_sequence
+        The degree sequence.
+
     Returns
     -------
-    ntri : int
+    ntri : integer
         Number of triangles
     """
     # shortcut algorithm that doesn't require computing number
@@ -511,6 +531,11 @@ def triangles(creation_sequence):
 
 def triangle_sequence(creation_sequence):
     """Return triangle sequence for the given threshold graph creation sequence.
+
+    Parameters
+    ----------
+    creation_sequence
+        The degree sequence.
 
     Returns
     -------
@@ -542,6 +567,11 @@ def triangle_sequence(creation_sequence):
 
 def cluster_sequence(creation_sequence):
     """Return cluster sequence for the given threshold graph creation sequence.
+
+    Parameters
+    ----------
+    creation_sequence
+        The degree sequence.
 
     Returns
     -------
