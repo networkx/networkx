@@ -79,9 +79,21 @@ Development Workflow
          PYTHONPATH=. pytest networkx
 
    * Finally, we recommend you use a pre-commit hook, which runs black when
-     you type ``git commit``::
+     you type ``git commit``. To do this, you need to have the pre-commit package manager installed, followed by the setup of the git hook scripts ::
 
-       pre-commit install
+       * Using ``pip``
+
+        ::
+
+          pip install pre-commit
+          pre-commit install
+
+      * Using ``conda`` (Anaconda or Miniconda)
+
+        ::
+
+          conda install -c conda-forge pre-commit
+          pre-commit install
 
 2. Develop your contribution:
 
