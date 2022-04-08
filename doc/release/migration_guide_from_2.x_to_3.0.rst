@@ -43,15 +43,58 @@ Improved integration with scientific Python
 NetworkX 3.0 includes several changes to improve and modernize the usage of
 ``numpy`` and ``scipy`` within networkx.
 
-**TODO** Flesh these bullets out
+- :ref:`Removal of matrix semantics <matrix-to-array>`_.
+  - Removing all uses of `numpy.matrix` in favor of `numpy.ndarray`.
+  - Adoption of the scipy.sparse **array** interface.
+- :ref:`NumPy or SciPy implementations of some algorithms by default
+  (e.g. pagerank) <scipy-default-impl>`_.
+- `numpy.random.Generator` support for random number generation.
+- :ref:`Replace recarray  support <recarray-to-structured>`_ with more generic
+  support for structured dtypes.
 
-- `numpy.random.Generator` support for random number generation
-- Replace explicit `numpy.recarray` support for more generic support of
-  structured dtypes
-- NumPy or SciPy implementations of some algorithms by default (e.g. pagerank)
-- Removal of matrix semantics
-  - Removing all uses of `numpy.matrix` in favor of `numpy.ndarray`
-  - Adoption of the scipy.sparse **array** interface
+.. _matrix-to-array:
+
+Replacing NumPy/SciPy matrices with arrays
+------------------------------------------
+
+The ``numpy.matrix`` has long been discouraged due to significant departures
+from the ``ndarray`` interface, namely:
+- Matrices are always two-dimensional, leading to different results for common
+  operations like indexing and broadcasting.
+- The multiplication operator is interpreted as matrix multiplication rather
+  than element-wise multiplication.
+
+These differences make code more difficult to understand and often require
+boilerplate in order to work with multiple formats.
+With the addition of a sparse array interface in scipy version 1.8, NetworkX
+3.0 has replaced all instances of scipy sparse matrices and numpy matrices
+in favor of their array counterparts.
+Any functions that returned either ``scipy.sparse.spmatrix`` or ``numpy.matrix``
+objects now return their corresponding array counterparts (``scipy.sparse._sparray``
+and ``numpy.ndarray``, respectively) and explicit conversion functions that
+resulted in matrix objects have been removed (e.g. ``to_numpy_matrix``).
+Users should expect all ``numpy`` and ``scipy.sparse`` objects to obey
+*array* semantics in NetworkX 3.X.
+
+.. _scipy-default-impl:
+
+Switch to NumPy/SciPy implementations by default for some algorithms
+--------------------------------------------------------------------
+
+Some networkx analysis algorithms can be implemented with very high performance
+using linear algebra, such as the ``pagerank`` algorithm.
+In NetworkX 2.0, there were multiple implementations of the ``pagerank``
+algorithm: ``pagerank`` (a pure-Python implementation), ``pagerank_numpy``
+(for dense adjacency matrices), and ``pagerank_scipy`` (sparse adjacency
+matrices).
+In all practical use-cases, the SciPy implementation vastly outperforms the
+others.
+In NetworkX 3.0, the `~networkx.algorithms.link_analysis.pagerank_alg.pagerank`
+function now uses the SciPy implementation by default.
+This means that calling ``nx.pagerank`` now requires SciPy to be installed.
+The original Python implementation is still available for pedagogical
+purposes as ``networkx.algorithms.link_analysis.pagerank_alg._pagerank_python``
+but is not exposed publicly to discourage it's use.
   
 Supporting `numpy.random.Generator`
 -----------------------------------
@@ -85,6 +128,8 @@ For new code where exact stream-reproducibility is less important,
 
 .. note::  Exact reproducibility of random numbers with ``Generator`` is still
    possible but may require specific versions of numpy to be installed.
+
+.. _recarray-to-structured:
 
 NumPy structured dtypes for multi-attribute adjacency matrices
 --------------------------------------------------------------
@@ -127,45 +172,6 @@ improving supported for array representations of multi-attribute adjacency::
            [10.,  0.,  5.],
            [ 0.,  5.,  0.]])
 
-Switch to NumPy/SciPy implementations by default for some algorithms
---------------------------------------------------------------------
-
-Some networkx analysis algorithms can be implemented with very high performance
-using linear algebra, such as the ``pagerank`` algorithm.
-In NetworkX 2.0, there were multiple implementations of the ``pagerank``
-algorithm: ``pagerank`` (a pure-Python implementation), ``pagerank_numpy``
-(for dense adjacency matrices), and ``pagerank_scipy`` (sparse adjacency
-matrices).
-In all practical use-cases, the SciPy implementation vastly outperforms the
-others.
-In NetworkX 3.0, the `~networkx.algorithms.link_analysis.pagerank_alg.pagerank`
-function now uses the SciPy implementation by default.
-This means that calling ``nx.pagerank`` now requires SciPy to be installed.
-The original Python implementation is still available for pedagogical
-purposes as ``networkx.algorithms.link_analysis.pagerank_alg._pagerank_python``
-but is not exposed publicly to discourage it's use.
-
-Replacing NumPy/SciPy matrices with arrays
-------------------------------------------
-
-The ``numpy.matrix`` has long been discouraged due to significant departures
-from the ``ndarray`` interface, namely:
-- Matrices are always two-dimensional, leading to different results for common
-  operations like indexing and broadcasting.
-- The multiplication operator is interpreted as matrix multiplication rather
-  than element-wise multiplication.
-
-These differences make code more difficult to understand and often require
-boilerplate in order to work with multiple formats.
-With the addition of a sparse array interface in scipy version 1.8, NetworkX
-3.0 has replaced all instances of scipy sparse matrices and numpy matrices
-in favor of their array counterparts.
-Any functions that returned either ``scipy.sparse.spmatrix`` or ``numpy.matrix``
-objects now return their corresponding array counterparts (``scipy.sparse._sparray``
-and ``numpy.ndarray``, respectively) and explicit conversion functions that
-resulted in matrix objects have been removed (e.g. ``to_numpy_matrix``).
-Users should expect all ``numpy`` and ``scipy.sparse`` objects to obey
-*array* semantics in NetworkX 3.X.
 
 Deprecated code
 ---------------
