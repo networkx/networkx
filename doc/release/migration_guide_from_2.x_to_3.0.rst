@@ -34,8 +34,8 @@ structures (``Graph``, ``DiGraph``, etc.) and common algorithms, but some
 functionality, e.g. functions found in the ``networkx.linalg`` package, are
 only available if these additional libraries are installed.
 
-**TODO**: Generate a table showing dependencies of individual nx objects?
-Probably overkill...
+.. **TODO**: Generate a table showing dependencies of individual nx objects?
+.. Probably overkill...
 
 Improved integration with scientific Python
 -------------------------------------------
@@ -59,7 +59,7 @@ Supporting `numpy.random.Generator`
 NumPy v1.17 introduced a new interface for pseudo-random number generation.
 The `~networkx.utils.misc.py_random_state` and `~networkx.utils.misc.np_random_state`
 decorators have added support for the new `numpy.random.Generator` instances;
-in other words, the ``seed`` argument no accepts `numpy.random.Generator` instances::
+in other words, the ``seed`` argument now accepts `numpy.random.Generator` instances::
 
     >>> G = nx.barbell_graph(6, 2)
     >>> pos = nx.spring_layout(G, seed=np.random.default_rng(123456789))
@@ -77,15 +77,14 @@ of NetworkX (past and future), ``RandomState`` is recommended::
     >>> rng = np.random.RandomState(12345)
     >>> pos = nx.spring_layout(G, seed=rng)
 
-For new code or for situations where exact reproducibility are less important,
+For new code where exact stream-reproducibility is less important,
 ``Generator`` is recommended::
 
     >>>> rng = np.random.default_rng(12345)
     >>> pos = nx.spring_layout(G, seed=rng)
 
 .. note::  Exact reproducibility of random numbers with ``Generator`` is still
-   possible but may require the specification of specific versions of numpy
-   to be installed.
+   possible but may require specific versions of numpy to be installed.
 
 NumPy structured dtypes for multi-attribute adjacency matrices
 --------------------------------------------------------------
