@@ -31,6 +31,12 @@ def efficiency(G, u, v):
     -----
     Edge weights are ignored when computing the shortest path distances.
 
+    Examples
+    --------
+    >>> G = nx.Graph([(0, 1), (1, 2), (1, 5), (5, 4), (2, 4), (2, 3), (4, 3), (3, 6)])
+    >>> nx.efficiency(G, 2, 6)
+    0.5
+
     See also
     --------
     local_efficiency
