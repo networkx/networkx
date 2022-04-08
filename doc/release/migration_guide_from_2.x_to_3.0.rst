@@ -91,8 +91,42 @@ NumPy structured dtypes for multi-attribute adjacency matrices
 
 Prior to NetworkX 3.0, multi-attribute adjacency matrices were supported
 through the ``nx.to_numpy_recarray`` conversion function.
+`numpy.recarray` is a convenience wrapper around ``ndarray`` with structured
+dtypes.
+As such, thisconversion function has been removed in NetworkX 3.0 and support
+for structured dtypes has been added to ``to_numpy_array`` instead, generally
+improving supported for array representations of multi-attribute adjacency::
 
-
+    >>> import numpy as np
+    >>> edges = [
+    ...     (0, 1, {"weight": 10, "cost": 2}),
+    ...     (1, 2, {"weight": 5, "cost": 100})
+    ... ]
+    >>> G = nx.Graph(edges)
+    >>> # Create an adjacency matrix with "weight" and "cost" attributes
+    >>> dtype = np.dtype([("weight", float), ("cost", int)])
+    >>> A = nx.to_numpy_array(G, dtype=dtype, weight=None)
+    >>> A
+    array([[( 0.,   0), (10.,   2), ( 0.,   0)],
+           [(10.,   2), ( 0.,   0), ( 5., 100)],
+           [( 0.,   0), ( 5., 100), ( 0.,   0)]],
+          dtype=[('weight', '<f8'), ('cost', '<i8')])
+    >>> A["cost"]
+    array([[  0,   2,   0],
+           [  2,   0, 100],
+           [  0, 100,   0]])
+    >>> # The recarray interface can be recovered with ``view``
+    >>> A = nx.to_numpy_array(G, dtype=dtype, weight=None).view(np.recarray)
+    >>> A
+    rec.array([[( 0.,   0), (10.,   2), ( 0.,   0)],
+               [(10.,   2), ( 0.,   0), ( 5., 100)],
+               [( 0.,   0), ( 5., 100), ( 0.,   0)]],
+              dtype=[('weight', '<f8'), ('cost', '<i8')])
+    >>> A.weight
+    array([[ 0., 10.,  0.],
+           [10.,  0.,  5.],
+           [ 0.,  5.,  0.]])
+  
 Deprecated code
 ---------------
 
