@@ -26,28 +26,19 @@ G = nx.DiGraph(
 
 
 fig, axes = plt.subplots(2, 4, figsize=(25, 12))
-layouts = [
-    nx.spring_layout(G),
-    nx.circular_layout(G),
-    nx.kamada_kawai_layout(G),
-    nx.planar_layout(G),
-    nx.random_layout(G),
-    nx.shell_layout(G),
-    nx.spectral_layout(G),
-    nx.spiral_layout(G),
-]
-titles = [
-    "Spring Layout - Default when given pos = None",
-    "Circular Layout",
-    "Kamada Kawai Layout",
-    "Planar Layout",
-    "Random Layout",
-    "Shell Layout",
-    "Spectral Layout",
-    "Spiral Layout",
-]
-for layout, title, ax in zip(layouts, titles, axes.flatten()):
-    pos = layout
+lay = {
+    "Spring Layout - Default when given pos = None": nx.spring_layout,
+    "Circular Layout": nx.circular_layout,
+    "Kamada Kawai Layout": nx.kamada_kawai_layout,
+    "Planar Layout": nx.planar_layout,
+    "Random Layout": nx.random_layout,
+    "Shell Layout": nx.shell_layout,
+    "Spectral Layout": nx.spectral_layout,
+    "Spiral Layout": nx.spiral_layout,
+}
+
+for (title, layout), ax in zip(lay.items(), axes.flatten()):
+    pos = layout(G)
     nx.draw_networkx(
         G,
         ax=ax,
