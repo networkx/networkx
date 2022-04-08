@@ -43,13 +43,15 @@ Improved integration with scientific Python
 NetworkX 3.0 includes several changes to improve and modernize the usage of
 ``numpy`` and ``scipy`` within networkx.
 
-- :ref:`Removal of matrix semantics <matrix-to-array>`_.
+- :ref:`Removal of matrix semantics <matrix-to-array>`.
+
   - Removing all uses of `numpy.matrix` in favor of `numpy.ndarray`.
   - Adoption of the scipy.sparse **array** interface.
+
 - :ref:`NumPy or SciPy implementations of some algorithms by default
-  (e.g. pagerank) <scipy-default-impl>`_.
+  (e.g. pagerank) <scipy-default-impl>`.
 - `numpy.random.Generator` support for random number generation.
-- :ref:`Replace recarray  support <recarray-to-structured>`_ with more generic
+- :ref:`Replace recarray  support <recarray-to-structured>` with more generic
   support for structured dtypes.
 
 .. _matrix-to-array:
@@ -179,8 +181,8 @@ Deprecated code
 The 2.6 release deprecates over 30 functions.
 See :ref:`networkx_2.6`.
 
-**TODO**: A table summarizing one deprecation per row w/ 3 columns: 1. the
-deprecated function, 2. the old usage, 3. the replacement usage.
+.. **TODO**: A table summarizing one deprecation per row w/ 3 columns: 1. the
+.. deprecated function, 2. the old usage, 3. the replacement usage.
 
 ---
 
