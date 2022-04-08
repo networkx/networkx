@@ -18,7 +18,7 @@ Any issues with these can be discussed on the `mailing list
 
 The focus of 3.0 release is on addressing years of technical debt, modernizing our codebase,
 improving performance, and making it easier to contribute.
-We plan to release 2.7 near the end of summer and 3.0 near the end of the year.
+We plan to release 3.0 in the summer.
 
 Default dependencies
 --------------------
