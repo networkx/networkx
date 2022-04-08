@@ -26,8 +26,7 @@ def voterank(G, number_of_nodes=None):
         Only nodes with positive number of votes are returned.
 
     Examples
-    -------
-
+    --------
     >>> G= nx.Graph()
     >>> G.add_edge(0,1)
     >>> G.add_edge(0,2)
