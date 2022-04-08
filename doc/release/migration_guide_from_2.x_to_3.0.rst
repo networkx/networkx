@@ -126,6 +126,24 @@ improving supported for array representations of multi-attribute adjacency::
     array([[ 0., 10.,  0.],
            [10.,  0.,  5.],
            [ 0.,  5.,  0.]])
+
+Switch to NumPy/SciPy implementations by default for some algorithms
+--------------------------------------------------------------------
+
+Some networkx analysis algorithms can be implemented with very high performance
+using linear algebra, such as the ``pagerank`` algorithm.
+In NetworkX 2.0, there were multiple implementations of the ``pagerank``
+algorithm: ``pagerank`` (a pure-Python implementation), ``pagerank_numpy``
+(for dense adjacency matrices), and ``pagerank_scipy`` (sparse adjacency
+matrices).
+In all practical use-cases, the SciPy implementation vastly outperforms the
+others.
+In NetworkX 3.0, the `~networkx.algorithms.link_analysis.pagerank_alg.pagerank`
+function now uses the SciPy implementation by default.
+This means that calling ``nx.pagerank`` now requires SciPy to be installed.
+The original Python implementation is still available for pedagogical
+purposes as ``networkx.algorithms.link_analysis.pagerank_alg._pagerank_python``
+but is not exposed publicly to discourage it's use.
   
 Deprecated code
 ---------------
