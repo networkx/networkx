@@ -193,7 +193,7 @@ def paley_graph(p, create_using=None):
     # Compute the squares in Z/pZ.
     # Make it a set to uniquify (there are exactly (p-1)/2 squares in Z/pZ
     # when is prime).
-    square_set = {(x ** 2) % p for x in range(1, p) if (x ** 2) % p != 0}
+    square_set = {(x**2) % p for x in range(1, p) if (x**2) % p != 0}
 
     for x in range(p):
         for x2 in square_set:

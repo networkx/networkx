@@ -547,7 +547,7 @@ def degree_correlation(creation_sequence):
         for dj in rdi:
             degj = ds[dj]
             s1 += degj * degi
-            s2 += degi ** 2 + degj ** 2
+            s2 += degi**2 + degj**2
             s3 += degi + degj
             m += 1
     denom = 2 * m * s2 - s3 * s3
