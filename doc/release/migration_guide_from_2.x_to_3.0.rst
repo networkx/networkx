@@ -144,7 +144,29 @@ This means that calling ``nx.pagerank`` now requires SciPy to be installed.
 The original Python implementation is still available for pedagogical
 purposes as ``networkx.algorithms.link_analysis.pagerank_alg._pagerank_python``
 but is not exposed publicly to discourage it's use.
-  
+
+Replacing NumPy/SciPy matrices with arrays
+------------------------------------------
+
+The ``numpy.matrix`` has long been discouraged due to significant departures
+from the ``ndarray`` interface, namely:
+- Matrices are always two-dimensional, leading to different results for common
+  operations like indexing and broadcasting.
+- The multiplication operator is interpreted as matrix multiplication rather
+  than element-wise multiplication.
+
+These differences make code more difficult to understand and often require
+boilerplate in order to work with multiple formats.
+With the addition of a sparse array interface in scipy version 1.8, NetworkX
+3.0 has replaced all instances of scipy sparse matrices and numpy matrices
+in favor of their array counterparts.
+Any functions that returned either ``scipy.sparse.spmatrix`` or ``numpy.matrix``
+objects now return their corresponding array counterparts (``scipy.sparse._sparray``
+and ``numpy.ndarray``, respectively) and explicit conversion functions that
+resulted in matrix objects have been removed (e.g. ``to_numpy_matrix``).
+Users should expect all ``numpy`` and ``scipy.sparse`` objects to obey
+*array* semantics in NetworkX 3.X.
+
 Deprecated code
 ---------------
 
