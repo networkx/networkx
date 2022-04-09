@@ -1,4 +1,2 @@
-black==22.3.0
-pyupgrade>=2.31
 pre-commit>=2.18
 mypy>=0.942

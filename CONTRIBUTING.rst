@@ -291,13 +291,14 @@ Guidelines
 
   .. code-block:: python
 
-      @nx.not_implemented_for('directed', 'multigraph')
+      @nx.not_implemented_for("directed", "multigraph")
       def function_not_for_MultiDiGraph(G, others):
           # function not for graphs that are directed *and* multigraph
           pass
 
-      @nx.not_implemented_for('directed')
-      @nx.not_implemented_for('multigraph')
+
+      @nx.not_implemented_for("directed")
+      @nx.not_implemented_for("multigraph")
       def function_only_for_Graph(G, others):
           # function not for directed graphs *or* for multigraphs
           pass
