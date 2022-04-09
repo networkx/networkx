@@ -25,7 +25,7 @@ G = nx.DiGraph(
 )
 
 
-fig, axes = plt.subplots(2, 4, figsize=(25, 12))
+fig, axes = plt.subplots(2, 4, figsize=(12, 6))
 layouts = {
     "Spring Layout (default)": nx.spring_layout,
     "Circular Layout": nx.circular_layout,
@@ -37,7 +37,7 @@ layouts = {
     "Spiral Layout": nx.spiral_layout,
 }
 
-for (title, layout), ax in zip(lay.items(), axes.flatten()):
+for (title, layout), ax in zip(layouts.items(), axes.flatten()):
     pos = layout(G)
     nx.draw_networkx(
         G,
@@ -45,9 +45,10 @@ for (title, layout), ax in zip(lay.items(), axes.flatten()):
         with_labels=True,
         node_color="maroon",
         font_color="white",
-        node_size=500,
-        font_size=14,
+        node_size=450,
+        font_size=12,
         pos=pos,
     )
-    ax.set_title(title)
+    ax.set_title(title, fontsize= 15)
+fig.tight_layout()
 plt.show()
