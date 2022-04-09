@@ -27,7 +27,7 @@ G = nx.DiGraph(
 
 fig, axes = plt.subplots(2, 4, figsize=(25, 12))
 lay = {
-    "Spring Layout - Default when given pos = None": nx.spring_layout,
+    "Spring Layout (default)": nx.spring_layout,
     "Circular Layout": nx.circular_layout,
     "Kamada Kawai Layout": nx.kamada_kawai_layout,
     "Planar Layout": nx.planar_layout,
