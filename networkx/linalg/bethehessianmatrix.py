@@ -26,15 +26,14 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
        A NetworkX graph
     r : float
        Regularizer parameter
-
     nodelist : list, optional
        The rows and columns are ordered according to the nodes in nodelist.
-       If nodelist is None, then the ordering is produced by G.nodes().
+       If nodelist is None, then the ordering is produced by ``G.nodes()``.
 
     Returns
     -------
     H : scipy.sparse.csr_matrix
-      The Bethe Hessian matrix of G, with parameter r.
+      The Bethe Hessian matrix of `G`, with parameter `r`.
 
     Examples
     --------
@@ -47,8 +46,6 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
            [-1.25  , -1.25  ,  2.5625,  0.    ,  0.    ],
            [-1.25  ,  0.    ,  0.    ,  1.5625,  0.    ],
            [ 0.    ,  0.    ,  0.    ,  0.    ,  0.5625]])
-
-
 
     See Also
     --------
