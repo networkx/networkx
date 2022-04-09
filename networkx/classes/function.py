@@ -797,7 +797,7 @@ def set_edge_attributes(G, values, name=None):
     including the edge key::
 
         >>> G = nx.MultiGraph()
-        >>> edges = [(0,1), (0,1)]
+        >>> edges = [(0, 1), (0, 1)]
         >>> G.add_edges_from(edges)  # Returns list of edge keys
         [0, 1]
         >>> attributes = {(0,1,0): {"cost": 21}, (0,1,1): {"cost": 7}}
