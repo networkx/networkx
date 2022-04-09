@@ -800,7 +800,7 @@ def set_edge_attributes(G, values, name=None):
         >>> edges = [(0, 1), (0, 1)]
         >>> G.add_edges_from(edges)  # Returns list of edge keys
         [0, 1]
-        >>> attributes = {(0,1,0): {"cost": 21}, (0,1,1): {"cost": 7}}
+        >>> attributes = {(0, 1, 0): {"cost": 21}, (0, 1, 1): {"cost": 7}}
         >>> nx.set_edge_attributes(G, attributes)
         >>> G[0][1][0]["cost"]
         21
