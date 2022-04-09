@@ -27,11 +27,7 @@ def voterank(G, number_of_nodes=None):
 
     Examples
     --------
-    >>> G= nx.Graph()
-    >>> G.add_edge(0,1)
-    >>> G.add_edge(0,2)
-    >>> G.add_edge(0,3)
-    >>> G.add_edge(1,4)
+    >>> G = nx.Graph([(0, 1), (0, 2), (0, 3), (1, 4)])
     >>> nx.voterank(G)
     [0, 1]
 
