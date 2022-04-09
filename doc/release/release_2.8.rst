@@ -1,4 +1,4 @@
-Next Release
+NetworkX 2.8
 ============
 
 Release date: 9 April 2022
