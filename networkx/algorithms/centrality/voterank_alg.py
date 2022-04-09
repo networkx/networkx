@@ -35,11 +35,7 @@ def voterank(G, number_of_nodes=None):
     (i) nodes only vote for their in-neighbors and (ii) only the voting ability of elected node and its out-neighbors are updated.
     You can see an example below:
 
-    >>> G= nx.DiGraph()
-    >>> G.add_edge(0,1)
-    >>> G.add_edge(2,1)
-    >>> G.add_edge(2,3)
-    >>> G.add_edge(3,4)
+    >>> G= nx.DiGraph([(0, 1), (2, 1), (2, 3), (3, 4)])
     >>> nx.voterank(G)
     [2, 3]
 
