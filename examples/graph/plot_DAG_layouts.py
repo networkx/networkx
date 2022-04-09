@@ -49,6 +49,6 @@ for (title, layout), ax in zip(layouts.items(), axes.flatten()):
         font_size=12,
         pos=pos,
     )
-    ax.set_title(title, fontsize= 15)
+    ax.set_title(title, fontsize=15)
 fig.tight_layout()
 plt.show()
