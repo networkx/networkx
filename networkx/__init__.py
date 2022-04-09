@@ -8,7 +8,7 @@ structure, dynamics, and functions of complex networks.
 See https://networkx.org for complete documentation.
 """
 
-__version__ = "2.8rc2.dev0"
+__version__ = "2.8"
 
 
 def __getattr__(name):
