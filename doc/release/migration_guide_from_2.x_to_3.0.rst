@@ -61,6 +61,7 @@ Replacing NumPy/SciPy matrices with arrays
 
 The ``numpy.matrix`` has long been discouraged due to significant departures
 from the ``ndarray`` interface, namely:
+
 - Matrices are always two-dimensional, leading to different results for common
   operations like indexing and broadcasting.
 - The multiplication operator is interpreted as matrix multiplication rather
