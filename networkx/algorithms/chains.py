@@ -51,8 +51,9 @@ def chain_decomposition(G, root=None):
 
     Examples
     --------
-    >>> G = nx.path_graph(5)
-    >>> chain_d = nx.chain_decomposition(G)
+    >>> G = nx.Graph([(0, 1), (1, 2), (1, 3), (3, 4), (5, 4), (5, 3), (4, 1), (3, 6)])
+    >>> list(nx.chain_decomposition(G))
+    [[(1, 4), (4, 3), (3, 1)], [(3, 5), (5, 4)]]
 
     References
     ----------
