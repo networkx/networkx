@@ -1083,6 +1083,9 @@ def multipartite_layout(G, subset_key="subset", align="vertical", scale=1, cente
             raise ValueError(msg)
         layers[layer] = [v] + layers.get(layer, [])
 
+    # sorting layers by subset key
+    layers = dict(sorted(layers.items()))
+
     pos = None
     nodes = []
 
