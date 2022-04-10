@@ -985,12 +985,6 @@ def spiral_layout(G, scale=1, center=None, dim=2, resolution=0.35, equidistant=F
     >>> pos = nx.spiral_layout(G)
     >>> nx.draw(G, pos=pos)
 
-    References
-    ----------
-    .. [1] Cheong, Se-Hang, and Yain-Whar Si. "Force-directed algorithms for schematic drawings and
-        placement: A survey." Information Visualization 19, no. 1 (2020): 65-91.
-        https://doi.org/10.1177%2F1473871618821740
-
     Notes
     -----
     This algorithm currently only works in two dimensions.
