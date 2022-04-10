@@ -7,6 +7,7 @@ from networkx.utils import not_implemented_for
 __all__ = ["bridges", "has_bridges", "local_bridges"]
 
 
+@not_implemented_for("multigraph")
 @not_implemented_for("directed")
 def bridges(G, root=None):
     """Generate all bridges in a graph.
@@ -34,6 +35,9 @@ def bridges(G, root=None):
     ------
     NodeNotFound
        If `root` is not in the graph `G`.
+
+    NetworkXNotImplemented
+        If `G` is a directed graph or multigraph.
 
     Examples
     --------
@@ -73,6 +77,7 @@ def bridges(G, root=None):
             yield u, v
 
 
+@not_implemented_for("multigraph")
 @not_implemented_for("directed")
 def has_bridges(G, root=None):
     """Decide whether a graph has any bridges.
@@ -98,6 +103,9 @@ def has_bridges(G, root=None):
     ------
     NodeNotFound
        If `root` is not in the graph `G`.
+
+    NetworkXNotImplemented
+        If `G` is a directed graph or multigraph.
 
     Examples
     --------
@@ -157,6 +165,11 @@ def local_bridges(G, with_span=True, weight=None):
     e : edge
         The local bridges as an edge 2-tuple of nodes `(u, v)` or
         as a 3-tuple `(u, v, span)` when `with_span is True`.
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If `G` is a directed graph or multigraph.
 
     Examples
     --------
