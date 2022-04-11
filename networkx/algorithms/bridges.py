@@ -36,7 +36,7 @@ def bridges(G, root=None):
        If `root` is not in the graph `G`.
 
     NetworkXNotImplemented
-        If `G` is a directed graph or multigraph.
+        If `G` is a directed graph.
 
     Examples
     --------
@@ -103,7 +103,7 @@ def has_bridges(G, root=None):
        If `root` is not in the graph `G`.
 
     NetworkXNotImplemented
-        If `G` is a directed graph or multigraph.
+        If `G` is a directed graph.
 
     Examples
     --------
