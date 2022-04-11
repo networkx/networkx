@@ -430,6 +430,12 @@ def periphery(G, e=None, usebounds=False):
     p : list
        List of nodes in periphery
 
+     Examples
+    --------
+    >>> G = nx.Graph([(0, 1), (1, 2), (1, 3), (3, 4), (5, 4), (5, 3), (4, 1), (3, 6)])
+    >>> list(nx.periphery(G))
+    [0, 2, 5, 6]
+
     See Also
     --------
     barycenter
