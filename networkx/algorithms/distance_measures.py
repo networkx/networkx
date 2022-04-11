@@ -446,6 +446,12 @@ def center(G, e=None, usebounds=False):
     c : list
        List of nodes in center
 
+    Examples
+    --------
+    >>> G = nx.path_graph(4)
+    >>> list(nx.center(G))
+    [1, 2]
+
     See Also
     --------
     barycenter
