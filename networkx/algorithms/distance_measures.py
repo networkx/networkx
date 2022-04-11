@@ -651,6 +651,12 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
     rd : float
        Value of effective resistance distance
 
+    Examples
+    --------
+    >>> G = nx.Graph([(0, 1), (1, 2), (1, 3), (3, 4), (5, 4), (5, 3), (4, 1), (3, 6)])
+    >>> nx.resistance_distance(G, 3, 5)
+    0.625
+
     Notes
     -----
     Overview discussion:
