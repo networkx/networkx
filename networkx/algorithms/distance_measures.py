@@ -304,6 +304,22 @@ def eccentricity(G, v=None, sp=None):
     -------
     ecc : dictionary
        A dictionary of eccentricity values keyed by node.
+
+    Examples
+    --------
+    >>> G = nx.Graph([(0, 1), (1, 2), (1, 5), (5, 4), (2, 4), (2, 3), (4, 3), (3, 6)])
+    >>> dict(nx.eccentricity(G))
+    {0: 4, 1: 3, 2: 2, 5: 3, 4: 3, 3: 3, 6: 4}
+
+    >>> G = nx.Graph([(0, 1), (1, 2), (1, 5), (5, 4), (2, 4), (2, 3), (4, 3), (3, 6)])
+    >>> sp = dict(nx.shortest_path_length(G))
+    >>> dict(nx.eccentricity(G, sp=sp))
+    {0: 4, 1: 3, 2: 2, 5: 3, 4: 3, 3: 3, 6: 4}
+
+    >>> G = nx.Graph([(0, 1), (1, 2), (1, 5), (5, 4), (2, 4), (2, 3), (4, 3), (3, 6)])
+    >>> dict(nx.eccentricity(G, v=[1, 6]))
+    {1: 3, 6: 4}
+
     """
     #    if v is None:                # none, use entire graph
     #        nodes=G.nodes()
