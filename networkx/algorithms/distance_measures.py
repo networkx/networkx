@@ -503,6 +503,16 @@ def barycenter(G, weight=None, attr=None, sp=None):
     ValueError
         If `sp` and `weight` are both given.
 
+    Examples
+    --------
+    >>> G = nx.Graph([(0, 1), (1, 2), (1, 5), (5, 4), (2, 4), (2, 3), (4, 3), (3, 6)])
+    >>> nx.barycenter(G)
+    [2]
+
+    >>> G = nx.path_graph(8)
+    >>> nx.barycenter(G)
+    [3, 4]
+
     See Also
     --------
     center
