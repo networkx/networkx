@@ -149,6 +149,13 @@ def triadic_census(G, nodelist=None):
     census : dict
        Dictionary with triad type as keys and number of occurrences as values.
 
+    Examples
+    -------
+    >>> G = nx.DiGraph()
+    >>> G.add_edges_from([(1, 2), (2, 3), (3, 1), (3, 4), (4, 1), (4, 2)])
+    >>> nx.triadic_census(G)
+    {'003': 0, '012': 0, '102': 0, '021D': 0, '021U': 0, '021C': 0, '111D': 0, '111U': 0, '030T': 2, '030C': 2, '201': 0, '120D': 0, '120U': 0, '120C': 0, '210': 0, '300': 0}
+
     Notes
     -----
     This algorithm has complexity $O(m)$ where $m$ is the number of edges in
@@ -224,6 +231,17 @@ def is_triad(G):
     -------
     istriad : boolean
        Whether G is a valid triad
+
+    Examples
+    ------
+    >>> G = nx.DiGraph()
+    >>> G.add_edges_from([(1, 2), (2, 3), (3, 1)])
+    >>> nx.is_triad(G)
+    True
+    >>> G.add_edges_from([(3, 4), (4, 6)])
+    >>> nx.is_triad(G)
+    False
+
     """
     if isinstance(G, nx.Graph):
         if G.order() == 3 and nx.is_directed(G):
@@ -245,6 +263,15 @@ def all_triplets(G):
     -------
     triplets : generator of 3-tuples
        Generator of tuples of 3 nodes
+
+    Examples
+    --------
+    >>> G = nx.DiGraph()
+    >>> G.add_edges_from([(1, 2),(2, 3),(3, 4)])
+    >>> triplets = nx.all_triplets(G)
+    >>> print([triplet for triplet in triplets])
+    [(1, 2, 3), (1, 2, 4), (1, 3, 4), (2, 3, 4)]
+
     """
     triplets = combinations(G.nodes(), 3)
     return triplets
@@ -263,6 +290,17 @@ def all_triads(G):
     -------
     all_triads : generator of DiGraphs
        Generator of triads (order-3 DiGraphs)
+
+    Examples
+    --------
+    >>> G = nx.DiGraph()
+    >>> G.add_edges_from([(1, 2), (2, 3), (3, 1), (3, 4), (4, 1), (4, 2)])
+    >>> triads = [x for x in nx.all_triads(G)]
+    >>> triads[0].edges()
+    OutEdgeView([(1, 2), (2, 3), (3, 1)])
+    >>> triads[1].edges()
+    OutEdgeView([(1, 2), (4, 1), (4, 2)])
+
     """
     triplets = combinations(G.nodes(), 3)
     for triplet in triplets:
@@ -282,6 +320,17 @@ def triads_by_type(G):
     -------
     tri_by_type : dict
        Dictionary with triad types as keys and lists of triads as values.
+
+    Examples
+    -------
+    >>> G = nx.DiGraph()
+    >>> G.add_edges_from([(1, 2), (1, 3), (2, 3), (3, 1), (5, 6), (5, 4), (6, 7)])
+    >>> dict = nx.triads_by_type(G)
+    >>> dict['120C'][0].edges()
+    OutEdgeView([(1, 2), (1, 3), (2, 3), (3, 1)])
+    >>> dict['012'][0].edges()
+    OutEdgeView([(1, 2)])
+
     """
     # num_triads = o * (o - 1) * (o - 2) // 6
     # if num_triads > TRIAD_LIMIT: print(WARNING)
@@ -306,6 +355,16 @@ def triad_type(G):
     -------
     triad_type : str
        A string identifying the triad type
+
+    Examples
+    -------
+    >>> G = nx.DiGraph()
+    >>> G.add_edges_from([(1,2), (2,3), (3,1)])
+    >>> nx.triad_type(G)
+    '030C'
+    >>> G.add_edges_from([(1,3)])
+    >>> nx.triad_type(G)
+    '120C'
 
     Notes
     -----
@@ -394,6 +453,15 @@ def random_triad(G):
     -------
     G2 : subgraph
        A randomly selected triad (order-3 NetworkX DiGraph)
+
+    Examples
+    -------
+    >>> G = nx.DiGraph()
+    >>> G.add_edges_from([(1, 2), (1, 3), (2, 3), (3, 1), (5, 6), (5, 4), (6, 7)])
+    >>> Random = nx.random_triad(G)
+    >>> nx.edges(Random)
+    OutEdgeView([(1, 3), (3, 1)])
+
     """
     nodes = sample(list(G.nodes()), 3)
     G2 = G.subgraph(nodes)
