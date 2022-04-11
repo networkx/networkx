@@ -267,7 +267,7 @@ def all_triplets(G):
     Examples
     --------
     >>> G = nx.DiGraph()
-    >>> G.add_edges_from([(1, 2),(2, 3),(3, 4)])
+    >>> G.add_edges_from([(1, 2), (2, 3), (3, 4)])
     >>> triplets = nx.all_triplets(G)
     >>> print([triplet for triplet in triplets])
     [(1, 2, 3), (1, 2, 4), (1, 3, 4), (2, 3, 4)]
@@ -359,10 +359,10 @@ def triad_type(G):
     Examples
     -------
     >>> G = nx.DiGraph()
-    >>> G.add_edges_from([(1,2), (2,3), (3,1)])
+    >>> G.add_edges_from([(1, 2), (2, 3), (3, 1)])
     >>> nx.triad_type(G)
     '030C'
-    >>> G.add_edges_from([(1,3)])
+    >>> G.add_edges_from([(1, 3)])
     >>> nx.triad_type(G)
     '120C'
 
