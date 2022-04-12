@@ -5,7 +5,8 @@ __all__ = ["check_planarity", "PlanarEmbedding"]
 
 
 def check_planarity(G, counterexample=False):
-    """Check if a graph is planar and return a counterexample or an embedding.
+    """Check if a graph is planar and return a Planar Embedding if true,
+    a counterexample otherwise.
 
     A graph is planar iff it can be drawn in a plane without
     any edge intersections.
@@ -24,8 +25,29 @@ def check_planarity(G, counterexample=False):
         If the graph is planar `certificate` is a PlanarEmbedding
         otherwise it is a Kuratowski subgraph.
 
+    Examples
+    --------
+
+    This function can be considered as the primary interface for the planar embedding tools since
+    -if the graph is planar- it returns a PlanarEmbedding which can be then used to call other methods of this class.
+    Consider the following example:
+
+    >>> G = nx.Graph([(0,1),(0,2)])
+    >>> isPlanar, P = nx.check_planarity(G)
+    >>> print(isPlanar)
+    True
+
+    Once the PlanarEmbedding obejct is created using `check_planarity()` as above, the other features of the class can be used safely.
+    Let's see this on action by extending our initial example:
+
+    >>> G = nx.Graph([(0,1),(0,2)])
+    >>> isPlanar, P = nx.check_planarity(G)
+    >>> P.get_data()
+    {0: [1, 2], 1: [0], 2: [0]}
+
     Notes
     -----
+
     A (combinatorial) embedding consists of cyclic orderings of the incident
     edges at each vertex. Given such an embedding there are multiple approaches
     discussed in literature to drawing the graph (subject to various
@@ -760,6 +782,14 @@ class PlanarEmbedding(nx.DiGraph):
     to them, it is possible to assign each half-edge *exactly one* face.
     For a half-edge (u, v) that is orientated such that u is below v then the
     face that belongs to (u, v) is to the right of this half-edge.
+
+    Note
+    ----
+
+    It is suggested to use `check_planarity()` function first, as it is considered as the
+    primary interface to the features of this class since it returns a PlanarEmbedding
+    if the input graph is planar. Returned embedding can then be used to apply other methods
+    of the class.
 
     Examples
     --------
