@@ -153,8 +153,26 @@ def triadic_census(G, nodelist=None):
     -------
     >>> G = nx.DiGraph()
     >>> G.add_edges_from([(1, 2), (2, 3), (3, 1), (3, 4), (4, 1), (4, 2)])
-    >>> nx.triadic_census(G)
-    {'003': 0, '012': 0, '102': 0, '021D': 0, '021U': 0, '021C': 0, '111D': 0, '111U': 0, '030T': 2, '030C': 2, '201': 0, '120D': 0, '120U': 0, '120C': 0, '210': 0, '300': 0}
+    >>> triadic_census = nx.triadic_census(G)
+    >>> for key, value in triadic_census.items(): 
+    ...     print(f"{key}: {value} ")
+    ... 
+    003: 0 
+    012: 0 
+    102: 0 
+    021D: 0 
+    021U: 0 
+    021C: 0 
+    111D: 0 
+    111U: 0 
+    030T: 2 
+    030C: 2 
+    201: 0 
+    120D: 0 
+    120U: 0 
+    120C: 0 
+    210: 0 
+    300: 0 
 
     Notes
     -----
