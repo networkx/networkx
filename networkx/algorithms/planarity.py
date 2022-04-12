@@ -37,7 +37,7 @@ def check_planarity(G, counterexample=False):
     >>> print(isPlanar)
     True
 
-    Once the PlanarEmbedding obejct is created using `check_planarity()` as above, the other features of the class can be used safely.
+    Once the PlanarEmbedding object is created using `check_planarity()` as above, the other features of the class can be used safely.
     Let's see this on action by extending our initial example:
 
     >>> G = nx.Graph([(0,1),(0,2)])
@@ -786,8 +786,8 @@ class PlanarEmbedding(nx.DiGraph):
     Note
     ----
 
-    It is suggested to use `check_planarity()` function first, as it is considered as the
-    primary interface to the features of this class since it returns a PlanarEmbedding
+    It is suggested to use `check_planarity()` function first, since it is considered as the
+    primary interface to the features of this class as it returns a PlanarEmbedding
     if the input graph is planar. Returned embedding can then be used to apply other methods
     of the class.
 
