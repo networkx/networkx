@@ -165,7 +165,6 @@ def is_forest(G):
     Examples
     --------
     >>> G= nx.Graph()
-    >>> G.add_nodes_from([1,2,3,4,5])
     >>> G.add_edges_from([(1,2),(1,3),(2,4),(2,5)])
     >>> nx.is_forest(G)
     True
@@ -222,7 +221,6 @@ def is_tree(G):
     Examples
     --------
     >>> G= nx.Graph()
-    >>> G.add_nodes_from([1,2,3,4,5])
     >>> G.add_edges_from([(1,2),(1,3),(2,4),(2,5)])
     >>> nx.is_tree(G) # n-1 edges
     True
