@@ -331,8 +331,8 @@ def triads_by_type(G):
     There are exactly 16 different types of Triads possible. Suppose 1, 2, 3 are three
     nodes, they will be classified as a particular Triad Type if their connection
     is as follows:
-    
-    003: 1, 2, 3 
+
+    003: 1, 2, 3
     012: 1 -> 2, 3
     102: 1 <-> 2, 3
     021D: 1 <- 2 -> 3
@@ -348,7 +348,7 @@ def triads_by_type(G):
     120C: 1 -> 2 -> 3, 1 <-> 3
     210: 1 -> 2 <-> 3, 1 <-> 3
     300: 1 <-> 2 <-> 3, 1 <-> 3
-    
+
     Refer to Gallery Section to view the Triads better.
 
     Parameters
@@ -370,7 +370,7 @@ def triads_by_type(G):
     OutEdgeView([(1, 2), (1, 3), (2, 3), (3, 1)])
     >>> dict['012'][0].edges()
     OutEdgeView([(1, 2)])
-    
+
     References
     ----------
     .. [1] Snijders, T. (2012). "Transitivity and triads." University of
