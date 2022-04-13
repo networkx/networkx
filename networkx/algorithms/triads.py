@@ -150,13 +150,13 @@ def triadic_census(G, nodelist=None):
        Dictionary with triad type as keys and number of occurrences as values.
 
     Examples
-    -------
+    --------
     >>> G = nx.DiGraph()
     >>> G.add_edges_from([(1, 2), (2, 3), (3, 1), (3, 4), (4, 1), (4, 2)])
     >>> triadic_census = nx.triadic_census(G)
     >>> for key, value in triadic_census.items():
-    ...     print(f"{key}: {value} ")
-    ...
+    ...     print(f"{key}: {value}")
+    ... 
     003: 0
     012: 0
     102: 0
@@ -251,7 +251,7 @@ def is_triad(G):
        Whether G is a valid triad
 
     Examples
-    ------
+    --------
     >>> G = nx.DiGraph()
     >>> G.add_edges_from([(1, 2), (2, 3), (3, 1)])
     >>> nx.is_triad(G)
@@ -340,7 +340,7 @@ def triads_by_type(G):
        Dictionary with triad types as keys and lists of triads as values.
 
     Examples
-    -------
+    --------
     >>> G = nx.DiGraph()
     >>> G.add_edges_from([(1, 2), (1, 3), (2, 3), (3, 1), (5, 6), (5, 4), (6, 7)])
     >>> dict = nx.triads_by_type(G)
@@ -375,7 +375,7 @@ def triad_type(G):
        A string identifying the triad type
 
     Examples
-    -------
+    --------
     >>> G = nx.DiGraph()
     >>> G.add_edges_from([(1, 2), (2, 3), (3, 1)])
     >>> nx.triad_type(G)
@@ -473,7 +473,7 @@ def random_triad(G):
        A randomly selected triad (order-3 NetworkX DiGraph)
 
     Examples
-    -------
+    --------
     >>> G = nx.DiGraph()
     >>> G.add_edges_from([(1, 2), (1, 3), (2, 3), (3, 1), (5, 6), (5, 4), (6, 7)])
     >>> Random = nx.random_triad(G)
