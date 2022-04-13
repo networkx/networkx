@@ -895,7 +895,7 @@ class TestSimilarity:
         assert expected_paths == list(paths)
         assert expected_map == index_map
 
-    def test_symmetry_with_custom_matching():
+    def test_symmetry_with_custom_matching(self):
         print("G2 is edge (a,b) and G3 is edge (a,a)")
         print("but node order for G2 is (a,b) while for G3 it is (b,a)")
 
