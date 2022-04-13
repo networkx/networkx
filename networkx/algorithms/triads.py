@@ -156,7 +156,7 @@ def triadic_census(G, nodelist=None):
     >>> triadic_census = nx.triadic_census(G)
     >>> for key, value in triadic_census.items():
     ...     print(f"{key}: {value}")
-    ... 
+    ...
     003: 0
     012: 0
     102: 0
@@ -328,6 +328,28 @@ def all_triads(G):
 @not_implemented_for("undirected")
 def triads_by_type(G):
     """Returns a list of all triads for each triad type in a directed graph.
+    There are exactly 16 different types of Triads possible. Suppose 1, 2, 3 are three
+    nodes, they will be classified as a particular Triad Type if their connection
+    is as follows:
+    
+    003: 1, 2, 3 
+    012: 1 -> 2, 3
+    102: 1 <-> 2, 3
+    021D: 1 <- 2 -> 3
+    021U: 1 -> 2 <- 3
+    021C: 1 -> 2 -> 3
+    111D: 1 <-> 2 <- 3
+    111U: 1 <-> 2 -> 3
+    030T: 1 -> 2 -> 3, 1 -> 3
+    030C: 1 <- 2 <- 3, 1 -> 3
+    201: 1 <-> 2 <-> 3
+    120D: 1 <- 2 -> 3, 1 <-> 3
+    120U: 1 -> 2 <- 3, 1 <-> 3
+    120C: 1 -> 2 -> 3, 1 <-> 3
+    210: 1 -> 2 <-> 3, 1 <-> 3
+    300: 1 <-> 2 <-> 3, 1 <-> 3
+    
+    Refer to Gallery Section to view the Triads better.
 
     Parameters
     ----------
@@ -348,7 +370,12 @@ def triads_by_type(G):
     OutEdgeView([(1, 2), (1, 3), (2, 3), (3, 1)])
     >>> dict['012'][0].edges()
     OutEdgeView([(1, 2)])
-
+    
+    References
+    ----------
+    .. [1] Snijders, T. (2012). "Transitivity and triads." University of
+        Oxford.
+        https://web.archive.org/web/20170830032057/http://www.stats.ox.ac.uk/~snijders/Trans_Triads_ha.pdf
     """
     # num_triads = o * (o - 1) * (o - 2) // 6
     # if num_triads > TRIAD_LIMIT: print(WARNING)
