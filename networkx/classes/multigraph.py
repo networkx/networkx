@@ -928,13 +928,7 @@ class MultiGraph(Graph):
 
         Returns
         -------
-        If a single node is requested
-        deg : int
-            Degree of the node, if a single node is passed as argument.
-
-        OR if multiple nodes are requested
-        nd_iter : iterator
-            The iterator returns two-tuples of (node, degree).
+        degree_view: MultiDegreeView
 
         Examples
         --------
