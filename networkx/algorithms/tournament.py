@@ -166,13 +166,6 @@ def random_tournament(n, seed=None):
         A tournament on `n` nodes, with exactly one directed edge joining
         each pair of distinct nodes.
 
-    Examples
-    --------
-    >>> from networkx.algorithms import tournament
-    >>> G = tournament.random_tournament(4)
-    >>> G.edges  # edges of the random tournament graph
-    OutEdgeView([(0, 1), (0, 3), (2, 0), (2, 1), (2, 3), (3, 1)])
-
     Notes
     -----
     This algorithm adds, for each pair of distinct nodes, an edge with
