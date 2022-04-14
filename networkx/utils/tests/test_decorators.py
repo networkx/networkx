@@ -8,10 +8,8 @@ import pytest
 import networkx as nx
 from networkx.utils.decorators import open_file, not_implemented_for
 from networkx.utils.decorators import (
-    preserve_random_state,
     py_random_state,
     np_random_state,
-    random_state,
     argmap,
 )
 from networkx.utils.misc import PythonRandomInterface
@@ -203,17 +201,6 @@ class TestOpenFileDecorator:
 
     def test_writer_kwarg_path_none(self):
         self.writer_kwarg(path=None)
-
-
-@preserve_random_state
-def test_preserve_random_state():
-    try:
-        import numpy.random
-
-        r = numpy.random.random()
-    except ImportError:
-        return
-    assert abs(r - 0.61879477158568) < 1e-16
 
 
 class TestRandomState:
