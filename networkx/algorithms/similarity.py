@@ -745,18 +745,30 @@ def optimize_edit_paths(
         N = len(pending_h)
         # assert Ce.C.shape == (M + N, M + N)
 
-        g_ind = [
-            i
-            for i in range(M)
-            if pending_g[i][:2] == (u, u)
-            or any(pending_g[i][:2] in ((p, u), (u, p)) for p, q in matched_uv)
-        ]
-        h_ind = [
-            j
-            for j in range(N)
-            if pending_h[j][:2] == (v, v)
-            or any(pending_h[j][:2] in ((q, v), (v, q)) for p, q in matched_uv)
-        ]
+        # only attempt to match edges after one node match has been made
+        # this will stop self-edges on the first node being automatically deleted
+        # even when a substitution is the better option
+        if matched_uv:
+            g_ind = [
+                i
+                for i in range(M)
+                if pending_g[i][:2] == (u, u)
+                or any(
+                    pending_g[i][:2] in ((p, u), (u, p), (p, p)) for p, q in matched_uv
+                )
+            ]
+            h_ind = [
+                j
+                for j in range(N)
+                if pending_h[j][:2] == (v, v)
+                or any(
+                    pending_h[j][:2] in ((q, v), (v, q), (q, q)) for p, q in matched_uv
+                )
+            ]
+        else:
+            g_ind = []
+            h_ind = []
+
         m = len(g_ind)
         n = len(h_ind)
 
@@ -782,9 +794,9 @@ def optimize_edit_paths(
                             for p, q in matched_uv
                         ):
                             continue
-                    if g == (u, u):
+                    if g == (u, u) or any(g == (p, p) for p, q in matched_uv):
                         continue
-                    if h == (v, v):
+                    if h == (v, v) or any(h == (q, q) for p, q in matched_uv):
                         continue
                     C[k, l] = inf
 
