@@ -151,8 +151,7 @@ def triadic_census(G, nodelist=None):
 
     Examples
     --------
-    >>> G = nx.DiGraph()
-    >>> G.add_edges_from([(1, 2), (2, 3), (3, 1), (3, 4), (4, 1), (4, 2)])
+    >>> G = nx.DiGraph([(1, 2), (2, 3), (3, 1), (3, 4), (4, 1), (4, 2)])
     >>> triadic_census = nx.triadic_census(G)
     >>> for key, value in triadic_census.items():
     ...     print(f"{key}: {value}")
@@ -255,7 +254,7 @@ def is_triad(G):
     >>> G = nx.DiGraph([(1, 2), (2, 3), (3, 1)])
     >>> nx.is_triad(G)
     True
-    >>> G.add_edges_from([(3, 4), (4, 6)])
+    >>> G.add_edges_from([(0,1)])
     >>> nx.is_triad(G)
     False
 
@@ -283,8 +282,7 @@ def all_triplets(G):
 
     Examples
     --------
-    >>> G = nx.DiGraph()
-    >>> G.add_edges_from([(1, 2), (2, 3), (3, 4)])
+    >>> G = nx.DiGraph([(1, 2), (2, 3), (3, 4)])
     >>> triplets = nx.all_triplets(G)
     >>> print([triplet for triplet in triplets])
     [(1, 2, 3), (1, 2, 4), (1, 3, 4), (2, 3, 4)]
@@ -310,8 +308,7 @@ def all_triads(G):
 
     Examples
     --------
-    >>> G = nx.DiGraph()
-    >>> G.add_edges_from([(1, 2), (2, 3), (3, 1), (3, 4), (4, 1), (4, 2)])
+    >>> G = nx.DiGraph([(1, 2), (2, 3), (3, 1), (3, 4), (4, 1), (4, 2)])
     >>> triads = [x for x in nx.all_triads(G)]
     >>> triads[0].edges()
     OutEdgeView([(1, 2), (2, 3), (3, 1)])
@@ -362,8 +359,7 @@ def triads_by_type(G):
 
     Examples
     --------
-    >>> G = nx.DiGraph()
-    >>> G.add_edges_from([(1, 2), (1, 3), (2, 3), (3, 1), (5, 6), (5, 4), (6, 7)])
+    >>> G = nx.DiGraph([(1, 2), (1, 3), (2, 3), (3, 1), (5, 6), (5, 4), (6, 7)])
     >>> dict = nx.triads_by_type(G)
     >>> dict['120C'][0].edges()
     OutEdgeView([(1, 2), (1, 3), (2, 3), (3, 1)])
@@ -402,8 +398,7 @@ def triad_type(G):
 
     Examples
     --------
-    >>> G = nx.DiGraph()
-    >>> G.add_edges_from([(1, 2), (2, 3), (3, 1)])
+    >>> G = nx.DiGraph([(1, 2), (2, 3), (3, 1)])
     >>> nx.triad_type(G)
     '030C'
     >>> G.add_edges_from([(1, 3)])
@@ -500,8 +495,7 @@ def random_triad(G):
 
     Examples
     --------
-    >>> G = nx.DiGraph()
-    >>> G.add_edges_from([(1, 2), (1, 3), (2, 3), (3, 1), (5, 6), (5, 4), (6, 7)])
+    >>> G = nx.DiGraph([(1, 2), (1, 3), (2, 3), (3, 1), (5, 6), (5, 4), (6, 7)])
     >>> Random = nx.random_triad(G)
     >>> nx.edges(Random)
     OutEdgeView([(1, 3), (3, 1)])
