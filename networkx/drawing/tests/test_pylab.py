@@ -751,3 +751,15 @@ def test_draw_networkx_edges_undirected_selfloop_colors():
     for fap, clr, slp in zip(ax.patches, edge_colors[-3:], sl_points):
         assert fap.get_path().contains_point(slp)
         assert mpl.colors.same_color(fap.get_edgecolor(), clr)
+    plt.delaxes(ax)
+
+
+def test_draw_networkx_edges_undirected_arrows():
+    """Default to double-ended arrows when graph is undirected and arrows=True."""
+    G = nx.Graph([(0, 1)])
+    pos = {n: (n, n) for n in G.nodes}
+    fig, ax = plt.subplots()
+
+    fap, *_ = nx.draw_networkx_edges(G, pos, arrows=True)
+    assert fap.get_arrowstyle().arrow == "<->"
+    plt.delaxes(ax)
