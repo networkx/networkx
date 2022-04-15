@@ -87,7 +87,7 @@ def not_implemented_for(*graph_types):
 
         return g
 
-    return argmap(_not_implemented_for, 0, clobber_generator=True)
+    return argmap(_not_implemented_for, 0, eager_mapping=True)
 
 
 # To handle new extensions, define a function accepting a `path` and `mode`.
@@ -464,6 +464,15 @@ class argmap:
         function constructs an object (like a file handle) that requires
         post-processing (like closing).
 
+    eager_mapping : bool (default: False)
+        When True, and the `argmap` is used to decorate a generator function, the
+        transformation is eagerly evaluated before calling the wrapped function
+        and returning the resulting generator.  Otherwise, a decorated generator
+        function will be strictly lazy.  Has no effect on non-generator functions.
+        Note that `try_finally` and `eager_mapping` cannot both be True.  Also,
+        the `eager_mapping` decorators must be the topmost decorators in a stack
+        of argmaps, when decorating a generator function.
+
     Examples
     --------
     Most of these examples use `@argmap(...)` to apply the decorator to
@@ -606,6 +615,54 @@ class argmap:
             # this code doesn't need to worry about closing the file
             print(file.read())
 
+    **Eager Mapping**
+
+    When argmap is used to decorate a generator function, the mapping can either
+    be evaluated lazily or eagerly.  In eager mapping, the transformation is
+    evaluated immediately upon calling the function.  In lazy mapping, evaluation
+    is delayed until the generator is iterated over.  This is used to allow the
+    :func:`not_implemented_for` decorator to immediately raise its exception
+    upon calling the decorated function.
+
+    For example we'll make a function which yields each node of a graph -- we'll
+    forbid graphs with more than 10 nodes for the sake of example::
+
+        def check_graph(G):
+            if len(G) > 10:
+                raise TooManyNodesError
+
+        @argmap(check_graph, eager_mapping=False)
+        def foo(G):
+            for v in G.nodes:
+                yield v
+
+    Since we have set eager_mapping=False, this would be equivalent to::
+
+        def foo(G):
+            if len(G) > 10:
+                raise TooManyNodesError
+            for v in G.nodes:
+                yield v
+
+    Then, if we call `foo`, `check_graph` is not evaluated until we begin
+    iterating.  If we set `eager_mapping = True`, the equivalent function is::
+
+        @argmap(check_graph, eager_mapping=True)
+        def bar(G):
+            for v in G.nodes:
+                yield v
+
+        def bar(G):
+            def internal_bar(G):
+                for v in G.nodes:
+                    yield v
+            if len(G) > 10:
+                raise TooManyNodesError
+            return internal_bar(G)
+
+    In this second case, `check_graph` is evaluated immediately.
+
+
     Notes
     -----
     An object of this class is callable and intended to be used when
@@ -732,11 +789,15 @@ class argmap:
 
     """
 
-    def __init__(self, func, *args, try_finally=False, clobber_generator=False):
+    def __init__(self, func, *args, try_finally=False, eager_mapping=False):
         self._func = func
         self._args = args
         self._finally = try_finally
-        self._clobber_generator = clobber_generator
+        self._eager_mapping = eager_mapping
+        if try_finally and eager_mapping:
+            raise nx.NetworkXError(
+                "try_finally and eager_mapping parameters cannot both be True in argmap"
+            )
 
     @staticmethod
     def _lazy_compile(func):
@@ -807,6 +868,14 @@ class argmap:
         """
 
         if inspect.isgeneratorfunction(f):
+
+            if hasattr(f, "__argmap__"):
+                if f.__argmap__._eager_mapping and not self._eager_mapping:
+                    # note: this error message is not generic, and should be
+                    # updated if future argmaps eagerly decorate generators
+                    raise nx.NetworkXError(
+                        "not_implemented_for must occur at the top of a decorator stack for generator functions"
+                    )
 
             def func(*args, __wrapper=None, **kwargs):
                 yield from argmap._lazy_compile(__wrapper)(*args, **kwargs)
@@ -1014,7 +1083,7 @@ class argmap:
             functions = {id(f): (wrapped_name, f)}
             mutable_args = False
 
-        if self._clobber_generator and sig.is_generator:
+        if self._eager_mapping and sig.is_generator:
             call = sig.call_sig.format("yield from", wrapped_name)
             wrapped_name = f"intern_{sig.name}"
             defn = sig.def_sig.format(wrapped_name)
