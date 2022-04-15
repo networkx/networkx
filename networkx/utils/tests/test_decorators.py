@@ -485,11 +485,6 @@ finally:
  pass#"""
         )
 
-    def nop(self):
-        print(foo.__argmap__.assemble(foo.__wrapped__))
-        argmap._lazy_compile(foo)
-        print(foo._code)
-
     def test_immediate_raise(self):
         @not_implemented_for("directed")
         def yield_nodes(G):
@@ -497,9 +492,6 @@ finally:
 
         G = nx.Graph([(1, 2)])
         D = nx.DiGraph()
-
-        print([*yield_nodes(G)])
-        print(yield_nodes._code)
 
         # test first call (argmap is compiled and executed)
         with pytest.raises(nx.NetworkXNotImplemented):
