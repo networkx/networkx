@@ -87,7 +87,7 @@ def not_implemented_for(*graph_types):
 
         return g
 
-    return argmap(_not_implemented_for, 0)
+    return argmap(_not_implemented_for, 0, clobber_generator=True)
 
 
 # To handle new extensions, define a function accepting a `path` and `mode`.
@@ -732,10 +732,11 @@ class argmap:
 
     """
 
-    def __init__(self, func, *args, try_finally=False):
+    def __init__(self, func, *args, try_finally=False, clobber_generator=False):
         self._func = func
         self._args = args
         self._finally = try_finally
+        self._clobber_generator = clobber_generator
 
     @staticmethod
     def _lazy_compile(func):
@@ -924,9 +925,11 @@ class argmap:
             f
         )
 
-        call = f"{sig.call_sig.format(wrapped_name)}#"
+        return_statement = "yield from" if sig.is_generator else "return"
+        call = sig.call_sig.format(return_statement, wrapped_name)
         mut_args = f"{sig.args} = list({sig.args})" if mutable_args else ""
-        body = argmap._indent(sig.def_sig, mut_args, mapblock, call, finallys)
+        defn = sig.def_sig.format(sig.name)
+        body = argmap._indent(defn, mut_args, mapblock, call, finallys)
         code = "\n".join(body)
 
         locl = {}
@@ -1010,6 +1013,14 @@ class argmap:
             mapblock, finallys = [], []
             functions = {id(f): (wrapped_name, f)}
             mutable_args = False
+
+        if self._clobber_generator and sig.is_generator:
+            call = sig.call_sig.format("yield from", wrapped_name)
+            wrapped_name = f"intern_{sig.name}"
+            defn = sig.def_sig.format(wrapped_name)
+            sig = self.Signature(*sig[:-1], False)
+            mapblock = [defn] + mapblock + finallys + [call]
+            finallys = []
 
         if id(self._func) in functions:
             fname, _ = functions[id(self._func)]
@@ -1160,16 +1171,15 @@ class argmap:
             def_sig.append(name)
 
         fname = cls._name(f)
-        def_sig = f'def {fname}({", ".join(def_sig)}):'
+        def_sig = f'def {{}}({", ".join(def_sig)}):'
 
-        if inspect.isgeneratorfunction(f):
-            _return = "yield from"
-        else:
-            _return = "return"
+        is_generator = inspect.isgeneratorfunction(f)
 
-        call_sig = f"{_return} {{}}({', '.join(call_sig)})"
+        call_sig = f"{{}} {{}}({', '.join(call_sig)})#"
 
-        return cls.Signature(fname, sig, def_sig, call_sig, names, npos, args, kwargs)
+        return cls.Signature(
+            fname, sig, def_sig, call_sig, names, npos, args, kwargs, is_generator
+        )
 
     Signature = collections.namedtuple(
         "Signature",
@@ -1182,6 +1192,7 @@ class argmap:
             "n_positional",
             "args",
             "kwargs",
+            "is_generator",
         ],
     )
 

@@ -489,3 +489,29 @@ finally:
         print(foo.__argmap__.assemble(foo.__wrapped__))
         argmap._lazy_compile(foo)
         print(foo._code)
+
+    def test_immediate_raise(self):
+        @not_implemented_for("directed")
+        def yield_nodes(G):
+            yield from G
+
+        G = nx.Graph([(1, 2)])
+        D = nx.DiGraph()
+
+        print([*yield_nodes(G)])
+        print(yield_nodes._code)
+
+        # test first call (argmap is compiled and executed)
+        with pytest.raises(nx.NetworkXNotImplemented):
+            node_iter = yield_nodes(D)
+
+        # test second call (argmap is only executed)
+        with pytest.raises(nx.NetworkXNotImplemented):
+            node_iter = yield_nodes(D)
+
+        # ensure that generators still make generators
+        node_iter = yield_nodes(G)
+        next(node_iter)
+        next(node_iter)
+        with pytest.raises(StopIteration):
+            next(node_iter)
