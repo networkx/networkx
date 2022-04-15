@@ -117,24 +117,6 @@ def _extrema_bounding(G, compute="diameter"):
     ValueError
         If `compute` is not one of "diameter", "radius", "periphery", "center", or "eccentricities".
 
-    Examples
-    --------
-    >>> G = nx.path_graph(4)
-    >>> nx.extrema_bounding(G, compute="diameter")
-    3
-
-    >>> G = nx.path_graph(4)
-    >>> nx.extrema_bounding(G, compute="radius")
-    2
-
-    >>> G = nx.path_graph(4)
-    >>> nx.extrema_bounding(G, compute="center")
-    [1, 2]
-
-    >>> G = nx.path_graph(4)
-    >>> nx.extrema_bounding(G, compute="periphery")
-    [0, 3]
-
     Notes
     -----
     This algorithm was proposed in the following papers:
