@@ -20,6 +20,17 @@ def degree_centrality(G):
     nodes : dictionary
        Dictionary of nodes with degree centrality as the value.
 
+    Examples
+    --------
+    >>> G = nx.Graph([(0, 1), (1, 2), (1, 5), (5, 4), (2, 4), (2, 3), (4, 3)])
+    >>> nx.degree_centrality(G)
+    {0: 0.2,
+     1: 0.6000000000000001,
+     2: 0.6000000000000001,
+     5: 0.4,
+     4: 0.6000000000000001,
+     3: 0.4}
+
     See Also
     --------
     betweenness_centrality, load_centrality, eigenvector_centrality
@@ -63,6 +74,12 @@ def in_degree_centrality(G):
     NetworkXNotImplemented
         If G is undirected.
 
+    Examples
+    --------
+    >>> G = nx.DiGraph([(0, 1), (1, 2), (1, 5), (5, 4), (2, 4), (2, 3), (4, 3)])
+    >>> nx.in_degree_centrality(G)
+    {0: 0.0, 1: 0.2, 2: 0.2, 5: 0.2, 4: 0.4, 3: 0.4}
+
     See Also
     --------
     degree_centrality, out_degree_centrality
@@ -105,6 +122,12 @@ def out_degree_centrality(G):
     ------
     NetworkXNotImplemented
         If G is undirected.
+
+    Examples
+    --------
+    >>> G = nx.DiGraph([(0, 1), (1, 2), (1, 5), (5, 4), (2, 4), (2, 3), (4, 3)])
+    >>> nx.out_degree_centrality(G)
+    {0: 0.2, 1: 0.4, 2: 0.4, 5: 0.2, 4: 0.2, 3: 0.0}
 
     See Also
     --------
