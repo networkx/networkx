@@ -142,7 +142,7 @@ def is_branching(G):
     True
     >>> G.remove_edge(2, 3)
     >>> G.add_edge(3, 1)  # maximum in-degree is 2
-    >>> nx.is_forest(G)
+    >>> nx.is_branching(G)
     False
 
     Notes
