@@ -1,9 +1,11 @@
 """
-======================
-16 Triad Types
-======================
-Creates Visualisation of the 16 Triad Types that can be identified within Networks.
-Especially useful when analysing Social Networks.
+======
+Triads
+======
+According to the paper by Snijders, T. (2012). “Transitivity and triads.” 
+University of Oxford, there are 16 Triad types possible. This plot creates 
+Visualisation of the 16 Triad Types that can be identified within Networks.
+For Example it will be especially useful when analysing Social Networks.
 """
 
 import networkx as nx
