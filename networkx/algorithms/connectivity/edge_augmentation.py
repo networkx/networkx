@@ -1142,9 +1142,9 @@ def _compat_shuffle(rng, input):
     rng.shuffle(input)
 
 
+@py_random_state(4)
 @not_implemented_for("multigraph")
 @not_implemented_for("directed")
-@py_random_state(4)
 def greedy_k_edge_augmentation(G, k, avail=None, weight=None, seed=None):
     """Greedy algorithm for finding a k-edge-augmentation
 

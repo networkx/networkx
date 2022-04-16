@@ -87,7 +87,7 @@ def not_implemented_for(*graph_types):
 
         return g
 
-    return argmap(_not_implemented_for, 0, eager_mapping=True)
+    return argmap(_not_implemented_for, 0)
 
 
 # To handle new extensions, define a function accepting a `path` and `mode`.
@@ -464,14 +464,8 @@ class argmap:
         function constructs an object (like a file handle) that requires
         post-processing (like closing).
 
-    eager_mapping : bool (default: False)
-        When True, and the `argmap` is used to decorate a generator function, the
-        transformation is eagerly evaluated before calling the wrapped function
-        and returning the resulting generator.  Otherwise, a decorated generator
-        function will be strictly lazy.  Has no effect on non-generator functions.
-        Note that `try_finally` and `eager_mapping` cannot both be True.  Also,
-        the `eager_mapping` decorators must be the topmost decorators in a stack
-        of argmaps, when decorating a generator function.
+        Note: try_finally decorators cannot be used to decorate generator
+        functions.
 
     Examples
     --------
@@ -615,53 +609,37 @@ class argmap:
             # this code doesn't need to worry about closing the file
             print(file.read())
 
-    **Eager Mapping**
+    Decorators with try_finally = True cannot be used with generator functions,
+    because the `finally` block is evaluated before the generator is exhausted::
 
-    When argmap is used to decorate a generator function, the mapping can either
-    be evaluated lazily or eagerly.  In eager mapping, the transformation is
-    evaluated immediately upon calling the function.  In lazy mapping, evaluation
-    is delayed until the generator is iterated over.  This is used to allow the
-    :func:`not_implemented_for` decorator to immediately raise its exception
-    upon calling the decorated function.
+        @argmap(open_file, "file", try_finally=True)
+        def file_to_lines(file):
+            for line in file.readlines():
+                yield line
 
-    For example we'll make a function which yields each node of a graph -- we'll
-    forbid graphs with more than 10 nodes for the sake of example::
+    is equivalent to::
 
-        def check_graph(G):
-            if len(G) > 10:
-                raise TooManyNodesError
+        def file_to_lines_wrapped(file):
+            for line in file.readlines():
+                yield line
 
-        @argmap(check_graph, eager_mapping=False)
-        def foo(G):
-            for v in G.nodes:
-                yield v
+        def file_to_lines_wrapper(file):
+            try:
+                file = open_file(file)
+                return file_to_lines_wrapped(file)
+            finally:
+                file.close()
 
-    Since we have set eager_mapping=False, this would be equivalent to::
+    which behaves similarly to::
 
-        def foo(G):
-            if len(G) > 10:
-                raise TooManyNodesError
-            for v in G.nodes:
-                yield v
+        def file_to_lines_whoops(file):
+            file = open_file(file)
+            file.close()
+            for line in file.readlines():
+                yield line
 
-    Then, if we call `foo`, `check_graph` is not evaluated until we begin
-    iterating.  If we set `eager_mapping = True`, the equivalent function is::
-
-        @argmap(check_graph, eager_mapping=True)
-        def bar(G):
-            for v in G.nodes:
-                yield v
-
-        def bar(G):
-            def internal_bar(G):
-                for v in G.nodes:
-                    yield v
-            if len(G) > 10:
-                raise TooManyNodesError
-            return internal_bar(G)
-
-    In this second case, `check_graph` is evaluated immediately.
-
+    because the `finally` block of `file_to_lines_wrapper` is executed before
+    the caller has a chance to exhaust the iterator.
 
     Notes
     -----
@@ -789,15 +767,10 @@ class argmap:
 
     """
 
-    def __init__(self, func, *args, try_finally=False, eager_mapping=False):
+    def __init__(self, func, *args, try_finally=False):
         self._func = func
         self._args = args
         self._finally = try_finally
-        self._eager_mapping = eager_mapping
-        if try_finally and eager_mapping:
-            raise nx.NetworkXError(
-                "try_finally and eager_mapping parameters cannot both be True in argmap"
-            )
 
     @staticmethod
     def _lazy_compile(func):
@@ -867,23 +840,8 @@ class argmap:
         argmap._lazy_compile
         """
 
-        if inspect.isgeneratorfunction(f):
-
-            if hasattr(f, "__argmap__"):
-                if f.__argmap__._eager_mapping and not self._eager_mapping:
-                    # note: this error message is not generic, and should be
-                    # updated if future argmaps eagerly decorate generators
-                    raise nx.NetworkXError(
-                        "not_implemented_for must occur at the top of a decorator stack for generator functions"
-                    )
-
-            def func(*args, __wrapper=None, **kwargs):
-                yield from argmap._lazy_compile(__wrapper)(*args, **kwargs)
-
-        else:
-
-            def func(*args, __wrapper=None, **kwargs):
-                return argmap._lazy_compile(__wrapper)(*args, **kwargs)
+        def func(*args, __wrapper=None, **kwargs):
+            return argmap._lazy_compile(__wrapper)(*args, **kwargs)
 
         # standard function-wrapping stuff
         func.__name__ = f.__name__
@@ -912,6 +870,14 @@ class argmap:
 
         # this is used to variously call self.assemble and self.compile
         func.__argmap__ = self
+
+        if hasattr(f, "__argmap__"):
+            func.__is_generator = f.__is_generator
+        else:
+            func.__is_generator = inspect.isgeneratorfunction(f)
+
+        if self._finally and func.__is_generator:
+            raise nx.NetworkXError("argmap cannot decorate generators with try_finally")
 
         return func
 
@@ -994,11 +960,9 @@ class argmap:
             f
         )
 
-        return_statement = "yield from" if sig.is_generator else "return"
-        call = sig.call_sig.format(return_statement, wrapped_name)
+        call = f"{sig.call_sig.format(wrapped_name)}#"
         mut_args = f"{sig.args} = list({sig.args})" if mutable_args else ""
-        defn = sig.def_sig.format(sig.name)
-        body = argmap._indent(defn, mut_args, mapblock, call, finallys)
+        body = argmap._indent(sig.def_sig, mut_args, mapblock, call, finallys)
         code = "\n".join(body)
 
         locl = {}
@@ -1082,14 +1046,6 @@ class argmap:
             mapblock, finallys = [], []
             functions = {id(f): (wrapped_name, f)}
             mutable_args = False
-
-        if self._eager_mapping and sig.is_generator:
-            call = sig.call_sig.format("yield from", wrapped_name)
-            wrapped_name = f"intern_{sig.name}"
-            defn = sig.def_sig.format(wrapped_name)
-            sig = self.Signature(*sig[:-1], False)
-            mapblock = [defn] + mapblock + finallys + [call]
-            finallys = []
 
         if id(self._func) in functions:
             fname, _ = functions[id(self._func)]
@@ -1240,15 +1196,11 @@ class argmap:
             def_sig.append(name)
 
         fname = cls._name(f)
-        def_sig = f'def {{}}({", ".join(def_sig)}):'
+        def_sig = f'def {fname}({", ".join(def_sig)}):'
 
-        is_generator = inspect.isgeneratorfunction(f)
+        call_sig = f"return {{}}({', '.join(call_sig)})"
 
-        call_sig = f"{{}} {{}}({', '.join(call_sig)})#"
-
-        return cls.Signature(
-            fname, sig, def_sig, call_sig, names, npos, args, kwargs, is_generator
-        )
+        return cls.Signature(fname, sig, def_sig, call_sig, names, npos, args, kwargs)
 
     Signature = collections.namedtuple(
         "Signature",
@@ -1261,7 +1213,6 @@ class argmap:
             "n_positional",
             "args",
             "kwargs",
-            "is_generator",
         ],
     )
 
