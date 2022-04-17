@@ -701,7 +701,7 @@ def generate_gml(G, stringizer=None):
                 elif value is False:
                     yield indent + key + " 0"
                 # GML only supports signed 32-bit integers
-                elif value < -(2 ** 31) or value >= 2 ** 31:
+                elif value < -(2**31) or value >= 2**31:
                     yield indent + key + ' "' + str(value) + '"'
                 else:
                     yield indent + key + " " + str(value)

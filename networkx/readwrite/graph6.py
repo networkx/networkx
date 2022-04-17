@@ -41,7 +41,7 @@ def _generate_graph6_bytes(G, nodes, header):
 
     """
     n = len(G)
-    if n >= 2 ** 36:
+    if n >= 2**36:
         raise ValueError(
             "graph6 is only defined if number of nodes is less " "than 2 ** 36"
         )
@@ -128,6 +128,8 @@ def from_graph6_bytes(bytes_in):
     return G
 
 
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def to_graph6_bytes(G, nodes=None, header=True):
     """Convert a simple undirected graph to bytes in graph6 format.
 

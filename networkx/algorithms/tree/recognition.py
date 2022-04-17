@@ -157,6 +157,21 @@ def is_forest(G):
     b : bool
         A boolean that is True if `G` is a forest.
 
+    Raises
+    ------
+    NetworkXPointlessConcept
+        If `G` is empty.
+
+    Examples
+    --------
+    >>> G = nx.Graph()
+    >>> G.add_edges_from([(1, 2), (1, 3), (2, 4), (2, 5)])
+    >>> nx.is_forest(G)
+    True
+    >>> G.add_edge(4, 1)
+    >>> nx.is_forest(G)
+    False
+
     Notes
     -----
     In another convention, a directed forest is known as a *polyforest* and
@@ -197,6 +212,21 @@ def is_tree(G):
     -------
     b : bool
         A boolean that is True if `G` is a tree.
+
+    Raises
+    ------
+    NetworkXPointlessConcept
+        If `G` is empty.
+
+    Examples
+    --------
+    >>> G = nx.Graph()
+    >>> G.add_edges_from([(1, 2), (1, 3), (2, 4), (2, 5)])
+    >>> nx.is_tree(G)  # n-1 edges
+    True
+    >>> G.add_edge(3, 4)
+    >>> nx.is_tree(G)  # n edges
+    False
 
     Notes
     -----
