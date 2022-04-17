@@ -929,9 +929,8 @@ class MultiGraph(Graph):
         Returns
         -------
         degree_view: MultiDegreeView
-        
-        If a single node is requested, returns an int - the degree of the node.
-        If multiple nodes are requested, returns an iterator of (node, degree) pairs.
+            If a single node is requested, returns an int - the degree of the node.
+            If multiple nodes are requested, returns an iterator of (node, degree) pairs.
 
         Examples
         --------
