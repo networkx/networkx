@@ -21,6 +21,7 @@ def is_planar(G):
     >>> is_planar = nx.is_planar(G)
     >>> print(is_planar)
     True
+
     See Also
     --------
     check_planarity :
