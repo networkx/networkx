@@ -777,9 +777,10 @@ class PlanarEmbedding(nx.DiGraph):
 
     See Also
     --------
+    is _planar : 
+        Preferred way to check if an existing graph is planar.
     check_planarity :
-        Preferred way to check if an existing graph is planar. Also a more
-        convenient way to create a `PlanarEmbedding` from an existing graph.
+        A convenient way to create a `PlanarEmbedding`. If not planar, it returns a subgraph that shows this.
 
     Examples
     --------
