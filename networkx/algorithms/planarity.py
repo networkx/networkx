@@ -33,13 +33,7 @@ def is_planar(G):
         Check if graph is planar *and* return a `PlanarEmbedding` instance if True.
     """
 
-    planarity_state = LRPlanarity(G)
-    embedding = planarity_state.lr_planarity()
-    if embedding is None:
-        return False
-    else:
-        # graph is planar
-        return True
+    return check_planarity(G, counterexample=False)[0]
 
 
 def check_planarity(G, counterexample=False):
