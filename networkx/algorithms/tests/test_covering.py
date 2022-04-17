@@ -17,7 +17,7 @@ class TestMinEdgeCover:
         G = nx.Graph([(0, 1)])
         assert nx.min_edge_cover(G) in ({(0, 1)}, {(1, 0)})
 
-    def test_graph_single_edge(self):
+    def test_graph_two_edge_path(self):
         G = nx.path_graph(3)
         min_cover = nx.min_edge_cover(G)
         assert len(min_cover) == 2
