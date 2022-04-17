@@ -26,7 +26,6 @@ def check_planarity(G, counterexample=False):
 
     Examples
     --------
-
     >>> G = nx.Graph([(0, 1), (0, 2)])
     >>> is_planar, P = nx.check_planarity(G)
     >>> print(is_planar)
@@ -39,7 +38,6 @@ def check_planarity(G, counterexample=False):
 
     Notes
     -----
-
     A (combinatorial) embedding consists of cyclic orderings of the incident
     edges at each vertex. Given such an embedding there are multiple approaches
     discussed in literature to drawing the graph (subject to various
@@ -730,7 +728,7 @@ class PlanarEmbedding(nx.DiGraph):
     The planar embedding is given by a `combinatorial embedding
     <https://en.wikipedia.org/wiki/Graph_embedding#Combinatorial_embedding>`_.
 
-    .. note::`check_planarity` is the preferred way to check if a graph is planar.
+    .. note:: `check_planarity` is the preferred way to check if a graph is planar.
 
     **Neighbor ordering:**
 
@@ -779,7 +777,6 @@ class PlanarEmbedding(nx.DiGraph):
 
     See Also
     --------
-
     check_planarity :
         Preferred way to check if an existing graph is planar. Also a more
         convenient way to create a `PlanarEmbedding` from an existing graph.
