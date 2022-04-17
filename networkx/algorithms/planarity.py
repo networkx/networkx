@@ -5,8 +5,7 @@ __all__ = ["check_planarity", "PlanarEmbedding"]
 
 
 def check_planarity(G, counterexample=False):
-    """Check if a graph is planar and return a Planar Embedding if true,
-    a counterexample otherwise.
+    """Check if a graph is planar and return a counterexample or an embedding.
 
     A graph is planar iff it can be drawn in a plane without
     any edge intersections.
@@ -28,20 +27,13 @@ def check_planarity(G, counterexample=False):
     Examples
     --------
 
-    This function can be considered as the primary interface for the planar embedding tools since
-    -if the graph is planar- it returns a PlanarEmbedding which can be then used to call other methods of this class.
-    Consider the following example:
-
-    >>> G = nx.Graph([(0,1),(0,2)])
-    >>> isPlanar, P = nx.check_planarity(G)
-    >>> print(isPlanar)
+    >>> G = nx.Graph([(0, 1), (0, 2)])
+    >>> is_planar, P = nx.check_planarity(G)
+    >>> print(is_planar)
     True
 
-    Once the PlanarEmbedding object is created using `check_planarity()` as above, the other features of the class can be used safely.
-    Let's see this on action by extending our initial example:
+    When `G` is planar, a `PlanarEmbedding` instance is returned:
 
-    >>> G = nx.Graph([(0,1),(0,2)])
-    >>> isPlanar, P = nx.check_planarity(G)
     >>> P.get_data()
     {0: [1, 2], 1: [0], 2: [0]}
 
@@ -738,6 +730,8 @@ class PlanarEmbedding(nx.DiGraph):
     The planar embedding is given by a `combinatorial embedding
     <https://en.wikipedia.org/wiki/Graph_embedding#Combinatorial_embedding>`_.
 
+    .. note::`check_planarity` is the preferred way to check if a graph is planar.
+
     **Neighbor ordering:**
 
     In comparison to a usual graph structure, the embedding also stores the
@@ -783,13 +777,12 @@ class PlanarEmbedding(nx.DiGraph):
     For a half-edge (u, v) that is orientated such that u is below v then the
     face that belongs to (u, v) is to the right of this half-edge.
 
-    Note
-    ----
+    See Also
+    --------
 
-    It is suggested to use `check_planarity()` function first, since it is considered as the
-    primary interface to the features of this class as it returns a PlanarEmbedding
-    if the input graph is planar. Returned embedding can then be used to apply other methods
-    of the class.
+    check_planarity :
+        Preferred way to check if an existing graph is planar. Also a more
+        convenient way to create a `PlanarEmbedding` from an existing graph.
 
     Examples
     --------
