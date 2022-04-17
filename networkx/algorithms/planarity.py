@@ -22,9 +22,10 @@ def is_planar(G):
     Example
     -------
     >>> G = nx.Graph([(0, 1), (0, 2)])
-    >>> is_planar = nx.is_planar(G)
-    >>> print(is_planar)
+    >>> nx.is_planar(G)
     True
+    >>> nx.is_planar(nx.complete_graph(5))
+    False
 
     See Also
     --------
