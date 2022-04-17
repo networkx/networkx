@@ -12,36 +12,42 @@ __all__ = ["min_edge_cover", "is_edge_cover"]
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def min_edge_cover(G, matching_algorithm=None):
-    """Returns a set of edges which constitutes
-    the minimum edge cover of the graph.
+    """Returns the min cardinality edge cover of the graph as a set of edges.
 
     A smallest edge cover can be found in polynomial time by finding
     a maximum matching and extending it greedily so that all nodes
-    are covered.
+    are covered. This function follows that process. A maximum matching
+    algorithm can be specified for the first step of the algorithm.
+    The resulting set may return a set with one 2-tuple for each edge,
+    (the usual case) or with both 2-tuples `(u, v)` and `(v, u)` for
+    each edge. The latter is only done when a bipartite matching algorithm
+    is specified as `matching_algorithm`.
 
     Parameters
     ----------
     G : NetworkX graph
-        An undirected bipartite graph.
+        An undirected graph.
 
     matching_algorithm : function
-        A function that returns a maximum cardinality matching in a
-        given bipartite graph. The function must take one input, the
-        graph ``G``, and return a dictionary mapping each node to its
-        mate. If not specified,
+        A function that returns a maximum cardinality matching for `G`.
+        The function must take one input, the graph `G`, and return
+        either a set of edges (with only one direction for the pair of nodes)
+        or a dictionary mapping each node to its mate. If not specified,
+        :func:`~networkx.algorithms.matching.max_weight_matching` is used.
+        Common bipartite matching functions include
         :func:`~networkx.algorithms.bipartite.matching.hopcroft_karp_matching`
-        will be used. Other possibilities include
-        :func:`~networkx.algorithms.bipartite.matching.eppstein_matching`,
-        or matching algorithms in the
-        :mod:`networkx.algorithms.matching` module.
+        or
+        :func:`~networkx.algorithms.bipartite.matching.eppstein_matching`.
 
     Returns
     -------
     min_cover : set
 
-        It contains all the edges of minimum edge cover
-        in form of tuples. It contains both the edges `(u, v)` and `(v, u)`
-        for given nodes `u` and `v` among the edges of minimum edge cover.
+        A set of the edges in a minimum edge cover in the form of tuples.
+        It contains only one of the equivalent 2-tuples `(u, v)` and `(v, u)`
+        for each edge. If a bipartite method is used to compute the matching,
+        the returned set contains both the 2-tuples `(u, v)` and `(v, u)`
+        for each edge of a minimum edge cover.
 
     Notes
     -----
@@ -53,8 +59,10 @@ def min_edge_cover(G, matching_algorithm=None):
     is bounded by the worst-case running time of the function
     ``matching_algorithm``.
 
-    Minimum edge cover for bipartite graph can also be found using the
-    function present in :mod:`networkx.algorithms.bipartite.covering`
+    Minimum edge cover for `G` can also be found using the `min_edge_covering`
+    function in :mod:`networkx.algorithms.bipartite.covering` which is
+    simply this function with a default matching algorithm of
+    :func:`~networkx.algorithms.bipartite.matching.hopcraft_karp_matching`
     """
     if len(G) == 0:
         return set()
