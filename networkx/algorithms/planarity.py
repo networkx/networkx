@@ -29,8 +29,7 @@ def is_planar(G):
     See Also
     --------
     check_planarity :
-        Preferred way to check if an existing graph is planar. Also a more
-        convenient way to create a `PlanarEmbedding` from an existing graph.
+        Check if graph is planar *and* return a `PlanarEmbedding` instance if True.
     """
 
     planarity_state = LRPlanarity(G)
