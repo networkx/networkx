@@ -6,15 +6,19 @@ __all__ = ["check_planarity", "is_planar", "PlanarEmbedding"]
 
 def is_planar(G):
     """Returns True if and only if `G` is planar.
+
     A graph is *planar* iff it can be drawn in a plane without
     any edge intersections.
+
     Parameters
     ----------
     G : NetworkX graph
+
     Returns
     -------
     bool
        Whether the graph is planar.
+
     Example
     -------
     >>> G = nx.Graph([(0, 1), (0, 2)])
