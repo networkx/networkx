@@ -82,7 +82,6 @@ def min_edge_cover(G, matching_algorithm=None):
         # multigraph.)
         u = arbitrary_element(G[v])
         min_cover.add((u, v))
-        min_cover.add((v, u))
     return min_cover
 
 
