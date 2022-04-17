@@ -308,11 +308,12 @@ def all_triads(G):
     Examples
     --------
     >>> G = nx.DiGraph([(1, 2), (2, 3), (3, 1), (3, 4), (4, 1), (4, 2)])
-    >>> triads = [x for x in nx.all_triads(G)]
-    >>> triads[0].edges()
-    OutEdgeView([(1, 2), (2, 3), (3, 1)])
-    >>> triads[1].edges()
-    OutEdgeView([(1, 2), (4, 1), (4, 2)])
+    >>> for triad in nx.all_triads(G):
+    ...     print(triad.edges)
+    [(1, 2), (2, 3), (3, 1)]
+    [(1, 2), (4, 1), (4, 2)]
+    [(3, 1), (3, 4), (4, 1)]
+    [(2, 3), (3, 4), (4, 2)]
 
     """
     triplets = combinations(G.nodes(), 3)
