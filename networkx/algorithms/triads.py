@@ -254,7 +254,7 @@ def is_triad(G):
     >>> G = nx.DiGraph([(1, 2), (2, 3), (3, 1)])
     >>> nx.is_triad(G)
     True
-    >>> G.add_edges_from([(0,1)])
+    >>> G.add_edges_from([(0, 1)])
     >>> nx.is_triad(G)
     False
 
