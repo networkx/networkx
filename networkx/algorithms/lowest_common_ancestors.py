@@ -39,7 +39,7 @@ def tree_all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
     --------
 
     >>> G = nx.DiGraph()
-    >>> G.add_edges_from([(1,3),(2,4),(1,2)])
+    >>> G.add_edges_from([(1, 3), (2, 4), (1, 2)])
     >>> dict(nx.tree_all_pairs_lowest_common_ancestor(G))
     {(3, 3): 3, (3, 4): 1, (4, 4): 4, (3, 2): 1, (2, 2): 2, (4, 2): 2, (1, 1): 1, (3, 1): 1, (2, 1): 1, (4, 1): 1}
 
@@ -47,8 +47,8 @@ def tree_all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
      want to compute lowest common ancestors. Here is an example:
 
     >>> G = nx.DiGraph()
-    >>> G.add_edges_from([(1,3),(2,4),(1,2)])
-    >>> dict(nx.tree_all_pairs_lowest_common_ancestor(G, pairs = [(1,4),(2,3)]))
+    >>> G.add_edges_from([(1, 3), (2, 4), (1, 2)])
+    >>> dict(nx.tree_all_pairs_lowest_common_ancestor(G, pairs=[(1, 4), (2, 3)]))
     {(2, 3): 1, (1, 4): 1}
 
     Notes
@@ -149,16 +149,16 @@ def lowest_common_ancestor(G, node1, node2, default=None):
     Examples
     --------
     >>> G = nx.DiGraph()
-    >>> G.add_edges_from([(0,1),(0,2),(2,3),(2,4),(1,6),(4,5)])
-    >>> nx.lowest_common_ancestor(G,3,5)
+    >>> G.add_edges_from([(0, 1), (0, 2), (2, 3), (2, 4), (1, 6), (4, 5)])
+    >>> nx.lowest_common_ancestor(G, 3, 5)
     2
 
     We can also set `default` argument as below. The value of default is returned
     if there are no common ancestors of given two nodes.
 
     >>> G = nx.DiGraph()
-    >>> G.add_edges_from([(4,5),(12,13)])
-    >>> print(nx.lowest_common_ancestor(G,12,5, default="No common ancestors!"))
+    >>> G.add_edges_from([(4, 5), (12, 13)])
+    >>> print(nx.lowest_common_ancestor(G, 12, 5, default="No common ancestors!"))
     No common ancestors!
 
     Notes
@@ -203,8 +203,8 @@ def all_pairs_lowest_common_ancestor(G, pairs=None):
 
     Example
     -------
-    >>> G = nx.DiGraph([(0,1),(0,3),(1,2)])
-    >>> dict(nx.all_pairs_lowest_common_ancestor(G, pairs = [(1,2),(2,3)]))
+    >>> G = nx.DiGraph([(0, 1), (0, 3), (1, 2)])
+    >>> dict(nx.all_pairs_lowest_common_ancestor(G, pairs=[(1, 2), (2, 3)]))
     {(2, 3): 0, (1, 2): 1}
 
     Notes
