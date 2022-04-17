@@ -56,6 +56,8 @@ def min_edge_cover(G, matching_algorithm=None):
     Minimum edge cover for bipartite graph can also be found using the
     function present in :mod:`networkx.algorithms.bipartite.covering`
     """
+    if len(G) == 0:
+        return set()
     if nx.number_of_isolates(G) > 0:
         # ``min_cover`` does not exist as there is an isolated node
         raise nx.NetworkXException(
@@ -66,11 +68,12 @@ def min_edge_cover(G, matching_algorithm=None):
     maximum_matching = matching_algorithm(G)
     # ``min_cover`` is superset of ``maximum_matching``
     try:
-        min_cover = set(
-            maximum_matching.items()
-        )  # bipartite matching case returns dict
+        # bipartite matching algs return dict so convert if needed
+        min_cover = set(maximum_matching.items())
+        bipartite_cover = True
     except AttributeError:
         min_cover = maximum_matching
+        bipartite_cover = False
     # iterate for uncovered nodes
     uncovered_nodes = set(G) - {v for u, v in min_cover} - {u for u, v in min_cover}
     for v in uncovered_nodes:
@@ -82,7 +85,8 @@ def min_edge_cover(G, matching_algorithm=None):
         # multigraph.)
         u = arbitrary_element(G[v])
         min_cover.add((u, v))
-        min_cover.add((v, u))
+        if bipartite_cover:
+            min_cover.add((v, u))
     return min_cover
 
 
