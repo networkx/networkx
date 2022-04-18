@@ -69,7 +69,7 @@ def in_degree_centrality(G):
 
     Notes
     -----
-    The degree centrality values are normalized by dividing by the maximum
+    Thee degree centrality values are normalized by dividing by the maximum
     possible degree in a simple graph n-1 where n is the number of nodes in G.
 
     For multigraphs or graphs with self loops the maximum degree might
