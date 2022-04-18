@@ -24,6 +24,18 @@ def check_planarity(G, counterexample=False):
         If the graph is planar `certificate` is a PlanarEmbedding
         otherwise it is a Kuratowski subgraph.
 
+    Examples
+    --------
+    >>> G = nx.Graph([(0, 1), (0, 2)])
+    >>> is_planar, P = nx.check_planarity(G)
+    >>> print(is_planar)
+    True
+
+    When `G` is planar, a `PlanarEmbedding` instance is returned:
+
+    >>> P.get_data()
+    {0: [1, 2], 1: [0], 2: [0]}
+
     Notes
     -----
     A (combinatorial) embedding consists of cyclic orderings of the incident
@@ -716,6 +728,8 @@ class PlanarEmbedding(nx.DiGraph):
     The planar embedding is given by a `combinatorial embedding
     <https://en.wikipedia.org/wiki/Graph_embedding#Combinatorial_embedding>`_.
 
+    .. note:: `check_planarity` is the preferred way to check if a graph is planar.
+
     **Neighbor ordering:**
 
     In comparison to a usual graph structure, the embedding also stores the
@@ -760,6 +774,13 @@ class PlanarEmbedding(nx.DiGraph):
     to them, it is possible to assign each half-edge *exactly one* face.
     For a half-edge (u, v) that is orientated such that u is below v then the
     face that belongs to (u, v) is to the right of this half-edge.
+
+    See Also
+    --------
+    is _planar :
+        Preferred way to check if an existing graph is planar.
+    check_planarity :
+        A convenient way to create a `PlanarEmbedding`. If not planar, it returns a subgraph that shows this.
 
     Examples
     --------
