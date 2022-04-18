@@ -150,8 +150,10 @@ def draw_networkx(G, pos=None, arrows=None, with_labels=True, **kwds):
         For directed graphs, if True draw arrowheads.
         Note: Arrows will be the same color as edges.
 
-    arrowstyle : str (default='-\|>')
+    arrowstyle : str (default='-\|>' for directed graphs)
         For directed graphs, choose the style of the arrowsheads.
+        For undirected graphs default to '-'
+
         See `matplotlib.patches.ArrowStyle` for more options.
 
     arrowsize : int or list (default=10)
@@ -500,7 +502,7 @@ def draw_networkx_edges(
     edge_color="k",
     style="solid",
     alpha=None,
-    arrowstyle="-|>",
+    arrowstyle=None,
     arrowsize=10,
     edge_cmap=None,
     edge_vmin=None,
@@ -572,8 +574,9 @@ def draw_networkx_edges(
 
         Note: Arrowheads will be the same color as edges.
 
-    arrowstyle : str (default='-\|>')
+    arrowstyle : str (default='-\|>' for directed graphs)
         For directed graphs and `arrows==True` defaults to '-\|>',
+        For undirected graphs default to '-'.
 
         See `matplotlib.patches.ArrowStyle` for more options.
 
@@ -678,6 +681,13 @@ def draw_networkx_edges(
     # undirected graphs (for performance reasons) and use FancyArrowPatches
     # for directed graphs.
     # The `arrows` keyword can be used to override the default behavior
+
+    if arrowstyle == None:
+        if G.is_directed():
+            arrowstyle = "-|>"
+        else:
+            arrowstyle = "-"
+
     use_linecollection = not G.is_directed()
     if arrows in (True, False):
         use_linecollection = not arrows
