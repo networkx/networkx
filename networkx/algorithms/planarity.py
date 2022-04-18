@@ -69,6 +69,11 @@ def check_planarity(G, counterexample=False):
     A counterexample is only generated if the corresponding parameter is set,
     because the complexity of the counterexample generation is higher.
 
+    See also
+    --------
+    is_planar:
+        Returns True if and only if `G` is planar.
+
     References
     ----------
     .. [1] Ulrik Brandes:
@@ -821,6 +826,11 @@ class PlanarEmbedding(nx.DiGraph):
     object is correct:
 
     >>> G.check_structure()
+
+    See Also
+    --------
+    is_planar :
+        Returns True if and only if `G` is planar.
 
     """
 
