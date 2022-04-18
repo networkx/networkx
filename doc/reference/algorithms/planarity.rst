@@ -7,5 +7,6 @@ Planarity
    :toctree: generated/
 
    check_planarity
+   is_planar
 .. autoclass:: PlanarEmbedding
    :members:
