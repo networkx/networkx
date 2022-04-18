@@ -8,5 +8,4 @@ Planarity
 
    check_planarity
    is_planar
-.. autoclass:: PlanarEmbedding
-   :members:
+   PlanarEmbedding
