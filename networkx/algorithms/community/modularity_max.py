@@ -358,9 +358,8 @@ def greedy_modularity_communities(
         # StopIteration occurs when communities are the connected components
         except StopIteration:
             communities = sorted(communities, key=len, reverse=True)
-            # continue to merge even though modularity goes down?
+            # if best_n requires more merging, merge big sets for highest modularity
             while len(communities) > best_n:
-                # merge the biggest sets
                 comm1, comm2, *rest = communities
                 communities = [comm1 ^ comm2]
                 communities.extend(rest)
