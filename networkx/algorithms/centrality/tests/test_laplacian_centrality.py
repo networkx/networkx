@@ -33,10 +33,6 @@ class TestDegreeCentrality:
         DG.add_edge(5, 8)
         self.DG = DG
 
-    """
-    TESTING
-    """
-
     def test_laplacian_centrality_E(self):
         d = nx.laplacian_centrality(self.E)
         exact = {
