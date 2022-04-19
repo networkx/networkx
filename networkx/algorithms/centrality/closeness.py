@@ -12,86 +12,97 @@ __all__ = ["closeness_centrality", "incremental_closeness_centrality"]
 def closeness_centrality(G, u=None, distance=None, wf_improved=True):
     r"""Compute closeness centrality for nodes.
 
-    Closeness centrality [1]_ of a node `u` is the reciprocal of the
-    average shortest path distance to `u` over all `n-1` reachable nodes.
+      Closeness centrality [1]_ of a node `u` is the reciprocal of the
+      average shortest path distance to `u` over all `n-1` reachable nodes.
 
-    .. math::
+      .. math::
 
-        C(u) = \frac{n - 1}{\sum_{v=1}^{n-1} d(v, u)},
+          C(u) = \frac{n - 1}{\sum_{v=1}^{n-1} d(v, u)},
 
-    where `d(v, u)` is the shortest-path distance between `v` and `u`,
-    and `n` is the number of nodes that can reach `u`. Notice that the
-    closeness distance function computes the incoming distance to `u`
-    for directed graphs. To use outward distance, act on `G.reverse()`.
+      where `d(v, u)` is the shortest-path distance between `v` and `u`,
+      and `n` is the number of nodes that can reach `u`. Notice that the
+      closeness distance function computes the incoming distance to `u`
+      for directed graphs. To use outward distance, act on `G.reverse()`.
 
-    Notice that higher values of closeness indicate higher centrality.
+      Notice that higher values of closeness indicate higher centrality.
 
-    Wasserman and Faust propose an improved formula for graphs with
-    more than one connected component. The result is "a ratio of the
-    fraction of actors in the group who are reachable, to the average
-    distance" from the reachable actors [2]_. You might think this
-    scale factor is inverted but it is not. As is, nodes from small
-    components receive a smaller closeness value. Letting `N` denote
-    the number of nodes in the graph,
+      Wasserman and Faust propose an improved formula for graphs with
+      more than one connected component. The result is "a ratio of the
+      fraction of actors in the group who are reachable, to the average
+      distance" from the reachable actors [2]_. You might think this
+      scale factor is inverted but it is not. As is, nodes from small
+      components receive a smaller closeness value. Letting `N` denote
+      the number of nodes in the graph,
 
-    .. math::
+      .. math::
 
-        C_{WF}(u) = \frac{n-1}{N-1} \frac{n - 1}{\sum_{v=1}^{n-1} d(v, u)},
+          C_{WF}(u) = \frac{n-1}{N-1} \frac{n - 1}{\sum_{v=1}^{n-1} d(v, u)},
 
-    Parameters
-    ----------
-    G : graph
-      A NetworkX graph
+      Parameters
+      ----------
+      G : graph
+        A NetworkX graph
 
-    u : node, optional
-      Return only the value for node u
+      u : node, optional
+        Return only the value for node u
 
-    distance : edge attribute key, optional (default=None)
-      Use the specified edge attribute as the edge distance in shortest
-      path calculations
+      distance : edge attribute key, optional (default=None)
+        Use the specified edge attribute as the edge distance in shortest
+        path calculations
 
-    wf_improved : bool, optional (default=True)
-      If True, scale by the fraction of nodes reachable. This gives the
-      Wasserman and Faust improved formula. For single component graphs
-      it is the same as the original formula.
+      wf_improved : bool, optional (default=True)
+        If True, scale by the fraction of nodes reachable. This gives the
+        Wasserman and Faust improved formula. For single component graphs
+        it is the same as the original formula.
 
-    Returns
-    -------
-    nodes : dictionary
-      Dictionary of nodes with closeness centrality as the value.
+      Returns
+      -------
+      nodes : dictionary
+        Dictionary of nodes with closeness centrality as the value.
 
-    See Also
-    --------
-    betweenness_centrality, load_centrality, eigenvector_centrality,
-    degree_centrality, incremental_closeness_centrality
+      Examples
+         --------
+         >>> G = nx.Graph([(0, 1), (1, 2), (1, 5), (5, 4), (2, 4), (2, 3), (4, 3)])
+         >>> nx.closeness_centrality(G)
+         {0: 0.0,
+    1: 0.2,
+    2: 0.26666666666666666,
+    5: 0.26666666666666666,
+    4: 0.45714285714285713,
+    3: 0.5555555555555556}
 
-    Notes
-    -----
-    The closeness centrality is normalized to `(n-1)/(|G|-1)` where
-    `n` is the number of nodes in the connected part of graph
-    containing the node.  If the graph is not completely connected,
-    this algorithm computes the closeness centrality for each
-    connected part separately scaled by that parts size.
+      See Also
+      --------
+      betweenness_centrality, load_centrality, eigenvector_centrality,
+      degree_centrality, incremental_closeness_centrality
 
-    If the 'distance' keyword is set to an edge attribute key then the
-    shortest-path length will be computed using Dijkstra's algorithm with
-    that edge attribute as the edge weight.
+      Notes
+      -----
+      The closeness centrality is normalized to `(n-1)/(|G|-1)` where
+      `n` is the number of nodes in the connected part of graph
+      containing the node.  If the graph is not completely connected,
+      this algorithm computes the closeness centrality for each
+      connected part separately scaled by that parts size.
 
-    The closeness centrality uses *inward* distance to a node, not outward.
-    If you want to use outword distances apply the function to `G.reverse()`
+      If the 'distance' keyword is set to an edge attribute key then the
+      shortest-path length will be computed using Dijkstra's algorithm with
+      that edge attribute as the edge weight.
 
-    In NetworkX 2.2 and earlier a bug caused Dijkstra's algorithm to use the
-    outward distance rather than the inward distance. If you use a 'distance'
-    keyword and a DiGraph, your results will change between v2.2 and v2.3.
+      The closeness centrality uses *inward* distance to a node, not outward.
+      If you want to use outword distances apply the function to `G.reverse()`
 
-    References
-    ----------
-    .. [1] Linton C. Freeman: Centrality in networks: I.
-       Conceptual clarification. Social Networks 1:215-239, 1979.
-       https://doi.org/10.1016/0378-8733(78)90021-7
-    .. [2] pg. 201 of Wasserman, S. and Faust, K.,
-       Social Network Analysis: Methods and Applications, 1994,
-       Cambridge University Press.
+      In NetworkX 2.2 and earlier a bug caused Dijkstra's algorithm to use the
+      outward distance rather than the inward distance. If you use a 'distance'
+      keyword and a DiGraph, your results will change between v2.2 and v2.3.
+
+      References
+      ----------
+      .. [1] Linton C. Freeman: Centrality in networks: I.
+         Conceptual clarification. Social Networks 1:215-239, 1979.
+         https://doi.org/10.1016/0378-8733(78)90021-7
+      .. [2] pg. 201 of Wasserman, S. and Faust, K.,
+         Social Network Analysis: Methods and Applications, 1994,
+         Cambridge University Press.
     """
     if G.is_directed():
         G = G.reverse()  # create a reversed graph view
