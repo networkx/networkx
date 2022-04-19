@@ -84,7 +84,7 @@ def check_planarity(G, counterexample=False):
     See also
     --------
     is_planar :
-        Returns True if and only if `G` is planar.
+        Check for planarity without creating a `PlanarEmbedding` or counterexample.
 
     References
     ----------
