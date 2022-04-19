@@ -8,7 +8,7 @@ __all__ = ["laplacian_centrality"]
 
 
 def laplacian_centrality(
-    G, normalized=True, nbunch=None, directed_laplacian_matrix_args=None
+    G, normalized=True, nbunch=None, **directed_laplacian_matrix_args
 ):
     r"""Compute the Laplacian centrality for nodes in the graph `G`.
 
