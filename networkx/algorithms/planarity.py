@@ -1,7 +1,39 @@
 from collections import defaultdict
 import networkx as nx
 
-__all__ = ["check_planarity", "PlanarEmbedding"]
+__all__ = ["check_planarity", "is_planar", "PlanarEmbedding"]
+
+
+def is_planar(G):
+    """Returns True if and only if `G` is planar.
+
+    A graph is *planar* iff it can be drawn in a plane without
+    any edge intersections.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    Returns
+    -------
+    bool
+       Whether the graph is planar.
+
+    Examples
+    --------
+    >>> G = nx.Graph([(0, 1), (0, 2)])
+    >>> nx.is_planar(G)
+    True
+    >>> nx.is_planar(nx.complete_graph(5))
+    False
+
+    See Also
+    --------
+    check_planarity :
+        Check if graph is planar *and* return a `PlanarEmbedding` instance if True.
+    """
+
+    return check_planarity(G, counterexample=False)[0]
 
 
 def check_planarity(G, counterexample=False):
@@ -48,6 +80,11 @@ def check_planarity(G, counterexample=False):
 
     A counterexample is only generated if the corresponding parameter is set,
     because the complexity of the counterexample generation is higher.
+
+    See also
+    --------
+    is_planar :
+        Check for planarity without creating a `PlanarEmbedding` or counterexample.
 
     References
     ----------
@@ -777,9 +814,12 @@ class PlanarEmbedding(nx.DiGraph):
 
     See Also
     --------
+    is_planar :
+        Preferred way to check if an existing graph is planar.
+
     check_planarity :
-        Preferred way to check if an existing graph is planar. Also a more
-        convenient way to create a `PlanarEmbedding` from an existing graph.
+        A convenient way to create a `PlanarEmbedding`. If not planar,
+        it returns a subgraph that shows this.
 
     Examples
     --------

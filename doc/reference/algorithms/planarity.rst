@@ -7,4 +7,5 @@ Planarity
    :toctree: generated/
 
    check_planarity
+   is_planar
    PlanarEmbedding
