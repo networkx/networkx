@@ -19,15 +19,13 @@ class TestMaxWeightMatching:
         assert nx.max_weight_matching(G) == set()
         assert nx.min_weight_matching(G) == set()
 
-    def test_trivial2(self):
-        """Self loop"""
+    def test_selfloop(self):
         G = nx.Graph()
         G.add_edge(0, 0, weight=100)
         assert nx.max_weight_matching(G) == set()
         assert nx.min_weight_matching(G) == set()
 
-    def test_trivial3(self):
-        """Single edge"""
+    def test_single_edge(self):
         G = nx.Graph()
         G.add_edge(0, 1)
         assert edges_equal(
@@ -37,8 +35,7 @@ class TestMaxWeightMatching:
             nx.min_weight_matching(G), matching_dict_to_set({0: 1, 1: 0})
         )
 
-    def test_trivial4(self):
-        """Small graph"""
+    def test_two_path(self):
         G = nx.Graph()
         G.add_edge("one", "two", weight=10)
         G.add_edge("two", "three", weight=11)
@@ -51,8 +48,7 @@ class TestMaxWeightMatching:
             matching_dict_to_set({"one": "two", "two": "one"}),
         )
 
-    def test_trivial5(self):
-        """Path"""
+    def test_path(self):
         G = nx.Graph()
         G.add_edge(1, 2, weight=5)
         G.add_edge(2, 3, weight=11)
@@ -70,8 +66,20 @@ class TestMaxWeightMatching:
             nx.min_weight_matching(G, 1), matching_dict_to_set({1: 2, 3: 4})
         )
 
-    def test_trivial6(self):
-        """Small graph with arbitrary weight attribute"""
+    def test_square(self):
+        G = nx.Graph()
+        G.add_edge(1, 4, weight=2)
+        G.add_edge(2, 3, weight=2)
+        G.add_edge(1, 2, weight=1)
+        G.add_edge(3, 4, weight=4)
+        assert edges_equal(
+            nx.max_weight_matching(G), matching_dict_to_set({1: 2, 3: 4})
+        )
+        assert edges_equal(
+            nx.min_weight_matching(G), matching_dict_to_set({1: 4, 2: 3})
+        )
+
+    def test_edge_attribute_name(self):
         G = nx.Graph()
         G.add_edge("one", "two", weight=10, abcd=11)
         G.add_edge("two", "three", weight=11, abcd=10)
@@ -85,7 +93,6 @@ class TestMaxWeightMatching:
         )
 
     def test_floating_point_weights(self):
-        """Floating point weights"""
         G = nx.Graph()
         G.add_edge(1, 2, weight=math.pi)
         G.add_edge(2, 3, weight=math.exp(1))
@@ -99,7 +106,6 @@ class TestMaxWeightMatching:
         )
 
     def test_negative_weights(self):
-        """Negative weights"""
         G = nx.Graph()
         G.add_edge(1, 2, weight=2)
         G.add_edge(1, 3, weight=-2)

@@ -199,7 +199,7 @@ class _AntiGraph(nx.Graph):
     Class for complement graphs.
 
     The main goal is to be able to work with big and dense graphs with
-    a low memory foodprint.
+    a low memory footprint.
 
     In this class you add the edges that *do not exist* in the dense graph,
     the report methods of the class return the neighbors, the edges and
