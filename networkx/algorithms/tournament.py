@@ -82,6 +82,13 @@ def is_tournament(G):
     bool
         Whether the given graph is a tournament graph.
 
+    Examples
+    --------
+    >>> from networkx.algorithms import tournament
+    >>> G = nx.DiGraph([(0, 1), (1, 2), (2, 0)])
+    >>> tournament.is_tournament(G)
+    True
+
     Notes
     -----
     Some definitions require a self-loop on each node, but that is not
@@ -113,6 +120,13 @@ def hamiltonian_path(G):
     -------
     path : list
         A list of nodes which form a Hamiltonian path in `G`.
+
+    Examples
+    --------
+    >>> from networkx.algorithms import tournament
+    >>> G = nx.DiGraph([(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 3)])
+    >>> tournament.hamiltonian_path(G)
+    [0, 1, 2, 3]
 
     Notes
     -----
@@ -184,6 +198,13 @@ def score_sequence(G):
     -------
     list
         A sorted list of the out-degrees of the nodes of `G`.
+
+    Examples
+    --------
+    >>> from networkx.algorithms import tournament
+    >>> G = nx.DiGraph([(1, 0), (1, 3), (0, 2), (0, 3), (2, 1), (3, 2)])
+    >>> tournament.score_sequence(G)
+    [1, 1, 2, 2]
 
     """
     return sorted(d for v, d in G.out_degree())
@@ -260,6 +281,15 @@ def is_reachable(G, s, t):
     bool
         Whether there is a path from `s` to `t` in `G`.
 
+    Examples
+    --------
+    >>> from networkx.algorithms import tournament
+    >>> G = nx.DiGraph([(1, 0), (1, 3), (1, 2), (2, 3), (2, 0), (3, 0)])
+    >>> tournament.is_reachable(G, 1, 3)
+    True
+    >>> tournament.is_reachable(G, 3, 2)
+    False
+
     Notes
     -----
     Although this function is more theoretically efficient than the
@@ -330,6 +360,16 @@ def is_strongly_connected(G):
     -------
     bool
         Whether the tournament is strongly connected.
+
+    Examples
+    --------
+    >>> from networkx.algorithms import tournament
+    >>> G = nx.DiGraph([(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 3), (3, 0)])
+    >>> tournament.is_strongly_connected(G)
+    True
+    >>> G.remove_edge(1, 3)
+    >>> tournament.is_strongly_connected(G)
+    False
 
     Notes
     -----
