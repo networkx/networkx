@@ -19,8 +19,8 @@ def is_planar(G):
     bool
        Whether the graph is planar.
 
-    Example
-    -------
+    Examples
+    --------
     >>> G = nx.Graph([(0, 1), (0, 2)])
     >>> nx.is_planar(G)
     True
