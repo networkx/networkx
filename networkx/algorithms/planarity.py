@@ -849,11 +849,6 @@ class PlanarEmbedding(nx.DiGraph):
 
     >>> G.check_structure()
 
-    See Also
-    --------
-    is_planar :
-        Returns True if and only if `G` is planar.
-
     """
 
     def get_data(self):
