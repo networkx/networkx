@@ -16,7 +16,8 @@ __all__ = [
 
 
 def extrema_bounding(G, compute="diameter"):
-    """Compute requested extreme distance metric of undirected graph G
+    """
+    Compute requested extreme distance metric of undirected graph G
 
     .. deprecated:: 2.8
 
@@ -53,6 +54,7 @@ def extrema_bounding(G, compute="diameter"):
         If the graph consists of multiple components
     ValueError
         If `compute` is not one of "diameter", "radius", "periphery", "center", or "eccentricities".
+
     Notes
     -----
     This algorithm was proposed in the following papers:
@@ -258,7 +260,7 @@ def _extrema_bounding(G, compute="diameter"):
             ):
                 maxuppernode = i
 
-        # print status update
+    # print status update
     #        print (" min=" + str(minlower) + "/" + str(minupper) +
     #        " max=" + str(maxlower) + "/" + str(maxupper) +
     #        " candidates: " + str(len(candidates)))
