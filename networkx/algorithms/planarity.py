@@ -83,7 +83,7 @@ def check_planarity(G, counterexample=False):
 
     See also
     --------
-    is_planar:
+    is_planar :
         Returns True if and only if `G` is planar.
 
     References
@@ -818,7 +818,8 @@ class PlanarEmbedding(nx.DiGraph):
         Preferred way to check if an existing graph is planar.
 
     check_planarity :
-        A convenient way to create a `PlanarEmbedding`. If not planar, it returns a subgraph that shows this.
+        A convenient way to create a `PlanarEmbedding`. If not planar,
+        it returns a subgraph that shows this.
 
     Examples
     --------
