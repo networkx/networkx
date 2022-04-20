@@ -4,7 +4,7 @@ Triads
 ======
 According to the paper by Snijders, T. (2012). “Transitivity and triads.” 
 University of Oxford, there are 16 Triad types possible. This plot creates 
-Visualisation of the 16 Triad Types that can be identified within Networks.
+a visualisation of the 16 Triad Types that can be identified within directed networks.
 For Example it will be especially useful when analysing Social Networks.
 """
 
