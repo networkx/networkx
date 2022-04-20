@@ -54,7 +54,15 @@ __all__ = [
 
 
 def nodes(G):
-    """Returns an iterator over the graph nodes."""
+    """Returns an iterator over the graph nodes.
+
+    Examples
+    --------
+    >>> G = nx.Graph()
+    >>> G.add_nodes_from([1, 2, 3, 4, 5])
+    >>> nx.nodes(G)
+    NodeView((1, 2, 3, 4, 5))
+    """
     return G.nodes()
 
 
@@ -64,6 +72,18 @@ def edges(G, nbunch=None):
     Return all edges if nbunch is unspecified or nbunch=None.
 
     For digraphs, edges=out_edges
+
+    Examples
+    --------
+    >>> G = nx.Graph()
+    >>> G.add_nodes_from([1, 2, 3, 4, 5])
+    >>> G.add_edges_from([(1, 2), (1, 3), (1, 4), (1, 5), (2, 3), (2, 4)])
+    >>> nx.edges(G, 1)
+    EdgeDataView([(1, 2), (1, 3), (1, 4), (1, 5)])
+    >>> nx.edges(G, 2)
+    EdgeDataView([(2, 1), (2, 3), (2, 4)])
+    >>> nx.edges(G)
+    EdgeView([(1, 2), (1, 3), (1, 4), (1, 5), (2, 3), (2, 4)])
     """
     return G.edges(nbunch)
 
@@ -76,7 +96,16 @@ def degree(G, nbunch=None, weight=None):
 
 
 def neighbors(G, n):
-    """Returns a list of nodes connected to node n."""
+    """Returns an iterator over the nodes connected to node n.
+
+    Examples
+    --------
+    >>> G = nx.Graph()
+    >>> G.add_nodes_from([1, 2, 3, 4, 5])
+    >>> G.add_edges_from([(1, 2), (1, 3), (1, 4), (1, 5), (2, 3), (2, 4)])
+    >>> list(nx.neighbors(G, 1))
+    [2, 3, 4, 5]
+    """
     return G.neighbors(n)
 
 
