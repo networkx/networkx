@@ -139,6 +139,35 @@ def test_random_triad():
         assert nx.is_triad(nx.random_triad(G))
 
 
+def test_triadic_census_short_path_nodelist():
+    G = nx.path_graph("abc", create_using=nx.DiGraph)
+    expected = {"021C": 1}
+    a_triad_census = nx.triadic_census(G, nodelist=["a"])
+    assert expected == {typ: cnt for typ, cnt in a_triad_census.items() if cnt>0}
+    b_triad_census = nx.triadic_census(G, nodelist=["b"])
+    assert expected == {typ: cnt for typ, cnt in b_triad_census.items() if cnt>0}
+    c_triad_census = nx.triadic_census(G, nodelist=["c"])
+    assert expected == {typ: cnt for typ, cnt in c_triad_census.items() if cnt>0}
+
+def test_triadic_census_four_path():
+    G = nx.path_graph("abcd", create_using=nx.DiGraph)
+    expected = {"012": 2, "021C": 2}
+    triad_census = nx.triadic_census(G, nodelist=["a"])
+    #assert expected == {typ: cnt for typ, cnt in triad_census.items() if cnt>0}
+
+def test_triadic_census_four_path_nodelist():
+    G = nx.path_graph("abcd", create_using=nx.DiGraph)
+    expected_end = {"012": 2, "021C": 1}
+    expected_mid = {"012": 1, "021C": 2}
+    a_triad_census = nx.triadic_census(G, nodelist=["a"])
+    #assert expected_end == {typ: cnt for typ, cnt in a_triad_census.items() if cnt>0}
+    b_triad_census = nx.triadic_census(G, nodelist=["b"])
+    assert expected_mid == {typ: cnt for typ, cnt in b_triad_census.items() if cnt>0}
+    c_triad_census = nx.triadic_census(G, nodelist=["c"])
+    assert expected_mid == {typ: cnt for typ, cnt in c_triad_census.items() if cnt>0}
+    d_triad_census = nx.triadic_census(G, nodelist=["d"])
+    assert expected_end == {typ: cnt for typ, cnt in d_triad_census.items() if cnt>0}
+
 def test_triadic_census_nodelist():
     """Tests the triadic_census function."""
     G = nx.DiGraph()
