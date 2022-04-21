@@ -326,6 +326,8 @@ def greedy_modularity_communities(
             raise ValueError(f"best_n must be between 1 and {len(G)}. Got {best_n}.")
         if best_n < cutoff:
             raise ValueError(f"Must have best_n >= cutoff. Got {best_n} < {cutoff}")
+        if best_n == 1:
+            return [set(G)]
     else:
         best_n = G.number_of_nodes()
     if n_communities is not None:
@@ -351,7 +353,19 @@ def greedy_modularity_communities(
 
     # continue merging communities until one of the breaking criteria is satisfied
     while len(communities) > cutoff:
-        dq = next(community_gen)
+        try:
+            dq = next(community_gen)
+        # StopIteration occurs when communities are the connected components
+        except StopIteration:
+            communities = sorted(communities, key=len, reverse=True)
+            # if best_n requires more merging, merge big sets for highest modularity
+            while len(communities) > best_n:
+                comm1, comm2, *rest = communities
+                communities = [comm1 ^ comm2]
+                communities.extend(rest)
+            return communities
+
+        # keep going unless max_mod is reached or best_n says to merge more
         if dq < 0 and len(communities) <= best_n:
             break
         communities = next(community_gen)
