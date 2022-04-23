@@ -22,8 +22,6 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install graphviz graphviz-dev
-          sudo apt-get install texlive texlive-latex-extra latexmk texlive-xetex
-          sudo apt-get install fonts-freefont-otf xindy
           sudo apt-get install libspatialindex-dev
 
       - name: Install packages
@@ -56,8 +54,6 @@ jobs:
         run: |
           export DISPLAY=:99
           make -C doc/ html
-          make -C doc/ latexpdf LATEXOPTS="-file-line-error -halt-on-error"
-          cp -a doc/build/latex/networkx_reference.pdf doc/build/html/_downloads/.
 
       - name: Deploy docs
         if: github.ref == 'refs/heads/main'
