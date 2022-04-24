@@ -5,6 +5,10 @@ import pytest
 import networkx as nx
 from networkx.algorithms.centrality.laplacian import laplacian_centrality
 
+np = pytest.importorskip("numpy")
+sp = pytest.importorskip("scipy")
+
+
 class TestLaplacianCentrality:
     def setup_method(self):
 
