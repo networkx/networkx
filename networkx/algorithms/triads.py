@@ -3,6 +3,7 @@
 # Copyright 2011 Alex Levenson <alex@isnotinvain.com>
 # Copyright 2011 Diederik van Liere <diederik.vanliere@rotman.utoronto.ca>
 """Functions for analyzing triads of a graph."""
+import pytest
 
 from itertools import combinations, permutations
 from collections import defaultdict
@@ -168,47 +169,93 @@ def triadic_census(G, nodelist=None):
     """
     # Initialize the count for each triad to be zero.
     census = {name: 0 for name in TRIAD_NAMES}
-    n = len(G)
-    # m = dict(zip(G, range(n)))
-    m = {v: i for i, v in enumerate(G)}
+    N = len(G)
+
     if nodelist is None:
-        nodelist = list(G.nodes())
+        nodelist = list(G)
+        ordering = {n: i for i, n in enumerate(G)}
+        all_nodes = True
+    else:
+        # ignore duplicates and nodes not in G
+        nodeset = set(nodelist)
+        nodelist = list(G.nbunch_iter(nodeset))
+        num_nodes = len(nodelist)
+        # TODO: rasie error if nodelist not unique or nodes not in G
+        ordering = {n: i for i, n in enumerate(nodelist)}
+        ordering.update((n, i + num_nodes) for i, n in enumerate(G) if n not in nodeset)
+        all_nodes = len(nodelist) == len(G)
+
+    # build all_neighbor dicts for easy counting
+    # After Python 3.8 can leave off these keys()
+    nbrs_dict = {n: G.pred[n].keys() | G.succ[n].keys() for n in G}
+    dbl_nbrs_dict = {n: G.pred[n].keys() & G.succ[n].keys() for n in G}
+
+    # Main loop over nodes
     for v in nodelist:
-        vnbrs = set(G.pred[v]) | set(G.succ[v])
+        vnbrs = nbrs_dict[v]
+        # TODO:  check for selfloops
+        dbl_vnbrs = dbl_nbrs_dict[v]
+        if not all_nodes:
+            # count edges incident to vnbrs
+            unbrs_in = 0  # unbrs within vnbrs
+            unbrs_out = 0  # unbrs outside of vnbrs
+            dbl_unbrs_in = 0
+            dbl_unbrs_out = 0
         for u in vnbrs:
-            if m[u] <= m[v]:
+            if ordering[u] <= ordering[v]:
                 continue
-            neighbors = (vnbrs | set(G.succ[u]) | set(G.pred[u])) - {u, v}
+            unbrs = nbrs_dict[u]
+            neighbors = (vnbrs | unbrs) - {u, v}
             # Calculate dyadic triads instead of counting them.
-            if v in G[u] and u in G[v]:
-                census["102"] += n - len(neighbors) - 2
+            if u in dbl_vnbrs:
+                census["102"] += N - len(neighbors) - 2
             else:
-                census["012"] += n - len(neighbors) - 2
+                census["012"] += N - len(neighbors) - 2
+            if not all_nodes:
+                # count edges incident to vnbrs
+                unbrs_in += len(unbrs & vnbrs)
+                unbrs_out += len(unbrs - vnbrs - {v})
+                dbl_unbrs = dbl_nbrs_dict[u]
+                dbl_unbrs_in += len(dbl_unbrs & vnbrs)
+                dbl_unbrs_out += len(dbl_unbrs - vnbrs - {v})
+
             # Count connected triads.
             for w in neighbors:
-                if m[u] < m[w] or (
-                    m[v] < m[w] < m[u] and v not in G.pred[w] and v not in G.succ[w]
+                if ordering[u] < ordering[w] or (
+                    ordering[v] < ordering[w] < ordering[u] and v not in nbrs_dict[w]
                 ):
                     code = _tricode(G, v, u, w)
                     census[TRICODE_TO_NAME[code]] += 1
+        # Calculate dyads for node v when nodelist is not all nodes
+        # NOTE: these formulas could lead to double-counting when len(nodelist)>1
+        if not all_nodes:
+            dbl_edges = sum(len(nbrs) for nbrs in dbl_nbrs_dict.values()) // 2
+            sgl_edges = sum(len(nbrs) for nbrs in nbrs_dict.values()) // 2 - dbl_edges
+            sgl_unbrs = (unbrs_out - dbl_unbrs_out) + (unbrs_in - dbl_unbrs_in) // 2
+            census["012"] += sgl_edges - sgl_unbrs - (len(vnbrs) - len(dbl_vnbrs))
+            dbl = dbl_edges - dbl_unbrs_out - dbl_unbrs_in // 2 - len(dbl_vnbrs)
+            census["102"] += dbl
 
-    if len(nodelist) != len(G):
-        census["003"] = 0
-        for v in nodelist:
-            vnbrs = set(G.pred[v]) | set(G.succ[v])
-            not_vnbrs = G.nodes() - vnbrs - set(v)
-            triad_003_count = 0
-            for u in not_vnbrs:
-                unbrs = set(set(G.succ[u]) | set(G.pred[u])) - vnbrs
-                triad_003_count += len(not_vnbrs - unbrs) - 1
-            triad_003_count //= 2
-            census["003"] += triad_003_count
-    else:
+    # calculate null triads: "003"
+    if all_nodes:
         # null triads = total number of possible triads - all found triads
         #
         # Use integer division here, since we know this formula guarantees an
         # integral value.
-        census["003"] = ((n * (n - 1) * (n - 2)) // 6) - sum(census.values())
+        census["003"] = ((N * (N - 1) * (N - 2)) // 6) - sum(census.values())
+    else:
+        for v in nodelist:
+            vnbrs = nbrs_dict[v]
+            not_vnbrs = G.nodes() - vnbrs - {v}
+            triad_003_count = 0
+            for u in not_vnbrs:
+                # subtract 1 from len to not count node u
+                unbrs = nbrs_dict[u] - vnbrs
+                triad_003_count += len(not_vnbrs - unbrs) - 1
+                # triad_003_count += len(not_vnbrs - nbrs_dict[u]) - 1
+            triad_003_count //= 2
+            census["003"] += triad_003_count
+
     return census
 
 

@@ -1,8 +1,11 @@
 """Unit tests for the :mod:`networkx.algorithms.triads` module."""
 
-import networkx as nx
+import pytest
 from collections import defaultdict
 from random import sample
+import networkx as nx
+
+TRIAD_NAMES = nx.triads.TRIAD_NAMES
 
 
 def test_triadic_census():
@@ -143,30 +146,33 @@ def test_triadic_census_short_path_nodelist():
     G = nx.path_graph("abc", create_using=nx.DiGraph)
     expected = {"021C": 1}
     a_triad_census = nx.triadic_census(G, nodelist=["a"])
-    assert expected == {typ: cnt for typ, cnt in a_triad_census.items() if cnt>0}
+    assert expected == {typ: cnt for typ, cnt in a_triad_census.items() if cnt > 0}
     b_triad_census = nx.triadic_census(G, nodelist=["b"])
-    assert expected == {typ: cnt for typ, cnt in b_triad_census.items() if cnt>0}
+    assert expected == {typ: cnt for typ, cnt in b_triad_census.items() if cnt > 0}
     c_triad_census = nx.triadic_census(G, nodelist=["c"])
-    assert expected == {typ: cnt for typ, cnt in c_triad_census.items() if cnt>0}
+    assert expected == {typ: cnt for typ, cnt in c_triad_census.items() if cnt > 0}
+
 
 def test_triadic_census_four_path():
     G = nx.path_graph("abcd", create_using=nx.DiGraph)
     expected = {"012": 2, "021C": 2}
-    triad_census = nx.triadic_census(G, nodelist=["a"])
-    #assert expected == {typ: cnt for typ, cnt in triad_census.items() if cnt>0}
+    triad_census = nx.triadic_census(G)
+    assert expected == {typ: cnt for typ, cnt in triad_census.items() if cnt > 0}
+
 
 def test_triadic_census_four_path_nodelist():
     G = nx.path_graph("abcd", create_using=nx.DiGraph)
     expected_end = {"012": 2, "021C": 1}
     expected_mid = {"012": 1, "021C": 2}
     a_triad_census = nx.triadic_census(G, nodelist=["a"])
-    #assert expected_end == {typ: cnt for typ, cnt in a_triad_census.items() if cnt>0}
+    assert expected_end == {typ: cnt for typ, cnt in a_triad_census.items() if cnt > 0}
     b_triad_census = nx.triadic_census(G, nodelist=["b"])
-    assert expected_mid == {typ: cnt for typ, cnt in b_triad_census.items() if cnt>0}
+    assert expected_mid == {typ: cnt for typ, cnt in b_triad_census.items() if cnt > 0}
     c_triad_census = nx.triadic_census(G, nodelist=["c"])
-    assert expected_mid == {typ: cnt for typ, cnt in c_triad_census.items() if cnt>0}
+    assert expected_mid == {typ: cnt for typ, cnt in c_triad_census.items() if cnt > 0}
     d_triad_census = nx.triadic_census(G, nodelist=["d"])
-    assert expected_end == {typ: cnt for typ, cnt in d_triad_census.items() if cnt>0}
+    assert expected_end == {typ: cnt for typ, cnt in d_triad_census.items() if cnt > 0}
+
 
 def test_triadic_census_nodelist():
     """Tests the triadic_census function."""
@@ -193,8 +199,45 @@ def test_triadic_census_nodelist():
     actual = {k: 0 for k in expected}
     for node in G.nodes():
         node_triad_census = nx.triadic_census(G, nodelist=[node])
+        print(f"node: {node}; census012 = {node_triad_census['012']}")
         for triad_key in expected:
             actual[triad_key] += node_triad_census[triad_key]
-    # Divide the total count of 003 triads by 3, since we are counting them thrice
-    actual["003"] //= 3
+    # Divide all counts by 3
+    for k, v in actual.items():
+        actual[k] //= 3
     assert expected == actual
+
+
+def test_triandic_census_on_random_graphs():
+    G = nx.binomial_graph(10, 0.3, directed=True, seed=42)
+    tc1 = nx.triadic_census(G)
+    tbt = nx.triads_by_type(G)
+    tc2 = {tt: len(tbt[tt]) for tt in TRIAD_NAMES}
+    assert tc1 == tc2
+
+    for n in G:
+        tc_node = nx.triadic_census(G, nodelist=[n])
+        tc = {tt: sum(1 for t in tbt.get(tt, []) if n in t) for tt in TRIAD_NAMES}
+        assert tc_node == tc
+
+
+@pytest.mark.slow
+def test_triandic_census_on_atlas():
+    for G in nx.graph_atlas_g():
+        edges = list(G.edges())
+        DG = G.to_directed()
+        for i, (u, v) in enumerate(edges):
+            for elist in ([(u, v)], [(v, u)], [(u, v), (v, u)], []):
+                DG = nx.DiGraph(edges[:i] + edges[i + 1 :] + elist)
+                DG.add_nodes_from(G)
+                tc1 = nx.triadic_census(DG)
+                tbt = nx.triads_by_type(DG)
+                tc = {tt: len(tbt.get(tt, [])) for tt in TRIAD_NAMES}
+                assert tc1 == tc
+                for n in DG:
+                    tc1 = nx.triadic_census(DG, nodelist=[n])
+                    tc = {
+                        tt: sum(1 for t in tbt.get(tt, []) if n in t)
+                        for tt in TRIAD_NAMES
+                    }
+                    assert tc1 == tc
