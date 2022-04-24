@@ -3,9 +3,9 @@ testing
 """
 import pytest
 import networkx as nx
+from networkx.algorithms.centrality.laplacian import laplacian_centrality
 
-
-class TestDegreeCentrality:
+class TestLaplacianCentrality:
     def setup_method(self):
 
         self.K = nx.krackhardt_kite_graph()
@@ -34,7 +34,7 @@ class TestDegreeCentrality:
         self.DG = DG
 
     def test_laplacian_centrality_E(self):
-        d = nx.laplacian_centrality(self.E)
+        d = laplacian_centrality(self.E)
         exact = {
             0: 0.700000,
             1: 0.900000,
@@ -49,7 +49,7 @@ class TestDegreeCentrality:
 
     def test_laplacian_centrality_KC(self):
 
-        d = nx.laplacian_centrality(self.KC)
+        d = laplacian_centrality(self.KC)
         exact = {
             0: 0.2543593,
             1: 0.1724524,
@@ -91,7 +91,7 @@ class TestDegreeCentrality:
 
     def test_laplacian_centrality_K(self):
 
-        d = nx.laplacian_centrality(self.K)
+        d = laplacian_centrality(self.K)
         exact = {
             0: 0.3010753,
             1: 0.3010753,
@@ -108,19 +108,19 @@ class TestDegreeCentrality:
             assert exact[n] == pytest.approx(dc, abs=1e-7)
 
     def test_laplacian_centrality_P3(self):
-        d = nx.laplacian_centrality(self.P3)
+        d = laplacian_centrality(self.P3)
         exact = {0: 0.6, 1: 1.0, 2: 0.6}
         for n, dc in d.items():
             assert exact[n] == pytest.approx(dc, abs=1e-7)
 
     def test_laplacian_centrality_K5(self):
-        d = nx.nx.laplacian_centrality(self.K5)
+        d = laplacian_centrality(self.K5)
         exact = {0: 0.52, 1: 0.52, 2: 0.52, 3: 0.52, 4: 0.52}
         for n, dc in d.items():
             assert exact[n] == pytest.approx(dc, abs=1e-7)
 
     def test_laplacian_centrality_FF(self):
-        d = nx.laplacian_centrality(self.FF)
+        d = laplacian_centrality(self.FF)
         exact = {
             "Acciaiuoli": 0.0804598,
             "Medici": 0.4022989,
@@ -142,7 +142,7 @@ class TestDegreeCentrality:
             assert exact[n] == pytest.approx(dc, abs=1e-7)
 
     def test_laplacian_centrality_DG(self):
-        d = nx.laplacian_centrality(self.DG)
+        d = laplacian_centrality(self.DG)
         exact = {
             0: 0.2123352,
             5: 0.515391,
