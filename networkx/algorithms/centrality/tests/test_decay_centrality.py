@@ -6,10 +6,6 @@ import pytest
 import networkx as nx
 
 
-import pytest
-import networkx as nx
-
-
 class TestDecayCentrality:
     @classmethod
     def setup_class(cls):

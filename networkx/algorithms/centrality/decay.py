@@ -5,7 +5,7 @@ __all__ = ["decay_centrality"]
 
 
 @not_implemented_for("directed")
-def decay_centrality(G, u=None, delta=0.5):
+def decay_centrality(G, u=None, delta=0.5, mode="all"):
     r"""Compute the decay centrality for nodes.
 
     Decay centrality [1]_ of a node `u` is the decay parameter raised to power sum of shortest distance between `u`
@@ -75,6 +75,12 @@ def decay_centrality(G, u=None, delta=0.5):
     decay_centrality = {}
 
     path_length = nx.single_source_shortest_path_length
+
+    if G.is_directed():
+        if mode == 'out':
+            path_length = nx.single_target_shortest_path
+        if mode == 'all':
+            G = G.to_undirected()    
 
     if u is None:
         nodes = G.nodes
