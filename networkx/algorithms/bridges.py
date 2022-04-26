@@ -35,6 +35,9 @@ def bridges(G, root=None):
     NodeNotFound
        If `root` is not in the graph `G`.
 
+    NetworkXNotImplemented
+        If `G` is a directed graph.
+
     Examples
     --------
     The barbell graph with parameter zero has a single bridge:
@@ -99,6 +102,9 @@ def has_bridges(G, root=None):
     NodeNotFound
        If `root` is not in the graph `G`.
 
+    NetworkXNotImplemented
+        If `G` is a directed graph.
+
     Examples
     --------
     The barbell graph with parameter zero has a single bridge::
@@ -157,6 +163,11 @@ def local_bridges(G, with_span=True, weight=None):
     e : edge
         The local bridges as an edge 2-tuple of nodes `(u, v)` or
         as a 3-tuple `(u, v, span)` when `with_span is True`.
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If `G` is a directed graph or multigraph.
 
     Examples
     --------

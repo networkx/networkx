@@ -245,7 +245,7 @@ def nodes_or_number(which_args):
             nodes = tuple(n)
         else:
             if n < 0:
-                msg = "Negative number of nodes not valid: {n}"
+                msg = f"Negative number of nodes not valid: {n}"
                 raise nx.NetworkXError(msg)
         return (n, nodes)
 
