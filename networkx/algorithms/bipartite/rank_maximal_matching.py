@@ -82,6 +82,8 @@ def rank_maximal_matching(G, rank="rank", top_nodes=None):
         "Rank-Maximal Matchings",ACM Trans. Algorithms,2006,Association for Computing Machinery**
            https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.92.6742&rep=rep1&type=pdf
         """
+    if G.number_of_nodes() == 0 or G.number_of_edges() == 0:
+        return dict()
     graph = nx.Graph(G)
     Gi = nx.Graph()
     Gi.add_nodes_from(G.nodes)
