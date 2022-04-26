@@ -37,9 +37,7 @@ def tree_all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
 
     Examples
     --------
-
-    >>> G = nx.DiGraph()
-    >>> G.add_edges_from([(1, 3), (2, 4), (1, 2)])
+    >>> G = nx.DiGraph([(1, 3), (2, 4), (1, 2)])
     >>> dict(nx.tree_all_pairs_lowest_common_ancestor(G))
     {(3, 3): 3, (3, 4): 1, (4, 4): 4, (3, 2): 1, (2, 2): 2, (4, 2): 2, (1, 1): 1, (3, 1): 1, (2, 1): 1, (4, 1): 1}
 
