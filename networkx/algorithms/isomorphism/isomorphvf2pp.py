@@ -4,6 +4,10 @@ VF2++ Algorithm
 ***************
 
 Implementation of the VF2++ algorithm for the Graph Isomorphism problem.
+
+TODO: Basic questions:
+    1. How exactly is the new node ordering going to be used?
+    2. Understand and implement the new cutting rules, proposed by VF2++.
 """
 import networkx as nx
 import matplotlib.pyplot as plt
