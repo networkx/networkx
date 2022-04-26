@@ -44,8 +44,6 @@ def tree_all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
      We can also use `pairs` argument to specify the pairs of nodes for which we
      want to compute lowest common ancestors. Here is an example:
 
-    >>> G = nx.DiGraph()
-    >>> G.add_edges_from([(1, 3), (2, 4), (1, 2)])
     >>> dict(nx.tree_all_pairs_lowest_common_ancestor(G, pairs=[(1, 4), (2, 3)]))
     {(2, 3): 1, (1, 4): 1}
 
