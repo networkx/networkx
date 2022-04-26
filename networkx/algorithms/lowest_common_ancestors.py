@@ -4,6 +4,7 @@ from collections.abc import Mapping, Set
 from itertools import chain, count
 
 import networkx as nx
+import pprint
 from networkx.utils import arbitrary_element, not_implemented_for, UnionFind
 
 __all__ = [
@@ -38,11 +39,20 @@ def tree_all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
     Examples
     --------
     >>> G = nx.DiGraph([(1, 3), (2, 4), (1, 2)])
-    >>> dict(nx.tree_all_pairs_lowest_common_ancestor(G))
-    {(3, 3): 3, (3, 4): 1, (4, 4): 4, (3, 2): 1, (2, 2): 2, (4, 2): 2, (1, 1): 1, (3, 1): 1, (2, 1): 1, (4, 1): 1}
+    >>> pprint.pprint(dict(nx.tree_all_pairs_lowest_common_ancestor(G)))
+    {(1, 1): 1,
+     (2, 1): 1,
+     (2, 2): 2,
+     (3, 1): 1,
+     (3, 2): 1,
+     (3, 3): 3,
+     (3, 4): 1,
+     (4, 1): 1,
+     (4, 2): 2,
+     (4, 4): 4}
 
-     We can also use `pairs` argument to specify the pairs of nodes for which we
-     want to compute lowest common ancestors. Here is an example:
+    We can also use `pairs` argument to specify the pairs of nodes for which we
+    want to compute lowest common ancestors. Here is an example:
 
     >>> dict(nx.tree_all_pairs_lowest_common_ancestor(G, pairs=[(1, 4), (2, 3)]))
     {(2, 3): 1, (1, 4): 1}
