@@ -310,9 +310,8 @@ def compose(G, H):
     >>> R.edges
     EdgeView([(0, 1), (0, 2), (1, 2)])
 
-    As indicated above, the attributes from H take precedent over attributes from G.
-    If you prefer another way of combining attributes, you can update them after the compose operation.
-    Consider the below graphs which have the nodes with the same labels, edge and node attributes:
+    By default, the attributes from `H` take precedent over attributes from `G`.
+    If you prefer another way of combining attributes, you can update them after the compose operation:
 
     >>> G = nx.Graph([('x', 'y', {'weight': 2.0}), ('x', 'z', {'weight': 1.0})])
     >>> H = nx.Graph([('x', 'y', {'weight': 10.0}), ('y', 'z', {'weight': -1.0})])
