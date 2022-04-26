@@ -95,9 +95,3 @@ def binary_tree():
 
 
 main()
-
-# def arg_max_degree(G1, M):
-#     # todo: for every node, take degree in G1 or in G1\M ??
-#     V1 = G1.nodes
-#     max_degree = max(G1.degree[node] for node in V1)
-#     return [u for u in V1 if G1.degree[u] == max_degree and u not in M]
