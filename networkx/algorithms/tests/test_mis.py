@@ -33,9 +33,9 @@ def test_exceptions():
 def test_florentine_family():
     G = nx.florentine_families_graph()
     indep = nx.maximal_independent_set(G, ["Medici", "Bischeri"])
-    assert sorted(indep) == sorted(
-        ["Medici", "Bischeri", "Castellani", "Pazzi", "Ginori", "Lamberteschi"]
-    )
+    assert set(indep) == {
+        "Medici", "Bischeri", "Castellani", "Pazzi", "Ginori", "Lamberteschi"
+    }
 
 
 def test_bipartite():
