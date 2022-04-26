@@ -313,25 +313,29 @@ def compose(G, H):
     By default, the attributes from `H` take precedent over attributes from `G`.
     If you prefer another way of combining attributes, you can update them after the compose operation:
 
-    >>> G = nx.Graph([('x', 'y', {'weight': 2.0}), ('x', 'z', {'weight': 1.0})])
-    >>> H = nx.Graph([('x', 'y', {'weight': 10.0}), ('y', 'z', {'weight': -1.0})])
-    >>> nx.set_node_attributes(G, {'x': "dark", 'y': "light", 'z':"neon"}, name='color')
-    >>> nx.set_node_attributes(H, {'x': "green", 'y': "orange", 'z':"yellow"}, name='color')
+    >>> G = nx.Graph([("x", "y", {'weight': 2.0}), ("x", "z", {'weight': 1.0}), ("t", "x", {'weight': 100.0})])
+    >>> H = nx.Graph([("x", "y", {'weight': 10.0}), ("y", "z", {'weight': -1.0})])
+    >>> nx.set_node_attributes(G, {"x": "dark", "y": "light", "z":"neon", "t":"black"}, name="color")
+    >>> nx.set_node_attributes(H, {"x": "green", "y": "orange", "z":"yellow"}, name="color")
     >>> GcomposeH = nx.compose(G, H)
 
     Normally, color attribute values of nodes of GcomposeH come from H. We can workaround this as follows:
 
-    >>> node_data = {n: G.nodes[n].get('color') + " " + H.nodes[n].get('color') for n in G.nodes & H.nodes}
+    >>> node_data = {n: G.nodes[n].get('color', "") + " " + H.nodes[n].get('color', "") for n in G.nodes & H.nodes}
     >>> nx.set_node_attributes(GcomposeH, node_data, 'color')
-    >>> GcomposeH.nodes['x']['color']
-    'dark green'
+    >>> print(GcomposeH.nodes["x"]["color"])
+    >>> print(GcomposeH.nodes["t"]["color"])
+    dark green
+    black
 
     Similarly, we can update edge attributes after the compose operation in a way we prefer:
 
-    >>> edge_data = {e: G.edges[e].get('weight') * H.edges[e].get('weight') for e in G.edges & H.edges}
+    >>> edge_data = {e: G.edges[e].get('weight', 1) * H.edges[e].get('weight', 1) for e in G.edges & H.edges}
     >>> nx.set_edge_attributes(GcomposeH, edge_data, 'weight')
-    >>> GcomposeH.edges[('x', 'y')]['weight']
+    >>> print(GcomposeH.edges[("x", "y")]["weight"])
+    >>> print(GcomposeH.edges[("t", "x")]["weight"])
     20.0
+    100.0
     """
     return nx.compose_all([G, H])
 
