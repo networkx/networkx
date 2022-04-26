@@ -37,6 +37,7 @@ class TestRankMaximalMatching:
 
     def test_rank_maximal_matching_bigger_left(self):
         G = nx.Graph()
+        # there are two valid solutions
         matching = [
             {"a1": "p1", "a2": "p2", "p1": "a1", "p2": "a2"},
             {"a1": "p1", "a3": "p2", "p1": "a1", "p2": "a3"},
