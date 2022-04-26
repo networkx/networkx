@@ -169,7 +169,7 @@ def node_connected_component(G, n):
     Examples
     --------
     >>> G = nx.Graph([(0, 1), (1, 2), (5, 6), (3, 4)])
-    >>> nx.node_connected_component(G, 0)  # nodes of component having '0' node
+    >>> nx.node_connected_component(G, 0)  # nodes of component that contains node 0
     {0, 1, 2}
 
     See Also
