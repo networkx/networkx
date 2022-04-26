@@ -163,8 +163,8 @@ def lowest_common_ancestor(G, node1, node2, default=None):
 
     >>> G = nx.DiGraph()
     >>> G.add_edges_from([(4, 5), (12, 13)])
-    >>> print(nx.lowest_common_ancestor(G, 12, 5, default="No common ancestors!"))
-    No common ancestors!
+    >>> nx.lowest_common_ancestor(G, 12, 5, default="No common ancestors!")
+    'No common ancestors!'
 
     Notes
     -----
