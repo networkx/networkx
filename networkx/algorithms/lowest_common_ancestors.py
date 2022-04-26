@@ -161,8 +161,7 @@ def lowest_common_ancestor(G, node1, node2, default=None):
     We can also set `default` argument as below. The value of default is returned
     if there are no common ancestors of given two nodes.
 
-    >>> G = nx.DiGraph()
-    >>> G.add_edges_from([(4, 5), (12, 13)])
+    >>> G = nx.DiGraph([(4, 5), (12, 13)])
     >>> nx.lowest_common_ancestor(G, 12, 5, default="No common ancestors!")
     'No common ancestors!'
 
