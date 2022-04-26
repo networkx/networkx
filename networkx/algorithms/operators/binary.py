@@ -324,8 +324,9 @@ def compose(G, H):
     >>> node_data = {n: G.nodes[n].get('color', "") + " " + H.nodes[n].get('color', "") for n in G.nodes & H.nodes}
     >>> nx.set_node_attributes(GcomposeH, node_data, 'color')
     >>> print(GcomposeH.nodes['x']['color'])
-    >>> print(GcomposeH.nodes['t']['color'])
     dark green
+
+    >>> print(GcomposeH.nodes['t']['color'])
     black
 
     Similarly, we can update edge attributes after the compose operation in a way we prefer:
@@ -333,8 +334,9 @@ def compose(G, H):
     >>> edge_data = {e: G.edges[e].get('weight', 1) * H.edges[e].get('weight', 1) for e in G.edges & H.edges}
     >>> nx.set_edge_attributes(GcomposeH, edge_data, 'weight')
     >>> print(GcomposeH.edges[('x', 'y')]['weight'])
-    >>> print(GcomposeH.edges[('t', 'x')]['weight'])
     20.0
+
+    >>> print(GcomposeH.edges[('t', 'x')]['weight'])
     100.0
     """
     return nx.compose_all([G, H])
