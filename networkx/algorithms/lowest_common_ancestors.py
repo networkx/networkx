@@ -154,8 +154,7 @@ def lowest_common_ancestor(G, node1, node2, default=None):
 
     Examples
     --------
-    >>> G = nx.DiGraph()
-    >>> G.add_edges_from([(0, 1), (0, 2), (2, 3), (2, 4), (1, 6), (4, 5)])
+    >>> G = nx.DiGraph([(0, 1), (0, 2), (2, 3), (2, 4), (1, 6), (4, 5)])
     >>> nx.lowest_common_ancestor(G, 3, 5)
     2
 
