@@ -21,7 +21,7 @@ def decay_centrality(G, u=None, delta=0.5, mode="all", weight=None):
 
     Notice that when `delta` approaches 0, the decay centrality approaches degree and decay centrality becomes
     propostional to the degree centrality.
-    
+
     When `delta` approaches 1, the decay centrality approaches size of component i.e the number of reachable nodes.
 
     Parameters
