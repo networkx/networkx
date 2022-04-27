@@ -15,7 +15,7 @@ REVERSE = "reverse"
 __all__ = ["edge_bfs"]
 
 
-def generic_edge_bfs(nodes, source=None, orientation=None):
+def generic_edge_bfs(G,nodes, source=None, orientation=None):
     """A directed, breadth-first-search of edges in `G`, beginning at `source`.
 
         Yield the edges of G in a breadth-first-search order continuing until
@@ -213,4 +213,4 @@ def edge_bfs(G, source=None, orientation=None):
     if not nodes:
         return
 
-    yield from generic_edge_bfs(nodes, source, orientation)
+    yield from generic_edge_bfs(G,nodes, source, orientation)
