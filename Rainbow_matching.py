@@ -10,6 +10,15 @@ def rainbow_matching(graph : nx.Graph, k : int) -> int:
     and returns "false" (0) if there isn't.
     >>> rainbow_matching(nx.Graph() , 1 )
     0
+
+    >>> G = nx.Graph()
+    >>> G.add_nodes_from([1, 3])
+    >>> G.add_edge(1, 2, color = "blue")
+    >>> G.add_edge(2, 3, color="red")
+    >>> rainbow_matching(nx.Graph() , 1 )
+    1
+    >>> rainbow_matching(nx.Graph() , 2)
+    0
     """
 
 
