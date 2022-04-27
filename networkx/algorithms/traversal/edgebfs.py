@@ -18,47 +18,47 @@ __all__ = ["edge_bfs"]
 def generic_edge_bfs(G, nodes, source=None, orientation=None):
     """A directed, breadth-first-search of edges in `G`, beginning at `source`.
 
-        Yield the edges of G in a breadth-first-search order continuing until
-        all edges are generated.
+    Yield the edges of G in a breadth-first-search order continuing until
+    all edges are generated.
 
-        Parameters
-        ----------
-        G : graph
-            A directed/undirected graph/multigraph.
+    Parameters
+    ----------
+    G : graph
+        A directed/undirected graph/multigraph.
 
-        source : node, list of nodes
-            The node from which the traversal begins. If None, then a source
-            is chosen arbitrarily and repeatedly until all edges from
-            each node in the graph are searched.
+    source : node, list of nodes
+        The node from which the traversal begins. If None, then a source
+        is chosen arbitrarily and repeatedly until all edges from
+        each node in the graph are searched.
 
-        orientation : None | 'original' | 'reverse' | 'ignore' (default: None)
-            For directed graphs and directed multigraphs, edge traversals
-            need not respect the original orientation of the edges.
-            When set to 'reverse' every edge is traversed in the reverse
-            direction.When set to 'ignore', every edge is treated as
-            undirected.When set to 'original', every edge is treated as
-            directed.In all three cases, the yielded edge tuples add a
-            last entry to indicate the direction in which that edge
-            was traversed.If orientation is None, the yielded edge has
-            no direction indicated.The direction is respected, but
-            not reported.
+    orientation : None | 'original' | 'reverse' | 'ignore' (default: None)
+        For directed graphs and directed multigraphs, edge traversals
+        need not respect the original orientation of the edges.
+        When set to 'reverse' every edge is traversed in the reverse
+        direction.When set to 'ignore', every edge is treated as
+        undirected.When set to 'original', every edge is treated as
+        directed.In all three cases, the yielded edge tuples add a
+        last entry to indicate the direction in which that edge
+        was traversed.If orientation is None, the yielded edge has
+        no direction indicated.The direction is respected, but
+        not reported.
 
-        Yields
-        ------
-        edge : directed edge
-            A directed edge indicating the path taken by the
-            breadth-first-search.
-            For graphs, `edge` is of the form `(u, v)` where `u` and `v`
-            are the tail and head of the edge as determined by the
-            traversal.
-            For multigraphs, `edge` is of the form `(u, v, key)`, where `key`
-            is the key of the edge. When the graph is directed,
-            then `u` and `v`
-            are always in the order of the actual directed edge.
-            If orientation is not None then the edge tuple is extended
-            to include the direction of traversal ('forward' or 'reverse')
-            on that edge.
-     """
+    Yields
+    ------
+    edge : directed edge
+        A directed edge indicating the path taken by the
+        breadth-first-search.
+        For graphs, `edge` is of the form `(u, v)` where `u` and `v`
+        are the tail and head of the edge as determined by the
+        traversal.
+        For multigraphs, `edge` is of the form `(u, v, key)`, where `key`
+        is the key of the edge. When the graph is directed,
+        then `u` and `v`
+        are always in the order of the actual directed edge.
+        If orientation is not None then the edge tuple is extended
+        to include the direction of traversal ('forward' or 'reverse')
+        on that edge.
+    """
     directed = G.is_directed()
     kwds = {"data": False}
     if G.is_multigraph() is True:
@@ -94,13 +94,16 @@ def generic_edge_bfs(G, nodes, source=None, orientation=None):
         raise nx.NetworkXError("invalid orientation argument.")
 
     if directed:
+
         def edge_id(edge):
             # remove direction indicator
             return edge[:-1] if orientation is not None else edge
 
     else:
+
         def edge_id(edge):
             return (frozenset(edge[:2]),) + edge[2:]
+
     check_reverse = directed and orientation in ("reverse", "ignore")
     # start BFS
     visited_nodes = {n for n in nodes}
