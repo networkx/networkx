@@ -1,7 +1,8 @@
-"""Unit tests for the :mod:`networkx.algorithms.triads` module."""
+"""Tests for the :mod:`networkx.algorithms.triads` module."""
 
 import pytest
 from collections import defaultdict
+import itertools
 from random import sample
 import networkx as nx
 
@@ -145,12 +146,9 @@ def test_random_triad():
 def test_triadic_census_short_path_nodelist():
     G = nx.path_graph("abc", create_using=nx.DiGraph)
     expected = {"021C": 1}
-    a_triad_census = nx.triadic_census(G, nodelist=["a"])
-    assert expected == {typ: cnt for typ, cnt in a_triad_census.items() if cnt > 0}
-    b_triad_census = nx.triadic_census(G, nodelist=["b"])
-    assert expected == {typ: cnt for typ, cnt in b_triad_census.items() if cnt > 0}
-    c_triad_census = nx.triadic_census(G, nodelist=["c"])
-    assert expected == {typ: cnt for typ, cnt in c_triad_census.items() if cnt > 0}
+    for nl in ["a", "b", "c", "ab", "ac", "bc", "abc"]:
+        triad_census = nx.triadic_census(G, nodelist=nl)
+        assert expected == {typ: cnt for typ, cnt in triad_census.items() if cnt > 0}
 
 
 def test_triadic_census_four_path():
@@ -199,7 +197,6 @@ def test_triadic_census_nodelist():
     actual = {k: 0 for k in expected}
     for node in G.nodes():
         node_triad_census = nx.triadic_census(G, nodelist=[node])
-        print(f"node: {node}; census012 = {node_triad_census['012']}")
         for triad_key in expected:
             actual[triad_key] += node_triad_census[triad_key]
     # Divide all counts by 3
@@ -208,36 +205,54 @@ def test_triadic_census_nodelist():
     assert expected == actual
 
 
-def test_triandic_census_on_random_graphs():
-    G = nx.binomial_graph(10, 0.3, directed=True, seed=42)
+@pytest.mark.parametrize("N", [5, 10])
+def test_triandic_census_on_random_graph(N):
+    G = nx.binomial_graph(N, 0.3, directed=True, seed=42)
     tc1 = nx.triadic_census(G)
     tbt = nx.triads_by_type(G)
-    tc2 = {tt: len(tbt[tt]) for tt in TRIAD_NAMES}
+    tc2 = {tt: len(tbt[tt]) for tt in tc1}
     assert tc1 == tc2
 
     for n in G:
-        tc_node = nx.triadic_census(G, nodelist=[n])
-        tc = {tt: sum(1 for t in tbt.get(tt, []) if n in t) for tt in TRIAD_NAMES}
-        assert tc_node == tc
+        tc1 = nx.triadic_census(G, nodelist={n})
+        tc2 = {tt: sum(1 for t in tbt.get(tt, []) if n in t) for tt in tc1}
+        assert tc1 == tc2
+
+    for ns in itertools.combinations(G, 2):
+        ns = set(ns)
+        tc1 = nx.triadic_census(G, nodelist=ns)
+        tc2 = {
+            tt: sum(1 for t in tbt.get(tt, []) if any(n in ns for n in t)) for tt in tc1
+        }
+        assert tc1 == tc2
+
+    for ns in itertools.combinations(G, 3):
+        ns = set(ns)
+        tc1 = nx.triadic_census(G, nodelist=ns)
+        tc2 = {
+            tt: sum(1 for t in tbt.get(tt, []) if any(n in ns for n in t)) for tt in tc1
+        }
+        assert tc1 == tc2
 
 
 @pytest.mark.slow
-def test_triandic_census_on_atlas():
+def test_triadic_census_on_directed_atlas():
     for G in nx.graph_atlas_g():
         edges = list(G.edges())
-        DG = G.to_directed()
         for i, (u, v) in enumerate(edges):
-            for elist in ([(u, v)], [(v, u)], [(u, v), (v, u)], []):
-                DG = nx.DiGraph(edges[:i] + edges[i + 1 :] + elist)
+            for elist in ([(u, v)], [(v, u)], [(u, v), (v, u)]):
+                DG = nx.DiGraph(edges[:i] + elist + edges[i + 1 :])
                 DG.add_nodes_from(G)
                 tc1 = nx.triadic_census(DG)
                 tbt = nx.triads_by_type(DG)
-                tc = {tt: len(tbt.get(tt, [])) for tt in TRIAD_NAMES}
-                assert tc1 == tc
+                tc2 = {tt: len(tbt.get(tt, [])) for tt in tc1}
+                assert tc1 == tc2
+                # test single node nodelist
+                n = 0
+                tc_node = nx.triadic_census(DG, nodelist=[n])
+                tb_node = {tt: sum(1 for t in tbt.get(tt, []) if n in t) for tt in tc1}
+                assert tc_node == tb_node
                 for n in DG:
                     tc1 = nx.triadic_census(DG, nodelist=[n])
-                    tc = {
-                        tt: sum(1 for t in tbt.get(tt, []) if n in t)
-                        for tt in TRIAD_NAMES
-                    }
-                    assert tc1 == tc
+                    tc2 = {tt: sum(1 for t in tbt.get(tt, []) if n in t) for tt in tc1}
+                    assert tc1 == tc2
