@@ -15,7 +15,7 @@ __all__ = [
 ]
 
 
-def extrema_bounding(G, compute="diameter"):
+def extrema_bounding(G, compute="diameter", weight=None):
     """Compute requested extreme distance metric of undirected graph G
 
     .. deprecated:: 2.8
@@ -39,6 +39,9 @@ def extrema_bounding(G, compute="diameter"):
        "periphery" for the set of nodes with eccentricity equal to the diameter,
        "center" for the set of nodes with eccentricity equal to the radius,
        "eccentricities" for the maximum distance from each node to all other nodes in G
+
+    weight : string, optional
+       Edge data key corresponding to the edge weight.
 
     Returns
     -------
@@ -161,7 +164,11 @@ def _extrema_bounding(G, compute="diameter"):
         high = not high
 
         # get distances from/to current node and derive eccentricity
-        dist = dict(nx.single_source_shortest_path_length(G, current))
+        if weight is None:
+            dist = dict(nx.single_source_shortest_path_length(G, current))
+        else:
+            dist = dict(nx.single_source_bellman_ford_path_length(G, current, weight))
+
         if len(dist) != N:
             msg = "Cannot compute metric because graph is not connected."
             raise nx.NetworkXError(msg)
@@ -283,7 +290,7 @@ def _extrema_bounding(G, compute="diameter"):
     return None
 
 
-def eccentricity(G, v=None, sp=None):
+def eccentricity(G, v=None, sp=None, weight=None):
     """Returns the eccentricity of nodes in G.
 
     The eccentricity of a node v is the maximum distance from v to
@@ -299,6 +306,9 @@ def eccentricity(G, v=None, sp=None):
 
     sp : dict of dicts, optional
        All pairs shortest path lengths as a dictionary of dictionaries
+
+    weight : string, optional
+       Edge data key corresponding to the edge weight.
 
     Returns
     -------
@@ -316,7 +326,10 @@ def eccentricity(G, v=None, sp=None):
     e = {}
     for n in G.nbunch_iter(v):
         if sp is None:
-            length = nx.single_source_shortest_path_length(G, n)
+            if weight is None:
+                length = nx.single_source_shortest_path_length(G, n)
+            else:
+                length = dict(nx.single_source_bellman_ford_path_length(G, n, weight))
             L = len(length)
         else:
             try:
@@ -342,7 +355,7 @@ def eccentricity(G, v=None, sp=None):
         return e
 
 
-def diameter(G, e=None, usebounds=False):
+def diameter(G, e=None, usebounds=False, weight=None):
     """Returns the diameter of the graph G.
 
     The diameter is the maximum eccentricity.
@@ -354,6 +367,9 @@ def diameter(G, e=None, usebounds=False):
 
     e : eccentricity dictionary, optional
       A precomputed dictionary of eccentricities.
+
+    weight : string, optional
+       Edge data key corresponding to the edge weight.
 
     Returns
     -------
@@ -371,7 +387,7 @@ def diameter(G, e=None, usebounds=False):
     return max(e.values())
 
 
-def periphery(G, e=None, usebounds=False):
+def periphery(G, e=None, usebounds=False, weight=None):
     """Returns the periphery of the graph G.
 
     The periphery is the set of nodes with eccentricity equal to the diameter.
@@ -383,6 +399,9 @@ def periphery(G, e=None, usebounds=False):
 
     e : eccentricity dictionary, optional
       A precomputed dictionary of eccentricities.
+
+    weight : string, optional
+       Edge data key corresponding to the edge weight.
 
     Returns
     -------
@@ -403,7 +422,7 @@ def periphery(G, e=None, usebounds=False):
     return p
 
 
-def radius(G, e=None, usebounds=False):
+def radius(G, e=None, usebounds=False, weight=None):
     """Returns the radius of the graph G.
 
     The radius is the minimum eccentricity.
@@ -415,6 +434,9 @@ def radius(G, e=None, usebounds=False):
 
     e : eccentricity dictionary, optional
       A precomputed dictionary of eccentricities.
+
+    weight : string, optional
+       Edge data key corresponding to the edge weight.
 
     Returns
     -------
@@ -428,7 +450,7 @@ def radius(G, e=None, usebounds=False):
     return min(e.values())
 
 
-def center(G, e=None, usebounds=False):
+def center(G, e=None, usebounds=False, weight=None):
     """Returns the center of the graph G.
 
     The center is the set of nodes with eccentricity equal to radius.
@@ -440,6 +462,9 @@ def center(G, e=None, usebounds=False):
 
     e : eccentricity dictionary, optional
       A precomputed dictionary of eccentricities.
+
+    weight : string, optional
+       Edge data key corresponding to the edge weight.
 
     Returns
     -------
