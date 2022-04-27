@@ -94,15 +94,11 @@ def generic_edge_bfs(G, nodes, source=None, orientation=None):
         raise nx.NetworkXError("invalid orientation argument.")
 
     if directed:
-        neighbors = G.successors
-
         def edge_id(edge):
             # remove direction indicator
             return edge[:-1] if orientation is not None else edge
 
     else:
-        neighbors = G.neighbors
-
         def edge_id(edge):
             return (frozenset(edge[:2]),) + edge[2:]
     check_reverse = directed and orientation in ("reverse", "ignore")
