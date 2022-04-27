@@ -1,7 +1,5 @@
 import networkx as nx
 
-# from networkx.utils.decorators import not_implemented_for
-
 __all__ = ["decay_centrality"]
 
 
