@@ -15,6 +15,113 @@ REVERSE = "reverse"
 __all__ = ["edge_bfs"]
 
 
+def generic_edge_bfs(nodes, source=None, orientation=None):
+    """A directed, breadth-first-search of edges in `G`, beginning at `source`.
+
+        Yield the edges of G in a breadth-first-search order continuing until
+        all edges are generated.
+
+        Parameters
+        ----------
+        G : graph
+            A directed/undirected graph/multigraph.
+
+        source : node, list of nodes
+            The node from which the traversal begins. If None, then a source
+            is chosen arbitrarily and repeatedly until all edges from each node in
+            the graph are searched.
+
+        orientation : None | 'original' | 'reverse' | 'ignore' (default: None)
+            For directed graphs and directed multigraphs, edge traversals need not
+            respect the original orientation of the edges.
+            When set to 'reverse' every edge is traversed in the reverse direction.
+            When set to 'ignore', every edge is treated as undirected.
+            When set to 'original', every edge is treated as directed.
+            In all three cases, the yielded edge tuples add a last entry to
+            indicate the direction in which that edge was traversed.
+            If orientation is None, the yielded edge has no direction indicated.
+            The direction is respected, but not reported.
+
+        Yields
+        ------
+        edge : directed edge
+            A directed edge indicating the path taken by the breadth-first-search.
+            For graphs, `edge` is of the form `(u, v)` where `u` and `v`
+            are the tail and head of the edge as determined by the traversal.
+            For multigraphs, `edge` is of the form `(u, v, key)`, where `key` is
+            the key of the edge. When the graph is directed, then `u` and `v`
+            are always in the order of the actual directed edge.
+            If orientation is not None then the edge tuple is extended to include
+            the direction of traversal ('forward' or 'reverse') on that edge.
+     """
+
+    directed = G.is_directed()
+    kwds = {"data": False}
+    if G.is_multigraph() is True:
+        kwds["keys"] = True
+
+    # set up edge lookup
+    if orientation is None:
+
+        def edges_from(node):
+            return iter(G.edges(node, **kwds))
+
+    elif not directed or orientation == "original":
+
+        def edges_from(node):
+            for e in G.edges(node, **kwds):
+                yield e + (FORWARD,)
+
+    elif orientation == "reverse":
+
+        def edges_from(node):
+            for e in G.in_edges(node, **kwds):
+                yield e + (REVERSE,)
+
+    elif orientation == "ignore":
+
+        def edges_from(node):
+            for e in G.edges(node, **kwds):
+                yield e + (FORWARD,)
+            for e in G.in_edges(node, **kwds):
+                yield e + (REVERSE,)
+
+    else:
+        raise nx.NetworkXError("invalid orientation argument.")
+
+    if directed:
+        neighbors = G.successors
+
+        def edge_id(edge):
+            # remove direction indicator
+            return edge[:-1] if orientation is not None else edge
+
+    else:
+        neighbors = G.neighbors
+
+        def edge_id(edge):
+            return (frozenset(edge[:2]),) + edge[2:]
+    check_reverse = directed and orientation in ("reverse", "ignore")
+    # start BFS
+    visited_nodes = {n for n in nodes}
+    visited_edges = set()
+    queue = deque([(n, edges_from(n)) for n in nodes])
+    while queue:
+        parent, children_edges = queue.popleft()
+        for edge in children_edges:
+            if check_reverse and edge[-1] == REVERSE:
+                child = edge[0]
+            else:
+                child = edge[1]
+            if child not in visited_nodes:
+                visited_nodes.add(child)
+                queue.append((child, edges_from(child)))
+            edgeid = edge_id(edge)
+            if edgeid not in visited_edges:
+                visited_edges.add(edgeid)
+                yield edge
+
+
 def edge_bfs(G, source=None, orientation=None):
     """A directed, breadth-first-search of edges in `G`, beginning at `source`.
 
@@ -106,70 +213,4 @@ def edge_bfs(G, source=None, orientation=None):
     if not nodes:
         return
 
-    directed = G.is_directed()
-    kwds = {"data": False}
-    if G.is_multigraph() is True:
-        kwds["keys"] = True
-
-    # set up edge lookup
-    if orientation is None:
-
-        def edges_from(node):
-            return iter(G.edges(node, **kwds))
-
-    elif not directed or orientation == "original":
-
-        def edges_from(node):
-            for e in G.edges(node, **kwds):
-                yield e + (FORWARD,)
-
-    elif orientation == "reverse":
-
-        def edges_from(node):
-            for e in G.in_edges(node, **kwds):
-                yield e + (REVERSE,)
-
-    elif orientation == "ignore":
-
-        def edges_from(node):
-            for e in G.edges(node, **kwds):
-                yield e + (FORWARD,)
-            for e in G.in_edges(node, **kwds):
-                yield e + (REVERSE,)
-
-    else:
-        raise nx.NetworkXError("invalid orientation argument.")
-
-    if directed:
-        neighbors = G.successors
-
-        def edge_id(edge):
-            # remove direction indicator
-            return edge[:-1] if orientation is not None else edge
-
-    else:
-        neighbors = G.neighbors
-
-        def edge_id(edge):
-            return (frozenset(edge[:2]),) + edge[2:]
-
-    check_reverse = directed and orientation in ("reverse", "ignore")
-
-    # start BFS
-    visited_nodes = {n for n in nodes}
-    visited_edges = set()
-    queue = deque([(n, edges_from(n)) for n in nodes])
-    while queue:
-        parent, children_edges = queue.popleft()
-        for edge in children_edges:
-            if check_reverse and edge[-1] == REVERSE:
-                child = edge[0]
-            else:
-                child = edge[1]
-            if child not in visited_nodes:
-                visited_nodes.add(child)
-                queue.append((child, edges_from(child)))
-            edgeid = edge_id(edge)
-            if edgeid not in visited_edges:
-                visited_edges.add(edgeid)
-                yield edge
+    yield from generic_edge_bfs(nodes, source, orientation)
