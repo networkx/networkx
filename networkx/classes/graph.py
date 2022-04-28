@@ -1400,12 +1400,10 @@ class Graph:
 
         Returns
         -------
-        If a single node is requested
-        deg : int
-            Degree of the node
-
-        OR if multiple nodes are requested
-        nd_view : A DegreeView object capable of iterating (node, degree) pairs
+        DegreeView or int
+            If multiple nodes are requested (the default), returns a `DegreeView`
+            mapping nodes to their degree.
+            If a single node is requested, returns the degree of the node as an integer.
 
         Examples
         --------
