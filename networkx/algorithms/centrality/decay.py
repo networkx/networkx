@@ -32,6 +32,20 @@ def decay_centrality(G, u=None, delta=0.5, mode="all", weight=None):
       Return only the value for node u
     delta : decay parameter, optional (default=0.5)
       Use the specified decay parameter. It must be between 0 and 1.
+    mode : string, optional (default='all')
+      Ignored for undirected graphs.
+      Compute the decay centrality for nodes as if graph is undirected if mode
+      is 'all', or the decay centrality for incoming edges path if mode is 'in'
+      or the decay centrality for outgoing edges path if mode is 'out'.
+    weight : string or function, optional (default = None)
+      If None, every edge has weight/distance/cost 1.If a string, use this edge
+      attribute as the edge weight.Any edge attribute not present defaults
+      to 1. If this is a function, the weight of an edge is the value returned
+      by the function. The function must accept exactly three positional
+      arguments:
+      1. the two endpoints of an edge
+      2. the dictionary of edge attributes for that edge.
+      The function must return a number.
     Returns
     -------
     nodes : dictionary
@@ -46,6 +60,7 @@ def decay_centrality(G, u=None, delta=0.5, mode="all", weight=None):
     >>> G = nx.path_graph(4)
     >>> decay_centrality(G, delta=0.5)
     {0: 0.875, 1: 1.25, 2: 1.25, 3: 0.875}
+
     See Also
     --------
     betweenness_centrality, load_centrality, eigenvector_centrality,
