@@ -6,9 +6,10 @@ __all__ = ["decay_centrality"]
 def decay_centrality(G, u=None, delta=0.5, mode="all", weight=None):
     r"""
     Compute the decay centrality for nodes.
-    Decay centrality [1]_ of a node `u` is the decay parameter raised to power sum of shortest distance between `u`
-    and `n-1` reachable nodes. This particular algorithm allows to manipulate the emphasis of reachable nodes with respect to distance
-    between the nodes.
+    Decay centrality [1]_ of a node `u` is the decay parameter raised to power
+    sum of shortest distance between `u`and `n-1` reachable nodes. This
+    particular algorithm allows to manipulate the emphasis of reachable nodes
+    with respect to distance between the nodes.
 
     .. math::
         DC(u) = {\sum_{v=1}^{n - 1}} \delta ^{d(v, u)},
@@ -17,10 +18,11 @@ def decay_centrality(G, u=None, delta=0.5, mode="all", weight=None):
     `delta` is the decay parameter with value between 0 and 1,
     and `n` is the number of nodes that can reach `u`.
 
-    Notice that when `delta` approaches 0, the decay centrality approaches degree and decay centrality becomes
-    propostional to the degree centrality.
+    Notice that when `delta` approaches 0, the decay centrality approaches
+    degree and decay centrality becomes propostional to the degree centrality.
 
-    When `delta` approaches 1, the decay centrality approaches size of component i.e the number of reachable nodes.
+    When `delta` approaches 1, the decay centrality approaches size of
+    component i.e the number of reachable nodes.
 
     Parameters
     ----------
@@ -50,7 +52,8 @@ def decay_centrality(G, u=None, delta=0.5, mode="all", weight=None):
     degree_centrality, incremental_closeness_centrality, closeness_centrality
     References
     ----------
-    .. [1] Bloch, Francis and Jackson, Matthew O. and Tebaldi, Pietro: Centrality Measures in Networks
+    .. [1] Bloch, Francis and Jackson, Matthew O. and Tebaldi, Pietro:
+          Centrality Measures in Networks
           https://doi.org/10.48550/arxiv.1608.05845,
        [2] pg 64 of Jackson, Matthew O.,
           Social and Economic Networks, 2008,
