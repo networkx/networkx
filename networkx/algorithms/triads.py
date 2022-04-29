@@ -3,7 +3,6 @@
 # Copyright 2011 Alex Levenson <alex@isnotinvain.com>
 # Copyright 2011 Diederik van Liere <diederik.vanliere@rotman.utoronto.ca>
 """Functions for analyzing triads of a graph."""
-import pytest
 
 from itertools import combinations, permutations
 from collections import defaultdict

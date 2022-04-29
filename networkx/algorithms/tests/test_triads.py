@@ -6,8 +6,6 @@ import itertools
 from random import sample
 import networkx as nx
 
-TRIAD_NAMES = nx.triads.TRIAD_NAMES
-
 
 def test_triadic_census():
     """Tests the triadic_census function."""
