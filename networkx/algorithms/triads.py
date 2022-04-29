@@ -155,6 +155,12 @@ def triadic_census(G, nodelist=None):
     This algorithm has complexity $O(m)$ where $m$ is the number of edges in
     the graph.
 
+    Raises
+    ------
+    ValueError
+        If `nodelist` contains duplicate nodes or nodes not in `G`.
+        If you want to ignore this you can preprocess with `set(nodelist) & G.nodes`
+
     See also
     --------
     triad_graph
@@ -167,17 +173,17 @@ def triadic_census(G, nodelist=None):
         http://vlado.fmf.uni-lj.si/pub/networks/doc/triads/triads.pdf
 
     """
-    # ignore nodelist duplicates and nodes not in G
-    # TODO:?? raise error if nodelist not unique or nodes not in G
-    nodelist = list(G.nbunch_iter(nodelist))
-    nodeset = set(nodelist)
-    N = len(G)
-    Nnot = N - len(nodelist)  # can signal special counting for subset of nodes
+    nodeset = set(G.nbunch_iter(nodelist))
+    if nodelist is not None and len(nodelist) != len(nodeset):
+        raise ValueError("nodelist include duplicate nodes or nodes not in G")
 
-    # create an ordering of nodes with nodelist nodes first
-    m = {n: i for i, n in enumerate(nodelist)}
+    N = len(G)
+    Nnot = N - len(nodeset)  # can signal special counting for subset of nodes
+
+    # create an ordering of nodes with nodeset nodes first
+    m = {n: i for i, n in enumerate(nodeset)}
     if Nnot:
-        # add non-nodelist nodes later in the ordering
+        # add non-nodeset nodes later in the ordering
         not_nodeset = G.nodes - nodeset
         m.update((n, i + N) for i, n in enumerate(not_nodeset))
 
@@ -189,7 +195,7 @@ def triadic_census(G, nodelist=None):
 
     if Nnot:
         sgl_nbrs = {n: G.pred[n].keys() ^ G.succ[n].keys() for n in not_nodeset}
-        # find number of edges not incident to nodes in nodelist
+        # find number of edges not incident to nodes in nodeset
         sgl = sum(1 for n in not_nodeset for nbr in sgl_nbrs[n] if nbr not in nodeset)
         sgl_edges_outside = sgl // 2
         dbl = sum(1 for n in not_nodeset for nbr in dbl_nbrs[n] if nbr not in nodeset)
@@ -198,13 +204,12 @@ def triadic_census(G, nodelist=None):
     # Initialize the count for each triad to be zero.
     census = {name: 0 for name in TRIAD_NAMES}
     # Main loop over nodes
-    for v in nodelist:
+    for v in nodeset:
         vnbrs = nbrs[v]
         dbl_vnbrs = dbl_nbrs[v]
         if Nnot:
             # set up counts of edges attached to v.
             sgl_unbrs_bdy = sgl_unbrs_out = dbl_unbrs_bdy = dbl_unbrs_out = 0
-        # TODO:  check for selfloops
         for u in vnbrs:
             if m[u] <= m[v]:
                 continue
@@ -232,17 +237,17 @@ def triadic_census(G, nodelist=None):
                 dbl_unbrs = dbl_nbrs[u]
                 dbl_unbrs_bdy += len(dbl_unbrs & vnbrs - nodeset)
                 dbl_unbrs_out += len(dbl_unbrs - vnbrs - nodeset)
-        # if nodelist is G.nodes, skip this b/c we will find the edge later.
+        # if nodeset == G.nodes, skip this b/c we will find the edge later.
         if Nnot:
-            # Count edges outside nodelist not connected with v (v isolated triads)
+            # Count edges outside nodeset not connected with v (v isolated triads)
             census["012"] += sgl_edges_outside - (sgl_unbrs_out + sgl_unbrs_bdy // 2)
             census["102"] += dbl_edges_outside - (dbl_unbrs_out + dbl_unbrs_bdy // 2)
 
     # calculate null triads: "003"
     # null triads = total number of possible triads - all found triads
     total_triangles = (N * (N - 1) * (N - 2)) // 6
-    triangles_without_nodelist = (Nnot * (Nnot - 1) * (Nnot - 2)) // 6
-    total_census = total_triangles - triangles_without_nodelist
+    triangles_without_nodeset = (Nnot * (Nnot - 1) * (Nnot - 2)) // 6
+    total_census = total_triangles - triangles_without_nodeset
     census["003"] = total_census - sum(census.values())
 
     return census

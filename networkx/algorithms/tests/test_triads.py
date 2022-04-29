@@ -151,6 +151,42 @@ def test_triadic_census_short_path_nodelist():
         assert expected == {typ: cnt for typ, cnt in triad_census.items() if cnt > 0}
 
 
+def test_triadic_census_correct_nodelist_values():
+    G = nx.path_graph(5, create_using=nx.DiGraph)
+    with pytest.raises(ValueError):
+        nx.triadic_census(G, [1, 2, 2, 3])
+    with pytest.raises(ValueError):
+        nx.triadic_census(G, [1, 2, "a", 3])
+
+
+def test_triadic_census_tiny_graphs():
+    tc = nx.triadic_census(nx.empty_graph(0, create_using=nx.DiGraph))
+    assert {} == {typ: cnt for typ, cnt in tc.items() if cnt > 0}
+    tc = nx.triadic_census(nx.empty_graph(1, create_using=nx.DiGraph))
+    assert {} == {typ: cnt for typ, cnt in tc.items() if cnt > 0}
+    tc = nx.triadic_census(nx.empty_graph(2, create_using=nx.DiGraph))
+    assert {} == {typ: cnt for typ, cnt in tc.items() if cnt > 0}
+    tc = nx.triadic_census(nx.DiGraph([(1, 2)]))
+    assert {} == {typ: cnt for typ, cnt in tc.items() if cnt > 0}
+
+
+def test_triadic_census_selfloops():
+    GG = nx.path_graph("abc", create_using=nx.DiGraph)
+    expected = {"021C": 1}
+    for n in GG:
+        G = GG.copy()
+        G.add_edge(n, n)
+        tc = nx.triadic_census(G)
+        assert expected == {typ: cnt for typ, cnt in tc.items() if cnt > 0}
+
+    GG = nx.path_graph("abcde", create_using=nx.DiGraph)
+    tbt = nx.triads_by_type(GG)
+    for n in GG:
+        GG.add_edge(n, n)
+    tc = nx.triadic_census(GG)
+    assert tc == {tt: len(tbt[tt]) for tt in tc}
+
+
 def test_triadic_census_four_path():
     G = nx.path_graph("abcd", create_using=nx.DiGraph)
     expected = {"012": 2, "021C": 2}
