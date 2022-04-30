@@ -814,7 +814,7 @@ def set_edge_attributes(G, values, name=None):
     with same nodes, the edge would take the last attribute value being passed
     for the same edge. If the edge doesn't exist it is simpy ignored. An example
     continuing from the previous case is shown below::
-    
+
         >>> H = nx.path_graph([0, 1, 2])
         >>> attributesH = {(u, v) : attributes for u, v, attributes in list(G.edges(data = True))}
         >>> attributesH
