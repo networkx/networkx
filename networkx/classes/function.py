@@ -809,6 +809,20 @@ def set_edge_attributes(G, values, name=None):
         >>> G[0][1][1]["cost"]
         7
 
+    The Attributes of one Graph can be set for another. It doesn't matter the
+    exact type of Graph. If its Multigraph attributes assigned to a Path Graph
+    with same nodes, the edge would take the last attribute value being passed
+    for the same edge. If the edge doesn't exist it is simpy ignored. An example
+    continuing from the previous case is shown below::
+    
+        >>> H = nx.path_graph([0, 1, 2])
+        >>> attributesH = {(u, v) : attributes for u, v, attributes in list(G.edges(data = True))}
+        >>> attributesH
+        {(0, 1): {'cost': 7}}
+        >>> nx.set_edge_attributes(H, attributesH)
+        >>> H[0][1]["cost"]
+        7
+
     """
     if name is not None:
         # `values` does not contain attribute names
