@@ -1381,6 +1381,19 @@ def to_numpy_array(
            [1., 0., 0.],
            [0., 0., 4.]])
 
+    When `nodelist` argument is used, nodes of `G` which do not appear in the `nodelist`
+    and their edges are not included in the adjacency matrix. Here is an example:
+
+    >>> G = nx.Graph()
+    >>> G.add_edge(3, 1)
+    >>> G.add_edge(2, 0)
+    >>> G.add_edge(2, 1)
+    >>> G.add_edge(3, 0)
+    >>> nx.to_numpy_array(G, nodelist=[1, 2, 3])
+    array([[0., 1., 1.],
+           [1., 0., 0.],
+           [1., 0., 0.]])
+
     This function can also be used to create adjacency matrices for multiple
     edge attributes with structured dtypes:
 
@@ -1401,6 +1414,20 @@ def to_numpy_array(
            [ 0.,  5.,  0., -4.],
            [ 0.,  0., -4.,  0.]])
 
+    As stated above, the argument "nonedge" is useful especially when there are
+    actually edges with weight 0 in the graph. Setting a nonedge value different than 0,
+    makes it much clearer to differentiate such 0-weighted edges and actual nonedge values.
+
+    >>> G = nx.Graph()
+    >>> G.add_edge(3, 1, weight=2)
+    >>> G.add_edge(2, 0, weight=0)
+    >>> G.add_edge(2, 1, weight=0)
+    >>> G.add_edge(3, 0, weight=1)
+    >>> nx.to_numpy_array(G, nonedge=-1.)
+    array([[-1.,  2., -1.,  1.],
+           [ 2., -1.,  0., -1.],
+           [-1.,  0., -1.,  0.],
+           [ 1., -1.,  0., -1.]])
     """
     import numpy as np
 

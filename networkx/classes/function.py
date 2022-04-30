@@ -385,9 +385,11 @@ def induced_subgraph(G, nbunch):
     Examples
     --------
     >>> G = nx.path_graph(4)  # or DiGraph, MultiGraph, MultiDiGraph, etc
-    >>> H = G.subgraph([0, 1, 2])
+    >>> H = nx.induced_subgraph(G, [0, 1, 3])
     >>> list(H.edges)
-    [(0, 1), (1, 2)]
+    [(0, 1)]
+    >>> list(H.nodes)
+    [0, 1, 3]
     """
     induced_nodes = nx.filters.show_nodes(G.nbunch_iter(nbunch))
     return nx.graphviews.subgraph_view(G, induced_nodes)

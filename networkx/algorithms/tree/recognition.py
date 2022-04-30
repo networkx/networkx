@@ -96,6 +96,16 @@ def is_arborescence(G):
     b : bool
         A boolean that is True if `G` is an arborescence.
 
+    Examples
+    --------
+    >>> G = nx.DiGraph([(0, 1), (0, 2), (2, 3), (3, 4)])
+    >>> nx.is_arborescence(G)
+    True
+    >>> G.remove_edge(0, 1)
+    >>> G.add_edge(1, 2)  # maximum in-degree is 2
+    >>> nx.is_arborescence(G)
+    False
+
     Notes
     -----
     In another convention, an arborescence is known as a *tree*.
@@ -124,6 +134,16 @@ def is_branching(G):
     -------
     b : bool
         A boolean that is True if `G` is a branching.
+
+    Examples
+    --------
+    >>> G = nx.DiGraph([(0, 1), (1, 2), (2, 3), (3, 4)])
+    >>> nx.is_branching(G)
+    True
+    >>> G.remove_edge(2, 3)
+    >>> G.add_edge(3, 1)  # maximum in-degree is 2
+    >>> nx.is_branching(G)
+    False
 
     Notes
     -----
@@ -156,6 +176,21 @@ def is_forest(G):
     -------
     b : bool
         A boolean that is True if `G` is a forest.
+
+    Raises
+    ------
+    NetworkXPointlessConcept
+        If `G` is empty.
+
+    Examples
+    --------
+    >>> G = nx.Graph()
+    >>> G.add_edges_from([(1, 2), (1, 3), (2, 4), (2, 5)])
+    >>> nx.is_forest(G)
+    True
+    >>> G.add_edge(4, 1)
+    >>> nx.is_forest(G)
+    False
 
     Notes
     -----
@@ -197,6 +232,21 @@ def is_tree(G):
     -------
     b : bool
         A boolean that is True if `G` is a tree.
+
+    Raises
+    ------
+    NetworkXPointlessConcept
+        If `G` is empty.
+
+    Examples
+    --------
+    >>> G = nx.Graph()
+    >>> G.add_edges_from([(1, 2), (1, 3), (2, 4), (2, 5)])
+    >>> nx.is_tree(G)  # n-1 edges
+    True
+    >>> G.add_edge(3, 4)
+    >>> nx.is_tree(G)  # n edges
+    False
 
     Notes
     -----
