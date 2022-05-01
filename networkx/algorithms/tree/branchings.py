@@ -75,6 +75,7 @@ def _max_weight(weight):
 def branching_weight(G, attr="weight", default=1):
     """
     Returns the total weight of a branching.
+
     """
     return sum(edge[2].get(attr, default) for edge in G.edges(data=True))
 
