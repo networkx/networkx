@@ -561,7 +561,7 @@ def lollipop_graph(m, n, create_using=None):
         G.add_edges_from(pairwise(n_nodes))
 
     if len(G) != M + N:
-        raise NetworkXError("Nodes must be distinct in containers m1 and m2")
+        raise NetworkXError("Nodes must be distinct in containers m and n")
 
     # connect ball to stick
     if M > 0 and N > 0:
