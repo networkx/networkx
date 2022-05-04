@@ -68,6 +68,12 @@ class TestGrid2DGraph:
         H = nx.grid_2d_graph(4, 2, periodic=True, create_using=nx.MultiGraph())
         assert list(G.edges()) == list(H.edges())
 
+    def test_exceptions(self):
+        pytest.raises(nx.NetworkXError, nx.grid_2d_graph, -3, 2)
+        pytest.raises(nx.NetworkXError, nx.grid_2d_graph, 3, -2)
+        pytest.raises(TypeError, nx.grid_2d_graph, 3.3, 2)
+        pytest.raises(TypeError, nx.grid_2d_graph, 3, 2.2)
+
     def test_node_input(self):
         G = nx.grid_2d_graph(4, 2, periodic=True)
         H = nx.grid_2d_graph(range(4), range(2), periodic=True)

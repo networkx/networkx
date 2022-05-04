@@ -222,7 +222,6 @@ def binomial_tree(n, create_using=None):
     return G
 
 
-@nodes_or_number(0)
 def complete_graph(n, create_using=None):
     """Return the complete graph `K_n` with n nodes.
 
@@ -252,13 +251,12 @@ def complete_graph(n, create_using=None):
     True
 
     """
-    n_name, nodes = n
-    G = empty_graph(n_name, create_using)
-    if len(nodes) > 1:
+    G = empty_graph(n, create_using)
+    if len(G) > 1:
         if G.is_directed():
-            edges = itertools.permutations(nodes, 2)
+            edges = itertools.permutations(G, 2)
         else:
-            edges = itertools.combinations(nodes, 2)
+            edges = itertools.combinations(G, 2)
         G.add_edges_from(edges)
     return G
 
@@ -350,7 +348,6 @@ def circulant_graph(n, offsets, create_using=None):
     return G
 
 
-@nodes_or_number(0)
 def cycle_graph(n, create_using=None):
     """Returns the cycle graph $C_n$ of cyclically connected nodes.
 
@@ -369,10 +366,8 @@ def cycle_graph(n, create_using=None):
     If create_using is directed, the direction is in increasing order.
 
     """
-    n_orig, nodes = n
-    G = empty_graph(nodes, create_using)
-    G.add_edges_from(pairwise(nodes))
-    G.add_edge(nodes[-1], nodes[0])
+    G = empty_graph(n, create_using)
+    G.add_edges_from(pairwise(G, cyclic=True))
     return G
 
 
@@ -579,7 +574,6 @@ def null_graph(create_using=None):
     return G
 
 
-@nodes_or_number(0)
 def path_graph(n, create_using=None):
     """Returns the Path graph `P_n` of linearly connected nodes.
 
@@ -592,9 +586,8 @@ def path_graph(n, create_using=None):
        Graph type to create. If graph instance, then cleared before populated.
 
     """
-    n_name, nodes = n
-    G = empty_graph(nodes, create_using)
-    G.add_edges_from(pairwise(nodes))
+    G = empty_graph(n, create_using)
+    G.add_edges_from(pairwise(G))
     return G
 
 
