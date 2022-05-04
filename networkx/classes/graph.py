@@ -8,6 +8,7 @@ Self-loops are allowed but multiple edges are not (see MultiGraph).
 For directed graphs see DiGraph and MultiDiGraph.
 """
 from copy import deepcopy
+from functools import cached_property
 
 import networkx as nx
 from networkx.classes.coreviews import AdjacencyView
@@ -658,7 +659,7 @@ class Graph:
             except KeyError:
                 pass
 
-    @property
+    @cached_property
     def nodes(self):
         """A NodeView of the Graph as G.nodes or G.nodes().
 
@@ -749,12 +750,7 @@ class Graph:
             {0: 1, 1: 2, 2: 3}
 
         """
-        nodes = NodeView(self)
-        # Lazy View creation: overload the (class) property on the instance
-        # Then future G.nodes use the existing View
-        # setattr doesn't work because attribute already exists
-        self.__dict__["nodes"] = nodes
-        return nodes
+        return NodeView(self)
 
     def number_of_nodes(self):
         """Returns the number of nodes in the graph.
