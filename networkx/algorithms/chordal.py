@@ -73,88 +73,90 @@ def is_chordal(G):
     Notes
     -----
     Based on the algorithms in [1]_ algorithm 3.
-    Based on the following caracterization: A graph is chordal if the LexBFS gives a lexicographical ordering 
+    Based on the following caracterization: A graph is chordal if the LexBFS gives a lexicographical ordering
 
-    Checking if the ordering is lexicographical with the following algorithm: 
+    Checking if the ordering is lexicographical with the following algorithm:
     Iterate the following from P={V}.
-    P = {P1, P2, . . . , Pk}, and a pivot p from P1, append p to the order. 
+    P = {P1, P2, . . . , Pk}, and a pivot p from P1, append p to the order.
     We use N(p) to refine P by creating the following new partition
-    {P1 ∩ N(p), P1-N(p), P2 ∩ N(p), P2-N(p), . . . , Pi ∩ N(p), Pi-N(p), . . . , Pk ∩ N(p), Pk-N(p)}, 
-    while maintaining the order of the partition classes and leav the empy ones out. 
+    {P1 ∩ N(p), P1-N(p), P2 ∩ N(p), P2-N(p), . . . , Pi ∩ N(p), Pi-N(p), . . . , Pk ∩ N(p), Pk-N(p)},
+    while maintaining the order of the partition classes and leav the empy ones out.
     The algorithm stops when all the partition classes are either empty.
 
     References
     ----------
-    .. [1] Michel Habib, Ross McConnell, Christophe Paul, and Laurent Viennot. 
-    Lex-bfs and partition refinement, with applications to transitive orientation, 
+    .. [1] Michel Habib, Ross McConnell, Christophe Paul, and Laurent Viennot.
+    Lex-bfs and partition refinement, with applications to transitive orientation,
     interval graph recognition and consecutive ones testing.
     Theoretical Computer Science, 234(1):59–84, 2000.
     """
     if nx.number_of_selfloops(G) > 0:
         raise nx.NetworkXError("Input graph is not chordal.")
 
-    order=_LexBFS(G)
-    dic_Np={n:set() for n in G.nodes}
-    dic_last={n:None for n in G.nodes}
-    for i,j in G.edges:
-        if order[i]<order[j]:
+    order = _LexBFS(G)
+    dic_Np = {n: set() for n in G.nodes}
+    dic_last = {n: None for n in G.nodes}
+    for i, j in G.edges:
+        if order[i] < order[j]:
             dic_Np[i].add(j)
-            if dic_last[i]==None:
-                dic_last[i]=j
-            elif order[j]<order[dic_last[i]]:
-                dic_last[i]=j
-        else: 
+            if dic_last[i] == None:
+                dic_last[i] = j
+            elif order[j] < order[dic_last[i]]:
+                dic_last[i] = j
+        else:
             dic_Np[j].add(i)
-            if dic_last[j]==None:
-                dic_last[j]=i
-            elif order[i]<order[dic_last[j]]:
-                dic_last[j]=i
+            if dic_last[j] == None:
+                dic_last[j] = i
+            elif order[i] < order[dic_last[j]]:
+                dic_last[j] = i
     for n in sorted(order, key=order.get):
-        p=dic_last[n]
-        if not p==None:
-            if not (dic_Np[n]-{p}).issubset(dic_Np[p]):
+        p = dic_last[n]
+        if not p == None:
+            if not (dic_Np[n] - {p}).issubset(dic_Np[p]):
                 return False
     return True
+
 
 def _LexBFS(G):
     """LexicographicalBFS based on [1]_ algorithm 2.
 
-        Returns a dictionary which assign an int for every nodes. This represent an ordering
-        This order is a lexicographical ordering for chordal graphs
+    Returns a dictionary which assign an int for every nodes. This represent an ordering
+    This order is a lexicographical ordering for chordal graphs
 
-        Parameters
-        ----------
-        G : graph
-            A NetworkX graph
+    Parameters
+    ----------
+    G : graph
+        A NetworkX graph
 
-        Returns
-        -------
-        dic: a dictionary which assign an int for every nodes
-            The nodes ordered by these numbers represent an ordering
+    Returns
+    -------
+    dic: a dictionary which assign an int for every nodes
+        The nodes ordered by these numbers represent an ordering
 
-        References
-        ----------
-        .. [1] Michel Habib, Ross McConnell, Christophe Paul, Laurent Viennot 
-        Lex-BFS and partition refinement, with applications
-        to transitive orientation, interval graph recognition and consecutive ones testing
-        Theoretical Computer Science 234 (2000) 59–84
+    References
+    ----------
+    .. [1] Michel Habib, Ross McConnell, Christophe Paul, Laurent Viennot
+    Lex-BFS and partition refinement, with applications
+    to transitive orientation, interval graph recognition and consecutive ones testing
+    Theoretical Computer Science 234 (2000) 59–84
     """
-    nodes=set(G.nodes)
-    i=len(nodes)
-    ls_sets=[nodes]
-    ls_sets=list(filter(lambda x: x!=set(), ls_sets))
-    order={n:None for n in nodes}
-    while len(ls_sets)>0:
-        p=ls_sets[0].pop()
-        i-=1
-        order[p]=i
-        N=set(G.neighbors(p))
-        ls_splited=[]
+    nodes = set(G.nodes)
+    i = len(nodes)
+    ls_sets = [nodes]
+    ls_sets = list(filter(lambda x: x != set(), ls_sets))
+    order = {n: None for n in nodes}
+    while len(ls_sets) > 0:
+        p = ls_sets[0].pop()
+        i -= 1
+        order[p] = i
+        N = set(G.neighbors(p))
+        ls_splited = []
         for S in ls_sets:
             ls_splited.append(S.intersection(N))
-            ls_splited.append(S-N)
-        ls_sets=list(filter(lambda x: x!=set(), ls_splited))
+            ls_splited.append(S - N)
+        ls_sets = list(filter(lambda x: x != set(), ls_splited))
     return order
+
 
 def chordal_maximum_independent_set(G):
     """Gives a set of maximum independent nodes in a chordal graph.
@@ -203,9 +205,9 @@ def chordal_maximum_independent_set(G):
     """
     if not is_chordal(G):
         raise nx.NetworkXError("Input graph is not chordal.")
-    order=_LexBFS(G)
-    independent=set()
-    Neighbor=set()
+    order = _LexBFS(G)
+    independent = set()
+    Neighbor = set()
     for n in sorted(order, key=order.get):
         if not n in Neighbor:
             for v in G.neighbors(n):
