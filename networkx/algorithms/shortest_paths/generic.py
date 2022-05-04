@@ -543,7 +543,7 @@ def _build_paths_from_predecessors(sources, target, pred):
     """
     if target not in pred:
         raise nx.NetworkXNoPath(
-            f"Target {target} cannot be reached" f"from given sources"
+            f"Target {target} cannot be reached from given sources"
         )
 
     seen = {target}
