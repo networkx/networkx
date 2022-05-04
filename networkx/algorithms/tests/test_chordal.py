@@ -66,7 +66,7 @@ class TestMCS:
             nx.is_chordal(self.self_loop_G)
 
     def test_chordal_maximum_independent_set(self):
-        assert len(nx.chordal_maximum_independent_set(self.chordal_G)) == 3
+        assert len(nx.chordal_maximum_independent_set(self.chordal_G)) == 4
         with pytest.raises(nx.NetworkXError, match="Input graph is not chordal"):
             nx.chordal_maximum_independent_set(self.non_chordal_G)
         with pytest.raises(nx.NetworkXError, match="Input graph is not chordal"):
