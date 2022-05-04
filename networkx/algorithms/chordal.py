@@ -193,7 +193,7 @@ def chordal_maximum_independent_set(G):
     ... ]
     >>> G = nx.Graph(e)
     >>> nx.chordal_maximum_independent_set(G)
-    {2,6}
+    {2, 6}
 
     Notes
     -----
