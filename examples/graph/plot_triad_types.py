@@ -28,7 +28,7 @@ triads = {
     "120U": [(1, 2), (2, 1), (1, 3), (2, 3)],
     "120C": [(1, 2), (2, 1), (1, 3), (3, 2)],
     "210": [(1, 2), (2, 1), (1, 3), (3, 2), (2, 3)],
-    "300": [(1, 2), (2, 1), (2, 3), (3, 2), (1, 3), (3, 1)]
+    "300": [(1, 2), (2, 1), (2, 3), (3, 2), (1, 3), (3, 1)],
 }
 
 for (title, triad), ax in zip(triads.items(), axes.flatten()):
@@ -47,8 +47,8 @@ for (title, triad), ax in zip(triads.items(), axes.flatten()):
         pos=nx.planar_layout(G),
         font_weight="bold",
     )
-    ax.set_title(title, fontsize = 15, fontweight = "bold")
-    ax.set_xlim((val*1.3 for val in ax.get_xlim()))
-    ax.set_ylim((val*1.3 for val in ax.get_ylim()))   
+    ax.set_title(title, fontsize=15, fontweight="bold")
+    ax.set_xlim((val * 1.3 for val in ax.get_xlim()))
+    ax.set_ylim((val * 1.3 for val in ax.get_ylim()))
 fig.tight_layout()
 plt.show()
