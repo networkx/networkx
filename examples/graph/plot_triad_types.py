@@ -48,7 +48,7 @@ for (title, triad), ax in zip(triads.items(), axes.flatten()):
         font_weight="bold",
     )
     ax.set_title(title, fontsize=15, fontweight="bold")
-    ax.set_xlim((val * 1.3 for val in ax.get_xlim()))
-    ax.set_ylim((val * 1.3 for val in ax.get_ylim()))
+    ax.set_xlim(val * 1.3 for val in ax.get_xlim())
+    ax.set_ylim(val * 1.3 for val in ax.get_ylim())
 fig.tight_layout()
 plt.show()
