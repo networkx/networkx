@@ -1205,7 +1205,7 @@ class DiGraph(Graph):
         Parameters
         ----------
         copy : bool optional (default=True)
-            If True, return a new DiGraph holding the reversed edges.
+            If True, a new DiGraph holding reversed edges is returned.
             If False, the reverse graph is created using a view of
             the original graph.
         """
