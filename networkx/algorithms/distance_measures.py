@@ -476,6 +476,12 @@ def center(G, e=None, usebounds=False):
     c : list
        List of nodes in center
 
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (2, 3), (3, 4), (2,5), (3,6), (5, 6),(5,7), (7, 8), (6, 9)])
+    >>> list(nx.center(G))
+    [2, 5, 6]
+
     See Also
     --------
     barycenter
