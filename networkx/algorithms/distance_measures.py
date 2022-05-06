@@ -443,6 +443,13 @@ def radius(G, e=None, usebounds=False):
     -------
     r : integer
        Radius of graph
+
+    Examples
+    --------
+    >>> G = nx.Graph([(0, 1), (1, 2), (1, 3), (3, 4), (5, 4), (5, 3), (4, 1), (3, 6)])
+    >>> nx.radius(G)
+    2
+
     """
     if usebounds is True and e is None and not G.is_directed():
         return _extrema_bounding(G, compute="radius")
