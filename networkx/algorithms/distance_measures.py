@@ -408,9 +408,9 @@ def periphery(G, e=None, usebounds=False):
 
     Examples
     --------
-    >>> >>> G = nx.Graph([(0, 1), (1, 2), (1, 5), (5, 4), (2, 4), (2, 3), (4, 3), (3, 6)])
-    >>> nx.diameter(G)
-    4
+    >>> G = nx.Graph([(1, 2), (2, 3), (2, 4), (3,5), (3, 6)])
+    >>> nx.periphery(G)
+    [1, 4, 5, 6]
 
     See Also
     --------
