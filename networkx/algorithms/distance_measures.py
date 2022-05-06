@@ -371,6 +371,12 @@ def diameter(G, e=None, usebounds=False):
     d : integer
        Diameter of graph
 
+    Examples
+    --------
+    >>> >>> G = nx.Graph([(0, 1), (1, 2), (1, 5), (5, 4), (2, 4), (2, 3), (4, 3), (3, 6)])
+    >>> nx.diameter(G)
+    4
+
     See Also
     --------
     eccentricity
