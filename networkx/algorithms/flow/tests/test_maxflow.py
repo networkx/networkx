@@ -10,17 +10,17 @@ from networkx.algorithms.flow import preflow_push
 from networkx.algorithms.flow import shortest_augmenting_path
 from networkx.algorithms.flow import dinitz
 
-flow_funcs = [
+flow_funcs = {
     boykov_kolmogorov,
     dinitz,
     edmonds_karp,
     preflow_push,
     shortest_augmenting_path,
-]
-max_min_funcs = [nx.maximum_flow, nx.minimum_cut]
-flow_value_funcs = [nx.maximum_flow_value, nx.minimum_cut_value]
-interface_funcs = max_min_funcs + flow_value_funcs
-all_funcs = sum([flow_funcs, interface_funcs], [])
+}
+max_min_funcs = {nx.maximum_flow, nx.minimum_cut}
+flow_value_funcs = {nx.maximum_flow_value, nx.minimum_cut_value}
+interface_funcs = max_min_funcs & flow_value_funcs
+all_funcs = flow_funcs & interface_funcs
 
 
 def compute_cutset(G, partition):
