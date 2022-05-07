@@ -49,16 +49,6 @@ class TestGeneratorsBipartite:
             complete_bipartite_graph(7, 3, create_using=nx.DiGraph)
         with pytest.raises(nx.NetworkXError):
             complete_bipartite_graph(7, 3, create_using=nx.MultiDiGraph)
-        pytest.raises(
-            nx.NetworkXError, complete_bipartite_graph, 7, 3, create_using=nx.DiGraph
-        )
-        pytest.raises(
-            nx.NetworkXError,
-            complete_bipartite_graph,
-            7,
-            3,
-            create_using=nx.MultiDiGraph,
-        )
 
         mG = complete_bipartite_graph(7, 3, create_using=nx.MultiGraph)
         assert mG.is_multigraph()
