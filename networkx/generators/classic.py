@@ -222,6 +222,7 @@ def binomial_tree(n, create_using=None):
     return G
 
 
+@nodes_or_number(0)
 def complete_graph(n, create_using=None):
     """Return the complete graph `K_n` with n nodes.
 
@@ -251,12 +252,13 @@ def complete_graph(n, create_using=None):
     True
 
     """
-    G = empty_graph(n, create_using)
+    _, nodes = n
+    G = empty_graph(nodes, create_using)
     if len(G) > 1:
         if G.is_directed():
-            edges = itertools.permutations(G, 2)
+            edges = itertools.permutations(nodes, 2)
         else:
-            edges = itertools.combinations(G, 2)
+            edges = itertools.combinations(nodes, 2)
         G.add_edges_from(edges)
     return G
 
@@ -348,6 +350,7 @@ def circulant_graph(n, offsets, create_using=None):
     return G
 
 
+@nodes_or_number(0)
 def cycle_graph(n, create_using=None):
     """Returns the cycle graph $C_n$ of cyclically connected nodes.
 
@@ -366,8 +369,9 @@ def cycle_graph(n, create_using=None):
     If create_using is directed, the direction is in increasing order.
 
     """
-    G = empty_graph(n, create_using)
-    G.add_edges_from(pairwise(G, cyclic=True))
+    _, nodes = n
+    G = empty_graph(nodes, create_using)
+    G.add_edges_from(pairwise(nodes, cyclic=True))
     return G
 
 
@@ -486,7 +490,7 @@ def empty_graph(n=0, create_using=None, default=Graph):
         # try create_using as constructor
         G = create_using()
 
-    n_name, nodes = n
+    _, nodes = n
     G.add_nodes_from(nodes)
     return G
 
@@ -574,6 +578,7 @@ def null_graph(create_using=None):
     return G
 
 
+@nodes_or_number(0)
 def path_graph(n, create_using=None):
     """Returns the Path graph `P_n` of linearly connected nodes.
 
@@ -586,11 +591,13 @@ def path_graph(n, create_using=None):
        Graph type to create. If graph instance, then cleared before populated.
 
     """
-    G = empty_graph(n, create_using)
-    G.add_edges_from(pairwise(G))
+    _, nodes = n
+    G = empty_graph(nodes, create_using)
+    G.add_edges_from(pairwise(nodes))
     return G
 
 
+@nodes_or_number(0)
 def star_graph(n, create_using=None):
     """Return the star graph
 
@@ -609,16 +616,17 @@ def star_graph(n, create_using=None):
     The graph has n+1 nodes for integer n.
     So star_graph(3) is the same as star_graph(range(4)).
     """
-    G = empty_graph(n, create_using)
+    n, nodes = n
+    if isinstance(n, numbers.Integral):
+        nodes.append(n)  # there should be n+1 nodes
+    G = empty_graph(nodes, create_using)
     if G.is_directed():
         raise NetworkXError("Directed Graph not supported")
 
-    if isinstance(n, numbers.Integral):
-        G.add_node(n)  # there should be n+1 nodes
     if len(G) < 2:
         return G
 
-    hub, *spokes = G.nodes
+    hub, *spokes = nodes
     G.add_edges_from((hub, node) for node in spokes)
     return G
 
@@ -662,6 +670,7 @@ def turan_graph(n, r):
     return G
 
 
+@nodes_or_number(0)
 def wheel_graph(n, create_using=None):
     """Return the wheel graph
 
@@ -677,14 +686,15 @@ def wheel_graph(n, create_using=None):
 
     Node labels are the integers 0 to n - 1.
     """
-    G = empty_graph(n, create_using)
+    _, nodes = n
+    G = empty_graph(nodes, create_using)
     if G.is_directed():
         raise NetworkXError("Directed Graph not supported")
 
-    if len(G) == 0:
+    if len(nodes) < 2:
         return G
 
-    hub, *rim = G.nodes
+    hub, *rim = nodes
     G.add_edges_from((hub, node) for node in rim)
     if len(rim) > 1:
         G.add_edges_from(pairwise(rim, cyclic=True))

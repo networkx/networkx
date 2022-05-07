@@ -159,6 +159,15 @@ class TestGeneratorClassic:
         assert nodes_equal(g.nodes(), ["a", "b", "c"])
         assert g.size() == 3
 
+        # creates a self-loop... should it? <backward compatible says yes>
+        g = nx.complete_graph("abcb")
+        assert nodes_equal(g.nodes(), ["a", "b", "c"])
+        assert g.size() == 4
+
+        g = nx.complete_graph("abcb", create_using=nx.MultiGraph)
+        assert nodes_equal(g.nodes(), ["a", "b", "c"])
+        assert g.size() == 6
+
     def test_complete_digraph(self):
         # complete_graph(m) is a connected graph with
         # m nodes and  m*(m+1)/2 edges
@@ -209,10 +218,16 @@ class TestGeneratorClassic:
         G = nx.cycle_graph("abc")
         assert len(G) == 3
         assert G.size() == 3
+        G = nx.cycle_graph("abcb")
+        assert len(G) == 3
+        assert G.size() == 2
         g = nx.cycle_graph("abc", nx.DiGraph)
         assert len(g) == 3
         assert g.size() == 3
         assert g.is_directed()
+        g = nx.cycle_graph("abcb", nx.DiGraph)
+        assert len(g) == 3
+        assert g.size() == 4
 
     def test_dorogovtsev_goltsev_mendes_graph(self):
         G = nx.dorogovtsev_goltsev_mendes_graph(0)
@@ -396,10 +411,19 @@ class TestGeneratorClassic:
         G = nx.path_graph("abc")
         assert len(G) == 3
         assert G.size() == 2
+        G = nx.path_graph("abcb")
+        assert len(G) == 3
+        assert G.size() == 2
         g = nx.path_graph("abc", nx.DiGraph)
         assert len(g) == 3
         assert g.size() == 2
         assert g.is_directed()
+        g = nx.path_graph("abcb", nx.DiGraph)
+        assert len(g) == 3
+        assert g.size() == 3
+
+        G = nx.path_graph((1, 2, 3, 2, 4))
+        assert G.has_edge(2, 4)
 
     def test_star_graph(self):
         assert is_isomorphic(nx.star_graph(""), nx.empty_graph(0))
@@ -416,6 +440,17 @@ class TestGeneratorClassic:
 
         ms = nx.star_graph(10, create_using=nx.MultiGraph)
         assert edges_equal(ms.edges(), s.edges())
+
+        G = nx.star_graph("abc")
+        assert len(G) == 3
+        assert G.size() == 2
+
+        G = nx.star_graph("abcb")
+        assert len(G) == 3
+        assert G.size() == 2
+        G = nx.star_graph("abcb", create_using=nx.MultiGraph)
+        assert len(G) == 3
+        assert G.size() == 3
 
         G = nx.star_graph("abcdefg")
         assert len(G) == 7
@@ -459,6 +494,13 @@ class TestGeneratorClassic:
         G = nx.wheel_graph("abc")
         assert len(G) == 3
         assert G.size() == 3
+
+        G = nx.wheel_graph("abcb")
+        assert len(G) == 3
+        assert G.size() == 4
+        G = nx.wheel_graph("abcb", nx.MultiGraph)
+        assert len(G) == 3
+        assert G.size() == 6
 
         # test non-int integers
         np = pytest.importorskip("numpy")
