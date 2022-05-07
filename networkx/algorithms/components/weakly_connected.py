@@ -83,14 +83,6 @@ def number_weakly_connected_components(G):
     NetworkXNotImplemented
         If G is undirected.
 
-    Examples
-    --------
-    >>> import networkx as nx
-    >>> G = nx.DiGraph()
-    >>> G.add_edges_from([(0, 1), (2, 1), (3, 4)])
-    >>> nx.number_weakly_connected_components(G)
-    2
-
     See Also
     --------
     weakly_connected_components
@@ -130,18 +122,6 @@ def is_weakly_connected(G):
     ------
     NetworkXNotImplemented
         If G is undirected.
-
-    Examples
-    --------
-    >>> import networkx as nx
-    >>> G = nx.DiGraph()
-    >>> G.add_nodes_from([0, 1, 2, 3])
-    >>> G.add_edges_from([(0, 1), (2, 1)])
-    >>> nx.is_weakly_connected(G)  # node 3 is not connected to the graph
-    False
-    >>> G.add_edge(2, 3)
-    >>> nx.is_weakly_connected(G)
-    True
 
     See Also
     --------
