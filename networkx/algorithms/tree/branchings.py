@@ -77,6 +77,7 @@ def branching_weight(G, attr="weight", default=1):
     Returns the total weight of a branching.
 
     You must access this function through the networkx.algorithms.tree module.
+
     Parameters
     ----------
     G : DiGraph
