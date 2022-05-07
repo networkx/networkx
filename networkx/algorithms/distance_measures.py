@@ -407,7 +407,7 @@ def periphery(G, e=None, usebounds=False):
 
     Examples
     --------
-    >>>G = nx.Graph([(1, 2), (1, 3), (1, 4), (3, 4), (3, 5), (4, 5)])
+    >>> G = nx.Graph([(1, 2), (1, 3), (1, 4), (3, 4), (3, 5), (4, 5)])
     >>> nx.periphery(G)
     [2, 5]
 
