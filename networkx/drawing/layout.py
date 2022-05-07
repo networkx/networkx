@@ -983,6 +983,7 @@ def spiral_layout(G, scale=1, center=None, dim=2, resolution=0.35, equidistant=F
     --------
     >>> G = nx.path_graph(4)
     >>> pos = nx.spiral_layout(G)
+    >>> nx.draw(G, pos=pos)
 
     Notes
     -----

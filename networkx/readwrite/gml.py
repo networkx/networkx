@@ -591,7 +591,7 @@ def literal_stringizer(value):
                 stringize(item)
             buf.write("}")
         else:
-            msg = "{value!r} cannot be converted into a Python literal"
+            msg = f"{value!r} cannot be converted into a Python literal"
             raise ValueError(msg)
 
     buf = StringIO()

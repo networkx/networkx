@@ -306,7 +306,7 @@ def prim_mst_edges(G, minimum, weight="weight", keys=True, data=True, ignore_nan
                     msg = f"NaN found as an edge weight. Edge {(u, v, d)}"
                     raise ValueError(msg)
                 push(frontier, (wt, next(c), u, v, d))
-        while frontier:
+        while nodes and frontier:
             if is_multigraph:
                 W, _, u, v, k, d = pop(frontier)
             else:
