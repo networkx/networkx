@@ -4,8 +4,10 @@ Triads
 ======
 According to the paper by Snijders, T. (2012). “Transitivity and triads.” 
 University of Oxford, there are 16 Triad types possible. This plot creates 
-a visualisation of the 16 Triad Types that can be identified within directed networks.
-Triadic relationships are especially useful when analysing Social Networks.
+a visualization of the 16 Triad Types that can be identified within directed networks.
+Triadic relationships are especially useful when analysing Social Networks. The first 
+three digits refers to numbers of mutual, asymmetric and null dyads and the letter gives 
+the Orientation as Up (U), Down (D) , Cycclical (C) and Transitive (T).
 """
 
 import networkx as nx
@@ -47,8 +49,18 @@ for (title, triad), ax in zip(triads.items(), axes.flatten()):
         pos=nx.planar_layout(G),
         font_weight="bold",
     )
-    ax.set_title(title, fontsize=15, fontweight="bold")
-    ax.set_xlim(val * 1.3 for val in ax.get_xlim())
-    ax.set_ylim(val * 1.3 for val in ax.get_ylim())
-fig.tight_layout()
+    # ax.set_title(title, fontsize=15, fontweight="bold")
+    ax.set_xlim((val * 1.3 for val in ax.get_xlim()))
+    ax.set_ylim((val * 1.3 for val in ax.get_ylim()))
+    ax.text(
+        -1.2,
+        0.75,
+        title,
+        color="black",
+        fontweight="bold",
+        fontsize=12,
+        bbox=dict(facecolor="none", edgecolor="blue", pad=3),
+    )
+
+fig.subplots_adjust(left=3, bottom=3, right=4, top=4, wspace=0.5, hspace=0.5)
 plt.show()
