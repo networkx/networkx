@@ -307,13 +307,12 @@ def eccentricity(G, v=None, sp=None):
 
     Examples
     --------
-    >>> G = nx.Graph([(1, 2), (2, 3), (3, 4), (2,5), (3,6), (5, 6),(5,7), (6, 8), (6,9), (8,9)])
+    >>> G = nx.Graph([(1, 2), (1, 3), (1, 4), (3, 4), (3, 5), (4, 5)])
     >>> dict(nx.eccentricity(G))
-    {1: 4, 2: 3, 3: 3, 4: 4, 5: 3, 6: 3, 7: 4, 8: 4, 9: 4}
+    {1: 2, 2: 3, 3: 2, 4: 2, 5: 3}
 
-    >>> G = nx.Graph([(1, 2), (2, 3), (3, 4), (2,5), (3,6), (5, 6),(5,7), (6, 8), (6,9), (8,9)])
-    >>> dict(nx.eccentricity(G, v=[1, 6])) # This returns the eccentrity of node 1 and 6 only
-    {1: 4, 6: 3}
+    >>> dict(nx.eccentricity(G, v=[1, 5]))  # This returns the eccentrity of node 1 & 5
+    {1: 2, 5: 3}
 
     """
     #    if v is None:                # none, use entire graph
@@ -373,9 +372,9 @@ def diameter(G, e=None, usebounds=False):
 
     Examples
     --------
-    >>> G = nx.Graph([(0, 1), (1, 2), (1, 5), (5, 4), (2, 4), (2, 3), (4, 3), (3, 6)])
+    >>> G = nx.Graph([(1, 2), (1, 3), (1, 4), (3, 4), (3, 5), (4, 5)])
     >>> nx.diameter(G)
-    4
+    3
 
     See Also
     --------
@@ -408,9 +407,9 @@ def periphery(G, e=None, usebounds=False):
 
     Examples
     --------
-    >>> G = nx.Graph([(1, 2), (2, 3), (2, 4), (3,5), (3, 6)])
+    >>>G = nx.Graph([(1, 2), (1, 3), (1, 4), (3, 4), (3, 5), (4, 5)])
     >>> nx.periphery(G)
-    [1, 4, 5, 6]
+    [2, 5]
 
     See Also
     --------
@@ -446,7 +445,7 @@ def radius(G, e=None, usebounds=False):
 
     Examples
     --------
-    >>> G = nx.Graph([(0, 1), (1, 2), (1, 3), (3, 4), (5, 4), (5, 3), (4, 1), (3, 6)])
+    >>> G = nx.Graph([(1, 2), (1, 3), (1, 4), (3, 4), (3, 5), (4, 5)])
     >>> nx.radius(G)
     2
 
@@ -478,9 +477,9 @@ def center(G, e=None, usebounds=False):
 
     Examples
     --------
-    >>> G = nx.Graph([(1, 2), (2, 3), (3, 4), (2,5), (3,6), (5, 6),(5,7), (7, 8), (6, 9)])
+    >>> G = nx.Graph([(1, 2), (1, 3), (1, 4), (3, 4), (3, 5), (4, 5)])
     >>> list(nx.center(G))
-    [2, 5, 6]
+    [1, 3, 4]
 
     See Also
     --------
@@ -541,9 +540,9 @@ def barycenter(G, weight=None, attr=None, sp=None):
 
     Examples
     --------
-    >>> G = nx.Graph([(0, 1), (1, 2), (1, 5), (5, 4), (2, 4), (2, 3), (4, 3), (3, 6)])
+    >>> G = nx.Graph([(1, 2), (1, 3), (1, 4), (3, 4), (3, 5), (4, 5)])
     >>> nx.barycenter(G)
-    [2]
+    [1, 3, 4]
 
     See Also
     --------
@@ -625,8 +624,8 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
 
     Examples
     --------
-    >>> G = nx.Graph([(0, 1), (1, 2), (1, 3), (3, 4), (5, 4), (5, 3), (4, 1), (3, 6)])
-    >>> nx.resistance_distance(G, 3, 5)
+    >>> G = nx.Graph([(1, 2), (1, 3), (1, 4), (3, 4), (3, 5), (4, 5)])
+    >>> nx.resistance_distance(G, 1, 3)
     0.625
 
     Notes
