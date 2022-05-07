@@ -355,7 +355,7 @@ class TestGeneratorClassic:
         # Raise NetworkXError if n<0
         pytest.raises(nx.NetworkXError, nx.lollipop_graph, 5, -2)
 
-        # raise NetworkXError is create_using is a directed form of Graph
+        # raise NetworkXError if create_using is directed
         with pytest.raises(nx.NetworkXError):
             nx.lollipop_graph(2, 20, create_using=nx.DiGraph)
         with pytest.raises(nx.NetworkXError):

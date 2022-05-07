@@ -179,8 +179,7 @@ def random_geometric_graph(n, radius, dim=2, pos=None, p=2, seed=None):
     # TODO Is this function just a special case of the geographical
     # threshold graph?
     #
-    #     n_name, nodes = n
-    #     half_radius = {v: radius / 2 for v in nodes}
+    #     half_radius = {v: radius / 2 for v in n}
     #     return geographical_threshold_graph(nodes, theta=1, alpha=1,
     #                                         weight=half_radius)
     #

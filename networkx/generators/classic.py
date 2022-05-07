@@ -254,7 +254,7 @@ def complete_graph(n, create_using=None):
     """
     _, nodes = n
     G = empty_graph(nodes, create_using)
-    if len(G) > 1:
+    if len(nodes) > 1:
         if G.is_directed():
             edges = itertools.permutations(nodes, 2)
         else:
@@ -623,11 +623,9 @@ def star_graph(n, create_using=None):
     if G.is_directed():
         raise NetworkXError("Directed Graph not supported")
 
-    if len(G) < 2:
-        return G
-
-    hub, *spokes = nodes
-    G.add_edges_from((hub, node) for node in spokes)
+    if len(nodes) > 1:
+        hub, *spokes = nodes
+        G.add_edges_from((hub, node) for node in spokes)
     return G
 
 
@@ -691,13 +689,11 @@ def wheel_graph(n, create_using=None):
     if G.is_directed():
         raise NetworkXError("Directed Graph not supported")
 
-    if len(nodes) < 2:
-        return G
-
-    hub, *rim = nodes
-    G.add_edges_from((hub, node) for node in rim)
-    if len(rim) > 1:
-        G.add_edges_from(pairwise(rim, cyclic=True))
+    if len(nodes) > 1:
+        hub, *rim = nodes
+        G.add_edges_from((hub, node) for node in rim)
+        if len(rim) > 1:
+            G.add_edges_from(pairwise(rim, cyclic=True))
     return G
 
 
