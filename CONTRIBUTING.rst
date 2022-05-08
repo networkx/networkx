@@ -33,7 +33,7 @@ Development Workflow
      - ``origin``, which refers to your personal fork
 
    * Next, you need to set up your build environment.
-     Here are instructions for two popular environment managers:
+     Here are instructions for two popular environment managers and for a devcontainer:
 
      * ``venv`` (pip based)
 
@@ -77,6 +77,11 @@ Development Workflow
          pip install -e .
          # Test your installation
          PYTHONPATH=. pytest networkx
+
+     * ``devcontainer`` (VSCode devcontainer)
+
+      - Follow the `installation instructions<https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers>`_
+      - Use the command palette and execute "Remote-Containers: Reopen in container" which open your local cloned repository in a devcontainer and install the dependencies.
 
    * Finally, we recommend you use a pre-commit hook, which runs black when
      you type ``git commit``::
