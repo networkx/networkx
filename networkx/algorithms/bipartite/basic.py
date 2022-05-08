@@ -5,6 +5,7 @@ Bipartite Graph Algorithms
 """
 import networkx as nx
 from networkx.algorithms.components import connected_components
+from networkx.exception import AmbiguousSolution
 
 __all__ = [
     "is_bipartite",
@@ -126,10 +127,21 @@ def is_bipartite_node_set(G, nodes):
 
     Notes
     -----
+    An exception is raised if the input nodes are not distinct, because in this
+    case some bipartite algorithms will yield incorrect results.
     For connected graphs the bipartite sets are unique.  This function handles
     disconnected graphs.
     """
     S = set(nodes)
+
+    if len(S) < len(nodes):
+        # this should maybe just return False?
+        raise AmbiguousSolution(
+            "The input node set contains duplicates.\n"
+            "This may lead to incorrect results when using it in bipartite algorithms.\n"
+            "Consider using set(nodes) as the input"
+        )
+
     for CC in (G.subgraph(c).copy() for c in connected_components(G)):
         X, Y = sets(CC)
         if not (
