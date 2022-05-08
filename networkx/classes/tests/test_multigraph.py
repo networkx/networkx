@@ -176,6 +176,13 @@ class BaseMultiGraphTester(BaseAttrGraphTester):
             ],
         )
 
+    def test_attributes_cached(self):
+        G = self.K3.copy()
+        assert id(G.nodes) == id(G.nodes)
+        assert id(G.edges) == id(G.edges)
+        assert id(G.degree) == id(G.degree)
+        assert id(G.adj) == id(G.adj)
+
 
 class TestMultiGraph(BaseMultiGraphTester, _TestGraph):
     def setup_method(self):
