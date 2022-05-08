@@ -170,6 +170,10 @@ class BaseGraphTester:
         G.add_edge(1, 1)
         G.remove_nodes_from([0, 1])
 
+    def test_nodes_cached(self):
+        G = self.K3.copy()
+        assert id(G.nodes) == id(G.nodes)
+
 
 class BaseAttrGraphTester(BaseGraphTester):
     """Tests of graph class attribute features."""
