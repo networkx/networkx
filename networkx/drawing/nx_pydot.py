@@ -64,7 +64,7 @@ def read_dot(path):
 
     Notes
     -----
-    Use `G = nx.Graph(read_dot(path))` to return a :class:`Graph` instead of a
+    Use `G = nx.Graph(nx.nx_pydot.read_dot(path))` to return a :class:`Graph` instead of a
     :class:`MultiGraph`.
     """
     import pydot
