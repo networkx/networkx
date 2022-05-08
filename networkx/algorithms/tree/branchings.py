@@ -96,10 +96,9 @@ def branching_weight(G, attr="weight", default=1):
 
     Examples
     --------
-    >>> from networkx.algorithms import tree
     >>> G = nx.DiGraph()
     >>> G.add_weighted_edges_from([(0, 1, 2), (1, 2, 4), (2, 3, 3), (3, 4, 2)])
-    >>> tree.branching_weight(G)
+    >>> nx.tree.branching_weight(G)
     11
 
     """
