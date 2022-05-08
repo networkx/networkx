@@ -50,7 +50,7 @@ def is_eulerian(G):
     >>> nx.is_eulerian(G)
     False
 
-    >>> G.remove_nodes_from(list(nx.isolates(G))
+    >>> G.remove_nodes_from(list(nx.isolates(G)))
     >>> nx.is_eulerian(G)
     True
 
@@ -284,7 +284,7 @@ def has_eulerian_path(G, source=None):
     >>> nx.has_eulerian_path(G)
     False
 
-    >>> G.remove_nodes_from(list(nx.isolates(G))
+    >>> G.remove_nodes_from(list(nx.isolates(G)))
     >>> nx.has_eulerian_path(G)
     True
 
