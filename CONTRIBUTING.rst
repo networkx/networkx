@@ -80,8 +80,8 @@ Development Workflow
 
      * ``devcontainer`` (VSCode devcontainer)
 
-      - Follow the `installation instructions<https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers>`_
-      - Use the command palette and execute "Remote-Containers: Reopen in container" which open your local cloned repository in a devcontainer and install the dependencies.
+       - Follow the `installation instructions <https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers>`_
+       - Use the command palette and execute "Remote-Containers: Open folder in Container". This opens your local cloned repository in a devcontainer and install the required dependencies.
 
    * Finally, we recommend you use a pre-commit hook, which runs black when
      you type ``git commit``::
