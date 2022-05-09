@@ -359,6 +359,12 @@ def max_weight_matching(G, maxcardinality=False, weight="weight"):
     matching : set
         A maximal matching of the graph.
 
+     Examples
+    --------
+    >>> G = nx.Graph ([(1, 2), (1, 3), (2, 3), (2, 4), (3, 5), (4, 5)])
+    >>> nx.max_weight_matching(G)
+    {(4, 2), (5, 3)}
+
     Notes
     -----
     If G has edges with weight attributes the edge data are used as
