@@ -6,9 +6,25 @@ VF2++ Algorithm
 Implementation of the VF2++ algorithm for the Graph Isomorphism problem.
 
 TODO: Basic questions:
-    1. How exactly is the new node ordering going to be used?
-    2. Understand and implement the new cutting rules, proposed by VF2++.
+    1. Understand and implement the new cutting rules, proposed by VF2++.
+    2. Implement the pseudocode:
+    input G1,G2
+    |V1| = |V2|
+    deg_seq(G1) = deg_seq(G2)
+    ordered = orderVF2PP(G1,G2)
+    M = {}
+    u_idx = 0
+    while ordered is not empty:
+        u = ordered[u_idx]          //the u currently being examined
+        for v in candidates(u):     //all candidates v for u
+            if Feasibility(u,v):    //matching found between u and v
+                M[u] = v            //add u,v to the mapping
+                ordered.remove(u)   //remove the covered node from the list
+                u_idx = 0           //start examining in VF2++ order again
+                break               //stop examining candidates for u
+        idx += 1                    //take next u
 """
+import time
 import networkx as nx
 import matplotlib.pyplot as plt
 from networkx.drawing.nx_agraph import graphviz_layout
@@ -16,14 +32,21 @@ from networkx.drawing.nx_agraph import graphviz_layout
 
 def main():
     # T = binary_tree()
-    T = nx.gnp_random_graph(20, 0.24, seed=23)
+    T = nx.gnp_random_graph(200, 0.25, seed=23)
 
     # pos = graphviz_layout(T, prog='dot')
     # nx.draw(T, pos, with_labels=True, arrows=False)
     # plt.show()
 
+    t0 = time.time()
     M = matching_order(G1=T, G2=None)
+    print('Elapsed time1: ', time.time() - t0)
     print('M:', M)
+
+    # t0 = time.time()
+    # M = matching_order2(G1=T, G2=None)
+    # print('Elapsed time1: ', time.time() - t0)
+    # print('M:', M)
 
 
 def connectivity(G, u, H):
@@ -74,6 +97,7 @@ def matching_order(G1, G2):
 
 def d_level_bfs_tree(G, source):
     # todo: when the d-th level is computed, immediately call 'process_level', to avoid redundant iterations/operations.
+    # todo: optimize descendants_at_distance. Compute all levels once. distance(2) re-computes distance(1).
     d = 0
     T = []
     d_level_successors = nx.descendants_at_distance(G, source=source, distance=d)
@@ -82,6 +106,30 @@ def d_level_bfs_tree(G, source):
         d += 1
         d_level_successors = nx.descendants_at_distance(G, source=source, distance=d)
     return T
+
+
+def matching_order2(G1, G2):
+    V1 = G1.nodes
+    M = []
+    while len(set(V1) - set(M)) > 0:
+        S = set(V1) - set(M)
+        r = arg_max_degree(G1, S)
+        for node in r:
+            T, M = d_level_bfs_tree2(G1, source=node, M=M)
+    return M
+
+
+def d_level_bfs_tree2(G, source, M):    # Optimized bfs, processes every level when it is computed.
+    # todo: why does this version have the same performance as the non-optimized??
+    d = 0
+    T = []
+    d_level_successors = nx.descendants_at_distance(G, source=source, distance=d)
+    while len(d_level_successors) > 0:
+        T.append(d_level_successors)
+        M = process_level(G, Vd=d_level_successors, M=M)
+        d += 1
+        d_level_successors = nx.descendants_at_distance(G, source=source, distance=d)
+    return T, M
 
 
 def binary_tree():
