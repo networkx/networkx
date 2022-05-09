@@ -226,6 +226,14 @@ def is_perfect_matching(G, matching):
         Whether the given set or dictionary represents a valid perfect
         matching in the graph.
 
+    Examples
+    --------
+    >>> G = nx.Graph()
+    >>> G.add_edges_from([(1, 2), (1, 3), (2, 3), (2, 4), (3, 5), (4, 5), (4, 6)])
+    >>> my_match = {1: 2, 3: 5, 4: 6}
+    >>> nx.is_perfect_matching(G, my_match)
+    True
+
     """
     if isinstance(matching, dict):
         matching = matching_dict_to_set(matching)
