@@ -33,6 +33,12 @@ def maximal_matching(G):
     matching : set
         A maximal matching of the graph.
 
+    Examples
+    --------
+    >>> G=nx.Graph ([(1, 2), (1, 3), (2, 3), (2, 4), (3, 5), (4, 5)])
+    >>> nx.maximal_matching(G)
+    {(1, 2), (3, 5)}
+
     Notes
     -----
     The algorithm greedily selects a maximal matching M of the graph G
