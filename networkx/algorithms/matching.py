@@ -165,6 +165,12 @@ def is_maximal_matching(G, matching):
         Whether the given set or dictionary represents a valid maximal
         matching in the graph.
 
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (1, 3), (2, 3), (3, 4), (3, 5)])
+    >>> nx.is_maximal_matching(G, {(1, 2), (3, 4)})
+    True
+
     """
     if isinstance(matching, dict):
         matching = matching_dict_to_set(matching)
