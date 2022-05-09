@@ -5,7 +5,7 @@ VF2++ Algorithm
 
 Implementation of the VF2++ algorithm for the Graph Isomorphism problem.
 
-TODO: Basic questions:
+TODO:
     1. Understand and implement the new cutting rules, proposed by VF2++.
     2. Implement the pseudocode:
     input G1,G2
@@ -22,7 +22,8 @@ TODO: Basic questions:
                 ordered.remove(u)   //remove the covered node from the list
                 u_idx = 0           //start examining in VF2++ order again
                 break               //stop examining candidates for u
-        idx += 1                    //take next u
+        u_idx += 1                  //take next u
+    3. Line 25 should not run if Feasibility is true.
 """
 import time
 import networkx as nx
