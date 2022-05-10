@@ -143,7 +143,7 @@ class TestHasEulerianPath:
         # Test directed graphs without isolated node returns False
         G = nx.DiGraph()
         G.add_edges_from([(0, 1), (1, 2), (2, 0)])
-        assert not nx.has_eulerian_path(G)
+        assert nx.has_eulerian_path(G)
 
         # Test directed graphs with isolated node returns False
         G.add_node(3)
