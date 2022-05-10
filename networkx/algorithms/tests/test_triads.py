@@ -268,26 +268,3 @@ def test_triandic_census_on_random_graph(N):
             tt: sum(1 for t in tbt.get(tt, []) if any(n in ns for n in t)) for tt in tc1
         }
         assert tc1 == tc2
-
-
-@pytest.mark.slow
-def test_triadic_census_on_directed_atlas():
-    for G in nx.graph_atlas_g():
-        edges = list(G.edges())
-        for i, (u, v) in enumerate(edges):
-            for elist in ([(u, v)], [(v, u)], [(u, v), (v, u)]):
-                DG = nx.DiGraph(edges[:i] + elist + edges[i + 1 :])
-                DG.add_nodes_from(G)
-                tc1 = nx.triadic_census(DG)
-                tbt = nx.triads_by_type(DG)
-                tc2 = {tt: len(tbt.get(tt, [])) for tt in tc1}
-                assert tc1 == tc2
-                # test single node nodelist
-                n = 0
-                tc_node = nx.triadic_census(DG, nodelist=[n])
-                tb_node = {tt: sum(1 for t in tbt.get(tt, []) if n in t) for tt in tc1}
-                assert tc_node == tb_node
-                for n in DG:
-                    tc1 = nx.triadic_census(DG, nodelist=[n])
-                    tc2 = {tt: sum(1 for t in tbt.get(tt, []) if n in t) for tt in tc1}
-                    assert tc1 == tc2
