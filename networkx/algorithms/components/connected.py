@@ -79,6 +79,12 @@ def number_connected_components(G):
     n : integer
        Number of connected components
 
+    Examples
+    --------
+    >>> G = nx.Graph([(0, 1), (1, 2), (5, 6), (3, 4)])
+    >>> nx.number_connected_components(G)
+    3
+
     See Also
     --------
     connected_components
@@ -159,6 +165,12 @@ def node_connected_component(G, n):
     ------
     NetworkXNotImplemented
         If G is directed.
+
+    Examples
+    --------
+    >>> G = nx.Graph([(0, 1), (1, 2), (5, 6), (3, 4)])
+    >>> nx.node_connected_component(G, 0)  # nodes of component that contains node 0
+    {0, 1, 2}
 
     See Also
     --------
