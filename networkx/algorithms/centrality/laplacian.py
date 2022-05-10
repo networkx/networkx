@@ -119,7 +119,7 @@ def laplacian_centrality(
         if normalized:
             l_cent = 1 - (sum_of_eigen_values_2 / sum_of_full)
         else:
-            l_cent = sum_of_eigen_values_2
+            l_cent = sum_of_full - sum_of_eigen_values_2
 
         laplace_centralities_dict[node] = l_cent
 
