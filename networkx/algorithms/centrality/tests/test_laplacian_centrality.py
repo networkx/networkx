@@ -8,7 +8,6 @@ np = pytest.importorskip("numpy")
 sp = pytest.importorskip("scipy")
 
 
-
 def test_laplacian_centrality_E():
     E = nx.Graph()
     E.add_weighted_edges_from(
@@ -26,6 +25,7 @@ def test_laplacian_centrality_E():
 
     for n, dc in d.items():
         assert exact[n] == pytest.approx(dc, abs=1e-7)
+
 
 def test_laplacian_centrality_KC():
 
@@ -70,6 +70,7 @@ def test_laplacian_centrality_KC():
     for n, dc in d.items():
         assert exact[n] == pytest.approx(dc, abs=1e-7)
 
+
 def test_laplacian_centrality_K():
     K = nx.krackhardt_kite_graph()
     d = nx.laplacian_centrality(K)
@@ -88,6 +89,7 @@ def test_laplacian_centrality_K():
     for n, dc in d.items():
         assert exact[n] == pytest.approx(dc, abs=1e-7)
 
+
 def test_laplacian_centrality_P3():
 
     P3 = nx.path_graph(3)
@@ -96,6 +98,7 @@ def test_laplacian_centrality_P3():
     for n, dc in d.items():
         assert exact[n] == pytest.approx(dc, abs=1e-7)
 
+
 def test_laplacian_centrality_K5():
 
     K5 = nx.complete_graph(5)
@@ -103,6 +106,7 @@ def test_laplacian_centrality_K5():
     exact = {0: 0.52, 1: 0.52, 2: 0.52, 3: 0.52, 4: 0.52}
     for n, dc in d.items():
         assert exact[n] == pytest.approx(dc, abs=1e-7)
+
 
 def test_laplacian_centrality_FF():
     FF = nx.florentine_families_graph()
@@ -126,6 +130,7 @@ def test_laplacian_centrality_FF():
     }
     for n, dc in d.items():
         assert exact[n] == pytest.approx(dc, abs=1e-7)
+
 
 def test_laplacian_centrality_DG():
     DG = nx.DiGraph()
