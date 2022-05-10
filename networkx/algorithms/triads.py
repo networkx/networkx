@@ -174,7 +174,7 @@ def triadic_census(G, nodelist=None):
     """
     nodeset = set(G.nbunch_iter(nodelist))
     if nodelist is not None and len(nodelist) != len(nodeset):
-        raise ValueError("nodelist include duplicate nodes or nodes not in G")
+        raise ValueError("nodelist includes duplicate nodes or nodes not in G")
 
     N = len(G)
     Nnot = N - len(nodeset)  # can signal special counting for subset of nodes
