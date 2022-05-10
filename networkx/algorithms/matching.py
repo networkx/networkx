@@ -36,8 +36,8 @@ def maximal_matching(G):
     Examples
     --------
     >>> G=nx.Graph ([(1, 2), (1, 3), (2, 3), (2, 4), (3, 5), (4, 5)])
-    >>> nx.maximal_matching(G)
-    {(1, 2), (3, 5)}
+    >>> sorted(nx.maximal_matching(G))
+    [(1, 2), (3, 5)]
 
     Notes
     -----
@@ -362,8 +362,8 @@ def max_weight_matching(G, maxcardinality=False, weight="weight"):
      Examples
     --------
     >>> G = nx.Graph ([(1, 2), (1, 3), (2, 3), (2, 4), (3, 5), (4, 5)])
-    >>> nx.max_weight_matching(G)
-    {(5, 3), (4, 2)}
+    >>> sorted(nx.max_weight_matching(G))
+    [(4, 2), (5, 3)]
 
     Notes
     -----
