@@ -55,6 +55,13 @@ def reverse(G, copy=True):
     H : directed graph
         The reversed G.
 
+    Examples
+    --------
+    >>> G = nx.DiGraph([(1, 2), (1, 3), (2, 3), (3, 4), (3, 5)])
+    >>> G_reversed = nx.reverse(G)
+    >>> G_reversed.edges()
+    OutEdgeView([(2, 1), (3, 1), (3, 2), (4, 3), (5, 3)])
+
     """
     if not G.is_directed():
         raise nx.NetworkXError("Cannot reverse an undirected graph.")
