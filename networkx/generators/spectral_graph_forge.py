@@ -161,7 +161,11 @@ def spectral_graph_forge(G, alpha, transformation="identity", seed=None):
     if transformation == "modularity":
         B -= K.T @ K / K.sum()
 
-    B = _mat_spect_approx(B, level, sorteigs=True, absolute=True)
+    # Compute low-rank approximation of B
+    evals, evecs = np.linalg.eigh(B)
+    k = np.argsort(np.abs(evals))[::-1]  # indices of evals in descending order
+    evecs[:, k[np.arange(level, n)]] = 0  # set smallest eigenvectors to 0
+    B = evecs @ np.diag(evals) @ evecs.T
 
     if transformation == "modularity":
         B += K.T @ K / K.sum()
