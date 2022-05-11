@@ -337,7 +337,7 @@ def bipartite_layout(
     pos = np.concatenate([top_pos, bottom_pos])
     pos = rescale_layout(pos, scale=scale) + center
     if align == "horizontal":
-        pos = np.flip(pos, 1)
+        pos = pos[:, ::-1]  # swap x and y coords
     pos = dict(zip(nodes, pos))
     return pos
 
@@ -1100,7 +1100,7 @@ def multipartite_layout(G, subset_key="subset", align="vertical", scale=1, cente
         nodes.extend(layer)
     pos = rescale_layout(pos, scale=scale) + center
     if align == "horizontal":
-        pos = np.flip(pos, 1)
+        pos = pos[:, ::-1]  # swap x and y coords
     pos = dict(zip(nodes, pos))
     return pos
 
