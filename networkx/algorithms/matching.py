@@ -35,7 +35,7 @@ def maximal_matching(G):
 
     Examples
     --------
-    >>> G=nx.Graph ([(1, 2), (1, 3), (2, 3), (2, 4), (3, 5), (4, 5)])
+    >>>G = nx.Graph([(1, 2), (1, 3), (2, 3), (2, 4), (3, 5), (4, 5)])
     >>> sorted(nx.maximal_matching(G))
     [(1, 2), (3, 5)]
 
