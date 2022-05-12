@@ -243,7 +243,7 @@ def has_eulerian_path(G, source=None):
         - at most one vertex has in_degree - out_degree = 1,
         - every other vertex has equal in_degree and out_degree,
         - and all of its vertices belong to a single connected
-        component of the underlying undirected graph.
+          component of the underlying undirected graph.
 
     If `source` is not None, an Eulerian path starting at `source` exists if no
     other node has out_degree - in_degree = 1. This is equivalent to either
