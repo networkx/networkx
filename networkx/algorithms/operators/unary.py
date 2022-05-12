@@ -55,6 +55,11 @@ def reverse(G, copy=True):
     H : directed graph
         The reversed G.
 
+    Raises
+    ------
+    NetworkXError
+        If graph is undirected.
+
     Examples
     --------
     >>> G = nx.DiGraph([(1, 2), (1, 3), (2, 3), (3, 4), (3, 5)])
