@@ -18,6 +18,7 @@ class TestSteinerTree:
         G.add_edge(7, 5, weight=1)
         cls.G = G
         cls.term_nodes = [1, 2, 3, 4, 5]
+        cls.methods = ["wu", "kou", "mehlhorn"]
 
     def test_connected_metric_closure(self):
         G = self.G.copy()
@@ -52,15 +53,28 @@ class TestSteinerTree:
         assert edges_equal(list(M.edges(data=True)), mc)
 
     def test_steiner_tree(self):
-        S = steiner_tree(self.G, self.term_nodes)
-        expected_steiner_tree = [
-            (1, 2, {"weight": 10}),
-            (2, 3, {"weight": 10}),
-            (2, 7, {"weight": 1}),
-            (3, 4, {"weight": 10}),
-            (5, 7, {"weight": 1}),
+        valid_steiner_trees = [
+            [
+                (1, 2, {"weight": 10}),
+                (2, 3, {"weight": 10}),
+                (2, 7, {"weight": 1}),
+                (3, 4, {"weight": 10}),
+                (5, 7, {"weight": 1}),
+            ],
+            [
+                (1, 2, {"weight": 10}),
+                (3, 4, {"weight": 10}),
+                (2, 7, {"weight": 1}),
+                (4, 5, {"weight": 10}),
+                (5, 7, {"weight": 1}),
+            ],
         ]
-        assert edges_equal(list(S.edges(data=True)), expected_steiner_tree)
+        for method in self.methods:
+            S = steiner_tree(self.G, self.term_nodes, method=method)
+            assert any(
+                edges_equal(list(S.edges(data=True)), valid_tree)
+                for valid_tree in valid_steiner_trees
+            )
 
     def test_multigraph_steiner_tree(self):
         G = nx.MultiGraph()
@@ -79,5 +93,6 @@ class TestSteinerTree:
             (3, 4, 0, {"weight": 1}),
             (3, 5, 0, {"weight": 1}),
         ]
-        T = steiner_tree(G, terminal_nodes)
-        assert edges_equal(T.edges(data=True, keys=True), expected_edges)
+        for method in self.methods:
+            S = steiner_tree(G, terminal_nodes, method=method)
+            assert edges_equal(S.edges(data=True, keys=True), expected_edges)
