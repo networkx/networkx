@@ -3,9 +3,9 @@ import os
 import sys
 from setuptools import setup
 
-if sys.version_info[:2] < (3, 7):
+if sys.version_info[:2] < (3, 8):
     error = (
-        "NetworkX 2.6+ requires Python 3.7 or later (%d.%d detected). \n"
+        "NetworkX 2.7+ requires Python 3.8 or later (%d.%d detected). \n"
         "For Python 2.7, please install version 2.2 using: \n"
         "$ pip install 'networkx==2.2'" % sys.version_info[:2]
     )
@@ -45,9 +45,9 @@ classifiers = [
     "License :: OSI Approved :: BSD License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3 :: Only",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Scientific/Engineering :: Bio-Informatics",
@@ -74,6 +74,7 @@ packages = [
     "networkx.algorithms.connectivity",
     "networkx.algorithms.coloring",
     "networkx.algorithms.flow",
+    "networkx.algorithms.minors",
     "networkx.algorithms.traversal",
     "networkx.algorithms.isomorphism",
     "networkx.algorithms.shortest_paths",
@@ -134,6 +135,7 @@ package_data = {
     "networkx.algorithms.components": ["tests/*.py"],
     "networkx.algorithms.connectivity": ["tests/*.py"],
     "networkx.algorithms.coloring": ["tests/*.py"],
+    "networkx.algorithms.minors": ["tests/*.py"],
     "networkx.algorithms.flow": ["tests/*.py", "tests/*.bz2"],
     "networkx.algorithms.isomorphism": ["tests/*.py", "tests/*.*99"],
     "networkx.algorithms.link_analysis": ["tests/*.py"],
@@ -144,7 +146,7 @@ package_data = {
     "networkx.algorithms.tree": ["tests/*.py"],
     "networkx.classes": ["tests/*.py"],
     "networkx.generators": ["tests/*.py", "atlas.dat.gz"],
-    "networkx.drawing": ["tests/*.py"],
+    "networkx.drawing": ["tests/*.py", "tests/baseline/*png"],
     "networkx.linalg": ["tests/*.py"],
     "networkx.readwrite": ["tests/*.py"],
     "networkx.readwrite.json_graph": ["tests/*.py"],
@@ -160,14 +162,13 @@ def parse_requirements_file(filename):
     return requires
 
 
-install_requires = parse_requirements_file("requirements/default.txt")
+install_requires = []
 extras_require = {
     dep: parse_requirements_file("requirements/" + dep + ".txt")
-    for dep in ["developer", "doc", "extra", "test"]
+    for dep in ["default", "developer", "doc", "extra", "test"]
 }
 
-
-with open("README.rst", "r") as fh:
+with open("README.rst") as fh:
     long_description = fh.read()
 
 if __name__ == "__main__":
@@ -191,6 +192,6 @@ if __name__ == "__main__":
         package_data=package_data,
         install_requires=install_requires,
         extras_require=extras_require,
-        python_requires=">=3.7",
+        python_requires=">=3.8",
         zip_safe=False,
     )
