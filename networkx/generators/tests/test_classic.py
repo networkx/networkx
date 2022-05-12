@@ -456,7 +456,7 @@ class TestGeneratorClassic:
         assert len(G) == 7
         assert G.size() == 6
 
-        # test non-int integers
+    def test_non_int_integers_for_star_graph(self):
         np = pytest.importorskip("numpy")
         G = nx.star_graph(np.int32(3))
         assert len(G) == 4
@@ -502,7 +502,7 @@ class TestGeneratorClassic:
         assert len(G) == 3
         assert G.size() == 6
 
-        # test non-int integers
+    def test_non_int_integers_for_wheel_graph(self):
         np = pytest.importorskip("numpy")
         G = nx.wheel_graph(np.int32(3))
         assert len(G) == 3
