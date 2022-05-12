@@ -6,8 +6,8 @@ Generators - Classic
 Unit tests for various classic graph generators in generators/classic.py
 """
 import itertools
-
 import pytest
+
 import networkx as nx
 from networkx.algorithms.isomorphism.isomorph import graph_could_be_isomorphic
 from networkx.utils import nodes_equal, edges_equal
@@ -159,6 +159,15 @@ class TestGeneratorClassic:
         assert nodes_equal(g.nodes(), ["a", "b", "c"])
         assert g.size() == 3
 
+        # creates a self-loop... should it? <backward compatible says yes>
+        g = nx.complete_graph("abcb")
+        assert nodes_equal(g.nodes(), ["a", "b", "c"])
+        assert g.size() == 4
+
+        g = nx.complete_graph("abcb", create_using=nx.MultiGraph)
+        assert nodes_equal(g.nodes(), ["a", "b", "c"])
+        assert g.size() == 6
+
     def test_complete_digraph(self):
         # complete_graph(m) is a connected graph with
         # m nodes and  m*(m+1)/2 edges
@@ -209,10 +218,16 @@ class TestGeneratorClassic:
         G = nx.cycle_graph("abc")
         assert len(G) == 3
         assert G.size() == 3
+        G = nx.cycle_graph("abcb")
+        assert len(G) == 3
+        assert G.size() == 2
         g = nx.cycle_graph("abc", nx.DiGraph)
         assert len(g) == 3
         assert g.size() == 3
         assert g.is_directed()
+        g = nx.cycle_graph("abcb", nx.DiGraph)
+        assert len(g) == 3
+        assert g.size() == 4
 
     def test_dorogovtsev_goltsev_mendes_graph(self):
         G = nx.dorogovtsev_goltsev_mendes_graph(0)
@@ -317,35 +332,59 @@ class TestGeneratorClassic:
         mg = nx.ladder_graph(2, create_using=nx.MultiGraph)
         assert edges_equal(mg.edges(), g.edges())
 
-    def test_lollipop_graph(self):
+    def test_lollipop_graph_right_sizes(self):
         # number of nodes = m1 + m2
         # number of edges = nx.number_of_edges(nx.complete_graph(m1)) + m2
         for m1, m2 in [(3, 5), (4, 10), (3, 20)]:
-            b = nx.lollipop_graph(m1, m2)
-            assert nx.number_of_nodes(b) == m1 + m2
-            assert nx.number_of_edges(b) == m1 * (m1 - 1) / 2 + m2
+            G = nx.lollipop_graph(m1, m2)
+            assert nx.number_of_nodes(G) == m1 + m2
+            assert nx.number_of_edges(G) == m1 * (m1 - 1) / 2 + m2
+        for first, second in [("ab", ""), ("abc", "defg")]:
+            m1, m2 = len(first), len(second)
+            G = nx.lollipop_graph(first, second)
+            assert nx.number_of_nodes(G) == m1 + m2
+            assert nx.number_of_edges(G) == m1 * (m1 - 1) / 2 + m2
 
+    def test_lollipop_graph_exceptions(self):
         # Raise NetworkXError if m<2
+        pytest.raises(nx.NetworkXError, nx.lollipop_graph, -1, 2)
         pytest.raises(nx.NetworkXError, nx.lollipop_graph, 1, 20)
+        pytest.raises(nx.NetworkXError, nx.lollipop_graph, "", 20)
+        pytest.raises(nx.NetworkXError, nx.lollipop_graph, "a", 20)
 
         # Raise NetworkXError if n<0
         pytest.raises(nx.NetworkXError, nx.lollipop_graph, 5, -2)
 
+        # raise NetworkXError if create_using is directed
+        with pytest.raises(nx.NetworkXError):
+            nx.lollipop_graph(2, 20, create_using=nx.DiGraph)
+        with pytest.raises(nx.NetworkXError):
+            nx.lollipop_graph(2, 20, create_using=nx.MultiDiGraph)
+
+    def test_lollipop_graph_same_as_path_when_m1_is_2(self):
         # lollipop_graph(2,m) = path_graph(m+2)
-        for m1, m2 in [(2, 5), (2, 10), (2, 20)]:
-            b = nx.lollipop_graph(m1, m2)
-            assert is_isomorphic(b, nx.path_graph(m2 + 2))
+        for m1, m2 in [(2, 0), (2, 5), (2, 10), ("ab", 20)]:
+            G = nx.lollipop_graph(m1, m2)
+            assert is_isomorphic(G, nx.path_graph(m2 + 2))
 
-        pytest.raises(
-            nx.NetworkXError, nx.lollipop_graph, m1, m2, create_using=nx.DiGraph
-        )
+    def test_lollipop_graph_for_multigraph(self):
+        G = nx.lollipop_graph(5, 20)
+        MG = nx.lollipop_graph(5, 20, create_using=nx.MultiGraph)
+        assert edges_equal(MG.edges(), G.edges())
 
-        mb = nx.lollipop_graph(m1, m2, create_using=nx.MultiGraph)
-        assert edges_equal(mb.edges(), b.edges())
+    def test_lollipop_graph_mixing_input_types(self):
+        cases = [(4, "abc"), ("abcd", 3), ([1, 2, 3, 4], "abc"), ("abcd", [1, 2, 3])]
+        for m1, m2 in cases:
+            G = nx.lollipop_graph(m1, m2)
+            assert len(G) == 7
+            assert G.size() == 9
 
-        g = nx.lollipop_graph([1, 2, 3, 4], "abc")
-        assert len(g) == 7
-        assert g.size() == 9
+    def test_lollipop_graph_not_int_integer_inputs(self):
+        # test non-int integers
+        np = pytest.importorskip("numpy")
+        G = nx.lollipop_graph(np.int32(4), np.int64(3))
+        assert len(G) == 7
+        assert G.size() == 9
 
     def test_null_graph(self):
         assert nx.number_of_nodes(nx.null_graph()) == 0
@@ -372,29 +411,56 @@ class TestGeneratorClassic:
         G = nx.path_graph("abc")
         assert len(G) == 3
         assert G.size() == 2
+        G = nx.path_graph("abcb")
+        assert len(G) == 3
+        assert G.size() == 2
         g = nx.path_graph("abc", nx.DiGraph)
         assert len(g) == 3
         assert g.size() == 2
         assert g.is_directed()
+        g = nx.path_graph("abcb", nx.DiGraph)
+        assert len(g) == 3
+        assert g.size() == 3
+
+        G = nx.path_graph((1, 2, 3, 2, 4))
+        assert G.has_edge(2, 4)
 
     def test_star_graph(self):
-        star_graph = nx.star_graph
-        assert is_isomorphic(star_graph(0), nx.empty_graph(1))
-        assert is_isomorphic(star_graph(1), nx.path_graph(2))
-        assert is_isomorphic(star_graph(2), nx.path_graph(3))
-        assert is_isomorphic(star_graph(5), nx.complete_bipartite_graph(1, 5))
+        assert is_isomorphic(nx.star_graph(""), nx.empty_graph(0))
+        assert is_isomorphic(nx.star_graph([]), nx.empty_graph(0))
+        assert is_isomorphic(nx.star_graph(0), nx.empty_graph(1))
+        assert is_isomorphic(nx.star_graph(1), nx.path_graph(2))
+        assert is_isomorphic(nx.star_graph(2), nx.path_graph(3))
+        assert is_isomorphic(nx.star_graph(5), nx.complete_bipartite_graph(1, 5))
 
-        s = star_graph(10)
+        s = nx.star_graph(10)
         assert sorted(d for n, d in s.degree()) == [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 10]
 
-        pytest.raises(nx.NetworkXError, star_graph, 10, create_using=nx.DiGraph)
+        pytest.raises(nx.NetworkXError, nx.star_graph, 10, create_using=nx.DiGraph)
 
-        ms = star_graph(10, create_using=nx.MultiGraph)
+        ms = nx.star_graph(10, create_using=nx.MultiGraph)
         assert edges_equal(ms.edges(), s.edges())
 
-        G = star_graph("abcdefg")
+        G = nx.star_graph("abc")
+        assert len(G) == 3
+        assert G.size() == 2
+
+        G = nx.star_graph("abcb")
+        assert len(G) == 3
+        assert G.size() == 2
+        G = nx.star_graph("abcb", create_using=nx.MultiGraph)
+        assert len(G) == 3
+        assert G.size() == 3
+
+        G = nx.star_graph("abcdefg")
         assert len(G) == 7
         assert G.size() == 6
+
+    def test_non_int_integers_for_star_graph(self):
+        np = pytest.importorskip("numpy")
+        G = nx.star_graph(np.int32(3))
+        assert len(G) == 4
+        assert G.size() == 3
 
     def test_trivial_graph(self):
         assert nx.number_of_nodes(nx.trivial_graph()) == 1
@@ -407,6 +473,7 @@ class TestGeneratorClassic:
 
     def test_wheel_graph(self):
         for n, G in [
+            ("", nx.null_graph()),
             (0, nx.null_graph()),
             (1, nx.empty_graph(1)),
             (2, nx.path_graph(2)),
@@ -425,6 +492,19 @@ class TestGeneratorClassic:
         assert edges_equal(mg.edges(), g.edges())
 
         G = nx.wheel_graph("abc")
+        assert len(G) == 3
+        assert G.size() == 3
+
+        G = nx.wheel_graph("abcb")
+        assert len(G) == 3
+        assert G.size() == 4
+        G = nx.wheel_graph("abcb", nx.MultiGraph)
+        assert len(G) == 3
+        assert G.size() == 6
+
+    def test_non_int_integers_for_wheel_graph(self):
+        np = pytest.importorskip("numpy")
+        G = nx.wheel_graph(np.int32(3))
         assert len(G) == 3
         assert G.size() == 3
 
