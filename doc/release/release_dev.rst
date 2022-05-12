@@ -23,6 +23,23 @@ X contributors. Highlights include:
 Improvements
 ------------
 
+- Changed the treatment of directed graphs for `has_eulerian_path` which
+  used to allow graphs with isolated nodes, i.e. nodes with zero degree to have
+  an eulerian path. For undirected graphs, on the other hand, `has_eulerian_path`
+  does not allow isolated nodes. For example:
+
+      >>> G = nx.DiGraph([(0, 1), (1, 2), (2, 0)])
+      >>> G.add_node(3)
+      >>> nx.has_eulerian_path(G)
+
+  The above snippet used to produce `True` whereas the below one used to produce `False`.
+
+      >>> G = nx.Graph([(0, 1), (1, 2), (2, 0)])
+      >>> G.add_node(3)
+      >>> nx.has_eulerian_path(G)
+
+  The change makes the method consistent for both undirected and directed graph types so
+  that it does not allow isolated nodes. (Both examples produce `False` now.)
 
 - `is_bipartite_node_set` now raises an exception when the tested nodes are
   not distinct (previously this would not affect the outcome).
