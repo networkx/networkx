@@ -330,13 +330,16 @@ class Graph:
         self.graph = self.graph_attr_dict_factory()  # dictionary for graph attributes
         self._node = self.node_dict_factory()  # empty node attribute dict
         self._adj = self.adjlist_outer_dict_factory()  # empty adjacency dict
+        # clear cached adjacency properties
+        if hasattr(self, "adj"):
+            delattr(self, "adj")
         # attempt to load graph with data
         if incoming_graph_data is not None:
             convert.to_networkx_graph(incoming_graph_data, create_using=self)
         # load graph attributes (must be after convert)
         self.graph.update(attr)
 
-    @property
+    @cached_property
     def adj(self):
         """Graph adjacency object holding the neighbors of each node.
 
@@ -1250,7 +1253,7 @@ class Graph:
         except KeyError as err:
             raise NetworkXError(f"The node {n} is not in the graph.") from err
 
-    @property
+    @cached_property
     def edges(self):
         """An EdgeView of the Graph as G.edges or G.edges().
 
@@ -1373,7 +1376,7 @@ class Graph:
         """
         return iter(self._adj.items())
 
-    @property
+    @cached_property
     def degree(self):
         """A DegreeView for the Graph as G.degree or G.degree().
 

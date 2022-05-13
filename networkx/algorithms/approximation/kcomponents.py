@@ -1,6 +1,7 @@
 """ Fast approximation for k-component structure
 """
 import itertools
+from functools import cached_property
 from collections import defaultdict
 from collections.abc import Mapping
 
@@ -281,7 +282,7 @@ class _AntiGraph(nx.Graph):
                 raise KeyError(node)
             return self._graph.AntiAtlasView(self._graph, node)
 
-    @property
+    @cached_property
     def adj(self):
         return self.AntiAdjacencyView(self)
 
@@ -312,7 +313,7 @@ class _AntiGraph(nx.Graph):
             # AntiGraph is a ThinGraph so all edges have weight 1
             return len(nbrs) + (n in nbrs)
 
-    @property
+    @cached_property
     def degree(self):
         """Returns an iterator for (node, degree) and degree for single node.
 

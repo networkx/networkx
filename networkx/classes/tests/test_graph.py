@@ -170,9 +170,12 @@ class BaseGraphTester:
         G.add_edge(1, 1)
         G.remove_nodes_from([0, 1])
 
-    def test_nodes_cached(self):
+    def test_attributes_cached(self):
         G = self.K3.copy()
         assert id(G.nodes) == id(G.nodes)
+        assert id(G.edges) == id(G.edges)
+        assert id(G.degree) == id(G.degree)
+        assert id(G.adj) == id(G.adj)
 
 
 class BaseAttrGraphTester(BaseGraphTester):
@@ -591,6 +594,7 @@ class TestGraph(BaseAttrGraphTester):
 
     def test_getitem(self):
         G = self.K3
+        assert G.adj[0] == {1: {}, 2: {}}
         assert G[0] == {1: {}, 2: {}}
         with pytest.raises(KeyError):
             G.__getitem__("j")
