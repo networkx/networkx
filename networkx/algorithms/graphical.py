@@ -268,6 +268,13 @@ def is_multigraphical(sequence):
     valid : bool
         True if deg_sequence is a multigraphic degree sequence and False if not.
 
+    Examples
+    --------
+    >>> G = nx.MultiGraph ([(1, 2), (1, 3), (2, 3), (3, 4), (4, 2), (5, 1), (5, 4)])
+    >>> sequence = (v for d, v in G.degree())
+    >>> nx.is_multigraphical(sequence)
+    True
+
     Notes
     -----
     The worst-case run time is $O(n)$ where $n$ is the length of the sequence.
