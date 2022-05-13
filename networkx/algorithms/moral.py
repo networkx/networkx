@@ -22,6 +22,11 @@ def moral_graph(G):
     H : NetworkX graph
         The undirected moralized graph of G
 
+    Raises
+    ------
+    NetworkXNotImplemented
+        If `G` is undirected.
+
     Examples
     --------
     >>> G = nx.DiGraph([(1, 2), (2, 3), (2, 5), (3, 4), (4, 3)])
