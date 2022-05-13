@@ -326,6 +326,17 @@ def is_digraphical(in_sequence, out_sequence):
     valid : bool
       True if in and out-sequences are digraphic False if not.
 
+    Examples
+    --------
+    >>> G = nx.DiGraph()
+    >>> G.add_edges_from([(1, 2), (1, 3), (2, 3), (3, 4), (4, 2), (5, 1), (5, 4)])
+    >>> in_deg = dict(G.in_degree())
+    >>> in_seq = list(in_deg.values())
+    >>> out_deg = dict(G.out_degree())
+    >>> out_seq = list(out_deg.values())
+    >>> nx.is_digraphical(in_seq, out_seq)
+    True
+
     Notes
     -----
     This algorithm is from Kleitman and Wang [1]_.
