@@ -177,6 +177,14 @@ def is_valid_degree_sequence_erdos_gallai(deg_sequence):
     valid : bool
         True if deg_sequence is graphical and False if not.
 
+    Examples
+    --------
+    >>> G = nx.Graph()
+    >>> G.add_edges_from([(1, 2), (1, 3), (2, 3), (3, 4), (4, 2), (5, 1), (5, 4)])
+    >>> sequence = (v for d, v in G.degree())
+    >>> nx.is_valid_degree_sequence_erdos_gallai(sequence)
+    True
+
     Notes
     -----
 
