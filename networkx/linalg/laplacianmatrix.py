@@ -149,6 +149,7 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
 ###############################################################################
 # Code based on work from https://github.com/bjedwards
 
+
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
 def directed_laplacian_matrix(
