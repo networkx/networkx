@@ -300,6 +300,14 @@ def is_pseudographical(sequence):
     valid : bool
       True if the sequence is a pseudographic degree sequence and False if not.
 
+    Examples
+    --------
+    >>> G = nx.Graph()
+    >>> G.add_edges_from([(1, 2), (1, 3), (2, 3), (3, 4), (4, 2), (5, 1), (5, 4)])
+    >>> sequence = (v for d, v in G.degree())
+    >>> nx.is_pseudographical(sequence)
+    True
+
     Notes
     -----
     The worst-case run time is $O(n)$ where n is the length of the sequence.
