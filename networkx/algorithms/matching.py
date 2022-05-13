@@ -362,13 +362,7 @@ def max_weight_matching(G, maxcardinality=False, weight="weight"):
      Examples
     --------
     >>> G = nx.Graph()
-
-    >>> G.add_edge(1, 2, weight=6.0)
-    >>> G.add_edge(1, 3, weight=2.0)
-    >>> G.add_edge(2, 3, weight=1.0)
-    >>> G.add_edge(2, 4, weight=7.0)
-    >>> G.add_edge(3, 5, weight=9.0)
-    >>> G.add_edge(4, 5, weight=3.0)
+    >>> G.add_weighted_edges_from([(1, 2, 6), (1, 3, 2), (2, 3, 1), (2, 4, 7), (3, 5, 9), (4, 5, 3)])
     >>> sorted(nx.max_weight_matching(G))
     [(2, 4), (5, 3)]
 
