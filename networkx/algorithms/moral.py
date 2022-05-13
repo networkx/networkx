@@ -49,9 +49,6 @@ def moral_graph(G):
            In Proceedings of the Eleventh conference on Uncertainty
            in artificial intelligence (UAI'95)
     """
-    if G is None:
-        raise ValueError("Expected NetworkX graph!")
-
     H = G.to_undirected()
     for preds in G.pred.values():
         predecessors_combinations = itertools.combinations(preds, r=2)
