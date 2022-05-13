@@ -22,6 +22,18 @@ def moral_graph(G):
     H : NetworkX graph
         The undirected moralized graph of G
 
+    Raises
+    ------
+    NetworkXNotImplemented
+        If `G` is undirected.
+
+    Examples
+    --------
+    >>> G = nx.DiGraph([(1, 2), (2, 3), (2, 5), (3, 4), (4, 3)])
+    >>> G_moral = nx.moral_graph(G)
+    >>> G_moral.edges()
+    EdgeView([(1, 2), (2, 3), (2, 5), (2, 4), (3, 4)])
+
     Notes
     -----
     A moral graph is an undirected graph H = (V, E) generated from a
