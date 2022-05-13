@@ -2159,9 +2159,8 @@ def find_negative_cycle(G, source, weight="weight"):
     ----------
     G : NetworkX graph
 
-    source: list of nodes
-        List of source nodes. The search starts from all of the source
-        nodes in the list.
+    source: node label
+        The search for the negative cycle will start from this node.
 
     weight : string or function
         If this is a string, then edge weights will be accessed via the
@@ -2175,6 +2174,13 @@ def find_negative_cycle(G, source, weight="weight"):
         positional arguments: the two endpoints of an edge and the
         dictionary of edge attributes for that edge. The function must
         return a number.
+
+    Examples
+    --------
+    >>> G = nx.DiGraph()
+    >>> G.add_weighted_edges_from([(0, 1, 2), (1, 2, 2), (2, 0, 1), (1, 4, 2), (4, 0, -5)])
+    >>> nx.find_negative_cycle(G, 0)
+    [4, 0, 1, 4]
 
     Returns
     -------

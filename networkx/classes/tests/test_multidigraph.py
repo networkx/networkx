@@ -240,6 +240,15 @@ class BaseMultiDiGraphTester(BaseMultiGraphTester):
         assert sorted(R.edges()) == [(1, 0), (1, 0)]
         pytest.raises(nx.NetworkXError, R.remove_edge, 1, 0)
 
+    def test_di_attributes_cached(self):
+        G = self.K3.copy()
+        assert id(G.in_edges) == id(G.in_edges)
+        assert id(G.out_edges) == id(G.out_edges)
+        assert id(G.in_degree) == id(G.in_degree)
+        assert id(G.out_degree) == id(G.out_degree)
+        assert id(G.succ) == id(G.succ)
+        assert id(G.pred) == id(G.pred)
+
 
 class TestMultiDiGraph(BaseMultiDiGraphTester, _TestMultiGraph):
     def setup_method(self):

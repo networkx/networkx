@@ -140,15 +140,14 @@ class TestHasEulerianPath:
         G.add_edges_from([(0, 1), (1, 2), (0, 2)])
         assert not nx.has_eulerian_path(G)
 
-    def test_has_eulerian_path_isolated_node(self):
         # Test directed graphs without isolated node returns True
         G = nx.DiGraph()
         G.add_edges_from([(0, 1), (1, 2), (2, 0)])
         assert nx.has_eulerian_path(G)
 
-        # Test directed graphs with isolated node returns True
+        # Test directed graphs with isolated node returns False
         G.add_node(3)
-        assert nx.has_eulerian_path(G)
+        assert not nx.has_eulerian_path(G)
 
     @pytest.mark.parametrize("G", (nx.Graph(), nx.DiGraph()))
     def test_has_eulerian_path_not_weakly_connected(self, G):

@@ -75,6 +75,7 @@ def _max_weight(weight):
 def branching_weight(G, attr="weight", default=1):
     """
     Returns the total weight of a branching.
+
     You must access this function through the networkx.algorithms.tree module.
 
     Parameters
@@ -87,16 +88,17 @@ def branching_weight(G, attr="weight", default=1):
     default : float
         When `attr` is not None, then if an edge does not have that attribute,
         `default` specifies what value it should take.
+
     Returns
     -------
     weight: int or float
         The total weight of the branching.
+
     Examples
     --------
-    >>> from networkx.algorithms import tree
     >>> G = nx.DiGraph()
     >>> G.add_weighted_edges_from([(0, 1, 2), (1, 2, 4), (2, 3, 3), (3, 4, 2)])
-    >>> tree.branching_weight(G)
+    >>> nx.tree.branching_weight(G)
     11
 
     """
