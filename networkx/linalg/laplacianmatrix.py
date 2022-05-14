@@ -102,7 +102,7 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
     For MultiGraph, the edges weights are summed.
     See :func:`to_numpy_array` for other options.
 
-    If the Graph contains selfloops, D is defined as `diag(sum(A,1))`, where A is
+    If the Graph contains selfloops, D is defined as ``diag(sum(A, 1))``, where A is
     the adjacency matrix [2]_.
 
     See Also
