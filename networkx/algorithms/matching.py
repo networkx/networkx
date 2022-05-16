@@ -115,7 +115,7 @@ def is_matching(G, matching):
     --------
     >>> G = nx.Graph()
     >>> G.add_edges_from([(1, 2), (1, 3), (2, 3), (2, 4), (3, 5), (4, 5)])
-    >>> nx.is_maximal_matching(G, {1: 3, 2: 4})  # using dictionary to represent matching
+    >>> nx.is_maximal_matching(G, {1: 3, 2: 4})  # using dict to represent matching
     True
 
     >>> nx.is_matching(G, {(1, 3), (2, 4)})  # using set to represent matching
