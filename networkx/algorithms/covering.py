@@ -125,6 +125,13 @@ def is_edge_cover(G, cover):
     bool
         Whether the set of edges is a valid edge cover of the graph.
 
+    Examples
+    --------
+    >>> G = nx.Graph([(0, 1), (0, 2), (0, 3), (1, 2), (1, 3)])
+    >>> cover = {(2, 1), (3, 0)}
+    >>> nx.is_edge_cover(G, cover)
+    True
+
     Notes
     -----
     An edge cover of a graph is a set of edges such that every node of
