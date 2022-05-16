@@ -21,6 +21,12 @@ def is_regular(G):
     bool
         Whether the given graph or digraph is regular.
 
+    Examples
+    --------
+    >>> G = nx.DiGraph([(1, 2), (2, 3), (3, 4), (4, 1)])
+    >>> nx.is_regular(G)
+    True
+
     """
     n1 = nx.utils.arbitrary_element(G)
     if not G.is_directed():
