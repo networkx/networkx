@@ -49,6 +49,12 @@ def min_edge_cover(G, matching_algorithm=None):
         the returned set contains both the 2-tuples `(u, v)` and `(v, u)`
         for each edge of a minimum edge cover.
 
+    Examples
+    --------
+    >>> G = nx.Graph([(0, 1), (0, 2), (0, 3), (1, 2), (1, 3)])
+    >>> sorted(nx.min_edge_cover(G))
+    [(2, 1), (3, 0)]
+
     Notes
     -----
     An edge cover of a graph is a set of edges such that every node of
