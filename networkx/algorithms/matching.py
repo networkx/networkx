@@ -113,8 +113,7 @@ def is_matching(G, matching):
 
     Examples
     --------
-    >>> G = nx.Graph()
-    >>> G.add_edges_from([(1, 2), (1, 3), (2, 3), (2, 4), (3, 5), (4, 5)])
+    >>> G = nx.Graph([(1, 2), (1, 3), (2, 3), (2, 4), (3, 5), (4, 5)])
     >>> nx.is_maximal_matching(G, {1: 3, 2: 4})  # using dict to represent matching
     True
 
@@ -228,8 +227,7 @@ def is_perfect_matching(G, matching):
 
     Examples
     --------
-    >>> G = nx.Graph()
-    >>> G.add_edges_from([(1, 2), (1, 3), (2, 3), (2, 4), (3, 5), (4, 5), (4, 6)])
+    >>> G = nx.Graph([(1, 2), (1, 3), (2, 3), (2, 4), (3, 5), (4, 5), (4, 6)])
     >>> my_match = {1: 2, 3: 5, 4: 6}
     >>> nx.is_perfect_matching(G, my_match)
     True
