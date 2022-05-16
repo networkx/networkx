@@ -62,12 +62,12 @@ def test_basic_adigraph():
     testfile = "adigraph_result.tex"
     A.save(testfile, document=True)
     result = filecmp.cmp(f"{script_dir}/expected.tex", testfile)
-    with open(testfile, "r") as f:
+    with open(testfile) as f:
         fileresult = f.readlines()
     os.remove(testfile)
 
     expected_filename = f"{script_dir}/expected.tex"
-    with open(expected_filename, "r") as f:
+    with open(expected_filename) as f:
         expected = f.readlines()
 
     content_same = True
