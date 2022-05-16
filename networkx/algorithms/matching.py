@@ -33,6 +33,12 @@ def maximal_matching(G):
     matching : set
         A maximal matching of the graph.
 
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (1, 3), (2, 3), (2, 4), (3, 5), (4, 5)])
+    >>> sorted(nx.maximal_matching(G))
+    [(1, 2), (3, 5)]
+
     Notes
     -----
     The algorithm greedily selects a maximal matching M of the graph G
@@ -105,6 +111,15 @@ def is_matching(G, matching):
         If the proposed matching has an edge to a node not in G.
         Or if the matching is not a collection of 2-tuple edges.
 
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (1, 3), (2, 3), (2, 4), (3, 5), (4, 5)])
+    >>> nx.is_maximal_matching(G, {1: 3, 2: 4})  # using dict to represent matching
+    True
+
+    >>> nx.is_matching(G, {(1, 3), (2, 4)})  # using set to represent matching
+    True
+
     """
     if isinstance(matching, dict):
         matching = matching_dict_to_set(matching)
@@ -148,6 +163,12 @@ def is_maximal_matching(G, matching):
     bool
         Whether the given set or dictionary represents a valid maximal
         matching in the graph.
+
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (1, 3), (2, 3), (3, 4), (3, 5)])
+    >>> nx.is_maximal_matching(G, {(1, 2), (3, 4)})
+    True
 
     """
     if isinstance(matching, dict):
@@ -203,6 +224,13 @@ def is_perfect_matching(G, matching):
     bool
         Whether the given set or dictionary represents a valid perfect
         matching in the graph.
+
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (1, 3), (2, 3), (2, 4), (3, 5), (4, 5), (4, 6)])
+    >>> my_match = {1: 2, 3: 5, 4: 6}
+    >>> nx.is_perfect_matching(G, my_match)
+    True
 
     """
     if isinstance(matching, dict):
@@ -328,6 +356,14 @@ def max_weight_matching(G, maxcardinality=False, weight="weight"):
     -------
     matching : set
         A maximal matching of the graph.
+
+     Examples
+    --------
+    >>> G = nx.Graph()
+    >>> edges = [(1, 2, 6), (1, 3, 2), (2, 3, 1), (2, 4, 7), (3, 5, 9), (4, 5, 3)]
+    >>> G.add_weighted_edges_from(edges)
+    >>> sorted(nx.max_weight_matching(G))
+    [(2, 4), (5, 3)]
 
     Notes
     -----
