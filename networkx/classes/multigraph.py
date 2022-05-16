@@ -1,5 +1,6 @@
 """Base class for MultiGraph."""
 from copy import deepcopy
+from functools import cached_property
 
 import networkx as nx
 from networkx.classes.graph import Graph
@@ -354,7 +355,7 @@ class MultiGraph(Graph):
         else:
             Graph.__init__(self, incoming_graph_data, **attr)
 
-    @property
+    @cached_property
     def adj(self):
         """Graph adjacency object holding the neighbors of each node.
 
@@ -756,7 +757,7 @@ class MultiGraph(Graph):
         except KeyError:
             return False
 
-    @property
+    @cached_property
     def edges(self):
         """Returns an iterator over the edges.
 
@@ -905,7 +906,7 @@ class MultiGraph(Graph):
         except KeyError:
             return default
 
-    @property
+    @cached_property
     def degree(self):
         """A DegreeView for the Graph as G.degree or G.degree().
 
@@ -928,13 +929,10 @@ class MultiGraph(Graph):
 
         Returns
         -------
-        If a single node is requested
-        deg : int
-            Degree of the node, if a single node is passed as argument.
-
-        OR if multiple nodes are requested
-        nd_iter : iterator
-            The iterator returns two-tuples of (node, degree).
+        MultiDegreeView or int
+            If multiple nodes are requested (the default), returns a `MultiDegreeView`
+            mapping nodes to their degree.
+            If a single node is requested, returns the degree of the node as an integer.
 
         Examples
         --------

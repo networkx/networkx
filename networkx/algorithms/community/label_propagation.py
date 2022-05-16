@@ -111,7 +111,7 @@ def asyn_lpa_communities(G, weight=None, seed=None):
 def label_propagation_communities(G):
     """Generates community sets determined by label propagation
 
-    Finds communities in `G` using a semi-synchronous label WOW propagation
+    Finds communities in `G` using a semi-synchronous label propagation
     method [1]_. This method combines the advantages of both the synchronous
     and asynchronous models. Not implemented for directed graphs.
 

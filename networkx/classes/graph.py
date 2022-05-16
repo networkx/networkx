@@ -8,6 +8,7 @@ Self-loops are allowed but multiple edges are not (see MultiGraph).
 For directed graphs see DiGraph and MultiDiGraph.
 """
 from copy import deepcopy
+from functools import cached_property
 
 import networkx as nx
 from networkx.classes.coreviews import AdjacencyView
@@ -329,13 +330,16 @@ class Graph:
         self.graph = self.graph_attr_dict_factory()  # dictionary for graph attributes
         self._node = self.node_dict_factory()  # empty node attribute dict
         self._adj = self.adjlist_outer_dict_factory()  # empty adjacency dict
+        # clear cached adjacency properties
+        if hasattr(self, "adj"):
+            delattr(self, "adj")
         # attempt to load graph with data
         if incoming_graph_data is not None:
             convert.to_networkx_graph(incoming_graph_data, create_using=self)
         # load graph attributes (must be after convert)
         self.graph.update(attr)
 
-    @property
+    @cached_property
     def adj(self):
         """Graph adjacency object holding the neighbors of each node.
 
@@ -658,7 +662,7 @@ class Graph:
             except KeyError:
                 pass
 
-    @property
+    @cached_property
     def nodes(self):
         """A NodeView of the Graph as G.nodes or G.nodes().
 
@@ -749,12 +753,7 @@ class Graph:
             {0: 1, 1: 2, 2: 3}
 
         """
-        nodes = NodeView(self)
-        # Lazy View creation: overload the (class) property on the instance
-        # Then future G.nodes use the existing View
-        # setattr doesn't work because attribute already exists
-        self.__dict__["nodes"] = nodes
-        return nodes
+        return NodeView(self)
 
     def number_of_nodes(self):
         """Returns the number of nodes in the graph.
@@ -1254,7 +1253,7 @@ class Graph:
         except KeyError as err:
             raise NetworkXError(f"The node {n} is not in the graph.") from err
 
-    @property
+    @cached_property
     def edges(self):
         """An EdgeView of the Graph as G.edges or G.edges().
 
@@ -1377,7 +1376,7 @@ class Graph:
         """
         return iter(self._adj.items())
 
-    @property
+    @cached_property
     def degree(self):
         """A DegreeView for the Graph as G.degree or G.degree().
 
@@ -1400,12 +1399,10 @@ class Graph:
 
         Returns
         -------
-        If a single node is requested
-        deg : int
-            Degree of the node
-
-        OR if multiple nodes are requested
-        nd_view : A DegreeView object capable of iterating (node, degree) pairs
+        DegreeView or int
+            If multiple nodes are requested (the default), returns a `DegreeView`
+            mapping nodes to their degree.
+            If a single node is requested, returns the degree of the node as an integer.
 
         Examples
         --------
