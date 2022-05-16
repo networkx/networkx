@@ -304,6 +304,16 @@ def eccentricity(G, v=None, sp=None):
     -------
     ecc : dictionary
        A dictionary of eccentricity values keyed by node.
+
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (1, 3), (1, 4), (3, 4), (3, 5), (4, 5)])
+    >>> dict(nx.eccentricity(G))
+    {1: 2, 2: 3, 3: 2, 4: 2, 5: 3}
+
+    >>> dict(nx.eccentricity(G, v=[1, 5]))  # This returns the eccentrity of node 1 & 5
+    {1: 2, 5: 3}
+
     """
     #    if v is None:                # none, use entire graph
     #        nodes=G.nodes()
@@ -360,6 +370,12 @@ def diameter(G, e=None, usebounds=False):
     d : integer
        Diameter of graph
 
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (1, 3), (1, 4), (3, 4), (3, 5), (4, 5)])
+    >>> nx.diameter(G)
+    3
+
     See Also
     --------
     eccentricity
@@ -388,6 +404,12 @@ def periphery(G, e=None, usebounds=False):
     -------
     p : list
        List of nodes in periphery
+
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (1, 3), (1, 4), (3, 4), (3, 5), (4, 5)])
+    >>> nx.periphery(G)
+    [2, 5]
 
     See Also
     --------
@@ -420,6 +442,13 @@ def radius(G, e=None, usebounds=False):
     -------
     r : integer
        Radius of graph
+
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (1, 3), (1, 4), (3, 4), (3, 5), (4, 5)])
+    >>> nx.radius(G)
+    2
+
     """
     if usebounds is True and e is None and not G.is_directed():
         return _extrema_bounding(G, compute="radius")
@@ -445,6 +474,12 @@ def center(G, e=None, usebounds=False):
     -------
     c : list
        List of nodes in center
+
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (1, 3), (1, 4), (3, 4), (3, 5), (4, 5)])
+    >>> list(nx.center(G))
+    [1, 3, 4]
 
     See Also
     --------
@@ -502,6 +537,12 @@ def barycenter(G, weight=None, attr=None, sp=None):
         lengths for any pairs.
     ValueError
         If `sp` and `weight` are both given.
+
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (1, 3), (1, 4), (3, 4), (3, 5), (4, 5)])
+    >>> nx.barycenter(G)
+    [1, 3, 4]
 
     See Also
     --------
@@ -580,6 +621,12 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
     -------
     rd : float
        Value of effective resistance distance
+
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (1, 3), (1, 4), (3, 4), (3, 5), (4, 5)])
+    >>> nx.resistance_distance(G, 1, 3)
+    0.625
 
     Notes
     -----

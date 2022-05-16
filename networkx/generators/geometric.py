@@ -6,7 +6,7 @@ from itertools import accumulate, combinations, product
 import math
 
 import networkx as nx
-from networkx.utils import nodes_or_number, py_random_state
+from networkx.utils import py_random_state
 
 __all__ = [
     "geometric_edges",
@@ -107,7 +107,6 @@ def geometric_edges(G, radius, p):
 
 
 @py_random_state(5)
-@nodes_or_number(0)
 def random_geometric_graph(n, radius, dim=2, pos=None, p=2, seed=None):
     """Returns a random geometric graph in the unit cube of dimensions `dim`.
 
@@ -180,18 +179,15 @@ def random_geometric_graph(n, radius, dim=2, pos=None, p=2, seed=None):
     # TODO Is this function just a special case of the geographical
     # threshold graph?
     #
-    #     n_name, nodes = n
-    #     half_radius = {v: radius / 2 for v in nodes}
+    #     half_radius = {v: radius / 2 for v in n}
     #     return geographical_threshold_graph(nodes, theta=1, alpha=1,
     #                                         weight=half_radius)
     #
-    n_name, nodes = n
-    G = nx.Graph()
-    G.add_nodes_from(nodes)
+    G = nx.empty_graph(n)
     # If no positions are provided, choose uniformly random vectors in
     # Euclidean space of the specified dimension.
     if pos is None:
-        pos = {v: [seed.random() for i in range(dim)] for v in nodes}
+        pos = {v: [seed.random() for i in range(dim)] for v in G}
     nx.set_node_attributes(G, pos, "pos")
 
     G.add_edges_from(geometric_edges(G, radius, p))
@@ -199,7 +195,6 @@ def random_geometric_graph(n, radius, dim=2, pos=None, p=2, seed=None):
 
 
 @py_random_state(6)
-@nodes_or_number(0)
 def soft_random_geometric_graph(
     n, radius, dim=2, pos=None, p=2, p_dist=None, seed=None
 ):
@@ -301,14 +296,12 @@ def soft_random_geometric_graph(
            https://docs.scipy.org/doc/scipy/reference/tutorial/stats.html
 
     """
-    n_name, nodes = n
-    G = nx.Graph()
+    G = nx.empty_graph(n)
     G.name = f"soft_random_geometric_graph({n}, {radius}, {dim})"
-    G.add_nodes_from(nodes)
     # If no positions are provided, choose uniformly random vectors in
     # Euclidean space of the specified dimension.
     if pos is None:
-        pos = {v: [seed.random() for i in range(dim)] for v in nodes}
+        pos = {v: [seed.random() for i in range(dim)] for v in G}
     nx.set_node_attributes(G, pos, "pos")
 
     # if p_dist function not supplied the default function is an exponential
@@ -328,7 +321,6 @@ def soft_random_geometric_graph(
 
 
 @py_random_state(7)
-@nodes_or_number(0)
 def geographical_threshold_graph(
     n, theta, dim=2, pos=None, weight=None, metric=None, p_dist=None, seed=None
 ):
@@ -444,9 +436,7 @@ def geographical_threshold_graph(
        in Algorithms and Models for the Web-Graph (WAW 2007),
        Antony Bonato and Fan Chung (Eds), pp. 209--216, 2007
     """
-    n_name, nodes = n
-    G = nx.Graph()
-    G.add_nodes_from(nodes)
+    G = nx.empty_graph(n)
     # If no weights are provided, choose them from an exponential
     # distribution.
     if weight is None:
@@ -454,7 +444,7 @@ def geographical_threshold_graph(
     # If no positions are provided, choose uniformly random vectors in
     # Euclidean space of the specified dimension.
     if pos is None:
-        pos = {v: [seed.random() for i in range(dim)] for v in nodes}
+        pos = {v: [seed.random() for i in range(dim)] for v in G}
     # If no distance metric is provided, use Euclidean distance.
     if metric is None:
         metric = math.dist
@@ -481,7 +471,6 @@ def geographical_threshold_graph(
 
 
 @py_random_state(6)
-@nodes_or_number(0)
 def waxman_graph(
     n, beta=0.4, alpha=0.1, L=None, domain=(0, 0, 1, 1), metric=None, seed=None
 ):
@@ -569,9 +558,7 @@ def waxman_graph(
     .. [1]  B. M. Waxman, *Routing of multipoint connections*.
        IEEE J. Select. Areas Commun. 6(9),(1988) 1617--1622.
     """
-    n_name, nodes = n
-    G = nx.Graph()
-    G.add_nodes_from(nodes)
+    G = nx.empty_graph(n)
     (xmin, ymin, xmax, ymax) = domain
     # Each node gets a uniformly random position in the given rectangle.
     pos = {v: (seed.uniform(xmin, xmax), seed.uniform(ymin, ymax)) for v in G}
@@ -677,7 +664,6 @@ def navigable_small_world_graph(n, p=1, q=1, r=2, dim=2, seed=None):
 
 
 @py_random_state(7)
-@nodes_or_number(0)
 def thresholded_random_geometric_graph(
     n, radius, theta, dim=2, pos=None, weight=None, p=2, seed=None
 ):
@@ -777,11 +763,8 @@ def thresholded_random_geometric_graph(
     .. [1] http://cole-maclean.github.io/blog/files/thesis.pdf
 
     """
-
-    n_name, nodes = n
-    G = nx.Graph()
+    G = nx.empty_graph(n)
     G.name = f"thresholded_random_geometric_graph({n}, {radius}, {theta}, {dim})"
-    G.add_nodes_from(nodes)
     # If no weights are provided, choose them from an exponential
     # distribution.
     if weight is None:
@@ -789,7 +772,7 @@ def thresholded_random_geometric_graph(
     # If no positions are provided, choose uniformly random vectors in
     # Euclidean space of the specified dimension.
     if pos is None:
-        pos = {v: [seed.random() for i in range(dim)] for v in nodes}
+        pos = {v: [seed.random() for i in range(dim)] for v in G}
     # If no distance metric is provided, use Euclidean distance.
     nx.set_node_attributes(G, weight, "weight")
     nx.set_node_attributes(G, pos, "pos")
