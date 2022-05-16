@@ -69,6 +69,12 @@ def in_degree_centrality(G):
     NetworkXNotImplemented
         If G is undirected.
 
+    Examples
+    --------
+    >>> G = nx.DiGraph([(0, 1), (0, 2), (0, 3), (1, 2), (1, 3)])
+    >>> nx.in_degree_centrality(G)
+    {0: 0.0, 1: 0.3333333333333333, 2: 0.6666666666666666, 3: 0.6666666666666666}
+
     See Also
     --------
     degree_centrality, out_degree_centrality
