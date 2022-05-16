@@ -76,6 +76,12 @@ def global_efficiency(G):
     float
         The average global efficiency of the graph.
 
+    Examples
+    --------
+    >>> G = nx.Graph([(0, 1), (0, 2), (0, 3), (1, 2), (1, 3)])
+    >>> nx.global_efficiency(G)
+    0.9166666666666666
+
     Notes
     -----
     Edge weights are ignored when computing the shortest path distances.
