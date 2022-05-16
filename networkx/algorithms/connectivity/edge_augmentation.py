@@ -138,7 +138,7 @@ def k_edge_augmentation(G, k, avail=None, weight=None, partial=False):
     function available (depending on the value of k and if the problem is
     weighted or unweighted) to search for a minimum weight subset of available
     edges that k-edge-connects G. In general, finding a k-edge-augmentation is
-    NP-hard, so solutions are not garuenteed to be minimal. Furthermore, a
+    NP-hard, so solutions are not guaranteed to be minimal. Furthermore, a
     k-edge-augmentation may not exist.
 
     Parameters
