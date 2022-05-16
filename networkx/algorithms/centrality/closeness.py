@@ -60,6 +60,12 @@ def closeness_centrality(G, u=None, distance=None, wf_improved=True):
     nodes : dictionary
       Dictionary of nodes with closeness centrality as the value.
 
+    Examples
+    --------
+    >>> G = nx.Graph([(0, 1), (0, 2), (0, 3), (1, 2), (1, 3)])
+    >>> nx.closeness_centrality(G)
+    {0: 1.0, 1: 1.0, 2: 0.75, 3: 0.75}
+
     See Also
     --------
     betweenness_centrality, load_centrality, eigenvector_centrality,
