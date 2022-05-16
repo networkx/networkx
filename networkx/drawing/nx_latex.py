@@ -9,7 +9,6 @@ See Also
 --------
 Adigraph:      https://ctan.org/pkg/adigraph
 """
-from typing import Dict, Tuple, List
 import os
 import networkx as nx
 
@@ -17,25 +16,26 @@ __all__ = ["Adigraph"]
 
 
 class Adigraph:
-    def __init__(self,
-                 row_size: int = 2,
-                 nodes_color_fallback: str = "",
-                 edges_color_fallback: str = "",
-                 layout: Dict[str, Tuple[float, float]] = None,
-                 weights: Dict[str, float] = None,
-                 style: str = "",
-                 directed: bool = True,
-                 nodes_color: Dict[str, str] = None,
-                 edges_color: Dict[str, str] = None,
-                 nodes_width: Dict[str, float] = None,
-                 edges_width: Dict[str, float] = None,
-                 nodes_label: Dict[str, str] = None,
-                 edges_label: Dict[str, str] = None,
-                 sub_caption: str = "",
-                 sub_label: str = "",
-                 caption: str = "",
-                 label: str = "",
-                 ):
+    def __init__(
+        self,
+        row_size=2,
+        nodes_color_fallback="",
+        edges_color_fallback="",
+        layout=None,
+        weights=None,
+        style="",
+        directed=True,
+        nodes_color=None,
+        edges_color=None,
+        nodes_width=None,
+        edges_width=None,
+        nodes_label=None,
+        edges_label=None,
+        sub_caption="",
+        sub_label="",
+        caption="",
+        label="",
+    ):
         """Render networkx graph into Latex Adigraph package.
 
         Parameters
@@ -133,142 +133,160 @@ class Adigraph:
         """Load placeholder files."""
         script_dir = os.path.dirname(os.path.realpath(__file__))
         dir = script_dir + "/placeholders/"
-        with open(dir + "document.tex", "r") as f:
+        with open(dir + "document.tex") as f:
             self._document_placeholder = f.read()
-        with open(dir + "figure.tex", "r") as f:
+        with open(dir + "figure.tex") as f:
             self._figure_placeholder = f.read()
-        with open(dir + "subfigure.tex", "r") as f:
+        with open(dir + "subfigure.tex") as f:
             self._subfigure_placeholder = f.read()
 
-    def _get_caption(self, caption: str) -> str:
+    def _get_caption(self, caption):
         return f"\n\t\\caption{{{caption}}}" if caption else ""
 
-    def _get_label(self, label: str) -> str:
+    def _get_label(self, label):
         return f"\\label{{{label}}}" if label else ""
 
-    def _subfigure(self, i: int, adigraph: str, caption: str,
-                   label: str) -> str:
+    def _subfigure(self, i, adigraph, caption, label):
         """Return subfigure."""
         return self._subfigure_placeholder.format(
             content=adigraph,
             caption=self._get_caption(caption.format(i=i, n=len(self._graphs))),
             label=self._get_label(label.format(i=i, n=len(self._graphs))),
-            size=1 / self._row_size
+            size=1 / self._row_size,
         )
 
-    def _figure(self, adigraphs: List[str], captions: List[str],
-                labels: List[str]) -> str:
+    def _figure(self, adigraphs, captions, labels):
         """Return set of subfigures."""
         return self._figure_placeholder.format(
-            content="\n".join([
-                self._subfigure(i, a, c, l) for i, (a, c, l) in enumerate(zip(
-                    adigraphs,
-                    captions,
-                    labels
-                ), 1)
-            ]),
+            content="\n".join(
+                [
+                    self._subfigure(i, a, c, l)
+                    for i, (a, c, l) in enumerate(zip(adigraphs, captions, labels), 1)
+                ]
+            ),
             caption=self._get_caption(self._caption),
             label=self._get_label(self._label),
         )
 
-    def _body(self, content: str) -> str:
+    def _body(self, content):
         """Return working Latex document with given content."""
         return self._document_placeholder.format(content=content)
 
-    def _node(self, node: str, x: float, y: float, color: str,
-              width: float, label: str) -> str:
+    def _node(self, node, x, y, color, width, label):
         """Return formatted node."""
-        return (f"\n\t\t\t{node},{color},{width}:{x/2}"
-                f"\\textwidth,{y/2}\\textwidth:{label};"
-                )
+        return (
+            f"\n\t\t\t{node},{color},{width}:{x/2}"
+            f"\\textwidth,{y/2}\\textwidth:{label};"
+        )
 
-    def _get(self, dict: Dict, key, default=""):
+    def _get(self, dict, key, default=""):
         return dict.get(key, default)
 
-    def _symmetric_get(self, dict: Dict, key, directed: bool, default=""):
+    def _symmetric_get(self, dict, key, directed, default=""):
         if directed:
             return self._get(dict, key, default)
         return dict.get(key, dict.get(tuple(reversed(key)), default))
 
-    def _nodes(self,
-               nodes: List[str],
-               layout: Dict[str, Tuple[float, float]],
-               colors: Dict[str, str],
-               default_color: str,
-               widths: Dict[str, float],
-               labels: Dict[str, str],
-               ) -> str:
+    def _nodes(
+        self,
+        nodes,
+        layout,
+        colors,
+        default_color,
+        widths,
+        labels,
+    ):
         """Return given nodes in adigraph syntax."""
         return "".join(
-            [self._node(v, *layout[v], self._get(colors, v, default_color),
-                        self._get(widths, v), self._get(labels, v))
-             for v in nodes])
+            [
+                self._node(
+                    v,
+                    *layout[v],
+                    self._get(colors, v, default_color),
+                    self._get(widths, v),
+                    self._get(labels, v),
+                )
+                for v in nodes
+            ]
+        )
 
-    def _edge(self, start: str, end: str, weight: float,
-              color: str, width: float, label: str) -> str:
+    def _edge(self, start, end, weight, color, width, label):
         """Return formatted edge."""
         return f"\n\t\t\t{start},{end},{color},{width}:{weight}:{label};"
 
-    def _edges(self, edges: List[Tuple[str, str]], weights: Dict[str, float],
-               colors: Dict[str, str], default_color: str,
-               widths: Dict[str, float], labels: Dict[str, str],
-               directed: bool
-               ) -> str:
+    def _edges(self, edges, weights, colors, default_color, widths, labels, directed):
         """Return given edges in adigraph syntax."""
         return "".join(
-            [self._edge(
-                *e,
-                self._symmetric_get(weights, e, directed=directed),
-                self._symmetric_get(colors, e, directed, default_color),
-                self._symmetric_get(widths, e, directed=directed),
-                self._symmetric_get(labels, e, directed=directed))
-             for e in edges])
+            [
+                self._edge(
+                    *e,
+                    self._symmetric_get(weights, e, directed=directed),
+                    self._symmetric_get(colors, e, directed, default_color),
+                    self._symmetric_get(widths, e, directed=directed),
+                    self._symmetric_get(labels, e, directed=directed),
+                )
+                for e in edges
+            ]
+        )
 
     def _adigraph(
         self,
-        graph: nx.Graph,
-        layout: Dict[str, Tuple[float, float]],
-        weights: Dict[str, float],
-        style: str,
-        directed: bool,
-        nodes_color: Dict[str, str],
-        nodes_color_fallback: str,
-        edges_color: Dict[str, str],
-        edges_color_fallback: str,
-        nodes_width: Dict[str, float],
-        edges_width: Dict[str, float],
-        nodes_label: Dict[str, str],
-        edges_label: Dict[str, str]
+        graph,
+        layout,
+        weights,
+        style,
+        directed,
+        nodes_color,
+        nodes_color_fallback,
+        edges_color,
+        edges_color_fallback,
+        nodes_width,
+        edges_width,
+        nodes_label,
+        edges_label,
     ):
         """Return given graph in adigraph syntax."""
-        nodes = self._nodes(graph.nodes, layout, nodes_color,
-                            nodes_color_fallback, nodes_width,
-                            nodes_label)
-        edges = self._edges(graph.edges, weights, edges_color,
-                            edges_color_fallback, edges_width,
-                            edges_label, directed)
+        nodes = self._nodes(
+            graph.nodes,
+            layout,
+            nodes_color,
+            nodes_color_fallback,
+            nodes_width,
+            nodes_label,
+        )
+        edges = self._edges(
+            graph.edges,
+            weights,
+            edges_color,
+            edges_color_fallback,
+            edges_width,
+            edges_label,
+            directed,
+        )
 
-        return (f"\t\\NewAdigraph{{myAdigraph}}{{{nodes}\n\t\t}}"
-                f"{{{edges}\n\t\t}}[{style}]\n\t\t\\myAdigraph{{}}"
-                )
+        return (
+            f"\t\\NewAdigraph{{myAdigraph}}{{{nodes}\n\t\t}}"
+            f"{{{edges}\n\t\t}}[{style}]\n\t\t\\myAdigraph{{}}"
+        )
 
     def add_graph(
-            self,
-            graph: nx.Graph,
-            nodes_color_fallback: str = "",
-            edges_color_fallback: str = "",
-            layout: Dict[str, Tuple[float, float]] = None,
-            weights: Dict[str, float] = None,
-            style: str = "",
-            directed: bool = None,
-            nodes_color: Dict[str, str] = None,
-            edges_color: Dict[str, str] = None,
-            nodes_width: Dict[str, float] = None,
-            edges_width: Dict[str, float] = None,
-            nodes_label: Dict[str, str] = None,
-            edges_label: Dict[str, str] = None,
-            caption: str = "",
-            label: str = "") -> str:
+        self,
+        graph,
+        nodes_color_fallback="",
+        edges_color_fallback="",
+        layout=None,
+        weights=None,
+        style="",
+        directed=None,
+        nodes_color=None,
+        edges_color=None,
+        nodes_width=None,
+        edges_width=None,
+        nodes_label=None,
+        edges_label=None,
+        caption="",
+        label="",
+    ):
         """Add given graph to adigraph.
 
         Parameters
@@ -314,13 +332,19 @@ class Adigraph:
             (weights, self._default_weights, self._weights),
             (style, self._default_style, self._styles),
             (directed, self._default_directed, self._directed),
-            (edges_color_fallback, self._default_edges_color_fallback,
-                self._edges_color_fallbacks),
+            (
+                edges_color_fallback,
+                self._default_edges_color_fallback,
+                self._edges_color_fallbacks,
+            ),
             (edges_color, self._default_edges_color, self._edges_color),
             (edges_width, self._default_edges_width, self._edges_width),
             (edges_label, self._default_edges_label, self._edges_label),
-            (nodes_color_fallback, self._default_nodes_color_fallback,
-                self._nodes_color_fallbacks),
+            (
+                nodes_color_fallback,
+                self._default_nodes_color_fallback,
+                self._nodes_color_fallbacks,
+            ),
             (nodes_color, self._default_nodes_color, self._nodes_color),
             (nodes_width, self._default_nodes_width, self._nodes_width),
             (nodes_label, self._default_nodes_label, self._nodes_label),
@@ -337,7 +361,8 @@ class Adigraph:
         """Return Latex representation of current Adigraph."""
         return self._figure(
             [
-                self._adigraph(*G) for G in zip(
+                self._adigraph(*G)
+                for G in zip(
                     self._graphs,
                     self._layouts,
                     self._weights,
@@ -350,16 +375,16 @@ class Adigraph:
                     self._nodes_width,
                     self._edges_width,
                     self._nodes_label,
-                    self._edges_label
+                    self._edges_label,
                 )
             ],
             self._captions,
-            self._labels
+            self._labels,
         )
 
     __repr__ = __str__
 
-    def save(self, path: str, document: bool = False):
+    def save(self, path, document=False):
         """Save Latex representation of current graph to given path.
 
         Parameters
