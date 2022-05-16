@@ -27,6 +27,12 @@ def efficiency(G, u, v):
     float
         Multiplicative inverse of the shortest path distance between the nodes.
 
+    Examples
+    --------
+    >>> G = nx.Graph([(0, 1), (0, 2), (0, 3), (1, 2), (1, 3)])
+    >>> nx.efficiency(G, 2, 3)  # this gives efficiency for node 2 and 3
+    0.5
+
     Notes
     -----
     Edge weights are ignored when computing the shortest path distances.
