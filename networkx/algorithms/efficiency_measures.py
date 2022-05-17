@@ -79,8 +79,8 @@ def global_efficiency(G):
     Examples
     --------
     >>> G = nx.Graph([(0, 1), (0, 2), (0, 3), (1, 2), (1, 3)])
-    >>> nx.global_efficiency(G)
-    0.9166666666666666
+    >>> round(nx.global_efficiency(G), 12)
+    0.916666666667
 
     Notes
     -----
