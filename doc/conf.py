@@ -228,6 +228,7 @@ intersphinx_mapping = {
     "pygraphviz": ("https://pygraphviz.github.io/documentation/stable/", None),
     "sphinx-gallery": ("https://sphinx-gallery.github.io/stable/", None),
     "nx-guides": ("https://networkx.org/nx-guides/", None),
+    "sympy": ("https://docs.sympy.org/latest/", None),
 }
 
 # The reST default role (used for this markup: `text`) to use for all

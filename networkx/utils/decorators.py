@@ -245,8 +245,7 @@ def nodes_or_number(which_args):
             nodes = tuple(n)
         else:
             if n < 0:
-                msg = "Negative number of nodes not valid: {n}"
-                raise nx.NetworkXError(msg)
+                raise nx.NetworkXError(f"Negative number of nodes not valid: {n}")
         return (n, nodes)
 
     try:
@@ -464,6 +463,9 @@ class argmap:
         function constructs an object (like a file handle) that requires
         post-processing (like closing).
 
+        Note: try_finally decorators cannot be used to decorate generator
+        functions.
+
     Examples
     --------
     Most of these examples use `@argmap(...)` to apply the decorator to
@@ -605,6 +607,38 @@ class argmap:
         def fancy_reader(file=None):
             # this code doesn't need to worry about closing the file
             print(file.read())
+
+    Decorators with try_finally = True cannot be used with generator functions,
+    because the `finally` block is evaluated before the generator is exhausted::
+
+        @argmap(open_file, "file", try_finally=True)
+        def file_to_lines(file):
+            for line in file.readlines():
+                yield line
+
+    is equivalent to::
+
+        def file_to_lines_wrapped(file):
+            for line in file.readlines():
+                yield line
+
+        def file_to_lines_wrapper(file):
+            try:
+                file = open_file(file)
+                return file_to_lines_wrapped(file)
+            finally:
+                file.close()
+
+    which behaves similarly to::
+
+        def file_to_lines_whoops(file):
+            file = open_file(file)
+            file.close()
+            for line in file.readlines():
+                yield line
+
+    because the `finally` block of `file_to_lines_wrapper` is executed before
+    the caller has a chance to exhaust the iterator.
 
     Notes
     -----
@@ -805,15 +839,8 @@ class argmap:
         argmap._lazy_compile
         """
 
-        if inspect.isgeneratorfunction(f):
-
-            def func(*args, __wrapper=None, **kwargs):
-                yield from argmap._lazy_compile(__wrapper)(*args, **kwargs)
-
-        else:
-
-            def func(*args, __wrapper=None, **kwargs):
-                return argmap._lazy_compile(__wrapper)(*args, **kwargs)
+        def func(*args, __wrapper=None, **kwargs):
+            return argmap._lazy_compile(__wrapper)(*args, **kwargs)
 
         # standard function-wrapping stuff
         func.__name__ = f.__name__
@@ -842,6 +869,14 @@ class argmap:
 
         # this is used to variously call self.assemble and self.compile
         func.__argmap__ = self
+
+        if hasattr(f, "__argmap__"):
+            func.__is_generator = f.__is_generator
+        else:
+            func.__is_generator = inspect.isgeneratorfunction(f)
+
+        if self._finally and func.__is_generator:
+            raise nx.NetworkXError("argmap cannot decorate generators with try_finally")
 
         return func
 
@@ -1162,12 +1197,7 @@ class argmap:
         fname = cls._name(f)
         def_sig = f'def {fname}({", ".join(def_sig)}):'
 
-        if inspect.isgeneratorfunction(f):
-            _return = "yield from"
-        else:
-            _return = "return"
-
-        call_sig = f"{_return} {{}}({', '.join(call_sig)})"
+        call_sig = f"return {{}}({', '.join(call_sig)})"
 
         return cls.Signature(fname, sig, def_sig, call_sig, names, npos, args, kwargs)
 

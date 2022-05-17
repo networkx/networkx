@@ -108,3 +108,10 @@ Version 3.0
   ``make_small_undirected_graph``.
 * In ``convert_matrix.py`` remove ``to_numpy_recarray``.
 * In ``classes/function.py`` remove ``info``.
+* In ``algorithms/community/modularity_max.py``, remove the deprecated
+  ``n_communities`` parameter from the ``greedy_modularity_communities``
+  function.
+* In ``algorithms/distance_measures.py`` remove ``extrema_bounding``.
+* In ``utils/misc.py`` remove ``dict_to_numpy_array1`` and ``dict_to_numpy_array2``.
+* In ``utils/misc.py`` remove ``to_tuple``.
+* In ``algorithms/matching.py``, remove parameter ``maxcardinality`` from ``min_weight_matching``.
