@@ -364,6 +364,8 @@ def _rescale(betweenness, n, normalized, directed=False, k=None, endpoints=False
             else:
                 # Scale factor should include endpoint nodes
                 scale = 1 / (n * (n - 1))
+                if not directed: 
+                    scale = 2 * scale 
         elif n <= 2:
             scale = None  # no normalization b=0 for all nodes
         else:
