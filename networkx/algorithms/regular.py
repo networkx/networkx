@@ -95,7 +95,7 @@ def k_factor(G, k, matching_weight="weight"):
     >>> G = nx.Graph([(1, 2), (2, 3), (3, 4), (4, 1)])
     >>> G2 = nx.k_factor(G, k=1)
     >>> G2.edges()
-    EdgeView([(1, 2), (3, 4)]
+    EdgeView([(1, 2), (3, 4)])
 
     References
     ----------
