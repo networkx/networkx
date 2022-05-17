@@ -899,8 +899,6 @@ def dijkstra_predecessor_and_distance(G, source, cutoff=None, weight="weight"):
     pred, distance : dictionaries
         Returns two dictionaries representing a list of predecessors
         of a node and the distance to each node.
-        Warning: If target is specified, the dicts are incomplete as they
-        only contain information for the nodes along a path to target.
 
     Raises
     ------
