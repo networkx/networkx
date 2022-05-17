@@ -44,6 +44,7 @@ jobs:
             pip install -r requirements/extra.txt
             pip install -r requirements/example.txt
             pip install -r requirements/doc.txt
+            pip install sphinx==5.0.0.b1
             pip list
 
       - save_cache:
