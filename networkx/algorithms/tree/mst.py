@@ -722,8 +722,8 @@ def maximum_spanning_tree(G, weight="weight", algorithm="kruskal", ignore_nan=Fa
     return T
 
 
-@py_random_state(2)
-def random_spanning_tree(G, weight, seed=None):
+@py_random_state(3)
+def random_spanning_tree(G, weight, method="multiplicative", seed=None):
     """
     Sample a spanning tree using the edges weights of the graph.
 
@@ -748,6 +748,12 @@ def random_spanning_tree(G, weight, seed=None):
     weight : string
         The edge key for the edge attribute holding edge weight.
 
+    method : string
+        Either "multiplicative" so that the probability of sampling the
+        returned spanning tree is the product of the edge weights or
+        "additive" so that the probability of the tree is the sum of the
+        edge weights.
+
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
@@ -762,6 +768,7 @@ def random_spanning_tree(G, weight, seed=None):
     .. [1] V. Kulkarni, Generating random combinatorial objects, Journal of
        algorithms, 11 (1990), pp. 185–207
     """
+    from math import inf
 
     def find_node(merged_nodes, n):
         """
@@ -838,43 +845,111 @@ def random_spanning_tree(G, weight, seed=None):
 
         return merged_nodes, result
 
+    def spanning_tree_total_weight(G, weight):
+        """
+        Find the sum of weights of the spanning trees of `G` using the
+        approioate `method`.
+
+        This is easy if the choosen method is 'multiplicative', since we can
+        use Kirchhoff's Tree Matrix Theorem directly. However, with the
+        'additive' method, this process is slightly more complex and less
+        computatiionally efficent as we have to find the number of spanning
+        trees which contain each possible edge in the graph.
+
+        Parameters
+        ----------
+        G : NetworkX Graph
+            The graph to find the total weight of all spanning trees on.
+
+        weight : string
+            The key for the weight edge attribute of the graph.
+
+        Returns
+        -------
+        float
+            The sum of either the multiplicative or additive weight for all
+            spanning trees in the graph.
+        """
+        if method == "multiplicative":
+            return nx.total_spanning_tree_weight(G, weight)
+        elif method == "additive":
+            # There are three cases for the total spanning tree additive weight.
+            # 1. There are zero edges in the graph. This will happen when we are
+            #    evaluating prepared_G_e and there is only one edge in prepared_G
+            #    (see below for the names). In this case, we have to add this last
+            #    edge, so return infinity.
+            if G.number_of_edges() == 0:
+                return inf
+            # 2. There is one edge in the graph. Then the only spanning tree is
+            #    that edge itself, which will have a total weight of that edge
+            #    itself.
+            elif G.number_of_edges() == 1:
+                return G.edges(data=weight).__iter__().__next__()[2]
+            # 3. There are more than two edges in the graph. Then, we can find the
+            #    total weight of the spanning trees using the formula in the
+            #    reference paper: take the weight of that edge and multiple it by
+            #    the number of spanning trees which have to include that edge. This
+            #    can be accomplished by contracting the edge and finding the
+            #    multiplicative total spanning tree weight if the weight of each edge
+            #    is assumed to be 1, which is conviently built into networkx already,
+            #    by calling total_spanning_tree_weight with weight=None
+            else:
+                total = 0
+                for u, v, w in G.edges(data=weight):
+                    total += w * nx.total_spanning_tree_weight(
+                        nx.contracted_edge(G, edge=(u, v), self_loops=False), None
+                    )
+                return total
+
     U = set()
     V = set(G.edges())
     shuffled_edges = list(G.edges())
     seed.shuffle(shuffled_edges)
 
     for u, v in shuffled_edges:
+        e_weight = G[u][v][weight] if weight is not None else 1
         node_map, prepared_G = prepare_graph()
-        G_total_tree_weight = nx.total_spanning_tree_weight(prepared_G, weight)
+        G_total_tree_weight = spanning_tree_total_weight(prepared_G, weight)
         # Add the edge to U so that we can compute the total tree weight
         # assuming we include that edge
-        U.add((u, v))
         # Now, if (u, v) cannot exist in G because it is fully contracted out
         # of existence, then it by definition cannot influence G_e's Kirchhoff
         # value. But, we also cannot pick it.
-        _, prepared_G_e = prepare_graph()
         rep_edge = (find_node(node_map, u), find_node(node_map, v))
         # Check to see if the 'representative edge' for the current edge is
         # in prepared_G. If so, then we can pick it.
         if rep_edge in prepared_G.edges:
-            G_e_total_tree_weight = nx.total_spanning_tree_weight(prepared_G_e, weight)
+            prepared_G_e = nx.contracted_edge(
+                prepared_G, edge=rep_edge, self_loops=False
+            )
+            G_e_total_tree_weight = spanning_tree_total_weight(prepared_G_e, weight)
+            if method == "multiplicative":
+                threshold = e_weight * G_e_total_tree_weight / G_total_tree_weight
+            else:
+                numerator = (
+                    sum(G[u][v][weight] for u, v in U) + e_weight
+                ) * nx.total_spanning_tree_weight(prepared_G_e) + G_e_total_tree_weight
+                denominator = (
+                    sum(G[u][v][weight] for u, v in U)
+                    * nx.total_spanning_tree_weight(prepared_G)
+                    + G_total_tree_weight
+                )
+                threshold = numerator / denominator
         else:
-            G_e_total_tree_weight = 0.0
+            threshold = 0.0
         z = seed.uniform(0.0, 1.0)
-        # This will be useful if I move this random spanning tree method to
-        # the boarder NetworkX library
-        e_weight = G[u][v][weight] if weight is not None else 1
-        if z > e_weight * G_e_total_tree_weight / G_total_tree_weight:
-            # Remove the edge from U since we did not decide to include it in
-            # the sampled spanning tree. Also remove the edge from V because if
-            # we did not decide to include it we must reject it.
-            U.remove((u, v))
+        if z > threshold:
+            # Remove the edge from V since we did not pick it.
             V.remove((u, v))
+        else:
+            # Add the edge to U since we picked it.
+            U.add((u, v))
         # If we decide to keep an edge, it may complete the spanning tree.
-        elif len(U) == G.number_of_nodes() - 1:
+        if len(U) == G.number_of_nodes() - 1:
             spanning_tree = nx.Graph()
             spanning_tree.add_edges_from(U)
             return spanning_tree
+    raise Exception(f"Something went wrong! Only {len(U)} edges in the spanning tree!")
 
 
 class SpanningTreeIterator:

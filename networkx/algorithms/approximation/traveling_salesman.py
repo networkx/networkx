@@ -335,6 +335,7 @@ def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, metho
 
 
 @not_implemented_for("undirected")
+@py_random_state(2)
 def asadpour_atsp(G, weight="weight", seed=None, source=None):
     """
     Returns an approximate solution to the traveling salesman problem.
@@ -383,7 +384,7 @@ def asadpour_atsp(G, weight="weight", seed=None, source=None):
         an exception.
 
     NetworkXError
-        If 'source` is not `None` and is not a node in `G`, the algorithm raises
+        If `source` is not `None` and is not a node in `G`, the algorithm raises
         an exception.
 
     NetworkXNotImplemented
@@ -451,7 +452,7 @@ def asadpour_atsp(G, weight="weight", seed=None, source=None):
     minimum_sampled_tree = None
     minimum_sampled_tree_weight = math.inf
     for _ in range(2 * ceil(ln(G.number_of_nodes()))):
-        sampled_tree = random_spanning_tree(z_support, "weight", seed)
+        sampled_tree = random_spanning_tree(z_support, "weight", seed=seed)
         sampled_tree_weight = sampled_tree.size(weight)
         if sampled_tree_weight < minimum_sampled_tree_weight:
             minimum_sampled_tree = sampled_tree.copy()
