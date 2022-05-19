@@ -31,11 +31,12 @@ def voterank(G, number_of_nodes=None):
     >>> nx.voterank(G)
     [0, 1]
 
-    The algorithm can be used both for undirected and directed graphs. However, the directed version is different in two ways:
-    (i) nodes only vote for their in-neighbors and (ii) only the voting ability of elected node and its out-neighbors are updated.
-    You can see an example below:
+    The algorithm can be used both for undirected and directed graphs.
+    However, the directed version is different in two ways:
+    (i) nodes only vote for their in-neighbors and
+    (ii) only the voting ability of elected node and its out-neighbors are updated:
 
-    >>> G= nx.DiGraph([(0, 1), (2, 1), (2, 3), (3, 4)])
+    >>> G = nx.DiGraph([(0, 1), (2, 1), (2, 3), (3, 4)])
     >>> nx.voterank(G)
     [2, 3]
 
