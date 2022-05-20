@@ -723,22 +723,20 @@ def maximum_spanning_tree(G, weight="weight", algorithm="kruskal", ignore_nan=Fa
 
 
 @py_random_state(3)
-def random_spanning_tree(G, weight, method="multiplicative", seed=None):
+def random_spanning_tree(G, weight=None, multiplicative=True, seed=None):
     """
-    Sample a spanning tree using the edges weights of the graph.
+    Sample a random spanning tree using the edges weights of the graph.
 
-    The edge weights are multiplicative, so the probability of each tree is
-    proportional to the product of edge weights.
+    This function supports two different methods for determining the
+    probability of the graph. If `multiplicative` is `True`, the probability
+    is based on the product of edge weights, and if `multiplicative` is
+    `false` it is based on the sum of the edge weight. However, since it is
+    easier to determine the total weight of all spanning trees for the
+    multiplicative verison, that is significantly faster and should be used if
+    possible. Additionally, setting `weight` to `None` will cause a spanning tree
+    to be selected with uniform probability.
 
-    The algorithm itself uses algorithm A8 in [1]_ .
-
-    We 'shuffle' the edges in the graph, and then probabilistically
-    determine weather to add the edge conditioned on all of the previous
-    edges which where added to the tree. Probabilities are calculated using
-    Kirchhoff's Matrix Tree Theorem and a weighted Laplacian matrix.
-
-    At each iteration, we contract the edges we have decided to include in the
-    sampled tree and delete those which we have decided not to include.
+    The function uses algorithm A8 in [1]_ .
 
     Parameters
     ----------
@@ -748,11 +746,11 @@ def random_spanning_tree(G, weight, method="multiplicative", seed=None):
     weight : string
         The edge key for the edge attribute holding edge weight.
 
-    method : string
-        Either "multiplicative" so that the probability of sampling the
-        returned spanning tree is the product of the edge weights or
-        "additive" so that the probability of the tree is the sum of the
-        edge weights.
+    multiplicative : True
+        If `True`, the probability of each tree is the product of its edge weight
+        over the sum of the product of all the spanning trees in the graph. If
+        `False`, the probability is the sum of its edge weight over the sum of
+        the sum of weights for all spanning trees in the graph.
 
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
@@ -761,14 +759,13 @@ def random_spanning_tree(G, weight, method="multiplicative", seed=None):
     Returns
     -------
     nx.Graph
-        A spanning tree using the distribution defined by `gamma`.
+        A spanning tree using the distribution defined by the weight of the tree.
 
     References
     ----------
     .. [1] V. Kulkarni, Generating random combinatorial objects, Journal of
        algorithms, 11 (1990), pp. 185–207
     """
-    from math import inf
 
     def find_node(merged_nodes, n):
         """
@@ -870,22 +867,16 @@ def random_spanning_tree(G, weight, method="multiplicative", seed=None):
             The sum of either the multiplicative or additive weight for all
             spanning trees in the graph.
         """
-        if method == "multiplicative":
+        if multiplicative:
             return nx.total_spanning_tree_weight(G, weight)
-        elif method == "additive":
-            # There are three cases for the total spanning tree additive weight.
-            # 1. There are zero edges in the graph. This will happen when we are
-            #    evaluating prepared_G_e and there is only one edge in prepared_G
-            #    (see below for the names). In this case, we have to add this last
-            #    edge, so return infinity.
-            if G.number_of_edges() == 0:
-                return inf
-            # 2. There is one edge in the graph. Then the only spanning tree is
+        else:
+            # There are two cases for the total spanning tree additive weight.
+            # 1. There is one edge in the graph. Then the only spanning tree is
             #    that edge itself, which will have a total weight of that edge
             #    itself.
-            elif G.number_of_edges() == 1:
+            if G.number_of_edges() == 1:
                 return G.edges(data=weight).__iter__().__next__()[2]
-            # 3. There are more than two edges in the graph. Then, we can find the
+            # 2. There are more than two edges in the graph. Then, we can find the
             #    total weight of the spanning trees using the formula in the
             #    reference paper: take the weight of that edge and multiple it by
             #    the number of spanning trees which have to include that edge. This
@@ -902,6 +893,7 @@ def random_spanning_tree(G, weight, method="multiplicative", seed=None):
                 return total
 
     U = set()
+    st_cached_value = 0
     V = set(G.edges())
     shuffled_edges = list(G.edges())
     seed.shuffle(shuffled_edges)
@@ -923,15 +915,14 @@ def random_spanning_tree(G, weight, method="multiplicative", seed=None):
                 prepared_G, edge=rep_edge, self_loops=False
             )
             G_e_total_tree_weight = spanning_tree_total_weight(prepared_G_e, weight)
-            if method == "multiplicative":
+            if multiplicative:
                 threshold = e_weight * G_e_total_tree_weight / G_total_tree_weight
             else:
                 numerator = (
-                    sum(G[u][v][weight] for u, v in U) + e_weight
+                    st_cached_value + e_weight
                 ) * nx.total_spanning_tree_weight(prepared_G_e) + G_e_total_tree_weight
                 denominator = (
-                    sum(G[u][v][weight] for u, v in U)
-                    * nx.total_spanning_tree_weight(prepared_G)
+                    st_cached_value * nx.total_spanning_tree_weight(prepared_G)
                     + G_total_tree_weight
                 )
                 threshold = numerator / denominator
@@ -943,6 +934,7 @@ def random_spanning_tree(G, weight, method="multiplicative", seed=None):
             V.remove((u, v))
         else:
             # Add the edge to U since we picked it.
+            st_cached_value += e_weight
             U.add((u, v))
         # If we decide to keep an edge, it may complete the spanning tree.
         if len(U) == G.number_of_nodes() - 1:

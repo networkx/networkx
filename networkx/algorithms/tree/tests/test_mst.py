@@ -519,12 +519,12 @@ def test_random_spanning_tree_additive_small():
     for u, v in edges:
         G.add_edge(u, v, weight=edges[(u, v)])
 
-    solution_edges = [(0, 1), (1, 2), (2, 3), (3, 4), (3, 5)]
+    solution_edges = [(0, 2), (1, 2), (2, 3), (3, 4), (3, 5)]
     solution = nx.Graph()
     solution.add_edges_from(solution_edges)
 
     sampled_tree = nx.random_spanning_tree(
-        G, weight="weight", method="additive", seed=37
+        G, weight="weight", multiplicative=False, seed=37
     )
 
     assert nx.utils.edges_equal(solution.edges, sampled_tree.edges)
@@ -598,7 +598,9 @@ def test_random_spanning_tree_additive_large():
     # and pass those into sample_spanning_tree.
     rng = Random(37)
     for _ in range(sample_size):
-        sampled_tree = nx.random_spanning_tree(G, "weight", method="additive", seed=rng)
+        sampled_tree = nx.random_spanning_tree(
+            G, "weight", multiplicative=False, seed=rng
+        )
         assert nx.is_tree(sampled_tree)
 
         for t in tree_expected:
