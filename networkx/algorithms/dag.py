@@ -621,7 +621,7 @@ def transitive_closure(G, reflexive=False):
     reflexive : Bool or None, optional (default: False)
         Determines when cycles create self-loops in the Transitive Closure.
         If True, trivial cycles (length 0) create self-loops. The result
-        is a reflexive tranistive closure of G.
+        is a reflexive transitive closure of G.
         If False (the default) non-trivial cycles create self-loops.
         If None, self-loops are not created.
 
