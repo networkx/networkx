@@ -11,8 +11,6 @@ def voterank(G, number_of_nodes=None):
     and the node with the highest votes is elected iteratively. The voting
     ability of out-neighbors of elected nodes is decreased in subsequent turns.
 
-    Note: We treat each edge independently in case of multigraphs.
-
     Parameters
     ----------
     G : graph
@@ -26,6 +24,25 @@ def voterank(G, number_of_nodes=None):
     voterank : list
         Ordered list of computed seeds.
         Only nodes with positive number of votes are returned.
+
+    Examples
+    --------
+    >>> G = nx.Graph([(0, 1), (0, 2), (0, 3), (1, 4)])
+    >>> nx.voterank(G)
+    [0, 1]
+
+    The algorithm can be used both for undirected and directed graphs.
+    However, the directed version is different in two ways:
+    (i) nodes only vote for their in-neighbors and
+    (ii) only the voting ability of elected node and its out-neighbors are updated:
+
+    >>> G = nx.DiGraph([(0, 1), (2, 1), (2, 3), (3, 4)])
+    >>> nx.voterank(G)
+    [2, 3]
+
+    Notes
+    -----
+    Each edge is treated independently in case of multigraphs.
 
     References
     ----------
