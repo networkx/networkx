@@ -76,16 +76,13 @@ Release Process
     Assuming you are at the top-level of the ``documentation`` repo::
 
       # FIXME - use eol_banner.html
-      cp -a latest networkx-<major>.<minor>
+      cp -a latest ../networkx-<major>.<minor>
+      git reset --hard <commit from last release>
+      mv ../networkx-<major>.<minor> .
       ln -sfn networkx-<major>.<minor> stable
       git add networkx-<major>.<minor> stable
       git commit -m "Add <major>.<minor> docs"
-      # maybe squash all the Deploy GitHub Pages commits
-      # git rebase -i HEAD~XX where XX is the number of commits back
-      # check you didn't break anything
-      # diff -r latest networkx-<major>.<minor>
-      # you will then need to force the push so be careful!
-      git push
+      git push  # force push---be careful!
 
 - Update ``__version__`` in ``networkx/__init__.py``.
 
