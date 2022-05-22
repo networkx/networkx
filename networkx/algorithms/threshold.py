@@ -15,8 +15,12 @@ def is_threshold_graph(G):
     G : NetworkX graph instance
         An instance of `Graph`, `DiGraph`, `MultiGraph` or `MultiDiGraph`
 
-    Notes
-        ----------
+    Returns
+    -------
+    True if `G` is a threshold graph, `False` otherwise.
+
+    References
+    ----------
         .. [1] Threshold graphs: https://en.wikipedia.org/wiki/Threshold_graph
 
     Examples
@@ -28,22 +32,18 @@ def is_threshold_graph(G):
     >>> G = nx.barbell_graph(3, 3)
     >>> is_threshold_graph(G)
     False
-
-    Returns
-    -------
-    True if `G` is a threshold graph, `False` otherwise.
     """
     return is_threshold_sequence(list(d for n, d in G.degree()))
 
 
 def is_threshold_sequence(degree_sequence):
-    """Returns True if the sequence is a threshold degree seqeunce.
+    """Returns True if the sequence is a threshold degree sequence.
 
     Uses the property that a threshold graph must be constructed by
     adding either dominating or isolated nodes. Thus, it can be
     deconstructed iteratively by removing a node of degree zero or a
     node that connects to the remaining nodes.  If this deconstruction
-    failes then the sequence is not a threshold sequence.
+    fails then the sequence is not a threshold sequence.
 
     Parameters
     ----------
@@ -52,7 +52,8 @@ def is_threshold_sequence(degree_sequence):
 
     Returns
     -------
-    False if not a threshold degree sequence, True otherwise
+     bool
+        Whether 'degree_sequence' is a threshold sequence.
     """
     ds = degree_sequence[:]  # get a copy so we don't destroy original
     ds.sort()
@@ -78,13 +79,6 @@ def creation_sequence(degree_sequence, with_labels=False, compact=False):
 
     Notes
     -----
-    If with_labels==True:
-    Returns a list of 2-tuples containing the vertex number
-    and a character 'd' or 'i' which describes the type of vertex.
-
-    If compact==True:
-    Returns the creation sequence in a compact form that is the number
-    of 'i's and 'd's alternating.
     Examples:
     [1,2,2,3] represents d,i,i,d,d,i,i,i
     [3,1,2] represents d,d,d,i,d,d
@@ -98,6 +92,12 @@ def creation_sequence(degree_sequence, with_labels=False, compact=False):
     ----------
     degree_sequence
         The sequence containing the degrees of the Graph's nodes
+    with_labels
+        If with_labels==True: Returns a list of 2-tuples containing the vertex number and a character 'd' or 'i'
+        which describes the type of vertex.
+    compact
+        If compact==True: Returns the creation sequence in a compact form that is the number of 'i's and 'd's
+        alternating.
 
     Returns
     -------
@@ -274,7 +274,7 @@ def creation_sequence_to_weights(creation_sequence):
 
 
 def weights_to_creation_sequence(
-    weights, threshold=1, with_labels=False, compact=False
+        weights, threshold=1, with_labels=False, compact=False
 ):
     """Returns a creation sequence for a threshold graph determined by the weights and threshold given as input.
 
@@ -670,7 +670,7 @@ def degree_correlation(creation_sequence):
         for dj in rdi:
             degj = ds[dj]
             s1 += degj * degi
-            s2 += degi**2 + degj**2
+            s2 += degi ** 2 + degj ** 2
             s3 += degi + degj
             m += 1
     denom = 2 * m * s2 - s3 * s3
