@@ -139,7 +139,7 @@ def approximate_current_flow_betweenness_centrality(
     else:
         factor = nb / 2.0
     # remap to original node names and "unnormalize" if required
-    return {ordering[k]: float(v * factor) for k, v in betweenness.items()}
+    return {ordering[k]: v * factor for k, v in betweenness.items()}
 
 
 @not_implemented_for("directed")
@@ -339,4 +339,4 @@ def edge_current_flow_betweenness_centrality(
             betweenness[e] += (i + 1 - pos[i]) * row[i]
             betweenness[e] += (n - i - pos[i]) * row[i]
         betweenness[e] /= nb
-    return {(ordering[s], ordering[t]): float(v) for (s, t), v in betweenness.items()}
+    return {(ordering[s], ordering[t]): v for (s, t), v in betweenness.items()}

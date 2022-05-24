@@ -375,7 +375,7 @@ class TestBipartiteWeightedProjection:
         def jaccard(G, u, v):
             unbrs = set(G[u])
             vnbrs = set(G[v])
-            return float(len(unbrs & vnbrs)) / len(unbrs | vnbrs)
+            return len(unbrs & vnbrs) / len(unbrs | vnbrs)
 
         def my_weight(G, u, v, weight="weight"):
             w = 0

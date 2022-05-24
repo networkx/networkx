@@ -318,7 +318,7 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True, weight=None):
     except AttributeError:
         nodelist = list(G)
         try:
-            b = np.ones((len(nodelist), 1)) * float(beta)
+            b = np.ones((len(nodelist), 1)) * beta
         except (TypeError, ValueError, AttributeError) as err:
             raise nx.NetworkXError("beta must be a number") from err
 

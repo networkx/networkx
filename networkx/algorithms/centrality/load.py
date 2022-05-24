@@ -118,7 +118,7 @@ def _node_betweenness(G, source, cutoff=False, normalized=True, weight=None):
             for x in pred[v]:  # one shortest path.
                 if x == source:  # stop if hit source because all remaining v
                     break  # also have pred[v]==[source]
-                between[x] += between[v] / float(num_paths)
+                between[x] += between[v] / num_paths
     #  remove source
     for v in between:
         between[v] -= 1
@@ -127,7 +127,7 @@ def _node_betweenness(G, source, cutoff=False, normalized=True, weight=None):
         l = len(between)
         if l > 2:
             # scale by 1/the number of possible paths
-            scale = 1.0 / float((l - 1) * (l - 2))
+            scale = 1 / ((l - 1) * (l - 2))
             for v in between:
                 between[v] *= scale
     return between

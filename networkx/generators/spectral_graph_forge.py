@@ -87,7 +87,7 @@ def spectral_graph_forge(G, alpha, transformation="identity", seed=None):
     alpha = np.clip(alpha, 0, 1)
     A = nx.to_numpy_array(G)
     n = A.shape[1]
-    level = int(round(n * alpha))
+    level = round(n * alpha)
 
     if transformation not in available_transformations:
         msg = f"{transformation!r} is not a valid transformation. "

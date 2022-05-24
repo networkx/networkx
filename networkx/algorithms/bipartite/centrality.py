@@ -144,17 +144,15 @@ def betweenness_centrality(G, nodes):
     """
     top = set(nodes)
     bottom = set(G) - top
-    n = float(len(top))
-    m = float(len(bottom))
-    s = (n - 1) // m
-    t = (n - 1) % m
+    n = len(top)
+    m = len(bottom)
+    s, t = divmod(n - 1, m)
     bet_max_top = (
         ((m**2) * ((s + 1) ** 2))
         + (m * (s + 1) * (2 * t - s - 1))
         - (t * ((2 * s) - t + 3))
     ) / 2.0
-    p = (m - 1) // n
-    r = (m - 1) % n
+    p, r = divmod(m - 1, n)
     bet_max_bot = (
         ((n**2) * ((p + 1) ** 2))
         + (n * (p + 1) * (2 * r - p - 1))
@@ -243,15 +241,15 @@ def closeness_centrality(G, nodes, normalized=True):
     path_length = nx.single_source_shortest_path_length
     top = set(nodes)
     bottom = set(G) - top
-    n = float(len(top))
-    m = float(len(bottom))
+    n = len(top)
+    m = len(bottom)
     for node in top:
         sp = dict(path_length(G, node))
         totsp = sum(sp.values())
         if totsp > 0.0 and len(G) > 1:
             closeness[node] = (m + 2 * (n - 1)) / totsp
             if normalized:
-                s = (len(sp) - 1.0) / (len(G) - 1)
+                s = (len(sp) - 1) / (len(G) - 1)
                 closeness[node] *= s
         else:
             closeness[n] = 0.0
@@ -261,7 +259,7 @@ def closeness_centrality(G, nodes, normalized=True):
         if totsp > 0.0 and len(G) > 1:
             closeness[node] = (n + 2 * (m - 1)) / totsp
             if normalized:
-                s = (len(sp) - 1.0) / (len(G) - 1)
+                s = (len(sp) - 1) / (len(G) - 1)
                 closeness[node] *= s
         else:
             closeness[n] = 0.0

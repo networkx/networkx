@@ -808,7 +808,7 @@ def unconstrained_bridge_augmentation(G):
         v2 = [n for n in nx.dfs_preorder_nodes(T, root) if T.degree(n) == 1]
         # connecting first half of the leafs in pre-order to the second
         # half will bridge connect the tree with the fewest edges.
-        half = int(math.ceil(len(v2) / 2.0))
+        half = math.ceil(len(v2) / 2)
         A2 = list(zip(v2[:half], v2[-half:]))
 
     # collect the edges used to augment the original forest

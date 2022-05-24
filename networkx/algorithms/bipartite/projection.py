@@ -194,7 +194,7 @@ def weighted_projected_graph(B, nodes, ratio=False):
         G = nx.Graph()
     G.graph.update(B.graph)
     G.add_nodes_from((n, B.nodes[n]) for n in nodes)
-    n_top = float(len(B) - len(nodes))
+    n_top = len(B) - len(nodes)
 
     if n_top < 1:
         raise NetworkXAlgorithmError(
@@ -402,9 +402,9 @@ def overlap_weighted_projected_graph(B, nodes, jaccard=True):
         for v in nbrs2:
             vnbrs = set(pred[v])
             if jaccard:
-                wt = float(len(unbrs & vnbrs)) / len(unbrs | vnbrs)
+                wt = len(unbrs & vnbrs) / len(unbrs | vnbrs)
             else:
-                wt = float(len(unbrs & vnbrs)) / min(len(unbrs), len(vnbrs))
+                wt = len(unbrs & vnbrs) / min(len(unbrs), len(vnbrs))
             G.add_edge(u, v, weight=wt)
     return G
 
