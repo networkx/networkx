@@ -268,58 +268,25 @@ def draw_networkx(G, pos=None, arrows=None, with_labels=True, **kwds):
     draw_networkx_labels
     draw_networkx_edge_labels
     """
+    from inspect import signature
+
     import matplotlib.pyplot as plt
 
-    valid_node_kwds = (
-        "nodelist",
-        "node_size",
-        "node_color",
-        "node_shape",
-        "alpha",
-        "cmap",
-        "vmin",
-        "vmax",
-        "ax",
-        "linewidths",
-        "edgecolors",
-        "label",
-    )
+    # Get all valid keywords by inspecting the signatures of draw_networkx_nodes,
+    # draw_networkx_edges, draw_networkx_labels
 
-    valid_edge_kwds = (
-        "edgelist",
-        "width",
-        "edge_color",
-        "style",
-        "alpha",
-        "arrowstyle",
-        "arrowsize",
-        "edge_cmap",
-        "edge_vmin",
-        "edge_vmax",
-        "ax",
-        "label",
-        "node_size",
-        "nodelist",
-        "node_shape",
-        "connectionstyle",
-        "min_source_margin",
-        "min_target_margin",
-    )
+    valid_node_kwds = signature(draw_networkx_nodes).parameters.keys()
+    valid_edge_kwds = signature(draw_networkx_edges).parameters.keys()
+    valid_label_kwds = signature(draw_networkx_labels).parameters.keys()
 
-    valid_label_kwds = (
-        "labels",
-        "font_size",
-        "font_color",
-        "font_family",
-        "font_weight",
-        "alpha",
-        "bbox",
-        "ax",
-        "horizontalalignment",
-        "verticalalignment",
-    )
-
-    valid_kwds = valid_node_kwds + valid_edge_kwds + valid_label_kwds
+    # Create a set with all valid keywords across the three functions and
+    # remove the arguments of this function (draw_networkx)
+    valid_kwds = (valid_node_kwds | valid_edge_kwds | valid_label_kwds) - {
+        "G",
+        "pos",
+        "arrows",
+        "with_labels",
+    }
 
     if any([k not in valid_kwds for k in kwds]):
         invalid_args = ", ".join([k for k in kwds if k not in valid_kwds])
