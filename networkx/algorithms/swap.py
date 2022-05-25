@@ -8,12 +8,17 @@ import networkx as nx
 
 __all__ = ["double_edge_swap", "connected_double_edge_swap", "directed_edge_swap"]
 
+
 @py_random_state(3)
 def directed_edge_swap(G, nswap=1, max_tries=100, seed=None):
     """Swap three edges in a directed graph while keeping the node degrees fixed.
 
+    A directed edge swap swaps three edges such that a -> b -> c -> d becomes
+    a -> c -> b -> d. This pattern of swapping allows all possible states with the
+    same in- and out-degree distribution in a directed graph to be reached.
 
-
+    If the swap would create parallel edges (e.g. if a -> c already existed in the
+    previous example), another attempt is made to find a suitable trio of edges.
 
     Returns
     -------
@@ -32,7 +37,9 @@ def directed_edge_swap(G, nswap=1, max_tries=100, seed=None):
     https://arxiv.org/pdf/0905.4913.pdf
     """
     if not G.is_directed():
-        raise nx.NetworkXError("directed_edge_swap() is only defined for directed graphs.")
+        raise nx.NetworkXError(
+            "directed_edge_swap() is only defined for directed graphs."
+        )
     if nswap > max_tries:
         raise nx.NetworkXError("Number of swaps > number of tries allowed.")
     if len(G) < 4:
@@ -68,23 +75,23 @@ def directed_edge_swap(G, nswap=1, max_tries=100, seed=None):
             continue
         _, fourth = seed.choice(list(G.out_edges(third)))
 
-        if (start == second or
-            second == third or
-            third == fourth):
+        if start == second or second == third or third == fourth:
             n += 1
             continue
 
-        if ((start, third) not in G.out_edges(start) and
-            (second, fourth) not in G.out_edges(second) and
-            (third, second) not in G.out_edges(third)):
-           # Swap nodes
-           G.add_edge(start, third)
-           G.add_edge(third, second)
-           G.add_edge(second, fourth)
-           G.remove_edge(start, second)
-           G.remove_edge(second, third)
-           G.remove_edge(third, fourth)
-           swapcount += 1
+        if (
+            (start, third) not in G.out_edges(start)
+            and (second, fourth) not in G.out_edges(second)
+            and (third, second) not in G.out_edges(third)
+        ):
+            # Swap nodes
+            G.add_edge(start, third)
+            G.add_edge(third, second)
+            G.add_edge(second, fourth)
+            G.remove_edge(start, second)
+            G.remove_edge(second, third)
+            G.remove_edge(third, fourth)
+            swapcount += 1
 
         if n >= max_tries:
             e = (
