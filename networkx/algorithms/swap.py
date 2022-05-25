@@ -33,8 +33,8 @@ def directed_edge_swap(G, nswap=1, max_tries=100, seed=None):
 
     References
     ----------
-    https://math.stackexchange.com/questions/22272
-    https://arxiv.org/pdf/0905.4913.pdf
+    .. [1] https://math.stackexchange.com/questions/22272
+    .. [2] https://arxiv.org/pdf/0905.4913.pdf
     """
     if not G.is_directed():
         raise nx.NetworkXError(
