@@ -2,7 +2,6 @@
 """
 
 import math
-import random
 from networkx.utils import py_random_state
 
 import networkx as nx
@@ -52,27 +51,24 @@ def directed_edge_swap(G, nswap=1, max_tries=100, seed=None):
 
     while swapcount < nswap:
         # choose source node index from discrete distribution
-        start_index = discrete_sequence(1, cdistribution=cdf, seed=seed)
+        start_index = discrete_sequence(1, cdistribution=cdf, seed=seed)[0]
         start = keys[start_index]
 
         # If the given node doesn't have any out edges, then there isn't anything to swap
-        if len(start.out_edges) == 0:
+        if G.out_degree(start) == 0:
             n += 1
             continue
+        _, second = seed.choice(list(G.out_edges(start)))
 
-        # TODO is using `random` okay, or is there a preferred way of sampling edges
-        # TODO also, how does random interact with py_random_state? Is this okay?
-        _, second = random.sample(start.out_edges, 1)
-
-        if len(second.out_edges) == 0:
+        if G.out_degree(second) == 0:
             n += 1
             continue
-        _, third = random.sample(second.out_edges, 1)
+        _, third = seed.choice(list(G.out_edges(second)))
 
-        if len(third.out_edges) == 0:
+        if G.out_degree(third) == 0:
             n += 1
             continue
-        _, fourth = random.sample(third.out_edges, 1)
+        _, fourth = seed.choice(list(G.out_edges(third)))
 
         if (start == second or
             second == third or
@@ -81,9 +77,9 @@ def directed_edge_swap(G, nswap=1, max_tries=100, seed=None):
             continue
 
         # TODO do OutEdgeViews have constant time membership checking i.e. are they dicts?
-        if ((start, third) not in start.out_edges and
-            (second, fourth) not in second.out_edges and
-            (third, second) not in third.out_edges):
+        if ((start, third) not in G.out_edges(start) and
+            (second, fourth) not in G.out_edges(second) and
+            (third, second) not in G.out_edges(third)):
            # Swap nodes
            G.add_edge(start, third)
            G.add_edge(third, second)
