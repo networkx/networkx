@@ -31,7 +31,6 @@ def directed_edge_swap(G, nswap=1, max_tries=100, seed=None):
     https://math.stackexchange.com/questions/22272
     https://arxiv.org/pdf/0905.4913.pdf
     """
-    # TODO which classes of graph should work? Only DiGraphs?
     if not G.is_directed():
         raise nx.NetworkXError("directed_edge_swap() is only defined for directed graphs.")
     if nswap > max_tries:
@@ -39,7 +38,6 @@ def directed_edge_swap(G, nswap=1, max_tries=100, seed=None):
     if len(G) < 4:
         raise nx.NetworkXError("Graph has less than four nodes.")
 
-    # TODO should this be based solely on in/out degree, or is total degree alright?
     # Instead of choosing uniformly at random from a generated edge list,
     # this algorithm chooses nonuniformly from the set of nodes with
     # probability weighted by degree.
@@ -76,7 +74,6 @@ def directed_edge_swap(G, nswap=1, max_tries=100, seed=None):
             n += 1
             continue
 
-        # TODO do OutEdgeViews have constant time membership checking i.e. are they dicts?
         if ((start, third) not in G.out_edges(start) and
             (second, fourth) not in G.out_edges(second) and
             (third, second) not in G.out_edges(third)):
