@@ -2,11 +2,105 @@
 """
 
 import math
+import random
 from networkx.utils import py_random_state
 
 import networkx as nx
 
-__all__ = ["double_edge_swap", "connected_double_edge_swap"]
+__all__ = ["double_edge_swap", "connected_double_edge_swap", "directed_edge_swap"]
+
+@py_random_state(3)
+def directed_edge_swap(G, nswap=1, max_tries=100, seed=None):
+    """Swap three edges in a directed graph while keeping the node degrees fixed.
+
+
+
+
+    Returns
+    -------
+    G : DiGraph
+       The graph after triple-edge swaps.
+
+    Notes
+    -----
+    Does not enforce any connectivity constraints.
+
+    The graph G is modified in place.
+
+    References
+    ----------
+    https://math.stackexchange.com/questions/22272
+    https://arxiv.org/pdf/0905.4913.pdf
+    """
+    # TODO which classes of graph should work? Only DiGraphs?
+    if not G.is_directed():
+        raise nx.NetworkXError("directed_edge_swap() is only defined for directed graphs.")
+    if nswap > max_tries:
+        raise nx.NetworkXError("Number of swaps > number of tries allowed.")
+    if len(G) < 4:
+        raise nx.NetworkXError("Graph has less than four nodes.")
+
+    # TODO should this be based solely on in/out degree, or is total degree alright?
+    # Instead of choosing uniformly at random from a generated edge list,
+    # this algorithm chooses nonuniformly from the set of nodes with
+    # probability weighted by degree.
+    n = 0
+    swapcount = 0
+    keys, degrees = zip(*G.degree())  # keys, degree
+    cdf = nx.utils.cumulative_distribution(degrees)  # cdf of degree
+    discrete_sequence = nx.utils.discrete_sequence
+
+    while swapcount < nswap:
+        # choose source node index from discrete distribution
+        start_index = discrete_sequence(1, cdistribution=cdf, seed=seed)
+        start = keys[start_index]
+
+        # If the given node doesn't have any out edges, then there isn't anything to swap
+        if len(start.out_edges) == 0:
+            n += 1
+            continue
+
+        # TODO is using `random` okay, or is there a preferred way of sampling edges
+        # TODO also, how does random interact with py_random_state? Is this okay?
+        _, second = random.sample(start.out_edges, 1)
+
+        if len(second.out_edges) == 0:
+            n += 1
+            continue
+        _, third = random.sample(second.out_edges, 1)
+
+        if len(third.out_edges) == 0:
+            n += 1
+            continue
+        _, fourth = random.sample(third.out_edges, 1)
+
+        if (start == second or
+            second == third or
+            third == fourth):
+            n += 1
+            continue
+
+        # TODO do OutEdgeViews have constant time membership checking i.e. are they dicts?
+        if ((start, third) not in start.out_edges and
+            (second, fourth) not in second.out_edges and
+            (third, second) not in third.out_edges):
+           # Swap nodes
+           G.add_edge(start, third)
+           G.add_edge(third, second)
+           G.add_edge(second, fourth)
+           G.remove_edge(start, second)
+           G.remove_edge(second, third)
+           G.remove_edge(third, fourth)
+           swapcount += 1
+
+        if n >= max_tries:
+            e = (
+                f"Maximum number of swap attempts ({n}) exceeded "
+                f"before desired swaps achieved ({nswap})."
+            )
+            raise nx.NetworkXAlgorithmError(e)
+        n += 1
+    return G
 
 
 @py_random_state(3)
