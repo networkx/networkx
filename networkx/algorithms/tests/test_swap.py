@@ -4,21 +4,24 @@ import networkx as nx
 # import random
 # random.seed(0)
 
+
 def test_directed_edge_swap():
-    graph = nx.gnp_random_graph(200, .5, directed=True)
+    graph = nx.gnp_random_graph(200, 0.5, directed=True)
     in_degrees = sorted((n, d) for n, d in graph.in_degree())
     out_degrees = sorted((n, d) for n, d in graph.out_degree())
     G = nx.directed_edge_swap(graph, 40, max_tries=500)
-    assert in_degrees == sorted((n, d) for n, d  in G.in_degree())
+    assert in_degrees == sorted((n, d) for n, d in G.in_degree())
     assert out_degrees == sorted((n, d) for n, d in G.out_degree())
 
+
 def test_directed_edge_swap_seed():
-    graph = nx.gnp_random_graph(200, .5, directed=True)
+    graph = nx.gnp_random_graph(200, 0.5, directed=True)
     in_degrees = sorted((n, d) for n, d in graph.in_degree())
     out_degrees = sorted((n, d) for n, d in graph.out_degree())
     G = nx.directed_edge_swap(graph, 40, max_tries=500, seed=1)
-    assert in_degrees == sorted((n, d) for n, d  in G.in_degree())
+    assert in_degrees == sorted((n, d) for n, d in G.in_degree())
     assert out_degrees == sorted((n, d) for n, d in G.out_degree())
+
 
 def test_double_edge_swap():
     graph = nx.barabasi_albert_graph(200, 1)
@@ -70,12 +73,14 @@ def test_connected_double_edge_swap_star_low_window_threshold():
 
 def test_directed_edge_swap_small():
     with pytest.raises(nx.NetworkXError):
-        G = nx.directed_edge_swap(nx.gnp_random_graph(3, .5, directed=True))
+        G = nx.directed_edge_swap(nx.gnp_random_graph(3, 0.5, directed=True))
 
 
 def test_directed_edge_swap_tries():
     with pytest.raises(nx.NetworkXError):
-        G = nx.directed_edge_swap(nx.gnp_random_graph(3, .5, directed=True), nswap=1, max_tries=0)
+        G = nx.directed_edge_swap(
+            nx.gnp_random_graph(3, 0.5, directed=True), nswap=1, max_tries=0
+        )
 
 
 def test_directed_edge_directed():
@@ -86,7 +91,9 @@ def test_directed_edge_directed():
 
 def test_directed_edge_max_tries():
     with pytest.raises(nx.NetworkXAlgorithmError):
-        G = nx.directed_edge_swap(nx.complete_graph(4, nx.DiGraph()), nswap=1, max_tries=5)
+        G = nx.directed_edge_swap(
+            nx.complete_graph(4, nx.DiGraph()), nswap=1, max_tries=5
+        )
 
 
 def test_double_edge_swap_small():
