@@ -214,6 +214,11 @@ def to_pydot(N):
     for n, nodedata in N.nodes(data=True):
         str_nodedata = {k: str(v) for k, v in nodedata.items()}
         p = pydot.Node(str(n), **str_nodedata)
+        # Explicitly catch all node name parsing errors
+        if len(str(n)) != len(p.get_name()):
+            raise ValueError(
+                f"{str(n)} is not a valid node name while using pydot. Please refer https://github.com/pydot/pydot/issues/258"
+            )
         P.add_node(p)
 
     if N.is_multigraph():
@@ -333,6 +338,11 @@ def pydot_layout(G, prog="neato", root=None):
     node_pos = {}
     for n in G.nodes():
         pydot_node = pydot.Node(str(n)).get_name()
+        # Explicitly catch all node name parsing errors
+        if len(str(n)) != len(pydot_node):
+            raise ValueError(
+                f"{str(n)} is not a valid node name while using pydot. Please refer https://github.com/pydot/pydot/issues/258"
+            )
         node = Q.get_node(pydot_node)
 
         if isinstance(node, list):

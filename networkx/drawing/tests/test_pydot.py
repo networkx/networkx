@@ -1,11 +1,12 @@
 """Unit tests for pydot drawing functions."""
-from io import StringIO
-import tempfile
 import os
-import networkx as nx
-from networkx.utils import graphs_equal
+import tempfile
+from io import StringIO
 
 import pytest
+
+import networkx as nx
+from networkx.utils import graphs_equal
 
 pydot = pytest.importorskip("pydot")
 
@@ -96,3 +97,13 @@ class TestPydot:
         fh.seek(0)
         H = nx.nx_pydot.read_dot(fh)
         assert graphs_equal(G, H)
+
+    def test_pydot_issue_258(self):
+        G = nx.Graph([("Example:A", 1)])
+        with pytest.raises(ValueError):
+            nx.nx_pydot.to_pydot(G)
+        with pytest.raises(ValueError):
+            nx.nx_pydot.pydot_layout(G)
+        G = nx.Graph([('"Example:A"', 1)])
+        layout = nx.nx_pydot.pydot_layout(G)
+        assert isinstance(layout, dict)
