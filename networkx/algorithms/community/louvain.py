@@ -250,7 +250,7 @@ def _one_level(G, m, partition, resolution=1, is_directed=False, seed=None):
                             out_degree * Stot_in[nbr_com]
                             + in_degree * Stot_out[nbr_com]
                         )
-                        / m
+                        / (2*m)
                     )
                 else:
                     gain = 2 * wt - resolution * (Stot[nbr_com] * degree) / m
