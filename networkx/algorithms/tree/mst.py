@@ -764,7 +764,7 @@ def random_spanning_tree(G, weight=None, multiplicative=True, seed=None):
     References
     ----------
     .. [1] V. Kulkarni, Generating random combinatorial objects, Journal of
-       algorithms, 11 (1990), pp. 185–207
+       Algorithms, 11 (1990), pp. 185–207
     """
 
     def find_node(merged_nodes, n):
