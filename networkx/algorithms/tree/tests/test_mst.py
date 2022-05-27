@@ -3,7 +3,6 @@
 import pytest
 
 import networkx as nx
-import networkx.algorithms
 from networkx.utils import nodes_equal, edges_equal
 
 

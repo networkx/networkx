@@ -767,7 +767,7 @@ def random_spanning_tree(G, weight=None, multiplicative=True, seed=None):
        algorithms, 11 (1990), pp. 185–207
     """
 
-    def find_node(merged_nodes, n):
+    def find_node(merged_nodes, node):
         """
         We can think of clusters of contracted nodes as having one
         representative in the graph. Each node which is not in merged_nodes
@@ -785,18 +785,18 @@ def random_spanning_tree(G, weight=None, multiplicative=True, seed=None):
         ----------
         merged_nodes : dict
             The dict storing the mapping from node to representative
-        n
+        node
             The node whose representative we seek
 
         Returns
         -------
-        The representative of the `n`
+        The representative of the `node`
         """
-        if n not in merged_nodes:
-            return n
+        if node not in merged_nodes:
+            return node
         else:
-            rep = find_node(merged_nodes, merged_nodes[n])
-            merged_nodes[n] = rep
+            rep = find_node(merged_nodes, merged_nodes[node])
+            merged_nodes[node] = rep
             return rep
 
     def prepare_graph():
