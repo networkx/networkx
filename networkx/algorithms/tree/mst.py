@@ -764,7 +764,7 @@ def random_spanning_tree(G, weight=None, multiplicative=True, seed=None):
     References
     ----------
     .. [1] V. Kulkarni, Generating random combinatorial objects, Journal of
-       algorithms, 11 (1990), pp. 185–207
+       Algorithms, 11 (1990), pp. 185–207
     """
 
     def find_node(merged_nodes, node):
@@ -779,7 +779,7 @@ def random_spanning_tree(G, weight=None, multiplicative=True, seed=None):
         This cannot be replaced by the standard NetworkX union_find since that
         data structure will merge nodes with less representing nodes into the
         one with more representing nodes but this function requires we merge
-        then using the order that contract_edges contracts using.
+        them using the order that contract_edges contracts using.
 
         Parameters
         ----------

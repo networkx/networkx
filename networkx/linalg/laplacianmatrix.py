@@ -149,11 +149,10 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
 
 def total_spanning_tree_weight(G, weight=None):
     """
-    Apply Kirchhoff's Tree Matrix Theorem to a graph in order to find the total
-    weight of all spanning trees.
-
-    The theorem states that the determinant of any cofactor of the Laplacian
-    matrix of a graph is the number of spanning trees in the graph. For a
+    Returns the total weight of all spanning trees of `G`.
+        
+    Kirchoff's Tree Matrix Theorem states that the determinant of any cofactor of the 
+    Laplacian matrix of a graph is the number of spanning trees in the graph. For a
     weighted Laplacian matrix, it is the sum across all spanning trees of the
     multiplicative weight of each tree. That is, the weight of each tree is the
     product of its edge weights.
@@ -171,8 +170,7 @@ def total_spanning_tree_weight(G, weight=None):
     Returns
     -------
     float
-        The sum of the total multiplicative weight for all spanning trees in the
-        graph.
+        The sum of the total multiplicative weights for all spanning trees in `G`
     """
     import numpy as np
 
