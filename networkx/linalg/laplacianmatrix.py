@@ -170,8 +170,7 @@ def total_spanning_tree_weight(G, weight=None):
     Returns
     -------
     float
-        The sum of the total multiplicative weight for all spanning trees in the
-        graph.
+        The sum of the total multiplicative weights for all spanning trees in `G`
     """
     import numpy as np
 
