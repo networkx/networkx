@@ -123,13 +123,13 @@ def approximate_current_flow_betweenness_centrality(
         raise nx.NetworkXError(msg, "Increase kmax or epsilon")
     cstar2k = cstar / (2 * k)
     for _ in range(k):
-        s, t = seed.sample(range(n), 2)
+        s, t = pair = seed.sample(range(n), 2)
         b = np.zeros(n, dtype=dtype)
         b[s] = 1
         b[t] = -1
         p = C.solve(b)
         for v in H:
-            if v in (s, t):
+            if v in pair:
                 continue
             for nbr in H[v]:
                 w = H[v][nbr].get(weight, 1.0)
