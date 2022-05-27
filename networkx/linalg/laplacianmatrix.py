@@ -150,8 +150,8 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
 def total_spanning_tree_weight(G, weight=None):
     """
     Returns the total weight of all spanning trees of `G`.
-        
-    Kirchoff's Tree Matrix Theorem states that the determinant of any cofactor of the 
+
+    Kirchoff's Tree Matrix Theorem states that the determinant of any cofactor of the
     Laplacian matrix of a graph is the number of spanning trees in the graph. For a
     weighted Laplacian matrix, it is the sum across all spanning trees of the
     multiplicative weight of each tree. That is, the weight of each tree is the
