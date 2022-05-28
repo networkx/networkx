@@ -24,6 +24,8 @@ import pytest
         (nx.random_shell_graph, {"constructor": [(10, 20, 0.8), (20, 40, 0.8)]}),
         (nx.random_powerlaw_tree, {"n": 10, "seed": 14, "tries": 1}),
         (nx.random_kernel_graph, {"n": 10, "kernel_integral": lambda u, w, z: z - w}),
+        (nx.duplication_divergence_graph, {"n": 17, "p": 0.1}),
+        (nx.partial_duplication_graph, {"N": 20, "n": 3, "p": 0.2, "q": 0.3}),
     ],
 )
 def test_create_using(generator, kwargs):
