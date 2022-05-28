@@ -25,6 +25,8 @@ def test_margulis_gabber_galil_graph():
 
     np = pytest.importorskip("numpy")
     sp = pytest.importorskip("scipy")
+    import scipy.linalg
+
     # Eigenvalues are already sorted using the scipy eigvalsh,
     # but the implementation in numpy does not guarantee order.
     w = sorted(sp.linalg.eigvalsh(adjacency_matrix(g).A))
