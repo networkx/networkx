@@ -36,9 +36,16 @@ __all__ = [
 ]
 
 
+def _assert_directedness(G, directed):
+    if directed and not G.is_directed():
+        raise ValueError("graph must be directed")
+    if not directed and G.is_directed():
+        raise ValueError("graph must not be directed")
+
+
 @py_random_state(2)
 @nx._dispatchable(graphs=None, returns_graph=True)
-def fast_gnp_random_graph(n, p, seed=None, directed=False):
+def fast_gnp_random_graph(n, p, seed=None, directed=False, create_using=None):
     """Returns a $G_{n,p}$ random graph, also known as an Erdős-Rényi graph or
     a binomial graph.
 
@@ -53,6 +60,9 @@ def fast_gnp_random_graph(n, p, seed=None, directed=False):
         See :ref:`Randomness<randomness>`.
     directed : bool, optional (default=False)
         If True, this function returns a directed graph.
+    create_using : Graph, optional (default DiGraph() if directed else Graph())
+        If provided this graph is cleared of nodes and edges and filled
+        with the new graph. Usually used to set the type of the graph.
 
     Notes
     -----
@@ -74,15 +84,18 @@ def fast_gnp_random_graph(n, p, seed=None, directed=False):
        "Efficient generation of large random networks",
        Phys. Rev. E, 71, 036113, 2005.
     """
-    G = empty_graph(n)
-
     if p <= 0 or p >= 1:
-        return nx.gnp_random_graph(n, p, seed=seed, directed=directed)
+        return nx.gnp_random_graph(
+            n, p, seed=seed, directed=directed, create_using=create_using
+        )
+
+    create_using = create_using or (nx.DiGraph if directed else nx.Graph)
+    G = empty_graph(n, create_using=create_using)
+    _assert_directedness(G, directed)
 
     lp = math.log(1.0 - p)
 
     if directed:
-        G = nx.DiGraph(G)
         v = 1
         w = -1
         while v < n:
@@ -110,7 +123,7 @@ def fast_gnp_random_graph(n, p, seed=None, directed=False):
 
 @py_random_state(2)
 @nx._dispatchable(graphs=None, returns_graph=True)
-def gnp_random_graph(n, p, seed=None, directed=False):
+def gnp_random_graph(n, p, seed=None, directed=False, create_using=None):
     """Returns a $G_{n,p}$ random graph, also known as an Erdős-Rényi graph
     or a binomial graph.
 
@@ -127,6 +140,9 @@ def gnp_random_graph(n, p, seed=None, directed=False):
         See :ref:`Randomness<randomness>`.
     directed : bool, optional (default=False)
         If True, this function returns a directed graph.
+    create_using : Graph, optional (default DiGraph() if directed else Graph())
+        If provided this graph is cleared of nodes and edges and filled
+        with the new graph. Usually used to set the type of the graph.
 
     See Also
     --------
@@ -152,10 +168,11 @@ def gnp_random_graph(n, p, seed=None, directed=False):
     """
     if directed:
         edges = itertools.permutations(range(n), 2)
-        G = nx.DiGraph()
+        G = (create_using or nx.DiGraph)()
     else:
         edges = itertools.combinations(range(n), 2)
-        G = nx.Graph()
+        G = (create_using or nx.Graph)()
+    _assert_directedness(G, directed)
     G.add_nodes_from(range(n))
     if p <= 0:
         return G
@@ -175,7 +192,7 @@ erdos_renyi_graph = gnp_random_graph
 
 @py_random_state(2)
 @nx._dispatchable(graphs=None, returns_graph=True)
-def dense_gnm_random_graph(n, m, seed=None):
+def dense_gnm_random_graph(n, m, seed=None, create_using=None):
     """Returns a $G_{n,m}$ random graph.
 
     In the $G_{n,m}$ model, a graph is chosen uniformly at random from the set
@@ -193,6 +210,9 @@ def dense_gnm_random_graph(n, m, seed=None):
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
+    create_using : Graph, optional (default Graph())
+        If provided this graph is cleared of nodes and edges and filled
+        with the new graph. Usually used to set the type of the graph.
 
     See Also
     --------
@@ -211,9 +231,9 @@ def dense_gnm_random_graph(n, m, seed=None):
     """
     mmax = n * (n - 1) // 2
     if m >= mmax:
-        G = complete_graph(n)
+        G = complete_graph(n, create_using)
     else:
-        G = empty_graph(n)
+        G = empty_graph(n, create_using)
 
     if n == 1 or m >= mmax:
         return G
@@ -237,7 +257,7 @@ def dense_gnm_random_graph(n, m, seed=None):
 
 @py_random_state(2)
 @nx._dispatchable(graphs=None, returns_graph=True)
-def gnm_random_graph(n, m, seed=None, directed=False):
+def gnm_random_graph(n, m, seed=None, directed=False, create_using=None):
     """Returns a $G_{n,m}$ random graph.
 
     In the $G_{n,m}$ model, a graph is chosen uniformly at random from the set
@@ -257,16 +277,18 @@ def gnm_random_graph(n, m, seed=None, directed=False):
         See :ref:`Randomness<randomness>`.
     directed : bool, optional (default=False)
         If True return a directed graph
+    create_using : Graph, optional (default DiGraph() if directed else Graph())
+        If provided this graph is cleared of nodes and edges and filled
+        with the new graph. Usually used to set the type of the graph.
 
     See also
     --------
     dense_gnm_random_graph
 
     """
-    if directed:
-        G = nx.DiGraph()
-    else:
-        G = nx.Graph()
+    create_using = create_using or (nx.DiGraph if directed else nx.Graph)
+    G = create_using()
+    _assert_directedness(G, directed)
     G.add_nodes_from(range(n))
 
     if n == 1:
@@ -293,7 +315,7 @@ def gnm_random_graph(n, m, seed=None, directed=False):
 
 @py_random_state(3)
 @nx._dispatchable(graphs=None, returns_graph=True)
-def newman_watts_strogatz_graph(n, k, p, seed=None):
+def newman_watts_strogatz_graph(n, k, p, seed=None, create_using=None):
     """Returns a Newman–Watts–Strogatz small-world graph.
 
     Parameters
@@ -308,6 +330,9 @@ def newman_watts_strogatz_graph(n, k, p, seed=None):
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
+    create_using : Graph, optional (default Graph())
+        If provided this graph is cleared of nodes and edges and filled
+        with the new graph. Usually used to set the type of the graph.
 
     Notes
     -----
@@ -335,9 +360,9 @@ def newman_watts_strogatz_graph(n, k, p, seed=None):
 
     # If k == n the graph return is a complete graph
     if k == n:
-        return nx.complete_graph(n)
+        return nx.complete_graph(n, create_using)
 
-    G = empty_graph(n)
+    G = empty_graph(n, create_using)
     nlist = list(G.nodes())
     fromv = nlist
     # connect the k/2 neighbors
@@ -364,7 +389,7 @@ def newman_watts_strogatz_graph(n, k, p, seed=None):
 
 @py_random_state(3)
 @nx._dispatchable(graphs=None, returns_graph=True)
-def watts_strogatz_graph(n, k, p, seed=None):
+def watts_strogatz_graph(n, k, p, seed=None, create_using=None):
     """Returns a Watts–Strogatz small-world graph.
 
     Parameters
@@ -379,6 +404,9 @@ def watts_strogatz_graph(n, k, p, seed=None):
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
+    create_using : Graph, optional (default Graph())
+        If provided this graph is cleared of nodes and edges and filled
+        with the new graph. Usually used to set the type of the graph.
 
     See Also
     --------
@@ -409,9 +437,9 @@ def watts_strogatz_graph(n, k, p, seed=None):
 
     # If k == n, the graph is complete not Watts-Strogatz
     if k == n:
-        return nx.complete_graph(n)
+        return nx.complete_graph(n, create_using)
 
-    G = nx.Graph()
+    G = (create_using or nx.Graph)()
     nodes = list(range(n))  # nodes are labeled 0 to n-1
     # connect each node to k/2 neighbors
     for j in range(1, k // 2 + 1):
@@ -439,7 +467,7 @@ def watts_strogatz_graph(n, k, p, seed=None):
 
 @py_random_state(4)
 @nx._dispatchable(graphs=None, returns_graph=True)
-def connected_watts_strogatz_graph(n, k, p, tries=100, seed=None):
+def connected_watts_strogatz_graph(n, k, p, tries=100, seed=None, create_using=None):
     """Returns a connected Watts–Strogatz small-world graph.
 
     Attempts to generate a connected graph by repeated generation of
@@ -484,7 +512,7 @@ def connected_watts_strogatz_graph(n, k, p, tries=100, seed=None):
     """
     for i in range(tries):
         # seed is an RNG so should change sequence each call
-        G = watts_strogatz_graph(n, k, p, seed)
+        G = watts_strogatz_graph(n, k, p, seed, create_using)
         if nx.is_connected(G):
             return G
     raise nx.NetworkXError("Maximum number of tries exceeded")
@@ -492,7 +520,7 @@ def connected_watts_strogatz_graph(n, k, p, tries=100, seed=None):
 
 @py_random_state(2)
 @nx._dispatchable(graphs=None, returns_graph=True)
-def random_regular_graph(d, n, seed=None):
+def random_regular_graph(d, n, seed=None, create_using=None):
     r"""Returns a random $d$-regular graph on $n$ nodes.
 
     A regular graph is a graph where each node has the same number of neighbors.
@@ -508,6 +536,9 @@ def random_regular_graph(d, n, seed=None):
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
+    create_using : Graph, optional (default Graph())
+        If provided this graph is cleared of nodes and edges and filled
+        with the new graph. Usually used to set the type of the graph.
 
     Notes
     -----
@@ -543,7 +574,7 @@ def random_regular_graph(d, n, seed=None):
         raise nx.NetworkXError("the 0 <= d < n inequality must be satisfied")
 
     if d == 0:
-        return empty_graph(n)
+        return empty_graph(n, create_using)
 
     def _suitable(edges, potential_edges):
         # Helper subroutine to check if there are suitable edges remaining
@@ -600,7 +631,7 @@ def random_regular_graph(d, n, seed=None):
     while edges is None:
         edges = _try_creation()
 
-    G = nx.Graph()
+    G = (create_using or nx.Graph)()
     G.add_edges_from(edges)
 
     return G
@@ -623,7 +654,7 @@ def _random_subset(seq, m, rng):
 
 @py_random_state(2)
 @nx._dispatchable(graphs=None, returns_graph=True)
-def barabasi_albert_graph(n, m, seed=None, initial_graph=None):
+def barabasi_albert_graph(n, m, seed=None, initial_graph=None, create_using=None):
     """Returns a random graph using Barabási–Albert preferential attachment
 
     A graph of $n$ nodes is grown by attaching new nodes each with $m$
@@ -643,6 +674,9 @@ def barabasi_albert_graph(n, m, seed=None, initial_graph=None):
         It should be a connected graph for most use cases.
         A copy of `initial_graph` is used.
         If None, starts from a star graph on (m+1) nodes.
+    create_using : Graph, optional (default Graph())
+        If provided this graph is cleared of nodes and edges and filled
+        with the new graph. Usually used to set the type of the graph.
 
     Returns
     -------
@@ -667,7 +701,7 @@ def barabasi_albert_graph(n, m, seed=None, initial_graph=None):
 
     if initial_graph is None:
         # Default initial graph : star graph on (m + 1) nodes
-        G = star_graph(m)
+        G = star_graph(m, create_using)
     else:
         if len(initial_graph) < m or len(initial_graph) > n:
             raise nx.NetworkXError(
@@ -696,7 +730,7 @@ def barabasi_albert_graph(n, m, seed=None, initial_graph=None):
 
 @py_random_state(4)
 @nx._dispatchable(graphs=None, returns_graph=True)
-def dual_barabasi_albert_graph(n, m1, m2, p, seed=None, initial_graph=None):
+def dual_barabasi_albert_graph(n, m1, m2, p, seed=None, initial_graph=None, create_using=None):
     """Returns a random graph using dual Barabási–Albert preferential attachment
 
     A graph of $n$ nodes is grown by attaching new nodes each with either $m_1$
@@ -721,6 +755,9 @@ def dual_barabasi_albert_graph(n, m1, m2, p, seed=None, initial_graph=None):
         A copy of `initial_graph` is used.
         It should be connected for most use cases.
         If None, starts from an star graph on max(m1, m2) + 1 nodes.
+    create_using : Graph, optional (default Graph())
+        If provided this graph is cleared of nodes and edges and filled
+        with the new graph. Usually used to set the type of the graph.
 
     Returns
     -------
@@ -753,13 +790,13 @@ def dual_barabasi_albert_graph(n, m1, m2, p, seed=None, initial_graph=None):
 
     # For simplicity, if p == 0 or 1, just return BA
     if p == 1:
-        return barabasi_albert_graph(n, m1, seed)
+        return barabasi_albert_graph(n, m1, seed, create_using)
     elif p == 0:
-        return barabasi_albert_graph(n, m2, seed)
+        return barabasi_albert_graph(n, m2, seed, create_using)
 
     if initial_graph is None:
         # Default initial graph : empty graph on max(m1, m2) nodes
-        G = star_graph(max(m1, m2))
+        G = star_graph(max(m1, m2), create_using)
     else:
         if len(initial_graph) < max(m1, m2) or len(initial_graph) > n:
             raise nx.NetworkXError(
@@ -796,7 +833,7 @@ def dual_barabasi_albert_graph(n, m1, m2, p, seed=None, initial_graph=None):
 
 @py_random_state(4)
 @nx._dispatchable(graphs=None, returns_graph=True)
-def extended_barabasi_albert_graph(n, m, p, q, seed=None):
+def extended_barabasi_albert_graph(n, m, p, q, seed=None, create_using=None):
     """Returns an extended Barabási–Albert model graph.
 
     An extended Barabási–Albert model graph is a random graph constructed
@@ -828,6 +865,9 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
+    create_using : Graph, optional (default Graph())
+        If provided this graph is cleared of nodes and edges and filled
+        with the new graph. Usually used to set the type of the graph.
 
     Returns
     -------
@@ -852,7 +892,7 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
         raise nx.NetworkXError(msg)
 
     # Add m initial nodes (m0 in barabasi-speak)
-    G = empty_graph(m)
+    G = empty_graph(m, create_using)
 
     # List of nodes to represent the preferential attachment random selection.
     # At the creation of the graph, all nodes are added to the list
@@ -957,7 +997,7 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
 
 @py_random_state(3)
 @nx._dispatchable(graphs=None, returns_graph=True)
-def powerlaw_cluster_graph(n, m, p, seed=None):
+def powerlaw_cluster_graph(n, m, p, seed=None, create_using=None):
     """Holme and Kim algorithm for growing graphs with powerlaw
     degree distribution and approximate average clustering.
 
@@ -972,6 +1012,9 @@ def powerlaw_cluster_graph(n, m, p, seed=None):
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
+    create_using : Graph, optional (default Graph())
+        If provided this graph is cleared of nodes and edges and filled
+        with the new graph. Usually used to set the type of the graph.
 
     Notes
     -----
@@ -1010,7 +1053,7 @@ def powerlaw_cluster_graph(n, m, p, seed=None):
     if p > 1 or p < 0:
         raise nx.NetworkXError(f"NetworkXError p must be in [0,1], p={p}")
 
-    G = empty_graph(m)  # add m initial nodes (m0 in barabasi-speak)
+    G = empty_graph(m, create_using)  # add m initial nodes (m0 in barabasi-speak)
     repeated_nodes = list(G.nodes())  # list of existing nodes to sample from
     # with nodes repeated once for each adjacent edge
     source = m  # next node is m
@@ -1047,7 +1090,7 @@ def powerlaw_cluster_graph(n, m, p, seed=None):
 
 @py_random_state(3)
 @nx._dispatchable(graphs=None, returns_graph=True)
-def random_lobster(n, p1, p2, seed=None):
+def random_lobster(n, p1, p2, seed=None, create_using=None):
     """Returns a random lobster graph.
 
     A lobster is a tree that reduces to a caterpillar when pruning all
@@ -1070,6 +1113,9 @@ def random_lobster(n, p1, p2, seed=None):
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
+    create_using : Graph, optional (default Graph())
+        If provided this graph is cleared of nodes and edges and filled
+        with the new graph. Usually used to set the type of the graph.
 
     Raises
     ------
@@ -1082,7 +1128,7 @@ def random_lobster(n, p1, p2, seed=None):
 
     # a necessary ingredient in any self-respecting graph library
     llen = int(2 * seed.random() * n + 0.5)
-    L = path_graph(llen)
+    L = path_graph(llen, create_using)
     # build caterpillar: add edges to path graph with probability p1
     current_node = llen - 1
     for n in range(llen):
@@ -1098,7 +1144,7 @@ def random_lobster(n, p1, p2, seed=None):
 
 @py_random_state(1)
 @nx._dispatchable(graphs=None, returns_graph=True)
-def random_shell_graph(constructor, seed=None):
+def random_shell_graph(constructor, seed=None, create_using=None):
     """Returns a random shell graph for the constructor given.
 
     Parameters
@@ -1114,6 +1160,9 @@ def random_shell_graph(constructor, seed=None):
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
+    create_using : Graph, optional (default Graph())
+        If provided this graph is cleared of nodes and edges and filled
+        with the new graph. Usually used to set the type of the graph.
 
     Examples
     --------
@@ -1121,7 +1170,7 @@ def random_shell_graph(constructor, seed=None):
     >>> G = nx.random_shell_graph(constructor)
 
     """
-    G = empty_graph(0)
+    G = empty_graph(0, create_using)
 
     glist = []
     intra_edges = []
@@ -1131,7 +1180,8 @@ def random_shell_graph(constructor, seed=None):
         inter_edges = int(m * d)
         intra_edges.append(m - inter_edges)
         g = nx.convert_node_labels_to_integers(
-            gnm_random_graph(n, inter_edges, seed=seed), first_label=nnodes
+            gnm_random_graph(n, inter_edges, seed=seed, create_using=create_using),
+            first_label=nnodes,
         )
         glist.append(g)
         nnodes += n
@@ -1156,7 +1206,7 @@ def random_shell_graph(constructor, seed=None):
 
 @py_random_state(2)
 @nx._dispatchable(graphs=None, returns_graph=True)
-def random_powerlaw_tree(n, gamma=3, seed=None, tries=100):
+def random_powerlaw_tree(n, gamma=3, seed=None, tries=100, create_using=None):
     """Returns a tree with a power law degree distribution.
 
     Parameters
@@ -1170,6 +1220,9 @@ def random_powerlaw_tree(n, gamma=3, seed=None, tries=100):
         See :ref:`Randomness<randomness>`.
     tries : int
         Number of attempts to adjust the sequence to make it a tree.
+    create_using : Graph, optional (default Graph())
+        If provided this graph is cleared of nodes and edges and filled
+        with the new graph. Usually used to set the type of the graph.
 
     Raises
     ------
@@ -1187,7 +1240,7 @@ def random_powerlaw_tree(n, gamma=3, seed=None, tries=100):
     """
     # This call may raise a NetworkXError if the number of tries is succeeded.
     seq = random_powerlaw_tree_sequence(n, gamma=gamma, seed=seed, tries=tries)
-    G = degree_sequence_tree(seq)
+    G = degree_sequence_tree(seq, create_using)
     return G
 
 
@@ -1250,7 +1303,7 @@ def random_powerlaw_tree_sequence(n, gamma=3, seed=None, tries=100):
 
 @py_random_state(3)
 @nx._dispatchable(graphs=None, returns_graph=True)
-def random_kernel_graph(n, kernel_integral, kernel_root=None, seed=None):
+def random_kernel_graph(n, kernel_integral, kernel_root=None, seed=None, create_using=None):
     r"""Returns an random graph based on the specified kernel.
 
     The algorithm chooses each of the $[n(n-1)]/2$ possible edges with
@@ -1272,6 +1325,9 @@ def random_kernel_graph(n, kernel_integral, kernel_root=None, seed=None):
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
+    create_using : Graph, optional (default Graph())
+        If provided this graph is cleared of nodes and edges and filled
+        with the new graph. Usually used to set the type of the graph.
 
     Notes
     -----
@@ -1318,7 +1374,7 @@ def random_kernel_graph(n, kernel_integral, kernel_root=None, seed=None):
 
             return sp.optimize.brentq(my_function, a, 1)
 
-    graph = nx.Graph()
+    graph = (create_using or nx.Graph)()
     graph.add_nodes_from(range(n))
     (i, j) = (1, 1)
     while i < n:
