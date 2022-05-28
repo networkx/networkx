@@ -39,6 +39,9 @@ class TestTriangles:
         G.remove_edge(1, 2)
         assert list(nx.triangles(G).values()) == [5, 3, 3, 5, 5]
         assert nx.triangles(G, 1) == 3
+        G.add_edge(3, 3)  # ignore self-edges
+        assert list(nx.triangles(G).values()) == [5, 3, 3, 5, 5]
+        assert nx.triangles(G, 3) == 5
 
 
 class TestDirectedClustering:
@@ -73,6 +76,7 @@ class TestDirectedClustering:
             8: 0.0,
             9: 0.0,
         }
+        assert nx.clustering(G, 0) == 0.0
 
     def test_k5(self):
         G = nx.complete_graph(5, create_using=nx.DiGraph())
@@ -96,6 +100,7 @@ class TestDirectedClustering:
             5.0 / 6.0,
         ]
         assert nx.clustering(G, [1, 4]) == {1: 1.0, 4: 0.83333333333333337}
+        assert nx.clustering(G, 4) == 5.0 / 6.0
 
     def test_triangle_and_edge(self):
         G = nx.cycle_graph(3, create_using=nx.DiGraph())
@@ -106,7 +111,8 @@ class TestDirectedClustering:
 class TestDirectedWeightedClustering:
     @classmethod
     def setup_class(cls):
-        pytest.importorskip("numpy")
+        global np
+        np = pytest.importorskip("numpy")
 
     def test_clustering(self):
         G = nx.DiGraph()
@@ -170,13 +176,15 @@ class TestDirectedWeightedClustering:
         G = nx.cycle_graph(3, create_using=nx.DiGraph())
         G.add_edge(0, 4, weight=2)
         assert nx.clustering(G)[0] == 1.0 / 6.0
-        assert nx.clustering(G, weight="weight")[0] == 1.0 / 12.0
+        np.testing.assert_allclose(nx.clustering(G, weight="weight")[0], 1.0 / 12.0)
+        np.testing.assert_allclose(nx.clustering(G, 0, weight="weight"), 1.0 / 12.0)
 
 
 class TestWeightedClustering:
     @classmethod
     def setup_class(cls):
-        pytest.importorskip("numpy")
+        global np
+        np = pytest.importorskip("numpy")
 
     def test_clustering(self):
         G = nx.Graph()
@@ -248,7 +256,8 @@ class TestWeightedClustering:
         G = nx.cycle_graph(3)
         G.add_edge(0, 4, weight=2)
         assert nx.clustering(G)[0] == 1.0 / 3.0
-        assert nx.clustering(G, weight="weight")[0] == 1.0 / 6.0
+        np.testing.assert_allclose(nx.clustering(G, weight="weight")[0], 1.0 / 6.0)
+        np.testing.assert_allclose(nx.clustering(G, 0, weight="weight"), 1.0 / 6.0)
 
     def test_triangle_and_signed_edge(self):
         G = nx.cycle_graph(3)
@@ -399,6 +408,7 @@ class TestSquareClustering:
         ]
         assert list(nx.square_clustering(G, [1, 2]).values()) == [1 / 3, 1 / 3]
         assert nx.square_clustering(G, [1])[1] == 1 / 3
+        assert nx.square_clustering(G, 1) == 1 / 3
         assert nx.square_clustering(G, [1, 2]) == {1: 1 / 3, 2: 1 / 3}
 
     def test_k5(self):
@@ -451,12 +461,25 @@ class TestAverageClustering:
     def setup_class(cls):
         pytest.importorskip("numpy")
 
+    def test_empty(self):
+        G = nx.Graph()
+        with pytest.raises(ZeroDivisionError):
+            nx.average_clustering(G)
+
     def test_average_clustering(self):
         G = nx.cycle_graph(3)
         G.add_edge(2, 3)
         assert nx.average_clustering(G) == (1 + 1 + 1 / 3.0) / 4.0
         assert nx.average_clustering(G, count_zeros=True) == (1 + 1 + 1 / 3.0) / 4.0
         assert nx.average_clustering(G, count_zeros=False) == (1 + 1 + 1 / 3.0) / 3.0
+        assert nx.average_clustering(G, [1, 2, 3]) == (1 + 1 / 3.0) / 3.0
+        assert (
+            nx.average_clustering(G, [1, 2, 3], count_zeros=True) == (1 + 1 / 3.0) / 3.0
+        )
+        assert (
+            nx.average_clustering(G, [1, 2, 3], count_zeros=False)
+            == (1 + 1 / 3.0) / 2.0
+        )
 
     def test_average_clustering_signed(self):
         G = nx.cycle_graph(3)
@@ -470,6 +493,32 @@ class TestAverageClustering:
         assert (
             nx.average_clustering(G, weight="weight", count_zeros=False)
             == (-1 - 1 - 1 / 3.0) / 3.0
+        )
+
+
+class TestDirectedAverageClustering:
+    @classmethod
+    def setup_class(cls):
+        pytest.importorskip("numpy")
+
+    def test_empty(self):
+        G = nx.DiGraph()
+        with pytest.raises(ZeroDivisionError):
+            nx.average_clustering(G)
+
+    def test_average_clustering(self):
+        G = nx.cycle_graph(3, create_using=nx.DiGraph())
+        G.add_edge(2, 3)
+        assert nx.average_clustering(G) == (1 + 1 + 1 / 3.0) / 8.0
+        assert nx.average_clustering(G, count_zeros=True) == (1 + 1 + 1 / 3.0) / 8.0
+        assert nx.average_clustering(G, count_zeros=False) == (1 + 1 + 1 / 3.0) / 6.0
+        assert nx.average_clustering(G, [1, 2, 3]) == (1 + 1 / 3.0) / 6.0
+        assert (
+            nx.average_clustering(G, [1, 2, 3], count_zeros=True) == (1 + 1 / 3.0) / 6.0
+        )
+        assert (
+            nx.average_clustering(G, [1, 2, 3], count_zeros=False)
+            == (1 + 1 / 3.0) / 4.0
         )
 
 
