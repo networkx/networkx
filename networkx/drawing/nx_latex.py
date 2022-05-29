@@ -139,7 +139,7 @@ class Adigraph:
     \end{{subfigure}}"""
 
     def _get_caption(self, caption):
-        return f"\n\t\\caption{{{caption}}}" if caption else ""
+        return f"\n    \\caption{{{caption}}}" if caption else ""
 
     def _get_label(self, label):
         return f"\\label{{{label}}}" if label else ""
@@ -173,7 +173,7 @@ class Adigraph:
     def _node(self, node, x, y, color, width, label):
         """Return formatted node."""
         return (
-            f"\n\t\t\t{node},{color},{width}:{x/2}"
+            f"\n            {node},{color},{width}:{x/2}"
             f"\\textwidth,{y/2}\\textwidth:{label};"
         )
 
@@ -210,7 +210,7 @@ class Adigraph:
 
     def _edge(self, start, end, weight, color, width, label):
         """Return formatted edge."""
-        return f"\n\t\t\t{start},{end},{color},{width}:{weight}:{label};"
+        return f"\n            {start},{end},{color},{width}:{weight}:{label};"
 
     def _edges(self, edges, weights, colors, default_color, widths, labels, directed):
         """Return given edges in adigraph syntax."""
@@ -263,8 +263,8 @@ class Adigraph:
         )
 
         return (
-            f"\t\\NewAdigraph{{myAdigraph}}{{{nodes}\n\t\t}}"
-            f"{{{edges}\n\t\t}}[{style}]\n\t\t\\myAdigraph{{}}"
+            f"    \\NewAdigraph{{myAdigraph}}{{{nodes}\n        }}"
+            f"{{{edges}\n        }}[{style}]\n        \\myAdigraph{{}}"
         )
 
     def add_graph(
