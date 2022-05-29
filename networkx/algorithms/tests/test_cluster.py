@@ -176,6 +176,7 @@ class TestDirectedWeightedClustering:
         G = nx.cycle_graph(3, create_using=nx.DiGraph())
         G.add_edge(0, 4, weight=2)
         assert nx.clustering(G)[0] == 1.0 / 6.0
+        # Relaxed comparisons to allow graphblas-algorithms to pass tests
         np.testing.assert_allclose(nx.clustering(G, weight="weight")[0], 1.0 / 12.0)
         np.testing.assert_allclose(nx.clustering(G, 0, weight="weight"), 1.0 / 12.0)
 
