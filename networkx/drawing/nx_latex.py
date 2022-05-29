@@ -1,9 +1,16 @@
-"""
+r"""
 *****
 LaTeX
 *****
 
 Export NetworkX graphs in LaTeX format using Adigraph LaTeX library.
+
+Examples
+========
+>>> A = nx.Adigraph()
+>>> A.add_graph(nx.path_graph(3))
+>>> A.save("myfigure.tex")
+>>> A.save("myfigure_in_a_document.tex", document=True)
 
 See Also
 --------
@@ -85,34 +92,19 @@ class Adigraph:
         self._default_nodes_color_fallback = nodes_color_fallback
         self._default_edges_color_fallback = edges_color_fallback
         self._default_layout = layout
-        self._default_weights = weights
         self._default_style = style
-        self._default_nodes_color = nodes_color
-        self._default_edges_color = edges_color
-        self._default_nodes_width = nodes_width
-        self._default_edges_width = edges_width
-        self._default_nodes_label = nodes_label
-        self._default_edges_label = edges_label
+        self._default_weights = weights if weights is not None else {}
+        self._default_nodes_color = nodes_color if nodes_color is not None else {}
+        self._default_edges_color = edges_color if edges_color is not None else {}
+        self._default_nodes_width = nodes_width if nodes_width is not None else {}
+        self._default_edges_width = edges_width if edges_width is not None else {}
+        self._default_nodes_label = nodes_label if nodes_label is not None else {}
+        self._default_edges_label = edges_label if edges_label is not None else {}
         self._default_caption = sub_caption
         self._default_label = sub_label
         self._caption = caption
         self._label = label
         self._default_directed = directed
-
-        if weights is None:
-            self._default_weights = {}
-        if nodes_color is None:
-            self._default_nodes_color = {}
-        if edges_color is None:
-            self._default_edges_color = {}
-        if nodes_width is None:
-            self._default_nodes_width = {}
-        if edges_width is None:
-            self._default_edges_width = {}
-        if nodes_label is None:
-            self._default_nodes_label = {}
-        if edges_label is None:
-            self._default_edges_label = {}
 
         self._nodes_color_fallbacks = []
         self._edges_color_fallbacks = []
@@ -130,15 +122,21 @@ class Adigraph:
         self._labels = []
 
     def _load_placeholders(self):
-        """Load placeholder files."""
-        script_dir = os.path.dirname(os.path.realpath(__file__))
-        dir = script_dir + "/placeholders/"
-        with open(dir + "document.tex") as f:
-            self._document_placeholder = f.read()
-        with open(dir + "figure.tex") as f:
-            self._figure_placeholder = f.read()
-        with open(dir + "subfigure.tex") as f:
-            self._subfigure_placeholder = f.read()
+        """Load placeholder strings."""
+        self._document_placeholder = r"""\documentclass{{report}}
+\usepackage{{adigraph}}
+\usepackage{{subcaption}}
+
+\begin{{document}}
+{content}
+\end{{document}}
+"""
+        self._figure_placeholder = r"""\begin{{figure}}
+{content}{caption}{label}
+\end{{figure}}"""
+        self._subfigure_placeholder = r"""    \begin{{subfigure}}{{{size}\textwidth}}
+    {content}{caption}{label}
+    \end{{subfigure}}"""
 
     def _get_caption(self, caption):
         return f"\n\t\\caption{{{caption}}}" if caption else ""
@@ -323,6 +321,9 @@ class Adigraph:
         label: str=""
             label for given graph. If None, default one is used.
         """
+        if graph.is_multigraph():
+            raise nx.NetworkXError(f"Latex Drawing not available for multigraphs")
+
         if layout is None and self._default_layout is None:
             layout = nx.spring_layout(graph, iterations=10000)
 
@@ -398,7 +399,7 @@ class Adigraph:
         if dirname:
             os.makedirs(dirname, exist_ok=True)
         with open(path, "w") as f:
-            file = str(self)
+            latex_code = str(self)
             if document:
-                file = self._body(file)
-            f.write(file)
+                latex_code = self._body(latex_code)
+            f.write(latex_code)
