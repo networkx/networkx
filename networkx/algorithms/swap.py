@@ -23,7 +23,7 @@ def directed_edge_swap(G, nswap=1, max_tries=100, seed=None):
     Parameters
     ----------
     G : DiGraph
-       An directed graph
+       A directed graph
 
     nswap : integer (optional, default=1)
        Number of three-edge swaps to perform
