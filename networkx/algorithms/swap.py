@@ -20,6 +20,21 @@ def directed_edge_swap(G, nswap=1, max_tries=100, seed=None):
     If the swap would create parallel edges (e.g. if a -> c already existed in the
     previous example), another attempt is made to find a suitable trio of edges.
 
+    Parameters
+    ----------
+    G : DiGraph
+       An directed graph
+
+    nswap : integer (optional, default=1)
+       Number of three-edge swaps to perform
+
+    max_tries : integer (optional)
+       Maximum number of attempts to swap edges
+
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
+
     Returns
     -------
     G : DiGraph
@@ -42,7 +57,8 @@ def directed_edge_swap(G, nswap=1, max_tries=100, seed=None):
     """
     if not G.is_directed():
         raise nx.NetworkXError(
-            "directed_edge_swap() is only defined for directed graphs."
+            "directed_edge_swap() is only defined for directed graphs. Use double_edge_swap "
+            "instead"
         )
     if nswap > max_tries:
         raise nx.NetworkXError("Number of swaps > number of tries allowed.")
@@ -148,7 +164,9 @@ def double_edge_swap(G, nswap=1, max_tries=100, seed=None):
     The graph G is modified in place.
     """
     if G.is_directed():
-        raise nx.NetworkXError("double_edge_swap() not defined for directed graphs.")
+        raise nx.NetworkXError(
+            "double_edge_swap() not defined for directed graphs. Use directed_edge_swap instead."
+        )
     if nswap > max_tries:
         raise nx.NetworkXError("Number of swaps > number of tries allowed.")
     if len(G) < 4:
