@@ -1,9 +1,9 @@
 Next Release
 ============
 
-Release date: TBD
+Release date: 21 May 2022
 
-Supports Python ...
+Supports Python 3.8, 3.9, and 3.10.
 
 NetworkX is a Python package for the creation, manipulation, and study of the
 structure, dynamics, and functions of complex networks.
@@ -16,29 +16,21 @@ Please send comments and questions to the `networkx-discuss mailing list
 Highlights
 ----------
 
-This release is the result of X of work with over X pull requests by
-X contributors. Highlights include:
-
-
-Improvements
-------------
-
-
-API Changes
------------
-
-
-Deprecations
-------------
-
+Minor documentation and bug fixes.
 
 Merged PRs
 ----------
 
-<output of contribs.py>
-
+- Fix doc deploy
+- Bump release version
+- MAINT: Update dfs_test with more comprehensive tests (#5654)
+- Bump release version
+- Fix __setstate__ for OutEdgeView subclasses, read _adjdict from state (#5657)
+- Add examples & improve documentation of voterank (#5500)
 
 Contributors
 ------------
 
-<output of contribs.py>
+- Jarrod Millman
+- Mridul Seth
+- Dilara Tekinoglu

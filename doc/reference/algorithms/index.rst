@@ -56,6 +56,7 @@ Algorithms
    operators
    planarity
    planar_drawing
+   polynomials
    reciprocity
    regular
    rich_club

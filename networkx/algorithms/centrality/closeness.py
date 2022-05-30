@@ -20,7 +20,7 @@ def closeness_centrality(G, u=None, distance=None, wf_improved=True):
         C(u) = \frac{n - 1}{\sum_{v=1}^{n-1} d(v, u)},
 
     where `d(v, u)` is the shortest-path distance between `v` and `u`,
-    and `n` is the number of nodes that can reach `u`. Notice that the
+    and `n-1` is the number of nodes reachable from `u`. Notice that the
     closeness distance function computes the incoming distance to `u`
     for directed graphs. To use outward distance, act on `G.reverse()`.
 
@@ -59,6 +59,12 @@ def closeness_centrality(G, u=None, distance=None, wf_improved=True):
     -------
     nodes : dictionary
       Dictionary of nodes with closeness centrality as the value.
+
+    Examples
+    --------
+    >>> G = nx.Graph([(0, 1), (0, 2), (0, 3), (1, 2), (1, 3)])
+    >>> nx.closeness_centrality(G)
+    {0: 1.0, 1: 1.0, 2: 0.75, 3: 0.75}
 
     See Also
     --------

@@ -10,14 +10,14 @@ jobs:
     # Do not attempt to deploy documentation on forks
     if: github.repository_owner == 'networkx'
 
-    runs-on: Ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       with:
-        python-version: '3.8'
+        python-version: '3.9'
 
     - name: Before install
       run: |
@@ -48,7 +48,7 @@ jobs:
     #   - Make sure the name is the same as below: CI_DEPLOY_KEY
     - name: Install SSH agent
       if: github.ref == 'refs/heads/main'
-      uses: webfactory/ssh-agent@v0.4.1
+      uses: webfactory/ssh-agent@v0.5.4
       with:
         ssh-private-key: ${{ secrets.CI_DEPLOY_KEY }}
 
@@ -71,4 +71,3 @@ jobs:
         BRANCH: gh-pages
         TARGET_FOLDER: latest
         SSH: true
-

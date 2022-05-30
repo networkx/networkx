@@ -44,6 +44,12 @@ def chain_decomposition(G, root=None):
     NodeNotFound
        If `root` is not in the graph `G`.
 
+    Examples
+    --------
+    >>> G = nx.Graph([(0, 1), (1, 4), (3, 4), (3, 5), (4, 5)])
+    >>> list(nx.chain_decomposition(G))
+    [[(4, 5), (5, 3), (3, 4)]]
+
     Notes
     -----
     The worst-case running time of this implementation is linear in the

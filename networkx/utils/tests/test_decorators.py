@@ -380,29 +380,25 @@ class TestArgmap:
         # context exits are called in reverse
         assert container == ["c", "b", "a"]
 
-    def test_contextmanager_iterator(self):
+    def test_tryfinally_generator(self):
         container = []
 
-        def contextmanager(x):
-            nonlocal container
-            return x, lambda: container.append(x)
+        def singleton(x):
+            return (x,)
 
-        @argmap(contextmanager, 0, 1, 2, try_finally=True)
+        with pytest.raises(nx.NetworkXError):
+
+            @argmap(singleton, 0, 1, 2, try_finally=True)
+            def foo(x, y, z):
+                yield from (x, y, z)
+
+        @argmap(singleton, 0, 1, 2)
         def foo(x, y, z):
-            yield from (x, y, z)
+            return x + y + z
 
         q = foo("a", "b", "c")
-        assert next(q) == "a"
-        assert container == []
-        assert next(q) == "b"
-        assert container == []
-        assert next(q) == "c"
-        assert container == []
-        with pytest.raises(StopIteration):
-            next(q)
 
-        # context exits are called in reverse
-        assert container == ["c", "b", "a"]
+        assert q == ("a", "b", "c")
 
     def test_actual_vararg(self):
         @argmap(lambda x: -x, 4)
@@ -485,7 +481,25 @@ finally:
  pass#"""
         )
 
-    def nop(self):
-        print(foo.__argmap__.assemble(foo.__wrapped__))
-        argmap._lazy_compile(foo)
-        print(foo._code)
+    def test_immediate_raise(self):
+        @not_implemented_for("directed")
+        def yield_nodes(G):
+            yield from G
+
+        G = nx.Graph([(1, 2)])
+        D = nx.DiGraph()
+
+        # test first call (argmap is compiled and executed)
+        with pytest.raises(nx.NetworkXNotImplemented):
+            node_iter = yield_nodes(D)
+
+        # test second call (argmap is only executed)
+        with pytest.raises(nx.NetworkXNotImplemented):
+            node_iter = yield_nodes(D)
+
+        # ensure that generators still make generators
+        node_iter = yield_nodes(G)
+        next(node_iter)
+        next(node_iter)
+        with pytest.raises(StopIteration):
+            next(node_iter)

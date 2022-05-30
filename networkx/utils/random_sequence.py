@@ -84,7 +84,7 @@ def zipf_rv(alpha, xmin=1, seed=None):
     if alpha <= 1:
         raise ValueError("a <= 1.0")
     a1 = alpha - 1.0
-    b = 2 ** a1
+    b = 2**a1
     while True:
         u = 1.0 - seed.random()  # u in (0,1]
         v = seed.random()  # v in [0,1)

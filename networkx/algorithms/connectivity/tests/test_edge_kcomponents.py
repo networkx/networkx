@@ -88,7 +88,7 @@ def _check_edge_connectivity(G):
         ccs_local = fset(aux_graph.k_edge_components(k))
         ccs_subgraph = fset(aux_graph.k_edge_subgraphs(k))
 
-        # Check connectivity properties that should be garuenteed by the
+        # Check connectivity properties that should be guaranteed by the
         # algorithms.
         _assert_local_cc_edge_connectivity(G, ccs_local, k, memo)
         _assert_subgraph_edge_connectivity(G, ccs_subgraph, k)

@@ -38,7 +38,7 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
 
     Notes
     -----
-    For MultiGraph/MultiDiGraph, the edges weights are summed.
+    For MultiGraph, the edges weights are summed.
 
     See Also
     --------
@@ -77,7 +77,7 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
         N = D^{-1/2} L D^{-1/2}
 
     where `L` is the graph Laplacian and `D` is the diagonal matrix of
-    node degrees.
+    node degrees [1]_.
 
     Parameters
     ----------
@@ -99,10 +99,10 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
 
     Notes
     -----
-    For MultiGraph/MultiDiGraph, the edges weights are summed.
-    See to_numpy_array for other options.
+    For MultiGraph, the edges weights are summed.
+    See :func:`to_numpy_array` for other options.
 
-    If the Graph contains selfloops, D is defined as diag(sum(A,1)), where A is
+    If the Graph contains selfloops, D is defined as ``diag(sum(A, 1))``, where A is
     the adjacency matrix [2]_.
 
     See Also
@@ -147,8 +147,7 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
 
 
 ###############################################################################
-# Code based on
-# https://bitbucket.org/bedwards/networkx-community/src/370bd69fc02f/networkx/algorithms/community/
+# Code based on work from https://github.com/bjedwards
 
 
 @not_implemented_for("undirected")
@@ -166,7 +165,7 @@ def directed_laplacian_matrix(
 
     where `I` is the identity matrix, `P` is the transition matrix of the
     graph, and `\Phi` a matrix with the Perron vector of `P` in the diagonal and
-    zeros elsewhere.
+    zeros elsewhere [1]_.
 
     Depending on the value of walk_type, `P` can be the transition matrix
     induced by a random walk, a lazy random walk, or a random walk with
@@ -262,7 +261,7 @@ def directed_combinatorial_laplacian_matrix(
         L = \Phi - (\Phi P + P^T \Phi) / 2
 
     where `P` is the transition matrix of the graph and `\Phi` a matrix
-    with the Perron vector of `P` in the diagonal and zeros elsewhere.
+    with the Perron vector of `P` in the diagonal and zeros elsewhere [1]_.
 
     Depending on the value of walk_type, `P` can be the transition matrix
     induced by a random walk, a lazy random walk, or a random walk with
