@@ -317,7 +317,7 @@ def test_overspecified_sources():
     assert got2 == target2
 
 
-def test_graph_str_iterative_add_edges():
+def test_graph_str_iterative_add_directed_edges():
     """
     Walk through the cases going from a diconnected to fully connected graph
     """
@@ -326,12 +326,14 @@ def test_graph_str_iterative_add_edges():
     graph = nx.DiGraph()
     graph.add_nodes_from([1, 2, 3, 4])
     lines = []
-    lines.append('--- initial state ---')
-    nx.graph_str(graph, write=lines.append)
+    write = lines.append
+    write('--- initial state ---')
+    # write = print
+    nx.graph_str(graph, write=write)
     for i, j in it.product(graph.nodes, graph.nodes):
-        lines.append('--- add_edge({}, {}) ---'.format(i, j))
+        write('--- add_edge({}, {}) ---'.format(i, j))
         graph.add_edge(i, j)
-        nx.graph_str(graph, write=lines.append)
+        nx.graph_str(graph, write=write)
     text = "\n".join(lines)
     print(text)
     # defined starting point
@@ -347,115 +349,247 @@ def test_graph_str_iterative_add_edges():
         ╟── 3
         ╟── 4
         ╙── 1 ╾ 1
-            └─╼  ... ╾ 1
+            └─╼  ...
         --- add_edge(1, 2) ---
         ╟── 3
         ╟── 4
         ╟── 2 ╾ 1
         ╙── 1 ╾ 1
-            └─╼  ... ╾ 1
+            └─╼  ...
         --- add_edge(1, 3) ---
         ╟── 4
         ╟── 2 ╾ 1
         ╟── 3 ╾ 1
         ╙── 1 ╾ 1
-            └─╼  ... ╾ 1
+            └─╼  ...
         --- add_edge(1, 4) ---
         ╟── 2 ╾ 1
         ╟── 3 ╾ 1
         ╟── 4 ╾ 1
         ╙── 1 ╾ 1
-            └─╼  ... ╾ 1
+            └─╼  ...
         --- add_edge(2, 1) ---
         ╟── 3 ╾ 1
         ╟── 4 ╾ 1
-        ╙── 2
+        ╙── 2 ╾ 1
             └─╼ 1 ╾ 1
-                └─╼  ... ╾ 1
+                └─╼  ...
         --- add_edge(2, 2) ---
         ╟── 3 ╾ 1
         ╟── 4 ╾ 1
-        ╙── 1 ╾ 1
-            └─╼  ... ╾ 1
-            └─╼ 2 ╾ 2
-                └─╼  ... ╾ 2
+        ╙── 1 ╾ 1, 2
+            ├─╼ 2 ╾ 2
+            │   └─╼  ...
+            └─╼  ...
         --- add_edge(2, 3) ---
         ╟── 4 ╾ 1
         ╟── 3 ╾ 1, 2
-        ╙── 1 ╾ 1
-            └─╼  ... ╾ 1
-            └─╼ 2 ╾ 2
-                └─╼  ... ╾ 2
+        ╙── 1 ╾ 1, 2
+            ├─╼ 2 ╾ 2
+            │   └─╼  ...
+            └─╼  ...
         --- add_edge(2, 4) ---
         ╟── 3 ╾ 1, 2
         ╟── 4 ╾ 1, 2
-        ╙── 1 ╾ 1
-            └─╼  ... ╾ 1
-            └─╼ 2 ╾ 2
-                └─╼  ... ╾ 2
+        ╙── 1 ╾ 1, 2
+            ├─╼ 2 ╾ 2
+            │   └─╼  ...
+            └─╼  ...
         --- add_edge(3, 1) ---
         ╟── 4 ╾ 1, 2
-        ╙── 2 ╾ 2
-            ├─╼  ... ╾ 2
-            ├─╼ 1 ╾ 1
-            │   └─╼  ... ╾ 1
-            │   └─╼ 3 ╾ 2
+        ╙── 2 ╾ 1, 2
+            ├─╼ 1 ╾ 1, 3
+            │   ├─╼ 3 ╾ 2
+            │   │   └─╼  ...
+            │   └─╼  ...
+            └─╼  ...
         --- add_edge(3, 2) ---
         ╟── 4 ╾ 1, 2
-        ╙── 3
-            ├─╼ 1 ╾ 1
-            │   └─╼  ... ╾ 1
-            │   └─╼ 2 ╾ 2, 3
-            │       └─╼  ... ╾ 2, 3
+        ╙── 3 ╾ 1, 2
+            ├─╼ 1 ╾ 1, 2
+            │   ├─╼ 2 ╾ 2, 3
+            │   │   └─╼  ...
+            │   └─╼  ...
+            └─╼  ...
         --- add_edge(3, 3) ---
         ╟── 4 ╾ 1, 2
-        ╙── 1 ╾ 1
-            ├─╼  ... ╾ 1
-            ├─╼ 2 ╾ 2
-            │   └─╼  ... ╾ 2
-            │   └─╼ 3 ╾ 1, 3
-            │       └─╼  ... ╾ 1, 3
+        ╙── 1 ╾ 1, 2, 3
+            ├─╼ 2 ╾ 2, 3
+            │   ├─╼ 3 ╾ 1, 3
+            │   │   └─╼  ...
+            │   └─╼  ...
+            └─╼  ...
         --- add_edge(3, 4) ---
         ╟── 4 ╾ 1, 2, 3
-        ╙── 1 ╾ 1
-            ├─╼  ... ╾ 1
-            ├─╼ 2 ╾ 2
-            │   └─╼  ... ╾ 2
-            │   └─╼ 3 ╾ 1, 3
-            │       └─╼  ... ╾ 1, 3
+        ╙── 1 ╾ 1, 2, 3
+            ├─╼ 2 ╾ 2, 3
+            │   ├─╼ 3 ╾ 1, 3
+            │   │   └─╼  ...
+            │   └─╼  ...
+            └─╼  ...
         --- add_edge(4, 1) ---
-        ╙── 2 ╾ 2
-            ├─╼  ... ╾ 2
-            ├─╼ 1 ╾ 1
-            │   ├─╼  ... ╾ 1
+        ╙── 2 ╾ 1, 2, 3
+            ├─╼ 1 ╾ 1, 3, 4
             │   ├─╼ 3 ╾ 2, 3
-            │   │   └─╼  ... ╾ 2, 3
             │   │   └─╼ 4 ╾ 1, 2
+            │   │       └─╼  ...
+            │   └─╼  ...
+            └─╼  ...
         --- add_edge(4, 2) ---
-        ╙── 3 ╾ 3
-            ├─╼  ... ╾ 3
-            ├─╼ 1 ╾ 1
-            │   ├─╼  ... ╾ 1
-            │   ├─╼ 2 ╾ 2, 3
-            │   │   └─╼  ... ╾ 2, 3
+        ╙── 3 ╾ 1, 2, 3
+            ├─╼ 1 ╾ 1, 2, 4
+            │   ├─╼ 2 ╾ 2, 3, 4
             │   │   └─╼ 4 ╾ 1, 3
+            │   │       └─╼  ...
+            │   └─╼  ...
+            └─╼  ...
+        --- add_edge(4, 3) ---
+        ╙── 4 ╾ 1, 2, 3
+            ├─╼ 1 ╾ 1, 2, 3
+            │   ├─╼ 2 ╾ 2, 3, 4
+            │   │   ├─╼ 3 ╾ 1, 3, 4
+            │   │   │   └─╼  ...
+            │   │   └─╼  ...
+            │   └─╼  ...
+            └─╼  ...
+        --- add_edge(4, 4) ---
+        ╙── 1 ╾ 1, 2, 3, 4
+            ├─╼ 2 ╾ 2, 3, 4
+            │   ├─╼ 3 ╾ 1, 3, 4
+            │   │   └─╼ 4 ╾ 1, 2, 4
+            │   │       └─╼  ...
+            │   └─╼  ...
+            └─╼  ...
+        """
+    ).strip()
+    print(text)
+    assert target == text
+
+
+def test_graph_str_iterative_add_undirected_edges():
+    """
+    Walk through the cases going from a diconnected to fully connected graph
+    """
+    import itertools as it
+    import networkx as nx
+    graph = nx.Graph()
+    graph.add_nodes_from([1, 2, 3, 4])
+    lines = []
+    write = lines.append
+    write('--- initial state ---')
+    nx.graph_str(graph, write=write)
+    for i, j in it.product(graph.nodes, graph.nodes):
+        write('--- add_edge({}, {}) ---'.format(i, j))
+        graph.add_edge(i, j)
+        nx.graph_str(graph, write=write)
+    text = "\n".join(lines)
+    print(text)
+    target = dedent(
+        """
+        --- initial state ---
+        ╟── 1
+        ╟── 2
+        ╟── 3
+        ╙── 4
+        --- add_edge(1, 1) ---
+        ╟── 2
+        ╟── 3
+        ╟── 4
+        ╙── 1 ─ 1
+        --- add_edge(1, 2) ---
+        ╟── 3
+        ╟── 4
+        ╙── 2
+            └── 1 ─ 1
+        --- add_edge(1, 3) ---
+        ╟── 4
+        ╙── 2
+            └── 1 ─ 1
+                └── 3
+        --- add_edge(1, 4) ---
+        ╙── 2
+            └── 1 ─ 1
+                ├── 3
+                └── 4
+        --- add_edge(2, 1) ---
+        ╙── 2
+            └── 1 ─ 1
+                ├── 3
+                └── 4
+        --- add_edge(2, 2) ---
+        ╙── 3
+            └── 1 ─ 1
+                ├── 2 ─ 2
+                └── 4
+        --- add_edge(2, 3) ---
+        ╙── 4
+            └── 1 ─ 1
+                ├── 2 ─ 2
+                │   └── 3 ─ 1
+                └──  ...
+        --- add_edge(2, 4) ---
+        ╙── 3
+            ├── 1 ─ 1
+            │   ├── 2 ─ 2, 3
+            │   │   └── 4 ─ 1
+            │   └──  ...
+            └──  ...
+        --- add_edge(3, 1) ---
+        ╙── 3
+            ├── 1 ─ 1
+            │   ├── 2 ─ 2, 3
+            │   │   └── 4 ─ 1
+            │   └──  ...
+            └──  ...
+        --- add_edge(3, 2) ---
+        ╙── 3
+            ├── 1 ─ 1
+            │   ├── 2 ─ 2, 3
+            │   │   └── 4 ─ 1
+            │   └──  ...
+            └──  ...
+        --- add_edge(3, 3) ---
+        ╙── 4
+            ├── 1 ─ 1
+            │   ├── 2 ─ 2, 4
+            │   │   └── 3 ─ 1, 3
+            │   └──  ...
+            └──  ...
+        --- add_edge(3, 4) ---
+        ╙── 4
+            ├── 1 ─ 1
+            │   ├── 2 ─ 2, 4
+            │   │   └── 3 ─ 1, 3, 4
+            │   └──  ...
+            └──  ...
+        --- add_edge(4, 1) ---
+        ╙── 4
+            ├── 1 ─ 1
+            │   ├── 2 ─ 2, 4
+            │   │   └── 3 ─ 1, 3, 4
+            │   └──  ...
+            └──  ...
+        --- add_edge(4, 2) ---
+        ╙── 4
+            ├── 1 ─ 1
+            │   ├── 2 ─ 2, 4
+            │   │   └── 3 ─ 1, 3, 4
+            │   └──  ...
+            └──  ...
         --- add_edge(4, 3) ---
         ╙── 4
-            ├─╼ 1 ╾ 1
-            │   ├─╼  ... ╾ 1
-            │   ├─╼ 2 ╾ 2, 4
-            │   │   └─╼  ... ╾ 2, 4
-            │   │   └─╼ 3 ╾ 1, 3, 4
-            │   │       └─╼  ... ╾ 1, 3, 4
+            ├── 1 ─ 1
+            │   ├── 2 ─ 2, 4
+            │   │   └── 3 ─ 1, 3, 4
+            │   └──  ...
+            └──  ...
         --- add_edge(4, 4) ---
-        ╙── 1 ╾ 1
-            ├─╼  ... ╾ 1
-            ├─╼ 2 ╾ 2
-            │   ├─╼  ... ╾ 2
-            │   ├─╼ 3 ╾ 1, 3
-            │   │   └─╼  ... ╾ 1, 3
-            │   │   └─╼ 4 ╾ 1, 2, 4
-            │   │       └─╼  ... ╾ 1, 2, 4
+        ╙── 1 ─ 1
+            ├── 2 ─ 2
+            │   ├── 3 ─ 1, 3
+            │   │   └── 4 ─ 1, 2, 4
+            │   └──  ...
+            └──  ...
 
         """
     ).strip()
