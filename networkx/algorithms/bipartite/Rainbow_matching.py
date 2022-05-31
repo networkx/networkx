@@ -7,22 +7,41 @@ def rainbow_matching(graph : nx.Graph, k : int) -> int:
     "Parameterized Algorithms and Kernels for Rainbow Matching" by
     S. Gupta and S. Roy and S. Saurabh and M. Zehavi, https://drops.dagstuhl.de/opus/volltexte/2017/8124/pdf/LIPIcs-MFCS-2017-71.pdf
 
-    Algorithm 1: Receives a colored path and an integer "k".
-    Returns "true" (1) if there is a rainbow matching of size "k",
-    and returns "false" (0) if there isn't.
-    >>> rainbow_matching(nx.Graph() , 1 )
-    0
+    Algorithm 1: Receives a colored path with numbered vertices and an integer "k".
+    Returns a rainbow matching of size k
+    and returns an empty graph if there isn't.
+    >>> Res = rainbow_matching(nx.Graph() , 1 )
+    >>> list(Res.edges)
+    []
 
 
     >>> G = nx.Graph()
     >>> G.add_nodes_from([1, 3])
     >>> G.add_edge(1, 2, color = "blue")
     >>> G.add_edge(2, 3, color="red")
-    >>> rainbow_matching(G , 1 )
-    1
-    >>> rainbow_matching(G , 2)
-    0
+    >>> Res = rainbow_matching(G , 1 )
+    >>> list(Res.edges)
+    [(1, 2)]
+    >>> Res = rainbow_matching(G , 2)
+    >>> list(Res.edges)
+    []
+
+    >>> G.add_node(4)
+    >>> G.add_edge(3, 4, color = "green")
+    >>> Res = rainbow_matching(G , 2)
+    >>> list(Res.edges)
+    [(1, 2), (3, 4)]
+    >>> G.edges[3, 4]['color'] = "blue"
+    >>> Res = rainbow_matching(G , 2)
+    >>> list(Res.edges)
+    []
+    >>> G.edges[3, 4]['color'] = "red"
+    >>> Res = rainbow_matching(G , 2)
+    >>> list(Res.edges)
+    [(1, 2), (3, 4)]
     """
+    global original_path
+    original_path = copy.deepcopy(graph)
     return Disjoint_Set_Rainbow_Matching(graph, [], k, nx.Graph())
 
 
@@ -32,24 +51,20 @@ def Disjoint_Set_Rainbow_Matching(P : nx.Graph, S : list, k : int, B : nx.Graph)
     Given a path P, a collection S of vertex disjoint paths and an integer k,
     Is there a colorful matching of size k that uses exactly one edge from each path in S,
     and k - |S| edges from P?
+    This function makes use of an auxiliary bi-partite graph B.
+    The left side contains the colors of the edges as nodes and the right side contains disjoint paths.
+    There will be an edge between a path P and a color c if there is an edge in P that is colored in c.
 
-    >>> G = nx.Graph()
-    >>> G.add_nodes_from([1, 3])
-    >>> G.add_edge(1, 2, color = "blue")
-    >>> G.add_edge(2, 3, color="red")
-    >>> Disjoint_Set_Rainbow_Matching(G , [] , 1 , nx.Graph())
-    1
-    >>> Disjoint_Set_Rainbow_Matching(G , [] , 2 , nx.Graph())
-    0
     """
 
     # First step is to check if Lemma 5 or Lemma 6 are applicable.
-    # If they return an answer that is not "-1",
-    # we return the answer.
-    if Lemma5(P,S,k,B) == 1:
-        return 1
-    if Lemma5(P,S,k,B) == 0 or Lemma6(P,S,k,B) == 0:
-        return 0
+    # If they return an answer that is not "-1", we return the answer.
+    result5 = Lemma5(P,S,k,B)
+    result6 = Lemma6(P,S,k,B)
+    if isinstance(result5, nx.Graph):
+        return result5
+    if result5 == False or result6 == False:
+        return nx.Graph()
 
     # If both Lemma 5 and Lemma 6 are not applicable,
     # Lemma 8 guarantees us an index i for which the sub-path of P, (1, ..., i),
@@ -77,8 +92,9 @@ def Disjoint_Set_Rainbow_Matching(P : nx.Graph, S : list, k : int, B : nx.Graph)
 
     # First branch - if the edge (i,i+1) belongs to the rainbow matching
     ans = Disjoint_Set_Rainbow_Matching(P_1, S_1, k, B_temp)
-    if ans == 1:
-        return 1
+    if ans != False:
+        return ans
+
 
 
 
@@ -100,10 +116,10 @@ def Disjoint_Set_Rainbow_Matching(P : nx.Graph, S : list, k : int, B : nx.Graph)
 
     # Second branch - if the edge (i,i+1) does not belongs to the rainbow matching
     ans = Disjoint_Set_Rainbow_Matching(P_2, S_2, k, B_temp)
-    if ans == 1:
-        return 1
+    if ans != False:
+        return ans
 
-    return 0
+    return nx.Graph()
 
 
 
@@ -112,10 +128,6 @@ def Disjoint_Set_Rainbow_Matching(P : nx.Graph, S : list, k : int, B : nx.Graph)
 def add_path_to_B(P : nx.Graph, B : nx.Graph):
     """
     This function adds a path P to the auxiliary bipartite graph B.
-    The left side contains the colors of the edges as nodes.
-    The right side contains paths.
-    There will be an edge between a path P and a color c
-     if there is an edge in P that is colored in c.
 
      >>> P = nx.Graph()
      >>> P.add_edge(1, 2, color="red")
@@ -132,10 +144,10 @@ def add_path_to_B(P : nx.Graph, B : nx.Graph):
     """
 
 
-    if len(P) == 1:
+    if len(P) <= 1:
         return
 
-    path =' '.join(map(str, list(P.nodes()) ))
+    path =' '.join(map(str, sorted(list(P.nodes())) ))
     B.add_node(path, bipartite=1)
     for i in P.nodes():
         if P.has_edge(i, i+1):
@@ -161,6 +173,23 @@ def size_max_matching(B : nx.Graph) -> int:
 
     return sum_matching
 
+def get_rainbow_matching(B : nx.Graph):
+    '''
+    This function recieves a bipartite graph and returns a Graph with the corresponding rainbow matching.
+    '''
+    matching = nx.Graph()
+    for path in nx.connected_components(B):
+        component = B.subgraph(path)
+        nodes = nx.bipartite.maximum_matching(component)
+        for key in list(nodes.keys()):
+            lst = key.split(" ")
+            if lst[0].isnumeric():
+                for i in lst[1:]:
+                    int_i = int(i)
+                    if original_path.has_edge(int_i-1, int_i) and nodes.get(key) == original_path.edges[int_i-1, int_i]['color']:
+                        matching.add_nodes_from([int_i -1 , int_i])
+                        matching.add_edge(int_i-1, int_i, color = nodes.get(key))
+    return matching
 
 # The following functions are Lemmas from the article that are very helpful for us.
 def Lemma5(P : nx.Graph, S : list, k : int, B : nx.Graph):
@@ -170,34 +199,35 @@ def Lemma5(P : nx.Graph, S : list, k : int, B : nx.Graph):
 
     # Less than 0, return 0
     elif k - len(S) < 0:
-        return 0
+        return False
 
     # Exactly zero, return 1 if there is a matching in B that saturates S
-    # If there isn't, return 0
+    # If there isn't, return False (there is no rainbow matching)
     elif k - len(S) == 0:
         #check if there is a matching that covers all S in B
         if size_max_matching(B) == len(S):
-            return 1
+            return get_rainbow_matching(B)
         else:
-            return 0
+            return False
 
     # Exactly one, go through every edge and do the same as the 0 case
     elif k - len(S) == 1:
         if len(P) <= 1:
             return 0
         for i in P.nodes():
-            if i > 1:
+            #if i > 1:
                 B_temp = copy.deepcopy(B)
                 add_path_to_B(P.subgraph([i,i+1]), B_temp)
                 #check if there is a matching that covers all S in B
-                if size_max_matching(B_temp) == len(S):
-                    return 1
+                if size_max_matching(B_temp) == len(S)+1:
+                    return get_rainbow_matching(B_temp)
+        return False
 
 
 
 def Lemma6(P : nx.Graph, S : list, k : int, B : nx.Graph):
     for i in P.nodes():
-        if i > 1:
+        #if i > 1:
             B_temp = copy.deepcopy(B)
             nodes = list(range(0,i))
             add_path_to_B(P.subgraph(nodes), B_temp)
@@ -209,13 +239,13 @@ def Lemma6(P : nx.Graph, S : list, k : int, B : nx.Graph):
 
     # if we checked all indexes and didn't find an index that satisfies the lemma's condition
     # there is no rainbow matching and we return 0
-    return 0
+    return False
 
 def Lemma8(P : nx.Graph, S : list, k : int, B : nx.Graph):
     # This lemma is called if lemma 6 returns "-1".
     # It finds the smallest index for which the lemma's condition is met.
     for i in P.nodes():
-        if i > 1:
+        #if i > 1:
             B_temp = copy.deepcopy(B)
 
             nodes = list(range(0, i))
@@ -231,7 +261,7 @@ def Lemma8(P : nx.Graph, S : list, k : int, B : nx.Graph):
 
 if __name__ == '__main__':
     import doctest
-    doctest.testmod()
+    print(doctest.testmod())
 
 
     G = nx.Graph()
@@ -249,5 +279,14 @@ if __name__ == '__main__':
     G.add_edge(12, 13, color="yellow")
     G.add_edge(13, 14, color="black")
 
-    print(rainbow_matching(G, 5))
-    print(rainbow_matching(G, 6))
+    print(list(rainbow_matching(G, 5).edges))
+    print(list(rainbow_matching(G, 6).edges))
+
+    G = nx.Graph()
+    G.add_nodes_from([1, 3])
+    G.add_edge(1, 2, color="blue")
+    G.add_edge(2, 3, color="red")
+    Res = rainbow_matching(G, 1)
+    print(list(Res.edges))
+
+
