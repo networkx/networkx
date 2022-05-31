@@ -40,6 +40,15 @@ def directed_edge_swap(G, *, nswap=1, max_tries=100, seed=None):
     G : DiGraph
        The graph after triple-edge swaps.
 
+    Raises
+    ------
+    NetworkXError
+        If `G` is not directed, or
+        If nswap > max_tries, or
+        If there are fewer than 4 nodes in `G`
+    NetworkXAlgorithmError
+        If the number of swap attempts exceeds `max_tries` before `nswap` swaps are made
+
     Notes
     -----
     Does not enforce any connectivity constraints.
