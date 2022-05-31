@@ -7,7 +7,10 @@ __all__ = ["forest_str", "graph_str"]
 
 def forest_str(graph, with_labels=True, sources=None, write=None, ascii_only=False):
     """
-    Creates a nice utf8 representation of a directed forest
+    Creates a nice utf8 representation of a forest
+
+    This function has been superseded by :func:`nx.readwrite.text.graph_str`,
+    which should be used instead.
 
     Parameters
     ----------
@@ -87,7 +90,13 @@ def forest_str(graph, with_labels=True, sources=None, write=None, ascii_only=Fal
 
 def graph_str(graph, with_labels=True, sources=None, write=None, ascii_only=False):
     """
-    Creates a nice utf8 representation of a graph
+    Creates a nice text representation of a graph
+
+    This works via a depth-first traversal the graph and writing a line for
+    each unique node encountered. Non-tree edges are written to the right of
+    each node, and connection to a non-tree edge is indicated with an ellipsis.
+    This representation works best when the input graph is a forest, but any
+    graph can be represented.
 
     Parameters
     ----------
@@ -99,10 +108,9 @@ def graph_str(graph, with_labels=True, sources=None, write=None, ascii_only=Fals
         exists otherwise it will use the node value itself. Defaults to True.
 
     sources : List
-        Mainly relevant for undirected forests, specifies which nodes to list
-        first. If unspecified the root nodes of each tree will be used for
-        directed forests; for undirected forests this defaults to the nodes
-        with the smallest degree.
+        Specifies which nodes to start traversal from. Note: nodes that are not
+        reachable from one of these sources may not be shown. If unspecified,
+        the minimal set of nodes needed to reach all others will be used.
 
     write : callable
         Function to use to write to, if None new lines are appended to
@@ -116,72 +124,80 @@ def graph_str(graph, with_labels=True, sources=None, write=None, ascii_only=Fals
     Returns
     -------
     str | None :
-        utf8 representation of the tree / forest
+        text representation of the graph
 
     Example
     -------
-    >>> import networkx as nx
-    >>> graph = nx.DiGraph()
-    >>> graph.add_nodes_from(['a', 'b', 'c', 'd', 'e'])
-    >>> graph.add_edges_from([
-    >>>     ('a', 'd'),
-    >>>     ('b', 'd'),
-    >>>     ('c', 'd'),
-    >>>     ('d', 'e'),
-    >>>     ('f1', 'g'),
-    >>>     ('f2', 'g'),
-    >>> ])
-    >>> nx.graph_str(graph, write=print)
-    >>> graph = nx.balanced_tree(r=2, h=3, create_using=nx.DiGraph)
-    >>> # A simple forest
+    >>> graph = nx.balanced_tree(r=2, h=2, create_using=nx.DiGraph)
     >>> print(nx.graph_str(graph))
     ╙── 0
         ├─╼ 1
         │   ├─╼ 3
-        │   │   ├─╼ 7
-        │   │   └─╼ 8
         │   └─╼ 4
-        │       ├─╼ 9
-        │       └─╼ 10
         └─╼ 2
             ├─╼ 5
-            │   ├─╼ 11
-            │   └─╼ 12
             └─╼ 6
-                ├─╼ 13
-                └─╼ 14
 
-    >>> # Add a non-forest edge
-    >>> graph.add_edges_from([
-    >>>     (7, 1)
-    >>> ])
+    >>> # A near tree with one non-tree edge
+    >>> graph.add_edge(5, 1)
     >>> print(nx.graph_str(graph))
     ╙── 0
-        ├─╼ 1 ╾ 7
+        ├─╼ 1 ╾ 5
         │   ├─╼ 3
-        │   │   ├─╼ 7
-        │   │   │   └─╼  ...
-        │   │   └─╼ 8
         │   └─╼ 4
-        │       ├─╼ 9
-        │       └─╼ 10
         └─╼ 2
             ├─╼ 5
-            │   ├─╼ 11
-            │   └─╼ 12
+            │   └─╼  ...
             └─╼ 6
-                ├─╼ 13
-                └─╼ 14
 
-    >>> # A clique graph
-    >>> graph = nx.erdos_renyi_graph(5, 1.0)
+    >>> graph = nx.cycle_graph(5)
+    >>> print(nx.graph_str(graph))
+    ╙── 0
+        ├── 1
+        │   └── 2
+        │       └── 3
+        │           └── 4 ─ 0
+        └──  ...
+
+    >>> graph = nx.generators.barbell_graph(4, 2)
+    >>> print(nx.graph_str(graph))
+    ╙── 4
+        ├── 5
+        │   └── 6
+        │       ├── 7
+        │       │   ├── 8 ─ 6
+        │       │   │   └── 9 ─ 6, 7
+        │       │   └──  ...
+        │       └──  ...
+        └── 3
+            ├── 0
+            │   ├── 1 ─ 3
+            │   │   └── 2 ─ 0, 3
+            │   └──  ...
+            └──  ...
+
+    >>> graph = nx.complete_graph(5, create_using=nx.Graph)
     >>> print(nx.graph_str(graph))
     ╙── 0
         ├── 1
         │   ├── 2 ─ 0
         │   │   ├── 3 ─ 0, 1
         │   │   │   └── 4 ─ 0, 1, 2
+        │   │   └──  ...
+        │   └──  ...
+        └──  ...
+
+    >>> graph = nx.complete_graph(3, create_using=nx.DiGraph)
+    >>> print(nx.graph_str(graph))
+    ╙── 0 ╾ 1, 2
+        ├─╼ 1 ╾ 2
+        │   ├─╼ 2 ╾ 0
+        │   │   └─╼  ...
+        │   └─╼  ...
+        └─╼  ...
     """
+    from collections import defaultdict
+
     import networkx as nx
 
     printbuf = []
@@ -247,19 +263,24 @@ def graph_str(graph, with_labels=True, sources=None, write=None, ascii_only=Fals
             # one node as a starting point, preferably without a parent
             if is_directed:
                 # Choose one node from each SCC with minimum in_degree
-                candidates = [
-                    min(scc, key=lambda n: graph.in_degree[n])
-                    for scc in nx.strongly_connected_components(graph)
-                ]
-                # Starting this this set of candidates find a small set of
-                # nodes, such that the entire graph is visitable.
-                candidates = sorted(candidates, key=lambda n: graph.in_degree[n])
+                sccs = list(nx.strongly_connected_components(graph))
+                # condensing the SCCs forms a dag, the nodes in this graph with
+                # 0 in-degree correspond to the SCCs from which the minimum set
+                # of nodes from which all other nodes can be reached.
+                scc_graph = nx.condensation(graph, sccs)
+                supernode_to_nodes = {sn: [] for sn in scc_graph.nodes()}
+                # Note: the order of mapping differs between pypy and cpython
+                # so we have to loop over graph nodes for consistency
+                mapping = scc_graph.graph["mapping"]
+                for n in graph.nodes:
+                    sn = mapping[n]
+                    supernode_to_nodes[sn].append(n)
                 sources = []
-                seen = set()
-                for n in candidates:
-                    if n not in seen:
-                        seen.update(nx.bfs_tree(graph, n))
-                        sources.append(n)
+                for sn in scc_graph.nodes():
+                    if scc_graph.in_degree[sn] == 0:
+                        scc = supernode_to_nodes[sn]
+                        node = min(scc, key=lambda n: graph.in_degree[n])
+                        sources.append(node)
             else:
                 # For undirected graph, the entire graph will be reachable as
                 # long as we consider one node from every connected component
@@ -277,33 +298,35 @@ def graph_str(graph, with_labels=True, sources=None, write=None, ascii_only=Fals
             (None, node, "", (idx == last_idx)) for idx, node in enumerate(sources)
         ][::-1]
 
-        if is_directed:
-            def normalize_edge(u, v):
-                return (u, v)
-        else:
-            def normalize_edge(u, v):
-                if u is not None or v is Ellipsis:
-                    return (u, v)
-                else:
-                    # TODO: make this work for non-comparable node types
-                    return tuple(sorted((u, v), key=str))
-
+        num_skipped_children = defaultdict(lambda: 0)
         seen_nodes = set()
-        seen_edges = set()
         while stack:
             parent, node, indent, this_islast = stack.pop()
 
-            edge = normalize_edge(parent, node)
-
             if node is not Ellipsis:
-                if node in seen_nodes:
-                    if this_islast:
-                        # If we are going to skip a islast node, we should add
-                        # an implicit output, to indicate that this node has
-                        # more outgoing edges, which were shown previously
+                skip = node in seen_nodes
+                if skip:
+                    # Mark that we skipped a parent's child
+                    num_skipped_children[parent] += 1
+
+                if this_islast:
+                    # If we reached the last child of a parent, and we skipped
+                    # any of that parents children, then we should emit an
+                    # ellipsis at the end after this.
+                    if num_skipped_children[parent] and parent is not None:
+
+                        # Append the ellipsis to be emitted last
                         next_islast = True
                         try_frame = (node, Ellipsis, indent, next_islast)
                         stack.append(try_frame)
+
+                        # Redo this frame, but not as a last object
+                        next_islast = False
+                        try_frame = (parent, node, indent, next_islast)
+                        stack.append(try_frame)
+                        continue
+
+                if skip:
                     continue
                 seen_nodes.add(node)
 
@@ -330,38 +353,58 @@ def graph_str(graph, with_labels=True, sources=None, write=None, ascii_only=Fals
             if node is Ellipsis:
                 label = " ..."
                 suffix = ""
-                new_children = []
                 children = []
             else:
                 if with_labels:
-                    label = graph.nodes[node].get("label", node)
+                    label = str(graph.nodes[node].get("label", node))
                 else:
-                    label = node
+                    label = str(node)
 
+                # Determine:
+                # (1) children to traverse into after showing this node.
+                # (2) parents to immediately show to the right of this node.
                 if is_directed:
-                    other_parents = set(pred[node]) - {parent}
-                    new_children = sorted(set(succ[node]) - seen_nodes)
-                    children = sorted(succ[node])
+                    # In the directed case we must show every successor node
+                    # note: it may be skipped later, but we don't have that
+                    # information here.
+                    children = list(succ[node])
+                    # In the directed case we must show every predecessor
+                    # except for parent we directly traversed from.
+                    handled_parents = {parent}
                 else:
-                    new_children = [child for child in succ[node] if child not in seen_nodes]
-                    neighbors = set(pred[node])
-                    other_parents = (neighbors - set(new_children)) - {parent}
-                    children = new_children
+                    # Showing only the unseen children results in a more
+                    # concise representation for the undirected case.
+                    children = [
+                        child for child in succ[node] if child not in seen_nodes
+                    ]
+                    # In the undirected case, parents are also children, so we
+                    # only need to immediately show the ones we can no longer
+                    # traverse
+                    handled_parents = {*children, parent}
 
-                other_parents_str = ", ".join([str(p) for p in sorted(other_parents)])
+                # The other parents are other predecessors of this node that
+                # are not handled elsewhere.
+                other_parents = [p for p in pred[node] if p not in handled_parents]
                 if other_parents:
-                    suffix = " ".join(["", glyph_backedge, other_parents_str])
+                    if with_labels:
+                        other_parents_labels = ", ".join(
+                            [str(graph.nodes[p].get("label", p)) for p in other_parents]
+                        )
+                    else:
+                        other_parents_labels = ", ".join(
+                            [str(p) for p in other_parents]
+                        )
+                    suffix = " ".join(["", glyph_backedge, other_parents_labels])
                 else:
                     suffix = ""
 
-            # Emit the line for this node
-            _write(this_prefix + str(label) + suffix)
-            seen_edges.add(edge)
+            # Emit the line for this node, this will be called for each node
+            # exactly once.
+            _write(this_prefix + label + suffix)
 
             # Push children on the stack in reverse order so they are popped in
             # the original order.
-            idx = 0
-            for idx, child in enumerate(children[::-1], start=idx):
+            for idx, child in enumerate(children[::-1]):
                 next_islast = idx == 0
                 try_frame = (node, child, next_prefix, next_islast)
                 stack.append(try_frame)
