@@ -725,12 +725,12 @@ def maximum_spanning_tree(G, weight="weight", algorithm="kruskal", ignore_nan=Fa
 @py_random_state(3)
 def random_spanning_tree(G, weight=None, multiplicative=True, seed=None):
     """
-    Sample a random spanning tree using the edges weights of the graph.
+    Sample a random spanning tree using the edges weights of `G`.
 
     This function supports two different methods for determining the
-    probability of the graph. If `multiplicative` is `True`, the probability
-    is based on the product of edge weights, and if `multiplicative` is
-    `false` it is based on the sum of the edge weight. However, since it is
+    probability of the graph. If ``multiplicative=True``, the probability
+    is based on the product of edge weights, and if ``multiplicative=False``
+    it is based on the sum of the edge weight. However, since it is
     easier to determine the total weight of all spanning trees for the
     multiplicative verison, that is significantly faster and should be used if
     possible. Additionally, setting `weight` to `None` will cause a spanning tree
@@ -746,7 +746,7 @@ def random_spanning_tree(G, weight=None, multiplicative=True, seed=None):
     weight : string
         The edge key for the edge attribute holding edge weight.
 
-    multiplicative : True
+    multiplicative : bool, default=True
         If `True`, the probability of each tree is the product of its edge weight
         over the sum of the product of all the spanning trees in the graph. If
         `False`, the probability is the sum of its edge weight over the sum of
