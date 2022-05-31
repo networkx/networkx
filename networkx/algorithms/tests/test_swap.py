@@ -9,7 +9,7 @@ def test_directed_edge_swap():
     graph = nx.gnp_random_graph(200, 0.5, directed=True)
     in_degrees = sorted((n, d) for n, d in graph.in_degree())
     out_degrees = sorted((n, d) for n, d in graph.out_degree())
-    G = nx.directed_edge_swap(graph, 40, max_tries=500)
+    G = nx.directed_edge_swap(graph, nswap=40, max_tries=500)
     assert in_degrees == sorted((n, d) for n, d in G.in_degree())
     assert out_degrees == sorted((n, d) for n, d in G.out_degree())
 
@@ -18,7 +18,7 @@ def test_directed_edge_swap_seed():
     graph = nx.gnp_random_graph(200, 0.5, directed=True)
     in_degrees = sorted((n, d) for n, d in graph.in_degree())
     out_degrees = sorted((n, d) for n, d in graph.out_degree())
-    G = nx.directed_edge_swap(graph, 40, max_tries=500, seed=1)
+    G = nx.directed_edge_swap(graph, nswap=40, max_tries=500, seed=1)
     assert in_degrees == sorted((n, d) for n, d in G.in_degree())
     assert out_degrees == sorted((n, d) for n, d in G.out_degree())
 
