@@ -197,7 +197,7 @@ ALGORITHMS = {
 
 
 @not_implemented_for("directed")
-def steiner_tree(G, terminal_nodes, weight="weight", method="kou"):
+def steiner_tree(G, terminal_nodes, weight="weight", method=None):
     r"""Return an approximation to the minimum Steiner tree of a graph.
 
     The minimum Steiner tree of `G` w.r.t a set of `terminal_nodes` (also *S*)
@@ -270,6 +270,16 @@ def steiner_tree(G, terminal_nodes, weight="weight", method="kou"):
            Information Processing Letters 27 (3): 125–28.
            https://doi.org/10.1016/0020-0190(88)90066-X.
     """
+    if method is None:
+        import warnings
+
+        msg = (
+            "steiner_tree will change default method from 'kou' to 'wu'"
+            "in version 3.0.\nSet the `method` kwarg to remove this warning."
+        )
+        warnings.warn(msg, FutureWarning, stacklevel=4)
+        method = "kou"
+
     try:
         algo = ALGORITHMS[method]
     except KeyError as e:
