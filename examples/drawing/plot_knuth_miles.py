@@ -66,7 +66,7 @@ def miles_graph():
             G.add_node(city)
             # assign position - Convert string to lat/long
             G.position[city] = (-float(x) / 100, float(y) / 100)
-            G.population[city] = float(pop) / 1000.0
+            G.population[city] = float(pop) / 1000
     return G
 
 

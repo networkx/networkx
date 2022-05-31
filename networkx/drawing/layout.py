@@ -530,7 +530,7 @@ def _fruchterman_reingold(
     t = max(max(pos.T[0]) - min(pos.T[0]), max(pos.T[1]) - min(pos.T[1])) * 0.1
     # simple cooling scheme.
     # linearly step down by dt on each iteration so last iteration is size dt.
-    dt = t / float(iterations + 1)
+    dt = t / (iterations + 1)
     delta = np.zeros((pos.shape[0], pos.shape[0], pos.shape[1]), dtype=A.dtype)
     # the inscrutable (but fast) version
     # this is still O(V^2)
@@ -602,7 +602,7 @@ def _sparse_fruchterman_reingold(
     t = max(max(pos.T[0]) - min(pos.T[0]), max(pos.T[1]) - min(pos.T[1])) * 0.1
     # simple cooling scheme.
     # linearly step down by dt on each iteration so last iteration is size dt.
-    dt = t / float(iterations + 1)
+    dt = t / (iterations + 1)
 
     displacement = np.zeros((dim, nnodes))
     for iteration in range(iterations):

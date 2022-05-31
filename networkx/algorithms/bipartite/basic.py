@@ -263,9 +263,9 @@ def density(B, nodes):
         d = 0.0
     else:
         if B.is_directed():
-            d = m / (2.0 * float(nb * nt))
+            d = m / (2 * nb * nt)
         else:
-            d = m / float(nb * nt)
+            d = m / (nb * nt)
     return d
 
 

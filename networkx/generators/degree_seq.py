@@ -428,7 +428,7 @@ def expected_degree_graph(w, seed=None, selfloops=True):
         while v < n and p > 0:
             if p != 1:
                 r = seed.random()
-                v += int(math.floor(math.log(r, 1 - p)))
+                v += math.floor(math.log(r, 1 - p))
             if v < n:
                 q = min(seq[v] * factor, 1)
                 if seed.random() < q / p:
@@ -805,7 +805,7 @@ class DegreeSequenceRandomGraph:
 
     def q(self, u, v):
         # remaining degree probability
-        norm = float(max(self.remaining_degree.values())) ** 2
+        norm = max(self.remaining_degree.values()) ** 2
         return self.remaining_degree[u] * self.remaining_degree[v] / norm
 
     def suitable_edge(self):

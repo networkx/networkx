@@ -367,7 +367,7 @@ def gaussian_random_partition_graph(n, s, v, p_in, p_out, directed=False, seed=N
     assigned = 0
     sizes = []
     while True:
-        size = int(seed.gauss(s, float(s) / v + 0.5))
+        size = int(seed.gauss(s, s / v + 0.5))
         if size < 1:  # how to handle 0 or negative sizes?
             continue
         if assigned + size >= n:
