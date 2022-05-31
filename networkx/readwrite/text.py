@@ -277,18 +277,35 @@ def graph_str(graph, with_labels=True, sources=None, write=None, ascii_only=Fals
             (None, node, "", (idx == last_idx)) for idx, node in enumerate(sources)
         ][::-1]
 
+        if is_directed:
+            def normalize_edge(u, v):
+                return (u, v)
+        else:
+            def normalize_edge(u, v):
+                if u is not None or v is Ellipsis:
+                    return (u, v)
+                else:
+                    # TODO: make this work for non-comparable node types
+                    return tuple(sorted((u, v), key=str))
+
         seen_nodes = set()
         seen_edges = set()
-        implicit_seen = set()
         while stack:
             parent, node, indent, this_islast = stack.pop()
-            edge = (parent, node)
+
+            edge = normalize_edge(parent, node)
 
             if node is not Ellipsis:
                 if node in seen_nodes:
+                    if this_islast:
+                        # If we are going to skip a islast node, we should add
+                        # an implicit output, to indicate that this node has
+                        # more outgoing edges, which were shown previously
+                        next_islast = True
+                        try_frame = (node, Ellipsis, indent, next_islast)
+                        stack.append(try_frame)
                     continue
                 seen_nodes.add(node)
-                seen_edges.add(edge)
 
             if not indent:
                 # Top level items (i.e. trees in the forest) get different
@@ -312,38 +329,41 @@ def graph_str(graph, with_labels=True, sources=None, write=None, ascii_only=Fals
 
             if node is Ellipsis:
                 label = " ..."
+                suffix = ""
+                new_children = []
                 children = []
             else:
                 if with_labels:
                     label = graph.nodes[node].get("label", node)
                 else:
                     label = node
-                children = [child for child in succ[node] if child not in seen_nodes]
-                neighbors = set(pred[node])
-                others = (neighbors - set(children)) - {parent}
-                implicit_seen.update(others)
-                in_edges = [(node, other) for other in others]
-                if in_edges:
-                    in_nodes = ", ".join([str(uv[1]) for uv in in_edges])
-                    suffix = " ".join(["", glyph_backedge, in_nodes])
+
+                if is_directed:
+                    other_parents = set(pred[node]) - {parent}
+                    new_children = sorted(set(succ[node]) - seen_nodes)
+                    children = sorted(succ[node])
+                else:
+                    new_children = [child for child in succ[node] if child not in seen_nodes]
+                    neighbors = set(pred[node])
+                    other_parents = (neighbors - set(new_children)) - {parent}
+                    children = new_children
+
+                other_parents_str = ", ".join([str(p) for p in sorted(other_parents)])
+                if other_parents:
+                    suffix = " ".join(["", glyph_backedge, other_parents_str])
                 else:
                     suffix = ""
 
+            # Emit the line for this node
             _write(this_prefix + str(label) + suffix)
+            seen_edges.add(edge)
 
             # Push children on the stack in reverse order so they are popped in
             # the original order.
-            idx = 1
-            for idx, child in enumerate(children[::-1], start=1):
-                next_islast = idx <= 1
+            idx = 0
+            for idx, child in enumerate(children[::-1], start=idx):
+                next_islast = idx == 0
                 try_frame = (node, child, next_prefix, next_islast)
-                stack.append(try_frame)
-
-            if node in implicit_seen:
-                # if have used this node in any previous implicit edges, then
-                # write an outgoing "implicit" connection.
-                next_islast = idx <= 1
-                try_frame = (node, Ellipsis, next_prefix, next_islast)
                 stack.append(try_frame)
 
     if write is None:
