@@ -314,6 +314,7 @@ collect_ignore = []
 needs_numpy = [
     "algorithms/approximation/traveling_salesman.py",
     "algorithms/centrality/current_flow_closeness.py",
+    "algorithms/community/dendrogram_from_girvan_newman.py",
     "algorithms/node_classification/__init__.py",
     "algorithms/non_randomness.py",
     "algorithms/shortest_paths/dense.py",
