@@ -10,7 +10,7 @@ __all__ = ["double_edge_swap", "connected_double_edge_swap", "directed_edge_swap
 
 
 @py_random_state(3)
-def directed_edge_swap(G, nswap=1, max_tries=100, seed=None):
+def directed_edge_swap(G, *, nswap=1, max_tries=100, seed=None):
     """Swap three edges in a directed graph while keeping the node degrees fixed.
 
     A directed edge swap swaps three edges such that a -> b -> c -> d becomes
