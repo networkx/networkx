@@ -246,15 +246,28 @@ def graph_str(graph, with_labels=True, sources=None, write=None, ascii_only=Fals
             # For each connected part of the graph, choose at least
             # one node as a starting point, preferably without a parent
             if is_directed:
-                sources = [
-                    min(cc, key=lambda n: graph.degree[n])
-                    for cc in nx.strongly_connected_components(graph)
+                # Choose one node from each SCC with minimum in_degree
+                candidates = [
+                    min(scc, key=lambda n: graph.in_degree[n])
+                    for scc in nx.strongly_connected_components(graph)
                 ]
+                # Starting this this set of candidates find a small set of
+                # nodes, such that the entire graph is visitable.
+                candidates = sorted(candidates, key=lambda n: graph.in_degree[n])
+                sources = []
+                seen = set()
+                for n in candidates:
+                    if n not in seen:
+                        seen.update(nx.bfs_tree(graph, n))
+                        sources.append(n)
             else:
+                # For undirected graph, the entire graph will be reachable as
+                # long as we consider one node from every connected component
                 sources = [
                     min(cc, key=lambda n: graph.degree[n])
                     for cc in nx.connected_components(graph)
                 ]
+                sources = sorted(sources, key=lambda n: graph.degree[n])
 
         # Populate the stack with each source node, empty indentation, and mark
         # the final node. Reverse the stack so sources are popped in the
