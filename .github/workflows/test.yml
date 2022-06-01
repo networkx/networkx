@@ -50,7 +50,7 @@ jobs:
 
     - name: Test NetworkX
       run: |
-        pytest --doctest-modules --durations=10 --pyargs networkx
+        pytest --doctest-modules --durations=11 --pyargs networkx
 
   extra:
     runs-on: ${{ matrix.os }}
