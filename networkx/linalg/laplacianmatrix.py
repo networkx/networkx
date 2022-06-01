@@ -6,6 +6,7 @@ from networkx.utils import not_implemented_for
 __all__ = [
     "laplacian_matrix",
     "normalized_laplacian_matrix",
+    "total_spanning_tree_weight",
     "directed_laplacian_matrix",
     "directed_combinatorial_laplacian_matrix",
 ]
@@ -144,6 +145,38 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
     )
     # TODO: rm csr_matrix wrapper for NX 3.0
     return sp.sparse.csr_matrix(DH @ (L @ DH))
+
+
+def total_spanning_tree_weight(G, weight=None):
+    """
+    Returns the total weight of all spanning trees of `G`.
+
+    Kirchoff's Tree Matrix Theorem states that the determinant of any cofactor of the
+    Laplacian matrix of a graph is the number of spanning trees in the graph. For a
+    weighted Laplacian matrix, it is the sum across all spanning trees of the
+    multiplicative weight of each tree. That is, the weight of each tree is the
+    product of its edge weights.
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+        The graph to use Kirchhoff's theorem on.
+
+    weight : string or None
+        The key for the edge attribute holding the edge weight. If `None`, then
+        each edge is assumed to have a weight of 1 and this function returns the
+        total number of spanning trees in `G`.
+
+    Returns
+    -------
+    float
+        The sum of the total multiplicative weights for all spanning trees in `G`
+    """
+    import numpy as np
+
+    G_laplacian = nx.laplacian_matrix(G, weight=weight).toarray()
+    # Determinant ignoring first row and column
+    return abs(np.linalg.det(G_laplacian[1:, 1:]))
 
 
 ###############################################################################
