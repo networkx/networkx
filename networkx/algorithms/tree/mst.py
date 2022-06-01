@@ -537,7 +537,35 @@ def maximum_spanning_edges(
     )
 
 
-def minimum_spanning_tree(G, weight="weight", algorithm="kruskal", ignore_nan=False):
+@not_implemented_for("directed")
+def _optimum_spanning_tree(G, algorithm, minimum, weight, ignore_nan, as_multigraph):
+    try:
+        algo = ALGORITHMS[algorithm]
+    except KeyError:
+        msg = "{} is not a valid choice for an algorithm.".format(algorithm)
+        raise ValueError(msg)
+
+    # If `as_multigraph` is False, we can ignore the key used to
+    # identify multigraph edges when creating the spanning tree. This is
+    # the default behavior, since a tree is guaranteed to have no
+    # parallel edges.
+    if not as_multigraph:
+        edges = algo(G, minimum, weight, keys=False, data=True, ignore_nan=ignore_nan)
+        T = nx.Graph(edges)
+    else:
+        edges = algo(G, minimum, weight, keys=True, data=True, ignore_nan=ignore_nan)
+        T = nx.MultiGraph(edges)
+
+    T.graph.update(G.graph)
+    T.add_nodes_from(G.nodes.items())
+    T.add_edges_from(edges)
+
+    return T
+
+
+def minimum_spanning_tree(
+    G, weight="weight", algorithm="kruskal", ignore_nan=False, as_multigraph=False
+):
     """Returns a minimum spanning tree or forest on an undirected graph `G`.
 
     Parameters
@@ -557,6 +585,13 @@ def minimum_spanning_tree(G, weight="weight", algorithm="kruskal", ignore_nan=Fa
     ignore_nan : bool (default: False)
         If a NaN is found as an edge weight normally an exception is raised.
         If `ignore_nan is True` then that edge is ignored instead.
+
+    as_multigraph : bool (default=False)
+        Whether to return the tree as an instance of
+        :class:`~networkx.MultiGraph`. The multigraph will still have at
+        most one edge joining each pair of nodes, but this is useful in
+        case you wish to have access to the edge key for the edges in
+        the computed spanning tree.
 
     Returns
     -------
@@ -586,14 +621,8 @@ def minimum_spanning_tree(G, weight="weight", algorithm="kruskal", ignore_nan=Fa
     Isolated nodes with self-loops are in the tree as edgeless isolated nodes.
 
     """
-    edges = minimum_spanning_edges(
-        G, algorithm, weight, keys=True, data=True, ignore_nan=ignore_nan
-    )
-    T = G.__class__()  # Same graph class as G
-    T.graph.update(G.graph)
-    T.add_nodes_from(G.nodes.items())
-    T.add_edges_from(edges)
-    return T
+    return _optimum_spanning_tree(G, algorithm=algorithm, minimum=True,
+                                  weight=weight, ignore_nan=True, as_multigraph=as_multigraph)
 
 
 def partition_spanning_tree(
@@ -659,7 +688,9 @@ def partition_spanning_tree(
     return T
 
 
-def maximum_spanning_tree(G, weight="weight", algorithm="kruskal", ignore_nan=False):
+def maximum_spanning_tree(
+    G, weight="weight", algorithm="kruskal", ignore_nan=False, as_multigraph=False
+):
     """Returns a maximum spanning tree or forest on an undirected graph `G`.
 
     Parameters
@@ -680,6 +711,12 @@ def maximum_spanning_tree(G, weight="weight", algorithm="kruskal", ignore_nan=Fa
         If a NaN is found as an edge weight normally an exception is raised.
         If `ignore_nan is True` then that edge is ignored instead.
 
+    as_multigraph : bool (default=False)
+        Whether to return the tree as an instance of
+        :class:`~networkx.MultiGraph`. The multigraph will still have at
+        most one edge joining each pair of nodes, but this is useful in
+        case you wish to have access to the edge key for the edges in
+        the computed spanning tree.
 
     Returns
     -------
