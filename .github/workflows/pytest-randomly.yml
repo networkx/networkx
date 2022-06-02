@@ -22,7 +22,7 @@ jobs:
     - name: Install packages
       run: |
         pip install --upgrade pip wheel setuptools
-        pip install -r requirements.txt -r requirements/test.txt
+        pip install -r requirements/default.txt -r requirements/test.txt
         pip install pytest-randomly
         pip install .
         pip list
