@@ -1,15 +1,15 @@
 import pytest
 
 import networkx as nx
-from networkx.utils import nodes_equal, edges_equal, graphs_equal
 from networkx.convert import (
-    to_networkx_graph,
-    to_dict_of_dicts,
     from_dict_of_dicts,
-    to_dict_of_lists,
     from_dict_of_lists,
+    to_dict_of_dicts,
+    to_dict_of_lists,
+    to_networkx_graph,
 )
 from networkx.generators.classic import barbell_graph, cycle_graph
+from networkx.utils import edges_equal, graphs_equal, nodes_equal
 
 
 class TestConvert:

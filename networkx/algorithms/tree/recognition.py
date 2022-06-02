@@ -75,7 +75,6 @@ becomes a useful notion.
 
 import networkx as nx
 
-
 __all__ = ["is_arborescence", "is_branching", "is_forest", "is_tree"]
 
 

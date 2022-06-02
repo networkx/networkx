@@ -1,5 +1,4 @@
-from networkx.utils import not_implemented_for
-from networkx.utils import py_random_state
+from networkx.utils import not_implemented_for, py_random_state
 
 __all__ = ["average_clustering"]
 

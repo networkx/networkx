@@ -1,10 +1,11 @@
-import pickle
 import gc
+import pickle
 import platform
+
 import pytest
 
 import networkx as nx
-from networkx.utils import nodes_equal, edges_equal, graphs_equal
+from networkx.utils import edges_equal, graphs_equal, nodes_equal
 
 
 class BaseGraphTester:

@@ -1,10 +1,11 @@
 """Unit tests for the :mod:`networkx.generators.lattice` module."""
 
+from itertools import product
+
 import pytest
 
 import networkx as nx
 from networkx.utils import edges_equal
-from itertools import product
 
 
 class TestGrid2DGraph:

@@ -3,11 +3,11 @@ Shortest path algorithms for weighted graphs.
 """
 
 from collections import deque
-from heapq import heappush, heappop
+from heapq import heappop, heappush
 from itertools import count
+
 import networkx as nx
 from networkx.algorithms.shortest_paths.generic import _build_paths_from_predecessors
-
 
 __all__ = [
     "dijkstra_path",

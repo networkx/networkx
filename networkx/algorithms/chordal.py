@@ -12,7 +12,6 @@ import networkx as nx
 from networkx.algorithms.components import connected_components
 from networkx.utils import arbitrary_element, not_implemented_for
 
-
 __all__ = [
     "is_chordal",
     "find_induced_nodes",

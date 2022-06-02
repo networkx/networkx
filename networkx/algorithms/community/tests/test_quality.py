@@ -6,10 +6,12 @@ import pytest
 
 import networkx as nx
 from networkx import barbell_graph
-from networkx.algorithms.community import coverage
-from networkx.algorithms.community import modularity
-from networkx.algorithms.community import performance
-from networkx.algorithms.community import partition_quality
+from networkx.algorithms.community import (
+    coverage,
+    modularity,
+    partition_quality,
+    performance,
+)
 from networkx.algorithms.community.quality import inter_community_edges
 
 

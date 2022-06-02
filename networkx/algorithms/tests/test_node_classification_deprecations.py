@@ -1,9 +1,9 @@
 """TODO: Remove this test module for version 3.0."""
 
 
-import pytest
 import sys
 
+import pytest
 
 # NOTE: It is necessary to prevent previous imports in the test suite from
 # "contaminating" the tests for the deprecation warnings by removing

@@ -1,4 +1,5 @@
 from pytest import approx
+
 from networkx import is_connected, neighbors
 from networkx.generators.internet_as_graphs import random_internet_as_graph
 

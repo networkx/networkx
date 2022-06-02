@@ -3,11 +3,11 @@ from copy import deepcopy
 from functools import cached_property
 
 import networkx as nx
-from networkx.classes.graph import Graph
-from networkx.classes.coreviews import MultiAdjacencyView
-from networkx.classes.reportviews import MultiEdgeView, MultiDegreeView
-from networkx import NetworkXError
 import networkx.convert as convert
+from networkx import NetworkXError
+from networkx.classes.coreviews import MultiAdjacencyView
+from networkx.classes.graph import Graph
+from networkx.classes.reportviews import MultiDegreeView, MultiEdgeView
 
 __all__ = ["MultiGraph"]
 

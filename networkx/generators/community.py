@@ -1,9 +1,9 @@
 """Generators for classes of graphs used in studying social networks."""
 import itertools
 import math
+
 import networkx as nx
 from networkx.utils import py_random_state
-
 
 __all__ = [
     "caveman_graph",

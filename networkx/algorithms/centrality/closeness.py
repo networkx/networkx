@@ -2,6 +2,7 @@
 Closeness centrality measures.
 """
 import functools
+
 import networkx as nx
 from networkx.exception import NetworkXError
 from networkx.utils.decorators import not_implemented_for

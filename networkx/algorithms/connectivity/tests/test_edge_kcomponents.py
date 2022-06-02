@@ -1,10 +1,11 @@
-import networkx as nx
 import itertools as it
-import pytest
-from networkx.utils import pairwise
-from networkx.algorithms.connectivity import bridge_components, EdgeComponentAuxGraph
-from networkx.algorithms.connectivity.edge_kcomponents import general_k_edge_subgraphs
 
+import pytest
+
+import networkx as nx
+from networkx.algorithms.connectivity import EdgeComponentAuxGraph, bridge_components
+from networkx.algorithms.connectivity.edge_kcomponents import general_k_edge_subgraphs
+from networkx.utils import pairwise
 
 # ----------------
 # Helper functions

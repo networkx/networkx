@@ -3,6 +3,7 @@ Ramsey numbers.
 """
 import networkx as nx
 from networkx.utils import not_implemented_for
+
 from ...utils import arbitrary_element
 
 __all__ = ["ramsey_R2"]

@@ -25,7 +25,7 @@ For each edge (u, v) the node u is assigned to part 0 and the node v to part 1.
 __all__ = ["generate_edgelist", "write_edgelist", "parse_edgelist", "read_edgelist"]
 
 import networkx as nx
-from networkx.utils import open_file, not_implemented_for
+from networkx.utils import not_implemented_for, open_file
 
 
 @open_file(1, mode="wb")

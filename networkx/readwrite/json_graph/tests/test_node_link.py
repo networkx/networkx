@@ -1,5 +1,7 @@
 import json
+
 import pytest
+
 import networkx as nx
 from networkx.readwrite.json_graph import node_link_data, node_link_graph
 

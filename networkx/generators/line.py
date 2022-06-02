@@ -1,7 +1,7 @@
 """Functions for generating line graphs."""
-from itertools import combinations
 from collections import defaultdict
 from functools import partial
+from itertools import combinations
 
 import networkx as nx
 from networkx.utils import arbitrary_element

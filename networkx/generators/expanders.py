@@ -2,6 +2,7 @@
 
 """
 import itertools
+
 import networkx as nx
 
 __all__ = ["margulis_gabber_galil_graph", "chordal_cycle_graph", "paley_graph"]

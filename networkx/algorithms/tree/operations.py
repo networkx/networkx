@@ -1,9 +1,8 @@
 """Operations on trees."""
 from functools import partial
-from itertools import chain
+from itertools import accumulate, chain
 
 import networkx as nx
-from itertools import accumulate
 
 __all__ = ["join"]
 

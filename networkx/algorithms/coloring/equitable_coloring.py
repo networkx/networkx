@@ -2,8 +2,9 @@
 Equitable coloring of graphs with bounded degree.
 """
 
-import networkx as nx
 from collections import defaultdict
+
+import networkx as nx
 
 __all__ = ["equitable_color"]
 

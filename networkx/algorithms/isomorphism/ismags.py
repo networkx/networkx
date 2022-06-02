@@ -109,9 +109,9 @@ References
 
 __all__ = ["ISMAGS"]
 
-from collections import defaultdict, Counter
-from functools import reduce, wraps
 import itertools
+from collections import Counter, defaultdict
+from functools import reduce, wraps
 
 
 def are_all_equal(iterable):

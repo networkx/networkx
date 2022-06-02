@@ -2,8 +2,7 @@ import pytest
 
 import networkx as nx
 from networkx.algorithms import flow
-from networkx.algorithms.connectivity import minimum_st_edge_cut
-from networkx.algorithms.connectivity import minimum_st_node_cut
+from networkx.algorithms.connectivity import minimum_st_edge_cut, minimum_st_node_cut
 from networkx.utils import arbitrary_element
 
 flow_funcs = [

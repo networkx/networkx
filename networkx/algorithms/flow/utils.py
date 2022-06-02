@@ -3,6 +3,7 @@ Utility classes and functions for network flow algorithms.
 """
 
 from collections import deque
+
 import networkx as nx
 
 __all__ = [

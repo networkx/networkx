@@ -1,11 +1,10 @@
 """Asynchronous Fluid Communities algorithm for community detection."""
 
 from collections import Counter
-from networkx.exception import NetworkXError
+
 from networkx.algorithms.components import is_connected
-from networkx.utils import groups
-from networkx.utils import not_implemented_for
-from networkx.utils import py_random_state
+from networkx.exception import NetworkXError
+from networkx.utils import groups, not_implemented_for, py_random_state
 
 __all__ = ["asyn_fluidc"]
 

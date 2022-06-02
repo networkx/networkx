@@ -2,15 +2,19 @@
 """
 
 import os
+
 import pytest
 
 import networkx as nx
-from networkx.algorithms.flow import build_flow_dict, build_residual_network
-from networkx.algorithms.flow import boykov_kolmogorov
-from networkx.algorithms.flow import dinitz
-from networkx.algorithms.flow import edmonds_karp
-from networkx.algorithms.flow import preflow_push
-from networkx.algorithms.flow import shortest_augmenting_path
+from networkx.algorithms.flow import (
+    boykov_kolmogorov,
+    build_flow_dict,
+    build_residual_network,
+    dinitz,
+    edmonds_karp,
+    preflow_push,
+    shortest_augmenting_path,
+)
 
 flow_funcs = [
     boykov_kolmogorov,

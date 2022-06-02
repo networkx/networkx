@@ -1,23 +1,24 @@
+import random
 from copy import copy
 
 import pytest
+
 import networkx as nx
-import random
 from networkx.utils import (
+    PythonRandomInterface,
     arbitrary_element,
     create_py_random_state,
     create_random_state,
-    discrete_sequence,
     dict_to_numpy_array,
+    discrete_sequence,
     flatten,
+    groups,
     is_string_like,
     iterable,
-    groups,
     make_list_of_ints,
     make_str,
     pairwise,
     powerlaw_sequence,
-    PythonRandomInterface,
     to_tuple,
 )
 from networkx.utils.misc import _dict_to_numpy_array1, _dict_to_numpy_array2

@@ -12,11 +12,12 @@ See Also
 :mod:`edge_kcomponents` : algorithms for finding k-edge-connected components
 :mod:`connectivity` : algorithms for determening edge connectivity.
 """
-import math
 import itertools as it
+import math
+from collections import defaultdict, namedtuple
+
 import networkx as nx
 from networkx.utils import not_implemented_for, py_random_state
-from collections import defaultdict, namedtuple
 
 __all__ = ["k_edge_augmentation", "is_k_edge_connected", "is_locally_k_edge_connected"]
 

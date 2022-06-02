@@ -1,10 +1,10 @@
 """ Functions related to graph covers."""
 
-import networkx as nx
-from networkx.utils import not_implemented_for, arbitrary_element
 from functools import partial
 from itertools import chain
 
+import networkx as nx
+from networkx.utils import arbitrary_element, not_implemented_for
 
 __all__ = ["min_edge_cover", "is_edge_cover"]
 

@@ -1,13 +1,11 @@
 """
 Greedy graph coloring using various strategies.
 """
-from collections import defaultdict, deque
 import itertools
+from collections import defaultdict, deque
 
 import networkx as nx
-from networkx.utils import arbitrary_element
-from networkx.utils import py_random_state
-
+from networkx.utils import arbitrary_element, py_random_state
 
 __all__ = [
     "greedy_color",

@@ -3,9 +3,11 @@ Tests for maximal (not maximum) independent sets.
 
 """
 
-import pytest
-import networkx as nx
 import random
+
+import pytest
+
+import networkx as nx
 
 
 class TestMaximalIndependantSet:

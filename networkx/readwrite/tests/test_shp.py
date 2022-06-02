@@ -3,6 +3,7 @@
 
 import os
 import tempfile
+
 import pytest
 
 ogr = pytest.importorskip("osgeo.ogr")

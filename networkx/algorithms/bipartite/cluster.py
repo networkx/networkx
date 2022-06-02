@@ -3,6 +3,7 @@
 """
 
 import itertools
+
 import networkx as nx
 
 __all__ = [

@@ -3,6 +3,7 @@
 """
 
 import pytest
+
 import networkx as nx
 from networkx.algorithms import isomorphism as iso
 

@@ -1,6 +1,7 @@
 import math
 
 import pytest
+
 import networkx as nx
 
 

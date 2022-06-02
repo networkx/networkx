@@ -3,8 +3,8 @@
 """
 
 import os
-import struct
 import random
+import struct
 
 import networkx as nx
 from networkx.algorithms import isomorphism as iso
