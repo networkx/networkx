@@ -3,18 +3,18 @@ from copy import deepcopy
 from functools import cached_property
 
 import networkx as nx
+import networkx.convert as convert
+from networkx.classes.coreviews import MultiAdjacencyView
 from networkx.classes.digraph import DiGraph
 from networkx.classes.multigraph import MultiGraph
-from networkx.classes.coreviews import MultiAdjacencyView
 from networkx.classes.reportviews import (
-    OutMultiEdgeView,
-    InMultiEdgeView,
     DiMultiDegreeView,
-    OutMultiDegreeView,
     InMultiDegreeView,
+    InMultiEdgeView,
+    OutMultiDegreeView,
+    OutMultiEdgeView,
 )
 from networkx.exception import NetworkXError
-import networkx.convert as convert
 
 __all__ = ["MultiDiGraph"]
 

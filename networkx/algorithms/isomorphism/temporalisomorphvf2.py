@@ -66,7 +66,8 @@ Handles directed and undirected graphs and graphs with parallel edges.
 """
 
 import networkx as nx
-from .isomorphvf2 import GraphMatcher, DiGraphMatcher
+
+from .isomorphvf2 import DiGraphMatcher, GraphMatcher
 
 __all__ = ["TimeRespectingGraphMatcher", "TimeRespectingDiGraphMatcher"]
 

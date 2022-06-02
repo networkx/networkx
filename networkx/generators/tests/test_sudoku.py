@@ -1,6 +1,7 @@
 """Unit tests for the :mod:`networkx.generators.sudoku_graph` module."""
 
 import pytest
+
 import networkx as nx
 
 

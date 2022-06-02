@@ -20,8 +20,9 @@ See Also
  - DOT Language:  http://www.graphviz.org/doc/info/lang.html
 """
 from locale import getpreferredencoding
-from networkx.utils import open_file
+
 import networkx as nx
+from networkx.utils import open_file
 
 __all__ = [
     "write_dot",

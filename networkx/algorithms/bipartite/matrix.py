@@ -4,8 +4,9 @@ Biadjacency matrices
 ====================
 """
 import itertools
-from networkx.convert_matrix import _generate_weighted_edges
+
 import networkx as nx
+from networkx.convert_matrix import _generate_weighted_edges
 
 __all__ = ["biadjacency_matrix", "from_biadjacency_matrix"]
 

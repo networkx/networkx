@@ -2,6 +2,7 @@
 """
 
 import pytest
+
 import networkx as nx
 from networkx.algorithms.approximation import diameter
 

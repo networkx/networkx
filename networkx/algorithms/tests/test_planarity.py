@@ -1,8 +1,11 @@
 import pytest
+
 import networkx as nx
-from networkx.algorithms.planarity import get_counterexample
-from networkx.algorithms.planarity import get_counterexample_recursive
-from networkx.algorithms.planarity import check_planarity_recursive
+from networkx.algorithms.planarity import (
+    check_planarity_recursive,
+    get_counterexample,
+    get_counterexample_recursive,
+)
 
 
 class TestLRPlanarity:

@@ -4,10 +4,11 @@ import pytest
 
 import networkx as nx
 from networkx import convert_node_labels_to_integers as cnlti
-from networkx.algorithms.simple_paths import _bidirectional_dijkstra
-from networkx.algorithms.simple_paths import _bidirectional_shortest_path
-from networkx.utils import arbitrary_element
-from networkx.utils import pairwise
+from networkx.algorithms.simple_paths import (
+    _bidirectional_dijkstra,
+    _bidirectional_shortest_path,
+)
+from networkx.utils import arbitrary_element, pairwise
 
 
 class TestIsSimplePath:

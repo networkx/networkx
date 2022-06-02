@@ -1,7 +1,7 @@
 """Function for detecting communities based on Louvain Community Detection
 Algorithm"""
 
-from collections import deque, defaultdict
+from collections import defaultdict, deque
 
 import networkx as nx
 from networkx.algorithms.community import modularity

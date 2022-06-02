@@ -1,6 +1,7 @@
 # Jordi Torrents
 # Test for k-cutsets
 import itertools
+
 import pytest
 
 import networkx as nx

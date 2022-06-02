@@ -1,6 +1,7 @@
 """Basic algorithms for depth-first searching the nodes of a graph."""
-import networkx as nx
 from collections import defaultdict
+
+import networkx as nx
 
 __all__ = [
     "dfs_edges",

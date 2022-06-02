@@ -1,4 +1,5 @@
 import pytest
+
 import networkx as nx
 from networkx.algorithms.isomorphism.isomorph import graph_could_be_isomorphic
 

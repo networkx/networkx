@@ -2,14 +2,12 @@
 """
 
 import heapq
-from itertools import chain
-from itertools import combinations
-from itertools import zip_longest
 import math
+from itertools import chain, combinations, zip_longest
 from operator import itemgetter
 
 import networkx as nx
-from networkx.utils import random_weighted_sample, py_random_state
+from networkx.utils import py_random_state, random_weighted_sample
 
 __all__ = [
     "configuration_model",

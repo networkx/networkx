@@ -4,8 +4,8 @@ from collections import defaultdict
 
 import networkx as nx
 from networkx.algorithms.community.quality import modularity
-from networkx.utils.mapped_queue import MappedQueue
 from networkx.utils import not_implemented_for
+from networkx.utils.mapped_queue import MappedQueue
 
 __all__ = [
     "greedy_modularity_communities",

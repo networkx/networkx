@@ -58,9 +58,9 @@ supports graphs with one edge type.
 For more information on graph summarization, see `Graph Summarization Methods
 and Applications: A Survey <https://dl.acm.org/doi/abs/10.1145/3186727>`_
 """
-import networkx as nx
 from collections import Counter, defaultdict
 
+import networkx as nx
 
 __all__ = ["dedensify", "snap_aggregation"]
 

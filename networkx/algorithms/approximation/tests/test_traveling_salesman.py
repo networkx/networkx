@@ -1,6 +1,8 @@
 """Unit tests for the traveling_salesman module."""
-import pytest
 import random
+
+import pytest
+
 import networkx as nx
 import networkx.algorithms.approximation as nx_app
 

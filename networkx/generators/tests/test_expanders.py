@@ -2,14 +2,15 @@
 
 """
 
-import networkx as nx
-from networkx import adjacency_matrix
-from networkx import number_of_nodes
-from networkx.generators.expanders import chordal_cycle_graph
-from networkx.generators.expanders import margulis_gabber_galil_graph
-from networkx.generators.expanders import paley_graph
-
 import pytest
+
+import networkx as nx
+from networkx import adjacency_matrix, number_of_nodes
+from networkx.generators.expanders import (
+    chordal_cycle_graph,
+    margulis_gabber_galil_graph,
+    paley_graph,
+)
 
 
 def test_margulis_gabber_galil_graph():

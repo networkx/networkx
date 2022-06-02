@@ -16,8 +16,7 @@ import numbers
 import networkx as nx
 from networkx.classes import Graph
 from networkx.exception import NetworkXError
-from networkx.utils import nodes_or_number
-from networkx.utils import pairwise
+from networkx.utils import nodes_or_number, pairwise
 
 __all__ = [
     "balanced_tree",

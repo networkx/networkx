@@ -4,9 +4,7 @@ Label propagation community detection algorithms.
 from collections import Counter, defaultdict
 
 import networkx as nx
-from networkx.utils import groups
-from networkx.utils import not_implemented_for
-from networkx.utils import py_random_state
+from networkx.utils import groups, not_implemented_for, py_random_state
 
 __all__ = ["label_propagation_communities", "asyn_lpa_communities"]
 

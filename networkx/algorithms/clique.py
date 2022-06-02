@@ -7,13 +7,11 @@ see the Wikipedia article on the clique problem [1]_.
 .. [1] clique problem:: https://en.wikipedia.org/wiki/Clique_problem
 
 """
-from collections import deque, defaultdict
-from itertools import chain
-from itertools import combinations
-from itertools import islice
+from collections import defaultdict, deque
+from itertools import chain, combinations, islice
+
 import networkx as nx
 from networkx.utils import not_implemented_for
-
 
 __all__ = [
     "find_cliques",

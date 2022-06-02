@@ -12,6 +12,7 @@ interoperability among Esri and other software products."
 See https://en.wikipedia.org/wiki/Shapefile for additional information.
 """
 import warnings
+
 import networkx as nx
 
 __all__ = ["read_shp", "write_shp"]

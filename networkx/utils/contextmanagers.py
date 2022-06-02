@@ -1,5 +1,5 @@
-from contextlib import contextmanager
 import warnings
+from contextlib import contextmanager
 
 __all__ = ["reversed"]
 

@@ -2,13 +2,12 @@
 from copy import deepcopy
 
 import networkx as nx
-from networkx.utils.decorators import not_implemented_for
 from networkx.algorithms.centrality.betweenness import (
-    _single_source_shortest_path_basic,
-    _single_source_dijkstra_path_basic,
     _accumulate_endpoints,
+    _single_source_dijkstra_path_basic,
+    _single_source_shortest_path_basic,
 )
-
+from networkx.utils.decorators import not_implemented_for
 
 __all__ = [
     "group_betweenness_centrality",
@@ -339,8 +338,8 @@ def prominent_group(
        "Fast algorithm for successive computation of group betweenness centrality."
        https://journals.aps.org/pre/pdf/10.1103/PhysRevE.76.056709
     """
-    import pandas as pd
     import numpy as np
+    import pandas as pd
 
     if C is not None:
         C = set(C)

@@ -1,4 +1,5 @@
 from collections import defaultdict
+
 import networkx as nx
 
 __all__ = ["check_planarity", "is_planar", "PlanarEmbedding"]

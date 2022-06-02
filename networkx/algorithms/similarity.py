@@ -13,12 +13,13 @@ At the same time, I encourage capable people to investigate
 alternative GED algorithms, in order to improve the choices available.
 """
 
-from functools import reduce
-from itertools import product
 import math
-from operator import mul
 import time
 import warnings
+from functools import reduce
+from itertools import product
+from operator import mul
+
 import networkx as nx
 
 __all__ = [

@@ -4,14 +4,15 @@
 import pytest
 
 import networkx as nx
-from networkx.classes import Graph
-from networkx.classes import MultiDiGraph
-from networkx.generators.directed import gn_graph
-from networkx.generators.directed import gnr_graph
-from networkx.generators.directed import gnc_graph
-from networkx.generators.directed import random_k_out_graph
-from networkx.generators.directed import random_uniform_k_out_graph
-from networkx.generators.directed import scale_free_graph
+from networkx.classes import Graph, MultiDiGraph
+from networkx.generators.directed import (
+    gn_graph,
+    gnc_graph,
+    gnr_graph,
+    random_k_out_graph,
+    random_uniform_k_out_graph,
+    scale_free_graph,
+)
 
 
 class TestGeneratorsDirected:

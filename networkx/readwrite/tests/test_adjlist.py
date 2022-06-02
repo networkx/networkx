@@ -2,11 +2,13 @@
     Unit tests for adjlist.
 """
 import io
-import pytest
 import os
 import tempfile
+
+import pytest
+
 import networkx as nx
-from networkx.utils import nodes_equal, edges_equal, graphs_equal
+from networkx.utils import edges_equal, graphs_equal, nodes_equal
 
 
 class TestAdjlist:

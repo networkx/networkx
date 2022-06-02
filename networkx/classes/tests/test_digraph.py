@@ -2,9 +2,10 @@ import pytest
 
 import networkx as nx
 from networkx.utils import nodes_equal
-from .test_graph import BaseGraphTester, BaseAttrGraphTester
-from .test_graph import TestGraph as _TestGraph
+
+from .test_graph import BaseAttrGraphTester, BaseGraphTester
 from .test_graph import TestEdgeSubgraph as _TestGraphEdgeSubgraph
+from .test_graph import TestGraph as _TestGraph
 
 
 class BaseDiGraphTester(BaseGraphTester):

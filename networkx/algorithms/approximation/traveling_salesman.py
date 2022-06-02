@@ -37,8 +37,7 @@ import math
 
 import networkx as nx
 from networkx.algorithms.tree.mst import random_spanning_tree
-
-from networkx.utils import py_random_state, not_implemented_for, pairwise
+from networkx.utils import not_implemented_for, pairwise, py_random_state
 
 __all__ = [
     "traveling_salesman_problem",
@@ -407,9 +406,8 @@ def asadpour_atsp(G, weight="weight", seed=None, source=None):
     >>> tour
     [0, 2, 1, 0]
     """
+    from math import ceil, exp
     from math import log as ln
-    from math import exp
-    from math import ceil
 
     # Check that G is a complete graph
     N = len(G) - 1

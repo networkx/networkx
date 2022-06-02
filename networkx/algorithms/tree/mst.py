@@ -5,9 +5,9 @@ Algorithms for calculating min/max spanning trees/forests.
 from dataclasses import dataclass, field
 from enum import Enum
 from heapq import heappop, heappush
-from operator import itemgetter
 from itertools import count
 from math import isnan
+from operator import itemgetter
 from queue import PriorityQueue
 
 import networkx as nx
