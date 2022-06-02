@@ -75,6 +75,7 @@ def strongly_connected_components(G):
     scc_found = set()
     scc_queue = []
     i = 0  # Preorder counter
+    neighbors = {v: iter(G[v]) for v in G}
     for source in G:
         if source not in scc_found:
             queue = [source]
@@ -84,7 +85,7 @@ def strongly_connected_components(G):
                     i = i + 1
                     preorder[v] = i
                 done = True
-                for w in G[v]:
+                for w in neighbors[v]:
                     if w not in preorder:
                         queue.append(w)
                         done = False
@@ -121,7 +122,7 @@ def kosaraju_strongly_connected_components(G, source=None):
     Returns
     -------
     comp : generator of sets
-        A genrator of sets of nodes, one for each strongly connected
+        A generator of sets of nodes, one for each strongly connected
         component of G.
 
     Raises
@@ -166,8 +167,8 @@ def kosaraju_strongly_connected_components(G, source=None):
             continue
         c = nx.dfs_preorder_nodes(G, r)
         new = {v for v in c if v not in seen}
-        yield new
         seen.update(new)
+        yield new
 
 
 @not_implemented_for("undirected")
@@ -282,6 +283,12 @@ def number_strongly_connected_components(G):
     NetworkXNotImplemented
         If G is undirected.
 
+    Examples
+    --------
+    >>> G = nx.DiGraph([(0, 1), (1, 2), (2, 0), (2, 3), (4, 5), (3, 4), (5, 6), (6, 3), (6, 7)])
+    >>> nx.number_strongly_connected_components(G)
+    3
+
     See Also
     --------
     strongly_connected_components
@@ -311,6 +318,15 @@ def is_strongly_connected(G):
     -------
     connected : bool
       True if the graph is strongly connected, False otherwise.
+
+    Examples
+    --------
+    >>> G = nx.DiGraph([(0, 1), (1, 2), (2, 3), (3, 0), (2, 4), (4, 2)])
+    >>> nx.is_strongly_connected(G)
+    True
+    >>> G.remove_edge(2, 3)
+    >>> nx.is_strongly_connected(G)
+    False
 
     Raises
     ------

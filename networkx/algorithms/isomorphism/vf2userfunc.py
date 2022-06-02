@@ -37,8 +37,7 @@ __all__ = ["GraphMatcher", "DiGraphMatcher", "MultiGraphMatcher", "MultiDiGraphM
 
 
 def _semantic_feasibility(self, G1_node, G2_node):
-    """Returns True if mapping G1_node to G2_node is semantically feasible.
-    """
+    """Returns True if mapping G1_node to G2_node is semantically feasible."""
     # Make sure the nodes match
     if self.node_match is not None:
         nm = self.node_match(self.G1.nodes[G1_node], self.G2.nodes[G2_node])
@@ -73,8 +72,7 @@ def _semantic_feasibility(self, G1_node, G2_node):
 
 
 class GraphMatcher(vf2.GraphMatcher):
-    """VF2 isomorphism checker for undirected graphs.
-    """
+    """VF2 isomorphism checker for undirected graphs."""
 
     def __init__(self, G1, G2, node_match=None, edge_match=None):
         """Initialize graph matcher.
@@ -121,8 +119,7 @@ class GraphMatcher(vf2.GraphMatcher):
 
 
 class DiGraphMatcher(vf2.DiGraphMatcher):
-    """VF2 isomorphism checker for directed graphs.
-    """
+    """VF2 isomorphism checker for directed graphs."""
 
     def __init__(self, G1, G2, node_match=None, edge_match=None):
         """Initialize graph matcher.
@@ -189,12 +186,12 @@ class DiGraphMatcher(vf2.DiGraphMatcher):
 
 
 class MultiGraphMatcher(GraphMatcher):
-    """VF2 isomorphism checker for undirected multigraphs. """
+    """VF2 isomorphism checker for undirected multigraphs."""
 
     pass
 
 
 class MultiDiGraphMatcher(DiGraphMatcher):
-    """VF2 isomorphism checker for directed multigraphs. """
+    """VF2 isomorphism checker for directed multigraphs."""
 
     pass

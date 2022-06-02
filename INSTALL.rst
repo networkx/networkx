@@ -1,7 +1,7 @@
 Install
 =======
 
-NetworkX requires Python 3.6, 3.7, or 3.8.  If you do not already
+NetworkX requires Python 3.8, 3.9, or 3.10.  If you do not already
 have a Python environment configured on your computer, please see the
 instructions for installing the full `scientific Python stack
 <https://scipy.org/install.html>`_.
@@ -21,16 +21,25 @@ Install the released version
 
 Install the current release of ``networkx`` with ``pip``::
 
-    $ pip install networkx
+    $ pip install networkx[default]
 
 To upgrade to a newer release use the ``--upgrade`` flag::
 
-    $ pip install --upgrade networkx
+    $ pip install --upgrade networkx[default]
 
 If you do not have permission to install software systemwide, you can
 install into your user directory using the ``--user`` flag::
 
-    $ pip install --user networkx
+    $ pip install --user networkx[default]
+
+If you do not want to install our dependencies (e.g., ``numpy``, ``scipy``, etc.),
+you can use::
+
+    $ pip install networkx
+
+This may be helpful if you are using PyPy or you are working on a project that
+only needs a limited subset of our functionality and you want to limit the
+number of dependencies.
 
 Alternatively, you can manually download ``networkx`` from
 `GitHub <https://github.com/networkx/networkx/releases>`_  or
@@ -38,7 +47,7 @@ Alternatively, you can manually download ``networkx`` from
 To install one of these versions, unpack it and run the following from the
 top-level source directory using the Terminal::
 
-    $ pip install .
+    $ pip install .[default]
 
 Install the development version
 -------------------------------
@@ -55,9 +64,9 @@ Then do::
 
     $ git clone https://github.com/networkx/networkx.git
     $ cd networkx
-    $ pip install -e .
+    $ pip install -e .[default]
 
-The ``pip install -e .`` command allows you to follow the development branch as
+The ``pip install -e .[default]`` command allows you to follow the development branch as
 it changes by creating links in the right places and installing the command
 line scripts to the appropriate locations.
 
@@ -65,28 +74,18 @@ Then, if you want to update ``networkx`` at any time, in the same directory do::
 
     $ git pull
 
-Optional packages
------------------
+Extra packages
+--------------
 
 .. note::
    Some optional packages (e.g., `gdal`) may require compiling
    C or C++ code.  If you have difficulty installing these packages
-   with `pip`, please review the instructions for installing
-   the full `scientific Python stack <https://scipy.org/install.html>`_.
+   with `pip`, please consult the homepages of those packages.
 
-The following optional packages provide additional functionality. See the
+The following extra packages provide additional functionality. See the
 files in the ``requirements/`` directory for information about specific
 version requirements.
 
-- `NumPy <http://www.numpy.org/>`_ provides array-based dense 
-  matrix representations of graphs and high-performance array math and linear
-  algebra which is used in some graph algorithms.
-- `SciPy <http://scipy.org/>`_ provides sparse matrix representation
-  of graphs and many numerical scientific tools.
-- `pandas <http://pandas.pydata.org/>`_ provides a DataFrame, which
-  is a tabular data structure with labeled axes.
-- `Matplotlib <http://matplotlib.org/>`_ provides flexible drawing of
-  graphs.
 - `PyGraphviz <http://pygraphviz.github.io/>`_ and
   `pydot <https://github.com/erocarrera/pydot>`_ provide graph drawing
   and graph layout algorithms via `GraphViz <http://graphviz.org/>`_.
@@ -94,17 +93,17 @@ version requirements.
 - `gdal <http://www.gdal.org/>`_ provides shapefile format reading and writing.
 - `lxml <http://lxml.de/>`_ used for GraphML XML format.
 
-To install ``networkx`` and all optional packages, do::
+To install ``networkx`` and extra packages, do::
 
-    $ pip install networkx[all]
+    $ pip install networkx[default,extra]
 
 To explicitly install all optional packages, do::
 
-    $ pip install numpy scipy pandas matplotlib pygraphviz pydot pyyaml gdal
+    $ pip install pygraphviz pydot pyyaml gdal lxml
 
-Or, install any optional package (e.g., ``numpy``) individually::
+Or, install any optional package (e.g., ``pygraphviz``) individually::
 
-    $ pip install numpy
+    $ pip install pygraphviz
 
 Testing
 -------
@@ -125,15 +124,3 @@ Test an installed package
 From a shell command prompt you can test the installed package with::
 
    pytest --pyargs networkx
-
-If you have a file-based (not a Python egg) installation you can test the
-installed package with::
-
-    >>> import networkx as nx
-    >>> nx.test()
-
-or::
-
-    python -c "import networkx as nx; nx.test()"
-
-.. autofunction:: networkx.test

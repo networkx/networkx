@@ -1,7 +1,8 @@
 import pytest
+
 import networkx as nx
-from networkx import convert_node_labels_to_integers as cnlti
 from networkx import NetworkXNotImplemented
+from networkx import convert_node_labels_to_integers as cnlti
 
 
 class TestConnected:
@@ -96,7 +97,8 @@ class TestConnected:
         assert not nx.is_connected(G)
 
     def test_connected_raise(self):
-        pytest.raises(NetworkXNotImplemented, nx.connected_components, self.DG)
+        with pytest.raises(NetworkXNotImplemented):
+            next(nx.connected_components(self.DG))
         pytest.raises(NetworkXNotImplemented, nx.number_connected_components, self.DG)
         pytest.raises(NetworkXNotImplemented, nx.node_connected_component, self.DG, 1)
         pytest.raises(NetworkXNotImplemented, nx.is_connected, self.DG)

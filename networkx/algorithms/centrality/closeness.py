@@ -2,6 +2,7 @@
 Closeness centrality measures.
 """
 import functools
+
 import networkx as nx
 from networkx.exception import NetworkXError
 from networkx.utils.decorators import not_implemented_for
@@ -20,7 +21,7 @@ def closeness_centrality(G, u=None, distance=None, wf_improved=True):
         C(u) = \frac{n - 1}{\sum_{v=1}^{n-1} d(v, u)},
 
     where `d(v, u)` is the shortest-path distance between `v` and `u`,
-    and `n` is the number of nodes that can reach `u`. Notice that the
+    and `n-1` is the number of nodes reachable from `u`. Notice that the
     closeness distance function computes the incoming distance to `u`
     for directed graphs. To use outward distance, act on `G.reverse()`.
 
@@ -60,6 +61,12 @@ def closeness_centrality(G, u=None, distance=None, wf_improved=True):
     nodes : dictionary
       Dictionary of nodes with closeness centrality as the value.
 
+    Examples
+    --------
+    >>> G = nx.Graph([(0, 1), (0, 2), (0, 3), (1, 2), (1, 3)])
+    >>> nx.closeness_centrality(G)
+    {0: 1.0, 1: 1.0, 2: 0.75, 3: 0.75}
+
     See Also
     --------
     betweenness_centrality, load_centrality, eigenvector_centrality,
@@ -88,7 +95,7 @@ def closeness_centrality(G, u=None, distance=None, wf_improved=True):
     ----------
     .. [1] Linton C. Freeman: Centrality in networks: I.
        Conceptual clarification. Social Networks 1:215-239, 1979.
-       http://leonidzhukov.ru/hse/2013/socialnetworks/papers/freeman79-centrality.pdf
+       https://doi.org/10.1016/0378-8733(78)90021-7
     .. [2] pg. 201 of Wasserman, S. and Faust, K.,
        Social Network Analysis: Methods and Applications, 1994,
        Cambridge University Press.
@@ -216,7 +223,7 @@ def incremental_closeness_centrality(
     ----------
     .. [1] Freeman, L.C., 1979. Centrality in networks: I.
        Conceptual clarification.  Social Networks 1, 215--239.
-       http://www.soc.ucsb.edu/faculty/friedkin/Syllabi/Soc146/Freeman78.PDF
+       https://doi.org/10.1016/0378-8733(78)90021-7
     .. [2] Sariyuce, A.E. ; Kaya, K. ; Saule, E. ; Catalyiirek, U.V. Incremental
        Algorithms for Closeness Centrality. 2013 IEEE International Conference on Big Data
        http://sariyuce.com/papers/bigdata13.pdf

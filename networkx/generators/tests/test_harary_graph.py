@@ -4,14 +4,13 @@
 import pytest
 
 import networkx as nx
-from networkx.generators.harary_graph import hnm_harary_graph
-from networkx.generators.harary_graph import hkn_harary_graph
 from networkx.algorithms.isomorphism.isomorph import is_isomorphic
+from networkx.generators.harary_graph import hkn_harary_graph, hnm_harary_graph
 
 
 class TestHararyGraph:
     """
-        Suppose n nodes, m >= n-1 edges, d = 2m // n, r = 2m % n
+    Suppose n nodes, m >= n-1 edges, d = 2m // n, r = 2m % n
     """
 
     def test_hnm_harary_graph(self):

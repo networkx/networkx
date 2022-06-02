@@ -4,8 +4,7 @@ Napoleon Russian Campaign
 =========================
 
 Minard's data from Napoleon's 1812-1813  Russian Campaign.
-http://www.math.yorku.ca/SCS/Gallery/minard/minard.txt
-
+https://web.archive.org/web/20080112042656/http://www.math.yorku.ca/SCS/Gallery/minard/minard.txt
 """
 
 import matplotlib.pyplot as plt
@@ -123,7 +122,7 @@ plt.clf()
 colors = ["b", "g", "r"]
 for G in g:
     c = colors.pop(0)
-    node_size = [int(G.pop[n] / 300.0) for n in G]
+    node_size = [G.pop[n] // 300 for n in G]
     nx.draw_networkx_edges(G, G.pos, edge_color=c, width=4, alpha=0.5)
     nx.draw_networkx_nodes(G, G.pos, node_size=node_size, node_color=c, alpha=0.5)
     nx.draw_networkx_nodes(G, G.pos, node_size=5, node_color="k")

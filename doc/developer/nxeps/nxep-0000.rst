@@ -263,14 +263,14 @@ References and Footnotes
 
 .. [1] This historical record is available by the normal git commands
    for retrieving older revisions, and can also be browsed on
-   `GitHub <https://github.com/networkx/networkx/tree/master/doc/nxeps>`_.
+   `GitHub <https://github.com/networkx/networkx/tree/main/doc/developer/nxeps>`_.
 
 .. [2] The URL for viewing NXEPs on the web is
-   https://networkx.github.io/nxeps/.
+   https://networkx.org/documentation/latest/developer/nxeps/index.html
 
 .. _repo: https://github.com/networkx/networkx
 
-.. _mailing list: http://groups.google.com/group/networkx-discuss/
+.. _mailing list: https://groups.google.com/group/networkx-discuss/
 
 .. _issue tracker: https://github.com/networkx/networkx/issues
 

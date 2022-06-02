@@ -2,9 +2,24 @@ from random import Random
 
 import pytest
 
-
 import networkx as nx
 from networkx import convert_node_labels_to_integers as cnlti
+from networkx.algorithms.distance_measures import _extrema_bounding
+
+
+@pytest.mark.parametrize(
+    "compute", ("diameter", "radius", "periphery", "center", "eccentricities")
+)
+def test_extrema_bounding_deprecated(compute):
+    G = nx.complete_graph(3)
+    with pytest.deprecated_call():
+        nx.extrema_bounding(G, compute=compute)
+
+
+def test__extrema_bounding_invalid_compute_kwarg():
+    G = nx.path_graph(3)
+    with pytest.raises(ValueError, match="compute must be one of"):
+        _extrema_bounding(G, compute="spam")
 
 
 class TestDistance:
@@ -95,10 +110,9 @@ class TestResistanceDistance:
     @classmethod
     def setup_class(cls):
         global np
-        global sp_sparse
+        global sp
         np = pytest.importorskip("numpy")
-        scipy = pytest.importorskip("scipy")
-        sp_sparse = pytest.importorskip("scipy.sparse")
+        sp = pytest.importorskip("scipy")
 
     def setup_method(self):
         G = nx.Graph()
@@ -107,31 +121,6 @@ class TestResistanceDistance:
         G.add_edge(3, 4, weight=1)
         G.add_edge(1, 4, weight=3)
         self.G = G
-
-    def test_laplacian_submatrix(self):
-        from networkx.algorithms.distance_measures import _laplacian_submatrix
-
-        M = sp_sparse.csr_matrix([[1, 2, 3], [4, 5, 6], [7, 8, 9]], dtype=np.float32)
-        N = sp_sparse.csr_matrix([[5, 6], [8, 9]], dtype=np.float32)
-        Mn, Mn_nodelist = _laplacian_submatrix(1, M, [1, 2, 3])
-        assert Mn_nodelist == [2, 3]
-        assert np.allclose(Mn.toarray(), N.toarray())
-
-    def test_laplacian_submatrix_square(self):
-        with pytest.raises(nx.NetworkXError):
-            from networkx.algorithms.distance_measures import _laplacian_submatrix
-
-            M = sp_sparse.csr_matrix([[1, 2], [4, 5], [7, 8]], dtype=np.float32)
-            _laplacian_submatrix(1, M, [1, 2, 3])
-
-    def test_laplacian_submatrix_matrix_node_dim(self):
-        with pytest.raises(nx.NetworkXError):
-            from networkx.algorithms.distance_measures import _laplacian_submatrix
-
-            M = sp_sparse.csr_matrix(
-                [[1, 2, 3], [4, 5, 6], [7, 8, 9]], dtype=np.float32
-            )
-            _laplacian_submatrix(1, M, [1, 2, 3, 4])
 
     def test_resistance_distance(self):
         rd = nx.resistance_distance(self.G, 1, 3, "weight", True)

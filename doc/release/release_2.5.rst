@@ -1,13 +1,16 @@
-Announcement: NetworkX 2.5
-==========================
+NetworkX 2.5
+============
 
-We're happy to announce the release of NetworkX 2.5!
+Release date: 22 August 2020
+
+Supports Python 3.6, 3.7, and 3.8.
+
 NetworkX is a Python package for the creation, manipulation, and study of the
 structure, dynamics, and functions of complex networks.
 
-For more information, please visit our `website <http://networkx.github.io/>`_
+For more information, please visit our `website <https://networkx.org/>`_
 and our `gallery of examples
-<https://networkx.github.io/documentation/latest/auto_examples/index.html>`_.
+<https://networkx.org/documentation/latest/auto_examples/index.html>`_.
 Please send comments and questions to the `networkx-discuss mailing list
 <http://groups.google.com/group/networkx-discuss>`_.
 
@@ -125,8 +128,8 @@ Deprecations
 - [`#4161 <https://github.com/networkx/networkx/pull/4161>`_]
   Rename `_naive_greedy_modularity_communities` as `naive_greedy_modularity_communities`.
 
-Pull requests merged in this release
-------------------------------------
+Merged PRs
+----------
 
 A total of 256 changes have been committed.
 
@@ -392,8 +395,9 @@ It contained the following 3 merges:
 - MAINT: Replace internal usage of to_numpy_matrix and from_numpy_matrix (#4093)
 
 
-Contributors to this release
-----------------------------
+Contributors
+------------
+
 - Adnan Abdulmuttaleb
 - Abhi
 - Antoine-H

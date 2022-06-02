@@ -3,6 +3,7 @@ Utility classes and functions for network flow algorithms.
 """
 
 from collections import deque
+
 import networkx as nx
 
 __all__ = [
@@ -43,8 +44,7 @@ class CurrentEdge:
 
 
 class Level:
-    """Active and inactive nodes in a level.
-    """
+    """Active and inactive nodes in a level."""
 
     __slots__ = ("active", "inactive")
 
@@ -154,8 +154,7 @@ def build_residual_network(G, capacity):
 
 
 def detect_unboundedness(R, s, t):
-    """Detect an infinite-capacity s-t path in R.
-    """
+    """Detect an infinite-capacity s-t path in R."""
     q = deque([s])
     seen = {s}
     inf = R.graph["inf"]
@@ -172,8 +171,7 @@ def detect_unboundedness(R, s, t):
 
 
 def build_flow_dict(G, R):
-    """Build a flow dictionary from a residual network.
-    """
+    """Build a flow dictionary from a residual network."""
     flow_dict = {}
     for u in G:
         flow_dict[u] = {v: 0 for v in G[u]}

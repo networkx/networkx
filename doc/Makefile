@@ -26,7 +26,6 @@ help:
 	@echo "  changes   to make an overview of all changed/added/deprecated items"
 	@echo "  linkcheck to check all external links for integrity"
 	@echo "  doctest   to run all doctests embedded in the documentation (if enabled)"
-	@echo "  gitwash   to update the gitwash documentation"
 
 
 clean:
@@ -43,6 +42,8 @@ dist: html
 	(cd build/dist && tar czf ../dist.tar.gz .)
 
 html:
+	mkdir -p auto_examples/geospatial/
+	cp ../examples/geospatial/extended_description.rst auto_examples/geospatial/
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) build/html
 	@echo
 	@echo "Build finished. The HTML pages are in build/html."
@@ -113,9 +114,3 @@ latexpdf: latex
 
 docs: clean html latexpdf
 	cp build/latex/networkx_reference.pdf build/html/_downloads/.
-
-gitwash-update:
-	python ../tools/gitwash_dumper.py developer networkx \
-	--project-url=http://networkx.github.io \
-	--project-ml-url=http://groups.google.com/group/networkx-discuss/ \
-	--gitwash-url git@github.com:matthew-brett/gitwash.git

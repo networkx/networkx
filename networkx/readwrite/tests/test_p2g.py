@@ -1,7 +1,8 @@
-import networkx as nx
 import io
+
+import networkx as nx
 from networkx.readwrite.p2g import read_p2g, write_p2g
-from networkx.testing import assert_edges_equal
+from networkx.utils import edges_equal
 
 
 class TestP2G:
@@ -29,7 +30,7 @@ c
         assert G.name == "name"
         assert sorted(G) == ["a", "b", "c"]
         edges = [(str(u), str(v)) for u, v in G.edges()]
-        assert_edges_equal(G.edges(), [("a", "c"), ("a", "b"), ("c", "a"), ("c", "c")])
+        assert edges_equal(G.edges(), [("a", "c"), ("a", "b"), ("c", "a"), ("c", "c")])
 
     def test_write_p2g(self):
         s = b"""foo
@@ -58,4 +59,4 @@ c
         write_p2g(G, fh)
         fh.seek(0)
         H = read_p2g(fh)
-        assert_edges_equal(G.edges(), H.edges())
+        assert edges_equal(G.edges(), H.edges())

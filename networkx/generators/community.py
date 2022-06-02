@@ -1,37 +1,9 @@
 """Generators for classes of graphs used in studying social networks."""
 import itertools
 import math
+
 import networkx as nx
 from networkx.utils import py_random_state
-
-# Accommodates for both SciPy and non-SciPy implementations..
-try:
-    from scipy.special import zeta as _zeta
-
-    def zeta(x, q, tolerance):
-        return _zeta(x, q)
-
-
-except ImportError:
-
-    def zeta(x, q, tolerance):
-        """The Hurwitz zeta function, or the Riemann zeta function of two
-        arguments.
-
-        ``x`` must be greater than one and ``q`` must be positive.
-
-        This function repeatedly computes subsequent partial sums until
-        convergence, as decided by ``tolerance``.
-        """
-        z = 0
-        z_prev = -float("inf")
-        k = 0
-        while abs(z - z_prev) > tolerance:
-            z_prev = z
-            z += 1 / ((k + q) ** x)
-            k += 1
-        return z
-
 
 __all__ = [
     "caveman_graph",
@@ -395,7 +367,7 @@ def gaussian_random_partition_graph(n, s, v, p_in, p_out, directed=False, seed=N
     assigned = 0
     sizes = []
     while True:
-        size = int(seed.gauss(s, float(s) / v + 0.5))
+        size = int(seed.gauss(s, s / v + 0.5))
         if size < 1:  # how to handle 0 or negative sizes?
             continue
         if assigned + size >= n:
@@ -725,9 +697,34 @@ def _powerlaw_sequence(gamma, low, high, condition, length, max_iters, seed):
     raise nx.ExceededMaxIterations("Could not create power law sequence")
 
 
-# TODO Needs documentation.
+def _hurwitz_zeta(x, q, tolerance):
+    """The Hurwitz zeta function, or the Riemann zeta function of two arguments.
+
+    ``x`` must be greater than one and ``q`` must be positive.
+
+    This function repeatedly computes subsequent partial sums until
+    convergence, as decided by ``tolerance``.
+    """
+    z = 0
+    z_prev = -float("inf")
+    k = 0
+    while abs(z - z_prev) > tolerance:
+        z_prev = z
+        z += 1 / ((k + q) ** x)
+        k += 1
+    return z
+
+
 def _generate_min_degree(gamma, average_degree, max_degree, tolerance, max_iters):
     """Returns a minimum degree from the given average degree."""
+    # Defines zeta function whether or not Scipy is available
+    try:
+        from scipy.special import zeta
+    except ImportError:
+
+        def zeta(x, q):
+            return _hurwitz_zeta(x, q, tolerance)
+
     min_deg_top = max_degree
     min_deg_bot = 1
     min_deg_mid = (min_deg_top - min_deg_bot) / 2 + min_deg_bot
@@ -738,7 +735,7 @@ def _generate_min_degree(gamma, average_degree, max_degree, tolerance, max_iters
             raise nx.ExceededMaxIterations("Could not match average_degree")
         mid_avg_deg = 0
         for x in range(int(min_deg_mid), max_degree + 1):
-            mid_avg_deg += (x ** (-gamma + 1)) / zeta(gamma, min_deg_mid, tolerance)
+            mid_avg_deg += (x ** (-gamma + 1)) / zeta(gamma, min_deg_mid)
         if mid_avg_deg > average_degree:
             min_deg_top = min_deg_mid
             min_deg_mid = (min_deg_top - min_deg_bot) / 2 + min_deg_bot
@@ -862,7 +859,7 @@ def LFR_benchmark_graph(
         created graph. This value must be strictly greater than one.
 
     mu : float
-        Fraction of intra-community edges incident to each node. This
+        Fraction of inter-community edges incident to each node. This
         value must be in the interval [0, 1].
 
     average_degree : float
@@ -981,7 +978,7 @@ def LFR_benchmark_graph(
     .. [1] "Benchmark graphs for testing community detection algorithms",
            Andrea Lancichinetti, Santo Fortunato, and Filippo Radicchi,
            Phys. Rev. E 78, 046110 2008
-    .. [2] http://santo.fortunato.googlepages.com/inthepress2
+    .. [2] https://www.santofortunato.net/resources
 
     """
     # Perform some basic parameter validation.

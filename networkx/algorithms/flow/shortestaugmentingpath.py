@@ -3,16 +3,17 @@ Shortest augmenting path algorithm for maximum flow problems.
 """
 
 from collections import deque
+
 import networkx as nx
-from .utils import build_residual_network, CurrentEdge
+
 from .edmondskarp import edmonds_karp_core
+from .utils import CurrentEdge, build_residual_network
 
 __all__ = ["shortest_augmenting_path"]
 
 
 def shortest_augmenting_path_impl(G, s, t, capacity, residual, two_phase, cutoff):
-    """Implementation of the shortest augmenting path algorithm.
-    """
+    """Implementation of the shortest augmenting path algorithm."""
     if s not in G:
         raise nx.NetworkXError(f"node {str(s)} not in graph")
     if t not in G:
@@ -67,8 +68,7 @@ def shortest_augmenting_path_impl(G, s, t, capacity, residual, two_phase, cutoff
     inf = R.graph["inf"]
 
     def augment(path):
-        """Augment flow along a path from s to t.
-        """
+        """Augment flow along a path from s to t."""
         # Determine the path residual capacity.
         flow = inf
         it = iter(path)
@@ -89,8 +89,7 @@ def shortest_augmenting_path_impl(G, s, t, capacity, residual, two_phase, cutoff
         return flow
 
     def relabel(u):
-        """Relabel a node to create an admissible edge.
-        """
+        """Relabel a node to create an admissible edge."""
         height = n - 1
         for v, attr in R_succ[u].items():
             if attr["flow"] < attr["capacity"]:
@@ -105,7 +104,7 @@ def shortest_augmenting_path_impl(G, s, t, capacity, residual, two_phase, cutoff
     flow_value = 0
     path = [s]
     u = s
-    d = n if not two_phase else int(min(m ** 0.5, 2 * n ** (2.0 / 3)))
+    d = n if not two_phase else int(min(m**0.5, 2 * n ** (2.0 / 3)))
     done = R_nodes[s]["height"] >= d
     while not done:
         height = R_nodes[u]["height"]

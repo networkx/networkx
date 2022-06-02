@@ -1,5 +1,9 @@
+import numbers
+
 import pytest
+
 import networkx as nx
+
 from ..generators import (
     alternating_havel_hakimi_graph,
     complete_bipartite_graph,
@@ -44,19 +48,10 @@ class TestGeneratorsBipartite:
             assert nx.number_of_nodes(G) == m1 + m2
             assert nx.number_of_edges(G) == m1 * m2
 
-        pytest.raises(
-            nx.NetworkXError, complete_bipartite_graph, 7, 3, create_using=nx.DiGraph
-        )
-        pytest.raises(
-            nx.NetworkXError, complete_bipartite_graph, 7, 3, create_using=nx.DiGraph
-        )
-        pytest.raises(
-            nx.NetworkXError,
-            complete_bipartite_graph,
-            7,
-            3,
-            create_using=nx.MultiDiGraph,
-        )
+        with pytest.raises(nx.NetworkXError):
+            complete_bipartite_graph(7, 3, create_using=nx.DiGraph)
+        with pytest.raises(nx.NetworkXError):
+            complete_bipartite_graph(7, 3, create_using=nx.MultiDiGraph)
 
         mG = complete_bipartite_graph(7, 3, create_using=nx.MultiGraph)
         assert mG.is_multigraph()
@@ -72,15 +67,21 @@ class TestGeneratorsBipartite:
         assert not mG.is_directed()
 
         # specify nodes rather than number of nodes
-        G = complete_bipartite_graph([1, 2], ["a", "b"])
-        has_edges = (
-            G.has_edge(1, "a")
-            & G.has_edge(1, "b")
-            & G.has_edge(2, "a")
-            & G.has_edge(2, "b")
-        )
-        assert has_edges
-        assert G.size() == 4
+        for n1, n2 in [([1, 2], "ab"), (3, 2), (3, "ab"), ("ab", 3)]:
+            G = complete_bipartite_graph(n1, n2)
+            if isinstance(n1, numbers.Integral):
+                if isinstance(n2, numbers.Integral):
+                    n2 = range(n1, n1 + n2)
+                n1 = range(n1)
+            elif isinstance(n2, numbers.Integral):
+                n2 = range(n2)
+            edges = {(u, v) for u in n1 for v in n2}
+            assert edges == set(G.edges)
+            assert G.size() == len(edges)
+
+        # raise when node sets are not distinct
+        for n1, n2 in [([1, 2], 3), (3, [1, 2]), ("abc", "bcd")]:
+            pytest.raises(nx.NetworkXError, complete_bipartite_graph, n1, n2)
 
     def test_configuration_model(self):
         aseq = []
@@ -115,10 +116,10 @@ class TestGeneratorsBipartite:
         assert not G.is_directed()
         assert sorted(d for n, d in G.degree()) == [1, 1, 1, 2, 2, 2, 3, 3, 3]
 
-        GU = nx.project(nx.Graph(G), range(len(aseq)))
+        GU = nx.projected_graph(nx.Graph(G), range(len(aseq)))
         assert GU.number_of_nodes() == 6
 
-        GD = nx.project(nx.Graph(G), range(len(aseq), len(aseq) + len(bseq)))
+        GD = nx.projected_graph(nx.Graph(G), range(len(aseq), len(aseq) + len(bseq)))
         assert GD.number_of_nodes() == 3
 
         G = reverse_havel_hakimi_graph(aseq, bseq, create_using=nx.Graph)
@@ -166,10 +167,10 @@ class TestGeneratorsBipartite:
         assert not G.is_directed()
         assert sorted(d for n, d in G.degree()) == [2, 2, 2, 2, 2, 2, 3, 3, 3, 3]
 
-        GU = nx.project(nx.Graph(G), range(len(aseq)))
+        GU = nx.projected_graph(nx.Graph(G), range(len(aseq)))
         assert GU.number_of_nodes() == 6
 
-        GD = nx.project(nx.Graph(G), range(len(aseq), len(aseq) + len(bseq)))
+        GD = nx.projected_graph(nx.Graph(G), range(len(aseq), len(aseq) + len(bseq)))
         assert GD.number_of_nodes() == 4
 
         G = reverse_havel_hakimi_graph(aseq, bseq, create_using=nx.Graph)
@@ -222,10 +223,10 @@ class TestGeneratorsBipartite:
         assert not G.is_directed()
         assert sorted(d for n, d in G.degree()) == [1, 1, 1, 2, 2, 2, 3, 3, 3]
 
-        GU = nx.project(nx.Graph(G), range(len(aseq)))
+        GU = nx.projected_graph(nx.Graph(G), range(len(aseq)))
         assert GU.number_of_nodes() == 6
 
-        GD = nx.project(nx.Graph(G), range(len(aseq), len(aseq) + len(bseq)))
+        GD = nx.projected_graph(nx.Graph(G), range(len(aseq), len(aseq) + len(bseq)))
         assert GD.number_of_nodes() == 3
 
         G = reverse_havel_hakimi_graph(aseq, bseq, create_using=nx.Graph)
@@ -286,10 +287,10 @@ class TestGeneratorsBipartite:
         assert not G.is_directed()
         assert sorted(d for n, d in G.degree()) == [1, 1, 1, 2, 2, 2, 3, 3, 3]
 
-        GU = nx.project(nx.Graph(G), range(len(aseq)))
+        GU = nx.projected_graph(nx.Graph(G), range(len(aseq)))
         assert GU.number_of_nodes() == 6
 
-        GD = nx.project(nx.Graph(G), range(len(aseq), len(aseq) + len(bseq)))
+        GD = nx.projected_graph(nx.Graph(G), range(len(aseq), len(aseq) + len(bseq)))
         assert GD.number_of_nodes() == 3
 
         G = reverse_havel_hakimi_graph(aseq, bseq, create_using=nx.Graph)

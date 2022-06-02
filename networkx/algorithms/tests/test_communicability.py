@@ -2,11 +2,10 @@ from collections import defaultdict
 
 import pytest
 
-numpy = pytest.importorskip("numpy")
-scipy = pytest.importorskip("scipy")
+pytest.importorskip("numpy")
+pytest.importorskip("scipy")
 
 import networkx as nx
-from networkx.testing import almost_equal
 from networkx.algorithms.communicability_alg import communicability, communicability_exp
 
 
@@ -24,7 +23,7 @@ class TestCommunicability:
         result = communicability(nx.path_graph(2))
         for k1, val in result.items():
             for k2 in val:
-                assert almost_equal(answer[k1][k2], result[k1][k2], places=7)
+                assert answer[k1][k2] == pytest.approx(result[k1][k2], abs=1e-7)
 
     def test_communicability2(self):
 
@@ -74,9 +73,9 @@ class TestCommunicability:
         result = communicability(G1)
         for k1, val in result.items():
             for k2 in val:
-                assert almost_equal(answer[k1][k2], result[k1][k2], places=7)
+                assert answer[k1][k2] == pytest.approx(result[k1][k2], abs=1e-7)
 
         result = communicability_exp(G1)
         for k1, val in result.items():
             for k2 in val:
-                assert almost_equal(answer[k1][k2], result[k1][k2], places=7)
+                assert answer[k1][k2] == pytest.approx(result[k1][k2], abs=1e-7)

@@ -11,8 +11,6 @@ __all__ = [
     "all_pairs_node_connectivity",
 ]
 
-INF = float("inf")
-
 
 def local_node_connectivity(G, source, target, cutoff=None):
     """Compute node connectivity between source and target.
@@ -95,7 +93,7 @@ def local_node_connectivity(G, source, target, cutoff=None):
         return K
 
     if cutoff is None:
-        cutoff = INF
+        cutoff = float("inf")
 
     exclude = set()
     for i in range(min(possible, cutoff)):
@@ -215,7 +213,7 @@ def node_connectivity(G, s=None, t=None):
 
 
 def all_pairs_node_connectivity(G, nbunch=None, cutoff=None):
-    """ Compute node connectivity between all pairs of nodes.
+    """Compute node connectivity between all pairs of nodes.
 
     Pairwise or local node connectivity between two distinct and nonadjacent
     nodes is the minimum number of nodes that must be removed (minimum

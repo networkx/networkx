@@ -95,11 +95,7 @@ def second_order_centrality(G):
        "Second order centrality: Distributed assessment of nodes criticity in
        complex networks", Elsevier Computer Communications 34(5):619-628, 2011.
     """
-
-    try:
-        import numpy as np
-    except ImportError as e:
-        raise ImportError("Requires NumPy: http://numpy.org/") from e
+    import numpy as np
 
     n = len(G)
 

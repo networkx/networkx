@@ -1,50 +1,8 @@
-import networkx as nx
 import pytest
 
+import networkx as nx
 import networkx.generators.line as line
-from networkx.testing.utils import assert_edges_equal
-
-
-def test_node_func():
-    # graph
-    G = nx.Graph()
-    G.add_edge(1, 2)
-    nf = line._node_func(G)
-    assert nf(1, 2) == (1, 2)
-    assert nf(2, 1) == (1, 2)
-
-    # multigraph
-    G = nx.MultiGraph()
-    G.add_edge(1, 2)
-    G.add_edge(1, 2)
-    nf = line._node_func(G)
-    assert nf(1, 2, 0) == (1, 2, 0)
-    assert nf(2, 1, 0) == (1, 2, 0)
-
-
-def test_edge_func():
-    # graph
-    G = nx.Graph()
-    G.add_edge(1, 2)
-    G.add_edge(2, 3)
-    ef = line._edge_func(G)
-    expected = [(1, 2), (2, 3)]
-    assert_edges_equal(ef(), expected)
-
-    # digraph
-    G = nx.MultiDiGraph()
-    G.add_edge(1, 2)
-    G.add_edge(2, 3)
-    G.add_edge(2, 3)
-    ef = line._edge_func(G)
-    expected = [(1, 2, 0), (2, 3, 0), (2, 3, 1)]
-    result = sorted(ef())
-    assert expected == result
-
-
-def test_sorted_edge():
-    assert (1, 2) == line._sorted_edge(1, 2)
-    assert (1, 2) == line._sorted_edge(2, 1)
+from networkx.utils import edges_equal
 
 
 class TestGeneratorLine:
@@ -64,29 +22,68 @@ class TestGeneratorLine:
         assert nx.is_isomorphic(L, G)
 
     def test_digraph1(self):
-        G = nx.DiGraph()
-        G.add_edges_from([(0, 1), (0, 2), (0, 3)])
+        G = nx.DiGraph([(0, 1), (0, 2), (0, 3)])
         L = nx.line_graph(G)
         # no edge graph, but with nodes
         assert L.adj == {(0, 1): {}, (0, 2): {}, (0, 3): {}}
 
-    def test_digraph2(self):
-        G = nx.DiGraph()
-        G.add_edges_from([(0, 1), (1, 2), (2, 3)])
+    def test_multigraph1(self):
+        G = nx.MultiGraph([(0, 1), (0, 1), (1, 0), (0, 2), (2, 0), (0, 3)])
         L = nx.line_graph(G)
-        assert_edges_equal(L.edges(), [((0, 1), (1, 2)), ((1, 2), (2, 3))])
+        # no edge graph, but with nodes
+        assert edges_equal(
+            L.edges(),
+            [
+                ((0, 3, 0), (0, 1, 0)),
+                ((0, 3, 0), (0, 2, 0)),
+                ((0, 3, 0), (0, 2, 1)),
+                ((0, 3, 0), (0, 1, 1)),
+                ((0, 3, 0), (0, 1, 2)),
+                ((0, 1, 0), (0, 1, 1)),
+                ((0, 1, 0), (0, 2, 0)),
+                ((0, 1, 0), (0, 1, 2)),
+                ((0, 1, 0), (0, 2, 1)),
+                ((0, 1, 1), (0, 1, 2)),
+                ((0, 1, 1), (0, 2, 0)),
+                ((0, 1, 1), (0, 2, 1)),
+                ((0, 1, 2), (0, 2, 0)),
+                ((0, 1, 2), (0, 2, 1)),
+                ((0, 2, 0), (0, 2, 1)),
+            ],
+        )
+
+    def test_multigraph2(self):
+        G = nx.MultiGraph([(1, 2), (2, 1)])
+        L = nx.line_graph(G)
+        assert edges_equal(L.edges(), [((1, 2, 0), (1, 2, 1))])
+
+    def test_multidigraph1(self):
+        G = nx.MultiDiGraph([(1, 2), (2, 1)])
+        L = nx.line_graph(G)
+        assert edges_equal(L.edges(), [((1, 2, 0), (2, 1, 0)), ((2, 1, 0), (1, 2, 0))])
+
+    def test_multidigraph2(self):
+        G = nx.MultiDiGraph([(0, 1), (0, 1), (0, 1), (1, 2)])
+        L = nx.line_graph(G)
+        assert edges_equal(
+            L.edges(),
+            [((0, 1, 0), (1, 2, 0)), ((0, 1, 1), (1, 2, 0)), ((0, 1, 2), (1, 2, 0))],
+        )
+
+    def test_digraph2(self):
+        G = nx.DiGraph([(0, 1), (1, 2), (2, 3)])
+        L = nx.line_graph(G)
+        assert edges_equal(L.edges(), [((0, 1), (1, 2)), ((1, 2), (2, 3))])
 
     def test_create1(self):
-        G = nx.DiGraph()
-        G.add_edges_from([(0, 1), (1, 2), (2, 3)])
+        G = nx.DiGraph([(0, 1), (1, 2), (2, 3)])
         L = nx.line_graph(G, create_using=nx.Graph())
-        assert_edges_equal(L.edges(), [((0, 1), (1, 2)), ((1, 2), (2, 3))])
+        assert edges_equal(L.edges(), [((0, 1), (1, 2)), ((1, 2), (2, 3))])
 
     def test_create2(self):
-        G = nx.Graph()
-        G.add_edges_from([(0, 1), (1, 2), (2, 3)])
+        G = nx.Graph([(0, 1), (1, 2), (2, 3)])
         L = nx.line_graph(G, create_using=nx.DiGraph())
-        assert_edges_equal(L.edges(), [((0, 1), (1, 2)), ((1, 2), (2, 3))])
+        assert edges_equal(L.edges(), [((0, 1), (1, 2)), ((1, 2), (2, 3))])
 
 
 class TestGeneratorInverseLine:
@@ -269,6 +266,12 @@ class TestGeneratorInverseLine:
 
     def test_line_inverse_line_dgm(self):
         G = nx.dorogovtsev_goltsev_mendes_graph(4)
+        H = nx.line_graph(G)
+        J = nx.inverse_line_graph(H)
+        assert nx.is_isomorphic(G, J)
+
+    def test_line_different_node_types(self):
+        G = nx.path_graph([1, 2, 3, "a", "b", "c"])
         H = nx.line_graph(G)
         J = nx.inverse_line_graph(H)
         assert nx.is_isomorphic(G, J)

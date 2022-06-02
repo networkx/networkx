@@ -2,14 +2,15 @@
 
 """
 
-import networkx as nx
-from networkx import adjacency_matrix
-from networkx import number_of_nodes
-from networkx.generators.expanders import chordal_cycle_graph
-from networkx.generators.expanders import margulis_gabber_galil_graph
-from networkx.generators.expanders import paley_graph
-
 import pytest
+
+import networkx as nx
+from networkx import adjacency_matrix, number_of_nodes
+from networkx.generators.expanders import (
+    chordal_cycle_graph,
+    margulis_gabber_galil_graph,
+    paley_graph,
+)
 
 
 def test_margulis_gabber_galil_graph():
@@ -24,11 +25,12 @@ def test_margulis_gabber_galil_graph():
                 assert 0 <= i < n
 
     np = pytest.importorskip("numpy")
-    scipy = pytest.importorskip("scipy")
-    scipy.linalg = pytest.importorskip("scipy.linalg")
+    sp = pytest.importorskip("scipy")
+    import scipy.linalg
+
     # Eigenvalues are already sorted using the scipy eigvalsh,
     # but the implementation in numpy does not guarantee order.
-    w = sorted(scipy.linalg.eigvalsh(adjacency_matrix(g).A))
+    w = sorted(sp.linalg.eigvalsh(adjacency_matrix(g).A))
     assert w[-2] < 5 * np.sqrt(2)
 
 
@@ -41,7 +43,7 @@ def test_chordal_cycle_graph():
         # TODO The second largest eigenvalue should be smaller than a constant,
         # independent of the number of nodes in the graph:
         #
-        #     eigs = sorted(scipy.linalg.eigvalsh(adjacency_matrix(G).A))
+        #     eigs = sorted(sp.linalg.eigvalsh(adjacency_matrix(G).A))
         #     assert_less(eigs[-2], ...)
         #
 

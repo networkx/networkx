@@ -1,0 +1,30 @@
+name: Mypy
+
+on: [push, pull_request]
+
+jobs:
+  type-check:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.9]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install packages
+        run: |
+          pip install --upgrade pip wheel setuptools
+          pip install -r requirements/developer.txt
+          # Rm below when yaml no longer a dep
+          pip install types-PyYAML
+          pip install -e .
+          pip list
+
+      - name: run mypy
+        run: mypy -p networkx

@@ -25,16 +25,16 @@ There are two different functions for computing a tree decomposition:
       http://www.cs.uu.nl
 
 .. [3] K. Wang, Z. Lu, and J. Hicks *Treewidth*.
-      http://web.eecs.utk.edu/~cphillip/cs594_spring2015_projects/treewidth.pdf
+      https://web.archive.org/web/20210507025929/http://web.eecs.utk.edu/~cphill25/cs594_spring2015_projects/treewidth.pdf
 
 """
 
+import itertools
 import sys
+from heapq import heapify, heappop, heappush
 
 import networkx as nx
 from networkx.utils import not_implemented_for
-from heapq import heappush, heappop, heapify
-import itertools
 
 __all__ = ["treewidth_min_degree", "treewidth_min_fill_in"]
 
@@ -42,7 +42,7 @@ __all__ = ["treewidth_min_degree", "treewidth_min_fill_in"]
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def treewidth_min_degree(G):
-    """ Returns a treewidth decomposition using the Minimum Degree heuristic.
+    """Returns a treewidth decomposition using the Minimum Degree heuristic.
 
     The heuristic chooses the nodes according to their degree, i.e., first
     the node with the lowest degree is chosen, then the graph is updated
@@ -65,7 +65,7 @@ def treewidth_min_degree(G):
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def treewidth_min_fill_in(G):
-    """ Returns a treewidth decomposition using the Minimum Fill-in heuristic.
+    """Returns a treewidth decomposition using the Minimum Fill-in heuristic.
 
     The heuristic chooses a node from the graph, where the number of edges
     added turning the neighbourhood of the chosen node into clique is as
@@ -84,7 +84,7 @@ def treewidth_min_fill_in(G):
 
 
 class MinDegreeHeuristic:
-    """ Implements the Minimum Degree heuristic.
+    """Implements the Minimum Degree heuristic.
 
     The heuristic chooses the nodes according to their degree
     (number of neighbours), i.e., first the node with the lowest degree is
@@ -130,7 +130,7 @@ class MinDegreeHeuristic:
 
 
 def min_fill_in_heuristic(graph):
-    """ Implements the Minimum Degree heuristic.
+    """Implements the Minimum Degree heuristic.
 
     Returns the node from the graph, where the number of edges added when
     turning the neighbourhood of the chosen node into clique is as small as
@@ -176,7 +176,7 @@ def min_fill_in_heuristic(graph):
 
 
 def treewidth_decomp(G, heuristic=min_fill_in_heuristic):
-    """ Returns a treewidth decomposition using the passed heuristic.
+    """Returns a treewidth decomposition using the passed heuristic.
 
     Parameters
     ----------

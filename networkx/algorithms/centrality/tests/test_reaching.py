@@ -1,8 +1,7 @@
 """Unit tests for the :mod:`networkx.algorithms.centrality.reaching` module."""
 import pytest
 
-from networkx import nx
-from networkx.testing import almost_equal
+import networkx as nx
 
 
 class TestGlobalReachingCentrality:
@@ -78,7 +77,7 @@ class TestGlobalReachingCentrality:
         expected = sum(max_local - lrc for lrc in local_reach_ctrs) / denom
         grc = nx.global_reaching_centrality
         actual = grc(G, normalized=False, weight="weight")
-        assert almost_equal(expected, actual, places=7)
+        assert expected == pytest.approx(actual, abs=1e-7)
 
 
 class TestLocalReachingCentrality:

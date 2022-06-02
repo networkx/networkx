@@ -1,6 +1,7 @@
 """Unit tests for the :mod:`networkx.generators.sudoku_graph` module."""
 
 import pytest
+
 import networkx as nx
 
 
@@ -13,7 +14,7 @@ def test_sudoku_negative():
 def test_sudoku_generator(n):
     """Generate Sudoku graphs of various sizes and verify their properties."""
     G = nx.sudoku_graph(n)
-    expected_nodes = n ** 4
+    expected_nodes = n**4
     expected_degree = (n - 1) * (3 * n + 1)
     expected_edges = expected_nodes * expected_degree // 2
     assert not G.is_directed()

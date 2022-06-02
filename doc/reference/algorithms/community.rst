@@ -29,7 +29,7 @@ Modularity-based communities
    :toctree: generated/
 
    greedy_modularity_communities
-   _naive_greedy_modularity_communities
+   naive_greedy_modularity_communities
 
 Tree partitioning
 -----------------
@@ -48,6 +48,15 @@ Label propagation
    asyn_lpa_communities
    label_propagation_communities
 
+Louvain Community Detection
+---------------------------
+.. automodule:: networkx.algorithms.community.louvain
+.. autosummary::
+    :toctree: generated/
+
+    louvain_communities
+    louvain_partitions
+
 Fluid Communities
 -----------------
 .. automodule:: networkx.algorithms.community.asyn_fluid
@@ -64,6 +73,7 @@ Measuring partitions
 
    coverage
    modularity
+   partition_quality
    performance
 
 Partitions via centrality measures

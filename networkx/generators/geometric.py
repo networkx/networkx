@@ -1,28 +1,21 @@
 """Generators for geometric graphs.
 """
 
+import math
 from bisect import bisect_left
 from itertools import accumulate, combinations, product
-from math import sqrt
-import math
-
-try:
-    from scipy.spatial import cKDTree as KDTree
-except ImportError:
-    _is_scipy_available = False
-else:
-    _is_scipy_available = True
 
 import networkx as nx
-from networkx.utils import nodes_or_number, py_random_state
+from networkx.utils import py_random_state
 
 __all__ = [
+    "geometric_edges",
     "geographical_threshold_graph",
-    "waxman_graph",
     "navigable_small_world_graph",
     "random_geometric_graph",
     "soft_random_geometric_graph",
     "thresholded_random_geometric_graph",
+    "waxman_graph",
 ]
 
 
@@ -32,40 +25,88 @@ def euclidean(x, y):
     Each of ``x`` and ``y`` can be any iterable of numbers. The
     iterables must be of the same length.
 
+     .. deprecated:: 2.7
     """
-    return sqrt(sum((a - b) ** 2 for a, b in zip(x, y)))
+    import warnings
+
+    msg = (
+        "euclidean is deprecated and will be removed in 3.0."
+        "Use math.dist(x, y) instead."
+    )
+    warnings.warn(msg, DeprecationWarning, stacklevel=2)
+    return math.dist(x, y)
 
 
-def _fast_edges(G, radius, p):
-    """Returns edge list of node pairs within `radius` of each other
-       using scipy KDTree and Minkowski distance metric `p`
+def geometric_edges(G, radius, p):
+    """Returns edge list of node pairs within `radius` of each other.
 
-    Requires scipy to be installed.
+    Parameters
+    ----------
+    G : networkx graph
+        The graph from which to generate the edge list. The nodes in `G` should
+        have an attribute ``pos`` corresponding to the node position, which is
+        used to compute the distance to other nodes.
+    radius : scalar
+        The distance threshold. Edges are included in the edge list if the
+        distance between the two nodes is less than `radius`.
+    p : scalar
+        The `Minkowski distance metric
+        <https://en.wikipedia.org/wiki/Minkowski_distance>`_ use to compute
+        distances.
+
+    Returns
+    -------
+    edges : list
+        List of edges whose distances are less than `radius`
+
+    Notes
+    -----
+    Radius uses Minkowski distance metric `p`.
+    If scipy is available, `scipy.spatial.cKDTree` is used to speed computation.
+
+    Examples
+    --------
+    Create a graph with nodes that have a "pos" attribute representing 2D
+    coordinates.
+
+    >>> G = nx.Graph()
+    >>> G.add_nodes_from([
+    ...     (0, {"pos": (0, 0)}),
+    ...     (1, {"pos": (3, 0)}),
+    ...     (2, {"pos": (8, 0)}),
+    ... ])
+    >>> p = 2  # Euclidean distance
+    >>> nx.geometric_edges(G, radius=1, p=p)
+    []
+    >>> nx.geometric_edges(G, radius=4, p=p)
+    [(0, 1)]
+    >>> nx.geometric_edges(G, radius=6, p=p)
+    [(0, 1), (1, 2)]
+    >>> nx.geometric_edges(G, radius=9, p=p)
+    [(0, 1), (0, 2), (1, 2)]
     """
-    pos = nx.get_node_attributes(G, "pos")
-    nodes, coords = list(zip(*pos.items()))
-    kdtree = KDTree(coords)  # Cannot provide generator.
+    nodes_pos = G.nodes(data="pos")
+    try:
+        import scipy as sp
+        import scipy.spatial  # call as sp.spatial
+    except ImportError:
+        # no scipy KDTree so compute by for-loop
+        radius_p = radius**p
+        edges = [
+            (u, v)
+            for (u, pu), (v, pv) in combinations(nodes_pos, 2)
+            if sum(abs(a - b) ** p for a, b in zip(pu, pv)) <= radius_p
+        ]
+        return edges
+    # scipy KDTree is available
+    nodes, coords = list(zip(*nodes_pos))
+    kdtree = sp.spatial.cKDTree(coords)  # Cannot provide generator.
     edge_indexes = kdtree.query_pairs(radius, p)
-    edges = ((nodes[u], nodes[v]) for u, v in edge_indexes)
-    return edges
-
-
-def _slow_edges(G, radius, p):
-    """Returns edge list of node pairs within `radius` of each other
-       using Minkowski distance metric `p`
-
-    Works without scipy, but in `O(n^2)` time.
-    """
-    # TODO This can be parallelized.
-    edges = []
-    for (u, pu), (v, pv) in combinations(G.nodes(data="pos"), 2):
-        if sum(abs(a - b) ** p for a, b in zip(pu, pv)) <= radius ** p:
-            edges.append((u, v))
+    edges = [(nodes[u], nodes[v]) for u, v in sorted(edge_indexes)]
     return edges
 
 
 @py_random_state(5)
-@nodes_or_number(0)
 def random_geometric_graph(n, radius, dim=2, pos=None, p=2, seed=None):
     """Returns a random geometric graph in the unit cube of dimensions `dim`.
 
@@ -138,31 +179,22 @@ def random_geometric_graph(n, radius, dim=2, pos=None, p=2, seed=None):
     # TODO Is this function just a special case of the geographical
     # threshold graph?
     #
-    #     n_name, nodes = n
-    #     half_radius = {v: radius / 2 for v in nodes}
+    #     half_radius = {v: radius / 2 for v in n}
     #     return geographical_threshold_graph(nodes, theta=1, alpha=1,
     #                                         weight=half_radius)
     #
-    n_name, nodes = n
-    G = nx.Graph()
-    G.add_nodes_from(nodes)
+    G = nx.empty_graph(n)
     # If no positions are provided, choose uniformly random vectors in
     # Euclidean space of the specified dimension.
     if pos is None:
-        pos = {v: [seed.random() for i in range(dim)] for v in nodes}
+        pos = {v: [seed.random() for i in range(dim)] for v in G}
     nx.set_node_attributes(G, pos, "pos")
 
-    if _is_scipy_available:
-        edges = _fast_edges(G, radius, p)
-    else:
-        edges = _slow_edges(G, radius, p)
-    G.add_edges_from(edges)
-
+    G.add_edges_from(geometric_edges(G, radius, p))
     return G
 
 
 @py_random_state(6)
-@nodes_or_number(0)
 def soft_random_geometric_graph(
     n, radius, dim=2, pos=None, p=2, p_dist=None, seed=None
 ):
@@ -260,18 +292,16 @@ def soft_random_geometric_graph(
     ----------
     .. [1] Penrose, Mathew D. "Connectivity of soft random geometric graphs."
            The Annals of Applied Probability 26.2 (2016): 986-1028.
-       [2] scipy.stats -
+    .. [2] scipy.stats -
            https://docs.scipy.org/doc/scipy/reference/tutorial/stats.html
 
     """
-    n_name, nodes = n
-    G = nx.Graph()
+    G = nx.empty_graph(n)
     G.name = f"soft_random_geometric_graph({n}, {radius}, {dim})"
-    G.add_nodes_from(nodes)
     # If no positions are provided, choose uniformly random vectors in
     # Euclidean space of the specified dimension.
     if pos is None:
-        pos = {v: [seed.random() for i in range(dim)] for v in nodes}
+        pos = {v: [seed.random() for i in range(dim)] for v in G}
     nx.set_node_attributes(G, pos, "pos")
 
     # if p_dist function not supplied the default function is an exponential
@@ -281,30 +311,16 @@ def soft_random_geometric_graph(
         def p_dist(dist):
             return math.exp(-dist)
 
-    def should_join(pair):
-        u, v = pair
-        u_pos, v_pos = pos[u], pos[v]
-        dist = (sum(abs(a - b) ** p for a, b in zip(u_pos, v_pos))) ** (1 / p)
-        # Check if dist <= radius parameter. This check is redundant if scipy
-        # is available and _fast_edges routine is used, but provides the
-        # check in case scipy is not available and all edge combinations
-        # need to be checked
-        if dist <= radius:
-            return seed.random() < p_dist(dist)
-        else:
-            return False
+    def should_join(edge):
+        u, v = edge
+        dist = (sum(abs(a - b) ** p for a, b in zip(pos[u], pos[v]))) ** (1 / p)
+        return seed.random() < p_dist(dist)
 
-    if _is_scipy_available:
-        edges = _fast_edges(G, radius, p)
-        G.add_edges_from(filter(should_join, edges))
-    else:
-        G.add_edges_from(filter(should_join, combinations(G, 2)))
-
+    G.add_edges_from(filter(should_join, geometric_edges(G, radius, p)))
     return G
 
 
 @py_random_state(7)
-@nodes_or_number(0)
 def geographical_threshold_graph(
     n, theta, dim=2, pos=None, weight=None, metric=None, p_dist=None, seed=None
 ):
@@ -316,11 +332,13 @@ def geographical_threshold_graph(
 
     .. math::
 
-       (w_u + w_v)h(r) \ge \theta
+       (w_u + w_v)p_{dist}(r) \ge \theta
 
-    where `r` is the distance between `u` and `v`, h(r) is a probability of
-    connection as a function of `r`, and :math:`\theta` as the threshold
-    parameter. h(r) corresponds to the p_dist parameter.
+    where `r` is the distance between `u` and `v`, `p_dist` is any function of
+    `r`, and :math:`\theta` as the threshold parameter. `p_dist` is used to
+    give weight to the distance between nodes when deciding whether or not
+    they should be connected. The larger `p_dist` is, the more prone nodes
+    separated by `r` are to be connected, and vice versa.
 
     Parameters
     ----------
@@ -352,17 +370,17 @@ def geographical_threshold_graph(
 
         .. _metric: https://en.wikipedia.org/wiki/Metric_%28mathematics%29
     p_dist : function, optional
-        A probability density function computing the probability of
-        connecting two nodes that are of distance, r, computed by metric.
-        The probability density function, `p_dist`, must
-        be any function that takes the metric value as input
-        and outputs a single probability value between 0-1.
-        The scipy.stats package has many probability distribution functions
-        implemented and tools for custom probability distribution
-        definitions [2], and passing the .pdf method of scipy.stats
-        distributions can be used here. If the probability
-        function, `p_dist`, is not supplied, the default exponential function
-        :math: `r^{-2}` is used.
+        Any function used to give weight to the distance between nodes when
+        deciding whether or not they should be connected. `p_dist` was
+        originally conceived as a probability density function giving the
+        probability of connecting two nodes that are of metric distance `r`
+        apart. The implementation here allows for more arbitrary definitions
+        of `p_dist` that do not need to correspond to valid probability
+        density functions. The :mod:`scipy.stats` package has many
+        probability density functions implemented and tools for custom
+        probability density definitions, and passing the ``.pdf`` method of
+        scipy.stats distributions can be used here. If ``p_dist=None``
+        (the default), the exponential function :math:`r^{-2}` is used.
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
@@ -418,9 +436,7 @@ def geographical_threshold_graph(
        in Algorithms and Models for the Web-Graph (WAW 2007),
        Antony Bonato and Fan Chung (Eds), pp. 209--216, 2007
     """
-    n_name, nodes = n
-    G = nx.Graph()
-    G.add_nodes_from(nodes)
+    G = nx.empty_graph(n)
     # If no weights are provided, choose them from an exponential
     # distribution.
     if weight is None:
@@ -428,10 +444,10 @@ def geographical_threshold_graph(
     # If no positions are provided, choose uniformly random vectors in
     # Euclidean space of the specified dimension.
     if pos is None:
-        pos = {v: [seed.random() for i in range(dim)] for v in nodes}
+        pos = {v: [seed.random() for i in range(dim)] for v in G}
     # If no distance metric is provided, use Euclidean distance.
     if metric is None:
-        metric = euclidean
+        metric = math.dist
     nx.set_node_attributes(G, weight, "weight")
     nx.set_node_attributes(G, pos, "pos")
 
@@ -439,7 +455,7 @@ def geographical_threshold_graph(
     if p_dist is None:
 
         def p_dist(r):
-            return r ** -2
+            return r**-2
 
     # Returns ``True`` if and only if the nodes whose attributes are
     # ``du`` and ``dv`` should be joined, according to the threshold
@@ -455,7 +471,6 @@ def geographical_threshold_graph(
 
 
 @py_random_state(6)
-@nodes_or_number(0)
 def waxman_graph(
     n, beta=0.4, alpha=0.1, L=None, domain=(0, 0, 1, 1), metric=None, seed=None
 ):
@@ -543,16 +558,14 @@ def waxman_graph(
     .. [1]  B. M. Waxman, *Routing of multipoint connections*.
        IEEE J. Select. Areas Commun. 6(9),(1988) 1617--1622.
     """
-    n_name, nodes = n
-    G = nx.Graph()
-    G.add_nodes_from(nodes)
+    G = nx.empty_graph(n)
     (xmin, ymin, xmax, ymax) = domain
     # Each node gets a uniformly random position in the given rectangle.
     pos = {v: (seed.uniform(xmin, xmax), seed.uniform(ymin, ymax)) for v in G}
     nx.set_node_attributes(G, pos, "pos")
     # If no distance metric is provided, use Euclidean distance.
     if metric is None:
-        metric = euclidean
+        metric = math.dist
     # If the maximum distance L is not specified (that is, we are in the
     # Waxman-1 model), then find the maximum distance between any pair
     # of nodes.
@@ -642,7 +655,7 @@ def navigable_small_world_graph(n, p=1, q=1, r=2, dim=2, seed=None):
             d = sum((abs(b - a) for a, b in zip(p1, p2)))
             if d <= p:
                 G.add_edge(p1, p2)
-            probs.append(d ** -r)
+            probs.append(d**-r)
         cdf = list(accumulate(probs))
         for _ in range(q):
             target = nodes[bisect_left(cdf, seed.uniform(0, cdf[-1]))]
@@ -651,7 +664,6 @@ def navigable_small_world_graph(n, p=1, q=1, r=2, dim=2, seed=None):
 
 
 @py_random_state(7)
-@nodes_or_number(0)
 def thresholded_random_geometric_graph(
     n, radius, theta, dim=2, pos=None, weight=None, p=2, seed=None
 ):
@@ -683,7 +695,7 @@ def thresholded_random_geometric_graph(
         A dictionary keyed by node with node positions as values.
     weight : dict, optional
         Node weights as a dictionary of numbers keyed by node.
-    p : float, optional
+    p : float, optional (default 2)
         Which Minkowski distance metric to use.  `p` has to meet the condition
         ``1 <= p <= infinity``.
 
@@ -751,11 +763,8 @@ def thresholded_random_geometric_graph(
     .. [1] http://cole-maclean.github.io/blog/files/thesis.pdf
 
     """
-
-    n_name, nodes = n
-    G = nx.Graph()
+    G = nx.empty_graph(n)
     G.name = f"thresholded_random_geometric_graph({n}, {radius}, {theta}, {dim})"
-    G.add_nodes_from(nodes)
     # If no weights are provided, choose them from an exponential
     # distribution.
     if weight is None:
@@ -763,34 +772,15 @@ def thresholded_random_geometric_graph(
     # If no positions are provided, choose uniformly random vectors in
     # Euclidean space of the specified dimension.
     if pos is None:
-        pos = {v: [seed.random() for i in range(dim)] for v in nodes}
+        pos = {v: [seed.random() for i in range(dim)] for v in G}
     # If no distance metric is provided, use Euclidean distance.
-
     nx.set_node_attributes(G, weight, "weight")
     nx.set_node_attributes(G, pos, "pos")
 
-    # Returns ``True`` if and only if the nodes whose attributes are
-    # ``du`` and ``dv`` should be joined, according to the threshold
-    # condition and node pairs are within the maximum connection
-    # distance, ``radius``.
-    def should_join(pair):
-        u, v = pair
-        u_weight, v_weight = weight[u], weight[v]
-        u_pos, v_pos = pos[u], pos[v]
-        dist = (sum(abs(a - b) ** p for a, b in zip(u_pos, v_pos))) ** (1 / p)
-        # Check if dist is <= radius parameter. This check is redundant if
-        # scipy is available and _fast_edges routine is used, but provides
-        # the check in case scipy is not available and all edge combinations
-        # need to be checked
-        if dist <= radius:
-            return theta <= u_weight + v_weight
-        else:
-            return False
-
-    if _is_scipy_available:
-        edges = _fast_edges(G, radius, p)
-        G.add_edges_from(filter(should_join, edges))
-    else:
-        G.add_edges_from(filter(should_join, combinations(G, 2)))
-
+    edges = (
+        (u, v)
+        for u, v in geometric_edges(G, radius, p)
+        if weight[u] + weight[v] >= theta
+    )
+    G.add_edges_from(edges)
     return G

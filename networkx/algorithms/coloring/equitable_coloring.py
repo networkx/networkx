@@ -2,8 +2,9 @@
 Equitable coloring of graphs with bounded degree.
 """
 
-import networkx as nx
 from collections import defaultdict
+
+import networkx as nx
 
 __all__ = ["equitable_color"]
 
@@ -109,7 +110,7 @@ def move_witnesses(src_color, dst_color, N, H, F, C, T_cal, L):
     while X != dst_color:
         Y = T_cal[X]
         # Move _any_ witness from X to Y = T_cal[X]
-        w = [x for x in C[X] if N[(x, Y)] == 0][0]
+        w = next(x for x in C[X] if N[(x, Y)] == 0)
         change_color(w, X, Y, N=N, H=H, F=F, C=C, L=L)
         X = Y
 
@@ -218,15 +219,16 @@ def procedure_P(V_minus, V_plus, N, H, F, C, L, excluded_colors=None):
                         X_prime = U
                         w = v
 
-                        # Finding the solo neighbor of w in X_prime
-                        y_candidates = [
-                            node
-                            for node in L[w]
-                            if F[node] == X_prime and N[(node, W_1)] == 1
-                        ]
-
-                        if len(y_candidates) > 0:
-                            y = y_candidates[0]
+                        try:
+                            # Finding the solo neighbor of w in X_prime
+                            y = next(
+                                node
+                                for node in L[w]
+                                if F[node] == X_prime and N[(node, W_1)] == 1
+                            )
+                        except StopIteration:
+                            pass
+                        else:
                             W = W_1
 
                             # Move w from W to X, now X has one extra node.
@@ -352,11 +354,11 @@ def procedure_P(V_minus, V_plus, N, H, F, C, L, excluded_colors=None):
                                 change_color(z_1, Z, W, N=N, H=H, F=F, C=C, L=L)
 
                                 # change color of w to some color in B_cal
-                                W_plus = [
+                                W_plus = next(
                                     k
                                     for k in C.keys()
                                     if N[(w, k)] == 0 and k not in A_cal
-                                ][0]
+                                )
                                 change_color(w, W, W_plus, N=N, H=H, F=F, C=C, L=L)
 
                                 # recurse with G[B \cup W*]
@@ -395,44 +397,44 @@ def procedure_P(V_minus, V_plus, N, H, F, C, L, excluded_colors=None):
 
 def equitable_color(G, num_colors):
     """Provides equitable (r + 1)-coloring for nodes of G in O(r * n^2) time
-     if deg(G) <= r. The algorithm is described in [1]_.
+    if deg(G) <= r. The algorithm is described in [1]_.
 
-     Attempts to color a graph using r colors, where no neighbors of a node
-     can have same color as the node itself and the number of nodes with each
-     color differ by at most 1.
+    Attempts to color a graph using r colors, where no neighbors of a node
+    can have same color as the node itself and the number of nodes with each
+    color differ by at most 1.
 
-     Parameters
-     ----------
-     G : networkX graph
-        The nodes of this graph will be colored.
+    Parameters
+    ----------
+    G : networkX graph
+       The nodes of this graph will be colored.
 
-     num_colors : number of colors to use
-        This number must be at least one more than the maximum degree of nodes
-        in the graph.
+    num_colors : number of colors to use
+       This number must be at least one more than the maximum degree of nodes
+       in the graph.
 
-     Returns
-     -------
-     A dictionary with keys representing nodes and values representing
-     corresponding coloring.
+    Returns
+    -------
+    A dictionary with keys representing nodes and values representing
+    corresponding coloring.
 
-     Examples
-     --------
-     >>> G = nx.cycle_graph(4)
-     >>> d = nx.coloring.equitable_color(G, num_colors=3)
-     >>> nx.algorithms.coloring.equitable_coloring.is_equitable(G, d)
-     True
+    Examples
+    --------
+    >>> G = nx.cycle_graph(4)
+    >>> d = nx.coloring.equitable_color(G, num_colors=3)
+    >>> nx.algorithms.coloring.equitable_coloring.is_equitable(G, d)
+    True
 
-     Raises
-     ------
-     NetworkXAlgorithmError
-         If the maximum degree of the graph ``G`` is greater than
-         ``num_colors``.
+    Raises
+    ------
+    NetworkXAlgorithmError
+        If the maximum degree of the graph ``G`` is greater than
+        ``num_colors``.
 
-     References
-     ----------
-     .. [1] Kierstead, H. A., Kostochka, A. V., Mydlarz, M., & Szemerédi, E.
-         (2010). A fast algorithm for equitable coloring. Combinatorica, 30(2),
-         217-224.
+    References
+    ----------
+    .. [1] Kierstead, H. A., Kostochka, A. V., Mydlarz, M., & Szemerédi, E.
+        (2010). A fast algorithm for equitable coloring. Combinatorica, 30(2),
+        217-224.
     """
 
     # Map nodes to integers for simplicity later.
@@ -447,7 +449,7 @@ def equitable_color(G, num_colors):
 
     # Basic graph statistics and sanity check.
     if len(G.nodes) > 0:
-        r_ = max([G.degree(node) for node in G.nodes])
+        r_ = max(G.degree(node) for node in G.nodes)
     else:
         r_ = 0
 
@@ -503,7 +505,7 @@ def equitable_color(G, num_colors):
 
         if N[(u, F[u])] != 0:
             # Find the first color where 'u' does not have any neighbors.
-            Y = [k for k in C.keys() if N[(u, k)] == 0][0]
+            Y = next(k for k in C.keys() if N[(u, k)] == 0)
             X = F[u]
             change_color(u, X, Y, N=N, H=H, F=F, C=C, L=L_)
 

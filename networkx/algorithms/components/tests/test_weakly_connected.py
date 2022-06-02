@@ -1,4 +1,5 @@
 import pytest
+
 import networkx as nx
 from networkx import NetworkXNotImplemented
 
@@ -69,10 +70,21 @@ class TestWeaklyConnected:
         G = nx.DiGraph()
         assert list(nx.weakly_connected_components(G)) == []
         assert nx.number_weakly_connected_components(G) == 0
-        pytest.raises(nx.NetworkXPointlessConcept, nx.is_weakly_connected, G)
+        with pytest.raises(nx.NetworkXPointlessConcept):
+            next(nx.is_weakly_connected(G))
 
     def test_connected_raise(self):
         G = nx.Graph()
-        pytest.raises(NetworkXNotImplemented, nx.weakly_connected_components, G)
+        with pytest.raises(NetworkXNotImplemented):
+            next(nx.weakly_connected_components(G))
         pytest.raises(NetworkXNotImplemented, nx.number_weakly_connected_components, G)
         pytest.raises(NetworkXNotImplemented, nx.is_weakly_connected, G)
+
+    def test_connected_mutability(self):
+        DG = nx.path_graph(5, create_using=nx.DiGraph)
+        G = nx.disjoint_union(DG, DG)
+        seen = set()
+        for component in nx.weakly_connected_components(G):
+            assert len(seen & component) == 0
+            seen.update(component)
+            component.clear()

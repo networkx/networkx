@@ -145,12 +145,12 @@ def boykov_kolmogorov(
            of min-cut/max-flow algorithms for energy minimization in vision.
            Pattern Analysis and Machine Intelligence, IEEE Transactions on,
            26(9), 1124-1137.
-           http://www.csd.uwo.ca/~yuri/Papers/pami04.pdf
+           https://doi.org/10.1109/TPAMI.2004.60
 
     .. [2] Vladimir Kolmogorov. Graph-based Algorithms for Multi-camera
            Reconstruction Problem. PhD thesis, Cornell University, CS Department,
            2003. pp. 109-114.
-           https://pub.ist.ac.at/~vnk/papers/thesis.pdf
+           https://web.archive.org/web/20170809091249/https://pub.ist.ac.at/~vnk/papers/thesis.pdf
 
     """
     R = boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff)
@@ -191,11 +191,11 @@ def boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff):
     def grow():
         """Bidirectional breadth-first search for the growth stage.
 
-           Returns a connecting edge, that is and edge that connects
-           a node from the source search tree with a node from the
-           target search tree.
-           The first node in the connecting edge is always from the
-           source tree and the last node from the target tree.
+        Returns a connecting edge, that is and edge that connects
+        a node from the source search tree with a node from the
+        target search tree.
+        The first node in the connecting edge is always from the
+        source tree and the last node from the target tree.
         """
         while active:
             u = active[0]
@@ -226,11 +226,11 @@ def boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff):
     def augment(u, v):
         """Augmentation stage.
 
-           Reconstruct path and determine its residual capacity.
-           We start from a connecting edge, which links a node
-           from the source tree to a node from the target tree.
-           The connecting edge is the output of the grow function
-           and the input of this function.
+        Reconstruct path and determine its residual capacity.
+        We start from a connecting edge, which links a node
+        from the source tree to a node from the target tree.
+        The connecting edge is the output of the grow function
+        and the input of this function.
         """
         attr = R_succ[u][v]
         flow = min(INF, attr["capacity"] - attr["flow"])
@@ -274,12 +274,12 @@ def boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff):
     def adopt():
         """Adoption stage.
 
-           Reconstruct search trees by adopting or discarding orphans.
-           During augmentation stage some edges got saturated and thus
-           the source and target search trees broke down to forests, with
-           orphans as roots of some of its trees. We have to reconstruct
-           the search trees rooted to source and target before we can grow
-           them again.
+        Reconstruct search trees by adopting or discarding orphans.
+        During augmentation stage some edges got saturated and thus
+        the source and target search trees broke down to forests, with
+        orphans as roots of some of its trees. We have to reconstruct
+        the search trees rooted to source and target before we can grow
+        them again.
         """
         while orphans:
             u = orphans.popleft()

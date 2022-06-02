@@ -1,7 +1,6 @@
 """Percolation centrality measures."""
 
 import networkx as nx
-
 from networkx.algorithms.centrality.betweenness import (
     _single_source_dijkstra_path_basic as dijkstra,
 )
@@ -47,6 +46,8 @@ def percolation_centrality(G, attribute="percolation", states=None, weight=None)
     weight : None or string, optional (default=None)
       If None, all edge weights are considered equal.
       Otherwise holds the name of the edge attribute used as weight.
+      The weight of an edge is treated as the length or distance between the two sides.
+
 
     Returns
     -------
@@ -76,7 +77,7 @@ def percolation_centrality(G, attribute="percolation", states=None, weight=None)
     .. [2] Ulrik Brandes:
        A Faster Algorithm for Betweenness Centrality.
        Journal of Mathematical Sociology 25(2):163-177, 2001.
-       http://www.inf.uni-konstanz.de/algo/publications/b-fabc-01.pdf
+       https://doi.org/10.1080/0022250X.2001.9990249
     """
     percolation = dict.fromkeys(G, 0.0)  # b[v]=0 for v in G
 
@@ -93,9 +94,9 @@ def percolation_centrality(G, attribute="percolation", states=None, weight=None)
     for s in nodes:
         # single source shortest paths
         if weight is None:  # use BFS
-            S, P, sigma = shortest_path(G, s)
+            S, P, sigma, _ = shortest_path(G, s)
         else:  # use Dijkstra's algorithm
-            S, P, sigma = dijkstra(G, s, weight)
+            S, P, sigma, _ = dijkstra(G, s, weight)
         # accumulation
         percolation = _accumulate_percolation(
             percolation, G, S, P, sigma, s, states, p_sigma_x_t

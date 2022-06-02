@@ -18,6 +18,12 @@ __all__ = [
 def extrema_bounding(G, compute="diameter"):
     """Compute requested extreme distance metric of undirected graph G
 
+    .. deprecated:: 2.8
+
+       extrema_bounding is deprecated and will be removed in NetworkX 3.0.
+       Use the corresponding distance measure with the `usebounds=True` option
+       instead.
+
     Computation is based on smart lower and upper bounds, and in practice
     linear in the number of nodes, rather than quadratic (except for some
     border cases such as complete graphs or circle shaped graphs).
@@ -30,20 +36,86 @@ def extrema_bounding(G, compute="diameter"):
     compute : string denoting the requesting metric
        "diameter" for the maximal eccentricity value,
        "radius" for the minimal eccentricity value,
-       "periphery" for the set of nodes with eccentricity equal to the diameter
-       "center" for the set of nodes with eccentricity equal to the radius
+       "periphery" for the set of nodes with eccentricity equal to the diameter,
+       "center" for the set of nodes with eccentricity equal to the radius,
+       "eccentricities" for the maximum distance from each node to all other nodes in G
 
     Returns
     -------
     value : value of the requested metric
        int for "diameter" and "radius" or
-       list of nodes for "center" and "periphery"
+       list of nodes for "center" and "periphery" or
+       dictionary of eccentricity values keyed by node for "eccentricities"
 
     Raises
     ------
     NetworkXError
         If the graph consists of multiple components
+    ValueError
+        If `compute` is not one of "diameter", "radius", "periphery", "center", or "eccentricities".
+    Notes
+    -----
+    This algorithm was proposed in the following papers:
 
+    F.W. Takes and W.A. Kosters, Determining the Diameter of Small World
+    Networks, in Proceedings of the 20th ACM International Conference on
+    Information and Knowledge Management (CIKM 2011), pp. 1191-1196, 2011.
+    doi: https://doi.org/10.1145/2063576.2063748
+
+    F.W. Takes and W.A. Kosters, Computing the Eccentricity Distribution of
+    Large Graphs, Algorithms 6(1): 100-118, 2013.
+    doi: https://doi.org/10.3390/a6010100
+
+    M. Borassi, P. Crescenzi, M. Habib, W.A. Kosters, A. Marino and F.W. Takes,
+    Fast Graph Diameter and Radius BFS-Based Computation in (Weakly Connected)
+    Real-World Graphs, Theoretical Computer Science 586: 59-80, 2015.
+    doi: https://doi.org/10.1016/j.tcs.2015.02.033
+    """
+    import warnings
+
+    msg = "extrema_bounding is deprecated and will be removed in networkx 3.0\n"
+    # NOTE: _extrema_bounding does input checking, so it is skipped here
+    if compute in {"diameter", "radius", "periphery", "center"}:
+        msg += f"Use nx.{compute}(G, usebounds=True) instead."
+    if compute == "eccentricities":
+        msg += f"Use nx.eccentricity(G) instead."
+    warnings.warn(msg, DeprecationWarning, stacklevel=2)
+
+    return _extrema_bounding(G, compute=compute)
+
+
+def _extrema_bounding(G, compute="diameter"):
+    """Compute requested extreme distance metric of undirected graph G
+
+    Computation is based on smart lower and upper bounds, and in practice
+    linear in the number of nodes, rather than quadratic (except for some
+    border cases such as complete graphs or circle shaped graphs).
+
+    Parameters
+    ----------
+    G : NetworkX graph
+       An undirected graph
+
+    compute : string denoting the requesting metric
+       "diameter" for the maximal eccentricity value,
+       "radius" for the minimal eccentricity value,
+       "periphery" for the set of nodes with eccentricity equal to the diameter,
+       "center" for the set of nodes with eccentricity equal to the radius,
+       "eccentricities" for the maximum distance from each node to all other nodes in G
+
+    Returns
+    -------
+    value : value of the requested metric
+       int for "diameter" and "radius" or
+       list of nodes for "center" and "periphery" or
+       dictionary of eccentricity values keyed by node for "eccentricities"
+
+    Raises
+    ------
+    NetworkXError
+        If the graph consists of multiple components
+    ValueError
+        If `compute` is not one of "diameter", "radius", "periphery", "center", or "eccentricities".
     Notes
     -----
     This algorithm was proposed in the following papers:
@@ -125,14 +197,12 @@ def extrema_bounding(G, compute="diameter"):
                 for i in candidates
                 if ecc_upper[i] <= maxlower and 2 * ecc_lower[i] >= maxupper
             }
-
         elif compute == "radius":
             ruled_out = {
                 i
                 for i in candidates
                 if ecc_lower[i] >= minupper and ecc_upper[i] + 1 <= 2 * minlower
             }
-
         elif compute == "periphery":
             ruled_out = {
                 i
@@ -140,7 +210,6 @@ def extrema_bounding(G, compute="diameter"):
                 if ecc_upper[i] < maxlower
                 and (maxlower == maxupper or ecc_lower[i] > maxupper)
             }
-
         elif compute == "center":
             ruled_out = {
                 i
@@ -148,9 +217,11 @@ def extrema_bounding(G, compute="diameter"):
                 if ecc_lower[i] > minupper
                 and (minlower == minupper or ecc_upper[i] + 1 < 2 * minlower)
             }
-
         elif compute == "eccentricities":
-            ruled_out = {}
+            ruled_out = set()
+        else:
+            msg = "compute must be one of 'diameter', 'radius', 'periphery', 'center', 'eccentricities'"
+            raise ValueError(msg)
 
         ruled_out.update(i for i in candidates if ecc_lower[i] == ecc_upper[i])
         candidates -= ruled_out
@@ -233,6 +304,16 @@ def eccentricity(G, v=None, sp=None):
     -------
     ecc : dictionary
        A dictionary of eccentricity values keyed by node.
+
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (1, 3), (1, 4), (3, 4), (3, 5), (4, 5)])
+    >>> dict(nx.eccentricity(G))
+    {1: 2, 2: 3, 3: 2, 4: 2, 5: 3}
+
+    >>> dict(nx.eccentricity(G, v=[1, 5]))  # This returns the eccentrity of node 1 & 5
+    {1: 2, 5: 3}
+
     """
     #    if v is None:                # none, use entire graph
     #        nodes=G.nodes()
@@ -251,8 +332,8 @@ def eccentricity(G, v=None, sp=None):
             try:
                 length = sp[n]
                 L = len(length)
-            except TypeError as e:
-                raise nx.NetworkXError('Format of "sp" is invalid.') from e
+            except TypeError as err:
+                raise nx.NetworkXError('Format of "sp" is invalid.') from err
         if L != order:
             if G.is_directed():
                 msg = (
@@ -289,12 +370,18 @@ def diameter(G, e=None, usebounds=False):
     d : integer
        Diameter of graph
 
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (1, 3), (1, 4), (3, 4), (3, 5), (4, 5)])
+    >>> nx.diameter(G)
+    3
+
     See Also
     --------
     eccentricity
     """
     if usebounds is True and e is None and not G.is_directed():
-        return extrema_bounding(G, compute="diameter")
+        return _extrema_bounding(G, compute="diameter")
     if e is None:
         e = eccentricity(G)
     return max(e.values())
@@ -318,13 +405,19 @@ def periphery(G, e=None, usebounds=False):
     p : list
        List of nodes in periphery
 
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (1, 3), (1, 4), (3, 4), (3, 5), (4, 5)])
+    >>> nx.periphery(G)
+    [2, 5]
+
     See Also
     --------
     barycenter
     center
     """
     if usebounds is True and e is None and not G.is_directed():
-        return extrema_bounding(G, compute="periphery")
+        return _extrema_bounding(G, compute="periphery")
     if e is None:
         e = eccentricity(G)
     diameter = max(e.values())
@@ -349,9 +442,16 @@ def radius(G, e=None, usebounds=False):
     -------
     r : integer
        Radius of graph
+
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (1, 3), (1, 4), (3, 4), (3, 5), (4, 5)])
+    >>> nx.radius(G)
+    2
+
     """
     if usebounds is True and e is None and not G.is_directed():
-        return extrema_bounding(G, compute="radius")
+        return _extrema_bounding(G, compute="radius")
     if e is None:
         e = eccentricity(G)
     return min(e.values())
@@ -375,13 +475,19 @@ def center(G, e=None, usebounds=False):
     c : list
        List of nodes in center
 
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (1, 3), (1, 4), (3, 4), (3, 5), (4, 5)])
+    >>> list(nx.center(G))
+    [1, 3, 4]
+
     See Also
     --------
     barycenter
     periphery
     """
     if usebounds is True and e is None and not G.is_directed():
-        return extrema_bounding(G, compute="center")
+        return _extrema_bounding(G, compute="center")
     if e is None:
         e = eccentricity(G)
     radius = min(e.values())
@@ -432,6 +538,12 @@ def barycenter(G, weight=None, attr=None, sp=None):
     ValueError
         If `sp` and `weight` are both given.
 
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (1, 3), (1, 4), (3, 4), (3, 5), (4, 5)])
+    >>> nx.barycenter(G)
+    [1, 3, 4]
+
     See Also
     --------
     center
@@ -461,33 +573,8 @@ def barycenter(G, weight=None, attr=None, sp=None):
     return barycenter_vertices
 
 
-def _laplacian_submatrix(node, mat, node_list):
-    """Removes row/col from a sparse matrix and returns the submatrix
-    """
-    j = node_list.index(node)
-    n = list(range(len(node_list)))
-    n.pop(j)
-
-    if mat.shape[0] != mat.shape[1]:
-        raise nx.NetworkXError("Matrix must be square")
-    elif len(node_list) != mat.shape[0]:
-        msg = "Node list length does not match matrix dimentions"
-        raise nx.NetworkXError(msg)
-
-    mat = mat.tocsr()
-    mat = mat[n, :]
-
-    mat = mat.tocsc()
-    mat = mat[:, n]
-
-    node_list.pop(j)
-
-    return mat, node_list
-
-
 def _count_lu_permutations(perm_array):
-    """Counts the number of permutations in SuperLU perm_c or perm_r
-    """
+    """Counts the number of permutations in SuperLU perm_c or perm_r"""
     perm_cnt = 0
     arr = perm_array.tolist()
     for i in range(len(arr)):
@@ -535,6 +622,12 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
     rd : float
        Value of effective resistance distance
 
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (1, 3), (1, 4), (3, 4), (3, 5), (4, 5)])
+    >>> nx.resistance_distance(G, 1, 3)
+    0.625
+
     Notes
     -----
     Overview discussion:
@@ -547,7 +640,8 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
     Available: `Link to thesis <https://www.universiteitleiden.nl/binaries/content/assets/science/mi/scripties/master/vos_vaya_master.pdf>`_
     """
     import numpy as np
-    import scipy.sparse
+    import scipy as sp
+    import scipy.sparse.linalg  # call as sp.sparse.linalg
 
     if not nx.is_connected(G):
         msg = "Graph G must be strongly connected."
@@ -576,15 +670,19 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
 
     # Using determinants to compute the effective resistance is more memory
     # efficent than directly calculating the psuedo-inverse
-    L = nx.laplacian_matrix(G, node_list, weight=weight)
-
-    Lsub_a, node_list_a = _laplacian_submatrix(nodeA, L.copy(), node_list[:])
-    Lsub_ab, node_list_ab = _laplacian_submatrix(nodeB, Lsub_a.copy(), node_list_a[:])
+    L = nx.laplacian_matrix(G, node_list, weight=weight).asformat("csc")
+    indices = list(range(L.shape[0]))
+    # w/ nodeA removed
+    indices.remove(node_list.index(nodeA))
+    L_a = L[indices, :][:, indices]
+    # Both nodeA and nodeB removed
+    indices.remove(node_list.index(nodeB))
+    L_ab = L[indices, :][:, indices]
 
     # Factorize Laplacian submatrixes and extract diagonals
     # Order the diagonals to minimize the likelihood over overflows
     # during computing the determinant
-    lu_a = scipy.sparse.linalg.splu(Lsub_a, options=dict(SymmetricMode=True))
+    lu_a = sp.sparse.linalg.splu(L_a, options=dict(SymmetricMode=True))
     LdiagA = lu_a.U.diagonal()
     LdiagA_s = np.product(np.sign(LdiagA)) * np.product(lu_a.L.diagonal())
     LdiagA_s *= (-1) ** _count_lu_permutations(lu_a.perm_r)
@@ -592,7 +690,7 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
     LdiagA = np.absolute(LdiagA)
     LdiagA = np.sort(LdiagA)
 
-    lu_ab = scipy.sparse.linalg.splu(Lsub_ab, options=dict(SymmetricMode=True))
+    lu_ab = sp.sparse.linalg.splu(L_ab, options=dict(SymmetricMode=True))
     LdiagAB = lu_ab.U.diagonal()
     LdiagAB_s = np.product(np.sign(LdiagAB)) * np.product(lu_ab.L.diagonal())
     LdiagAB_s *= (-1) ** _count_lu_permutations(lu_ab.perm_r)
@@ -600,7 +698,7 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
     LdiagAB = np.absolute(LdiagAB)
     LdiagAB = np.sort(LdiagAB)
 
-    # Calculate the ratio of determinant, rd = det(Lsub_ab)/det(Lsub_a)
+    # Calculate the ratio of determinant, rd = det(L_ab)/det(L_a)
     Ldet = np.product(np.divide(np.append(LdiagAB, [1]), LdiagA))
     rd = Ldet * LdiagAB_s / LdiagA_s
 

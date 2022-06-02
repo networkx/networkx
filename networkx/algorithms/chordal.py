@@ -12,7 +12,6 @@ import networkx as nx
 from networkx.algorithms.components import connected_components
 from networkx.utils import arbitrary_element, not_implemented_for
 
-
 __all__ = [
     "is_chordal",
     "find_induced_nodes",
@@ -28,6 +27,8 @@ class NetworkXTreewidthBoundExceeded(nx.NetworkXException):
     been exceeded"""
 
 
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def is_chordal(G):
     """Checks whether G is a chordal graph.
 
@@ -46,10 +47,8 @@ def is_chordal(G):
 
     Raises
     ------
-    NetworkXError
+    NetworkXNotImplemented
         The algorithm does not support DiGraph, MultiGraph and MultiDiGraph.
-        If the input graph is an instance of one of these classes, a
-        :exc:`NetworkXError` is raised.
 
     Examples
     --------
@@ -82,14 +81,7 @@ def is_chordal(G):
        selectively reduce acyclic hypergraphs, SIAM J. Comput., 13 (1984),
        pp. 566–579.
     """
-    if G.is_directed():
-        raise nx.NetworkXError("Directed graphs not supported")
-    if G.is_multigraph():
-        raise nx.NetworkXError("Multiply connected graphs not supported.")
-    if len(_find_chordality_breaker(G)) == 0:
-        return True
-    else:
-        return False
+    return len(_find_chordality_breaker(G)) == 0
 
 
 def find_induced_nodes(G, s, t, treewidth_bound=sys.maxsize):
@@ -103,13 +95,13 @@ def find_induced_nodes(G, s, t, treewidth_bound=sys.maxsize):
         Source node to look for induced nodes
     t : node
         Destination node to look for induced nodes
-    treewith_bound: float
+    treewidth_bound: float
         Maximum treewidth acceptable for the graph H. The search
         for induced nodes will end as soon as the treewidth_bound is exceeded.
 
     Returns
     -------
-    Induced_nodes : Set of nodes
+    induced_nodes : Set of nodes
         The set of induced nodes in the path from s to t in G
 
     Raises
@@ -150,23 +142,23 @@ def find_induced_nodes(G, s, t, treewidth_bound=sys.maxsize):
 
     H = nx.Graph(G)
     H.add_edge(s, t)
-    Induced_nodes = set()
+    induced_nodes = set()
     triplet = _find_chordality_breaker(H, s, treewidth_bound)
     while triplet:
         (u, v, w) = triplet
-        Induced_nodes.update(triplet)
+        induced_nodes.update(triplet)
         for n in triplet:
             if n != s:
                 H.add_edge(s, n)
         triplet = _find_chordality_breaker(H, s, treewidth_bound)
-    if Induced_nodes:
+    if induced_nodes:
         # Add t and the second node in the induced path from s to t.
-        Induced_nodes.add(t)
+        induced_nodes.add(t)
         for u in G[s]:
-            if len(Induced_nodes & set(G[u])) == 2:
-                Induced_nodes.add(u)
+            if len(induced_nodes & set(G[u])) == 2:
+                induced_nodes.add(u)
                 break
-    return Induced_nodes
+    return induced_nodes
 
 
 def chordal_graph_cliques(G):
@@ -188,8 +180,6 @@ def chordal_graph_cliques(G):
     ------
     NetworkXError
         The algorithm does not support DiGraph, MultiGraph and MultiDiGraph.
-        If the input graph is an instance of one of these classes, a
-        :exc:`NetworkXError` is raised.
         The algorithm can only be applied to chordal graphs. If the input
         graph is found to be non-chordal, a :exc:`NetworkXError` is raised.
 
@@ -234,8 +224,6 @@ def chordal_graph_treewidth(G):
     ------
     NetworkXError
         The algorithm does not support DiGraph, MultiGraph and MultiDiGraph.
-        If the input graph is an instance of one of these classes, a
-        :exc:`NetworkXError` is raised.
         The algorithm can only be applied to chordal graphs. If the input
         graph is found to be non-chordal, a :exc:`NetworkXError` is raised.
 
@@ -285,7 +273,7 @@ def _is_complete_graph(G):
 
 
 def _find_missing_edge(G):
-    """ Given a non-complete graph G, returns a missing edge."""
+    """Given a non-complete graph G, returns a missing edge."""
     nodes = set(G)
     for u in G:
         missing = nodes - set(list(G[u].keys()) + [u])
@@ -307,14 +295,15 @@ def _max_cardinality_node(G, choices, wanna_connect):
 
 
 def _find_chordality_breaker(G, s=None, treewidth_bound=sys.maxsize):
-    """ Given a graph G, starts a max cardinality search
+    """Given a graph G, starts a max cardinality search
     (starting from s if s is given and from an arbitrary node otherwise)
     trying to find a non-chordal cycle.
 
     If it does find one, it returns (u,v,w) where u,v,w are the three
     nodes that together with s are involved in the cycle.
     """
-
+    if nx.number_of_selfloops(G) > 0:
+        raise nx.NetworkXError("Input graph is not chordal.")
     unnumbered = set(G)
     if s is None:
         s = arbitrary_element(G)
@@ -363,8 +352,6 @@ def _chordal_graph_cliques(G):
     ------
     NetworkXError
         The algorithm does not support DiGraph, MultiGraph and MultiDiGraph.
-        If the input graph is an instance of one of these classes, a
-        :exc:`NetworkXError` is raised.
         The algorithm can only be applied to chordal graphs. If the input
         graph is found to be non-chordal, a :exc:`NetworkXError` is raised.
 
@@ -389,11 +376,10 @@ def _chordal_graph_cliques(G):
     >>> cliques[0]
     frozenset({1, 2, 3})
     """
-    if not is_chordal(G):
-        raise nx.NetworkXError("Input graph is not chordal.")
-
     for C in (G.subgraph(c).copy() for c in connected_components(G)):
         if C.number_of_nodes() == 1:
+            if nx.number_of_selfloops(C) > 0:
+                raise nx.NetworkXError("Input graph is not chordal.")
             yield frozenset(C.nodes())
         else:
             unnumbered = set(C.nodes())
@@ -438,7 +424,7 @@ def complete_to_chordal_graph(G):
             The elimination ordering of nodes of G
 
     Notes
-    ------
+    -----
     There are different approaches to calculate the chordal
     enhancement of a graph. The algorithm used here is called
     MCS-M and gives at least minimal (local) triangulation of graph. Note

@@ -15,12 +15,12 @@ and biconnected_components algorithms but might also work for other
 algorithms.
 
 """
-import networkx as nx
-from networkx.exception import NetworkXError
 import matplotlib.pyplot as plt
+import networkx as nx
+from networkx import Graph
 
 
-class AntiGraph(nx.Graph):
+class AntiGraph(Graph):
     """
     Class for complement graphs.
 
@@ -60,13 +60,13 @@ class AntiGraph(nx.Graph):
 
     def neighbors(self, n):
         """Return an iterator over all neighbors of node n in the
-           dense graph.
+        dense graph.
 
         """
         try:
             return iter(set(self.adj) - set(self.adj[n]) - {n})
-        except KeyError as e:
-            raise NetworkXError(f"The node {n} is not in the graph.") from e
+        except KeyError as err:
+            raise nx.NetworkXError(f"The node {n} is not in the graph.") from err
 
     def degree(self, nbunch=None, weight=None):
         """Return an iterator for (node, degree) in the dense graph.
@@ -96,8 +96,8 @@ class AntiGraph(nx.Graph):
         Examples
         --------
         >>> G = nx.path_graph(4)  # or DiGraph, MultiGraph, MultiDiGraph, etc
-        >>> list(G.degree(0))  # node 0 with degree 1
-        [(0, 1)]
+        >>> G.degree(0)  # node 0 with degree 1
+        1
         >>> list(G.degree([0, 1]))
         [(0, 1), (1, 2)]
 
@@ -137,7 +137,7 @@ class AntiGraph(nx.Graph):
                 for n, nbrs in nodes_nbrs
             )
 
-    def adjacency_iter(self):
+    def adjacency(self):
         """Return an iterator of (node, adjacency set) tuples for all nodes
            in the dense graph.
 
@@ -149,10 +149,10 @@ class AntiGraph(nx.Graph):
         adj_iter : iterator
            An iterator of (node, adjacency set) for all nodes in
            the graph.
-
         """
-        for n in self.adj:
-            yield (n, set(self.adj) - set(self.adj[n]) - {n})
+        nodes = set(self.adj)
+        for n, nbrs in self.adj.items():
+            yield (n, nodes - set(nbrs) - {n})
 
 
 # Build several pairs of graphs, a regular graph
@@ -187,5 +187,6 @@ for G, A in pairs:
     assert sum(d for n, d in A.degree()) == sum(d for n, d in A.degree(weight="weight"))
     assert sum(d for n, d in G.degree(nodes)) == sum(d for n, d in A.degree(nodes))
 
-nx.draw(Gnp)
+pos = nx.spring_layout(G, seed=268)  # Seed for reproducible layout
+nx.draw(Gnp, pos=pos)
 plt.show()

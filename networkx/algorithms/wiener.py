@@ -2,8 +2,7 @@
 
 from itertools import chain
 
-from .components import is_connected
-from .components import is_strongly_connected
+from .components import is_connected, is_strongly_connected
 from .shortest_paths import shortest_path_length as spl
 
 __all__ = ["wiener_index"]

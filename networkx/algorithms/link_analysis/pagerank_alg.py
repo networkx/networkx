@@ -1,11 +1,11 @@
 """PageRank analysis of graph structure. """
+from warnings import warn
+
 import networkx as nx
-from networkx.utils import not_implemented_for
 
 __all__ = ["pagerank", "pagerank_numpy", "pagerank_scipy", "google_matrix"]
 
 
-@not_implemented_for("multigraph")
 def pagerank(
     G,
     alpha=0.85,
@@ -59,6 +59,7 @@ def pagerank(
       matrix (see notes under google_matrix). It may be common to have the
       dangling dict to be the same as the personalization dict.
 
+
     Returns
     -------
     pagerank : dictionary
@@ -104,13 +105,25 @@ def pagerank(
        http://dbpubs.stanford.edu:8090/pub/showDoc.Fulltext?lang=en&doc=1999-66&format=pdf
 
     """
+    return pagerank_scipy(
+        G, alpha, personalization, max_iter, tol, nstart, weight, dangling
+    )
+
+
+def _pagerank_python(
+    G,
+    alpha=0.85,
+    personalization=None,
+    max_iter=100,
+    tol=1.0e-6,
+    nstart=None,
+    weight="weight",
+    dangling=None,
+):
     if len(G) == 0:
         return {}
 
-    if not G.is_directed():
-        D = G.to_directed()
-    else:
-        D = G
+    D = G.to_directed()
 
     # Create a copy in (right) stochastic form
     W = nx.stochastic_graph(D, weight=weight)
@@ -121,21 +134,21 @@ def pagerank(
         x = dict.fromkeys(W, 1.0 / N)
     else:
         # Normalized nstart vector
-        s = float(sum(nstart.values()))
+        s = sum(nstart.values())
         x = {k: v / s for k, v in nstart.items()}
 
     if personalization is None:
         # Assign uniform personalization vector if not given
         p = dict.fromkeys(W, 1.0 / N)
     else:
-        s = float(sum(personalization.values()))
+        s = sum(personalization.values())
         p = {k: v / s for k, v in personalization.items()}
 
     if dangling is None:
         # Use personalization vector if dangling vector not specified
         dangling_weights = p
     else:
-        s = float(sum(dangling.values()))
+        s = sum(dangling.values())
         dangling_weights = {k: v / s for k, v in dangling.items()}
     dangling_nodes = [n for n in W if W.out_degree(n, weight=weight) == 0.0]
 
@@ -147,11 +160,11 @@ def pagerank(
         for n in x:
             # this matrix multiply looks odd because it is
             # doing a left multiply x^T=xlast^T*W
-            for nbr in W[n]:
-                x[nbr] += alpha * xlast[n] * W[n][nbr][weight]
+            for _, nbr, wt in W.edges(n, data=weight):
+                x[nbr] += alpha * xlast[n] * wt
             x[n] += danglesum * dangling_weights.get(n, 0) + (1.0 - alpha) * p.get(n, 0)
         # check convergence, l1 norm
-        err = sum([abs(x[n] - xlast[n]) for n in x])
+        err = sum(abs(x[n] - xlast[n]) for n in x)
         if err < N * tol:
             return x
     raise nx.PowerIterationFailedConvergence(max_iter)
@@ -216,21 +229,34 @@ def google_matrix(
     --------
     pagerank, pagerank_numpy, pagerank_scipy
     """
+    # TODO: Remove this warning in version 3.0
+    import warnings
+
     import numpy as np
+
+    warnings.warn(
+        "google_matrix will return an np.ndarray instead of a np.matrix in\n"
+        "NetworkX version 3.0.",
+        FutureWarning,
+        stacklevel=2,
+    )
 
     if nodelist is None:
         nodelist = list(G)
 
-    M = nx.to_numpy_matrix(G, nodelist=nodelist, weight=weight)
+    A = nx.to_numpy_array(G, nodelist=nodelist, weight=weight)
     N = len(G)
     if N == 0:
-        return M
+        # TODO: Remove np.asmatrix wrapper in version 3.0
+        return np.asmatrix(A)
 
     # Personalization vector
     if personalization is None:
         p = np.repeat(1.0 / N, N)
     else:
         p = np.array([personalization.get(n, 0) for n in nodelist], dtype=float)
+        if p.sum() == 0:
+            raise ZeroDivisionError
         p /= p.sum()
 
     # Dangling nodes
@@ -240,15 +266,15 @@ def google_matrix(
         # Convert the dangling dictionary into an array in nodelist order
         dangling_weights = np.array([dangling.get(n, 0) for n in nodelist], dtype=float)
         dangling_weights /= dangling_weights.sum()
-    dangling_nodes = np.where(M.sum(axis=1) == 0)[0]
+    dangling_nodes = np.where(A.sum(axis=1) == 0)[0]
 
     # Assign dangling_weights to any dangling nodes (nodes with no out links)
-    for node in dangling_nodes:
-        M[node] = dangling_weights
+    A[dangling_nodes] = dangling_weights
 
-    M /= M.sum(axis=1)  # Normalize rows to sum to 1
+    A /= A.sum(axis=1)[:, np.newaxis]  # Normalize rows to sum to 1
 
-    return alpha * M + (1 - alpha) * p
+    # TODO: Remove np.asmatrix wrapper in version 3.0
+    return np.asmatrix(alpha * A + (1 - alpha) * p)
 
 
 def pagerank_numpy(G, alpha=0.85, personalization=None, weight="weight", dangling=None):
@@ -319,6 +345,8 @@ def pagerank_numpy(G, alpha=0.85, personalization=None, weight="weight", danglin
        The PageRank citation ranking: Bringing order to the Web. 1999
        http://dbpubs.stanford.edu:8090/pub/showDoc.Fulltext?lang=en&doc=1999-66&format=pdf
     """
+    msg = "networkx.pagerank_numpy is deprecated and will be removed in NetworkX 3.0, use networkx.pagerank instead."
+    warn(msg, DeprecationWarning, stacklevel=2)
     import numpy as np
 
     if len(G) == 0:
@@ -331,7 +359,7 @@ def pagerank_numpy(G, alpha=0.85, personalization=None, weight="weight", danglin
     ind = np.argmax(eigenvalues)
     # eigenvector of largest eigenvalue is at ind, normalized
     largest = np.array(eigenvectors[:, ind]).flatten().real
-    norm = float(largest.sum())
+    norm = largest.sum()
     return dict(zip(G, map(float, largest / norm)))
 
 
@@ -427,34 +455,39 @@ def pagerank_scipy(
        The PageRank citation ranking: Bringing order to the Web. 1999
        http://dbpubs.stanford.edu:8090/pub/showDoc.Fulltext?lang=en&doc=1999-66&format=pdf
     """
+    msg = "networkx.pagerank_scipy is deprecated and will be removed in NetworkX 3.0, use networkx.pagerank instead."
+    warn(msg, DeprecationWarning, stacklevel=2)
     import numpy as np
-    import scipy.sparse
+    import scipy as sp
+    import scipy.sparse  # call as sp.sparse
 
     N = len(G)
     if N == 0:
         return {}
 
     nodelist = list(G)
-    M = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight, dtype=float)
-    S = np.array(M.sum(axis=1)).flatten()
+    A = nx.to_scipy_sparse_array(G, nodelist=nodelist, weight=weight, dtype=float)
+    S = A.sum(axis=1)
     S[S != 0] = 1.0 / S[S != 0]
-    Q = scipy.sparse.spdiags(S.T, 0, *M.shape, format="csr")
-    M = Q * M
+    # TODO: csr_array
+    Q = sp.sparse.csr_array(sp.sparse.spdiags(S.T, 0, *A.shape))
+    A = Q @ A
 
     # initial vector
     if nstart is None:
         x = np.repeat(1.0 / N, N)
     else:
         x = np.array([nstart.get(n, 0) for n in nodelist], dtype=float)
-        x = x / x.sum()
+        x /= x.sum()
 
     # Personalization vector
     if personalization is None:
         p = np.repeat(1.0 / N, N)
     else:
         p = np.array([personalization.get(n, 0) for n in nodelist], dtype=float)
-        p = p / p.sum()
-
+        if p.sum() == 0:
+            raise ZeroDivisionError
+        p /= p.sum()
     # Dangling nodes
     if dangling is None:
         dangling_weights = p
@@ -467,7 +500,7 @@ def pagerank_scipy(
     # power iteration: make up to max_iter iterations
     for _ in range(max_iter):
         xlast = x
-        x = alpha * (x * M + sum(x[is_dangling]) * dangling_weights) + (1 - alpha) * p
+        x = alpha * (x @ A + sum(x[is_dangling]) * dangling_weights) + (1 - alpha) * p
         # check convergence, l1 norm
         err = np.absolute(x - xlast).sum()
         if err < N * tol:

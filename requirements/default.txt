@@ -1,1 +1,4 @@
-decorator>=4.3.0
+numpy>=1.19
+scipy>=1.8
+matplotlib>=3.4
+pandas>=1.3

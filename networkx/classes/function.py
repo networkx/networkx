@@ -5,9 +5,8 @@ from collections import Counter
 from itertools import chain
 
 import networkx as nx
-from networkx.utils import pairwise, not_implemented_for
-from networkx.classes.graphviews import subgraph_view, reverse_view
-
+from networkx.classes.graphviews import reverse_view, subgraph_view
+from networkx.utils import not_implemented_for, pairwise
 
 __all__ = [
     "nodes",
@@ -76,7 +75,7 @@ def degree(G, nbunch=None, weight=None):
 
 
 def neighbors(G, n):
-    """Returns a list of nodes connected to node n. """
+    """Returns a list of nodes connected to node n."""
     return G.neighbors(n)
 
 
@@ -86,7 +85,7 @@ def number_of_nodes(G):
 
 
 def number_of_edges(G):
-    """Returns the number of edges in the graph. """
+    """Returns the number of edges in the graph."""
     return G.number_of_edges()
 
 
@@ -149,7 +148,7 @@ def degree_histogram(G):
 
 
 def is_directed(G):
-    """ Return True if graph is directed."""
+    """Return True if graph is directed."""
     return G.is_directed()
 
 
@@ -175,8 +174,8 @@ def freeze(G):
     >>> G = nx.freeze(G)
     >>> try:
     ...     G.add_edge(4, 5)
-    ... except nx.NetworkXError as e:
-    ...     print(str(e))
+    ... except nx.NetworkXError as err:
+    ...     print(str(err))
     Frozen graph can't be modified
 
     Notes
@@ -385,9 +384,11 @@ def induced_subgraph(G, nbunch):
     Examples
     --------
     >>> G = nx.path_graph(4)  # or DiGraph, MultiGraph, MultiDiGraph, etc
-    >>> H = G.subgraph([0, 1, 2])
+    >>> H = nx.induced_subgraph(G, [0, 1, 3])
     >>> list(H.edges)
-    [(0, 1), (1, 2)]
+    [(0, 1)]
+    >>> list(H.nodes)
+    [0, 1, 3]
     """
     induced_nodes = nx.filters.show_nodes(G.nbunch_iter(nbunch))
     return nx.graphviews.subgraph_view(G, induced_nodes)
@@ -540,7 +541,7 @@ def create_empty_copy(G, with_data=True):
        Propagate Graph and Nodes data to the new graph.
 
     See Also
-    -----
+    --------
     empty_graph
 
     """
@@ -554,8 +555,8 @@ def create_empty_copy(G, with_data=True):
 def info(G, n=None):
     """Return a summary of information for the graph G or a single node n.
 
-    The summary includes the number of nodes and edges (or neighbours for a single
-    node), and their average degree.
+    The summary includes the number of nodes and edges, or neighbours for a single
+    node.
 
     Parameters
     ----------
@@ -574,31 +575,25 @@ def info(G, n=None):
     NetworkXError
         If n is not in the graph G
 
+    .. deprecated:: 2.7
+       ``info`` is deprecated and will be removed in NetworkX 3.0.
     """
-    info = ""  # append this all to a string
+    import warnings
+
+    warnings.warn(
+        ("info is deprecated and will be removed in version 3.0.\n"),
+        DeprecationWarning,
+        stacklevel=2,
+    )
     if n is None:
-        info += f"Name: {G.name}\n"
-        type_name = [type(G).__name__]
-        info += f"Type: {','.join(type_name)}\n"
-        info += f"Number of nodes: {G.number_of_nodes()}\n"
-        info += f"Number of edges: {G.number_of_edges()}\n"
-        nnodes = G.number_of_nodes()
-        if len(G) > 0:
-            if G.is_directed():
-                deg = sum(d for n, d in G.in_degree()) / float(nnodes)
-                info += f"Average in degree: {deg:8.4f}\n"
-                deg = sum(d for n, d in G.out_degree()) / float(nnodes)
-                info += f"Average out degree: {deg:8.4f}"
-            else:
-                s = sum(dict(G.degree()).values())
-                info += f"Average degree: {(float(s) / float(nnodes)):8.4f}"
-    else:
-        if n not in G:
-            raise nx.NetworkXError(f"node {n} not in graph")
-        info += f"Node {n} has the following properties:\n"
-        info += f"Degree: {G.degree(n)}\n"
-        info += "Neighbors: "
-        info += " ".join(str(nbr) for nbr in G.neighbors(n))
+        return str(G)
+    if n not in G:
+        raise nx.NetworkXError(f"node {n} not in graph")
+    info = ""  # append this all to a string
+    info += f"Node {n} has the following properties:\n"
+    info += f"Degree: {G.degree(n)}\n"
+    info += "Neighbors: "
+    info += " ".join(str(nbr) for nbr in G.neighbors(n))
     return info
 
 
@@ -670,6 +665,17 @@ def set_node_attributes(G, values, name=None):
         3
         >>> G.nodes[2]
         {}
+
+    Note that if the dictionary contains nodes that are not in `G`, the
+    values are silently ignored::
+
+        >>> G = nx.Graph()
+        >>> G.add_node(0)
+        >>> nx.set_node_attributes(G, {0: "red", 1: "blue"}, name="color")
+        >>> G.nodes[0]["color"]
+        'red'
+        >>> 1 in G.nodes
+        False
 
     """
     # Set node attributes based on type of `values`
@@ -779,6 +785,14 @@ def set_edge_attributes(G, values, name=None):
         'nothing'
         >>> G[1][2]["attr2"]
         3
+
+    Note that if the dict contains edges that are not in `G`, they are
+    silently ignored::
+
+        >>> G = nx.Graph([(0, 1)])
+        >>> nx.set_edge_attributes(G, {(1, 2): {"weight": 2.0}})
+        >>> (1, 2) in G.edges()
+        False
 
     """
     if name is not None:
@@ -1119,6 +1133,8 @@ def selfloop_edges(G, data=False, keys=False, default=None):
 
     Parameters
     ----------
+    G : graph
+        A NetworkX graph.
     data : string or bool, optional (default=False)
         Return selfloop edges as two tuples (u, v) (data=False)
         or three-tuples (u, v, datadict) (data=True)
@@ -1273,8 +1289,8 @@ def path_weight(G, path, weight):
 
     Returns
     -------
-    cost: int
-        A integer representing the total cost with respect to the
+    cost: int or float
+        An integer or a float representing the total cost with respect to the
         specified weight of the specified path
 
     Raises
@@ -1289,7 +1305,7 @@ def path_weight(G, path, weight):
         raise nx.NetworkXNoPath("path does not exist")
     for node, nbr in nx.utils.pairwise(path):
         if multigraph:
-            cost += min([v[weight] for v in G[node][nbr].values()])
+            cost += min(v[weight] for v in G[node][nbr].values())
         else:
             cost += G[node][nbr][weight]
     return cost

@@ -1,14 +1,15 @@
 r"""Function for computing a junction tree of a graph."""
 
-import networkx as nx
-from networkx.utils import not_implemented_for
-from networkx.algorithms import moral, complete_to_chordal_graph, chordal_graph_cliques
 from itertools import combinations
+
+import networkx as nx
+from networkx.algorithms import chordal_graph_cliques, complete_to_chordal_graph, moral
+from networkx.utils import not_implemented_for
 
 __all__ = ["junction_tree"]
 
 
-@not_implemented_for("multigraph", "MultiDiGraph")
+@not_implemented_for("multigraph")
 def junction_tree(G):
     r"""Returns a junction tree of a given graph.
 

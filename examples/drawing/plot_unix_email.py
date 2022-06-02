@@ -14,7 +14,7 @@ objects (in this case a list of email messages).
 
 The sample unix email mailbox called "unix_email.mbox" may be found here:
 
-- https://github.com/networkx/networkx/blob/master/examples/drawing/unix_email.mbox
+- https://github.com/networkx/networkx/blob/main/examples/drawing/unix_email.mbox
 """
 
 from email.utils import getaddresses, parseaddr
@@ -55,6 +55,8 @@ G = mbox_graph()
 for (u, v, d) in G.edges(data=True):
     print(f"From: {u} To: {v} Subject: {d['message']['Subject']}")
 
-pos = nx.spring_layout(G, iterations=10)
+pos = nx.spring_layout(G, iterations=10, seed=227)
 nx.draw(G, pos, node_size=0, alpha=0.4, edge_color="r", font_size=16, with_labels=True)
+ax = plt.gca()
+ax.margins(0.08)
 plt.show()

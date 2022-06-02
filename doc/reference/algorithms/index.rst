@@ -57,6 +57,7 @@ Algorithms
    operators
    planarity
    planar_drawing
+   polynomials
    reciprocity
    regular
    rich_club
@@ -67,6 +68,7 @@ Algorithms
    smetric
    sparsifiers
    structuralholes
+   summarization
    swap
    threshold
    tournament

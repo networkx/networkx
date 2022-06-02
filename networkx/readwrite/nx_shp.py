@@ -11,13 +11,22 @@ and regulated by Esri as a (mostly) open specification for data
 interoperability among Esri and other software products."
 See https://en.wikipedia.org/wiki/Shapefile for additional information.
 """
+import warnings
+
 import networkx as nx
 
 __all__ = ["read_shp", "write_shp"]
 
 
 def read_shp(path, simplify=True, geom_attrs=True, strict=True):
-    """Generates a networkx.DiGraph from shapefiles. Point geometries are
+    """Generates a networkx.DiGraph from shapefiles.
+
+    .. deprecated:: 2.6
+
+       read_shp is deprecated and will be removed in NetworkX 3.0.
+       See https://networkx.org/documentation/latest/auto_examples/index.html#geospatial.
+
+    Point geometries are
     translated into nodes, lines into edges. Coordinate tuples are used as
     keys. Attributes are preserved, line geometries are simplified into start
     and end coordinates. Accepts a single shapefile or directory of many
@@ -75,10 +84,15 @@ def read_shp(path, simplify=True, geom_attrs=True, strict=True):
     ----------
     .. [1] https://en.wikipedia.org/wiki/Shapefile
     """
+    msg = (
+        "read_shp is deprecated and will be removed in 3.0."
+        "See https://networkx.org/documentation/latest/auto_examples/index.html#geospatial."
+    )
+    warnings.warn(msg, DeprecationWarning, stacklevel=2)
     try:
         from osgeo import ogr
-    except ImportError as e:
-        raise ImportError("read_shp requires OGR: http://www.gdal.org/") from e
+    except ImportError as err:
+        raise ImportError("read_shp requires OGR: http://www.gdal.org/") from err
 
     if not isinstance(path, str):
         return
@@ -110,7 +124,7 @@ def read_shp(path, simplify=True, geom_attrs=True, strict=True):
             else:
                 if strict:
                     raise nx.NetworkXError(
-                        "GeometryType {} not supported".format(g.GetGeometryType())
+                        f"GeometryType {g.GetGeometryType()} not supported"
                     )
 
     return net
@@ -143,13 +157,20 @@ def edges_from_line(geom, attrs, simplify=True, geom_attrs=True):
         each edge is a tuple of form
         (node1_coord, node2_coord, attribute_dict)
         suitable for expanding into a networkx Graph add_edge call
+
+    .. deprecated:: 2.6
     """
+    msg = (
+        "edges_from_line is deprecated and will be removed in 3.0."
+        "See https://networkx.org/documentation/latest/auto_examples/index.html#geospatial."
+    )
+    warnings.warn(msg, DeprecationWarning, stacklevel=2)
     try:
         from osgeo import ogr
-    except ImportError as e:
+    except ImportError as err:
         raise ImportError(
             "edges_from_line requires OGR: " "http://www.gdal.org/"
-        ) from e
+        ) from err
 
     if geom.GetGeometryType() == ogr.wkbLineString:
         if simplify:
@@ -183,6 +204,12 @@ def edges_from_line(geom, attrs, simplify=True, geom_attrs=True):
 
 def write_shp(G, outdir):
     """Writes a networkx.DiGraph to two shapefiles, edges and nodes.
+
+    .. deprecated:: 2.6
+
+       write_shp is deprecated and will be removed in 3.0.
+       See https://networkx.org/documentation/latest/auto_examples/index.html#geospatial.
+
     Nodes and edges are expected to have a Well Known Binary (Wkb) or
     Well Known Text (Wkt) key in order to generate geometries. Also
     acceptable are nodes with a numeric tuple key (x,y).
@@ -192,6 +219,8 @@ def write_shp(G, outdir):
 
     Parameters
     ----------
+    G : NetworkX graph
+        Directed graph
     outdir : directory path
        Output directory for the two shapefiles.
 
@@ -207,10 +236,15 @@ def write_shp(G, outdir):
     ----------
     .. [1] https://en.wikipedia.org/wiki/Shapefile
     """
+    msg = (
+        "write_shp is deprecated and will be removed in 3.0."
+        "See https://networkx.org/documentation/latest/auto_examples/index.html#geospatial."
+    )
+    warnings.warn(msg, DeprecationWarning, stacklevel=2)
     try:
         from osgeo import ogr
-    except ImportError as e:
-        raise ImportError("write_shp requires OGR: http://www.gdal.org/") from e
+    except ImportError as err:
+        raise ImportError("write_shp requires OGR: http://www.gdal.org/") from err
     # easier to debug in python if ogr throws exceptions
     ogr.UseExceptions()
 
@@ -307,10 +341,10 @@ def write_shp(G, outdir):
     # New edge attribute write support merged into edge loop
     edge_fields = {}  # storage for field names and their data types
 
-    for e in G.edges(data=True):
-        data = G.get_edge_data(*e)
-        g = netgeometry(e, data)
-        attributes, edges = create_attributes(e[2], edge_fields, edges)
+    for edge in G.edges(data=True):
+        data = G.get_edge_data(*edge)
+        g = netgeometry(edge, data)
+        attributes, edges = create_attributes(edge[2], edge_fields, edges)
         create_feature(g, edges, attributes)
 
     nodes, edges = None, None

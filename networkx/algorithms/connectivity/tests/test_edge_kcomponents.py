@@ -1,10 +1,11 @@
-import networkx as nx
 import itertools as it
-import pytest
-from networkx.utils import pairwise
-from networkx.algorithms.connectivity import bridge_components, EdgeComponentAuxGraph
-from networkx.algorithms.connectivity.edge_kcomponents import general_k_edge_subgraphs
 
+import pytest
+
+import networkx as nx
+from networkx.algorithms.connectivity import EdgeComponentAuxGraph, bridge_components
+from networkx.algorithms.connectivity.edge_kcomponents import general_k_edge_subgraphs
+from networkx.utils import pairwise
 
 # ----------------
 # Helper functions
@@ -12,7 +13,7 @@ from networkx.algorithms.connectivity.edge_kcomponents import general_k_edge_sub
 
 
 def fset(list_of_sets):
-    """ allows == to be used for list of sets """
+    """allows == to be used for list of sets"""
     return set(map(frozenset, list_of_sets))
 
 
@@ -56,7 +57,7 @@ def _assert_local_cc_edge_connectivity(G, ccs_local, k, memo):
     """
     tests properties of k-edge-connected components
 
-    the local edge connectivity between each pair of nodes in the the original
+    the local edge connectivity between each pair of nodes in the original
     graph should be no less than k unless the cc is a single node.
     """
     for cc in ccs_local:
@@ -88,7 +89,7 @@ def _check_edge_connectivity(G):
         ccs_local = fset(aux_graph.k_edge_components(k))
         ccs_subgraph = fset(aux_graph.k_edge_subgraphs(k))
 
-        # Check connectivity properties that should be garuenteed by the
+        # Check connectivity properties that should be guaranteed by the
         # algorithms.
         _assert_local_cc_edge_connectivity(G, ccs_local, k, memo)
         _assert_subgraph_edge_connectivity(G, ccs_subgraph, k)
@@ -162,8 +163,10 @@ def test_not_implemented():
     pytest.raises(nx.NetworkXNotImplemented, EdgeComponentAuxGraph.construct, G)
     pytest.raises(nx.NetworkXNotImplemented, nx.k_edge_components, G, k=2)
     pytest.raises(nx.NetworkXNotImplemented, nx.k_edge_subgraphs, G, k=2)
-    pytest.raises(nx.NetworkXNotImplemented, bridge_components, G)
-    pytest.raises(nx.NetworkXNotImplemented, bridge_components, nx.DiGraph())
+    with pytest.raises(nx.NetworkXNotImplemented):
+        next(bridge_components(G))
+    with pytest.raises(nx.NetworkXNotImplemented):
+        next(bridge_components(nx.DiGraph()))
 
 
 def test_general_k_edge_subgraph_quick_return():

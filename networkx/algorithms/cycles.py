@@ -21,7 +21,7 @@ __all__ = [
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def cycle_basis(G, root=None):
-    """ Returns a list of cycles which form a basis for cycles of G.
+    """Returns a list of cycles which form a basis for cycles of G.
 
     A basis for cycles of a network is a minimal collection of
     cycles such that any cycle in the network can be written
@@ -235,6 +235,7 @@ def recursive_simple_cycles(G):
     This version uses a recursive algorithm to build a list of cycles.
     You should probably use the iterator version called simple_cycles().
     Warning: This recursive version uses lots of RAM!
+    It appears in NetworkX for pedagogical value.
 
     Parameters
     ----------
@@ -252,10 +253,6 @@ def recursive_simple_cycles(G):
     >>> G = nx.DiGraph(edges)
     >>> nx.recursive_simple_cycles(G)
     [[0], [2], [0, 1, 2], [0, 2], [1, 2]]
-
-    See Also
-    --------
-    cycle_basis (for undirected graphs)
 
     Notes
     -----
@@ -392,11 +389,10 @@ def find_cycle(G, source=None, orientation=None):
     is also known as a polytree).
 
     >>> G = nx.DiGraph([(0, 1), (0, 2), (1, 2)])
-    >>> try:
-    ...     nx.find_cycle(G, orientation="original")
-    ... except:
-    ...     pass
-    ...
+    >>> nx.find_cycle(G, orientation="original")
+    Traceback (most recent call last):
+        ...
+    networkx.exception.NetworkXNoCycle: No cycle found.
     >>> list(nx.find_cycle(G, orientation="ignore"))
     [(0, 1, 'forward'), (1, 2, 'forward'), (0, 2, 'reverse')]
 
@@ -499,7 +495,7 @@ def find_cycle(G, source=None, orientation=None):
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def minimum_cycle_basis(G, weight=None):
-    """ Returns a minimum weight cycle basis for G
+    """Returns a minimum weight cycle basis for G
 
     Minimum weight means a cycle basis for which the total weight
     (length for unweighted graphs) of all the cycles is minimum.

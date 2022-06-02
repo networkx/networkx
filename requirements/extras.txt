@@ -1,2 +1,0 @@
-pygraphviz>=1.5, <2.0
-pydot>=1.4.1

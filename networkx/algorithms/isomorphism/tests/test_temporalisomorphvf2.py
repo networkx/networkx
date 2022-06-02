@@ -1,9 +1,10 @@
 """
     Tests for the temporal aspect of the Temporal VF2 isomorphism algorithm.
 """
+from datetime import date, datetime, timedelta
+
 import networkx as nx
 from networkx.algorithms import isomorphism as iso
-from datetime import date, datetime, timedelta
 
 
 def provide_g1_edgelist():
@@ -65,7 +66,7 @@ def put_time_config_2(G, att_name):
 
 class TestTimeRespectingGraphMatcher:
     """
-        A test class for the undirected temporal graph matcher.
+    A test class for the undirected temporal graph matcher.
     """
 
     def provide_g1_topology(self):
@@ -148,7 +149,7 @@ class TestTimeRespectingGraphMatcher:
 
 class TestDiTimeRespectingGraphMatcher:
     """
-        A test class for the directed time-respecting graph matcher.
+    A test class for the directed time-respecting graph matcher.
     """
 
     def provide_g1_topology(self):

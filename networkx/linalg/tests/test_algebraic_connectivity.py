@@ -2,38 +2,60 @@ from math import sqrt
 
 import pytest
 
-numpy = pytest.importorskip("numpy")
-numpy.linalg = pytest.importorskip("numpy.linalg")
-scipy = pytest.importorskip("scipy")
-scipy.sparse = pytest.importorskip("scipy.sparse")
+np = pytest.importorskip("numpy")
 
 
 import networkx as nx
-from networkx.testing import almost_equal
 
-try:
-    from scikits.sparse.cholmod import cholesky
+methods = ("tracemin_pcg", "tracemin_lu", "lanczos", "lobpcg")
 
-    _cholesky = cholesky
-except ImportError:
-    _cholesky = None
 
-if _cholesky is None:
-    methods = ("tracemin_pcg", "tracemin_lu", "lanczos", "lobpcg")
-else:
-    methods = ("tracemin_pcg", "tracemin_chol", "tracemin_lu", "lanczos", "lobpcg")
+def test_algebraic_connectivity_tracemin_chol():
+    """Test that "tracemin_chol" raises an exception."""
+    pytest.importorskip("scipy")
+    G = nx.barbell_graph(5, 4)
+    with pytest.raises(nx.NetworkXError):
+        nx.algebraic_connectivity(G, method="tracemin_chol")
+
+
+def test_fiedler_vector_tracemin_chol():
+    """Test that "tracemin_chol" raises an exception."""
+    pytest.importorskip("scipy")
+    G = nx.barbell_graph(5, 4)
+    with pytest.raises(nx.NetworkXError):
+        nx.fiedler_vector(G, method="tracemin_chol")
+
+
+def test_spectral_ordering_tracemin_chol():
+    """Test that "tracemin_chol" raises an exception."""
+    pytest.importorskip("scipy")
+    G = nx.barbell_graph(5, 4)
+    with pytest.raises(nx.NetworkXError):
+        nx.spectral_ordering(G, method="tracemin_chol")
+
+
+def test_fiedler_vector_tracemin_unknown():
+    """Test that "tracemin_unknown" raises an exception."""
+    pytest.importorskip("scipy")
+    G = nx.barbell_graph(5, 4)
+    L = nx.laplacian_matrix(G)
+    X = np.asarray(np.random.normal(size=(1, L.shape[0]))).T
+    with pytest.raises(nx.NetworkXError, match="Unknown linear system solver"):
+        nx.linalg.algebraicconnectivity._tracemin_fiedler(
+            L, X, normalized=False, tol=1e-8, method="tracemin_unknown"
+        )
 
 
 def check_eigenvector(A, l, x):
-    nx = numpy.linalg.norm(x)
+    nx = np.linalg.norm(x)
     # Check zeroness.
-    assert not almost_equal(nx, 0)
-    y = A * x
-    ny = numpy.linalg.norm(y)
+    assert not nx == pytest.approx(0, abs=1e-7)
+    y = A @ x
+    ny = np.linalg.norm(y)
     # Check collinearity.
-    assert almost_equal(numpy.dot(x, y), nx * ny)
+    assert x @ y == pytest.approx(nx * ny, abs=1e-7)
     # Check eigenvalue.
-    assert almost_equal(ny, l * nx)
+    assert ny == pytest.approx(l * nx, abs=1e-7)
 
 
 class TestAlgebraicConnectivity:
@@ -65,79 +87,89 @@ class TestAlgebraicConnectivity:
         pytest.raises(nx.NetworkXError, nx.fiedler_vector, G, method=method)
 
     def test_unrecognized_method(self):
+        pytest.importorskip("scipy")
         G = nx.path_graph(4)
         pytest.raises(nx.NetworkXError, nx.algebraic_connectivity, G, method="unknown")
         pytest.raises(nx.NetworkXError, nx.fiedler_vector, G, method="unknown")
 
     @pytest.mark.parametrize("method", methods)
     def test_two_nodes(self, method):
+        pytest.importorskip("scipy")
         G = nx.Graph()
         G.add_edge(0, 1, weight=1)
         A = nx.laplacian_matrix(G)
-        assert almost_equal(nx.algebraic_connectivity(G, tol=1e-12, method=method), 2)
+        assert nx.algebraic_connectivity(G, tol=1e-12, method=method) == pytest.approx(
+            2, abs=1e-7
+        )
         x = nx.fiedler_vector(G, tol=1e-12, method=method)
         check_eigenvector(A, 2, x)
 
     @pytest.mark.parametrize("method", methods)
     def test_two_nodes_multigraph(self, method):
+        pytest.importorskip("scipy")
         G = nx.MultiGraph()
         G.add_edge(0, 0, spam=1e8)
         G.add_edge(0, 1, spam=1)
         G.add_edge(0, 1, spam=-2)
         A = -3 * nx.laplacian_matrix(G, weight="spam")
-        assert almost_equal(
-            nx.algebraic_connectivity(G, weight="spam", tol=1e-12, method=method), 6
-        )
+        assert nx.algebraic_connectivity(
+            G, weight="spam", tol=1e-12, method=method
+        ) == pytest.approx(6, abs=1e-7)
         x = nx.fiedler_vector(G, weight="spam", tol=1e-12, method=method)
         check_eigenvector(A, 6, x)
 
     def test_abbreviation_of_method(self):
+        pytest.importorskip("scipy")
         G = nx.path_graph(8)
         A = nx.laplacian_matrix(G)
         sigma = 2 - sqrt(2 + sqrt(2))
         ac = nx.algebraic_connectivity(G, tol=1e-12, method="tracemin")
-        assert almost_equal(ac, sigma)
+        assert ac == pytest.approx(sigma, abs=1e-7)
         x = nx.fiedler_vector(G, tol=1e-12, method="tracemin")
         check_eigenvector(A, sigma, x)
 
     @pytest.mark.parametrize("method", methods)
     def test_path(self, method):
+        pytest.importorskip("scipy")
         G = nx.path_graph(8)
         A = nx.laplacian_matrix(G)
         sigma = 2 - sqrt(2 + sqrt(2))
         ac = nx.algebraic_connectivity(G, tol=1e-12, method=method)
-        assert almost_equal(ac, sigma)
+        assert ac == pytest.approx(sigma, abs=1e-7)
         x = nx.fiedler_vector(G, tol=1e-12, method=method)
         check_eigenvector(A, sigma, x)
 
     @pytest.mark.parametrize("method", methods)
     def test_problematic_graph_issue_2381(self, method):
+        pytest.importorskip("scipy")
         G = nx.path_graph(4)
         G.add_edges_from([(4, 2), (5, 1)])
         A = nx.laplacian_matrix(G)
         sigma = 0.438447187191
         ac = nx.algebraic_connectivity(G, tol=1e-12, method=method)
-        assert almost_equal(ac, sigma)
+        assert ac == pytest.approx(sigma, abs=1e-7)
         x = nx.fiedler_vector(G, tol=1e-12, method=method)
         check_eigenvector(A, sigma, x)
 
     @pytest.mark.parametrize("method", methods)
     def test_cycle(self, method):
+        pytest.importorskip("scipy")
         G = nx.cycle_graph(8)
         A = nx.laplacian_matrix(G)
         sigma = 2 - sqrt(2)
         ac = nx.algebraic_connectivity(G, tol=1e-12, method=method)
-        assert almost_equal(ac, sigma)
+        assert ac == pytest.approx(sigma, abs=1e-7)
         x = nx.fiedler_vector(G, tol=1e-12, method=method)
         check_eigenvector(A, sigma, x)
 
     @pytest.mark.parametrize("method", methods)
     def test_seed_argument(self, method):
+        pytest.importorskip("scipy")
         G = nx.cycle_graph(8)
         A = nx.laplacian_matrix(G)
         sigma = 2 - sqrt(2)
         ac = nx.algebraic_connectivity(G, tol=1e-12, method=method, seed=1)
-        assert almost_equal(ac, sigma)
+        assert ac == pytest.approx(sigma, abs=1e-7)
         x = nx.fiedler_vector(G, tol=1e-12, method=method, seed=1)
         check_eigenvector(A, sigma, x)
 
@@ -150,6 +182,7 @@ class TestAlgebraicConnectivity:
     )
     @pytest.mark.parametrize("method", methods)
     def test_buckminsterfullerene(self, normalized, sigma, laplacian_fn, method):
+        pytest.importorskip("scipy")
         G = nx.Graph(
             [
                 (1, 10),
@@ -246,16 +279,13 @@ class TestAlgebraicConnectivity:
         )
         A = laplacian_fn(G)
         try:
-            assert almost_equal(
-                nx.algebraic_connectivity(
-                    G, normalized=normalized, tol=1e-12, method=method
-                ),
-                sigma,
-            )
+            assert nx.algebraic_connectivity(
+                G, normalized=normalized, tol=1e-12, method=method
+            ) == pytest.approx(sigma, abs=1e-7)
             x = nx.fiedler_vector(G, normalized=normalized, tol=1e-12, method=method)
             check_eigenvector(A, sigma, x)
-        except nx.NetworkXError as e:
-            if e.args not in (
+        except nx.NetworkXError as err:
+            if err.args not in (
                 ("Cholesky solver unavailable.",),
                 ("LU solver unavailable.",),
             ):
@@ -285,6 +315,7 @@ class TestSpectralOrdering:
 
     @pytest.mark.parametrize("method", methods)
     def test_three_nodes(self, method):
+        pytest.importorskip("scipy")
         G = nx.Graph()
         G.add_weighted_edges_from([(1, 2, 1), (1, 3, 2), (2, 3, 1)], weight="spam")
         order = nx.spectral_ordering(G, weight="spam", method=method)
@@ -293,6 +324,7 @@ class TestSpectralOrdering:
 
     @pytest.mark.parametrize("method", methods)
     def test_three_nodes_multigraph(self, method):
+        pytest.importorskip("scipy")
         G = nx.MultiDiGraph()
         G.add_weighted_edges_from([(1, 2, 1), (1, 3, 2), (2, 3, 1), (2, 3, 2)])
         order = nx.spectral_ordering(G, method=method)
@@ -301,11 +333,9 @@ class TestSpectralOrdering:
 
     @pytest.mark.parametrize("method", methods)
     def test_path(self, method):
-        # based on setup_class numpy is installed if we get here
-        from numpy.random import shuffle
-
+        pytest.importorskip("scipy")
         path = list(range(10))
-        shuffle(path)
+        np.random.shuffle(path)
         G = nx.Graph()
         nx.add_path(G, path)
         order = nx.spectral_ordering(G, method=method)
@@ -313,11 +343,9 @@ class TestSpectralOrdering:
 
     @pytest.mark.parametrize("method", methods)
     def test_seed_argument(self, method):
-        # based on setup_class numpy is installed if we get here
-        from numpy.random import shuffle
-
+        pytest.importorskip("scipy")
         path = list(range(10))
-        shuffle(path)
+        np.random.shuffle(path)
         G = nx.Graph()
         nx.add_path(G, path)
         order = nx.spectral_ordering(G, method=method, seed=1)
@@ -325,6 +353,7 @@ class TestSpectralOrdering:
 
     @pytest.mark.parametrize("method", methods)
     def test_disconnected(self, method):
+        pytest.importorskip("scipy")
         G = nx.Graph()
         nx.add_path(G, range(0, 10, 2))
         nx.add_path(G, range(1, 10, 2))
@@ -348,18 +377,11 @@ class TestSpectralOrdering:
     )
     @pytest.mark.parametrize("method", methods)
     def test_cycle(self, normalized, expected_order, method):
+        pytest.importorskip("scipy")
         path = list(range(10))
         G = nx.Graph()
         nx.add_path(G, path, weight=5)
         G.add_edge(path[-1], path[0], weight=1)
         A = nx.laplacian_matrix(G).todense()
-        try:
-            order = nx.spectral_ordering(G, normalized=normalized, method=method)
-        except nx.NetworkXError as e:
-            if e.args not in (
-                ("Cholesky solver unavailable.",),
-                ("LU solver unavailable.",),
-            ):
-                raise
-        else:
-            assert order in expected_order
+        order = nx.spectral_ordering(G, normalized=normalized, method=method)
+        assert order in expected_order

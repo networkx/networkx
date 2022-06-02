@@ -60,8 +60,8 @@ def weakly_connected_components(G):
     for v in G:
         if v not in seen:
             c = set(_plain_bfs(G, v))
-            yield c
             seen.update(c)
+            yield c
 
 
 @not_implemented_for("undirected")
@@ -82,6 +82,12 @@ def number_weakly_connected_components(G):
     ------
     NetworkXNotImplemented
         If G is undirected.
+
+    Examples
+    --------
+    >>> G = nx.DiGraph([(0, 1), (2, 1), (3, 4)])
+    >>> nx.number_weakly_connected_components(G)
+    2
 
     See Also
     --------
@@ -123,6 +129,16 @@ def is_weakly_connected(G):
     NetworkXNotImplemented
         If G is undirected.
 
+    Examples
+    --------
+    >>> G = nx.DiGraph([(0, 1), (2, 1)])
+    >>> G.add_node(3)
+    >>> nx.is_weakly_connected(G)  # node 3 is not connected to the graph
+    False
+    >>> G.add_edge(2, 3)
+    >>> nx.is_weakly_connected(G)
+    True
+
     See Also
     --------
     is_strongly_connected
@@ -162,7 +178,7 @@ def _plain_bfs(G, source):
         nextlevel = set()
         for v in thislevel:
             if v not in seen:
-                yield v
                 seen.add(v)
                 nextlevel.update(Gsucc[v])
                 nextlevel.update(Gpred[v])
+                yield v

@@ -1,6 +1,7 @@
+import pytest
+
 import networkx as nx
 from networkx.algorithms import bipartite
-from networkx.testing import almost_equal
 
 
 class TestBipartiteCentrality:
@@ -92,7 +93,7 @@ class TestBipartiteCentrality:
             "E14": 0.17,
         }
         for node, value in answer.items():
-            assert almost_equal(value, deg[node], places=2)
+            assert value == pytest.approx(deg[node], abs=1e-2)
 
     def test_davis_betweenness_centrality(self):
         G = self.davis
@@ -132,7 +133,7 @@ class TestBipartiteCentrality:
             "E14": 0.00,
         }
         for node, value in answer.items():
-            assert almost_equal(value, bet[node], places=2)
+            assert value == pytest.approx(bet[node], abs=1e-2)
 
     def test_davis_closeness_centrality(self):
         G = self.davis
@@ -172,4 +173,4 @@ class TestBipartiteCentrality:
             "E14": 0.52,
         }
         for node, value in answer.items():
-            assert almost_equal(value, clos[node], places=2)
+            assert value == pytest.approx(clos[node], abs=1e-2)

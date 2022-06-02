@@ -1,0 +1,4 @@
+lxml>=4.6
+pygraphviz>=1.9
+pydot>=1.4.2
+sympy>=1.10

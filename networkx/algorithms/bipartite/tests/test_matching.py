@@ -1,15 +1,16 @@
 """Unit tests for the :mod:`networkx.algorithms.bipartite.matching` module."""
 import itertools
 
-import networkx as nx
-
 import pytest
 
-from networkx.algorithms.bipartite.matching import eppstein_matching
-from networkx.algorithms.bipartite.matching import hopcroft_karp_matching
-from networkx.algorithms.bipartite.matching import maximum_matching
-from networkx.algorithms.bipartite.matching import minimum_weight_full_matching
-from networkx.algorithms.bipartite.matching import to_vertex_cover
+import networkx as nx
+from networkx.algorithms.bipartite.matching import (
+    eppstein_matching,
+    hopcroft_karp_matching,
+    maximum_matching,
+    minimum_weight_full_matching,
+    to_vertex_cover,
+)
 
 
 class TestMatching:
@@ -180,6 +181,16 @@ class TestMatching:
         for u, v in G.edges():
             assert u in vertex_cover or v in vertex_cover
 
+    def test_vertex_cover_issue_3306(self):
+        G = nx.Graph()
+        edges = [(0, 2), (1, 0), (1, 1), (1, 2), (2, 2)]
+        G.add_edges_from([((i, "L"), (j, "R")) for i, j in edges])
+
+        matching = maximum_matching(G)
+        vertex_cover = to_vertex_cover(G, matching)
+        for u, v in G.edges():
+            assert u in vertex_cover or v in vertex_cover
+
     def test_unorderable_nodes(self):
         a = object()
         b = object()
@@ -207,8 +218,7 @@ def test_eppstein_matching():
 class TestMinimumWeightFullMatching:
     @classmethod
     def setup_class(cls):
-        global scipy
-        scipy = pytest.importorskip("scipy")
+        pytest.importorskip("scipy")
 
     def test_minimum_weight_full_matching_incomplete_graph(self):
         B = nx.Graph()

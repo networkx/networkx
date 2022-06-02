@@ -12,11 +12,12 @@ See Also
 :mod:`edge_kcomponents` : algorithms for finding k-edge-connected components
 :mod:`connectivity` : algorithms for determening edge connectivity.
 """
-import math
 import itertools as it
+import math
+from collections import defaultdict, namedtuple
+
 import networkx as nx
 from networkx.utils import not_implemented_for, py_random_state
-from collections import defaultdict, namedtuple
 
 __all__ = ["k_edge_augmentation", "is_k_edge_connected", "is_locally_k_edge_connected"]
 
@@ -46,8 +47,8 @@ def is_k_edge_connected(G, k):
     --------
     :func:`is_locally_k_edge_connected`
 
-    Example
-    -------
+    Examples
+    --------
     >>> G = nx.barbell_graph(10, 0)
     >>> nx.is_k_edge_connected(G, k=1)
     True
@@ -102,8 +103,8 @@ def is_locally_k_edge_connected(G, s, t, k):
     --------
     :func:`is_k_edge_connected`
 
-    Example
-    -------
+    Examples
+    --------
     >>> from networkx.algorithms.connectivity import is_locally_k_edge_connected
     >>> G = nx.barbell_graph(10, 0)
     >>> is_locally_k_edge_connected(G, 5, 15, k=1)
@@ -138,7 +139,7 @@ def k_edge_augmentation(G, k, avail=None, weight=None, partial=False):
     function available (depending on the value of k and if the problem is
     weighted or unweighted) to search for a minimum weight subset of available
     edges that k-edge-connects G. In general, finding a k-edge-augmentation is
-    NP-hard, so solutions are not garuenteed to be minimal. Furthermore, a
+    NP-hard, so solutions are not guaranteed to be minimal. Furthermore, a
     k-edge-augmentation may not exist.
 
     Parameters
@@ -204,8 +205,8 @@ def k_edge_augmentation(G, k, avail=None, weight=None, partial=False):
         produces a feasible solution, but provides no guarantees on the
         solution weight.
 
-    Example
-    -------
+    Examples
+    --------
     >>> # Unweighted cases
     >>> G = nx.path_graph((1, 2, 3, 4))
     >>> G.add_node(5)
@@ -220,8 +221,6 @@ def k_edge_augmentation(G, k, avail=None, weight=None, partial=False):
     >>> nx.edge_connectivity(G)
     4
 
-    Example
-    -------
     >>> # Weighted cases
     >>> G = nx.path_graph((1, 2, 3, 4))
     >>> G.add_node(5)
@@ -326,8 +325,8 @@ def partial_k_edge_augmentation(G, k, avail, weight=None):
     --------
     :func:`k_edge_augmentation`
 
-    Example
-    -------
+    Examples
+    --------
     >>> G = nx.path_graph((1, 2, 3, 4, 5, 6, 7))
     >>> G.add_node(8)
     >>> avail = [(1, 3), (1, 4), (1, 5), (2, 4), (2, 5), (3, 5), (1, 8)]
@@ -336,7 +335,7 @@ def partial_k_edge_augmentation(G, k, avail, weight=None):
     """
 
     def _edges_between_disjoint(H, only1, only2):
-        """ finds edges between disjoint nodes """
+        """finds edges between disjoint nodes"""
         only1_adj = {u: set(H.adj[u]) for u in only1}
         for u, neighbs in only1_adj.items():
             # Find the neighbors of u in only1 that are also in only2
@@ -547,8 +546,8 @@ def _lightest_meta_edges(mapping, avail_uv, avail_w):
     minimum weight edge bridging each k-edge-connected component so, we group
     the edges by meta-edge and take the lightest in each group.
 
-    Example
-    -------
+    Examples
+    --------
     >>> # Each group represents a meta-node
     >>> groups = ([1, 2, 3], [4, 5], [6])
     >>> mapping = {n: meta_n for meta_n, ns in enumerate(groups) for n in ns}
@@ -594,8 +593,8 @@ def unconstrained_one_edge_augmentation(G):
     :func:`one_edge_augmentation`
     :func:`k_edge_augmentation`
 
-    Example
-    -------
+    Examples
+    --------
     >>> G = nx.Graph([(1, 2), (2, 3), (4, 5)])
     >>> G.add_nodes_from([6, 7, 8])
     >>> sorted(unconstrained_one_edge_augmentation(G))
@@ -646,8 +645,8 @@ def weighted_one_edge_augmentation(G, avail, weight=None, partial=False):
     :func:`one_edge_augmentation`
     :func:`k_edge_augmentation`
 
-    Example
-    -------
+    Examples
+    --------
     >>> G = nx.Graph([(1, 2), (2, 3), (4, 5)])
     >>> G.add_nodes_from([6, 7, 8])
     >>> # any edge not in avail has an implicit weight of infinity
@@ -746,8 +745,8 @@ def unconstrained_bridge_augmentation(G):
     :func:`bridge_augmentation`
     :func:`k_edge_augmentation`
 
-    Example
-    -------
+    Examples
+    --------
     >>> G = nx.path_graph((1, 2, 3, 4, 5, 6, 7))
     >>> sorted(unconstrained_bridge_augmentation(G))
     [(1, 7)]
@@ -810,7 +809,7 @@ def unconstrained_bridge_augmentation(G):
         v2 = [n for n in nx.dfs_preorder_nodes(T, root) if T.degree(n) == 1]
         # connecting first half of the leafs in pre-order to the second
         # half will bridge connect the tree with the fewest edges.
-        half = int(math.ceil(len(v2) / 2.0))
+        half = math.ceil(len(v2) / 2)
         A2 = list(zip(v2[:half], v2[-half:]))
 
     # collect the edges used to augment the original forest
@@ -880,8 +879,8 @@ def weighted_bridge_augmentation(G, avail, weight=None):
     :func:`bridge_augmentation`
     :func:`k_edge_augmentation`
 
-    Example
-    -------
+    Examples
+    --------
     >>> G = nx.path_graph((1, 2, 3, 4))
     >>> # When the weights are equal, (1, 4) is the best
     >>> avail = [(1, 4, 1), (1, 3, 1), (2, 4, 1)]
@@ -987,9 +986,9 @@ def weighted_bridge_augmentation(G, avail, weight=None):
         # Note the original edges must be directed towards to root for the
         # branching to give us a bridge-augmentation.
         A = _minimum_rooted_branching(D, root)
-    except nx.NetworkXException as e:
+    except nx.NetworkXException as err:
         # If there is no branching then augmentation is not possible
-        raise nx.NetworkXUnfeasible("no 2-edge-augmentation possible") from e
+        raise nx.NetworkXUnfeasible("no 2-edge-augmentation possible") from err
 
     # For each edge e, in the branching that did not belong to the directed
     # tree T, add the corresponding edge that **GENERATED** it (this is not
@@ -1021,7 +1020,7 @@ def _minimum_rooted_branching(D, root):
     References
     ----------
     [1] Khuller, Samir (2002) Advanced Algorithms Lecture 24 Notes.
-    https://www.cs.umd.edu/class/spring2011/cmsc651/lec07.pdf
+    https://web.archive.org/web/20121030033722/https://www.cs.umd.edu/class/spring2011/cmsc651/lec07.pdf
     """
     rooted = D.copy()
     # root the graph by removing all predecessors to `root`.
@@ -1114,8 +1113,8 @@ def complement_edges(G):
     edge : tuple
         Edges in the complement of G
 
-    Example
-    -------
+    Examples
+    --------
     >>> G = nx.path_graph((1, 2, 3, 4))
     >>> sorted(complement_edges(G))
     [(1, 3), (1, 4), (2, 4)]
@@ -1126,15 +1125,16 @@ def complement_edges(G):
     >>> sorted(complement_edges(G))
     []
     """
+    G_adj = G._adj  # Store as a variable to eliminate attribute lookup
     if G.is_directed():
         for u, v in it.combinations(G.nodes(), 2):
-            if v not in G.adj[u]:
+            if v not in G_adj[u]:
                 yield (u, v)
-            if u not in G.adj[v]:
+            if u not in G_adj[v]:
                 yield (v, u)
     else:
         for u, v in it.combinations(G.nodes(), 2):
-            if v not in G.adj[u]:
+            if v not in G_adj[u]:
                 yield (u, v)
 
 
@@ -1187,8 +1187,8 @@ def greedy_k_edge_augmentation(G, k, avail=None, weight=None, seed=None):
     --------
     :func:`k_edge_augmentation`
 
-    Example
-    -------
+    Examples
+    --------
     >>> G = nx.path_graph((1, 2, 3, 4, 5, 6, 7))
     >>> sorted(greedy_k_edge_augmentation(G, k=2))
     [(1, 7)]

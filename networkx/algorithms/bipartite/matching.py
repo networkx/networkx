@@ -39,9 +39,9 @@ edges included in the matching is minimal.
 import collections
 import itertools
 
-from networkx.algorithms.bipartite.matrix import biadjacency_matrix
-from networkx.algorithms.bipartite import sets as bipartite_sets
 import networkx as nx
+from networkx.algorithms.bipartite import sets as bipartite_sets
+from networkx.algorithms.bipartite.matrix import biadjacency_matrix
 
 __all__ = [
     "maximum_matching",
@@ -57,13 +57,13 @@ INFINITY = float("inf")
 def hopcroft_karp_matching(G, top_nodes=None):
     """Returns the maximum cardinality matching of the bipartite graph `G`.
 
-    A matching is a set of edges that do not share any nodes. A maximum 
+    A matching is a set of edges that do not share any nodes. A maximum
     cardinality matching is a matching with the most edges possible. It
     is not always unique. Finding a matching in a bipartite graph can be
     treated as a networkx flow problem.
-    
+
     The functions ``hopcroft_karp_matching`` and ``maximum_matching``
-    are aliases of the same function. 
+    are aliases of the same function.
 
     Parameters
     ----------
@@ -346,14 +346,14 @@ def _is_connected_by_alternating_path(G, v, matched_edges, unmatched_edges, targ
         will continue only through edges *not* in the given matching.
 
         """
-        if along_matched:
-            edges = itertools.cycle([matched_edges, unmatched_edges])
-        else:
-            edges = itertools.cycle([unmatched_edges, matched_edges])
         visited = set()
-        stack = [(u, iter(G[u]), next(edges))]
+        # Follow matched edges when depth is even,
+        # and follow unmatched edges when depth is odd.
+        initial_depth = 0 if along_matched else 1
+        stack = [(u, iter(G[u]), initial_depth)]
         while stack:
-            parent, children, valid_edges = stack[-1]
+            parent, children, depth = stack[-1]
+            valid_edges = matched_edges if depth % 2 else unmatched_edges
             try:
                 child = next(children)
                 if child not in visited:
@@ -361,7 +361,7 @@ def _is_connected_by_alternating_path(G, v, matched_edges, unmatched_edges, targ
                         if child in targets:
                             return True
                         visited.add(child)
-                        stack.append((child, iter(G[child]), next(edges)))
+                        stack.append((child, iter(G[child]), depth + 1))
             except StopIteration:
                 stack.pop()
         return False
@@ -556,13 +556,10 @@ def minimum_weight_full_matching(G, top_nodes=None, weight="weight"):
        Networks, 10(2):143–152, 1980.
 
     """
-    try:
-        import numpy as np
-        import scipy.optimize
-    except ImportError as e:
-        raise ImportError(
-            "minimum_weight_full_matching requires SciPy: " + "https://scipy.org/"
-        ) from e
+    import numpy as np
+    import scipy as sp
+    import scipy.optimize  # call as sp.optimize
+
     left, right = nx.bipartite.sets(G, top_nodes)
     U = list(left)
     V = list(right)
@@ -574,7 +571,7 @@ def minimum_weight_full_matching(G, top_nodes=None, weight="weight"):
     )
     weights = np.full(weights_sparse.shape, np.inf)
     weights[weights_sparse.row, weights_sparse.col] = weights_sparse.data
-    left_matches = scipy.optimize.linear_sum_assignment(weights)
+    left_matches = sp.optimize.linear_sum_assignment(weights)
     d = {U[u]: V[v] for u, v in zip(*left_matches)}
     # d will contain the matching from edges in left to right; we need to
     # add the ones from right to left as well.

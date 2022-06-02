@@ -3,8 +3,8 @@
 """
 
 import os
-import struct
 import random
+import struct
 
 import networkx as nx
 from networkx.algorithms import isomorphism as iso
@@ -84,7 +84,7 @@ class TestWikipediaExample:
 
 
 class TestVF2GraphDB:
-    # http://amalfi.dis.unina.it/graph/db/
+    # https://web.archive.org/web/20090303210205/http://amalfi.dis.unina.it/graph/db/
 
     @staticmethod
     def create_graph(filename):
@@ -143,10 +143,6 @@ class TestAtlas:
     @classmethod
     def setup_class(cls):
         global atlas
-        # import platform
-        # import pytest
-        # if platform.python_implementation() == 'Jython':
-        #     pytest.mark.skip('graph atlas not available under Jython.')
         import networkx.generators.atlas as atlas
 
         cls.GAG = atlas.graph_atlas_g()

@@ -7,15 +7,22 @@ Import and export NetworkX graphs in Graphviz dot format using pydot.
 
 Either this module or nx_agraph can be used to interface with graphviz.
 
+Examples
+--------
+>>> G = nx.complete_graph(5)
+>>> PG = nx.nx_pydot.to_pydot(G)
+>>> H = nx.nx_pydot.from_pydot(PG)
+
 See Also
 --------
-pydot:         https://github.com/erocarrera/pydot
-Graphviz:      https://www.graphviz.org
-DOT Language:  http://www.graphviz.org/doc/info/lang.html
+ - pydot:         https://github.com/erocarrera/pydot
+ - Graphviz:      https://www.graphviz.org
+ - DOT Language:  http://www.graphviz.org/doc/info/lang.html
 """
 from locale import getpreferredencoding
-from networkx.utils import open_file
+
 import networkx as nx
+from networkx.utils import open_file
 
 __all__ = [
     "write_dot",
@@ -58,7 +65,7 @@ def read_dot(path):
 
     Notes
     -----
-    Use `G = nx.Graph(read_dot(path))` to return a :class:`Graph` instead of a
+    Use `G = nx.Graph(nx.nx_pydot.read_dot(path))` to return a :class:`Graph` instead of a
     :class:`MultiGraph`.
     """
     import pydot
@@ -208,6 +215,11 @@ def to_pydot(N):
     for n, nodedata in N.nodes(data=True):
         str_nodedata = {k: str(v) for k, v in nodedata.items()}
         p = pydot.Node(str(n), **str_nodedata)
+        # Explicitly catch all node name parsing errors
+        if len(str(n)) != len(p.get_name()):
+            raise ValueError(
+                f"{str(n)} is not a valid node name while using pydot. Please refer https://github.com/pydot/pydot/issues/258"
+            )
         P.add_node(p)
 
     if N.is_multigraph():
@@ -261,7 +273,7 @@ def pydot_layout(G, prog="neato", root=None):
     """Create node positions using :mod:`pydot` and Graphviz.
 
     Parameters
-    --------
+    ----------
     G : Graph
         NetworkX graph to be laid out.
     prog : string  (default: 'neato')
@@ -272,7 +284,7 @@ def pydot_layout(G, prog="neato", root=None):
         The node of G from which to start some layout algorithms.
 
     Returns
-    --------
+    -------
     dict
         Dictionary of positions keyed by node.
 
@@ -288,7 +300,7 @@ def pydot_layout(G, prog="neato", root=None):
     representation and GraphViz could treat them as the same node.
     The layout may assign both nodes a single location. See Issue #1568
     If this occurs in your case, consider relabeling the nodes just
-    for the layout computation using something similar to:
+    for the layout computation using something similar to::
 
         H = nx.convert_node_labels_to_integers(G, label_attribute='node_label')
         H_layout = nx.nx_pydot.pydot_layout(G, prog='dot')
@@ -327,6 +339,11 @@ def pydot_layout(G, prog="neato", root=None):
     node_pos = {}
     for n in G.nodes():
         pydot_node = pydot.Node(str(n)).get_name()
+        # Explicitly catch all node name parsing errors
+        if len(str(n)) != len(pydot_node):
+            raise ValueError(
+                f"{str(n)} is not a valid node name while using pydot. Please refer https://github.com/pydot/pydot/issues/258"
+            )
         node = Q.get_node(pydot_node)
 
         if isinstance(node, list):

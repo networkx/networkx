@@ -7,7 +7,7 @@ __all__ = ["random_internet_as_graph"]
 
 
 def uniform_int_from_avg(a, m, seed):
-    """ Pick a random integer with uniform probability.
+    """Pick a random integer with uniform probability.
 
     Returns a random integer uniformly taken from a distribution with
     minimum value 'a' and average value 'm', X~U(a,b), E[X]=m, X in N where
@@ -25,7 +25,7 @@ def uniform_int_from_avg(a, m, seed):
     assert m >= a
     b = 2 * m - a
     p = (b - floor(b)) / 2
-    X1 = int(round(seed.random() * (floor(b) - a) + a))
+    X1 = round(seed.random() * (floor(b) - a) + a)
     if seed.random() < p:
         X2 = 1
     else:
@@ -34,7 +34,7 @@ def uniform_int_from_avg(a, m, seed):
 
 
 def choose_pref_attach(degs, seed):
-    """ Pick a random value, with a probability given by its weight.
+    """Pick a random value, with a probability given by its weight.
 
     Returns a random choice among degs keys, each of which has a
     probability proportional to the corresponding dictionary value.
@@ -69,11 +69,10 @@ def choose_pref_attach(degs, seed):
 
 
 class AS_graph_generator:
-    """ Generates random internet AS graphs.
-    """
+    """Generates random internet AS graphs."""
 
     def __init__(self, n, seed):
-        """ Initializes variables. Immediate numbers are taken from [1].
+        """Initializes variables. Immediate numbers are taken from [1].
 
         Parameters
         ----------
@@ -95,9 +94,9 @@ class AS_graph_generator:
         """
 
         self.seed = seed
-        self.n_t = min(n, int(round(self.seed.random() * 2 + 4)))  # num of T nodes
-        self.n_m = int(round(0.15 * n))  # number of M nodes
-        self.n_cp = int(round(0.05 * n))  # number of CP nodes
+        self.n_t = min(n, round(self.seed.random() * 2 + 4))  # num of T nodes
+        self.n_m = round(0.15 * n)  # number of M nodes
+        self.n_cp = round(0.05 * n)  # number of CP nodes
         self.n_c = max(0, n - self.n_t - self.n_m - self.n_cp)  # number of C nodes
 
         self.d_m = 2 + (2.5 * n) / 10000  # average multihoming degree for M nodes
@@ -113,7 +112,7 @@ class AS_graph_generator:
         self.t_c = 0.125  # probability C's provider is T
 
     def t_graph(self):
-        """ Generates the core mesh network of tier one nodes of a AS graph.
+        """Generates the core mesh network of tier one nodes of a AS graph.
 
         Returns
         -------
@@ -141,7 +140,7 @@ class AS_graph_generator:
         self.G.add_edge(i, j, type=kind, customer=customer)
 
     def choose_peer_pref_attach(self, node_list):
-        """ Pick a node with a probability weighted by its peer degree.
+        """Pick a node with a probability weighted by its peer degree.
 
         Pick a node from node_list with preferential attachment
         computed only on their peer degree
@@ -153,7 +152,7 @@ class AS_graph_generator:
         return choose_pref_attach(d, self.seed)
 
     def choose_node_pref_attach(self, node_list):
-        """ Pick a node with a probability weighted by its degree.
+        """Pick a node with a probability weighted by its degree.
 
         Pick a node from node_list with preferential attachment
         computed on their degree
@@ -163,8 +162,7 @@ class AS_graph_generator:
         return choose_pref_attach(degs, self.seed)
 
     def add_customer(self, i, j):
-        """ Keep the dictionaries 'customers' and 'providers' consistent.
-        """
+        """Keep the dictionaries 'customers' and 'providers' consistent."""
 
         self.customers[j].add(i)
         self.providers[i].add(j)
@@ -173,7 +171,7 @@ class AS_graph_generator:
             self.providers[i].add(z)
 
     def add_node(self, i, kind, reg2prob, avg_deg, t_edge_prob):
-        """ Add a node and its customer transit edges to the graph.
+        """Add a node and its customer transit edges to the graph.
 
         Parameters
         ----------
@@ -232,7 +230,7 @@ class AS_graph_generator:
         return i
 
     def add_m_peering_link(self, m, to_kind):
-        """ Add a peering link between two middle tier (M) nodes.
+        """Add a peering link between two middle tier (M) nodes.
 
         Target node j is drawn considering a preferential attachment based on
         other M node peering degree.
@@ -272,7 +270,7 @@ class AS_graph_generator:
             return False
 
     def add_cp_peering_link(self, cp, to_kind):
-        """ Add a peering link to a content provider (CP) node.
+        """Add a peering link to a content provider (CP) node.
 
         Target node j can be CP or M and it is drawn uniformely among the nodes
         belonging to the same region as cp.
@@ -310,7 +308,7 @@ class AS_graph_generator:
                 node_options.remove(j)
 
         if len(node_options) > 0:
-            j = self.seed.sample(node_options, 1)[0]
+            j = self.seed.sample(list(node_options), 1)[0]
             self.add_edge(cp, j, "peer")
             self.G.nodes[cp]["peers"] += 1
             self.G.nodes[j]["peers"] += 1
@@ -319,7 +317,7 @@ class AS_graph_generator:
             return False
 
     def graph_regions(self, rn):
-        """ Initializes AS network regions.
+        """Initializes AS network regions.
 
         Parameters
         ----------
@@ -332,8 +330,7 @@ class AS_graph_generator:
             self.regions["REG" + str(i)] = set()
 
     def add_peering_links(self, from_kind, to_kind):
-        """ Utility function to add peering links among node groups.
-        """
+        """Utility function to add peering links among node groups."""
         peer_link_method = None
         if from_kind == "M":
             peer_link_method = self.add_m_peering_link
@@ -351,7 +348,7 @@ class AS_graph_generator:
                 peer_link_method(i, to_kind)
 
     def generate(self):
-        """ Generates a random AS network graph as described in [1].
+        """Generates a random AS network graph as described in [1].
 
         Returns
         -------
@@ -401,7 +398,7 @@ class AS_graph_generator:
 
 @py_random_state(1)
 def random_internet_as_graph(n, seed=None):
-    """ Generates a random undirected graph resembling the Internet AS network
+    """Generates a random undirected graph resembling the Internet AS network
 
     Parameters
     ----------
@@ -420,21 +417,22 @@ def random_internet_as_graph(n, seed=None):
     -----
     This algorithm returns an undirected graph resembling the Internet
     Autonomous System (AS) network, it uses the approach by Elmokashfi et al.
-    [1] and it grants the properties described in the related paper [1].
+    [1]_ and it grants the properties described in the related paper [1]_.
 
     Each node models an autonomous system, with an attribute 'type' specifying
     its kind; tier-1 (T), mid-level (M), customer (C) or content-provider (CP).
     Each edge models an ADV communication link (hence, bidirectional) with
     attributes:
-        - type: transit|peer, the kind of commercial agreement between nodes;
-        - customer: <node id>, the identifier of the node acting as customer
-            ('none' if type is peer).
+
+      - type: transit|peer, the kind of commercial agreement between nodes;
+      - customer: <node id>, the identifier of the node acting as customer
+        ('none' if type is peer).
 
     References
     ----------
-    [1] A. Elmokashfi, A. Kvalbein and C. Dovrolis, "On the Scalability of
-    BGP: The Role of Topology Growth," in IEEE Journal on Selected Areas
-    in Communications, vol. 28, no. 8, pp. 1250-1261, October 2010.
+    .. [1] A. Elmokashfi, A. Kvalbein and C. Dovrolis, "On the Scalability of
+       BGP: The Role of Topology Growth," in IEEE Journal on Selected Areas
+       in Communications, vol. 28, no. 8, pp. 1250-1261, October 2010.
     """
 
     GG = AS_graph_generator(n, seed)

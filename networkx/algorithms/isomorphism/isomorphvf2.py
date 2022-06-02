@@ -3,7 +3,7 @@
 VF2 Algorithm
 *************
 
-An implementation of VF2 algorithm for graph ismorphism testing.
+An implementation of VF2 algorithm for graph isomorphism testing.
 
 The simplest interface to use this module is to call networkx.is_isomorphic().
 
@@ -44,8 +44,8 @@ GM.mapping stores the isomorphism mapping from G1 to G2.
 {0: 0, 1: 1, 2: 2, 3: 3}
 
 
-Suppose G1 and G2 are isomorphic directed graphs
-graphs. Verification is as follows:
+Suppose G1 and G2 are isomorphic directed graphs.
+Verification is as follows:
 
 >>> G1 = nx.path_graph(4, create_using=nx.DiGraph())
 >>> G2 = nx.path_graph(4, create_using=nx.DiGraph())
@@ -116,7 +116,7 @@ References
       Algorithm for Matching Large Graphs", 3rd IAPR-TC15 Workshop
       on Graph-based Representations in Pattern Recognition, Cuen,
       pp. 149-159, 2001.
-      http://amalfi.dis.unina.it/graph/db/papers/vf-algorithm.pdf
+      https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.101.5342
 
 See Also
 --------
