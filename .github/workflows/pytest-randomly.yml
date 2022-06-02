@@ -1,5 +1,9 @@
 name: Run test suite in random order
 on:
+  pull_request:
+    branches:
+      - main
+
   schedule:
     # Run this workflow once a day
     - cron: "0 0 * * *"
