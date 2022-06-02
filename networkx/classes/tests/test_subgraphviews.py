@@ -310,7 +310,7 @@ class TestEdgeSubGraph:
         """
         self.G.remove_node(0)
         assert [1, 3, 4] == sorted(self.H.nodes)
-        self.G.add_edge(0, 1)
+        self.G.add_edge(0, 1, name="edge01")
 
     def test_node_attr_dict(self):
         """Tests that the node attribute dictionary of the two graphs is
