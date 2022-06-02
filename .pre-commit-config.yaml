@@ -15,3 +15,10 @@ repos:
     rev: v1.12.1
     hooks:
     -   id: blacken-docs
+-   repo: https://github.com/pycqa/isort
+    rev: 5.10.1
+    hooks:
+    -   id: isort
+        name: isort (python)
+        args: ["--profile", "black", "--filter-files", "--skip", "__init__.py"]
+        files: ^networkx/
