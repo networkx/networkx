@@ -3,6 +3,7 @@
 """
 
 import itertools
+
 import pytest
 
 import networkx as nx
