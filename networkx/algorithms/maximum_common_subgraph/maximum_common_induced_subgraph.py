@@ -30,6 +30,7 @@ provides another alternative approach to solving the optimisation problem.
 """
 
 import itertools
+
 import networkx as nx
 
 
@@ -83,7 +84,7 @@ def get_edge_label(G, edge_label_fun, node_a, node_b):
         return None
 
 
-class LabelClass(object):
+class LabelClass:
     """A label class, used by the McSplit algorithm.
 
     A label class contains a list of nodes from graph G and a list of nodes
@@ -100,7 +101,7 @@ class LabelClass(object):
         self.is_adjacent = is_adjacent
 
 
-class PartitioningMCISFinder(object):
+class PartitioningMCISFinder:
     """A class implementing a variant of the McSplit algorithm"""
 
     __slots__ = ["G", "H", "connected", "node_label_fun", "edge_label_fun"]

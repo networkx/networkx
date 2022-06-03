@@ -3,8 +3,9 @@
 """
 
 import itertools
-import networkx as nx
 import pytest
+
+import networkx as nx
 
 
 class TestMaxCommonSubgraph:
