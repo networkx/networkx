@@ -33,7 +33,6 @@ import itertools
 
 import networkx as nx
 
-
 __all__ = [
     "max_common_induced_subgraph",
     "weak_modular_product_mcis",
