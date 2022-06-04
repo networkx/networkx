@@ -34,7 +34,6 @@ import networkx as nx
 from networkx.utils import not_implemented_for
 
 # Authors: Erwan Le Merrer (erwan.lemerrer@technicolor.com)
-""" Second order centrality measure."""
 
 __all__ = ["second_order_centrality"]
 

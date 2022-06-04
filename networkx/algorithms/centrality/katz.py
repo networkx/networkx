@@ -165,7 +165,7 @@ def katz_centrality(
             ) from err
 
     # make up to max_iter iterations
-    for i in range(max_iter):
+    for _ in range(max_iter):
         xlast = x
         x = dict.fromkeys(xlast, 0)
         # do the multiplication y^T = Alpha * x^T A - Beta

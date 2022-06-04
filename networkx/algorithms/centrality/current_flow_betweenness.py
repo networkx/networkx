@@ -122,14 +122,14 @@ def approximate_current_flow_betweenness_centrality(
         msg = f"Number random pairs k>kmax ({k}>{kmax}) "
         raise nx.NetworkXError(msg, "Increase kmax or epsilon")
     cstar2k = cstar / (2 * k)
-    for i in range(k):
-        s, t = seed.sample(range(n), 2)
+    for _ in range(k):
+        s, t = pair = seed.sample(range(n), 2)
         b = np.zeros(n, dtype=dtype)
         b[s] = 1
         b[t] = -1
         p = C.solve(b)
         for v in H:
-            if v == s or v == t:
+            if v in pair:
                 continue
             for nbr in H[v]:
                 w = H[v][nbr].get(weight, 1.0)
@@ -318,8 +318,6 @@ def edge_current_flow_betweenness_centrality(
     .. [2] A measure of betweenness centrality based on random walks,
        M. E. J. Newman, Social Networks 27, 39-54 (2005).
     """
-    from networkx.utils import reverse_cuthill_mckee_ordering
-
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph not connected.")
     n = G.number_of_nodes()
