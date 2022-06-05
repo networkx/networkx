@@ -375,7 +375,7 @@ def test_random_spanning_tree_multiplicative_small():
     """
     from math import exp
 
-    pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
 
     gamma = {
         (0, 1): -0.6383,
@@ -499,7 +499,7 @@ def test_random_spanning_tree_additive_small():
     """
     Sample a single spanning tree from the additive method.
     """
-    pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
 
     edges = {
         (0, 1): 1,
