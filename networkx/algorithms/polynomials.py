@@ -275,8 +275,6 @@ def chromatic_polynomial(G):
     polynomial = 0
     while stack:
         G = stack.pop()
-        bridges = set(nx.bridges(G))
-
         edges = list(G.edges)
         if not edges:
             polynomial += (-1) ** G.graph["contraction_idx"] * x ** len(G)
