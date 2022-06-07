@@ -304,3 +304,25 @@ class TestClosenessCentrality:
             assert set(test_cc.items()) == set(real_cc.items())
 
             prev_cc = test_cc
+
+
+def test_distance_kwarg_is_not_edge_attr():
+    """If the distance kwarg is not None, at least one edge should have the
+    specified distance attribute. If not, then it's likely that the distance
+    kwarg was misspelled. See gh-3880."""
+    # A path graph w/ 4 nodes where the central edge twice as "long" as the others
+    G = nx.path_graph(4)
+    G[1][2]["len"] = 2
+
+    # Raise exception if distance is given but not an attr of any edge
+    with pytest.raises(ValueError, match="No edges found"):
+        nx.closeness_centrality(G, distance="not_a_valid_edge_attr")
+
+    # Default case gives unweighted closeness centrality
+    assert nx.closeness_centrality(G) == {0: 0.5, 1: 0.75, 2: 0.75, 3: 0.5}
+
+    # Correct distance attribute gives weighted closeness centrality
+    weighted_cc = nx.closeness_centrality(G, distance="len")
+    assert weighted_cc == {0: 0.375, 1: 0.5, 2: 0.5, 3: 0.375}
+
+    

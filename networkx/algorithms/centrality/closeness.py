@@ -104,6 +104,13 @@ def closeness_centrality(G, u=None, distance=None, wf_improved=True):
         G = G.reverse()  # create a reversed graph view
 
     if distance is not None:
+        # If `distance` is given, ensure that it is an attribute on at least
+        # one edge.
+        if {attr for _, _, attr in G.edges(data=distance)} == {None}:
+            raise ValueError(
+                f"No edges found with distance={distance}. "
+                "Use distance=None for the unweighted case."
+            )
         # use Dijkstra's algorithm with specified attribute as edge weight
         path_length = functools.partial(
             nx.single_source_dijkstra_path_length, weight=distance
