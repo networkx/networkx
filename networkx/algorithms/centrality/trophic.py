@@ -1,6 +1,5 @@
 """Trophic levels"""
 import networkx as nx
-
 from networkx.utils import not_implemented_for
 
 __all__ = ["trophic_levels", "trophic_differences", "trophic_incoherence_parameter"]

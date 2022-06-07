@@ -28,6 +28,7 @@ nx_agraph, nx_pydot
 import itertools
 import warnings
 from collections import defaultdict
+
 import networkx as nx
 from networkx.utils import not_implemented_for
 
@@ -746,8 +747,9 @@ def to_numpy_recarray(G, nodelist=None, dtype=None, order=None):
      [5 0]]
 
     """
-    import numpy as np
     import warnings
+
+    import numpy as np
 
     warnings.warn(
         (

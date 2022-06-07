@@ -5,9 +5,8 @@ from collections import Counter
 from itertools import chain
 
 import networkx as nx
-from networkx.utils import pairwise, not_implemented_for
-from networkx.classes.graphviews import subgraph_view, reverse_view
-
+from networkx.classes.graphviews import reverse_view, subgraph_view
+from networkx.utils import not_implemented_for, pairwise
 
 __all__ = [
     "nodes",

@@ -4,8 +4,8 @@
 # Copyright 2011 Diederik van Liere <diederik.vanliere@rotman.utoronto.ca>
 """Functions for analyzing triads of a graph."""
 
-from itertools import combinations, permutations
 from collections import defaultdict
+from itertools import combinations, permutations
 from random import sample
 
 import networkx as nx

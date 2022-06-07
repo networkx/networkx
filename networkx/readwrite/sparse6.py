@@ -13,8 +13,8 @@ For more information, see the `sparse6`_ homepage.
 """
 import networkx as nx
 from networkx.exception import NetworkXError
-from networkx.utils import open_file, not_implemented_for
 from networkx.readwrite.graph6 import data_to_n, n_to_data
+from networkx.utils import not_implemented_for, open_file
 
 __all__ = ["from_sparse6_bytes", "read_sparse6", "to_sparse6_bytes", "write_sparse6"]
 

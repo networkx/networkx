@@ -2,6 +2,7 @@
 Threshold Graphs - Creation, manipulation and identification.
 """
 from math import sqrt
+
 import networkx as nx
 from networkx.utils import py_random_state
 
@@ -231,7 +232,7 @@ def creation_sequence_to_weights(creation_sequence):
     # Now scale weights
     if prev == "d":
         w += 1
-    wscale = 1.0 / float(w)
+    wscale = 1 / w
     return [ww * wscale for ww in wseq]
     # return wseq
 
@@ -492,7 +493,7 @@ def cluster_sequence(creation_sequence):
             cseq.append(0)
             continue
         max_size = (deg * (deg - 1)) // 2
-        cseq.append(float(tri) / float(max_size))
+        cseq.append(tri / max_size)
     return cseq
 
 
@@ -521,7 +522,7 @@ def density(creation_sequence):
     N = len(creation_sequence)
     two_size = sum(degree_sequence(creation_sequence))
     two_possible = N * (N - 1)
-    den = two_size / float(two_possible)
+    den = two_size / two_possible
     return den
 
 
@@ -556,7 +557,7 @@ def degree_correlation(creation_sequence):
         if numer == 0:
             return 1
         raise ValueError(f"Zero Denominator but Numerator is {numer}")
-    return numer / float(denom)
+    return numer / denom
 
 
 def shortest_path(creation_sequence, u, v):

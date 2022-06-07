@@ -6,10 +6,10 @@ __all__ = ["capacity_scaling"]
 
 from itertools import chain
 from math import log
+
 import networkx as nx
-from ...utils import BinaryHeap
-from ...utils import not_implemented_for
-from ...utils import arbitrary_element
+
+from ...utils import BinaryHeap, arbitrary_element, not_implemented_for
 
 
 def _detect_unboundedness(R):

@@ -1,5 +1,6 @@
-import networkx as nx
 import io
+
+import networkx as nx
 from networkx.readwrite.p2g import read_p2g, write_p2g
 from networkx.utils import edges_equal
 

@@ -22,9 +22,7 @@ from itertools import combinations
 
 import networkx as nx
 from networkx.algorithms.simple_paths import is_simple_path as is_path
-from networkx.utils import arbitrary_element
-from networkx.utils import not_implemented_for
-from networkx.utils import py_random_state
+from networkx.utils import arbitrary_element, not_implemented_for, py_random_state
 
 __all__ = [
     "hamiltonian_path",

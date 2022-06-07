@@ -1,10 +1,12 @@
 """Unit tests for the :mod:`networkx.algorithms.boundary` module."""
 
 from itertools import combinations
+
 import pytest
+
 import networkx as nx
-from networkx.utils import edges_equal
 from networkx import convert_node_labels_to_integers as cnlti
+from networkx.utils import edges_equal
 
 
 class TestNodeBoundary:

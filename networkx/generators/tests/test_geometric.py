@@ -1,6 +1,6 @@
-from itertools import combinations
 import math
 import random
+from itertools import combinations
 
 import networkx as nx
 

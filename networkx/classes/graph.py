@@ -11,10 +11,10 @@ from copy import deepcopy
 from functools import cached_property
 
 import networkx as nx
-from networkx.classes.coreviews import AdjacencyView
-from networkx.classes.reportviews import NodeView, EdgeView, DegreeView
-from networkx.exception import NetworkXError
 import networkx.convert as convert
+from networkx.classes.coreviews import AdjacencyView
+from networkx.classes.reportviews import DegreeView, EdgeView, NodeView
+from networkx.exception import NetworkXError
 
 __all__ = ["Graph"]
 

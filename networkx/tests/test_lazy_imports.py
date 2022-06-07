@@ -1,6 +1,7 @@
-import sys
 import importlib
+import sys
 import types
+
 import pytest
 
 import networkx.lazy_imports as lazy

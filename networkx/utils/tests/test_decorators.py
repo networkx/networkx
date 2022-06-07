@@ -1,18 +1,19 @@
-import tempfile
 import os
 import pathlib
 import random
+import tempfile
 
 import pytest
 
 import networkx as nx
-from networkx.utils.decorators import open_file, not_implemented_for
 from networkx.utils.decorators import (
+    argmap,
+    not_implemented_for,
+    np_random_state,
+    open_file,
     preserve_random_state,
     py_random_state,
-    np_random_state,
     random_state,
-    argmap,
 )
 from networkx.utils.misc import PythonRandomInterface
 

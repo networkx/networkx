@@ -27,18 +27,18 @@ For additional documentation on the GML file format, please see the
 Several example graphs in GML format may be found on Mark Newman's
 `Network data page <http://www-personal.umich.edu/~mejn/netdata/>`_.
 """
-from io import StringIO
+import html.entities as htmlentitydefs
+import re
+import warnings
 from ast import literal_eval
 from collections import defaultdict
 from enum import Enum
+from io import StringIO
 from typing import Any, NamedTuple
+
 import networkx as nx
 from networkx.exception import NetworkXError
 from networkx.utils import open_file
-
-import warnings
-import re
-import html.entities as htmlentitydefs
 
 __all__ = ["read_gml", "parse_gml", "generate_gml", "write_gml"]
 

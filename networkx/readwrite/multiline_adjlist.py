@@ -32,8 +32,8 @@ __all__ = [
     "read_multiline_adjlist",
 ]
 
-from networkx.utils import open_file
 import networkx as nx
+from networkx.utils import open_file
 
 
 def generate_multiline_adjlist(G, delimiter=" "):

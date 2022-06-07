@@ -17,15 +17,16 @@ See Also
  - :obj:`matplotlib.patches.FancyArrowPatch`
 """
 from numbers import Number
+
 import networkx as nx
 from networkx.drawing.layout import (
-    shell_layout,
     circular_layout,
     kamada_kawai_layout,
+    planar_layout,
+    random_layout,
+    shell_layout,
     spectral_layout,
     spring_layout,
-    random_layout,
-    planar_layout,
 )
 
 __all__ = [
@@ -405,10 +406,11 @@ def draw_networkx_nodes(
     draw_networkx_edge_labels
     """
     from collections.abc import Iterable
-    import numpy as np
+
     import matplotlib as mpl
     import matplotlib.collections  # call as mpl.collections
     import matplotlib.pyplot as plt
+    import numpy as np
 
     if ax is None:
         ax = plt.gca()
@@ -636,13 +638,13 @@ def draw_networkx_edges(
     draw_networkx_edge_labels
 
     """
-    import numpy as np
     import matplotlib as mpl
+    import matplotlib.collections  # call as mpl.collections
     import matplotlib.colors  # call as mpl.colors
     import matplotlib.patches  # call as mpl.patches
-    import matplotlib.collections  # call as mpl.collections
     import matplotlib.path  # call as mpl.path
     import matplotlib.pyplot as plt
+    import numpy as np
 
     # The default behavior is to use LineCollection to draw edges for
     # undirected graphs (for performance reasons) and use FancyArrowPatches
@@ -1475,11 +1477,12 @@ def apply_alpha(colors, alpha, elem_list, cmap=None, vmin=None, vmax=None):
         Array containing RGBA format values for each of the node colours.
 
     """
-    from itertools import islice, cycle
-    import numpy as np
+    from itertools import cycle, islice
+
     import matplotlib as mpl
-    import matplotlib.colors  # call as mpl.colors
     import matplotlib.cm  # call as mpl.cm
+    import matplotlib.colors  # call as mpl.colors
+    import numpy as np
 
     # If we have been provided with a list of numbers as long as elem_list,
     # apply the color mapping.

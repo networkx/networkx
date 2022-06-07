@@ -12,11 +12,12 @@ See Also
 :mod:`edge_kcomponents` : algorithms for finding k-edge-connected components
 :mod:`connectivity` : algorithms for determening edge connectivity.
 """
-import math
 import itertools as it
+import math
+from collections import defaultdict, namedtuple
+
 import networkx as nx
 from networkx.utils import not_implemented_for, py_random_state
-from collections import defaultdict, namedtuple
 
 __all__ = ["k_edge_augmentation", "is_k_edge_connected", "is_locally_k_edge_connected"]
 
@@ -808,7 +809,7 @@ def unconstrained_bridge_augmentation(G):
         v2 = [n for n in nx.dfs_preorder_nodes(T, root) if T.degree(n) == 1]
         # connecting first half of the leafs in pre-order to the second
         # half will bridge connect the tree with the fewest edges.
-        half = int(math.ceil(len(v2) / 2.0))
+        half = math.ceil(len(v2) / 2)
         A2 = list(zip(v2[:half], v2[-half:]))
 
     # collect the edges used to augment the original forest

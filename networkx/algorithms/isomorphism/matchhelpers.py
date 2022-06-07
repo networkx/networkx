@@ -1,9 +1,9 @@
 """Functions which help end users define customize node_match and
 edge_match functions to use during isomorphism checks.
 """
-from itertools import permutations
-import types
 import math
+import types
+from itertools import permutations
 
 __all__ = [
     "categorical_node_match",

@@ -1,9 +1,9 @@
 """Generators for geometric graphs.
 """
 
+import math
 from bisect import bisect_left
 from itertools import accumulate, combinations, product
-import math
 
 import networkx as nx
 from networkx.utils import py_random_state

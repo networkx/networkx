@@ -1,6 +1,8 @@
 import networkx as nx
-from networkx.algorithms.approximation import min_weighted_dominating_set
-from networkx.algorithms.approximation import min_edge_dominating_set
+from networkx.algorithms.approximation import (
+    min_edge_dominating_set,
+    min_weighted_dominating_set,
+)
 
 
 class TestMinWeightDominatingSet:

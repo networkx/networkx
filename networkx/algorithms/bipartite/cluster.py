@@ -3,6 +3,7 @@
 """
 
 import itertools
+
 import networkx as nx
 
 __all__ = [
@@ -14,15 +15,15 @@ __all__ = [
 
 
 def cc_dot(nu, nv):
-    return float(len(nu & nv)) / len(nu | nv)
+    return len(nu & nv) / len(nu | nv)
 
 
 def cc_max(nu, nv):
-    return float(len(nu & nv)) / max(len(nu), len(nv))
+    return len(nu & nv) / max(len(nu), len(nv))
 
 
 def cc_min(nu, nv):
-    return float(len(nu & nv)) / min(len(nu), len(nv))
+    return len(nu & nv) / min(len(nu), len(nv))
 
 
 modes = {"dot": cc_dot, "min": cc_min, "max": cc_max}
@@ -205,7 +206,7 @@ def average_clustering(G, nodes=None, mode="dot"):
     if nodes is None:
         nodes = G
     ccs = latapy_clustering(G, nodes=nodes, mode=mode)
-    return float(sum(ccs[v] for v in nodes)) / len(nodes)
+    return sum(ccs[v] for v in nodes) / len(nodes)
 
 
 def robins_alexander_clustering(G):

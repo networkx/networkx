@@ -1,14 +1,16 @@
-from ast import literal_eval
 import codecs
-from contextlib import contextmanager
 import io
 import math
-import pytest
-import networkx as nx
-from networkx.readwrite.gml import literal_stringizer, literal_destringizer
 import os
 import tempfile
+from ast import literal_eval
+from contextlib import contextmanager
 from textwrap import dedent
+
+import pytest
+
+import networkx as nx
+from networkx.readwrite.gml import literal_destringizer, literal_stringizer
 
 
 class TestGraph:

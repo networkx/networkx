@@ -11,10 +11,12 @@ General guidelines for writing good tests:
   and add the module to the relevant entries below.
 
 """
-import pytest
-import networkx
 import sys
 import warnings
+
+import pytest
+
+import networkx
 
 
 def pytest_addoption(parser):

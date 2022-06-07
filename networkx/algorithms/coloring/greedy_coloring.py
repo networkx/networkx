@@ -1,13 +1,11 @@
 """
 Greedy graph coloring using various strategies.
 """
-from collections import defaultdict, deque
 import itertools
+from collections import defaultdict, deque
 
 import networkx as nx
-from networkx.utils import arbitrary_element
-from networkx.utils import py_random_state
-
+from networkx.utils import arbitrary_element, py_random_state
 
 __all__ = [
     "greedy_color",
@@ -324,7 +322,7 @@ def greedy_color(G, strategy="largest_first", interchange=False):
     .. [2] David W. Matula, and Leland L. Beck, "Smallest-last
        ordering and clustering and graph coloring algorithms." *J. ACM* 30,
        3 (July 1983), 417–427. <https://doi.org/10.1145/2402.322385>
-    .. [3] Maciej M. Sysło, Marsingh Deo, Janusz S. Kowalik,
+    .. [3] Maciej M. Sysło, Narsingh Deo, Janusz S. Kowalik,
        Discrete Optimization Algorithms with Pascal Programs, 415-424, 1983.
        ISBN 0-486-45353-7.
 
@@ -451,7 +449,7 @@ def _greedy_coloring_with_interchange(G, nodes):
 
     References
     ----------
-    .. [1] Maciej M. Syslo, Marsingh Deo, Janusz S. Kowalik,
+    .. [1] Maciej M. Syslo, Narsingh Deo, Janusz S. Kowalik,
        Discrete Optimization Algorithms with Pascal Programs, 415-424, 1983.
        ISBN 0-486-45353-7.
     """

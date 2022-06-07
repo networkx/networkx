@@ -1,16 +1,14 @@
 """ Fast approximation for k-component structure
 """
 import itertools
-from functools import cached_property
 from collections import defaultdict
 from collections.abc import Mapping
+from functools import cached_property
 
 import networkx as nx
+from networkx.algorithms.approximation import local_node_connectivity
 from networkx.exception import NetworkXError
 from networkx.utils import not_implemented_for
-
-from networkx.algorithms.approximation import local_node_connectivity
-
 
 __all__ = ["k_components"]
 

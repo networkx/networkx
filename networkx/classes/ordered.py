@@ -33,13 +33,13 @@ subgraphs and replace with code similar to:
     SG.add_edges_from((u, v) for (u, v) in G.edges() if u in SG if v in SG)
 
 """
-from collections import OrderedDict
 import warnings
+from collections import OrderedDict
 
-from .graph import Graph
-from .multigraph import MultiGraph
 from .digraph import DiGraph
+from .graph import Graph
 from .multidigraph import MultiDiGraph
+from .multigraph import MultiGraph
 
 __all__ = []
 

@@ -5,14 +5,14 @@ In general, these functions do not check for acyclic-ness, so it is up
 to the user to check for that.
 """
 
+import heapq
 from collections import deque
-from math import gcd
 from functools import partial
 from itertools import chain, product, starmap
-import heapq
+from math import gcd
 
 import networkx as nx
-from networkx.utils import arbitrary_element, pairwise, not_implemented_for
+from networkx.utils import arbitrary_element, not_implemented_for, pairwise
 
 __all__ = [
     "descendants",

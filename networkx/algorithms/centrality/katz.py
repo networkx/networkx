@@ -165,7 +165,7 @@ def katz_centrality(
             ) from err
 
     # make up to max_iter iterations
-    for i in range(max_iter):
+    for _ in range(max_iter):
         xlast = x
         x = dict.fromkeys(xlast, 0)
         # do the multiplication y^T = Alpha * x^T A - Beta
@@ -318,7 +318,7 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True, weight=None):
     except AttributeError:
         nodelist = list(G)
         try:
-            b = np.ones((len(nodelist), 1)) * float(beta)
+            b = np.ones((len(nodelist), 1)) * beta
         except (TypeError, ValueError, AttributeError) as err:
             raise nx.NetworkXError("beta must be a number") from err
 

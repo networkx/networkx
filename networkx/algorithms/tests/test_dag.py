@@ -1,10 +1,11 @@
-from itertools import combinations, permutations
 from collections import deque
+from itertools import combinations, permutations
 
 import pytest
 
 import networkx as nx
 from networkx.utils import edges_equal, pairwise
+
 
 # Recipe from the itertools documentation.
 def _consume(iterator):

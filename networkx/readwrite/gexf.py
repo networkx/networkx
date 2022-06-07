@@ -18,17 +18,16 @@ specification and http://gexf.net/basic.html for examples.
 """
 import itertools
 import time
-
-import networkx as nx
-from networkx.utils import open_file
-
 from xml.etree.ElementTree import (
     Element,
     ElementTree,
     SubElement,
-    tostring,
     register_namespace,
+    tostring,
 )
+
+import networkx as nx
+from networkx.utils import open_file
 
 __all__ = ["write_gexf", "read_gexf", "relabel_gexf_graph", "generate_gexf"]
 

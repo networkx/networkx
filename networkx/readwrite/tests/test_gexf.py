@@ -1,5 +1,6 @@
 import io
 import time
+
 import pytest
 
 import networkx as nx

@@ -9,6 +9,7 @@ extensive treatment is provided in [1]_.
    "Graph Polynomials"
 """
 from collections import deque
+
 import networkx as nx
 from networkx.utils import not_implemented_for
 
