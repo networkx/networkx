@@ -37,7 +37,7 @@ def euclidean(x, y):
     return math.dist(x, y)
 
 
-def geometric_edges(G, radius, p):
+def geometric_edges(G, radius, p=2):
     """Returns edge list of node pairs within `radius` of each other.
 
     Parameters
@@ -49,10 +49,10 @@ def geometric_edges(G, radius, p):
     radius : scalar
         The distance threshold. Edges are included in the edge list if the
         distance between the two nodes is less than `radius`.
-    p : scalar
+    p : scalar, default=2
         The `Minkowski distance metric
-        <https://en.wikipedia.org/wiki/Minkowski_distance>`_ use to compute
-        distances.
+        <https://en.wikipedia.org/wiki/Minkowski_distance>`_ used to compute
+        distances. The default value is 2, i.e. Euclidean distance.
 
     Returns
     -------
@@ -75,14 +75,13 @@ def geometric_edges(G, radius, p):
     ...     (1, {"pos": (3, 0)}),
     ...     (2, {"pos": (8, 0)}),
     ... ])
-    >>> p = 2  # Euclidean distance
-    >>> nx.geometric_edges(G, radius=1, p=p)
+    >>> nx.geometric_edges(G, radius=1)
     []
-    >>> nx.geometric_edges(G, radius=4, p=p)
+    >>> nx.geometric_edges(G, radius=4)
     [(0, 1)]
-    >>> nx.geometric_edges(G, radius=6, p=p)
+    >>> nx.geometric_edges(G, radius=6)
     [(0, 1), (1, 2)]
-    >>> nx.geometric_edges(G, radius=9, p=p)
+    >>> nx.geometric_edges(G, radius=9)
     [(0, 1), (0, 2), (1, 2)]
     """
     nodes_pos = G.nodes(data="pos")
