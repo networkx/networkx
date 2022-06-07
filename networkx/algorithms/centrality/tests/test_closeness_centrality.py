@@ -324,5 +324,3 @@ def test_distance_kwarg_is_not_edge_attr():
     # Correct distance attribute gives weighted closeness centrality
     weighted_cc = nx.closeness_centrality(G, distance="len")
     assert weighted_cc == {0: 0.375, 1: 0.5, 2: 0.5, 3: 0.375}
-
-    
