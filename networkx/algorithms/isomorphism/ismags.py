@@ -603,7 +603,7 @@ class ISMAGS:
             The found permutations. This is a set of frozensets of pairs of node
             keys which can be exchanged without changing :attr:`subgraph`.
         dict[collections.abc.Hashable, set[collections.abc.Hashable]]
-            The found co-sets. The co-sets is a dictionary of 
+            The found co-sets. The co-sets is a dictionary of
             ``{node key: set of node keys}``.
             Every key-value pair describes which ``values`` can be interchanged
             without changing nodes less than ``key``.
