@@ -116,7 +116,7 @@ Version 3.0
 * In ``utils/misc.py`` remove ``to_tuple``.
 * In ``algorithms/matching.py``, remove parameter ``maxcardinality`` from ``min_weight_matching``.
 
-Version 3.X
+Version 3.2
 ~~~~~~~~~~~
 * In ``generators/directed.py`` remove the ``create_using`` keyword argument
   for the ``scale_free_graph`` function.
