@@ -662,7 +662,7 @@ class MultiGraph(Graph):
             Each edge given in the list or container will be removed
             from the graph. The edges can be:
 
-                - 2-tuples (u, v) All edges between u and v are removed.
+                - 2-tuples (u, v) A single edge between u and v is removed.
                 - 3-tuples (u, v, key) The edge identified by key is removed.
                 - 4-tuples (u, v, key, data) where data is ignored.
 
@@ -690,6 +690,20 @@ class MultiGraph(Graph):
         >>> G.remove_edges_from([(1, 2), (1, 2)])  # silently ignore extra copy
         >>> list(G.edges)  # now empty graph
         []
+
+        When the edge is a 2-tuple ``(u, v)`` but there are multiple edges between
+        u and v in the graph, the most recent edge (in terms of insertion
+        order) is removed.
+
+        >>> G = nx.MultiGraph()
+        >>> for key in ("x", "y", "a"):
+        ...     k = G.add_edge(0, 1, key=key)
+        >>> G.edges(keys=True)
+        MultiEdgeView([(0, 1, 'x'), (0, 1, 'y'), (0, 1, 'a')])
+        >>> G.remove_edges_from([(0, 1)])
+        >>> G.edges(keys=True)
+        MultiEdgeView([(0, 1, 'x'), (0, 1, 'y')])
+
         """
         for e in ebunch:
             try:
