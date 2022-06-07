@@ -272,11 +272,11 @@ def scale_free_graph(
 
     # TODO: Rm all this complicated logic when deprecation expires and replace
     # with commented code:
-#    if initial_graph is not None and hasattr(initial_graph, "_adj"):
-#        G = initial_graph
-#    else:
-#        # Start with 3-cycle
-#        G = nx.MultiDiGraph([(0, 1), (1, 2), (2, 0)])
+    #    if initial_graph is not None and hasattr(initial_graph, "_adj"):
+    #        G = initial_graph
+    #    else:
+    #        # Start with 3-cycle
+    #        G = nx.MultiDiGraph([(0, 1), (1, 2), (2, 0)])
     if create_using is not None and hasattr(create_using, "_adj"):
         if initial_graph is not None:
             raise ValueError(
@@ -290,7 +290,6 @@ def scale_free_graph(
             G = nx.MultiDiGraph([(0, 1), (1, 2), (2, 0)])
     if not (G.is_directed() and G.is_multigraph()):
         raise nx.NetworkXError("MultiDiGraph required in initial_graph")
-
 
     if alpha <= 0:
         raise ValueError("alpha must be > 0.")
