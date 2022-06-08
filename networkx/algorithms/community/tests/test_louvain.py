@@ -43,6 +43,29 @@ def test_partition():
     assert part == partition
 
 
+def test_directed_partition():
+    G = nx.DiGraph()
+    G.add_edges_from(
+        [
+            (0, 2),
+            (0, 1),
+            (1, 0),
+            (2, 1),
+            (2, 0),
+            (3, 4),
+            (4, 3),
+            (7, 8),
+            (8, 7),
+            (9, 10),
+            (10, 9),
+        ]
+    )
+    expected_partition = [{0, 1, 2}, {3, 4}, {8, 7}, {9, 10}]
+    partition = louvain_communities(G, seed=123, weight=None)
+
+    assert partition == expected_partition
+
+
 def test_none_weight_param():
     G = nx.karate_club_graph()
     nx.set_edge_attributes(
@@ -120,7 +143,7 @@ def test_threshold():
     G = nx.LFR_benchmark_graph(
         250, 3, 1.5, 0.009, average_degree=5, min_community=20, seed=10
     )
-    partition1 = louvain_communities(G, threshold=0.2, seed=2)
+    partition1 = louvain_communities(G, threshold=0.3, seed=2)
     partition2 = louvain_communities(G, seed=2)
     mod1 = modularity(G, partition1)
     mod2 = modularity(G, partition2)

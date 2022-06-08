@@ -238,22 +238,33 @@ def _one_level(G, m, partition, resolution=1, is_directed=False, seed=None):
                 out_degree = out_degrees[u]
                 Stot_in[best_com] -= in_degree
                 Stot_out[best_com] -= out_degree
+                remove_cost = -weights2com[best_com] / (2 * m) + resolution * (
+                    out_degree * Stot_in[best_com] + in_degree * Stot_out[best_com]
+                ) / (2 * m**2)
             else:
                 degree = degrees[u]
                 Stot[best_com] -= degree
+                remove_cost = -weights2com[best_com] / m + (Stot[best_com] * degree) / (
+                    2 * m**2
+                )
             for nbr_com, wt in weights2com.items():
                 if is_directed:
                     gain = (
-                        wt
+                        remove_cost
+                        + wt / (2 * m)
                         - resolution
                         * (
                             out_degree * Stot_in[nbr_com]
                             + in_degree * Stot_out[nbr_com]
                         )
-                        / m
+                        / (2 * m**2)
                     )
                 else:
-                    gain = 2 * wt - resolution * (Stot[nbr_com] * degree) / m
+                    gain = (
+                        remove_cost
+                        + wt / m
+                        - resolution * (Stot[nbr_com] * degree) / (2 * m**2)
+                    )
                 if gain > best_mod:
                     best_mod = gain
                     best_com = nbr_com
