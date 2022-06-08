@@ -537,10 +537,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
 
         >>> G.remove_edge(1, 2)
         >>> G.edges(keys=True)
-        MultiEdgeView([(1, 2, 0), (1, 2, 1)])
-        >>> G.remove_edge(2, 1)  # edges are not directed
-        >>> G.edges(keys=True)
-        MultiEdgeView([(1, 2, 0)])
+        OutMultiEdgeView([(1, 2, 0), (1, 2, 1)])
 
         For edges with keys
 
@@ -551,7 +548,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         'second'
         >>> G.remove_edge(1, 2, key="first")
         >>> G.edges(keys=True)
-        MultiEdgeView([(1, 2, 'second')])
+        OutMultiEdgeView([(1, 2, 'second')])
 
         """
         try:
