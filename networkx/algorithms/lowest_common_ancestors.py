@@ -1,7 +1,7 @@
 """Algorithms for finding the lowest common ancestor of trees and DAGs."""
 from collections import defaultdict
 from collections.abc import Mapping, Set
-from itertools import chain, count
+from itertools import chain, combinations, count
 
 import networkx as nx
 from networkx.utils import UnionFind, arbitrary_element, not_implemented_for
@@ -10,7 +10,77 @@ __all__ = [
     "all_pairs_lowest_common_ancestor",
     "tree_all_pairs_lowest_common_ancestor",
     "lowest_common_ancestor",
+    "naive_lowest_common_ancestor",
+    "naive_all_pairs_lowest_common_ancestor",
 ]
+
+
+def find_successor(G, v, S):
+    """Find a successor of v that is in the set of nodes S"""
+    for w in G.successors(v):
+        if w in S:
+            return w
+    return None
+
+
+def get_a_lowest_common_ancestor(G, common_ancestors):
+    """Return a lowest common ancestor from the given set of common ancestors"""
+    # Start with an arbitrary node v from the set of common ancestors.  Follow
+    # arbitrary outgoing edges, remaining in the set of common ancestors, until
+    # reaching a node with no outgoing edge to another of the common ancestors.
+    v = next(iter(common_ancestors))
+    while True:
+        successor = find_successor(G, v, common_ancestors)
+        if successor is None:
+            return v
+        v = successor
+
+
+@not_implemented_for("undirected")
+@not_implemented_for("multigraph")
+def naive_all_pairs_lowest_common_ancestor(G, pairs=None):
+    """Return the lowest common ancestor of all pairs or the provided pairs"""
+    result = []
+    ancestor_cache = {}
+
+    if pairs is None:
+        pairs = combinations(G.nodes(), 2)
+
+    for v, w in pairs:
+        if v not in ancestor_cache:
+            ancestor_cache[v] = nx.ancestors(v)
+        if w not in ancestor_cache:
+            ancestor_cache[w] = nx.ancestors(w)
+
+        common_ancestors = ancestor_cache[v] & ancestor_cache[w]
+        if common_ancestors:
+            result.append(((v, w), get_a_lowest_common_ancestor(G, common_ancestors)))
+    return result
+
+
+@not_implemented_for("undirected")
+@not_implemented_for("multigraph")
+def naive_lowest_common_ancestor(G, node1, node2, default=None):
+    """Compute the lowest common ancestor of the given pair of nodes.
+
+    Parameters
+    ----------
+    G : NetworkX directed graph
+
+    node1, node2 : nodes in the graph.
+
+    default : object
+        Returned if no common ancestor between `node1` and `node2`
+
+    Returns
+    -------
+    The lowest common ancestor of node1 and node2,
+    or default if they have no common ancestors."""
+
+    lca = naive_all_pairs_lowest_common_ancestor(G, pairs=[(node1, node2)])
+    if lca:
+        return lca
+    return default
 
 
 @not_implemented_for("undirected")
