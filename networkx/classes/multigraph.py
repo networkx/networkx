@@ -596,7 +596,9 @@ class MultiGraph(Graph):
             Remove an edge between nodes u and v.
         key : hashable identifier, optional (default=None)
             Used to distinguish multiple edges between a pair of nodes.
-            If None remove a single (arbitrary) edge between u and v.
+            If None, remove a single edge between u and v. If there are
+            multiple edges, removes the last edge added in terms of
+            insertion order.
 
         Raises
         ------
@@ -621,17 +623,27 @@ class MultiGraph(Graph):
         >>> G = nx.MultiGraph()  # or MultiDiGraph, etc
         >>> G.add_edges_from([(1, 2), (1, 2), (1, 2)])  # key_list returned
         [0, 1, 2]
-        >>> G.remove_edge(1, 2)  # remove a single (arbitrary) edge
+
+        When ``key=None`` (the default), edges are removed in the opposite
+        order that they were added:
+
+        >>> G.remove_edge(1, 2)
+        >>> G.edges(keys=True)
+        MultiEdgeView([(1, 2, 0), (1, 2, 1)])
         >>> G.remove_edge(2, 1)  # edges are not directed
+        >>> G.edges(keys=True)
+        MultiEdgeView([(1, 2, 0)])
 
         For edges with keys
 
-        >>> G = nx.MultiGraph()  # or MultiDiGraph, etc
+        >>> G = nx.MultiGraph()
         >>> G.add_edge(1, 2, key="first")
         'first'
         >>> G.add_edge(1, 2, key="second")
         'second'
-        >>> G.remove_edge(1, 2, key="second")
+        >>> G.remove_edge(1, 2, key="first")
+        >>> G.edges(keys=True)
+        MultiEdgeView([(1, 2, 'second')])
 
         """
         try:
