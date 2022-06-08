@@ -4,6 +4,14 @@ import pytest
 
 import networkx as nx
 
+def test_me():
+    H1 = nx.path_graph(4)
+    H2 = nx.complete_graph(4)
+    H3 = nx.path_graph(8)
+    H4 = nx.complete_graph(8)
+    captions = ["Path on 4 nodes", "Complete graph on 4 nodes", "Path on 8 nodes", "Complete graph on 8 nodes"]
+    labels = ["fig2a", "fig2b", "fig2c", "fig2d"]
+    nx.write_latex([H1, H2, H3, H4], "subfigures.tex", n_rows=2, sub_captions=captions, sub_labels=labels)
 
 expected_tex = r"""\documentclass{report}
 \usepackage{adigraph}
@@ -80,9 +88,9 @@ expected_tex = r"""\documentclass{report}
 
 
 def test_basic_adigraph():
-    A = nx.Adigraph(
-        nodes_color_fallback="gray!90",
-        edges_color_fallback="gray!90",
+    A = nx.AdigraphCollection(
+        default_node_color="gray!90",
+        default_edge_color="gray!90",
         sub_caption="My adigraph number {i} of {n}",
         sub_label="adigraph_{i}_{n}",
         caption="A graph generated with python and latex.",
@@ -109,7 +117,7 @@ def test_basic_adigraph():
     G = nx.Graph()
     G.add_nodes_from(range(8))
     G.add_edges_from(edges)
-    layout = {
+    pos = {
         0: (0.7490296171687696, 0.702353520257394),
         1: (1.0, -0.014221357723796535),
         2: (-0.7765783344161441, -0.7054170966808919),
@@ -122,30 +130,29 @@ def test_basic_adigraph():
 
     A.add_graph(
         G,
-        layout=layout,
-        nodes_color={0: "red!90", 1: "red!90", 4: "cyan!90", 7: "cyan!90"},
+        pos=pos,
+        node_color={0: "red!90", 1: "red!90", 4: "cyan!90", 7: "cyan!90"},
     )
 
     A.add_graph(
         G,
-        layout=layout,
-        directed=False,
-        nodes_color={0: "green!90", 1: "green!90", 4: "purple!90", 7: "purple!90"},
+        pos=pos,
+        node_color={0: "green!90", 1: "green!90", 4: "purple!90", 7: "purple!90"},
     )
 
-    output_tex = A._body(str(A))
+    output_tex = A.to_latex_document(n_rows=2)
 
-    # Pretty way to assert that A._body(str(A)) == expected_tex
+    # Pretty way to assert that A.to_document() == expected_tex
     content_same = True
     for aa, bb in zip(expected_tex.split("\n"), output_tex.split("\n")):
         if aa != bb:
             content_same = False
-            print(f"-{aa}\n+{bb}")
+            print(f"-{aa}|\n+{bb}|")
     assert content_same
 
 
 def test_exception():
-    A = nx.Adigraph()
+    A = nx.AdigraphCollection()
     G = nx.MultiGraph()
     with pytest.raises(nx.NetworkXError):
         A.add_graph(G)
