@@ -244,9 +244,9 @@ def _one_level(G, m, partition, resolution=1, is_directed=False, seed=None):
             else:
                 degree = degrees[u]
                 Stot[best_com] -= degree
-                remove_cost = -weights2com[best_com] / m + (Stot[best_com] * degree) / (
-                    2 * m**2
-                )
+                remove_cost = -weights2com[best_com] / m + resolution * (
+                    Stot[best_com] * degree
+                ) / (2 * m**2)
             for nbr_com, wt in weights2com.items():
                 if is_directed:
                     gain = (
