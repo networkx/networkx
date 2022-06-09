@@ -92,23 +92,23 @@ def directed_edge_swap(G, *, nswap=1, max_tries=100, seed=None):
         # If the given node doesn't have any out edges, then there isn't anything to swap
         if G.out_degree(start) == 0:
             continue
-        _, second = seed.choice(list(G.out_edges(start)))
+        second = seed.choice(list(G.succ[start]))
 
         if G.out_degree(second) == 0:
             continue
-        _, third = seed.choice(list(G.out_edges(second)))
+        third = seed.choice(list(G.succ[second]))
 
         if G.out_degree(third) == 0:
             continue
-        _, fourth = seed.choice(list(G.out_edges(third)))
+        fourth = seed.choice(list(G.succ[third]))
 
         if start == second or second == third or third == fourth:
             continue
 
         if (
-            (start, third) not in G.out_edges(start)
-            and (second, fourth) not in G.out_edges(second)
-            and (third, second) not in G.out_edges(third)
+            third not in G.succ[start]
+            and fourth not in G.succ[second]
+            and second not in G.succ[third]
         ):
             # Swap nodes
             G.add_edge(start, third)
