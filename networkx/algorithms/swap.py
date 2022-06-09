@@ -26,7 +26,7 @@ def directed_edge_swap(G, *, nswap=1, max_tries=100, seed=None):
        A directed graph
 
     nswap : integer (optional, default=1)
-       Number of three-edge swaps to perform
+       Number of three-edge (directed) swaps to perform
 
     max_tries : integer (optional)
        Maximum number of attempts to swap edges
@@ -38,7 +38,7 @@ def directed_edge_swap(G, *, nswap=1, max_tries=100, seed=None):
     Returns
     -------
     G : DiGraph
-       The graph after triple-edge swaps.
+       The graph after the edges are swapped.
 
     Raises
     ------
