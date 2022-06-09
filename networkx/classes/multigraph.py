@@ -789,17 +789,21 @@ class MultiGraph(Graph):
 
         edges(self, nbunch=None, data=False, keys=False, default=None)
 
-        The EdgeView provides set-like operations on the edge-tuples
+        The MultiEdgeView provides set-like operations on the edge-tuples
         as well as edge attribute lookup. When called, it also provides
         an EdgeDataView object which allows control of access to edge
         attributes (but does not provide set-like operations).
-        Hence, `G.edges[u, v, k]['color']` provides the value of the color
-        attribute for edge `(u, v, k)` while
-        `for (u, v, c) in G.edges(data='color', default='red'):`
-        iterates through all the edges yielding the color attribute.
+        Hence, ``G.edges[u, v, k]['color']`` provides the value of the color
+        attribute for the edge from ``u`` to ``v`` with key ``k`` while
+        ``for (u, v, k, c) in G.edges(data='color', keys=True, default="red"):``
+        iterates through all the edges yielding the color attribute with
+        default `'red'` if no color attribute exists.
 
         Edges are returned as tuples with optional data and keys
-        in the order (node, neighbor, key, data).
+        in the order (node, neighbor, key, data). If ``keys=True`` is not
+        provided, the tuples will just be (node, neighbor, data), but
+        multiple tuples with the same node and neighbor will be generated
+        when multiple edges exist between two nodes.
 
         Parameters
         ----------
@@ -821,7 +825,7 @@ class MultiGraph(Graph):
         edges : MultiEdgeView
             A view of edge attributes, usually it iterates over (u, v)
             (u, v, k) or (u, v, k, d) tuples of edges, but can also be
-            used for attribute lookup as `edges[u, v, k]['foo']`.
+            used for attribute lookup as ``edges[u, v, k]['foo']``.
 
         Notes
         -----
@@ -830,7 +834,7 @@ class MultiGraph(Graph):
 
         Examples
         --------
-        >>> G = nx.MultiGraph()  # or MultiDiGraph
+        >>> G = nx.MultiGraph()
         >>> nx.add_path(G, [0, 1, 2])
         >>> key = G.add_edge(2, 3, weight=5)
         >>> key2 = G.add_edge(2, 1, weight=2)  # multi-edge
