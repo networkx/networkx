@@ -52,7 +52,9 @@ def extrema_bounding(G, compute="diameter"):
     NetworkXError
         If the graph consists of multiple components
     ValueError
-        If `compute` is not one of "diameter", "radius", "periphery", "center", or "eccentricities".
+        If `compute` is not one of "diameter", "radius", "periphery", "center",
+        or "eccentricities".
+
     Notes
     -----
     This algorithm was proposed in the following papers:
