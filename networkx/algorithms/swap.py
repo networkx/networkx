@@ -73,7 +73,7 @@ def directed_edge_swap(G, *, nswap=1, max_tries=100, seed=None):
     # Instead of choosing uniformly at random from a generated edge list,
     # this algorithm chooses nonuniformly from the set of nodes with
     # probability weighted by degree.
-    n = 0
+    tries = 0
     swapcount = 0
     keys, degrees = zip(*G.degree())  # keys, degree
     cdf = nx.utils.cumulative_distribution(degrees)  # cdf of degree
@@ -83,25 +83,29 @@ def directed_edge_swap(G, *, nswap=1, max_tries=100, seed=None):
         # choose source node index from discrete distribution
         start_index = discrete_sequence(1, cdistribution=cdf, seed=seed)[0]
         start = keys[start_index]
+        tries += 1
+
+        if tries > max_tries:
+            e = (
+                f"Maximum number of swap attempts ({tries}) exceeded "
+                f"before desired swaps achieved ({nswap})."
+            )
+            raise nx.NetworkXAlgorithmError(e)
 
         # If the given node doesn't have any out edges, then there isn't anything to swap
         if G.out_degree(start) == 0:
-            n += 1
             continue
         _, second = seed.choice(list(G.out_edges(start)))
 
         if G.out_degree(second) == 0:
-            n += 1
             continue
         _, third = seed.choice(list(G.out_edges(second)))
 
         if G.out_degree(third) == 0:
-            n += 1
             continue
         _, fourth = seed.choice(list(G.out_edges(third)))
 
         if start == second or second == third or third == fourth:
-            n += 1
             continue
 
         if (
@@ -118,13 +122,6 @@ def directed_edge_swap(G, *, nswap=1, max_tries=100, seed=None):
             G.remove_edge(third, fourth)
             swapcount += 1
 
-        if n >= max_tries:
-            e = (
-                f"Maximum number of swap attempts ({n}) exceeded "
-                f"before desired swaps achieved ({nswap})."
-            )
-            raise nx.NetworkXAlgorithmError(e)
-        n += 1
     return G
 
 
