@@ -188,6 +188,7 @@ html_context = {
         "latest": "devel (latest)",
         "stable": "current (stable)",
     },
+    "default_mode": "light",
 }
 
 # Options for LaTeX output
