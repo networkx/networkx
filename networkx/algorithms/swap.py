@@ -10,6 +10,7 @@ __all__ = ["double_edge_swap", "connected_double_edge_swap", "directed_edge_swap
 
 
 @py_random_state(3)
+@nx.utils.not_implemented_for("undirected")
 def directed_edge_swap(G, *, nswap=1, max_tries=100, seed=None):
     """Swap three edges in a directed graph while keeping the node degrees fixed.
 
@@ -64,11 +65,6 @@ def directed_edge_swap(G, *, nswap=1, max_tries=100, seed=None):
            Degree Sequence with 2-Edge Swaps.” Mathematics Stack Exchange,
            https://math.stackexchange.com/questions/22272/. Accessed 30 May 2022.
     """
-    if not G.is_directed():
-        raise nx.NetworkXError(
-            "directed_edge_swap() is only defined for directed graphs. Use double_edge_swap "
-            "instead"
-        )
     if nswap > max_tries:
         raise nx.NetworkXError("Number of swaps > number of tries allowed.")
     if len(G) < 4:

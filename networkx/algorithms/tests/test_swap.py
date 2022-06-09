@@ -85,7 +85,7 @@ def test_directed_edge_swap_tries():
 
 def test_directed_edge_directed():
     graph = nx.Graph([(0, 1), (2, 3)])
-    with pytest.raises(nx.NetworkXError, match="only defined for directed graphs."):
+    with pytest.raises(nx.NetworkXNotImplemented):
         G = nx.directed_edge_swap(graph)
 
 
