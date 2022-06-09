@@ -34,5 +34,5 @@ jobs:
 
     - name: Test NetworkX
       run: |
-        pytest --cov=networkx --runslow --doctest-modules --pyargs networkx
+        pytest --cov=networkx --runslow --doctest-modules --durations=20 --pyargs networkx
         codecov
