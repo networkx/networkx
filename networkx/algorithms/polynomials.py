@@ -287,4 +287,4 @@ def chromatic_polynomial(G):
             G.remove_edge(*e)
             stack.append(G)
             stack.append(C)
-    return sympy.simplify(polynomial)
+    return polynomial
