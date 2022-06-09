@@ -1087,7 +1087,7 @@ def multipartite_layout(G, subset_key="subset", align="vertical", scale=1, cente
     try:
         layers = sorted(layers.items())
     except TypeError:
-        layers = list(d.items())
+        layers = list(layers.items())
 
     pos = None
     nodes = []

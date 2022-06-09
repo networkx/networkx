@@ -438,3 +438,8 @@ def test_multipartite_layout_layer_order():
     assert pos["a"][-1] == pos["d"][-1]
     # positions should be sorted according to layer
     assert pos["c"][-1] < pos["a"][-1] < pos["b"][-1] < pos["e"][-1]
+
+    # Make sure that multipartite_layout still works when layers are not sortable
+    G.nodes["a"]["subset"] = "layer_0"  # Can't sort mixed strs/ints
+    pos_nosort = nx.multipartite_layout(G)  # smoke test: this should not raise
+    assert pos_nosort.keys() == pos.keys()
