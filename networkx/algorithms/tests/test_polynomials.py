@@ -17,10 +17,10 @@ _test_tutte_graphs = {
 
 _test_chromatic_graphs = {
     nx.complete_graph(1): "x",
-    nx.complete_graph(4): "x*(x**3 - 6*x**2 + 11*x - 6)",
-    nx.cycle_graph(5): "((-1)**5)*(x-1)+(x-1)**5",
-    nx.diamond_graph(): "x*(x**3 - 5*x**2 + 8*x - 4)",
-    nx.path_graph(5): "x*(x-1)**4",
+    nx.complete_graph(4): "x**4 - 6*x**3 + 11*x**2 - 6*x",
+    nx.cycle_graph(5): "x**5 - 5*x**4 + 10*x**3 - 10*x**2 + 4*x",
+    nx.diamond_graph(): "x**4 - 5*x**3 + 8*x**2 - 4*x",
+    nx.path_graph(5): "x**5 - 4*x**4 + 6*x**3 - 4*x**2 + x",
 }
 
 

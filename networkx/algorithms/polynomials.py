@@ -223,11 +223,11 @@ def chromatic_polynomial(G):
     --------
     >>> C = nx.cycle_graph(5)
     >>> nx.chromatic_polynomial(C)
-    x*(x**4 - 5*x**3 + 10*x**2 - 10*x + 4)
+    x**5 - 5*x**4 + 10*x**3 - 10*x**2 + 4*x
 
     >>> G = nx.complete_graph(4)
     >>> nx.chromatic_polynomial(G)
-    x*(x**3 - 6*x**2 + 11*x - 6)
+    x**4 - 6*x**3 + 11*x**2 - 6*x
 
     Notes
     -----
