@@ -1,6 +1,7 @@
 import pytest
 
 import networkx as nx
+from networkx.utils import edges_equal
 
 
 class TestSubGraphView:
@@ -292,7 +293,9 @@ class TestEdgeSubGraph:
 
     def test_correct_edges(self):
         """Tests that the subgraph has the correct edges."""
-        assert [(0, 1, "edge01"), (3, 4, "edge34")] == sorted(self.H.edges.data("name"))
+        assert edges_equal(
+            [(0, 1, "edge01"), (3, 4, "edge34")], self.H.edges.data("name")
+        )
 
     def test_add_node(self):
         """Tests that adding a node to the original graph does not
@@ -310,6 +313,7 @@ class TestEdgeSubGraph:
         """
         self.G.remove_node(0)
         assert [1, 3, 4] == sorted(self.H.nodes)
+        self.G.add_node(0, name="node0")
         self.G.add_edge(0, 1, name="edge01")
 
     def test_node_attr_dict(self):
