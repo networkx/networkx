@@ -274,7 +274,7 @@ def steiner_tree(G, terminal_nodes, weight="weight", method=None):
         import warnings
 
         msg = (
-            "steiner_tree will change default method from 'kou' to 'wu'"
+            "steiner_tree will change default method from 'kou' to 'wu' "
             "in version 3.0.\nSet the `method` kwarg to remove this warning."
         )
         warnings.warn(msg, FutureWarning, stacklevel=4)
