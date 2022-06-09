@@ -26,9 +26,7 @@ jobs:
 
     - name: Test NetworkX
       run: |
-        # NOTE: --assert=plain necessary to work around known pytest issue.
-        # See pytest-dev/pytest#10008
-        pytest --durations=10 --pyargs --assert=plain networkx
+        pytest --durations=10 --pyargs networkx
 
   default:
     runs-on: ${{ matrix.os }}-latest
