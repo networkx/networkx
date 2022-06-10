@@ -1,8 +1,9 @@
 import filecmp
 import os
 
-import networkx as nx
 import pytest
+
+import networkx as nx
 
 
 def test_multiple_graphs():
