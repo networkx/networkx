@@ -44,7 +44,8 @@ def write_dot(G, path):
     msg = (
         "nx.nx_pydot.write_dot depends on the pydot package, which has"
         "known issues and is not actively maintained. Consider using"
-        "nx.nx_agraph.write_dot instead."
+        "nx.nx_agraph.write_dot instead.\n\n"
+        "See https://github.com/networkx/networkx/issues/5723"
     )
     warnings.warn(msg, PendingDeprecationWarning, stacklevel=2)
     P = to_pydot(G)
@@ -80,7 +81,8 @@ def read_dot(path):
     msg = (
         "nx.nx_pydot.read_dot depends on the pydot package, which has"
         "known issues and is not actively maintained. Consider using"
-        "nx.nx_agraph.read_dot instead."
+        "nx.nx_agraph.read_dot instead.\n\n"
+        "See https://github.com/networkx/networkx/issues/5723"
     )
     warnings.warn(msg, PendingDeprecationWarning, stacklevel=2)
 
@@ -118,7 +120,8 @@ def from_pydot(P):
     """
     msg = (
         "nx.nx_pydot.from_pydot depends on the pydot package, which has"
-        "known issues and is not actively maintained."
+        "known issues and is not actively maintained.\n\n"
+        "See https://github.com/networkx/networkx/issues/5723"
     )
     warnings.warn(msg, PendingDeprecationWarning, stacklevel=2)
 
@@ -217,7 +220,8 @@ def to_pydot(N):
 
     msg = (
         "nx.nx_pydot.to_pydot depends on the pydot package, which has"
-        "known issues and is not actively maintained."
+        "known issues and is not actively maintained.\n\n"
+        "See https://github.com/networkx/networkx/issues/5723"
     )
     warnings.warn(msg, PendingDeprecationWarning, stacklevel=2)
 
@@ -345,7 +349,8 @@ def graphviz_layout(G, prog="neato", root=None):
     msg = (
         "nx.nx_pydot.graphviz_layout depends on the pydot package, which has"
         "known issues and is not actively maintained. Consider using"
-        "nx.nx_agraph.graphviz_layout instead."
+        "nx.nx_agraph.graphviz_layout instead.\n\n"
+        "See https://github.com/networkx/networkx/issues/5723"
     )
     warnings.warn(msg, PendingDeprecationWarning, stacklevel=2)
 
@@ -394,7 +399,8 @@ def pydot_layout(G, prog="neato", root=None):
 
     msg = (
         "nx.nx_pydot.pydot_layout depends on the pydot package, which has"
-        "known issues and is not actively maintained."
+        "known issues and is not actively maintained.\n\n"
+        "See https://github.com/networkx/networkx/issues/5723"
     )
     warnings.warn(msg, PendingDeprecationWarning, stacklevel=2)
     P = to_pydot(G)
