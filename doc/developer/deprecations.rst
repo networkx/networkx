@@ -115,6 +115,7 @@ Version 3.0
 * In ``utils/misc.py`` remove ``dict_to_numpy_array1`` and ``dict_to_numpy_array2``.
 * In ``utils/misc.py`` remove ``to_tuple``.
 * In ``algorithms/matching.py``, remove parameter ``maxcardinality`` from ``min_weight_matching``.
+* In ``drawing/nx_pydot.py``, change PendingDeprecationWarning to DeprecationWarning.
 
 Version 3.2
 ~~~~~~~~~~~
