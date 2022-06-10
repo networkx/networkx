@@ -1,11 +1,11 @@
 import filecmp
 import os
-import pytest
 
 import networkx as nx
+import pytest
 
 
-def test_me():
+def test_multiple_graphs():
     H1 = nx.path_graph(4)
     H2 = nx.complete_graph(4)
     H3 = nx.path_graph(8)
@@ -17,9 +17,8 @@ def test_me():
         "Complete graph on 8 nodes",
     ]
     labels = ["fig2a", "fig2b", "fig2c", "fig2d"]
-    nx.write_latex(
+    latex_code = nx.to_latex(
         [H1, H2, H3, H4],
-        "subfigures.tex",
         n_rows=2,
         sub_captions=captions,
         sub_labels=labels,
@@ -119,7 +118,7 @@ def test_basic_adigraph():
         (3, 6),
         (3, 7),
     ]
-    G = nx.Graph()
+    G = nx.DiGraph()
     G.add_nodes_from(range(8))
     G.add_edges_from(edges)
     pos = {
@@ -174,7 +173,7 @@ def test_exception_pos_single_graph():
         nx.to_latex(G, pos)
 
     pos[3] = (1, 2, 3)
-    with pytest.raises(ValueError):
+    with pytest.raises(nx.NetworkXError):
         nx.to_latex(G, pos)
 
     pos[3] = (3, 2)

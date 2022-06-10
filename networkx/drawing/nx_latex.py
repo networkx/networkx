@@ -28,7 +28,7 @@ If you want subfigures each containing one graph, you can input a list of graphs
 >>> nx.set_node_attributes(G, node_color, "color")
 >>> edge_width = {e: 1.5 for e in H3.edges}
 >>> nx.set_edge_attributes(G, edge_width, "width")
->>> pos = nx.spring_layout(H3, seed=42)
+>>> pos = nx.circular_layout(H3)
 >>> latex_code = nx.to_latex(H3, pos=pos, node_color="color", edge_width="width")
 >>> print(latex_code)
 \documentclass{report}
@@ -38,14 +38,14 @@ If you want subfigures each containing one graph, you can input a list of graphs
 \begin{document}
 \begin{figure}
     \NewAdigraph{myAdigraph}{
-            0,None,:0.13691873391588788\textwidth,0.48252075234621256\textwidth:;
-            1,None,:0.07722434611576236\textwidth,0.37392216097885134\textwidth:;
-            2,None,:0.020007452362970562\textwidth,0.23772460620435057\textwidth:;
-            3,None,:-0.026381163990210173\textwidth,0.08612095850053242\textwidth:;
-            4,None,:-0.05452915409975908\textwidth,-0.07222784919699579\textwidth:;
-            5,None,:-0.06258014562321262\textwidth,-0.23025586352234492\textwidth:;
-            6,None,:-0.055089924341919554\textwidth,-0.37780476531060614\textwidth:;
-            7,None,:-0.03557014433951943\textwidth,-0.5\textwidth:;
+            0,None,:0.5\textwidth,9.189213592397599e-09\textwidth:;
+            1,None,:0.35355338839768036\textwidth,0.3535533844243667\textwidth:;
+            2,None,:-8.69316629112046e-09\textwidth,0.4999999960266863\textwidth:;
+            3,None,:-0.3535533620726258\textwidth,0.3535533844243667\textwidth:;
+            4,None,:-0.4999999736749454\textwidth,-3.452217354363565e-08\textwidth:;
+            5,None,:-0.3535533918749474\textwidth,-0.35355333624361784\textwidth:;
+            6,None,:1.9124967439186124e-08\textwidth,-0.4999999776482591\textwidth:;
+            7,None,:0.35355332879303714\textwidth,-0.3535534256505827\textwidth:;
         }{
             0,1,None,::;
             1,2,None,::;
@@ -54,7 +54,7 @@ If you want subfigures each containing one graph, you can input a list of graphs
             4,5,None,::;
             5,6,None,::;
             6,7,None,::;
-        }[]
+        }[-]
         \myAdigraph{}
 \end{figure}
 \end{document}
@@ -65,6 +65,7 @@ See Also
 Adigraph:      https://ctan.org/pkg/adigraph
 """
 import os
+
 import networkx as nx
 
 __all__ = ["to_latex_raw", "to_latex", "write_latex"]
@@ -84,28 +85,39 @@ def to_latex_raw(
     edge_label="label",
     edge_style=None,
 ):
-    # Setup attribute dicts
+    # Setup position dict
     if pos is None:
-        pos = nx.spring_layout(G, seed=42)
+        # default is a circle with radius 1
+        adigraph_pos = {n: 1 for n in G}
     else:
         # try pos as attribute name in G.nodes
+        n_pos = {}
         try:
-            if all(hasattr(data, pos) for n, data in G.nodes(data=True)):
-                pos = nx.get_node_attributes(G, pos)
+            for n, data in G.nodes(data=True):
+                n_pos[n] = data[pos]
+            pos = n_pos
+        except KeyError:
             raise nx.NetworkXError(
                 "pos appears to be a node attr name but not for all nodes"
             )
         except TypeError:
             # try pos is dict
-            try:
-                any(len(pos[n]) != 2 for n in G)
-            except KeyError:
-                raise nx.NetworkXError(
-                    "pos appears to be a dict but not including all nodes"
-                )
+            if G.nodes - pos.keys():
+                raise nx.NetworkXError("pos appears as a dict but without all nodes")
 
+        adigraph_pos = {}
+        for n, xy in pos.items():
+            if len(xy) == 2:
+                x, y = xy
+                adigraph_pos[n] = f"{x/2}\\textwidth,{y/2}\\textwidth"
+            elif len(xy) == 1:
+                adigraph_pos[n] = xy
+            else:
+                raise nx.NetworkXError("pos contains values not of length 1 or 2")
+
+    # Setup edge style
     if edge_style is None:
-        edge_style = "[]" if G.is_directed() else ""
+        edge_style = "" if G.is_directed() else "-"
 
     # indent nicely
     i4 = "\n    "
@@ -114,11 +126,11 @@ def to_latex_raw(
 
     result = "    \\NewAdigraph{myAdigraph}{"
     for n, data in G.nodes(data=True):
-        x, y = pos[n]
+        xy = adigraph_pos[n]
         clr = data.get(node_color, default_node_color)
         wth = data.get(node_width, "")
         lbl = data.get(node_label, "")
-        result += i12 + f"{n},{clr},{wth}:{x/2}\\textwidth,{y/2}\\textwidth:{lbl};"
+        result += i12 + f"{n},{clr},{wth}:{xy}:{lbl};"
 
     result += i8 + "}{"
     for u, v, data in G.edges(data=True):
@@ -237,12 +249,13 @@ def to_latex(
         sbf = subfigure_wrapper
         size = 1 / n_rows
 
+        N = len(Gbunch)
         if pos is None:
-            pos = [nx.spring_layout(G, seed=42) for G in Gbunch]
+            pos = [None] * N
         if sub_captions is None:
-            sub_captions = [""] * len(Gbunch)
+            sub_captions = [""] * N
         if sub_labels is None:
-            sub_labels = [""] * len(Gbunch)
+            sub_labels = [""] * N
         if not (len(Gbunch) == len(pos) == len(sub_captions) == len(sub_labels)):
             raise nx.NetworkXError(
                 "length of Gbunch, sub_captions and sub_figures must agree"
