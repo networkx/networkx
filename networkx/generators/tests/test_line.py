@@ -1,6 +1,6 @@
-import networkx as nx
 import pytest
 
+import networkx as nx
 import networkx.generators.line as line
 from networkx.utils import edges_equal
 

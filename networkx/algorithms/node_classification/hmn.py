@@ -7,9 +7,8 @@ Semi-supervised learning using gaussian fields and harmonic functions.
 In ICML (Vol. 3, pp. 912-919).
 """
 import networkx as nx
-
-from networkx.utils.decorators import not_implemented_for
 from networkx.algorithms.node_classification.utils import _get_label_info
+from networkx.utils.decorators import not_implemented_for
 
 __all__ = ["harmonic_function"]
 

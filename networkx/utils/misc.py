@@ -11,12 +11,12 @@ can be accessed, for example, as
 1
 """
 
-from collections import defaultdict, deque
-from collections.abc import Iterable, Iterator, Sized
-import warnings
 import sys
 import uuid
-from itertools import tee, chain
+import warnings
+from collections import defaultdict, deque
+from collections.abc import Iterable, Iterator, Sized
+from itertools import chain, tee
 
 import networkx as nx
 

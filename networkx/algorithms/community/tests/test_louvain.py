@@ -1,8 +1,8 @@
 import networkx as nx
 from networkx.algorithms.community import (
+    is_partition,
     louvain_communities,
     modularity,
-    is_partition,
     partition_quality,
 )
 

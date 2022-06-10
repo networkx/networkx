@@ -4,8 +4,8 @@ np = pytest.importorskip("numpy")
 pytest.importorskip("scipy")
 
 import networkx as nx
-from networkx.generators.degree_seq import havel_hakimi_graph
 from networkx.exception import NetworkXError
+from networkx.generators.degree_seq import havel_hakimi_graph
 
 
 def test_incidence_matrix_simple():

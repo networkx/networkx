@@ -1,10 +1,12 @@
-import pytest
-import networkx as nx
-from networkx.utils import nodes_equal, edges_equal
-from networkx.readwrite.graphml import GraphMLWriter
 import io
-import tempfile
 import os
+import tempfile
+
+import pytest
+
+import networkx as nx
+from networkx.readwrite.graphml import GraphMLWriter
+from networkx.utils import edges_equal, nodes_equal
 
 
 class BaseGraphML:

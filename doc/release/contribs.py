@@ -13,7 +13,7 @@ tag = sys.argv[1]
 
 
 def call(cmd):
-    return check_output(shlex.split(cmd), universal_newlines=True).split("\n")
+    return check_output(shlex.split(cmd), text=True).split("\n")
 
 
 tag_date = call(f"git log -n1 --format='%ci' {tag}")[0]

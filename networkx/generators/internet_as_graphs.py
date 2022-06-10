@@ -25,7 +25,7 @@ def uniform_int_from_avg(a, m, seed):
     assert m >= a
     b = 2 * m - a
     p = (b - floor(b)) / 2
-    X1 = int(round(seed.random() * (floor(b) - a) + a))
+    X1 = round(seed.random() * (floor(b) - a) + a)
     if seed.random() < p:
         X2 = 1
     else:
@@ -94,9 +94,9 @@ class AS_graph_generator:
         """
 
         self.seed = seed
-        self.n_t = min(n, int(round(self.seed.random() * 2 + 4)))  # num of T nodes
-        self.n_m = int(round(0.15 * n))  # number of M nodes
-        self.n_cp = int(round(0.05 * n))  # number of CP nodes
+        self.n_t = min(n, round(self.seed.random() * 2 + 4))  # num of T nodes
+        self.n_m = round(0.15 * n)  # number of M nodes
+        self.n_cp = round(0.05 * n)  # number of CP nodes
         self.n_c = max(0, n - self.n_t - self.n_m - self.n_cp)  # number of C nodes
 
         self.d_m = 2 + (2.5 * n) / 10000  # average multihoming degree for M nodes

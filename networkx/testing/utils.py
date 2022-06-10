@@ -1,5 +1,6 @@
 import warnings
-from networkx.utils import nodes_equal, edges_equal, graphs_equal
+
+from networkx.utils import edges_equal, graphs_equal, nodes_equal
 
 __all__ = [
     "assert_nodes_equal",

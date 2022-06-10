@@ -1,4 +1,5 @@
 import math
+
 import pytest
 
 np = pytest.importorskip("numpy")
@@ -48,7 +49,7 @@ class TestEigenvectorCentrality:
     def test_maxiter(self):
         with pytest.raises(nx.PowerIterationFailedConvergence):
             G = nx.path_graph(3)
-            b = nx.eigenvector_centrality(G, max_iter=0)
+            nx.eigenvector_centrality(G, max_iter=0)
 
 
 class TestEigenvectorCentralityDirected:
@@ -152,16 +153,16 @@ class TestEigenvectorCentralityDirected:
 class TestEigenvectorCentralityExceptions:
     def test_multigraph(self):
         with pytest.raises(nx.NetworkXException):
-            e = nx.eigenvector_centrality(nx.MultiGraph())
+            nx.eigenvector_centrality(nx.MultiGraph())
 
     def test_multigraph_numpy(self):
         with pytest.raises(nx.NetworkXException):
-            e = nx.eigenvector_centrality_numpy(nx.MultiGraph())
+            nx.eigenvector_centrality_numpy(nx.MultiGraph())
 
     def test_empty(self):
         with pytest.raises(nx.NetworkXException):
-            e = nx.eigenvector_centrality(nx.Graph())
+            nx.eigenvector_centrality(nx.Graph())
 
     def test_empty_numpy(self):
         with pytest.raises(nx.NetworkXException):
-            e = nx.eigenvector_centrality_numpy(nx.Graph())
+            nx.eigenvector_centrality_numpy(nx.Graph())

@@ -1,10 +1,11 @@
 """Unit tests for the :mod:`networkx.generators.lattice` module."""
 
+from itertools import product
+
 import pytest
 
 import networkx as nx
 from networkx.utils import edges_equal
-from itertools import product
 
 
 class TestGrid2DGraph:
@@ -67,6 +68,12 @@ class TestGrid2DGraph:
         G = nx.grid_2d_graph(4, 2, periodic=True)
         H = nx.grid_2d_graph(4, 2, periodic=True, create_using=nx.MultiGraph())
         assert list(G.edges()) == list(H.edges())
+
+    def test_exceptions(self):
+        pytest.raises(nx.NetworkXError, nx.grid_2d_graph, -3, 2)
+        pytest.raises(nx.NetworkXError, nx.grid_2d_graph, 3, -2)
+        pytest.raises(TypeError, nx.grid_2d_graph, 3.3, 2)
+        pytest.raises(TypeError, nx.grid_2d_graph, 3, 2.2)
 
     def test_node_input(self):
         G = nx.grid_2d_graph(4, 2, periodic=True)

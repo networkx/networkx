@@ -1,5 +1,6 @@
 """Biconnected components and articulation points."""
 from itertools import chain
+
 from networkx.utils.decorators import not_implemented_for
 
 __all__ = [
@@ -74,15 +75,20 @@ def is_biconnected(G):
        Communications of the ACM 16: 372–378. doi:10.1145/362248.362272
 
     """
-    bcc = list(biconnected_components(G))
-    if len(bcc) == 1:
-        return len(bcc[0]) == len(G)
-    return False  # Multiple bicomponents or No bicomponents (empty graph?)
-
-
-#    if len(bcc) == 0:  # No bicomponents (it could be an empty graph)
-#        return False
-#    return len(bcc[0]) == len(G)
+    bccs = biconnected_components(G)
+    try:
+        bcc = next(bccs)
+    except StopIteration:
+        # No bicomponents (empty graph?)
+        return False
+    try:
+        next(bccs)
+    except StopIteration:
+        # Only one bicomponent
+        return len(bcc) == len(G)
+    else:
+        # Multiple bicomponents
+        return False
 
 
 @not_implemented_for("directed")

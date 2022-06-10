@@ -2,8 +2,9 @@
 Equitable coloring of graphs with bounded degree.
 """
 
-import networkx as nx
 from collections import defaultdict
+
+import networkx as nx
 
 __all__ = ["equitable_color"]
 
@@ -109,7 +110,7 @@ def move_witnesses(src_color, dst_color, N, H, F, C, T_cal, L):
     while X != dst_color:
         Y = T_cal[X]
         # Move _any_ witness from X to Y = T_cal[X]
-        w = [x for x in C[X] if N[(x, Y)] == 0][0]
+        w = next(x for x in C[X] if N[(x, Y)] == 0)
         change_color(w, X, Y, N=N, H=H, F=F, C=C, L=L)
         X = Y
 
@@ -218,15 +219,16 @@ def procedure_P(V_minus, V_plus, N, H, F, C, L, excluded_colors=None):
                         X_prime = U
                         w = v
 
-                        # Finding the solo neighbor of w in X_prime
-                        y_candidates = [
-                            node
-                            for node in L[w]
-                            if F[node] == X_prime and N[(node, W_1)] == 1
-                        ]
-
-                        if len(y_candidates) > 0:
-                            y = y_candidates[0]
+                        try:
+                            # Finding the solo neighbor of w in X_prime
+                            y = next(
+                                node
+                                for node in L[w]
+                                if F[node] == X_prime and N[(node, W_1)] == 1
+                            )
+                        except StopIteration:
+                            pass
+                        else:
                             W = W_1
 
                             # Move w from W to X, now X has one extra node.
@@ -352,11 +354,11 @@ def procedure_P(V_minus, V_plus, N, H, F, C, L, excluded_colors=None):
                                 change_color(z_1, Z, W, N=N, H=H, F=F, C=C, L=L)
 
                                 # change color of w to some color in B_cal
-                                W_plus = [
+                                W_plus = next(
                                     k
                                     for k in C.keys()
                                     if N[(w, k)] == 0 and k not in A_cal
-                                ][0]
+                                )
                                 change_color(w, W, W_plus, N=N, H=H, F=F, C=C, L=L)
 
                                 # recurse with G[B \cup W*]
@@ -503,7 +505,7 @@ def equitable_color(G, num_colors):
 
         if N[(u, F[u])] != 0:
             # Find the first color where 'u' does not have any neighbors.
-            Y = [k for k in C.keys() if N[(u, k)] == 0][0]
+            Y = next(k for k in C.keys() if N[(u, k)] == 0)
             X = F[u]
             change_color(u, X, Y, N=N, H=H, F=F, C=C, L=L_)
 

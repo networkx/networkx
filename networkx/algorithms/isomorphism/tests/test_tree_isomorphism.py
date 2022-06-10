@@ -1,12 +1,12 @@
-import networkx as nx
 import random
 import time
-from networkx.classes.function import is_directed
 
+import networkx as nx
 from networkx.algorithms.isomorphism.tree_isomorphism import (
     rooted_tree_isomorphism,
     tree_isomorphism,
 )
+from networkx.classes.function import is_directed
 
 
 # have this work for graph

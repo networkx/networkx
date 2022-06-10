@@ -2,9 +2,9 @@
 Generators for the small graph atlas.
 """
 import gzip
-from itertools import islice
 import os
 import os.path
+from itertools import islice
 
 import networkx as nx
 

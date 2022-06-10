@@ -1,4 +1,5 @@
 import pytest
+
 import networkx as nx
 
 
@@ -36,16 +37,16 @@ class TestPercolationCentrality:
         G = example1a_G()
         p = nx.percolation_centrality(G)
         p_answer = {4: 0.625, 6: 0.667}
-        for n in p_answer:
-            assert p[n] == pytest.approx(p_answer[n], abs=1e-3)
+        for n, k in p_answer.items():
+            assert p[n] == pytest.approx(k, abs=1e-3)
 
     def test_percolation_example1b(self):
         """percolation centrality: example 1a"""
         G = example1b_G()
         p = nx.percolation_centrality(G)
         p_answer = {4: 0.825, 6: 0.4}
-        for n in p_answer:
-            assert p[n] == pytest.approx(p_answer[n], abs=1e-3)
+        for n, k in p_answer.items():
+            assert p[n] == pytest.approx(k, abs=1e-3)
 
     def test_converge_to_betweenness(self):
         """percolation centrality: should converge to betweenness

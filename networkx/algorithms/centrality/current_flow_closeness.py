@@ -1,12 +1,11 @@
 """Current-flow closeness centrality measures."""
 import networkx as nx
-
-from networkx.utils import not_implemented_for, reverse_cuthill_mckee_ordering
 from networkx.algorithms.centrality.flow_matrix import (
     CGInverseLaplacian,
     FullInverseLaplacian,
     SuperLUInverseLaplacian,
 )
+from networkx.utils import not_implemented_for, reverse_cuthill_mckee_ordering
 
 __all__ = ["current_flow_closeness_centrality", "information_centrality"]
 
@@ -90,8 +89,8 @@ def current_flow_closeness_centrality(G, weight=None, dtype=float, solver="lu"):
             betweenness[v] += col[v] - 2 * col[w]
             betweenness[w] += col[v]
     for v in H:
-        betweenness[v] = 1.0 / (betweenness[v])
-    return {ordering[k]: float(v) for k, v in betweenness.items()}
+        betweenness[v] = 1 / (betweenness[v])
+    return {ordering[k]: v for k, v in betweenness.items()}
 
 
 information_centrality = current_flow_closeness_centrality

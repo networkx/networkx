@@ -1,7 +1,8 @@
 import pytest
+
 import networkx as nx
-from networkx import convert_node_labels_to_integers as cnlti
 from networkx import NetworkXNotImplemented
+from networkx import convert_node_labels_to_integers as cnlti
 
 
 class TestConnected:

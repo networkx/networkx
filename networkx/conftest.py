@@ -11,10 +11,12 @@ General guidelines for writing good tests:
   and add the module to the relevant entries below.
 
 """
-import pytest
-import networkx
 import sys
 import warnings
+
+import pytest
+
+import networkx
 
 
 def pytest_addoption(parser):
@@ -234,6 +236,10 @@ def set_warnings():
     )
     warnings.filterwarnings("ignore", category=DeprecationWarning, message="info")
     warnings.filterwarnings("ignore", category=DeprecationWarning, message="to_tuple")
+    # create_using for scale_free_graph
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="The create_using argument"
+    )
 
 
 @pytest.fixture(autouse=True)

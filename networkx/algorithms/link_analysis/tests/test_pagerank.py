@@ -141,7 +141,7 @@ class TestPageRank:
         """
         G = self.G
         dangling = self.dangling_edges
-        dangling_sum = float(sum(dangling.values()))
+        dangling_sum = sum(dangling.values())
         M1 = nx.google_matrix(G, personalization=dangling)
         M2 = nx.google_matrix(G, personalization=dangling, dangling=dangling)
         for i in range(len(G)):

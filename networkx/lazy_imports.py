@@ -1,10 +1,9 @@
 import importlib
 import importlib.util
 import inspect
-import types
 import os
 import sys
-
+import types
 
 __all__ = ["attach", "lazy_import"]
 

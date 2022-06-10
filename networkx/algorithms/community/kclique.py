@@ -1,4 +1,5 @@
 from collections import defaultdict
+
 import networkx as nx
 
 __all__ = ["k_clique_communities"]

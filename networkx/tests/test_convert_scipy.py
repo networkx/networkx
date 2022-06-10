@@ -5,8 +5,8 @@ sp = pytest.importorskip("scipy")
 import scipy.sparse  # call as sp.sparse
 
 import networkx as nx
-from networkx.utils import graphs_equal
 from networkx.generators.classic import barbell_graph, cycle_graph, path_graph
+from networkx.utils import graphs_equal
 
 
 class TestConvertScipy:

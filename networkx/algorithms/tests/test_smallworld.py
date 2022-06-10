@@ -4,8 +4,8 @@ pytest.importorskip("numpy")
 
 import random
 
-from networkx import random_reference, lattice_reference, sigma, omega
 import networkx as nx
+from networkx import lattice_reference, omega, random_reference, sigma
 
 rng = 42
 

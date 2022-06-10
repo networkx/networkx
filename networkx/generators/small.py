@@ -31,14 +31,15 @@ __all__ = [
 ]
 
 from functools import wraps
+
 import networkx as nx
-from networkx.generators.classic import (
-    empty_graph,
-    cycle_graph,
-    path_graph,
-    complete_graph,
-)
 from networkx.exception import NetworkXError
+from networkx.generators.classic import (
+    complete_graph,
+    cycle_graph,
+    empty_graph,
+    path_graph,
+)
 
 
 def _raise_on_directed(func):
