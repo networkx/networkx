@@ -10,29 +10,26 @@ Examples
 >>> G = nx.path_graph(3)
 >>> nx.write_latex(G, "my_figure.tex", caption="A path graph", latex_label="fig1")
 >>> nx.write_latex(G, "just_my_figure.tex", as_document=True)
+>>> latex_code = nx.to_latex(G)  # a string rather than a file
 
-If you want subfigures each containing one graph, you can use write_latex
-or the class AdigraphCollection.
+If you want subfigures each containing one graph, you can input a list of graphs.
 
 >>> H1 = nx.path_graph(4)
 >>> H2 = nx.complete_graph(4)
 >>> H3 = nx.path_graph(8)
 >>> H4 = nx.complete_graph(8)
->>> captions = ["Path on 4 nodes", "Complete graph on 4 nodes", "Path on 8 nodes", "Complete graph on 8 nodes"]
->>> labels = ["fig2a", "fig2b", "fig2c", "fig2d"]
->>> nx.write_latex([H1, H2, H3, H4], "subfigures.tex", n_rows=2, sub_captions=captions, sub_labels=labels)
-
->>> ADC = nx.AdigraphCollection()
->>> ADC.add_graph(H1, sub_caption="Path on 4 nodes", sub_label="fig2a")
->>> ADC.add_graph(H2, sub_caption="Complete graph on 4 nodes", sub_label="fig2b")
->>> ADC.add_graph(H3, sub_caption="Path on 8 nodes", sub_label="fig2c")
->>> ADC.add_graph(H4, sub_caption="Complete graph on 8 nodes", sub_label="fig2d")
->>> latex_code = ADC.to_latex_document()
+>>> graphs = [H1, H2, H3, H4]
+>>> caps = ["Path 4", "Complete graph 4", "Path 8", "Complete graph 8"]
+>>> lbls = ["fig2a", "fig2b", "fig2c", "fig2d"]
+>>> nx.write_latex(graphs, "subfigs.tex", n_rows=2, sub_captions=caps, sub_labels=lbls)
+>>> latex_code = nx.to_latex(graphs, n_rows=2, sub_captions=caps, sub_labels=lbls)
 
 >>> node_color = {0: "red", 1: "orange", 2: "blue", 3: "gray!90"}
+>>> nx.set_node_attributes(G, node_color, "color")
 >>> edge_width = {e: 1.5 for e in H3.edges}
+>>> nx.set_edge_attributes(G, edge_width, "width")
 >>> pos = nx.spring_layout(H3, seed=42)
->>> latex_code = nx.to_latex(H3, pos=pos, node_color=node_color, edge_width=edge_width)
+>>> latex_code = nx.to_latex(H3, pos=pos, node_color="color", edge_width="width")
 >>> print(latex_code)
 \documentclass{report}
 \usepackage{adigraph}
@@ -70,27 +67,111 @@ Adigraph:      https://ctan.org/pkg/adigraph
 import os
 import networkx as nx
 
-__all__ = ["to_latex", "write_latex", "Adigraph", "AdigraphCollection"]
+__all__ = ["to_latex_raw", "to_latex", "write_latex"]
+
+
+@nx.utils.not_implemented_for("multigraph")
+def to_latex_raw(
+    G,
+    pos=None,
+    default_node_color="red",
+    default_edge_color="black",
+    node_color="color",
+    edge_color="color",
+    node_width="width",
+    edge_width="width",
+    node_label="label",
+    edge_label="label",
+    edge_style=None,
+):
+    # Setup attribute dicts
+    if pos is None:
+        pos = nx.spring_layout(G, seed=42)
+    else:
+        # try pos as attribute name in G.nodes
+        try:
+            if all(hasattr(data, pos) for n, data in G.nodes(data=True)):
+                pos = nx.get_node_attributes(G, pos)
+            raise nx.NetworkXError(
+                "pos appears to be a node attr name but not for all nodes"
+            )
+        except TypeError:
+            # try pos is dict
+            try:
+                any(len(pos[n]) != 2 for n in G)
+            except KeyError:
+                raise nx.NetworkXError(
+                    "pos appears to be a dict but not including all nodes"
+                )
+
+    if edge_style is None:
+        edge_style = "[]" if G.is_directed() else ""
+
+    # indent nicely
+    i4 = "\n    "
+    i8 = "\n        "
+    i12 = "\n            "
+
+    result = "    \\NewAdigraph{myAdigraph}{"
+    for n, data in G.nodes(data=True):
+        x, y = pos[n]
+        clr = data.get(node_color, default_node_color)
+        wth = data.get(node_width, "")
+        lbl = data.get(node_label, "")
+        result += i12 + f"{n},{clr},{wth}:{x/2}\\textwidth,{y/2}\\textwidth:{lbl};"
+
+    result += i8 + "}{"
+    for u, v, data in G.edges(data=True):
+        clr = data.get(edge_color, default_edge_color)
+        wth = data.get(edge_width, "")
+        lbl = data.get(edge_label, "")
+        result += i12 + f"{u},{v},{clr},{wth}::{lbl};"
+
+    result += i8 + f"}}[{edge_style}]" + i8 + "\\myAdigraph{}\n"
+    return result
+
+
+_DOC_WRAPPER = r"""\documentclass{{report}}
+\usepackage{{adigraph}}
+\usepackage{{subcaption}}
+
+\begin{{document}}
+{content}
+\end{{document}}"""
+
+
+_FIG_WRAPPER = r"""\begin{{figure}}
+{content}{caption}{label}
+\end{{figure}}"""
+
+
+_SUBFIG_WRAPPER = r"""    \begin{{subfigure}}{{{size}\textwidth}}
+    {content}{caption}{label}
+    \end{{subfigure}}"""
 
 
 def to_latex(
-        Gbunch,
-        pos=None,
-        default_node_color=None,
-        default_edge_color=None,
-        node_color="color",
-        edge_color="color",
-        node_width="width",
-        edge_width="width",
-        node_label="label",
-        edge_label="label",
-        as_document=True,
-        n_rows=1,
-        caption="",
-        latex_label="",
-        sub_captions=None,
-        sub_labels=None,
-    ):
+    Gbunch,
+    pos=None,
+    default_node_color=None,
+    default_edge_color=None,
+    node_color="color",
+    edge_color="color",
+    node_width="width",
+    edge_width="width",
+    node_label="label",
+    edge_label="label",
+    edge_style=None,
+    caption="",
+    latex_label="",
+    sub_captions=None,
+    sub_labels=None,
+    n_rows=1,
+    as_document=True,
+    document_wrapper=_DOC_WRAPPER,
+    figure_wrapper=_FIG_WRAPPER,
+    subfigure_wrapper=_SUBFIG_WRAPPER,
+):
     """Return latex code to draw the graph(s) in Gbunch
 
     If Gbunch is a graph, it is drawn in a figure environment.
@@ -107,7 +188,7 @@ def to_latex(
     Gbunch : NetworkX graph or iterable of NetworkX graphs or Adigraphs
         The NetworkX graph to be drawn or an iterable of graphs or Adigraphs
         to be drawn inside subfigures of a single figure.
-    pos : dict
+    pos : dict or iterable of position dict for each graph or None
     default_node_color : string
     default_edge_color : string
     node_color : string or dict
@@ -116,10 +197,7 @@ def to_latex(
     edge_width : string or dict
     node_label : string or dict
     edge_label : string or dict
-    as_document : bool
-        Whether to wrap the latex code in a document envionment for compiling
-    n_rows : int
-        The number of rows of subfigures to arrange for multiple graphs
+    edge_style : string or None
     caption : string
         The caption string for the figure environment
     latex_label : string
@@ -128,6 +206,10 @@ def to_latex(
         The sub_caption string for each subfigure in the figure
     sub_latex_labels : list of strings
         The latex label for each subfigure in the figure
+    n_rows : int
+        The number of rows of subfigures to arrange for multiple graphs
+    as_document : bool
+        Whether to wrap the latex code in a document envionment for compiling
 
     Returns
     =======
@@ -139,23 +221,64 @@ def to_latex(
     write_latex
     """
     if hasattr(Gbunch, "adj"):
-        pos = pos if pos is not None else nx.spring_layout(Gbunch, seed=42)
-        ADI_all = Adigraph(Gbunch, pos)
-        if as_document:
-            fig = ADI_all.to_latex_document(caption, latex_label)
-        else:
-            fig = ADI_all.to_latex_figure(caption, latex_label)
-    else:
-        ADI_all = AdigraphCollection(Gbunch, sub_captions=sub_captions, sub_labels=sub_labels)
-        if as_document:
-            fig = ADI_all.to_latex_document(n_rows, caption, latex_label)
-        else:
-            fig = ADI_all.to_latex_figure(n_rows, caption, latex_label)
+        raw = to_latex_raw(
+            Gbunch,
+            pos,
+            default_node_color,
+            default_edge_color,
+            node_color,
+            edge_color,
+            node_width,
+            edge_width,
+            node_label,
+            edge_label,
+        )
+    else:  # iterator of graphs
+        sbf = subfigure_wrapper
+        size = 1 / n_rows
+
+        if pos is None:
+            pos = [nx.spring_layout(G, seed=42) for G in Gbunch]
+        if sub_captions is None:
+            sub_captions = [""] * len(Gbunch)
+        if sub_labels is None:
+            sub_labels = [""] * len(Gbunch)
+        if not (len(Gbunch) == len(pos) == len(sub_captions) == len(sub_labels)):
+            raise nx.NetworkXError(
+                "length of Gbunch, sub_captions and sub_figures must agree"
+            )
+
+        raw = ""
+        for G, pos, subcap, sublbl in zip(Gbunch, pos, sub_captions, sub_labels):
+            subraw = to_latex_raw(
+                G,
+                pos,
+                default_node_color,
+                default_edge_color,
+                node_color,
+                edge_color,
+                node_width,
+                edge_width,
+                node_label,
+                edge_label,
+            )
+            cap = f"    \\caption{{{subcap}}}" if subcap else ""
+            lbl = f"\\label{{{sublbl}}}" if sublbl else ""
+            raw += sbf.format(size=size, content=subraw, caption=cap, label=lbl)
+            raw += "\n"
+
+    # put raw latex code into a figure environment and optionally into a document
+    raw = raw[:-1]
+    cap = f"\n    \\caption{{{caption}}}" if caption else ""
+    lbl = f"\\label{{{latex_label}}}" if latex_label else ""
+    fig = figure_wrapper.format(content=raw, caption=cap, label=lbl)
+    if as_document:
+        return document_wrapper.format(content=fig)
     return fig
 
 
 @nx.utils.open_file(1, mode="w")
-def write_latex(Gbunch, path, as_document=False, **options):
+def write_latex(Gbunch, path, **options):
     """Write the latex code to draw the graph(s) onto `path`.
 
     Parameters
@@ -188,316 +311,4 @@ def write_latex(Gbunch, path, as_document=False, **options):
     ========
     to_latex
     """
-    path.write(to_latex(Gbunch, as_document=as_document, **options))
-
-
-def _make_node_attr_dict(attr, nodes, default):
-    if attr is None or isinstance(attr, str):
-        return dict(nodes(data=attr, default=default))
-    return {x: attr.get(x, default) for x in nodes}
-
-
-def _make_edge_attr_dict(attr, edges, default):
-    if attr is None or isinstance(attr, str):
-        return dict((e[:-1], e[-1]) for e in edges(data=attr, default=default))
-    return {x: attr.get(x, default) for x in edges}
-
-
-_DOCUMENT_PLACEHOLDER = r"""\documentclass{{report}}
-\usepackage{{adigraph}}
-\usepackage{{subcaption}}
-
-\begin{{document}}
-{content}
-\end{{document}}"""
-
-
-_FIGURE_PLACEHOLDER = r"""\begin{{figure}}
-{content}{caption}{label}
-\end{{figure}}"""
-
-
-_SUBFIGURE_PLACEHOLDER = r"""    \begin{{subfigure}}{{{size}\textwidth}}
-    {content}{caption}{label}
-    \end{{subfigure}}"""
-
-
-class Adigraph:
-    """Render networkx graph into Latex Adigraph package.
-
-    Parameters
-    ----------
-    G : NetworkX graph
-        Graph to format in latex
-    pos : dict or None
-        A dict keyed by node to 2-array indicating position.
-        If None, nx.spring_layout is used to generate it.
-    style : str
-        style to use in adigraph (e.g. "", "-", "dashed")
-    default_node_color : str, default="red"
-        color to use when node color is not given.
-    default_edge_color : str, default="black"
-        color to use when edge color is not given.
-    node_color : attr_name or dict
-        When node_color is a string it indicates which node attribute
-        name holds the color for each node. When a dict, it is keyed by
-        node to the color for that node.
-    edge_color : str or dict
-        When edge_color is a string it indicates which edge attribute
-        name holds the color for each edge. When a dict, it is keyed by
-        edge to the color for that edge.
-    node_width : str or dict
-        When node_width is a string it indicates which node attribute
-        name holds the width for each node. When a dict, it is keyed by
-        node to the width for that node.
-    edge_width : str or dict
-        When edge_width is a string it indicates which edge attribute
-        name holds the width for each edge. When a dict, it is keyed by
-        edge to the width for that edge.
-    node_label : str or dict
-        When node_label is a string it indicates which node attribute
-        name holds the label for each node. When a dict, it is keyed by
-        node to the label for that node.
-    edge_label : str or dict
-        When edge_label is a string it indicates which edge attribute
-        name holds the label for each edge. When a dict, it is keyed by
-        edge to the label for that edge.
-    """
-    def __str__(self):
-        return self.to_latex_raw()
-
-    __repr__ = __str__
-    _SUBFIGURE_PLACEHOLDER = _SUBFIGURE_PLACEHOLDER
-    _FIGURE_PLACEHOLDER = _FIGURE_PLACEHOLDER
-    _DOCUMENT_PLACEHOLDER = _DOCUMENT_PLACEHOLDER
-
-    def __init__(
-        self,
-        G,
-        pos=None,
-        style="",
-        default_node_color=None,
-        default_edge_color=None,
-        node_color=None,
-        edge_color=None,
-        node_width=None,
-        edge_width=None,
-        node_label=None,
-        edge_label=None,
-    ):
-        self.G = G
-        self.pos = pos if pos is not None else nx.spring_layout(G)
-        self.style = style
-
-        self.node_color = _make_node_attr_dict(node_color, G.nodes, default_node_color)
-        self.node_width = _make_node_attr_dict(node_width, G.nodes, "")
-        self.node_label = _make_node_attr_dict(node_label, G.nodes, "")
-
-        self.edge_color = _make_edge_attr_dict(edge_color, G.edges, default_edge_color)
-        self.edge_width = _make_edge_attr_dict(edge_width, G.edges, "")
-        self.edge_label = _make_edge_attr_dict(edge_label, G.edges, "")
-
-    def to_latex_raw(self):
-        # indent nicely
-        i4 = "\n    "
-        i8 = "\n        "
-        i12 = "\n            "
-
-        result = "    \\NewAdigraph{myAdigraph}{"
-        for n in self.G:
-            x, y = self.pos[n]
-            clr = self.node_color[n]
-            wth = self.node_width[n]
-            lbl = self.node_label[n]
-            result += i12 + f"{n},{clr},{wth}:{x/2}\\textwidth,{y/2}\\textwidth:{lbl};"
-
-        edge_color = self.edge_color
-        edge_width = self.edge_width
-        edge_label = self.edge_label
-        result += i8 + "}{"
-        for e in self.G.edges:
-            u, v = e
-            reverse_e = v, u
-            color = edge_color[e] if e in edge_color else edge_color[reverse_e]
-            width = edge_width[e] if e in edge_label else edge_label[reverse_e]
-            label = edge_label[e] if e in edge_width else edge_width[reverse_e]
-            result += i12 + f"{e[0]},{e[1]},{color},{width}::{label};"
-
-        result += i8 + f"}}[{self.style}]" + i8 + "\\myAdigraph{}"
-        return result
-
-    def to_latex_document(self, caption="", latex_label=""):
-        fig = self.to_latex_figure(caption, latex_label)
-        return self._DOCUMENT_PLACEHOLDER.format(content=fig)
-
-    def to_latex_figure(self, caption="", latex_label=""):
-        raw = self.to_latex_raw()
-        cap = f"    \\caption{{{caption}}}" if caption else ""
-        lbl = f"\\label{{{latex_label}}}" if latex_label else ""
-        return self._FIGURE_PLACEHOLDER.format(content=raw, caption=cap, label=lbl)
-
-    def to_latex_subfigure(self, size=1, caption="", latex_label=""):
-        raw = self.to_latex_raw()
-        cap = f"\n    \\caption{{{caption}}}" if caption else ""
-        lbl = f"\\label{{{latex_label}}}" if latex_label else ""
-        sbf = self._SUBFIGURE_PLACEHOLDER
-        return sbf.format(size=size, content=raw, caption=cap, label=lbl)
-
-
-class AdigraphCollection:
-    """Render multiple networkx graphs into Latex Adigraph package.
-
-    Parameters
-    ----------
-    G : iterable of NetworkX graphs or Adigraphs
-        The list of graphs to render in latex
-    pos : dict or None
-        A dict keyed by node to 2-array indicating position.
-        If None, nx.spring_layout is used to generate it.
-    style : str
-        style to use in adigraph (e.g. "", "-", "dashed")
-    default_node_color : str, default="red"
-        color to use when node color is not given.
-    default_edge_color : str, default="black"
-        color to use when edge color is not given.
-    node_color : attr_name or dict
-        When node_color is a string it indicates which node attribute
-        name holds the color for each node. When a dict, it is keyed by
-        node to the color for that node.
-    edge_color : str or dict
-        When edge_color is a string it indicates which edge attribute
-        name holds the color for each edge. When a dict, it is keyed by
-        edge to the color for that edge.
-    node_width : str or dict
-        When node_width is a string it indicates which node attribute
-        name holds the width for each node. When a dict, it is keyed by
-        node to the width for that node.
-    edge_width : str or dict
-        When edge_width is a string it indicates which edge attribute
-        name holds the width for each edge. When a dict, it is keyed by
-        edge to the width for that edge.
-    node_label : str or dict
-        When node_label is a string it indicates which node attribute
-        name holds the label for each node. When a dict, it is keyed by
-        node to the label for that node.
-    edge_label : str or dict
-        When edge_label is a string it indicates which edge attribute
-        name holds the label for each edge. When a dict, it is keyed by
-        edge to the label for that edge.
-    sub_caption : str (default="")
-        The LaTeX string to be used as the caption of subfigures if not provided
-    sub_label : str (default="")
-        The LaTeX string to be used as the label of subfigures if not provided
-    sub_captions : list of strings or None
-        A list of caption strings for each graph in Gbunch.
-    sub_labels : list of strings or None
-        A list of label strings for each graph in Gbunch.
-    caption : str (default="")
-        The LaTeX string to be used as the caption of the figure
-    label : str (default="")
-        The LaTeX string to be used as the label of the figure
-    """
-    _SUBFIGURE_PLACEHOLDER = _SUBFIGURE_PLACEHOLDER
-    _FIGURE_PLACEHOLDER = _FIGURE_PLACEHOLDER
-    _DOCUMENT_PLACEHOLDER = _DOCUMENT_PLACEHOLDER
-
-    def __init__(
-        self,
-        Gbunch=None,
-        pos=None,
-        style="",
-        default_node_color="red",
-        default_edge_color="black",
-        node_color="color",
-        edge_color="color",
-        node_width="width",
-        edge_width="width",
-        node_label="",
-        edge_label="",
-        sub_caption="",
-        sub_label="",
-        sub_captions=None,
-        sub_labels=None,
-        caption="",
-        label="",
-    ):
-        self.options = dict(
-            pos=pos,
-            style=style,
-            default_node_color=default_node_color,
-            default_edge_color=default_edge_color,
-            node_color=node_color,
-            edge_color=edge_color,
-            node_width=node_width,
-            edge_width=edge_width,
-            node_label=node_label,
-            edge_label=edge_label,
-        )
-        if Gbunch is None:
-            Gbunch = []
-        self.graphs = [(Adigraph(G, **self.options) if hasattr(G, "adj") else G) for G in Gbunch]
-        self.sub_captions = [] if sub_captions is None else sub_captions
-        self.sub_labels =  [] if sub_labels is None else sub_labels
-        self.sub_caption = sub_caption
-        self.sub_label = sub_label
-        self.caption = caption
-        self.label = label
-
-    def add_graph(
-            self,
-            graph,
-            pos=None,
-            style=None,
-            default_node_color=None,
-            default_edge_color=None,
-            node_color=None,
-            edge_color=None,
-            node_width=None,
-            edge_width=None,
-            node_label=None,
-            edge_label=None,
-            sub_caption="",
-            sub_label=""
-        ):
-        opts = {}
-        for k, v in self.options.items():
-            new = eval(k)
-            opts[k] = new if new is not None else v
-        #opts = {k: (eval(k) if eval(k) else v) for k, v in self.options.items()}
-        if hasattr(graph, "adj"):
-            if graph.is_multigraph():
-                raise nx.NetworkXError("Multigraphs not supported for Adigraph.add_graph")
-            self.graphs.append(Adigraph(graph, **opts))
-        else:
-            self.graphs.append(graph)
-        self.sub_captions.append(sub_caption if sub_caption else self.sub_caption)
-        self.sub_labels.append(sub_label if sub_label else self.sub_label)
-
-    def to_latex_subfigures(self, n_rows=1, captions=None, latex_labels=None):
-        N = len(self.graphs)
-        size = 1 / n_rows
-        if captions is None:
-            captions = self.sub_captions
-        if latex_labels is None:
-            latex_labels = self.sub_labels
-
-        result = ""
-        for i, (ADIG, cap, lbl) in enumerate(zip(self.graphs, captions, latex_labels)):
-            caption = cap.format(i=i + 1, n=N)
-            latex_label = lbl.format(i=i + 1, n=N)
-            if i > 0:
-                result += "\n"
-            result += ADIG.to_latex_subfigure(size, caption, latex_label)
-        return result
-
-    def to_latex_figure(self, n_rows=1, caption="", latex_label=""):
-        raw = self.to_latex_subfigures(n_rows)
-        caption = caption if caption else self.caption
-        cap = f"\n    \\caption{{{caption}}}" if caption else ""
-        latex_label = latex_label if latex_label else self.label
-        lbl = f"\\label{{{latex_label}}}" if latex_label else ""
-        return self._FIGURE_PLACEHOLDER.format(content=raw, caption=cap, label=lbl)
-
-    def to_latex_document(self, n_rows=1, caption="", latex_label=""):
-        fig = self.to_latex_figure(n_rows, caption, latex_label)
-        return self._DOCUMENT_PLACEHOLDER.format(content=fig)
+    path.write(to_latex(Gbunch, **options))
