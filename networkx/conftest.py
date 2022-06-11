@@ -240,6 +240,9 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="The create_using argument"
     )
+    warnings.filterwarnings(
+        "ignore", category=PendingDeprecationWarning, message="nx.nx_pydot"
+    )
 
 
 @pytest.fixture(autouse=True)

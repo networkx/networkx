@@ -19,6 +19,7 @@ See Also
  - Graphviz:      https://www.graphviz.org
  - DOT Language:  http://www.graphviz.org/doc/info/lang.html
 """
+import warnings
 from locale import getpreferredencoding
 
 import networkx as nx
@@ -40,6 +41,13 @@ def write_dot(G, path):
 
     Path can be a string or a file handle.
     """
+    msg = (
+        "nx.nx_pydot.write_dot depends on the pydot package, which has"
+        "known issues and is not actively maintained. Consider using"
+        "nx.nx_agraph.write_dot instead.\n\n"
+        "See https://github.com/networkx/networkx/issues/5723"
+    )
+    warnings.warn(msg, PendingDeprecationWarning, stacklevel=2)
     P = to_pydot(G)
     path.write(P.to_string())
     return
@@ -69,6 +77,14 @@ def read_dot(path):
     :class:`MultiGraph`.
     """
     import pydot
+
+    msg = (
+        "nx.nx_pydot.read_dot depends on the pydot package, which has"
+        "known issues and is not actively maintained. Consider using"
+        "nx.nx_agraph.read_dot instead.\n\n"
+        "See https://github.com/networkx/networkx/issues/5723"
+    )
+    warnings.warn(msg, PendingDeprecationWarning, stacklevel=2)
 
     data = path.read()
 
@@ -102,6 +118,13 @@ def from_pydot(P):
     >>> G = nx.Graph(nx.nx_pydot.from_pydot(A))
 
     """
+    msg = (
+        "nx.nx_pydot.from_pydot depends on the pydot package, which has"
+        "known issues and is not actively maintained.\n\n"
+        "See https://github.com/networkx/networkx/issues/5723"
+    )
+    warnings.warn(msg, PendingDeprecationWarning, stacklevel=2)
+
     if P.get_strict(None):  # pydot bug: get_strict() shouldn't take argument
         multiedges = False
     else:
@@ -194,6 +217,13 @@ def to_pydot(N):
 
     """
     import pydot
+
+    msg = (
+        "nx.nx_pydot.to_pydot depends on the pydot package, which has"
+        "known issues and is not actively maintained.\n\n"
+        "See https://github.com/networkx/networkx/issues/5723"
+    )
+    warnings.warn(msg, PendingDeprecationWarning, stacklevel=2)
 
     # set Graphviz graph type
     if N.is_directed():
@@ -316,6 +346,14 @@ def graphviz_layout(G, prog="neato", root=None):
     -----
     This is a wrapper for pydot_layout.
     """
+    msg = (
+        "nx.nx_pydot.graphviz_layout depends on the pydot package, which has"
+        "known issues and is not actively maintained. Consider using"
+        "nx.nx_agraph.graphviz_layout instead.\n\n"
+        "See https://github.com/networkx/networkx/issues/5723"
+    )
+    warnings.warn(msg, PendingDeprecationWarning, stacklevel=2)
+
     return pydot_layout(G=G, prog=prog, root=root)
 
 
@@ -359,6 +397,12 @@ def pydot_layout(G, prog="neato", root=None):
     """
     import pydot
 
+    msg = (
+        "nx.nx_pydot.pydot_layout depends on the pydot package, which has"
+        "known issues and is not actively maintained.\n\n"
+        "See https://github.com/networkx/networkx/issues/5723"
+    )
+    warnings.warn(msg, PendingDeprecationWarning, stacklevel=2)
     P = to_pydot(G)
     if root is not None:
         P.set("root", str(root))
