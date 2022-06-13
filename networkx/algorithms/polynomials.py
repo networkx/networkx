@@ -13,7 +13,7 @@ from collections import deque
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-__all__ = ["tutte_polynomial", "chromatic_polynomial"]
+__all__ = ["tutte_polynomial", "chromatic_polynomial", "characteristic_polynomial"]
 
 
 @not_implemented_for("directed")
@@ -288,3 +288,85 @@ def chromatic_polynomial(G):
             stack.append(G)
             stack.append(C)
     return polynomial
+
+
+def characteristic_polynomial(G):
+    r"""Returns the characteristic polynomial of `G`.
+
+    The characteristic polynomial `p_G(x)` is a fundamental graph polynomial
+    invariant in one variable that encodes information about the spectrum of a
+    graph [1]_.
+
+    Def 1: For a graph `G` of size `n` with adjacency matrix `A`, the
+    characteristic polynomial `p_G(x)` is a polynomial whose roots are the
+    eigenvalues of `A`. In particular:
+
+    .. math::
+
+        p_G(x) = det(xI - A) = \prod (x - \lamda_i)
+
+    where `I` is the `n \times n` identity matrix, and `\lamda_1,\dots,\lamdba_n`
+    are the eigenvalues of `A` [2]_.
+
+
+    Def 2: Let `[n]` be the set of integers from `1` to `n`. For a graph `G` of
+    size `n` with adjacency matrix `A`, a principal minor is a the determinant
+    of a submatrix of `A` obtained by taking rows `m_1, \dots, m_k` and columns
+    `m_1, \dots, m_k` of `A`, where `{\ m_1, \dots, m_k \} \subseteq [n]` (e.g.
+    for `n \geq 2` A[:2,:2] is a principal minor of `A`). Let `a_i` be the sum
+    of all principal minors of `A` of size `i \times i`. Then [3]_:
+
+    .. math::
+
+        p_G(x) = \sum_{i=0}^n (-1)^i a_i x^{n-i}
+
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    Returns
+    -------
+    instance of `sympy.core.add.Add`
+        A Sympy expression representing the characteristic polynomial for `G`.
+
+    Examples
+    --------
+    >>> C = nx.cycle_graph(5)
+    >>> nx.characteristic_polynomial(C)
+    x**5 - 5*x**3 + 5*x - 2
+
+    >>> G = nx.complete_graph(4)
+    >>> nx.characteristic_polynomial(G)
+    x**4 - 6*x**2 - 8*x - 3
+
+    Notes
+    -----
+    Directed graphs with the same characteristic polynomial are known as
+    cospectral [3]_. Due to Definition 2 above: `c_1 = 0`, `c_2` is the number
+    of edges of `G`, and `c_3` is twice the number of triangles of `G` [4]_.
+
+    References
+    ----------
+    .. [1] E. W. Weisstein
+       "Graph Spectrum"
+       MathWorld--A Wolfram Web Resource
+       https://mathworld.wolfram.com/GraphSpectrum.html
+    .. [2] A. Saberi,
+       "Matching Theory: Lecture 7"
+       http://web.stanford.edu/class/msande319/MatchingSpring19/lecture07.pdf
+    .. [3] A. Mowshowitz,
+       "The Characteristic Polynomial of a Graph"
+       Journal of Combinatorial Theory, 1972
+       https://www.sciencedirect.com/science/article/pii/0095895672900238
+    .. [4] H. Q. Ngo,
+       "Introduction to Algebraic Graph Theory"
+       https://cse.buffalo.edu/~hungngo/classes/2005/Expanders/notes/AGT-intro.pdf
+    """
+    import sympy
+
+    x = sympy.Symbol("x")
+    A = nx.adjacency_matrix(G)
+    M = sympy.SparseMatrix(A.todense())
+
+    return M.charpoly(x).as_expr()
