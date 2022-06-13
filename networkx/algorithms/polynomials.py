@@ -5,9 +5,9 @@ variety of structural information. Examples include the Tutte polynomial,
 chromatic polynomial, characteristic polynomial, and matching polynomial. An
 extensive treatment is provided in [1]_.
 
-For a simple example, the ~sympy.SparseMatrix.charpoly method can be used to
-compute the characteristic polynomial from the adjacency matrix of a graph.
-Consider the complete graph `K_4`:
+For a simple example, the `~sympy.matrices.matrices.MatrixDeterminant.charpoly`
+method can be used to compute the characteristic polynomial from the adjacency
+matrix of a graph. Consider the complete graph ``K_4``:
 
 >>> import sympy
 >>> x = sympy.Symbol("x")
