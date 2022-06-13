@@ -29,7 +29,7 @@ def directed_edge_swap(G, *, nswap=1, max_tries=100, seed=None):
     nswap : integer (optional, default=1)
        Number of three-edge (directed) swaps to perform
 
-    max_tries : integer (optional)
+    max_tries : integer (optional, default=100)
        Maximum number of attempts to swap edges
 
     seed : integer, random_state, or None (default)
