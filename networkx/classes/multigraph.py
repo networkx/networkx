@@ -291,7 +291,13 @@ class MultiGraph(Graph):
         """
         return MultiGraph
 
-    def __init__(self, incoming_graph_data=None, multigraph_input=None, keep_multiple_directed_edges=False, **attr):
+    def __init__(
+        self,
+        incoming_graph_data=None,
+        multigraph_input=None,
+        keep_multiple_directed_edges=False,
+        **attr,
+    ):
         """Initialize a graph with edges, name, or graph attributes.
 
         Parameters
@@ -358,7 +364,12 @@ class MultiGraph(Graph):
                     )
                 Graph.__init__(self, incoming_graph_data, **attr)
         else:
-            Graph.__init__(self, incoming_graph_data, keep_multiple_directed_edges=keep_multiple_directed_edges, **attr)
+            Graph.__init__(
+                self,
+                incoming_graph_data,
+                keep_multiple_directed_edges=keep_multiple_directed_edges,
+                **attr,
+            )
 
     @cached_property
     def adj(self):

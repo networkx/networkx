@@ -287,7 +287,9 @@ class Graph:
         """
         return Graph
 
-    def __init__(self, incoming_graph_data=None, keep_multiple_directed_edges=False, **attr):
+    def __init__(
+        self, incoming_graph_data=None, keep_multiple_directed_edges=False, **attr
+    ):
         """Initialize a graph with edges, name, or graph attributes.
 
         Parameters
@@ -340,7 +342,11 @@ class Graph:
             delattr(self, "adj")
         # attempt to load graph with data
         if incoming_graph_data is not None:
-            convert.to_networkx_graph(incoming_graph_data, create_using=self, keep_multiple_directed_edges=keep_multiple_directed_edges)
+            convert.to_networkx_graph(
+                incoming_graph_data,
+                create_using=self,
+                keep_multiple_directed_edges=keep_multiple_directed_edges,
+            )
         # load graph attributes (must be after convert)
         self.graph.update(attr)
 

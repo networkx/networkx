@@ -1,4 +1,5 @@
 import pytest
+from typing import Optional
 
 import networkx as nx
 
@@ -85,8 +86,8 @@ class TestTreeRecognition:
 
 
 class TestDirectedTreeRecognition(TestTreeRecognition):
-    graph = nx.DiGraph
-    multigraph = nx.MultiDiGraph
+    graph = nx.DiGraph # type: ignore
+    multigraph = nx.MultiDiGraph # type: ignore
 
 
 def test_disconnected_graph():

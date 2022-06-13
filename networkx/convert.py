@@ -31,7 +31,9 @@ __all__ = [
 ]
 
 
-def to_networkx_graph(data, create_using=None, multigraph_input=False, keep_multiple_directed_edges=False):
+def to_networkx_graph(
+    data, create_using=None, multigraph_input=False, keep_multiple_directed_edges=False
+):
     """Make a NetworkX graph from a known data structure.
 
     The preferred way to call this is automatically
@@ -82,7 +84,7 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False, keep_mult
                 data.adj,
                 create_using=create_using,
                 multigraph_input=data.is_multigraph(),
-                keep_multiple_directed_edges=keep_multiple_directed_edges
+                keep_multiple_directed_edges=keep_multiple_directed_edges,
             )
             # data.graph should be dict-like
             result.graph.update(data.graph)
@@ -368,7 +370,9 @@ def to_dict_of_dicts(G, nodelist=None, edge_data=None):
     return dod
 
 
-def from_dict_of_dicts(d, create_using=None, multigraph_input=False, keep_multiple_directed_edges=False):
+def from_dict_of_dicts(
+    d, create_using=None, multigraph_input=False, keep_multiple_directed_edges=False
+):
     """Returns a graph from a dictionary of dictionaries.
 
     Parameters
@@ -453,7 +457,7 @@ def from_dict_of_dicts(d, create_using=None, multigraph_input=False, keep_multip
                 for v, data in nbrs.items():
                     if keep_multiple_directed_edges:
                         # print(seen.count((u,v)))
-                        G.add_edge(u, v, key=seen.count((u,v)))
+                        G.add_edge(u, v, key=seen.count((u, v)))
                         G[u][v][0].update(data)
                         seen += [(v, u), (u, v)]
                     else:
