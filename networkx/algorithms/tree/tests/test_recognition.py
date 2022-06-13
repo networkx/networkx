@@ -86,8 +86,8 @@ class TestTreeRecognition:
 
 
 class TestDirectedTreeRecognition(TestTreeRecognition):
-    graph = nx.DiGraph # type: ignore
-    multigraph = nx.MultiDiGraph # type: ignore
+    graph = nx.DiGraph  # type: ignore
+    multigraph = nx.MultiDiGraph  # type: ignore
 
 
 def test_disconnected_graph():
