@@ -79,7 +79,7 @@ def test_directed_edge_swap_small():
 def test_directed_edge_swap_tries():
     with pytest.raises(nx.NetworkXError):
         G = nx.directed_edge_swap(
-            nx.gnp_random_graph(3, 0.5, directed=True), nswap=1, max_tries=0
+            nx.path_graph(3, create_using=nx.DiGraph), nswap=1, max_tries=0
         )
 
 
