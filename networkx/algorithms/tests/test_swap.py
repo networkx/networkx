@@ -6,7 +6,7 @@ import networkx as nx
 
 
 def test_directed_edge_swap():
-    graph = nx.gnp_random_graph(200, 0.5, directed=True)
+    graph = nx.path_graph(200, create_using=nx.DiGraph)
     in_degrees = sorted((n, d) for n, d in graph.in_degree())
     out_degrees = sorted((n, d) for n, d in graph.out_degree())
     G = nx.directed_edge_swap(graph, nswap=40, max_tries=500)
@@ -15,7 +15,7 @@ def test_directed_edge_swap():
 
 
 def test_directed_edge_swap_seed():
-    graph = nx.gnp_random_graph(200, 0.5, directed=True)
+    graph = nx.path_graph(200, create_using=nx.DiGraph)
     in_degrees = sorted((n, d) for n, d in graph.in_degree())
     out_degrees = sorted((n, d) for n, d in graph.out_degree())
     G = nx.directed_edge_swap(graph, nswap=40, max_tries=500, seed=1)
@@ -73,7 +73,7 @@ def test_connected_double_edge_swap_star_low_window_threshold():
 
 def test_directed_edge_swap_small():
     with pytest.raises(nx.NetworkXError):
-        G = nx.directed_edge_swap(nx.path_graph(3, create_using=nx.DiGraph)
+        G = nx.directed_edge_swap(nx.path_graph(3, create_using=nx.DiGraph))
 
 
 def test_directed_edge_swap_tries():
