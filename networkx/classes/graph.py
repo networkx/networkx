@@ -287,7 +287,7 @@ class Graph:
         """
         return Graph
 
-    def __init__(self, incoming_graph_data=None, **attr):
+    def __init__(self, incoming_graph_data=None, keep_multiple_directed_edges=False, **attr):
         """Initialize a graph with edges, name, or graph attributes.
 
         Parameters
@@ -298,6 +298,11 @@ class Graph:
             NetworkX graph object.  If the corresponding optional Python
             packages are installed the data can also be a 2D NumPy array, a
             SciPy sparse matrix, or a PyGraphviz graph.
+
+        keep_multiple_directed_edges : bool (default False)
+            When True, if `d` represents a digraph and G is a multigraph, each
+            directed edge between two nodes from `d` is treated as a separate edge
+            in the multigraph, regardless of direction
 
         attr : keyword arguments, optional (default= no attributes)
             Attributes to add to graph as key=value pairs.
@@ -335,7 +340,7 @@ class Graph:
             delattr(self, "adj")
         # attempt to load graph with data
         if incoming_graph_data is not None:
-            convert.to_networkx_graph(incoming_graph_data, create_using=self)
+            convert.to_networkx_graph(incoming_graph_data, create_using=self, keep_multiple_directed_edges=keep_multiple_directed_edges)
         # load graph attributes (must be after convert)
         self.graph.update(attr)
 
