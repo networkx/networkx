@@ -2,7 +2,7 @@ import networkx as nx
 import copy
 
 
-def rainbow_matching(graph : nx.Graph, k : int) -> int:
+def rainbow_matching(graph: nx.Graph, k: int) -> int:
     """
     "Parameterized Algorithms and Kernels for Rainbow Matching" by
     S. Gupta and S. Roy and S. Saurabh and M. Zehavi, https://drops.dagstuhl.de/opus/volltexte/2017/8124/pdf/LIPIcs-MFCS-2017-71.pdf
@@ -45,7 +45,7 @@ def rainbow_matching(graph : nx.Graph, k : int) -> int:
     return Disjoint_Set_Rainbow_Matching(graph, [], k, nx.Graph())
 
 
-def Disjoint_Set_Rainbow_Matching(P : nx.Graph, S : list, k : int, B : nx.Graph):
+def Disjoint_Set_Rainbow_Matching(P: nx.Graph, S: list, k: int, B: nx.Graph):
     """
     This function is a generalization of the Rainbow Matching problem.
     Given a path P, a collection S of vertex disjoint paths and an integer k,
@@ -59,8 +59,8 @@ def Disjoint_Set_Rainbow_Matching(P : nx.Graph, S : list, k : int, B : nx.Graph)
 
     # First step is to check if Lemma 5 or Lemma 6 are applicable.
     # If they return an answer that is not "-1", we return the answer.
-    result5 = Lemma5(P,S,k,B)
-    result6 = Lemma6(P,S,k,B)
+    result5 = Lemma5(P, S, k, B)
+    result6 = Lemma6(P, S, k, B)
     if isinstance(result5, nx.Graph):
         return result5
     if result5 == False or result6 == False:
@@ -69,7 +69,7 @@ def Disjoint_Set_Rainbow_Matching(P : nx.Graph, S : list, k : int, B : nx.Graph)
     # If both Lemma 5 and Lemma 6 are not applicable,
     # Lemma 8 guarantees us an index i for which the sub-path of P, (1, ..., i),
     # has exactly one edge in the Rainbow Match.
-    i = Lemma8(P,S,k,B)
+    i = Lemma8(P, S, k, B)
     P_1 = copy.deepcopy(P)
     S_1 = copy.deepcopy(S)
 
@@ -77,15 +77,15 @@ def Disjoint_Set_Rainbow_Matching(P : nx.Graph, S : list, k : int, B : nx.Graph)
     # to the set S_1
     nodes = list(range(0, i))
     list_nodes = list(P_1.subgraph(nodes))
-    path = ' '.join(map(str, list_nodes))
+    path = " ".join(map(str, list_nodes))
     S_1.append(path)
-    path = ' '.join(map(str, [i, i + 1]))
+    path = " ".join(map(str, [i, i + 1]))
     S_1.append(path)
 
     # Update the auxiliary bipartite graph
     B_temp = copy.deepcopy(B)
     add_path_to_B(P_1.subgraph(nodes), B_temp)
-    add_path_to_B(P_1.subgraph([i,i+1]), B_temp)
+    add_path_to_B(P_1.subgraph([i, i + 1]), B_temp)
 
     # Update the path P_1 to start from vertex i+2
     P_1.remove_nodes_from(list(range(0, i + 2)))
@@ -95,16 +95,13 @@ def Disjoint_Set_Rainbow_Matching(P : nx.Graph, S : list, k : int, B : nx.Graph)
     if ans != False:
         return ans
 
-
-
-
     P_2 = copy.deepcopy(P)
     S_2 = copy.deepcopy(S)
 
     # Add the sub-path (1, ..., i) to the set S_2
-    nodes = list(range(0, i+1))
+    nodes = list(range(0, i + 1))
     list_nodes = list(P_2.subgraph(nodes))
-    path = ' '.join(map(str, list_nodes))
+    path = " ".join(map(str, list_nodes))
     S_2.append(path)
 
     # Update the auxiliary bipartite graph
@@ -122,10 +119,7 @@ def Disjoint_Set_Rainbow_Matching(P : nx.Graph, S : list, k : int, B : nx.Graph)
     return nx.Graph()
 
 
-
-
-
-def add_path_to_B(P : nx.Graph, B : nx.Graph):
+def add_path_to_B(P: nx.Graph, B: nx.Graph):
     """
     This function adds a path P to the auxiliary bipartite graph B.
 
@@ -143,19 +137,18 @@ def add_path_to_B(P : nx.Graph, B : nx.Graph):
 
     """
 
-
     if len(P) <= 1:
         return
 
-    path =' '.join(map(str, sorted(list(P.nodes())) ))
+    path = " ".join(map(str, sorted(list(P.nodes()))))
     B.add_node(path, bipartite=1)
     for i in P.nodes():
-        if P.has_edge(i, i+1):
-            color = P.edges[i, i + 1]['color']
+        if P.has_edge(i, i + 1):
+            color = P.edges[i, i + 1]["color"]
             B.add_edge(color, path)
 
 
-def size_max_matching(B : nx.Graph) -> int:
+def size_max_matching(B: nx.Graph) -> int:
     """
     This function returns the size of the maximum matching in a given bipartite graph.
     Since the bipartite graph we use can be disconnected, we go through all of the components.
@@ -169,14 +162,16 @@ def size_max_matching(B : nx.Graph) -> int:
     sum_matching = 0
     for path in nx.connected_components(B):
         component = B.subgraph(path)
-        sum_matching += len(nx.bipartite.maximum_matching(component))/2
+        sum_matching += len(nx.bipartite.maximum_matching(component)) / 2
 
     return sum_matching
 
+
 def get_rainbow_matching(B : nx.Graph):
-    '''
+    """
     This function recieves a bipartite graph and returns a Graph with the corresponding rainbow matching.
-    '''
+    """
+
     matching = nx.Graph()
     for path in nx.connected_components(B):
         component = B.subgraph(path)
@@ -186,13 +181,18 @@ def get_rainbow_matching(B : nx.Graph):
             if lst[0].isnumeric():
                 for i in lst[1:]:
                     int_i = int(i)
-                    if original_path.has_edge(int_i-1, int_i) and nodes.get(key) == original_path.edges[int_i-1, int_i]['color']:
-                        matching.add_nodes_from([int_i -1 , int_i])
-                        matching.add_edge(int_i-1, int_i, color = nodes.get(key))
+                    if (
+                        original_path.has_edge(int_i - 1, int_i)
+                        and nodes.get(key)
+                        == original_path.edges[int_i - 1, int_i]["color"]
+                        ):
+                            matching.add_nodes_from([int_i - 1, int_i])
+                            matching.add_edge(int_i - 1, int_i, color=nodes.get(key))
     return matching
 
+
 # The following functions are Lemmas from the article that are very helpful for us.
-def Lemma5(P : nx.Graph, S : list, k : int, B : nx.Graph):
+def Lemma5(P: nx.Graph, S: list, k: int, B: nx.Graph):
     # This lemma focuses only on <=1
     if k - len(S) > 1:
         return -1
@@ -204,7 +204,7 @@ def Lemma5(P : nx.Graph, S : list, k : int, B : nx.Graph):
     # Exactly zero, return 1 if there is a matching in B that saturates S
     # If there isn't, return False (there is no rainbow matching)
     elif k - len(S) == 0:
-        #check if there is a matching that covers all S in B
+        # check if there is a matching that covers all S in B
         if size_max_matching(B) == len(S):
             return get_rainbow_matching(B)
         else:
@@ -215,48 +215,42 @@ def Lemma5(P : nx.Graph, S : list, k : int, B : nx.Graph):
         if len(P) <= 1:
             return 0
         for i in P.nodes():
-            #if i > 1:
-                B_temp = copy.deepcopy(B)
-                add_path_to_B(P.subgraph([i,i+1]), B_temp)
-                #check if there is a matching that covers all S in B
-                if size_max_matching(B_temp) == len(S)+1:
-                    return get_rainbow_matching(B_temp)
+            B_temp = copy.deepcopy(B)
+            add_path_to_B(P.subgraph([i,i+1]), B_temp)
+            # check if there is a matching that covers all S in B
+            if size_max_matching(B_temp) == len(S)+1:
+                return get_rainbow_matching(B_temp)
         return False
 
 
 
-def Lemma6(P : nx.Graph, S : list, k : int, B : nx.Graph):
+def Lemma6(P: nx.Graph, S: list, k: int, B: nx.Graph):
     for i in P.nodes():
-        #if i > 1:
-            B_temp = copy.deepcopy(B)
-            nodes = list(range(0,i))
-            add_path_to_B(P.subgraph(nodes), B_temp)
-            add_path_to_B(P.subgraph([i,i+1]), B_temp)
+        B_temp = copy.deepcopy(B)
+        nodes = list(range(0,i))
+        add_path_to_B(P.subgraph(nodes), B_temp)
+        add_path_to_B(P.subgraph([i,i+1]), B_temp)
 
-            max_match = size_max_matching(B_temp)
-            if max_match > len(S)+1:
-                return -1
+        max_match = size_max_matching(B_temp)
+        if max_match > len(S)+1:
+            return -1
 
     # if we checked all indexes and didn't find an index that satisfies the lemma's condition
     # there is no rainbow matching and we return 0
     return False
 
-def Lemma8(P : nx.Graph, S : list, k : int, B : nx.Graph):
+
+def Lemma8(P: nx.Graph, S: list, k: int, B: nx.Graph):
     # This lemma is called if lemma 6 returns "-1".
     # It finds the smallest index for which the lemma's condition is met.
     for i in P.nodes():
-        #if i > 1:
-            B_temp = copy.deepcopy(B)
+        B_temp = copy.deepcopy(B)
 
-            nodes = list(range(0, i))
-            add_path_to_B(P.subgraph(nodes), B_temp)
-            add_path_to_B(P.subgraph([i, i + 1]), B_temp)
+        nodes = list(range(0, i))
+        add_path_to_B(P.subgraph(nodes), B_temp)
+        add_path_to_B(P.subgraph([i, i + 1]), B_temp)
 
-            max_match = size_max_matching(B_temp)
-            if max_match == len(S) + 2:
-                return i
+        max_match = size_max_matching(B_temp)
+        if max_match == len(S) + 2:
+            return i
     return -1
-
-
-
-
