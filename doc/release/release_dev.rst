@@ -1,5 +1,5 @@
-Next Release
-============
+NetworkX 3.0 (unreleased)
+=========================
 
 Release date: TBD
 
