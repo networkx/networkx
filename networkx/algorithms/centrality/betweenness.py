@@ -8,12 +8,16 @@ from networkx.utils import py_random_state
 from networkx.utils.decorators import not_implemented_for
 from networkx.algorithms.shortest_paths.weighted import _weight_function
 
-__all__ = ["betweenness_centrality", "edge_betweenness_centrality", "edge_betweenness"]
+__all__ = [
+    "betweenness_centrality",
+    "edge_betweenness_centrality",
+    "edge_betweenness",
+]
 
 
 @py_random_state(5)
 def betweenness_centrality(
-    G, k=None, normalized=True, weight=None, endpoints=False, seed=None
+    G, k=None, normalized=True, weight=None, endpoints=False, seed=None, xtra_data=None
 ):
     r"""Compute the shortest-path betweenness centrality for nodes.
 
@@ -58,6 +62,10 @@ def betweenness_centrality(
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
         Note that this is only used if k is not None.
+
+    xtra_data : bool, optional
+        If true return additional information, including distance matrix $D$,
+        shortest path matrix $SP$ and source dependency matrix $Delta$
 
     Returns
     -------
@@ -120,6 +128,10 @@ def betweenness_centrality(
        https://doi.org/10.2307/3033543
     """
     betweenness = dict.fromkeys(G, 0.0)  # b[v]=0 for v in G
+    if xtra_data:
+        D = dict.fromkeys(G)
+        SP = dict.fromkeys(G)
+        Delta = dict.fromkeys(G)
     if k is None:
         nodes = G
     else:
@@ -130,11 +142,17 @@ def betweenness_centrality(
             S, P, sigma, _ = _single_source_shortest_path_basic(G, s)
         else:  # use Dijkstra's algorithm
             S, P, sigma, _ = _single_source_dijkstra_path_basic(G, s, weight)
+        if xtra_data:
+            D[s], SP[s] = _, sigma
+
         # accumulation
         if endpoints:
             betweenness, delta = _accumulate_endpoints(betweenness, S, P, sigma, s)
         else:
             betweenness, delta = _accumulate_basic(betweenness, S, P, sigma, s)
+        if xtra_data:
+            Delta[s] = delta
+
     # rescaling
     betweenness = _rescale(
         betweenness,
@@ -144,6 +162,8 @@ def betweenness_centrality(
         k=k,
         endpoints=endpoints,
     )
+    if xtra_data:
+        return betweenness, D, SP, Delta
     return betweenness
 
 
