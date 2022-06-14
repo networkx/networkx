@@ -223,13 +223,12 @@ def Lemma5(P: nx.Graph, S: list, k: int, B: nx.Graph):
         return False
 
 
-
 def Lemma6(P: nx.Graph, S: list, k: int, B: nx.Graph):
     for i in P.nodes():
         B_temp = copy.deepcopy(B)
         nodes = list(range(0, i))
         add_path_to_B(P.subgraph(nodes), B_temp)
-        add_path_to_B(P.subgraph([i,i+1]), B_temp)
+        add_path_to_B(P.subgraph([i, i + 1]), B_temp)
 
         max_match = size_max_matching(B_temp)
         if max_match > len(S) + 1:
