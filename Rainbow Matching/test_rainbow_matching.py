@@ -10,7 +10,6 @@ def test_easy_cases():
     Res = rm.rainbow_matching(G, 1)
     assert list(Res.edges) == []
 
-
     G.add_nodes_from([1, 3])
     G.add_edge(1, 2, color="red")
     G.add_edge(2, 3, color="red")
@@ -19,6 +18,7 @@ def test_easy_cases():
     assert list(Res.edges) == [(1, 2)]
     Res = rm.rainbow_matching(G, 2)
     assert list(Res.edges) == []
+
 
 def test_small_cases():
     G = nx.Graph()
@@ -45,8 +45,7 @@ def test_small_cases():
     assert list(rm.rainbow_matching(G, 2).edges) == [(1, 2), (3, 4)]
     assert list(rm.rainbow_matching(G, 3).edges) == [(1, 2), (3, 4), (5, 6)]
 
-
-    #more colors than "k"
+    # more colors than "k"
     G.edges[1, 2]["color"] = "blue"
     G.edges[2, 3]["color"] = "yellow"
     G.edges[3, 4]["color"] = "blue"
@@ -66,6 +65,7 @@ def test_small_cases():
     assert list(rm.rainbow_matching(G, 3).edges) == [(1, 2), (3, 4), (5, 6)]
     assert list(rm.rainbow_matching(G, 5).edges) == []
 
+
 def test_big_cases():
     G = nx.Graph()
     G.add_nodes_from([1, 14])
@@ -83,6 +83,6 @@ def test_big_cases():
     G.add_edge(12, 13, color="yellow")
     G.add_edge(13, 14, color="black")
 
-    assert list(rm.rainbow_matching(G, 4).edges) == [(1,2), (4,5), (7,8), (9,10)]
+    assert list(rm.rainbow_matching(G, 4).edges) == [(1, 2), (4, 5), (7, 8), (9, 10)]
     # assert list(rm.rainbow_matching(G, 5).edges) == [(1,2),  (4,5), (7,8),  (9,10), (11,12)]
     assert list(rm.rainbow_matching(G, 6).edges) == []

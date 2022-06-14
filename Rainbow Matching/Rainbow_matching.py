@@ -167,7 +167,7 @@ def size_max_matching(B: nx.Graph) -> int:
     return sum_matching
 
 
-def get_rainbow_matching(B : nx.Graph):
+def get_rainbow_matching(B: nx.Graph):
     """
     This function recieves a bipartite graph and returns a Graph with the corresponding rainbow matching.
     """
@@ -185,9 +185,9 @@ def get_rainbow_matching(B : nx.Graph):
                         original_path.has_edge(int_i - 1, int_i)
                         and nodes.get(key)
                         == original_path.edges[int_i - 1, int_i]["color"]
-                        ):
-                            matching.add_nodes_from([int_i - 1, int_i])
-                            matching.add_edge(int_i - 1, int_i, color=nodes.get(key))
+                    ):
+                        matching.add_nodes_from([int_i - 1, int_i])
+                        matching.add_edge(int_i - 1, int_i, color=nodes.get(key))
     return matching
 
 
@@ -216,9 +216,9 @@ def Lemma5(P: nx.Graph, S: list, k: int, B: nx.Graph):
             return 0
         for i in P.nodes():
             B_temp = copy.deepcopy(B)
-            add_path_to_B(P.subgraph([i,i+1]), B_temp)
+            add_path_to_B(P.subgraph([i, i + 1]), B_temp)
             # check if there is a matching that covers all S in B
-            if size_max_matching(B_temp) == len(S)+1:
+            if size_max_matching(B_temp) == len(S) + 1:
                 return get_rainbow_matching(B_temp)
         return False
 
@@ -227,12 +227,12 @@ def Lemma5(P: nx.Graph, S: list, k: int, B: nx.Graph):
 def Lemma6(P: nx.Graph, S: list, k: int, B: nx.Graph):
     for i in P.nodes():
         B_temp = copy.deepcopy(B)
-        nodes = list(range(0,i))
+        nodes = list(range(0, i))
         add_path_to_B(P.subgraph(nodes), B_temp)
         add_path_to_B(P.subgraph([i,i+1]), B_temp)
 
         max_match = size_max_matching(B_temp)
-        if max_match > len(S)+1:
+        if max_match > len(S) + 1:
             return -1
 
     # if we checked all indexes and didn't find an index that satisfies the lemma's condition
