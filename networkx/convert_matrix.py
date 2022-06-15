@@ -39,7 +39,6 @@ __all__ = [
     "to_pandas_adjacency",
     "from_pandas_edgelist",
     "to_pandas_edgelist",
-    "to_numpy_recarray",
     "from_scipy_sparse_array",
     "from_scipy_sparse_matrix",
     "to_scipy_sparse_array",
@@ -499,7 +498,7 @@ def to_numpy_matrix(
     dtype : NumPy data type, optional
         A valid single NumPy data type used to initialize the array.
         This must be a simple type such as int or numpy.float64 and
-        not a compound data type (see to_numpy_recarray)
+        not a compound data type.
         If None, then the NumPy default is used.
 
     order : {'C', 'F'}, optional
@@ -526,10 +525,6 @@ def to_numpy_matrix(
     -------
     M : NumPy matrix
         Graph adjacency matrix
-
-    See Also
-    --------
-    to_numpy_recarray
 
     Notes
     -----
@@ -640,10 +635,6 @@ def from_numpy_matrix(A, parallel_edges=False, create_using=None):
     of the data fields will be used as attribute keys in the resulting
     NetworkX graph.
 
-    See Also
-    --------
-    to_numpy_recarray
-
     Examples
     --------
     Simple integer weights on edges:
@@ -692,105 +683,6 @@ def from_numpy_matrix(A, parallel_edges=False, create_using=None):
         DeprecationWarning,
     )
     return from_numpy_array(A, parallel_edges=parallel_edges, create_using=create_using)
-
-
-@not_implemented_for("multigraph")
-def to_numpy_recarray(G, nodelist=None, dtype=None, order=None):
-    """Returns the graph adjacency matrix as a NumPy recarray.
-
-    .. deprecated:: 2.7
-
-       ``to_numpy_recarray`` is deprecated and will be removed in NetworkX 3.0.
-       Use ``nx.to_numpy_array(G, dtype=dtype, weight=None).view(np.recarray)``
-       instead.
-
-    Parameters
-    ----------
-    G : graph
-        The NetworkX graph used to construct the NumPy recarray.
-
-    nodelist : list, optional
-       The rows and columns are ordered according to the nodes in `nodelist`.
-       If `nodelist` is None, then the ordering is produced by G.nodes().
-
-    dtype : NumPy data-type, optional
-        A valid NumPy named dtype used to initialize the NumPy recarray.
-        The data type names are assumed to be keys in the graph edge attribute
-        dictionary. The default is ``dtype([("weight", float)])``.
-
-    order : {'C', 'F'}, optional
-        Whether to store multidimensional data in C- or Fortran-contiguous
-        (row- or column-wise) order in memory. If None, then the NumPy default
-        is used.
-
-    Returns
-    -------
-    M : NumPy recarray
-       The graph with specified edge data as a Numpy recarray
-
-    Notes
-    -----
-    When `nodelist` does not contain every node in `G`, the adjacency
-    matrix is built from the subgraph of `G` that is induced by the nodes in
-    `nodelist`.
-
-    Examples
-    --------
-    >>> G = nx.Graph()
-    >>> G.add_edge(1, 2, weight=7.0, cost=5)
-    >>> A = nx.to_numpy_recarray(G, dtype=[("weight", float), ("cost", int)])
-    >>> print(A.weight)
-    [[0. 7.]
-     [7. 0.]]
-    >>> print(A.cost)
-    [[0 5]
-     [5 0]]
-
-    """
-    import warnings
-
-    import numpy as np
-
-    warnings.warn(
-        (
-            "to_numpy_recarray is deprecated and will be removed in version 3.0.\n"
-            "Use to_numpy_array instead::\n\n"
-            "    nx.to_numpy_array(G, dtype=dtype, weight=None).view(np.recarray)"
-        ),
-        DeprecationWarning,
-        stacklevel=2,
-    )
-
-    if dtype is None:
-        dtype = [("weight", float)]
-
-    if nodelist is None:
-        nodelist = list(G)
-        nodeset = G
-        nlen = len(G)
-    else:
-        nlen = len(nodelist)
-        nodeset = set(G.nbunch_iter(nodelist))
-        if nlen != len(nodeset):
-            for n in nodelist:
-                if n not in G:
-                    raise nx.NetworkXError(f"Node {n} in nodelist is not in G")
-            raise nx.NetworkXError("nodelist contains duplicates.")
-
-    undirected = not G.is_directed()
-    index = dict(zip(nodelist, range(nlen)))
-    M = np.zeros((nlen, nlen), dtype=dtype, order=order)
-
-    names = M.dtype.names
-    for u, v, attrs in G.edges(data=True):
-        if (u in nodeset) and (v in nodeset):
-            i, j = index[u], index[v]
-            values = tuple(attrs[n] for n in names)
-            M[i, j] = values
-            if undirected:
-                M[j, i] = M[i, j]
-
-    return M.view(np.recarray)
 
 
 def to_scipy_sparse_array(G, nodelist=None, dtype=None, weight="weight", format="csr"):

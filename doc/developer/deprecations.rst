@@ -77,7 +77,6 @@ Version 3.0
 * In ``algorithms/link_analysis/pagerank_alg.py`` replace ``pagerank`` with ``pagerank_scipy``.
 * In ``algorithms/link_analysis/pagerank_alg.py`` rename ``pagerank_numpy`` as ``_pagerank_numpy``.
 * In ``convert_matrix.py`` remove ``order`` kwarg from ``to_pandas_edgelist`` and docstring
-* Remove ``readwrite/json_graph/jit.py`` and related tests.
 * In ``utils/misc.py`` remove ``generate_unique_node`` and related tests.
 * In ``algorithms/link_analysis/hits_alg.py`` remove ``hub_matrix`` and ``authority_matrix``
 * In ``algorithms/link_analysis/hits_alg.py``, remove ``hits_numpy`` and ``hist_scipy``.
@@ -106,7 +105,6 @@ Version 3.0
   reflect that the function returns a ``numpy.ndarray`` instance.
 * In ``generators/small.py`` remove ``make_small_graph`` and
   ``make_small_undirected_graph``.
-* In ``convert_matrix.py`` remove ``to_numpy_recarray``.
 * In ``classes/function.py`` remove ``info``.
 * In ``algorithms/community/modularity_max.py``, remove the deprecated
   ``n_communities`` parameter from the ``greedy_modularity_communities``
