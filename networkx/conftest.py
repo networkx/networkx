@@ -86,9 +86,6 @@ def set_warnings():
         message="This will return a generator in 3.0*",
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="betweenness_centrality_source"
-    )
-    warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="edge_betweeness"
     )
     warnings.filterwarnings(
