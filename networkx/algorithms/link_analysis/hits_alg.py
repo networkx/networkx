@@ -179,10 +179,11 @@ def _hits_numpy(G, normalized=True):
     >>> hubs_matrix = adj_ary @ adj_ary.T
     >>> authority_matrix = adj_ary.T @ adj_ary
 
-    `hits_numpy` maps the eigenvector corresponding to the maximum eigenvalue
+    `_hits_numpy` maps the eigenvector corresponding to the maximum eigenvalue
     of the respective matrices to the nodes in `G`:
 
-    >>> hubs, authority = nx.hits_numpy(G)
+    >>> from networkx.algorithms.link_analysis.hits_alg import _hits_numpy
+    >>> hubs, authority = _hits_numpy(G)
 
     Notes
     -----
@@ -260,8 +261,9 @@ def _hits_scipy(G, max_iter=100, tol=1.0e-6, nstart=None, normalized=True):
 
     Examples
     --------
+    >>> from networkx.algorithms.link_analysis.hits_alg import _hits_scipy
     >>> G = nx.path_graph(4)
-    >>> h, a = nx.hits(G)
+    >>> h, a = _hits_scipy(G)
 
     Notes
     -----
