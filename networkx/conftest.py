@@ -225,9 +225,6 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message=r"\n\nmake_small_.*"
     )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="to_numpy_recarray"
-    )
     warnings.filterwarnings("ignore", category=DeprecationWarning, message="info")
     warnings.filterwarnings("ignore", category=DeprecationWarning, message="to_tuple")
     # create_using for scale_free_graph
