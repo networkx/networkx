@@ -9,4 +9,3 @@ GML
    parse_gml
    generate_gml
    literal_destringizer
-   literal_stringizer

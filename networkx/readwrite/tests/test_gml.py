@@ -10,7 +10,7 @@ from textwrap import dedent
 import pytest
 
 import networkx as nx
-from networkx.readwrite.gml import literal_destringizer, literal_stringizer
+from networkx.readwrite.gml import literal_destringizer
 
 
 class TestGraph:
@@ -187,7 +187,7 @@ graph   [
 ]"""
         G = nx.Graph()
         G.add_node(1203)
-        data = "\n".join(nx.generate_gml(G, stringizer=literal_stringizer))
+        data = "\n".join(nx.generate_gml(G))
         assert data == answer
 
     def test_relabel_duplicate(self):
@@ -217,7 +217,7 @@ graph
         # Writing tuple labels to GML failed.
         G = nx.Graph()
         G.add_edge((0, 1), (1, 0))
-        data = "\n".join(nx.generate_gml(G, stringizer=literal_stringizer))
+        data = "\n".join(nx.generate_gml(G))
         answer = """graph [
   node [
     id 0
@@ -448,7 +448,7 @@ graph
         G.graph["data"] = data
         G.add_node(0, int=-1, data=dict(data=data))
         G.add_edge(0, 0, float=-2.5, data=data)
-        gml = "\n".join(nx.generate_gml(G, stringizer=literal_stringizer))
+        gml = "\n".join(nx.generate_gml(G))
         G = nx.parse_gml(gml, destringizer=literal_destringizer)
         assert data == G.name
         assert {"name": data, "data": data} == G.graph
@@ -483,8 +483,6 @@ graph
         pytest.raises(ValueError, literal_destringizer, "(")
         pytest.raises(ValueError, literal_destringizer, "frozenset([1, 2, 3])")
         pytest.raises(ValueError, literal_destringizer, literal_destringizer)
-        pytest.raises(ValueError, literal_stringizer, frozenset([1, 2, 3]))
-        pytest.raises(ValueError, literal_stringizer, literal_stringizer)
         with tempfile.TemporaryFile() as f:
             f.write(codecs.BOM_UTF8 + b"graph[]")
             f.seek(0)
