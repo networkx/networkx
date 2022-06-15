@@ -229,9 +229,6 @@ def set_warnings():
     )
     warnings.filterwarnings("ignore", category=FutureWarning, message="attr_matrix")
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message=r"\n\nmake_small_.*"
-    )
-    warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="to_numpy_recarray"
     )
     warnings.filterwarnings("ignore", category=DeprecationWarning, message="info")
