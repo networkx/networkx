@@ -118,8 +118,6 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="read_gpickle"
     )
-    warnings.filterwarnings("ignore", category=DeprecationWarning, message="write_shp")
-    warnings.filterwarnings("ignore", category=DeprecationWarning, message="read_shp")
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="edges_from_line"
     )
@@ -299,13 +297,6 @@ except ImportError:
     has_pydot = False
 
 try:
-    import ogr
-
-    has_ogr = True
-except ImportError:
-    has_ogr = False
-
-try:
     import sympy
 
     has_sympy = True
@@ -363,7 +354,6 @@ needs_pandas = ["convert_matrix.py"]
 needs_yaml = ["readwrite/nx_yaml.py"]
 needs_pygraphviz = ["drawing/nx_agraph.py"]
 needs_pydot = ["drawing/nx_pydot.py"]
-needs_ogr = ["readwrite/nx_shp.py"]
 needs_sympy = ["algorithms/polynomials.py"]
 
 if not has_numpy:
@@ -380,8 +370,6 @@ if not has_pygraphviz:
     collect_ignore += needs_pygraphviz
 if not has_pydot:
     collect_ignore += needs_pydot
-if not has_ogr:
-    collect_ignore += needs_ogr
 if not has_sympy:
     collect_ignore += needs_sympy
 

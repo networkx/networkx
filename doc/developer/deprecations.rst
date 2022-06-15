@@ -72,7 +72,6 @@ Version 3.0
   ``networkx/readwrite/__init__.py`` and ``networkx/readwrite/nx_yaml.py`` and
   remove ``networkx/readwrite/tests/test_getattr_nxyaml_removal.py``
 * Remove ``readwrite/gpickle.py`` and related tests.
-* Remove ``readwrite/nx_shp.py`` and related tests (add info in alternatives).
 * Remove ``copy`` method in the coreview Filtered-related classes and related tests.
 * In ``algorithms/link_analysis/pagerank_alg.py`` replace ``pagerank`` with ``pagerank_scipy``.
 * In ``algorithms/link_analysis/pagerank_alg.py`` rename ``pagerank_numpy`` as ``_pagerank_numpy``.
