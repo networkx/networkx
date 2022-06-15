@@ -95,16 +95,19 @@ def directed_edge_swap(G, *, nswap=1, max_tries=100, seed=None):
         if G.out_degree(start) == 0:
             continue
         second = seed.choice(list(G.succ[start]))
+        if start == second:
+            continue
 
         if G.out_degree(second) == 0:
             continue
         third = seed.choice(list(G.succ[second]))
+        if second == third:
+            continue
 
         if G.out_degree(third) == 0:
             continue
         fourth = seed.choice(list(G.succ[third]))
-
-        if start == second or second == third or third == fourth:
+        if third == fourth:
             continue
 
         if (
