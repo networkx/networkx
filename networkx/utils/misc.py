@@ -34,7 +34,6 @@ __all__ = [
     "dict_to_numpy_array1",
     "dict_to_numpy_array2",
     "arbitrary_element",
-    "consume",
     "pairwise",
     "groups",
     "to_tuple",
@@ -341,22 +340,6 @@ def arbitrary_element(iterable):
         raise ValueError("cannot return an arbitrary item from an iterator")
     # Another possible implementation is ``for x in iterable: return x``.
     return next(iter(iterable))
-
-
-# Recipe from the itertools documentation.
-def consume(iterator):
-    """Consume the iterator entirely.
-
-    .. deprecated:: 2.6
-        This is deprecated and will be removed in NetworkX v3.0.
-    """
-    # Feed the entire iterator into a zero-length deque.
-    msg = (
-        "consume is deprecated and will be removed in version 3.0. "
-        "Use ``collections.deque(iterator, maxlen=0)`` instead."
-    )
-    warnings.warn(msg, DeprecationWarning, stacklevel=2)
-    deque(iterator, maxlen=0)
 
 
 # Recipe from the itertools documentation.
