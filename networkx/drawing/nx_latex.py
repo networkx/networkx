@@ -4,6 +4,36 @@ LaTeX
 *****
 
 Export NetworkX graphs in LaTeX format using a Adigraph LaTeX library.
+Usually, you will want the drawing to appear in a figure environment so
+you use :func:`to_latex(G, caption="A caption")`. If you want the raw
+drawing commends without a figure environment us `to_latex_raw(G)`.
+And it you want to write to a file instead of just returning the latex
+code as a string, use `write_latex(G, "filname.tex", caption="A caption")`.
+
+For this drawing feature the drawing attributes should be stored on the
+graph as either node attributes or edge attributes. You can point to any
+attribute names you like, but the default attributes are:
+ - "color" the color of the node/edge
+ - "width" the width of the outline of a node, or the edge line of an edge.
+ - "label" the string printed inside the node, or along the edge.
+ Note that you can put a location inside an edge label to adjust where along
+ the edge the label goes with text like:  "My Edge:near end" or "My edge:near start"
+ 
+The edge styles default to arrows for directed graphs and lines for undirected edges.
+You can override this for all edges using the `edge_style` keyword argument. For 
+individual edges, you can add the style to the edge label.  TODO Does this really work?
+
+To construct a figure with subfigures for each graph to be shown, provide
+`to_latex`, or `write_latex` with a list of graphs and a list of sub-captions and
+a number of rows of sub-figures inside the figure.
+
+To be able to refer to the figures or subfigures in latex using `\\ref`,
+the keyword `latex_label` is available for figures and `sub_labels` for
+a list of labels, one for each sub-figure.
+
+Note that some features of TikZ graph drawing are not provided by this interface.
+Let us know what you'd like to see available on github, or better yet give us
+some code to do it, or even better make a github pull request to add the feature.
 
 Examples
 ========
@@ -60,9 +90,19 @@ If you want subfigures each containing one graph, you can input a list of graphs
 \end{document}
 
 
-See Also
---------
+Notes
+-----
+If you want to change the preamble/postamble of the figure/document/subfigure
+environment, use the keyword arguments: `figure_wrapper`, `document_wrapper`,
+`subfigure_wrapper`. The default values are stored in private variables
+``nx.nx_layout._DOCUMENT_WRAPPER``, e.g.
+
+
+References
+----------
 Adigraph:      https://ctan.org/pkg/adigraph
+Tikz:          https://tikz.dev/
+Tikz style details:   https://tikz.dev/tikz-shapes#sec-17.11
 """
 import os
 
@@ -201,15 +241,35 @@ def to_latex(
         The NetworkX graph to be drawn or an iterable of graphs or Adigraphs
         to be drawn inside subfigures of a single figure.
     pos : dict or iterable of position dict for each graph or None
+        A dict keyed by node to an (x, y) position on the drawing.
+        If None, a circular layout is provided by TikZ.
+        If you are drawing many graphs in subfigures, use a list of position dicts.
     default_node_color : string
+        The color to use if a color is not specified in the `node_color` attribute.
     default_edge_color : string
+        The color to use if a color is not specified in the `edge_color` attribute.
     node_color : string or dict
+        The name of the node attribute holding a string indicating a color.
+        If that attribute does not exist for some node, `default_node_color` is used.
     edge_color : string or dict
-    node_width : string or dict
-    edge_width : string or dict
-    node_label : string or dict
-    edge_label : string or dict
+        The name of the edge attribute holding a string indicating a color.
+        If that attribute does not exist for some edge, `default_edge_color` is used.
+    node_width : string or dict (default "")
+        The name of the node attribute holding a string indicating node line width.
+        If that attribute does not exist for some node, `""` is used.
+    edge_width : string or dict (default "")
+        The name of the edge attribute holding a string indicating a edge line width.
+        If that attribute does not exist for some edge, `""` is used.
+    node_label : string or dict (default "")
+        The name of node attribute holding a string for that node in the drawing.
+        By default `str(node)` is used for each node.
+    edge_label : string or dict (default "")
+        The name of the edge attribute holding a string indicating a edge line width.
+        By default, no label is drawn next to an edge.
     edge_style : string or None
+        The ``style`` option for all edges. These can be any valid style previously
+        defained in a way TikZ can understand it. Typically this is ``"-"``, ``"->"``,
+        ``"dotted"``, or ``"dashed"``.
     caption : string
         The caption string for the figure environment
     latex_label : string
@@ -222,6 +282,18 @@ def to_latex(
         The number of rows of subfigures to arrange for multiple graphs
     as_document : bool
         Whether to wrap the latex code in a document envionment for compiling
+    document_wrapper : formatted text string with variable ``content``.
+        This text is called to evaluate the content embedded in a document
+        environment with a preamble setting up the adigraph syntax.
+    figure_wrapper : formatted text string
+        This text is evaluated with variables ``content``, ``caption`` and ``label``.
+        It wraps the content and if a caption is provided, adds the latex code for
+        that caption, and if a label is provided, adds the latex code for a label.
+    subfigure_wrapper : formatted text string
+        This text evaluate variables ``size``, ``content``, ``caption`` and ``label``.
+        It wraps the content and if a caption is provided, adds the latex code for
+        that caption, and if a label is provided, adds the latex code for a label.
+        The size is the vertical size of each row of subfigures as a fraction.
 
     Returns
     =======
@@ -294,6 +366,12 @@ def to_latex(
 def write_latex(Gbunch, path, **options):
     """Write the latex code to draw the graph(s) onto `path`.
 
+    This convenience function creates the latex drawing code as a string
+    and writes that to a file ready to be compiled when `as_document is True`
+    or ready to be ``\\import``ed or `\\include``ed into your main LaTeX document.
+
+    The `path` argument can be a string filename or a file handle to write to.
+
     Parameters
     ----------
     Gbunch : NetworkX graph or iterable of NetworkX graphs or Adigraphs
@@ -302,23 +380,63 @@ def write_latex(Gbunch, path, **options):
         envionment within a single figure environment.
     path : filename
         Filename or file handle to write to
-    as_document : bool
-        Whether to wrap the latex code in a document environment ready to be compiled.
     options : dict
-        keyword arguments for the `to_latex` constructor function
-
-    The options can be: (others are ignored)
-
-    n_rows : int
-        The number of rows of subfigures to arrange for multiple graphs
-    caption : string
-        The caption string for the figure environment
-    latex_label : string
-        The latex label used for the figure for easy referral from the main text
-    sub_captions : list of strings
-        The sub_caption string for each subfigure in the figure
-    sub_latex_labels : list of strings
-        The latex label for each subfigure in the figure
+        keyword arguments that mimic the `to_latex` constructor function
+        The options can be: (others are ignored)
+        pos : dict or iterable of position dict for each graph or None
+            A dict keyed by node to an (x, y) position on the drawing.
+            If None, a circular layout is provided by TikZ.
+            If you are drawing many graphs in subfigures, use a list of position dicts.
+        default_node_color : string
+            The color to use if a color is not specified in the `node_color` attribute.
+        default_edge_color : string
+            The color to use if a color is not specified in the `edge_color` attribute.
+        node_color : string or dict
+            The name of the node attribute holding a string indicating a color.
+            If that attribute does not exist for some node, `default_node_color` is used.
+        edge_color : string or dict
+            The name of the edge attribute holding a string indicating a color.
+            If that attribute does not exist for some edge, `default_edge_color` is used.
+        node_width : string or dict (default "")
+            The name of the node attribute holding a string indicating node line width.
+            If that attribute does not exist for some node, `""` is used.
+        edge_width : string or dict (default "")
+            The name of the edge attribute holding a string indicating a edge line width.
+            If that attribute does not exist for some edge, `""` is used.
+        node_label : string or dict (default "")
+            The name of node attribute holding a string for that node in the drawing.
+            By default `str(node)` is used for each node.
+        edge_label : string or dict (default "")
+            The name of the edge attribute holding a string indicating a edge line width.
+            By default, no label is drawn next to an edge.
+        edge_style : string or None
+            The ``style`` option for all edges. These can be any valid style previously
+            defained in a way TikZ can understand it. Typically this is ``"-"``, ``"->"``,
+            ``"dotted"``, or ``"dashed"``.
+        caption : string
+            The caption string for the figure environment
+        latex_label : string
+            The latex label used for the figure for easy referral from the main text
+        sub_captions : list of strings
+            The sub_caption string for each subfigure in the figure
+        sub_latex_labels : list of strings
+            The latex label for each subfigure in the figure
+        n_rows : int
+            The number of rows of subfigures to arrange for multiple graphs
+        as_document : bool
+            Whether to wrap the latex code in a document envionment for compiling
+        document_wrapper : formatted text string with variable ``content``.
+            This text is called to evaluate the content embedded in a document
+            environment with a preamble setting up the adigraph syntax.
+        figure_wrapper : formatted text string
+            This text is evaluated with variables ``content``, ``caption`` and ``label``.
+            It wraps the content and if a caption is provided, adds the latex code for
+            that caption, and if a label is provided, adds the latex code for a label.
+        subfigure_wrapper : formatted text string
+            This text evaluate variables ``size``, ``content``, ``caption`` and ``label``.
+            It wraps the content and if a caption is provided, adds the latex code for
+            that caption, and if a label is provided, adds the latex code for a label.
+            The size is the vertical size of each row of subfigures as a fraction.
 
     See Also
     ========

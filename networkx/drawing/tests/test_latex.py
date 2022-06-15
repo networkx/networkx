@@ -6,7 +6,7 @@ import pytest
 import networkx as nx
 
 
-def test_multiple_graphs():
+def test_basic_multiple_graphs():
     H1 = nx.path_graph(4)
     H2 = nx.complete_graph(4)
     H3 = nx.path_graph(8)
@@ -24,6 +24,11 @@ def test_multiple_graphs():
         sub_captions=captions,
         sub_labels=labels,
     )
+    assert "begin{document}" in latex_code
+    assert "begin{figure}" in latex_code
+    assert latex_code.count("begin{subfigure}") == 4
+    assert latex_code.count("myAdigraph") == 8
+    assert latex_code.count("[-]") == 4
 
 
 expected_tex = r"""\documentclass{report}
@@ -165,18 +170,23 @@ def test_basic_adigraph():
 
 
 def test_exception_pos_single_graph():
+    # cant be a string
     G = nx.path_graph(4)
     with pytest.raises(nx.NetworkXError):
         nx.to_latex(G, pos="pos")
 
+    # must include all nodes
     pos = {0: (1, 2), 1: (0, 1), 2: (2, 1)}
     with pytest.raises(nx.NetworkXError):
         nx.to_latex(G, pos)
 
+    # must have 2 or fewer values
+    # (1 value indicates the radius of a circle on which the node is placed
     pos[3] = (1, 2, 3)
     with pytest.raises(nx.NetworkXError):
         nx.to_latex(G, pos)
 
+    # all pass
     pos[3] = (3, 2)
     nx.to_latex(G, pos)
 
@@ -188,27 +198,32 @@ def test_exception_multiple_graphs():
     fourG = [G, G, G, G]
     fourpos = [pos_OK, pos_OK, pos_OK, pos_OK]
 
+    # include pos dict as a list of dicts for each graph
     with pytest.raises(nx.NetworkXError):
         nx.to_latex(fourG, pos_OK)
 
+    # include pos dict as a list of dicts for each graph
     with pytest.raises(nx.NetworkXError):
         nx.to_latex(fourG, pos_bad)
 
+    # the pos dict must include all nodes
     with pytest.raises(nx.NetworkXError):
         nx.to_latex(fourG, [pos_bad, pos_bad, pos_bad, pos_bad])
 
+    # every pos dict must include all nodes
     with pytest.raises(nx.NetworkXError):
         nx.to_latex(fourG, [pos_OK, pos_OK, pos_bad, pos_OK])
 
     nx.to_latex(fourG, fourpos)
 
-    # test sub_captions and sub_labels
+    # test sub_captions and sub_labels (len must match Gbunch)
     with pytest.raises(nx.NetworkXError):
         nx.to_latex(fourG, fourpos, sub_captions=["hi", "hi"])
 
     with pytest.raises(nx.NetworkXError):
         nx.to_latex(fourG, fourpos, sub_labels=["hi", "hi"])
 
+    # all pass
     nx.to_latex(fourG, fourpos, ["hi"] * 4, ["lbl"] * 4)
 
 
