@@ -84,7 +84,6 @@ Version 3.0
 * In ``classes`` remove the ``ordered`` module and the four ``Ordered``
   classes defined therein.
 * In ``utils/decorators.py`` remove ``preserve_random_state``.
-* In ``algorithms/community/quality.py`` remove ``coverage`` and ``performance``.
 * Remove ``testing``.
 * In ``linalg/graphmatrix.py`` remove ``adj_matrix``.
 * In ``algorithms/similarity.py`` replace ``simrank_similarity`` with ``simrank_similarity_numpy``.
