@@ -7,15 +7,6 @@ from networkx import convert_node_labels_to_integers as cnlti
 from networkx.algorithms.distance_measures import _extrema_bounding
 
 
-@pytest.mark.parametrize(
-    "compute", ("diameter", "radius", "periphery", "center", "eccentricities")
-)
-def test_extrema_bounding_deprecated(compute):
-    G = nx.complete_graph(3)
-    with pytest.deprecated_call():
-        nx.extrema_bounding(G, compute=compute)
-
-
 def test__extrema_bounding_invalid_compute_kwarg():
     G = nx.path_graph(3)
     with pytest.raises(ValueError, match="compute must be one of"):
