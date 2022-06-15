@@ -15,22 +15,19 @@ __all__ = [
 ]
 
 
-def find_successor(G, v, S):
-    """Find a successor of v that is in the set of nodes S"""
-    for w in G.successors(v):
-        if w in S:
-            return w
-    return None
-
-
 def get_a_lowest_common_ancestor(G, common_ancestors):
     """Return a lowest common ancestor from the given set of common ancestors"""
     # Start with an arbitrary node v from the set of common ancestors.  Follow
     # arbitrary outgoing edges, remaining in the set of common ancestors, until
     # reaching a node with no outgoing edge to another of the common ancestors.
+
     v = next(iter(common_ancestors))
     while True:
-        successor = find_successor(G, v, common_ancestors)
+        successor = None
+        for w in G.successors(v):
+            if w in common_ancestors:
+                successor = w
+                break
         if successor is None:
             return v
         v = successor
@@ -80,8 +77,10 @@ def naive_all_pairs_lowest_common_ancestor(G, pairs=None):
     for v, w in pairs:
         if v not in ancestor_cache:
             ancestor_cache[v] = nx.ancestors(v)
+            ancestor_cache[v].add(v)
         if w not in ancestor_cache:
             ancestor_cache[w] = nx.ancestors(w)
+            ancestor_cache[w].add(w)
 
         common_ancestors = ancestor_cache[v] & ancestor_cache[w]
         if common_ancestors:
