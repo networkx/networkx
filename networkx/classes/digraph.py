@@ -50,7 +50,6 @@ class DiGraph(Graph):
     Graph
     MultiGraph
     MultiDiGraph
-    OrderedDiGraph
 
     Examples
     --------

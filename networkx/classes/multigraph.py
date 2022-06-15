@@ -59,7 +59,6 @@ class MultiGraph(Graph):
     Graph
     DiGraph
     MultiDiGraph
-    OrderedMultiGraph
 
     Examples
     --------

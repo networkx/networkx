@@ -63,7 +63,6 @@ class MultiDiGraph(MultiGraph, DiGraph):
     Graph
     DiGraph
     MultiGraph
-    OrderedMultiDiGraph
 
     Examples
     --------

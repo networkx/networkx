@@ -41,12 +41,7 @@ Basic graph types
 
 .. note:: NetworkX uses `dicts` to store the nodes and neighbors in a graph.
    So the reporting of nodes and edges for the base graph classes will not
-   necessarily be consistent across versions and platforms.  If you need the
-   order of nodes and edges to be consistent (e.g., when writing automated
-   tests), please see :class:`~networkx.OrderedGraph`,
-   :class:`~networkx.OrderedDiGraph`, :class:`~networkx.OrderedMultiGraph`,
-   or :class:`~networkx.OrderedMultiDiGraph`, which behave like the base
-   graph classes but give a consistent order for reporting of nodes and edges.
+   necessarily be consistent across versions and platforms.
 
 Graph Views
 ===========
