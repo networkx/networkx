@@ -71,9 +71,6 @@ def set_warnings():
         "ignore", category=DeprecationWarning, message="default_opener is deprecated"
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="empty_generator is deprecated"
-    )
-    warnings.filterwarnings(
         "ignore",
         category=DeprecationWarning,
         message="generate_unique_node is deprecated",
