@@ -14,7 +14,6 @@ from networkx.utils import (
     flatten,
     groups,
     is_string_like,
-    iterable,
     make_list_of_ints,
     make_str,
     pairwise,
@@ -66,22 +65,6 @@ def test_is_string_like():
     assert is_string_like("aaaa")
     assert not is_string_like(None)
     assert not is_string_like(123)
-
-
-def test_iterable():
-    assert not iterable(None)
-    assert not iterable(10)
-    assert iterable([1, 2, 3])
-    assert iterable((1, 2, 3))
-    assert iterable({1: "A", 2: "X"})
-    assert iterable("ABC")
-
-
-def test_graph_iterable():
-    K = nx.complete_graph(10)
-    assert iterable(K)
-    assert iterable(K.nodes())
-    assert iterable(K.edges())
 
 
 def test_make_list_of_ints():

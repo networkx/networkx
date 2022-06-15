@@ -24,7 +24,6 @@ np = nx.lazy_import("numpy")
 
 __all__ = [
     "is_string_like",
-    "iterable",
     "empty_generator",
     "flatten",
     "make_list_of_ints",
@@ -67,26 +66,6 @@ def is_string_like(obj):  # from John Hunter, types-free version
     )
     warnings.warn(msg, DeprecationWarning)
     return isinstance(obj, str)
-
-
-def iterable(obj):
-    """Return True if obj is iterable with a well-defined len().
-
-    .. deprecated:: 2.6
-        This is deprecated and will be removed in NetworkX v3.0.
-    """
-    msg = (
-        "iterable is deprecated and will be removed in 3.0."
-        "Use isinstance(obj, (collections.abc.Iterable, collections.abc.Sized)) instead."
-    )
-    warnings.warn(msg, DeprecationWarning)
-    if hasattr(obj, "__iter__"):
-        return True
-    try:
-        len(obj)
-    except:
-        return False
-    return True
 
 
 def empty_generator():
