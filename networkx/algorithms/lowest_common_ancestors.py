@@ -76,10 +76,10 @@ def naive_all_pairs_lowest_common_ancestor(G, pairs=None):
 
     for v, w in pairs:
         if v not in ancestor_cache:
-            ancestor_cache[v] = nx.ancestors(v)
+            ancestor_cache[v] = nx.ancestors(G, v)
             ancestor_cache[v].add(v)
         if w not in ancestor_cache:
-            ancestor_cache[w] = nx.ancestors(w)
+            ancestor_cache[w] = nx.ancestors(G, w)
             ancestor_cache[w].add(w)
 
         common_ancestors = ancestor_cache[v] & ancestor_cache[w]
