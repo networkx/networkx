@@ -204,7 +204,7 @@ def attr_matrix(
 
     Returns
     -------
-    M : NumPy matrix
+    M : NumPy ndarray
         The attribute matrix.
 
     ordering : list
@@ -297,19 +297,6 @@ def attr_matrix(
 
     if normalized:
         M /= M.sum(axis=1).reshape((N, 1))
-
-    import warnings
-
-    warnings.warn(
-        (
-            "attr_matrix will return an numpy.ndarray instead of a numpy.matrix "
-            "in NetworkX 3.0."
-        ),
-        category=FutureWarning,
-        stacklevel=2,
-    )
-    # TODO: Remove asmatrix in NetworkX 3.0
-    M = np.asmatrix(M)
 
     if rc_order is None:
         return M, ordering
