@@ -35,7 +35,6 @@ __all__ = [
     "arbitrary_element",
     "pairwise",
     "groups",
-    "to_tuple",
     "create_random_state",
     "create_py_random_state",
     "PythonRandomInterface",
@@ -360,31 +359,6 @@ def groups(many_to_one):
     for v, k in many_to_one.items():
         one_to_many[k].add(v)
     return dict(one_to_many)
-
-
-def to_tuple(x):
-    """Converts lists to tuples.
-
-    .. deprecated:: 2.8
-
-       to_tuple is deprecated and will be removed in NetworkX 3.0.
-
-    Examples
-    --------
-    >>> from networkx.utils import to_tuple
-    >>> a_list = [1, 2, [1, 4]]
-    >>> to_tuple(a_list)
-    (1, 2, (1, 4))
-    """
-    warnings.warn(
-        "to_tuple is deprecated and will be removed in NetworkX 3.0.",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-
-    if not isinstance(x, (tuple, list)):
-        return x
-    return tuple(map(to_tuple, x))
 
 
 def create_random_state(random_state=None):

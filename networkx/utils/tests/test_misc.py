@@ -17,7 +17,6 @@ from networkx.utils import (
     make_list_of_ints,
     pairwise,
     powerlaw_sequence,
-    to_tuple,
 )
 from networkx.utils.misc import _dict_to_numpy_array1, _dict_to_numpy_array2
 
@@ -171,23 +170,6 @@ def test_groups():
     expected = {0: {"a", "b"}, 1: {"c", "d"}, 2: {"e"}}
     assert actual == expected
     assert {} == groups({})
-
-
-def test_to_tuple():
-    a_list = [1, 2, [1, 3]]
-    actual = to_tuple(a_list)
-    expected = (1, 2, (1, 3))
-    assert actual == expected
-
-    a_tuple = (1, 2)
-    actual = to_tuple(a_tuple)
-    expected = a_tuple
-    assert actual == expected
-
-    a_mix = (1, 2, [1, 3])
-    actual = to_tuple(a_mix)
-    expected = (1, 2, (1, 3))
-    assert actual == expected
 
 
 def test_create_random_state():
