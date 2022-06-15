@@ -19,24 +19,6 @@ __all__ = [
 ]
 
 
-def euclidean(x, y):
-    """Returns the Euclidean distance between the vectors ``x`` and ``y``.
-
-    Each of ``x`` and ``y`` can be any iterable of numbers. The
-    iterables must be of the same length.
-
-     .. deprecated:: 2.7
-    """
-    import warnings
-
-    msg = (
-        "euclidean is deprecated and will be removed in 3.0."
-        "Use math.dist(x, y) instead."
-    )
-    warnings.warn(msg, DeprecationWarning, stacklevel=2)
-    return math.dist(x, y)
-
-
 def geometric_edges(G, radius, p=2):
     """Returns edge list of node pairs within `radius` of each other.
 

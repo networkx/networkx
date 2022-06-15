@@ -13,10 +13,8 @@ from networkx.utils import (
     discrete_sequence,
     flatten,
     groups,
-    is_string_like,
     iterable,
     make_list_of_ints,
-    make_str,
     pairwise,
     powerlaw_sequence,
     to_tuple,
@@ -62,12 +60,6 @@ def test_flatten(nested, result):
     assert issubclass(type(val), tuple)
 
 
-def test_is_string_like():
-    assert is_string_like("aaaa")
-    assert not is_string_like(None)
-    assert not is_string_like(123)
-
-
 def test_iterable():
     assert not iterable(None)
     assert not iterable(10)
@@ -97,20 +89,6 @@ def test_random_number_distribution():
     # smoke test only
     z = powerlaw_sequence(20, exponent=2.5)
     z = discrete_sequence(20, distribution=[0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 3])
-
-
-def test_make_str_with_bytes():
-    x = "qualité"
-    y = make_str(x)
-    assert isinstance(y, str)
-    assert len(y) == 7
-
-
-def test_make_str_with_unicode():
-    x = "qualité"
-    y = make_str(x)
-    assert isinstance(y, str)
-    assert len(y) == 7
 
 
 class TestNumpyArray:

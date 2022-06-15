@@ -16,7 +16,6 @@ Helper Functions
    flatten
    iterable
    make_list_of_ints
-   make_str
    generate_unique_node
    default_opener
    pairwise

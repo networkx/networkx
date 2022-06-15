@@ -62,9 +62,6 @@ def set_warnings():
         message="literal_destringizer is deprecated",
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="is_string_like is deprecated"
-    )
-    warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="\nauthority_matrix"
     )
     warnings.filterwarnings(
@@ -227,9 +224,6 @@ def set_warnings():
     warnings.filterwarnings("ignore", category=FutureWarning, message="attr_matrix")
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message=r"\n\nmake_small_.*"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="to_numpy_recarray"
     )
     warnings.filterwarnings("ignore", category=DeprecationWarning, message="info")
     warnings.filterwarnings("ignore", category=DeprecationWarning, message="to_tuple")

@@ -23,20 +23,16 @@ import networkx as nx
 np = nx.lazy_import("numpy")
 
 __all__ = [
-    "is_string_like",
     "iterable",
     "flatten",
     "make_list_of_ints",
     "is_list_of_ints",
-    "make_str",
     "generate_unique_node",
     "default_opener",
     "dict_to_numpy_array",
     "dict_to_numpy_array1",
     "dict_to_numpy_array2",
-    "is_iterator",
     "arbitrary_element",
-    "consume",
     "pairwise",
     "groups",
     "to_tuple",
@@ -52,20 +48,6 @@ __all__ = [
 # some cookbook stuff
 # used in deciding whether something is a bunch of nodes, edges, etc.
 # see G.add_nodes and others in Graph Class in networkx/base.py
-
-
-def is_string_like(obj):  # from John Hunter, types-free version
-    """Check if obj is string.
-
-    .. deprecated:: 2.6
-        This is deprecated and will be removed in NetworkX v3.0.
-    """
-    msg = (
-        "is_string_like is deprecated and will be removed in 3.0."
-        "Use isinstance(obj, str) instead."
-    )
-    warnings.warn(msg, DeprecationWarning)
-    return isinstance(obj, str)
 
 
 def iterable(obj):
@@ -155,17 +137,6 @@ def is_list_of_ints(intlist):
         if not isinstance(i, int):
             return False
     return True
-
-
-def make_str(x):
-    """Returns the string representation of t.
-
-    .. deprecated:: 2.6
-        This is deprecated and will be removed in NetworkX v3.0.
-    """
-    msg = "make_str is deprecated and will be removed in 3.0. Use str instead."
-    warnings.warn(msg, DeprecationWarning)
-    return str(x)
 
 
 def generate_unique_node():
@@ -290,21 +261,6 @@ def _dict_to_numpy_array1(d, mapping=None):
     return a
 
 
-def is_iterator(obj):
-    """Returns True if and only if the given object is an iterator object.
-
-    .. deprecated:: 2.6.0
-        Deprecated in favor of ``isinstance(obj, collections.abc.Iterator)``
-    """
-    msg = (
-        "is_iterator is deprecated and will be removed in version 3.0. "
-        "Use ``isinstance(obj, collections.abc.Iterator)`` instead."
-    )
-    warnings.warn(msg, DeprecationWarning, stacklevel=2)
-    has_next_attr = hasattr(obj, "__next__") or hasattr(obj, "next")
-    return iter(obj) is obj and has_next_attr
-
-
 def arbitrary_element(iterable):
     """Returns an arbitrary element of `iterable` without removing it.
 
@@ -372,22 +328,6 @@ def arbitrary_element(iterable):
         raise ValueError("cannot return an arbitrary item from an iterator")
     # Another possible implementation is ``for x in iterable: return x``.
     return next(iter(iterable))
-
-
-# Recipe from the itertools documentation.
-def consume(iterator):
-    """Consume the iterator entirely.
-
-    .. deprecated:: 2.6
-        This is deprecated and will be removed in NetworkX v3.0.
-    """
-    # Feed the entire iterator into a zero-length deque.
-    msg = (
-        "consume is deprecated and will be removed in version 3.0. "
-        "Use ``collections.deque(iterator, maxlen=0)`` instead."
-    )
-    warnings.warn(msg, DeprecationWarning, stacklevel=2)
-    deque(iterator, maxlen=0)
 
 
 # Recipe from the itertools documentation.

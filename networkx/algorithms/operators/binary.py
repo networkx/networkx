@@ -14,7 +14,7 @@ __all__ = [
 ]
 
 
-def union(G, H, rename=(None, None), name=None):
+def union(G, H, rename=(None, None)):
     """Return the union of graphs G and H.
 
     Graphs G and H must be disjoint after the renaming takes place,
@@ -29,12 +29,6 @@ def union(G, H, rename=(None, None), name=None):
        Node names of G and H can be changed by specifying the tuple
        rename=('G-','H-') (for example).  Node "u" in G is then renamed
        "G-u" and "v" in H is renamed "H-v".
-
-    name : string
-       Specify the name for the union graph
-
-       .. deprecated:: 2.7
-           This is deprecated and will be removed in version v3.0.
 
     Returns
     -------
@@ -63,15 +57,6 @@ def union(G, H, rename=(None, None), name=None):
     --------
     disjoint_union
     """
-    if name is not None:
-        import warnings
-
-        warnings.warn(
-            "name parameter is deprecated and will be removed in version 3.0",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-
     return nx.union_all([G, H], rename)
 
 
