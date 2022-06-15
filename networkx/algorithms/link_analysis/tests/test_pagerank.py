@@ -82,7 +82,7 @@ class TestPageRank:
         G = self.G
         M = nx.google_matrix(G, alpha=0.9, nodelist=sorted(G))
         _, ev = np.linalg.eig(M.T)
-        p = np.array(ev[:, 0] / ev[:, 0].sum())[:, 0]
+        p = ev[:, 0] / ev[:, 0].sum()
         for (a, b) in zip(p, self.G.pagerank.values()):
             assert a == pytest.approx(b, abs=1e-7)
 
