@@ -94,12 +94,6 @@ def set_warnings():
         "ignore", category=DeprecationWarning, message="`assert_graphs_equal`"
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="networkx.hits_scipy"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="networkx.hits_numpy"
-    )
-    warnings.filterwarnings(
         "ignore",
         category=FutureWarning,
         message="google_matrix will return an np.ndarray instead of a np.matrix",
