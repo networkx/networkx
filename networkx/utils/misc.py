@@ -27,7 +27,6 @@ __all__ = [
     "flatten",
     "make_list_of_ints",
     "is_list_of_ints",
-    "generate_unique_node",
     "default_opener",
     "dict_to_numpy_array",
     "dict_to_numpy_array1",
@@ -137,17 +136,6 @@ def is_list_of_ints(intlist):
         if not isinstance(i, int):
             return False
     return True
-
-
-def generate_unique_node():
-    """Generate a unique node label.
-
-    .. deprecated:: 2.6
-        This is deprecated and will be removed in NetworkX v3.0.
-    """
-    msg = "generate_unique_node is deprecated and will be removed in 3.0. Use uuid.uuid4 instead."
-    warnings.warn(msg, DeprecationWarning)
-    return str(uuid.uuid4())
 
 
 def default_opener(filename):
