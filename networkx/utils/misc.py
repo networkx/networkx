@@ -28,7 +28,6 @@ __all__ = [
     "flatten",
     "make_list_of_ints",
     "is_list_of_ints",
-    "make_str",
     "generate_unique_node",
     "default_opener",
     "dict_to_numpy_array",
@@ -152,17 +151,6 @@ def is_list_of_ints(intlist):
         if not isinstance(i, int):
             return False
     return True
-
-
-def make_str(x):
-    """Returns the string representation of t.
-
-    .. deprecated:: 2.6
-        This is deprecated and will be removed in NetworkX v3.0.
-    """
-    msg = "make_str is deprecated and will be removed in 3.0. Use str instead."
-    warnings.warn(msg, DeprecationWarning)
-    return str(x)
 
 
 def generate_unique_node():
