@@ -37,10 +37,8 @@ Numpy
 .. autosummary::
    :toctree: generated/
 
-   to_numpy_matrix
    to_numpy_array
    to_numpy_recarray
-   from_numpy_matrix
    from_numpy_array
 
 Scipy
