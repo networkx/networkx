@@ -55,7 +55,6 @@ Version 3.0
 * In ``utils/misc.py`` remove ``default_opener``.
 * In ``utils/misc.py`` remove ``empty_generator``.
 * Remove ``utils/contextmanagers.py`` and related tests.
-* In ``algorithms/chordal.py`` replace ``chordal_graph_cliques`` with ``_chordal_graph_cliques``.
 * In ``algorithms/centrality/betweenness.py`` remove ``edge_betweeness``.
 * In ``linalg/algebraicconnectivity.py`` remove ``_CholeskySolver`` and related code.
 * In ``readwrite/json_graph/cytoscape.py``, change function signature for
