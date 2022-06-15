@@ -10,7 +10,6 @@ from networkx.utils.mapped_queue import MappedQueue
 __all__ = [
     "greedy_modularity_communities",
     "naive_greedy_modularity_communities",
-    "_naive_greedy_modularity_communities",
 ]
 
 
@@ -468,7 +467,3 @@ def naive_greedy_modularity_communities(G, resolution=1, weight=None):
             communities[i] = frozenset([])
     # Remove empty communities and sort
     return sorted((c for c in communities if len(c) > 0), key=len, reverse=True)
-
-
-# old name
-_naive_greedy_modularity_communities = naive_greedy_modularity_communities

@@ -59,7 +59,6 @@ Version 3.0
 * In ``algorithms/chordal.py`` replace ``chordal_graph_cliques`` with ``_chordal_graph_cliques``.
 * In ``algorithms/centrality/betweenness_centrality_subset.py`` remove ``betweenness_centrality_source``.
 * In ``algorithms/centrality/betweenness.py`` remove ``edge_betweeness``.
-* In ``algorithms/community_modularity_max.py`` remove old name ``_naive_greedy_modularity_communities``.
 * In ``linalg/algebraicconnectivity.py`` remove ``_CholeskySolver`` and related code.
 * In ``convert_matrix.py`` remove ``to_numpy_matrix`` and ``from_numpy_matrix``.
 * In ``readwrite/json_graph/cytoscape.py``, change function signature for
