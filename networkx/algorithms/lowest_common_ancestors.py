@@ -39,7 +39,38 @@ def get_a_lowest_common_ancestor(G, common_ancestors):
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
 def naive_all_pairs_lowest_common_ancestor(G, pairs=None):
-    """Return the lowest common ancestor of all pairs or the provided pairs"""
+    """Return the lowest common ancestor of all pairs or the provided pairs
+
+    Parameters
+    ----------
+    G : NetworkX directed graph
+
+    pairs : iterable of pairs of nodes, optional (default: all pairs)
+        The pairs of nodes of interest.
+        If None, will find the LCA of all pairs of nodes.
+
+    Returns
+    -------
+    An iterator over ((node1, node2), lca) where (node1, node2) are
+    the pairs specified and lca is a lowest common ancestor of the pair.
+    Note that for the default of all pairs in G, we consider
+    unordered pairs, e.g. you will not get both (b, a) and (a, b).
+
+    Notes
+    -----
+    Only defined on non-null directed acyclic graphs.
+
+    See Also
+    --------
+    naive_lowest_common_ancestor
+    """
+    if not nx.is_directed_acyclic_graph(G):
+        raise nx.NetworkXError("LCA only defined on directed acyclic graphs.")
+    elif len(G) == 0:
+        raise nx.NetworkXPointlessConcept("LCA meaningless on null graphs.")
+    elif None in G:
+        raise nx.NetworkXError("None is not a valid node.")
+
     result = []
     ancestor_cache = {}
 
@@ -55,7 +86,7 @@ def naive_all_pairs_lowest_common_ancestor(G, pairs=None):
         common_ancestors = ancestor_cache[v] & ancestor_cache[w]
         if common_ancestors:
             result.append(((v, w), get_a_lowest_common_ancestor(G, common_ancestors)))
-    return result
+    return iter(result)
 
 
 @not_implemented_for("undirected")
@@ -75,12 +106,18 @@ def naive_lowest_common_ancestor(G, node1, node2, default=None):
     Returns
     -------
     The lowest common ancestor of node1 and node2,
-    or default if they have no common ancestors."""
+    or default if they have no common ancestors.
 
-    lca = naive_all_pairs_lowest_common_ancestor(G, pairs=[(node1, node2)])
-    if lca:
-        return lca
-    return default
+    See Also
+    --------
+    naive_all_pairs_lowest_common_ancestor"""
+
+    ans = list(naive_all_pairs_lowest_common_ancestor(G, pairs=[(node1, node2)]))
+    if ans:
+        assert len(ans) == 1
+        return ans[0][1]
+    else:
+        return default
 
 
 @not_implemented_for("undirected")
