@@ -281,13 +281,3 @@ def test_from_scipy_sparse_array_formats(sparse_format):
     )
     A = sp.sparse.coo_array([[0, 3, 2], [3, 0, 1], [2, 1, 0]]).asformat(sparse_format)
     assert graphs_equal(expected, nx.from_scipy_sparse_array(A))
-
-
-# NOTE: remove when to/from_sparse_matrix deprecations expire
-def test_scipy_sparse_matrix_deprecations():
-    G = nx.path_graph(3)
-    msg = "\n\nThe scipy.sparse array containers will be used instead of matrices"
-    with pytest.warns(DeprecationWarning, match=msg):
-        M = nx.to_scipy_sparse_matrix(G)
-    with pytest.warns(DeprecationWarning, match=msg):
-        H = nx.from_scipy_sparse_matrix(M)
