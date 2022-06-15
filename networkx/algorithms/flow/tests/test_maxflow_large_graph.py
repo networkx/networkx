@@ -1,7 +1,9 @@
 """Maximum flow algorithms test suite on large graphs.
 """
 
+import bz2
 import os
+import pickle
 
 import pytest
 
@@ -47,8 +49,10 @@ def gen_pyramid(N):
 
 def read_graph(name):
     dirname = os.path.dirname(__file__)
-    path = os.path.join(dirname, name + ".gpickle.bz2")
-    return nx.read_gpickle(path)
+    fname = os.path.join(dirname, name + ".gpickle.bz2")
+    with bz2.BZ2File(fname, "rb") as f:
+        G = pickle.load(f)
+    return G
 
 
 def validate_flows(G, s, t, soln_value, R, flow_func):
