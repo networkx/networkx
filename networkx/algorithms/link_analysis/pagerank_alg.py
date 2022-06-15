@@ -3,7 +3,7 @@ from warnings import warn
 
 import networkx as nx
 
-__all__ = ["pagerank", "pagerank_numpy", "pagerank_scipy", "google_matrix"]
+__all__ = ["pagerank", "google_matrix"]
 
 
 def pagerank(
@@ -86,7 +86,7 @@ def pagerank(
 
     See Also
     --------
-    pagerank_numpy, pagerank_scipy, google_matrix
+    google_matrix
 
     Raises
     ------
@@ -105,7 +105,7 @@ def pagerank(
        http://dbpubs.stanford.edu:8090/pub/showDoc.Fulltext?lang=en&doc=1999-66&format=pdf
 
     """
-    return pagerank_scipy(
+    return _pagerank_scipy(
         G, alpha, personalization, max_iter, tol, nstart, weight, dangling
     )
 
@@ -227,7 +227,7 @@ def google_matrix(
 
     See Also
     --------
-    pagerank, pagerank_numpy, pagerank_scipy
+    pagerank
     """
     # TODO: Remove this warning in version 3.0
     import warnings
@@ -277,7 +277,9 @@ def google_matrix(
     return np.asmatrix(alpha * A + (1 - alpha) * p)
 
 
-def pagerank_numpy(G, alpha=0.85, personalization=None, weight="weight", dangling=None):
+def _pagerank_numpy(
+    G, alpha=0.85, personalization=None, weight="weight", dangling=None
+):
     """Returns the PageRank of the nodes in the graph.
 
     PageRank computes a ranking of the nodes in the graph G based on
@@ -319,8 +321,9 @@ def pagerank_numpy(G, alpha=0.85, personalization=None, weight="weight", danglin
 
     Examples
     --------
+    >>> from networkx.algorithms.link_analysis.pagerank_alg import _pagerank_numpy
     >>> G = nx.DiGraph(nx.path_graph(4))
-    >>> pr = nx.pagerank_numpy(G, alpha=0.9)
+    >>> pr = _pagerank_numpy(G, alpha=0.9)
 
     Notes
     -----
@@ -345,8 +348,6 @@ def pagerank_numpy(G, alpha=0.85, personalization=None, weight="weight", danglin
        The PageRank citation ranking: Bringing order to the Web. 1999
        http://dbpubs.stanford.edu:8090/pub/showDoc.Fulltext?lang=en&doc=1999-66&format=pdf
     """
-    msg = "networkx.pagerank_numpy is deprecated and will be removed in NetworkX 3.0, use networkx.pagerank instead."
-    warn(msg, DeprecationWarning, stacklevel=2)
     import numpy as np
 
     if len(G) == 0:
@@ -363,7 +364,7 @@ def pagerank_numpy(G, alpha=0.85, personalization=None, weight="weight", danglin
     return dict(zip(G, map(float, largest / norm)))
 
 
-def pagerank_scipy(
+def _pagerank_scipy(
     G,
     alpha=0.85,
     personalization=None,
@@ -423,8 +424,9 @@ def pagerank_scipy(
 
     Examples
     --------
+    >>> from networkx.algorithms.link_analysis.pagerank_alg import _pagerank_scipy
     >>> G = nx.DiGraph(nx.path_graph(4))
-    >>> pr = nx.pagerank_scipy(G, alpha=0.9)
+    >>> pr = _pagerank_scipy(G, alpha=0.9)
 
     Notes
     -----
@@ -437,7 +439,7 @@ def pagerank_scipy(
 
     See Also
     --------
-    pagerank, pagerank_numpy, google_matrix
+    pagerank
 
     Raises
     ------
@@ -455,8 +457,6 @@ def pagerank_scipy(
        The PageRank citation ranking: Bringing order to the Web. 1999
        http://dbpubs.stanford.edu:8090/pub/showDoc.Fulltext?lang=en&doc=1999-66&format=pdf
     """
-    msg = "networkx.pagerank_scipy is deprecated and will be removed in NetworkX 3.0, use networkx.pagerank instead."
-    warn(msg, DeprecationWarning, stacklevel=2)
     import numpy as np
     import scipy as sp
     import scipy.sparse  # call as sp.sparse

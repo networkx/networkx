@@ -107,12 +107,6 @@ def set_warnings():
         "ignore", category=DeprecationWarning, message="from_numpy_matrix"
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="networkx.pagerank_numpy"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="networkx.pagerank_scipy"
-    )
-    warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="write_gpickle"
     )
     warnings.filterwarnings(
