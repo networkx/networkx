@@ -25,7 +25,6 @@ np = nx.lazy_import("numpy")
 __all__ = [
     "is_string_like",
     "iterable",
-    "empty_generator",
     "flatten",
     "make_list_of_ints",
     "is_list_of_ints",
@@ -87,17 +86,6 @@ def iterable(obj):
     except:
         return False
     return True
-
-
-def empty_generator():
-    """Return a generator with no members.
-
-    .. deprecated:: 2.6
-    """
-    warnings.warn(
-        "empty_generator is deprecated and will be removed in v3.0.", DeprecationWarning
-    )
-    return (i for i in ())
 
 
 def flatten(obj, result=None):
