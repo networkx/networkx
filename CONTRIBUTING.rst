@@ -325,11 +325,11 @@ Or the tests for a specific submodule::
 
 Or tests from a specific file::
 
-    $ PYTHONPATH=. pytest networkx/readwrite/tests/test_yaml.py
+    $ PYTHONPATH=. pytest networkx/readwrite/tests/test_edgelist.py
 
 Or a single test within that file::
 
-    $ PYTHONPATH=. pytest networkx/readwrite/tests/test_yaml.py::TestYaml::testUndirected
+    $ PYTHONPATH=. pytest networkx/readwrite/tests/test_edgelist.py::test_parse_edgelist_with_data_list
 
 Use ``--doctest-modules`` to run doctests.
 For example, run all tests and all doctests using::
