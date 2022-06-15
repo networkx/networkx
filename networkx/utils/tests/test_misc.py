@@ -13,7 +13,6 @@ from networkx.utils import (
     discrete_sequence,
     flatten,
     groups,
-    is_string_like,
     iterable,
     make_list_of_ints,
     make_str,
@@ -60,12 +59,6 @@ def test_flatten(nested, result):
         assert len(val) == len(_result) == 20 + nexisting
 
     assert issubclass(type(val), tuple)
-
-
-def test_is_string_like():
-    assert is_string_like("aaaa")
-    assert not is_string_like(None)
-    assert not is_string_like(123)
 
 
 def test_iterable():
