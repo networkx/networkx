@@ -85,7 +85,6 @@ def run_all_random_functions(seed):
     )
     t(nx.betweenness_centrality, G, seed=seed)
     t(nx.edge_betweenness_centrality, G, seed=seed)
-    t(nx.edge_betweenness, G, seed=seed)
     t(nx.approximate_current_flow_betweenness_centrality, G, seed=seed)
     # print("kernighan")
     t(nx.algorithms.community.kernighan_lin_bisection, G, seed=seed)
