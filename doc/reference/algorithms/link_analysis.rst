@@ -22,6 +22,3 @@ Hits
    :toctree: generated/
 
    hits
-   hits_numpy
-   hits_scipy
-
