@@ -77,7 +77,6 @@ Version 3.0
 * In ``algorithms/link_analysis/pagerank_alg.py`` replace ``pagerank`` with ``pagerank_scipy``.
 * In ``algorithms/link_analysis/pagerank_alg.py`` rename ``pagerank_numpy`` as ``_pagerank_numpy``.
 * In ``convert_matrix.py`` remove ``order`` kwarg from ``to_pandas_edgelist`` and docstring
-* Remove ``readwrite/json_graph/jit.py`` and related tests.
 * In ``utils/misc.py`` remove ``generate_unique_node`` and related tests.
 * In ``algorithms/link_analysis/hits_alg.py`` remove ``hub_matrix`` and ``authority_matrix``
 * In ``algorithms/link_analysis/hits_alg.py``, remove ``hits_numpy`` and ``hist_scipy``.
