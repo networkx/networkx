@@ -43,9 +43,6 @@ def pytest_collection_modifyitems(config, items):
 @pytest.fixture(autouse=True)
 def set_warnings():
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="k_nearest_neighbors"
-    )
-    warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="numeric_mixing_matrix"
     )
     warnings.filterwarnings(

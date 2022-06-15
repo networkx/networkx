@@ -89,7 +89,6 @@ Version 3.0
 * In ``linalg/graphmatrix.py`` remove ``adj_matrix``.
 * In ``algorithms/similarity.py`` replace ``simrank_similarity`` with ``simrank_similarity_numpy``.
 * In ``algorithms/assortativity/mixing.py`` remove ``numeric_mixing_matrix``.
-* In ``algorithms/assortativity/connectivity.py`` remove ``k_nearest_neighbors``.
 * In ``utils/decorators.py`` remove ``random_state``.
 * In ``algorithms/operators/binary.py`` remove ``name`` kwarg from ``union`` and docstring.
 * In ``generators/geometric.py`` remove ``euclidean`` and tests.

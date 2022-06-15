@@ -30,7 +30,6 @@ Average degree connectivity
    :toctree: generated/
 
    average_degree_connectivity
-   k_nearest_neighbors
 
 
 Mixing
