@@ -46,9 +46,6 @@ def set_warnings():
         "ignore", category=DeprecationWarning, message="k_nearest_neighbors"
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="numeric_mixing_matrix"
-    )
-    warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message=r"Ordered.* is deprecated"
     )
     warnings.filterwarnings(
