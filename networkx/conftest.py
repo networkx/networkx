@@ -62,9 +62,6 @@ def set_warnings():
         message="literal_destringizer is deprecated",
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="is_string_like is deprecated"
-    )
-    warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="\nauthority_matrix"
     )
     warnings.filterwarnings(
