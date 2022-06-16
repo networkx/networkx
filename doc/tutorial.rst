@@ -509,7 +509,7 @@ like so:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 NetworkX supports many popular formats, such as edge lists, adjacency lists,
-GML, GraphML, pickle, LEDA and others.
+GML, GraphML, LEDA and others.
 
 .. nbplot::
 

@@ -43,9 +43,6 @@ def pytest_collection_modifyitems(config, items):
 @pytest.fixture(autouse=True)
 def set_warnings():
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="numeric_mixing_matrix"
-    )
-    warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message=r"Ordered.* is deprecated"
     )
     warnings.filterwarnings(
@@ -59,27 +56,10 @@ def set_warnings():
         message="literal_destringizer is deprecated",
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="is_string_like is deprecated"
-    )
-    warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="\nauthority_matrix"
     )
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="\nhub_matrix"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="default_opener is deprecated"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="empty_generator is deprecated"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="make_str is deprecated"
-    )
-    warnings.filterwarnings(
-        "ignore",
-        category=DeprecationWarning,
-        message="generate_unique_node is deprecated",
     )
     warnings.filterwarnings(
         "ignore",
@@ -92,31 +72,16 @@ def set_warnings():
         message="This will return a generator in 3.0*",
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="betweenness_centrality_source"
-    )
-    warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="edge_betweeness"
     )
     warnings.filterwarnings(
         "ignore", category=PendingDeprecationWarning, message="the matrix subclass"
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="to_numpy_matrix"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="from_numpy_matrix"
-    )
-    warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="networkx.pagerank_numpy"
     )
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="networkx.pagerank_scipy"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="write_gpickle"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="read_gpickle"
     )
     warnings.filterwarnings("ignore", category=DeprecationWarning, message="write_shp")
     warnings.filterwarnings("ignore", category=DeprecationWarning, message="read_shp")
@@ -137,22 +102,9 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="FilterMultiInner.copy"
     )
-    warnings.filterwarnings("ignore", category=DeprecationWarning, message="jit_data")
-    warnings.filterwarnings("ignore", category=DeprecationWarning, message="jit_graph")
     warnings.filterwarnings("ignore", category=DeprecationWarning, message="consume")
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="iterable is deprecated"
-    )
-    warnings.filterwarnings(
-        "ignore",
-        category=FutureWarning,
-        message="\nThe function signature for cytoscape",
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="\nThe `attrs` keyword"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="preserve_random_state"
     )
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="`almost_equal`"
@@ -171,9 +123,6 @@ def set_warnings():
     )
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="networkx.hits_numpy"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="preserve_random_state"
     )
     warnings.filterwarnings(
         "ignore",
@@ -225,20 +174,13 @@ def set_warnings():
         "ignore", category=DeprecationWarning, message="\nfind_cores"
     )
     warnings.filterwarnings("ignore", category=FutureWarning, message="attr_matrix")
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message=r"\n\nmake_small_.*"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="to_numpy_recarray"
-    )
     warnings.filterwarnings("ignore", category=DeprecationWarning, message="info")
-    warnings.filterwarnings("ignore", category=DeprecationWarning, message="to_tuple")
     # create_using for scale_free_graph
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="The create_using argument"
     )
     warnings.filterwarnings(
-        "ignore", category=PendingDeprecationWarning, message="nx.nx_pydot"
+        "ignore", category=DeprecationWarning, message="nx.nx_pydot"
     )
 
 
@@ -320,7 +262,7 @@ collect_ignore = []
 needs_numpy = [
     "algorithms/approximation/traveling_salesman.py",
     "algorithms/centrality/current_flow_closeness.py",
-    "algorithms/node_classification/__init__.py",
+    "algorithms/node_classification.py",
     "algorithms/non_randomness.py",
     "algorithms/shortest_paths/dense.py",
     "linalg/bethehessianmatrix.py",
@@ -343,9 +285,7 @@ needs_scipy = [
     "algorithms/communicability_alg.py",
     "algorithms/link_analysis/hits_alg.py",
     "algorithms/link_analysis/pagerank_alg.py",
-    "algorithms/node_classification/__init__.py",
-    "algorithms/node_classification/hmn.py",
-    "algorithms/node_classification/lgc.py",
+    "algorithms/node_classification.py",
     "algorithms/similarity.py",
     "convert_matrix.py",
     "drawing/layout.py",
