@@ -4,7 +4,6 @@ Various small and named graphs, together with some compact generators.
 """
 
 __all__ = [
-    "make_small_graph",
     "LCF_graph",
     "bull_graph",
     "chvatal_graph",
@@ -58,115 +57,6 @@ def _raise_on_directed(func):
         return func(*args, **kwargs)
 
     return wrapper
-
-
-def make_small_undirected_graph(graph_description, create_using=None):
-    """
-    Return a small undirected graph described by graph_description.
-
-    .. deprecated:: 2.7
-
-       make_small_undirected_graph is deprecated and will be removed in
-       version 3.0. If "ltype" == "adjacencylist", convert the list to a dict
-       and use `from_dict_of_lists`. If "ltype" == "edgelist", use
-       `from_edgelist`.
-
-    See make_small_graph.
-    """
-    import warnings
-
-    msg = (
-        "\n\nmake_small_undirected_graph is deprecated and will be removed in "
-        "version 3.0.\n"
-        "If `ltype` == 'adjacencylist', convert `xlist` to a dict and use\n"
-        "`from_dict_of_lists` instead.\n"
-        "If `ltype` == 'edgelist', use `from_edgelist` instead."
-    )
-    warnings.warn(msg, category=DeprecationWarning, stacklevel=2)
-
-    G = empty_graph(0, create_using)
-    if G.is_directed():
-        raise NetworkXError("Directed Graph not supported")
-    return make_small_graph(graph_description, G)
-
-
-def make_small_graph(graph_description, create_using=None):
-    """
-    Return the small graph described by graph_description.
-
-    .. deprecated:: 2.7
-
-       make_small_graph is deprecated and will be removed in
-       version 3.0. If "ltype" == "adjacencylist", convert the list to a dict
-       and use `from_dict_of_lists`. If "ltype" == "edgelist", use
-       `from_edgelist`.
-
-    graph_description is a list of the form [ltype,name,n,xlist]
-
-    Here ltype is one of "adjacencylist" or "edgelist",
-    name is the name of the graph and n the number of nodes.
-    This constructs a graph of n nodes with integer labels 0,..,n-1.
-
-    If ltype="adjacencylist"  then xlist is an adjacency list
-    with exactly n entries, in with the j'th entry (which can be empty)
-    specifies the nodes connected to vertex j.
-    e.g. the "square" graph C_4 can be obtained by
-
-    >>> G = nx.make_small_graph(
-    ...     ["adjacencylist", "C_4", 4, [[2, 4], [1, 3], [2, 4], [1, 3]]]
-    ... )
-
-    or, since we do not need to add edges twice,
-
-    >>> G = nx.make_small_graph(["adjacencylist", "C_4", 4, [[2, 4], [3], [4], []]])
-
-    If ltype="edgelist" then xlist is an edge list
-    written as [[v1,w2],[v2,w2],...,[vk,wk]],
-    where vj and wj integers in the range 1,..,n
-    e.g. the "square" graph C_4 can be obtained by
-
-    >>> G = nx.make_small_graph(
-    ...     ["edgelist", "C_4", 4, [[1, 2], [3, 4], [2, 3], [4, 1]]]
-    ... )
-
-    Use the create_using argument to choose the graph class/type.
-    """
-    import warnings
-
-    msg = (
-        "\n\nmake_small_graph is deprecated and will be removed in version 3.0.\n"
-        "If `ltype` == 'adjacencylist', convert `xlist` to a dict and use\n"
-        "`from_dict_of_lists` instead.\n"
-        "If `ltype` == 'edgelist', use `from_edgelist` instead."
-    )
-    warnings.warn(msg, category=DeprecationWarning, stacklevel=2)
-
-    if graph_description[0] not in ("adjacencylist", "edgelist"):
-        raise NetworkXError("ltype must be either adjacencylist or edgelist")
-
-    ltype = graph_description[0]
-    name = graph_description[1]
-    n = graph_description[2]
-
-    G = empty_graph(n, create_using)
-    nodes = G.nodes()
-
-    if ltype == "adjacencylist":
-        adjlist = graph_description[3]
-        if len(adjlist) != n:
-            raise NetworkXError("invalid graph_description")
-        G.add_edges_from([(u - 1, v) for v in nodes for u in adjlist[v]])
-    elif ltype == "edgelist":
-        edgelist = graph_description[3]
-        for e in edgelist:
-            v1 = e[0] - 1
-            v2 = e[1] - 1
-            if v1 < 0 or v1 > n - 1 or v2 < 0 or v2 > n - 1:
-                raise NetworkXError("invalid graph_description")
-            else:
-                G.add_edge(v1, v2)
-    G.name = name
-    return G
 
 
 def LCF_graph(n, shift_list, repeats, create_using=None):
