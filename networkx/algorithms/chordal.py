@@ -172,10 +172,10 @@ def chordal_graph_cliques(G):
     G : graph
       A NetworkX graph
 
-    Returns
-    -------
-    iterator
-        An iterator over maximal cliques, each of which is a frozenset of
+    Yields
+    ------
+    frozenset of nodes
+        Maximal cliques, each of which is a frozenset of
         nodes in `G`. The order of cliques is arbitrary.
 
     Raises
