@@ -209,12 +209,12 @@ def google_matrix(
 
     Returns
     -------
-    A : NumPy ndarray
+    A : 2D NumPy ndarray
        Google matrix of the graph
 
     Notes
     -----
-    The matrix returned represents the transition matrix that describes the
+    The array returned represents the transition matrix that describes the
     Markov chain used in PageRank. For PageRank to converge to a unique
     solution (i.e., a unique stationary distribution in a Markov chain), the
     transition matrix must be irreducible. In other words, it must be that
