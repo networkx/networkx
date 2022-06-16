@@ -86,12 +86,6 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="networkx.pagerank_scipy"
     )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="write_gpickle"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="read_gpickle"
-    )
     warnings.filterwarnings("ignore", category=DeprecationWarning, message="write_shp")
     warnings.filterwarnings("ignore", category=DeprecationWarning, message="read_shp")
     warnings.filterwarnings(
