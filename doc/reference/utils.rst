@@ -17,7 +17,6 @@ Helper Functions
    iterable
    make_list_of_ints
    generate_unique_node
-   default_opener
    pairwise
    groups
    create_random_state

@@ -65,9 +65,6 @@ def set_warnings():
         "ignore", category=DeprecationWarning, message="\nhub_matrix"
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="default_opener is deprecated"
-    )
-    warnings.filterwarnings(
         "ignore",
         category=DeprecationWarning,
         message="generate_unique_node is deprecated",
