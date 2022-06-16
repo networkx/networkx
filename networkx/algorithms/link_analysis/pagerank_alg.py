@@ -337,7 +337,7 @@ def _pagerank_numpy(
 
     See Also
     --------
-    pagerank, pagerank_scipy, google_matrix
+    pagerank, google_matrix
 
     References
     ----------
