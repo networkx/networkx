@@ -308,7 +308,10 @@ class GraphMatcher:
             # The mapping is complete.
             yield self.mapping
         else:
+            print('M: ', self.state.GM.core_1)
+            print('Cand/tes:')
             for G1_node, G2_node in self.candidate_pairs_iter():
+                print(G1_node, G2_node)
                 if self.syntactic_feasibility(G1_node, G2_node):
                     if self.semantic_feasibility(G1_node, G2_node):
                         # Recursive call, adding the feasible state.
