@@ -57,7 +57,6 @@ Version 3.0
 * Remove ``utils/contextmanagers.py`` and related tests.
 * In ``algorithms/chordal.py`` replace ``chordal_graph_cliques`` with ``_chordal_graph_cliques``.
 * In ``algorithms/centrality/betweenness.py`` remove ``edge_betweeness``.
-* In ``algorithms/community_modularity_max.py`` remove old name ``_naive_greedy_modularity_communities``.
 * In ``linalg/algebraicconnectivity.py`` remove ``_CholeskySolver`` and related code.
 * In ``readwrite/json_graph/cytoscape.py``, change function signature for
   ``cytoscape_graph`` and ``cytoscape_data`` to replace the ``attrs`` keyword.
