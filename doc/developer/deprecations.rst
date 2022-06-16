@@ -82,9 +82,6 @@ Version 3.0
 * In ``algorithms/assortativity/connectivity.py`` remove ``k_nearest_neighbors``.
 * In ``algorithms/operators/binary.py`` remove ``name`` kwarg from ``union`` and docstring.
 * In ``generators/geometric.py`` remove ``euclidean`` and tests.
-* In ``algorithms/node_classification/`` remove ``hmn.py``, ``lgc.py``,
-  and ``utils.py`` after moving the functions defined therein into the newly created
-  ``node_classification.py`` module, which will replace the current package.
 * In ``algorithms/link_analysis/pagerank_alg.py``, remove the
   ``np.asmatrix`` wrappers on the return values of ``google_matrix`` and remove
   the associated FutureWarning.
