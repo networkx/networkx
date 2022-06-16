@@ -12,7 +12,6 @@ from networkx.utils.decorators import (
     np_random_state,
     open_file,
     py_random_state,
-    random_state,
 )
 from networkx.utils.misc import PythonRandomInterface
 
