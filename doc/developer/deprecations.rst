@@ -80,7 +80,6 @@ Version 3.0
 * In ``algorithms/link_analysis/hits_alg.py``, remove ``hits_numpy`` and ``hist_scipy``.
 * In ``classes`` remove the ``ordered`` module and the four ``Ordered``
   classes defined therein.
-* In ``utils/decorators.py`` remove ``preserve_random_state``.
 * In ``algorithms/community/quality.py`` remove ``coverage`` and ``performance``.
 * Remove ``testing``.
 * In ``linalg/graphmatrix.py`` remove ``adj_matrix``.

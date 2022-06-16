@@ -138,9 +138,6 @@ def set_warnings():
         "ignore", category=DeprecationWarning, message="\nThe `attrs` keyword"
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="preserve_random_state"
-    )
-    warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="`almost_equal`"
     )
     warnings.filterwarnings(
@@ -157,9 +154,6 @@ def set_warnings():
     )
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="networkx.hits_numpy"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="preserve_random_state"
     )
     warnings.filterwarnings(
         "ignore",
