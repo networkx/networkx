@@ -8,6 +8,7 @@ Implementation of the VF2++ algorithm for the Graph Isomorphism problem.
 
 import sys
 
+
 class GraphMatcher:
     """Implementation of the VF2++ algorithm, for matching undirected graphs.
     """
