@@ -77,7 +77,6 @@ Version 3.0
   classes defined therein.
 * Remove ``testing``.
 * In ``linalg/graphmatrix.py`` remove ``adj_matrix``.
-* In ``algorithms/assortativity/connectivity.py`` remove ``k_nearest_neighbors``.
 * In ``algorithms/operators/binary.py`` remove ``name`` kwarg from ``union`` and docstring.
 * In ``generators/geometric.py`` remove ``euclidean`` and tests.
 * In ``algorithms/link_analysis/pagerank_alg.py``, remove the
