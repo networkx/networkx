@@ -67,11 +67,6 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore",
         category=DeprecationWarning,
-        message="generate_unique_node is deprecated",
-    )
-    warnings.filterwarnings(
-        "ignore",
-        category=DeprecationWarning,
         message="context manager reversed is deprecated",
     )
     warnings.filterwarnings(

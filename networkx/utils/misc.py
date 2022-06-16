@@ -25,7 +25,6 @@ np = nx.lazy_import("numpy")
 __all__ = [
     "flatten",
     "make_list_of_ints",
-    "generate_unique_node",
     "dict_to_numpy_array",
     "arbitrary_element",
     "pairwise",
@@ -92,17 +91,6 @@ def make_list_of_ints(sequence):
             raise nx.NetworkXError(errmsg)
         sequence[indx] = ii
     return sequence
-
-
-def generate_unique_node():
-    """Generate a unique node label.
-
-    .. deprecated:: 2.6
-        This is deprecated and will be removed in NetworkX v3.0.
-    """
-    msg = "generate_unique_node is deprecated and will be removed in 3.0. Use uuid.uuid4 instead."
-    warnings.warn(msg, DeprecationWarning)
-    return str(uuid.uuid4())
 
 
 def dict_to_numpy_array(d, mapping=None):
