@@ -150,7 +150,7 @@ def attr_matrix(
     dtype=None,
     order=None,
 ):
-    """Returns a NumPy matrix using attributes from G.
+    """Returns the attribute matrix using attributes from `G` as a numpy array.
 
     If only `G` is passed in, then the adjacency matrix is constructed.
 
@@ -164,12 +164,12 @@ def attr_matrix(
     Parameters
     ----------
     G : graph
-        The NetworkX graph used to construct the NumPy matrix.
+        The NetworkX graph used to construct the attribute matrix.
 
     edge_attr : str, optional
         Each element of the matrix represents a running total of the
         specified edge attribute for edges whose node attributes correspond
-        to the rows/cols of the matirx. The attribute must be present for
+        to the rows/cols of the matrix. The attribute must be present for
         all edges in the graph. If no attribute is specified, then we
         just count the number of edges whose node attributes correspond
         to the matrix element.
@@ -204,11 +204,11 @@ def attr_matrix(
 
     Returns
     -------
-    M : NumPy ndarray
+    M : 2D NumPy ndarray
         The attribute matrix.
 
     ordering : list
-        If `rc_order` was specified, then only the matrix is returned.
+        If `rc_order` was specified, then only the attribute matrix is returned.
         However, if `rc_order` was None, then the ordering used to construct
         the matrix is returned as well.
 
