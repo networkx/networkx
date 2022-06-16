@@ -95,12 +95,6 @@ def set_warnings():
         "ignore", category=PendingDeprecationWarning, message="the matrix subclass"
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="to_numpy_matrix"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="from_numpy_matrix"
-    )
-    warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="networkx.pagerank_numpy"
     )
     warnings.filterwarnings(
