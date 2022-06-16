@@ -211,7 +211,7 @@ def set_warnings():
         "ignore", category=DeprecationWarning, message="The create_using argument"
     )
     warnings.filterwarnings(
-        "ignore", category=PendingDeprecationWarning, message="nx.nx_pydot"
+        "ignore", category=DeprecationWarning, message="nx.nx_pydot"
     )
 
 
