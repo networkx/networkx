@@ -5,11 +5,7 @@ np = pytest.importorskip("numpy")
 
 import networkx as nx
 
-from .base_test import (
-    BaseTestAttributeMixing,
-    BaseTestDegreeMixing,
-    BaseTestNumericMixing,
-)
+from .base_test import BaseTestAttributeMixing, BaseTestDegreeMixing
 
 
 class TestDegreeMixingDict(BaseTestDegreeMixing):
@@ -159,24 +155,22 @@ class TestAttributeMixingMatrix(BaseTestAttributeMixing):
         a = nx.attribute_mixing_matrix(self.M, "fish", mapping=mapping)
         np.testing.assert_equal(a, a_result / a_result.sum())
 
-
-class TestNumericMixingMatrix(BaseTestNumericMixing):
-    def test_numeric_mixing_matrix_negative(self):
+    def test_attribute_mixing_matrix_negative(self):
         mapping = {-2: 0, -3: 1, -4: 2}
         a_result = np.array([[4.0, 1.0, 1.0], [1.0, 0.0, 0.0], [1.0, 0.0, 0.0]])
-        a = nx.numeric_mixing_matrix(
+        a = nx.attribute_mixing_matrix(
             self.N, "margin", mapping=mapping, normalized=False
         )
         np.testing.assert_equal(a, a_result)
-        a = nx.numeric_mixing_matrix(self.N, "margin", mapping=mapping)
+        a = nx.attribute_mixing_matrix(self.N, "margin", mapping=mapping)
         np.testing.assert_equal(a, a_result / float(a_result.sum()))
 
-    def test_numeric_mixing_matrix_float(self):
+    def test_attribute_mixing_matrix_float(self):
         mapping = {0.5: 1, 1.5: 0}
         a_result = np.array([[6.0, 1.0], [1.0, 0.0]])
-        a = nx.numeric_mixing_matrix(
+        a = nx.attribute_mixing_matrix(
             self.F, "margin", mapping=mapping, normalized=False
         )
         np.testing.assert_equal(a, a_result)
-        a = nx.numeric_mixing_matrix(self.F, "margin", mapping=mapping)
+        a = nx.attribute_mixing_matrix(self.F, "margin", mapping=mapping)
         np.testing.assert_equal(a, a_result / a_result.sum())

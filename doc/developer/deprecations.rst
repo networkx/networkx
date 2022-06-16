@@ -82,7 +82,6 @@ Version 3.0
 * In ``algorithms/community/quality.py`` remove ``coverage`` and ``performance``.
 * Remove ``testing``.
 * In ``linalg/graphmatrix.py`` remove ``adj_matrix``.
-* In ``algorithms/assortativity/mixing.py`` remove ``numeric_mixing_matrix``.
 * In ``algorithms/assortativity/connectivity.py`` remove ``k_nearest_neighbors``.
 * In ``algorithms/operators/binary.py`` remove ``name`` kwarg from ``union`` and docstring.
 * In ``generators/geometric.py`` remove ``euclidean`` and tests.
