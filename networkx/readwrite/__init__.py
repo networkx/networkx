@@ -47,7 +47,6 @@ def __getattr__(name):
 from networkx.readwrite.adjlist import *
 from networkx.readwrite.multiline_adjlist import *
 from networkx.readwrite.edgelist import *
-from networkx.readwrite.gpickle import *
 from networkx.readwrite.pajek import *
 from networkx.readwrite.leda import *
 from networkx.readwrite.sparse6 import *

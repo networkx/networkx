@@ -117,24 +117,6 @@ class TestSubsetBetweennessCentrality:
             assert b[n] == pytest.approx(expected_b[n], abs=1e-7)
 
 
-class TestBetweennessCentralitySources:
-    def test_K5(self):
-        """Betweenness Centrality Sources: K5"""
-        G = nx.complete_graph(5)
-        b = nx.betweenness_centrality_source(G, weight=None, normalized=False)
-        b_answer = {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0}
-        for n in sorted(G):
-            assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
-
-    def test_P3(self):
-        """Betweenness Centrality Sources: P3"""
-        G = nx.path_graph(3)
-        b_answer = {0: 0.0, 1: 1.0, 2: 0.0}
-        b = nx.betweenness_centrality_source(G, weight=None, normalized=True)
-        for n in sorted(G):
-            assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
-
-
 class TestEdgeSubsetBetweennessCentrality:
     def test_K5(self):
         """Edge betweenness subset centrality: K5"""

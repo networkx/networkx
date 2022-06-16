@@ -15,10 +15,8 @@ for n, f in funcs:
     old_names = (
         "find_cores",
         "test",
-        "betweenness_centrality_source",
         "write_graphml_lxml",
         "write_graphml_xml",
-        "adj_matrix",
         "project",
         "fruchterman_reingold_layout",
         "node_degree_xy",

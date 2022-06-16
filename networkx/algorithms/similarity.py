@@ -28,7 +28,6 @@ __all__ = [
     "optimize_graph_edit_distance",
     "optimize_edit_paths",
     "simrank_similarity",
-    "simrank_similarity_numpy",
     "panther_similarity",
     "generate_random_paths",
 ]
@@ -1498,34 +1497,6 @@ def _simrank_similarity_numpy(
     if source is not None:
         return newsim[source]
     return newsim
-
-
-def simrank_similarity_numpy(
-    G,
-    source=None,
-    target=None,
-    importance_factor=0.9,
-    max_iterations=100,
-    tolerance=1e-4,
-):
-    """Calculate SimRank of nodes in ``G`` using matrices with ``numpy``.
-
-    .. deprecated:: 2.6
-        simrank_similarity_numpy is deprecated and will be removed in networkx 3.0.
-        Use simrank_similarity
-
-    """
-    warnings.warn(
-        (
-            "networkx.simrank_similarity_numpy is deprecated and will be removed"
-            "in NetworkX 3.0, use networkx.simrank_similarity instead."
-        ),
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    return _simrank_similarity_numpy(
-        G, source, target, importance_factor, max_iterations, tolerance
-    )
 
 
 def panther_similarity(G, source, k=5, path_length=5, c=0.5, delta=0.1, eps=None):
