@@ -16,7 +16,6 @@ for n, f in funcs:
         "find_cores",
         "test",
         "edge_betweenness",
-        "betweenness_centrality_source",
         "write_graphml_lxml",
         "write_graphml_xml",
         "project",
