@@ -199,9 +199,6 @@ def set_warnings():
         "ignore", category=DeprecationWarning, message="\nfind_cores"
     )
     warnings.filterwarnings("ignore", category=FutureWarning, message="attr_matrix")
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message=r"\n\nmake_small_.*"
-    )
     warnings.filterwarnings("ignore", category=DeprecationWarning, message="info")
     # create_using for scale_free_graph
     warnings.filterwarnings(
