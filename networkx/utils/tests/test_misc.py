@@ -13,11 +13,9 @@ from networkx.utils import (
     discrete_sequence,
     flatten,
     groups,
-    iterable,
     make_list_of_ints,
     pairwise,
     powerlaw_sequence,
-    to_tuple,
 )
 from networkx.utils.misc import _dict_to_numpy_array1, _dict_to_numpy_array2
 
@@ -58,22 +56,6 @@ def test_flatten(nested, result):
         assert len(val) == len(_result) == 20 + nexisting
 
     assert issubclass(type(val), tuple)
-
-
-def test_iterable():
-    assert not iterable(None)
-    assert not iterable(10)
-    assert iterable([1, 2, 3])
-    assert iterable((1, 2, 3))
-    assert iterable({1: "A", 2: "X"})
-    assert iterable("ABC")
-
-
-def test_graph_iterable():
-    K = nx.complete_graph(10)
-    assert iterable(K)
-    assert iterable(K.nodes())
-    assert iterable(K.edges())
 
 
 def test_make_list_of_ints():
@@ -171,23 +153,6 @@ def test_groups():
     expected = {0: {"a", "b"}, 1: {"c", "d"}, 2: {"e"}}
     assert actual == expected
     assert {} == groups({})
-
-
-def test_to_tuple():
-    a_list = [1, 2, [1, 3]]
-    actual = to_tuple(a_list)
-    expected = (1, 2, (1, 3))
-    assert actual == expected
-
-    a_tuple = (1, 2)
-    actual = to_tuple(a_tuple)
-    expected = a_tuple
-    assert actual == expected
-
-    a_mix = (1, 2, [1, 3])
-    actual = to_tuple(a_mix)
-    expected = (1, 2, (1, 3))
-    assert actual == expected
 
 
 def test_create_random_state():
@@ -288,13 +253,3 @@ def test_arbitrary_element_raises(iterator):
     """Value error is raised when input is an iterator."""
     with pytest.raises(ValueError, match="from an iterator"):
         arbitrary_element(iterator)
-
-
-def test_dict_to_numpy_array_deprecations():
-    np = pytest.importorskip("numpy")
-    d = {"a": 1}
-    with pytest.deprecated_call():
-        nx.utils.dict_to_numpy_array1(d)
-    d2 = {"a": {"b": 2}}
-    with pytest.deprecated_call():
-        nx.utils.dict_to_numpy_array2(d2)

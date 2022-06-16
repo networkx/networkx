@@ -15,15 +15,6 @@ null = nx.null_graph()
 
 
 class TestGeneratorsSmall:
-    def test_make_small_graph(self):
-        d = ["adjacencylist", "Bull Graph", 5, [[2, 3], [1, 3, 4], [1, 2, 5], [2], [3]]]
-        G = nx.make_small_graph(d)
-        assert is_isomorphic(G, nx.bull_graph())
-
-        # Test small graph creation error with wrong ltype
-        d[0] = "erroneouslist"
-        pytest.raises(nx.NetworkXError, nx.make_small_graph, graph_description=d)
-
     def test__LCF_graph(self):
         # If n<=0, then return the null_graph
         G = nx.LCF_graph(-10, [1, 2], 100)

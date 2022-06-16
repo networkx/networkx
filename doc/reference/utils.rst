@@ -14,9 +14,7 @@ Helper Functions
    arbitrary_element
    is_string_like
    flatten
-   iterable
    make_list_of_ints
-   default_opener
    pairwise
    groups
    create_random_state

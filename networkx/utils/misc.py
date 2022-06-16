@@ -23,18 +23,12 @@ import networkx as nx
 np = nx.lazy_import("numpy")
 
 __all__ = [
-    "iterable",
     "flatten",
     "make_list_of_ints",
-    "is_list_of_ints",
-    "default_opener",
     "dict_to_numpy_array",
-    "dict_to_numpy_array1",
-    "dict_to_numpy_array2",
     "arbitrary_element",
     "pairwise",
     "groups",
-    "to_tuple",
     "create_random_state",
     "create_py_random_state",
     "PythonRandomInterface",
@@ -47,26 +41,6 @@ __all__ = [
 # some cookbook stuff
 # used in deciding whether something is a bunch of nodes, edges, etc.
 # see G.add_nodes and others in Graph Class in networkx/base.py
-
-
-def iterable(obj):
-    """Return True if obj is iterable with a well-defined len().
-
-    .. deprecated:: 2.6
-        This is deprecated and will be removed in NetworkX v3.0.
-    """
-    msg = (
-        "iterable is deprecated and will be removed in 3.0."
-        "Use isinstance(obj, (collections.abc.Iterable, collections.abc.Sized)) instead."
-    )
-    warnings.warn(msg, DeprecationWarning)
-    if hasattr(obj, "__iter__"):
-        return True
-    try:
-        len(obj)
-    except:
-        return False
-    return True
 
 
 def flatten(obj, result=None):
@@ -119,57 +93,6 @@ def make_list_of_ints(sequence):
     return sequence
 
 
-def is_list_of_ints(intlist):
-    """Return True if list is a list of ints.
-
-    .. deprecated:: 2.6
-        This is deprecated and will be removed in NetworkX v3.0.
-    """
-    msg = (
-        "is_list_of_ints is deprecated and will be removed in 3.0."
-        "See also: ``networkx.utils.make_list_of_ints.``"
-    )
-    warnings.warn(msg, DeprecationWarning, stacklevel=2)
-    if not isinstance(intlist, list):
-        return False
-    for i in intlist:
-        if not isinstance(i, int):
-            return False
-    return True
-
-
-def default_opener(filename):
-    """Opens `filename` using system's default program.
-
-    .. deprecated:: 2.6
-       default_opener is deprecated and will be removed in version 3.0.
-       Consider an image processing library to open images, such as Pillow::
-
-           from PIL import Image
-           Image.open(filename).show()
-
-    Parameters
-    ----------
-    filename : str
-        The path of the file to be opened.
-
-    """
-    warnings.warn(
-        "default_opener is deprecated and will be removed in version 3.0. ",
-        DeprecationWarning,
-    )
-    from subprocess import call
-
-    cmds = {
-        "darwin": ["open"],
-        "linux": ["xdg-open"],
-        "linux2": ["xdg-open"],
-        "win32": ["cmd.exe", "/C", "start", ""],
-    }
-    cmd = cmds[sys.platform] + [filename]
-    call(cmd)
-
-
 def dict_to_numpy_array(d, mapping=None):
     """Convert a dictionary of dictionaries to a numpy array
     with optional mapping."""
@@ -179,23 +102,6 @@ def dict_to_numpy_array(d, mapping=None):
         # AttributeError is when no mapping was provided and v.keys() fails.
         # TypeError is when a mapping was provided and d[k1][k2] fails.
         return _dict_to_numpy_array1(d, mapping)
-
-
-def dict_to_numpy_array2(d, mapping=None):
-    """Convert a dict of dicts to a 2d numpy array with optional mapping.
-
-    .. deprecated:: 2.8
-
-       dict_to_numpy_array2 is deprecated and will be removed in networkx 3.0.
-       Use `dict_to_numpy_array` instead.
-    """
-    msg = (
-        "dict_to_numpy_array2 is deprecated and will be removed in networkx 3.0.\n"
-        "Use dict_to_numpy_array instead."
-    )
-    warnings.warn(msg, DeprecationWarning, stacklevel=2)
-
-    return _dict_to_numpy_array2(d, mapping)
 
 
 def _dict_to_numpy_array2(d, mapping=None):
@@ -217,23 +123,6 @@ def _dict_to_numpy_array2(d, mapping=None):
             except KeyError:
                 pass
     return a
-
-
-def dict_to_numpy_array1(d, mapping=None):
-    """Convert a dict of numbers to a 1d numpy array with optional mapping.
-
-    .. deprecated:: 2.8
-
-       dict_to_numpy_array1 is deprecated and will be removed in networkx 3.0.
-       Use dict_to_numpy_array instead.
-    """
-    msg = (
-        "dict_to_numpy_array1 is deprecated and will be removed in networkx 3.0.\n"
-        "Use dict_to_numpy_array instead."
-    )
-    warnings.warn(msg, DeprecationWarning, stacklevel=2)
-
-    return _dict_to_numpy_array1(d, mapping)
 
 
 def _dict_to_numpy_array1(d, mapping=None):
@@ -348,31 +237,6 @@ def groups(many_to_one):
     for v, k in many_to_one.items():
         one_to_many[k].add(v)
     return dict(one_to_many)
-
-
-def to_tuple(x):
-    """Converts lists to tuples.
-
-    .. deprecated:: 2.8
-
-       to_tuple is deprecated and will be removed in NetworkX 3.0.
-
-    Examples
-    --------
-    >>> from networkx.utils import to_tuple
-    >>> a_list = [1, 2, [1, 4]]
-    >>> to_tuple(a_list)
-    (1, 2, (1, 4))
-    """
-    warnings.warn(
-        "to_tuple is deprecated and will be removed in NetworkX 3.0.",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-
-    if not isinstance(x, (tuple, list)):
-        return x
-    return tuple(map(to_tuple, x))
 
 
 def create_random_state(random_state=None):

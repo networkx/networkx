@@ -84,7 +84,5 @@ from networkx.algorithms import *
 from networkx import linalg
 from networkx.linalg import *
 
-from networkx.testing.test import run as test
-
 from networkx import drawing
 from networkx.drawing import *
