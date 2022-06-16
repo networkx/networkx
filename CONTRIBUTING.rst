@@ -47,7 +47,7 @@ Development Workflow
          # Install main development and runtime dependencies of networkx
          pip install -r requirements/default.txt -r requirements/test.txt -r requirements/developer.txt
          #
-         # (Optional) Install pygraphviz, pydot, and gdal packages
+         # (Optional) Install pygraphviz and pydot packages
          # These packages require that you have your system properly configured
          # and what that involves differs on various systems.
          # pip install -r requirements/extra.txt
@@ -68,7 +68,7 @@ Development Workflow
          # Install main development and runtime dependencies of networkx
          conda install -c conda-forge --file requirements/default.txt --file requirements/test.txt --file requirements/developer.txt
          #
-         # (Optional) Install pygraphviz, pydot, and gdal packages
+         # (Optional) Install pygraphviz and pydot packages
          # These packages require that you have your system properly configured
          # and what that involves differs on various systems.
          # conda install -c conda-forge --file requirements/extra.txt
