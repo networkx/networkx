@@ -67,11 +67,6 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore",
         category=DeprecationWarning,
-        message="generate_unique_node is deprecated",
-    )
-    warnings.filterwarnings(
-        "ignore",
-        category=DeprecationWarning,
         message="context manager reversed is deprecated",
     )
     warnings.filterwarnings(
@@ -90,12 +85,6 @@ def set_warnings():
     )
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="networkx.pagerank_scipy"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="write_gpickle"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="read_gpickle"
     )
     warnings.filterwarnings("ignore", category=DeprecationWarning, message="write_shp")
     warnings.filterwarnings("ignore", category=DeprecationWarning, message="read_shp")
@@ -267,7 +256,7 @@ collect_ignore = []
 needs_numpy = [
     "algorithms/approximation/traveling_salesman.py",
     "algorithms/centrality/current_flow_closeness.py",
-    "algorithms/node_classification/__init__.py",
+    "algorithms/node_classification.py",
     "algorithms/non_randomness.py",
     "algorithms/shortest_paths/dense.py",
     "linalg/bethehessianmatrix.py",
@@ -290,9 +279,7 @@ needs_scipy = [
     "algorithms/communicability_alg.py",
     "algorithms/link_analysis/hits_alg.py",
     "algorithms/link_analysis/pagerank_alg.py",
-    "algorithms/node_classification/__init__.py",
-    "algorithms/node_classification/hmn.py",
-    "algorithms/node_classification/lgc.py",
+    "algorithms/node_classification.py",
     "algorithms/similarity.py",
     "convert_matrix.py",
     "drawing/layout.py",

@@ -15,7 +15,6 @@ Helper Functions
    is_string_like
    flatten
    make_list_of_ints
-   generate_unique_node
    pairwise
    groups
    create_random_state

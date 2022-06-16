@@ -62,13 +62,11 @@ Version 3.0
   argument with explicit ``name`` and ``ident`` keyword args.
 * In ``readwrite/json_graph/tree.py``, remove ``attrs`` kwarg from ``tree_graph``
   and ``tree_data``.
-* Remove ``readwrite/gpickle.py`` and related tests.
 * Remove ``readwrite/nx_shp.py`` and related tests (add info in alternatives).
 * Remove ``copy`` method in the coreview Filtered-related classes and related tests.
 * In ``algorithms/link_analysis/pagerank_alg.py`` replace ``pagerank`` with ``pagerank_scipy``.
 * In ``algorithms/link_analysis/pagerank_alg.py`` rename ``pagerank_numpy`` as ``_pagerank_numpy``.
 * In ``convert_matrix.py`` remove ``order`` kwarg from ``to_pandas_edgelist`` and docstring
-* In ``utils/misc.py`` remove ``generate_unique_node`` and related tests.
 * In ``algorithms/link_analysis/hits_alg.py`` remove ``hub_matrix`` and ``authority_matrix``
 * In ``algorithms/link_analysis/hits_alg.py``, remove ``hits_numpy`` and ``hist_scipy``.
 * In ``classes`` remove the ``ordered`` module and the four ``Ordered``
@@ -79,9 +77,6 @@ Version 3.0
 * In ``algorithms/assortativity/connectivity.py`` remove ``k_nearest_neighbors``.
 * In ``algorithms/operators/binary.py`` remove ``name`` kwarg from ``union`` and docstring.
 * In ``generators/geometric.py`` remove ``euclidean`` and tests.
-* In ``algorithms/node_classification/`` remove ``hmn.py``, ``lgc.py``,
-  and ``utils.py`` after moving the functions defined therein into the newly created
-  ``node_classification.py`` module, which will replace the current package.
 * In ``algorithms/link_analysis/pagerank_alg.py``, remove the
   ``np.asmatrix`` wrappers on the return values of ``google_matrix`` and remove
   the associated FutureWarning.
