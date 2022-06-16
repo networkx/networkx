@@ -62,9 +62,6 @@ def set_warnings():
         message="literal_destringizer is deprecated",
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="is_string_like is deprecated"
-    )
-    warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="\nauthority_matrix"
     )
     warnings.filterwarnings(
@@ -72,12 +69,6 @@ def set_warnings():
     )
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="default_opener is deprecated"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="empty_generator is deprecated"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="make_str is deprecated"
     )
     warnings.filterwarnings(
         "ignore",
@@ -102,12 +93,6 @@ def set_warnings():
     )
     warnings.filterwarnings(
         "ignore", category=PendingDeprecationWarning, message="the matrix subclass"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="to_numpy_matrix"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="from_numpy_matrix"
     )
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="networkx.pagerank_numpy"
@@ -140,8 +125,6 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="FilterMultiInner.copy"
     )
-    warnings.filterwarnings("ignore", category=DeprecationWarning, message="jit_data")
-    warnings.filterwarnings("ignore", category=DeprecationWarning, message="jit_graph")
     warnings.filterwarnings("ignore", category=DeprecationWarning, message="consume")
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="iterable is deprecated"
@@ -153,9 +136,6 @@ def set_warnings():
     )
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="\nThe `attrs` keyword"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="preserve_random_state"
     )
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="`almost_equal`"
@@ -174,9 +154,6 @@ def set_warnings():
     )
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="networkx.hits_numpy"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="preserve_random_state"
     )
     warnings.filterwarnings(
         "ignore",
@@ -231,11 +208,7 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message=r"\n\nmake_small_.*"
     )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="to_numpy_recarray"
-    )
     warnings.filterwarnings("ignore", category=DeprecationWarning, message="info")
-    warnings.filterwarnings("ignore", category=DeprecationWarning, message="to_tuple")
     # create_using for scale_free_graph
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="The create_using argument"
