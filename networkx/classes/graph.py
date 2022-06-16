@@ -378,7 +378,8 @@ class Graph:
         Returns
         -------
         info : string
-            Graph information as provided by `nx.info`
+            Graph information including the graph name (if any), graph type, and the
+            number of nodes and edges.
 
         Examples
         --------
