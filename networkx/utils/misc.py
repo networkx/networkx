@@ -29,8 +29,6 @@ __all__ = [
     "generate_unique_node",
     "default_opener",
     "dict_to_numpy_array",
-    "dict_to_numpy_array1",
-    "dict_to_numpy_array2",
     "arbitrary_element",
     "pairwise",
     "groups",
@@ -172,23 +170,6 @@ def dict_to_numpy_array(d, mapping=None):
         return _dict_to_numpy_array1(d, mapping)
 
 
-def dict_to_numpy_array2(d, mapping=None):
-    """Convert a dict of dicts to a 2d numpy array with optional mapping.
-
-    .. deprecated:: 2.8
-
-       dict_to_numpy_array2 is deprecated and will be removed in networkx 3.0.
-       Use `dict_to_numpy_array` instead.
-    """
-    msg = (
-        "dict_to_numpy_array2 is deprecated and will be removed in networkx 3.0.\n"
-        "Use dict_to_numpy_array instead."
-    )
-    warnings.warn(msg, DeprecationWarning, stacklevel=2)
-
-    return _dict_to_numpy_array2(d, mapping)
-
-
 def _dict_to_numpy_array2(d, mapping=None):
     """Convert a dictionary of dictionaries to a 2d numpy array
     with optional mapping.
@@ -208,23 +189,6 @@ def _dict_to_numpy_array2(d, mapping=None):
             except KeyError:
                 pass
     return a
-
-
-def dict_to_numpy_array1(d, mapping=None):
-    """Convert a dict of numbers to a 1d numpy array with optional mapping.
-
-    .. deprecated:: 2.8
-
-       dict_to_numpy_array1 is deprecated and will be removed in networkx 3.0.
-       Use dict_to_numpy_array instead.
-    """
-    msg = (
-        "dict_to_numpy_array1 is deprecated and will be removed in networkx 3.0.\n"
-        "Use dict_to_numpy_array instead."
-    )
-    warnings.warn(msg, DeprecationWarning, stacklevel=2)
-
-    return _dict_to_numpy_array1(d, mapping)
 
 
 def _dict_to_numpy_array1(d, mapping=None):
