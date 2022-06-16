@@ -13,7 +13,6 @@ from networkx.utils import (
     discrete_sequence,
     flatten,
     groups,
-    iterable,
     make_list_of_ints,
     pairwise,
     powerlaw_sequence,
@@ -57,22 +56,6 @@ def test_flatten(nested, result):
         assert len(val) == len(_result) == 20 + nexisting
 
     assert issubclass(type(val), tuple)
-
-
-def test_iterable():
-    assert not iterable(None)
-    assert not iterable(10)
-    assert iterable([1, 2, 3])
-    assert iterable((1, 2, 3))
-    assert iterable({1: "A", 2: "X"})
-    assert iterable("ABC")
-
-
-def test_graph_iterable():
-    K = nx.complete_graph(10)
-    assert iterable(K)
-    assert iterable(K.nodes())
-    assert iterable(K.edges())
 
 
 def test_make_list_of_ints():

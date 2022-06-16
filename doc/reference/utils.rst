@@ -14,7 +14,6 @@ Helper Functions
    arbitrary_element
    is_string_like
    flatten
-   iterable
    make_list_of_ints
    generate_unique_node
    pairwise

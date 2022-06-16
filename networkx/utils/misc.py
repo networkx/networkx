@@ -23,7 +23,6 @@ import networkx as nx
 np = nx.lazy_import("numpy")
 
 __all__ = [
-    "iterable",
     "flatten",
     "make_list_of_ints",
     "generate_unique_node",
@@ -43,26 +42,6 @@ __all__ = [
 # some cookbook stuff
 # used in deciding whether something is a bunch of nodes, edges, etc.
 # see G.add_nodes and others in Graph Class in networkx/base.py
-
-
-def iterable(obj):
-    """Return True if obj is iterable with a well-defined len().
-
-    .. deprecated:: 2.6
-        This is deprecated and will be removed in NetworkX v3.0.
-    """
-    msg = (
-        "iterable is deprecated and will be removed in 3.0."
-        "Use isinstance(obj, (collections.abc.Iterable, collections.abc.Sized)) instead."
-    )
-    warnings.warn(msg, DeprecationWarning)
-    if hasattr(obj, "__iter__"):
-        return True
-    try:
-        len(obj)
-    except:
-        return False
-    return True
 
 
 def flatten(obj, result=None):
