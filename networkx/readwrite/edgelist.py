@@ -346,7 +346,7 @@ def read_edgelist(
     >>> fh.close()
 
     >>> G = nx.read_edgelist("test.edgelist", nodetype=int)
-    >>> G = nx.read_edgelist("test.edgelist", create_using=nx.DiGraph)
+    >>> G = nx.read_edgelist("test.edgelist", create_using=nx.DiGraph())
 
     Edgelist with data in a list:
 
