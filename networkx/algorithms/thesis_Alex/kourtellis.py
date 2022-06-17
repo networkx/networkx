@@ -136,8 +136,8 @@ def algorithm_3(s, v, w, flag, Delta, Delta_d, SP, SPd, Q_lvl, level):
         flag[v] = State.U
         Delta_d[v] = Delta[s][v]
         Q_lvl[level-1].append(v)
-    Delta_d[v] += (SPd[v]/SPd[w]) * (1 + Delta_d[w])
-    a = (SP[s][v]/SP[s][w]) * (1 + Delta[s][w])
+    Delta_d[v] += (SPd[v]/SPd[w]) * (1.0 + Delta_d[w])
+    a = (SP[s][v]/SP[s][w]) * (1.0 + Delta[s][w])
     return flag, Delta_d, Q_lvl, a
 
 
