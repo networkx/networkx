@@ -1,15 +1,5 @@
 import networkx as nx
-import graphs as g
-
-
-def pretty_print(mtrx, name):
-    mtrx_sort = dict(sorted(mtrx.items(), key=lambda item: item[0]))
-
-    print("\nThe following is the output for the {} algorithm:".format(name))
-    for values in mtrx_sort.values():
-        print(dict(sorted(values.items(), key=lambda item: item[0])))
-    print("------------------------------------------------------------ \n")
-
+import networkx.algorithms.thesis_Alex.utils.graphs as g
 
 if __name__ == '__main__':
     G_1 = g.g_1()

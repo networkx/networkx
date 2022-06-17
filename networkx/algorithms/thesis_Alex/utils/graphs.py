@@ -41,3 +41,32 @@ def g_1():
         G.add_edge(*edge)
 
     return G
+
+
+def single_edge_graph():
+    G = nx.Graph()
+    G.add_edge('1', '2')
+
+    return G
+
+
+def square_longated():
+    G = nx.Graph()
+
+    edge_list = [('1', '2'), ('1', '4'), ('2', '3'), ('3', '5')]
+
+    for edge in edge_list:
+        G.add_edge(*edge)
+
+    return G
+
+
+def incomplete_square():
+    G = nx.Graph()
+
+    edge_list = [('1', '2'), ('1', '4'), ('2', '3')]
+
+    for edge in edge_list:
+        G.add_edge(*edge)
+
+    return G
