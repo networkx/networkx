@@ -280,7 +280,7 @@ class _AntiGraph(nx.Graph):
                 raise KeyError(node)
             return self._graph.AntiAtlasView(self._graph, node)
 
-    @cached_property
+    @property
     def adj(self):
         return self.AntiAdjacencyView(self)
 
@@ -311,7 +311,7 @@ class _AntiGraph(nx.Graph):
             # AntiGraph is a ThinGraph so all edges have weight 1
             return len(nbrs) + (n in nbrs)
 
-    @cached_property
+    @property
     def degree(self):
         """Returns an iterator for (node, degree) and degree for single node.
 

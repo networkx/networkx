@@ -1,6 +1,5 @@
 """Base class for MultiGraph."""
 from copy import deepcopy
-from functools import cached_property
 
 import networkx as nx
 import networkx.convert as convert
@@ -355,7 +354,7 @@ class MultiGraph(Graph):
         else:
             Graph.__init__(self, incoming_graph_data, **attr)
 
-    @cached_property
+    @property
     def adj(self):
         """Graph adjacency object holding the neighbors of each node.
 
@@ -783,7 +782,7 @@ class MultiGraph(Graph):
         except KeyError:
             return False
 
-    @cached_property
+    @property
     def edges(self):
         """Returns an iterator over the edges.
 
@@ -936,7 +935,7 @@ class MultiGraph(Graph):
         except KeyError:
             return default
 
-    @cached_property
+    @property
     def degree(self):
         """A DegreeView for the Graph as G.degree or G.degree().
 

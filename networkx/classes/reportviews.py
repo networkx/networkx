@@ -1049,11 +1049,11 @@ class OutEdgeView(Set, Mapping):
     __slots__ = ("_adjdict", "_graph", "_nodes_nbrs")
 
     def __getstate__(self):
-        return {"_graph": self._graph, "_adjdict": self._adjdict}
+        return {"_graph": self._graph}
 
     def __setstate__(self, state):
-        self._graph = state["_graph"]
-        self._adjdict = state["_adjdict"]
+        self._graph = G = state["_graph"]
+        self._adjdict = G._succ if hasattr(G, "succ") else G._adj
         self._nodes_nbrs = self._adjdict.items
 
     @classmethod

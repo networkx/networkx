@@ -1,6 +1,5 @@
 """Base class for directed graphs."""
 from copy import deepcopy
-from functools import cached_property
 
 import networkx as nx
 import networkx.convert as convert
@@ -314,13 +313,6 @@ class DiGraph(Graph):
         self._adj = self.adjlist_outer_dict_factory()  # empty adjacency dict
         self._pred = self.adjlist_outer_dict_factory()  # predecessor
         self._succ = self._adj  # successor
-        # clear cached adjacency properties
-        if hasattr(self, "adj"):
-            delattr(self, "adj")
-        if hasattr(self, "pred"):
-            delattr(self, "pred")
-        if hasattr(self, "succ"):
-            delattr(self, "succ")
 
         # attempt to load graph with data
         if incoming_graph_data is not None:
@@ -328,7 +320,7 @@ class DiGraph(Graph):
         # load graph attributes (must be after convert)
         self.graph.update(attr)
 
-    @cached_property
+    @property
     def adj(self):
         """Graph adjacency object holding the neighbors of each node.
 
@@ -347,7 +339,7 @@ class DiGraph(Graph):
         """
         return AdjacencyView(self._succ)
 
-    @cached_property
+    @property
     def succ(self):
         """Graph adjacency object holding the successors of each node.
 
@@ -368,7 +360,7 @@ class DiGraph(Graph):
         """
         return AdjacencyView(self._succ)
 
-    @cached_property
+    @property
     def pred(self):
         """Graph adjacency object holding the predecessors of each node.
 
@@ -844,7 +836,7 @@ class DiGraph(Graph):
         except KeyError as err:
             raise NetworkXError(f"The node {n} is not in the digraph.") from err
 
-    @cached_property
+    @property
     def edges(self):
         """An OutEdgeView of the DiGraph as G.edges or G.edges().
 
@@ -908,13 +900,9 @@ class DiGraph(Graph):
         return OutEdgeView(self)
 
     # alias out_edges to edges
-    @cached_property
-    def out_edges(self):
-        return OutEdgeView(self)
+    out_edges = edges
 
-    out_edges.__doc__ = edges.__doc__
-
-    @cached_property
+    @property
     def in_edges(self):
         """An InEdgeView of the Graph as G.in_edges or G.in_edges().
 
@@ -945,7 +933,7 @@ class DiGraph(Graph):
         """
         return InEdgeView(self)
 
-    @cached_property
+    @property
     def degree(self):
         """A DegreeView for the Graph as G.degree or G.degree().
 
@@ -989,7 +977,7 @@ class DiGraph(Graph):
         """
         return DiDegreeView(self)
 
-    @cached_property
+    @property
     def in_degree(self):
         """An InDegreeView for (node, in_degree) or in_degree for single node.
 
@@ -1036,7 +1024,7 @@ class DiGraph(Graph):
         """
         return InDegreeView(self)
 
-    @cached_property
+    @property
     def out_degree(self):
         """An OutDegreeView for (node, out_degree)
 

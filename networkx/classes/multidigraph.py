@@ -1,6 +1,5 @@
 """Base class for MultiDiGraph."""
 from copy import deepcopy
-from functools import cached_property
 
 import networkx as nx
 import networkx.convert as convert
@@ -346,7 +345,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         else:
             DiGraph.__init__(self, incoming_graph_data, **attr)
 
-    @cached_property
+    @property
     def adj(self):
         """Graph adjacency object holding the neighbors of each node.
 
@@ -365,7 +364,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         """
         return MultiAdjacencyView(self._succ)
 
-    @cached_property
+    @property
     def succ(self):
         """Graph adjacency object holding the successors of each node.
 
@@ -384,7 +383,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         """
         return MultiAdjacencyView(self._succ)
 
-    @cached_property
+    @property
     def pred(self):
         """Graph adjacency object holding the predecessors of each node.
 
@@ -569,7 +568,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
             del self._succ[u][v]
             del self._pred[v][u]
 
-    @cached_property
+    @property
     def edges(self):
         """An OutMultiEdgeView of the Graph as G.edges or G.edges().
 
@@ -651,13 +650,9 @@ class MultiDiGraph(MultiGraph, DiGraph):
         return OutMultiEdgeView(self)
 
     # alias out_edges to edges
-    @cached_property
-    def out_edges(self):
-        return OutMultiEdgeView(self)
+    out_edges = edges
 
-    out_edges.__doc__ = edges.__doc__
-
-    @cached_property
+    @property
     def in_edges(self):
         """An InMultiEdgeView of the Graph as G.in_edges or G.in_edges().
 
@@ -691,7 +686,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         """
         return InMultiEdgeView(self)
 
-    @cached_property
+    @property
     def degree(self):
         """A DegreeView for the Graph as G.degree or G.degree().
 
@@ -739,7 +734,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         """
         return DiMultiDegreeView(self)
 
-    @cached_property
+    @property
     def in_degree(self):
         """A DegreeView for (node, in_degree) or in_degree for single node.
 
@@ -790,7 +785,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         """
         return InMultiDegreeView(self)
 
-    @cached_property
+    @property
     def out_degree(self):
         """Returns an iterator for (node, out-degree) or out-degree for single node.
 
