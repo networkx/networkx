@@ -1287,8 +1287,8 @@ class InEdgeView(OutEdgeView):
     __slots__ = ()
 
     def __setstate__(self, state):
-        self._graph = state["_graph"]
-        self._adjdict = state["_adjdict"]
+        self._graph = G = state["_graph"]
+        self._adjdict = G._pred if hasattr(G, "pred") else G._adj
         self._nodes_nbrs = self._adjdict.items
 
     dataview = InEdgeDataView
@@ -1399,8 +1399,8 @@ class InMultiEdgeView(OutMultiEdgeView):
     __slots__ = ()
 
     def __setstate__(self, state):
-        self._graph = state["_graph"]
-        self._adjdict = state["_adjdict"]
+        self._graph = G = state["_graph"]
+        self._adjdict = G._pred if hasattr(G, "pred") else G._adj
         self._nodes_nbrs = self._adjdict.items
 
     dataview = InMultiEdgeDataView
