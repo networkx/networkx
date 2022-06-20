@@ -1,6 +1,7 @@
-import itertools as it
+from itertools import product
 from textwrap import dedent
 
+import random
 import pytest
 
 import networkx as nx
@@ -355,7 +356,7 @@ def test_graph_str_iterative_add_directed_edges():
     write = lines.append
     write("--- initial state ---")
     nx.graph_str(graph, write=write)
-    for i, j in it.product(graph.nodes, graph.nodes):
+    for i, j in product(graph.nodes, graph.nodes):
         write(f"--- add_edge({i}, {j}) ---")
         graph.add_edge(i, j)
         nx.graph_str(graph, write=write)
@@ -503,7 +504,7 @@ def test_graph_str_iterative_add_undirected_edges():
     write = lines.append
     write("--- initial state ---")
     nx.graph_str(graph, write=write)
-    for i, j in it.product(graph.nodes, graph.nodes):
+    for i, j in product(graph.nodes, graph.nodes):
         if i == j:
             continue
         write(f"--- add_edge({i}, {j}) ---")
@@ -602,12 +603,11 @@ def test_graph_str_iterative_add_random_directed_edges():
     """
     Walk through the cases going from a diconnected to fully connected graph
     """
-    import random
 
     rng = random.Random(724466096)
     graph = nx.DiGraph()
     graph.add_nodes_from([1, 2, 3, 4, 5])
-    possible_edges = list(it.product(graph.nodes, graph.nodes))
+    possible_edges = list(product(graph.nodes, graph.nodes))
     rng.shuffle(possible_edges)
     graph.add_edges_from(possible_edges[0:8])
     lines = []

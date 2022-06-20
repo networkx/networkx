@@ -1,6 +1,9 @@
 """
 Text-based visual representations of graphs
 """
+from collections import defaultdict
+import networkx as nx
+import warnings
 
 __all__ = ["forest_str", "graph_str"]
 
@@ -73,7 +76,11 @@ def forest_str(graph, with_labels=True, sources=None, write=None, ascii_only=Fal
         L-- 1
             L-- 2
     """
-    import networkx as nx
+    msg = (
+        "\nforest_str is deprecated as of version <TBD> and will be removed "
+        "in version <TBD>. Use graph_str instead.\n"
+    )
+    warnings.warn(msg, DeprecationWarning)
 
     if len(graph.nodes) > 0:
         if not nx.is_forest(graph):
@@ -92,7 +99,7 @@ def graph_str(graph, with_labels=True, sources=None, write=None, ascii_only=Fals
     """
     Creates a nice text representation of a graph
 
-    This works via a depth-first traversal the graph and writing a line for
+    This works via a depth-first traversal of the graph and writing a line for
     each unique node encountered. Non-tree edges are written to the right of
     each node, and connection to a non-tree edge is indicated with an ellipsis.
     This representation works best when the input graph is a forest, but any
@@ -196,9 +203,6 @@ def graph_str(graph, with_labels=True, sources=None, write=None, ascii_only=Fals
         │   └─╼  ...
         └─╼  ...
     """
-    from collections import defaultdict
-
-    import networkx as nx
 
     printbuf = []
     if write is None:
