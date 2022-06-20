@@ -73,15 +73,15 @@ def naive_all_pairs_lowest_common_ancestor(G, pairs=None):
 
     if pairs is None:
         pairs = set()
-        for u in G.nodes():
-            for v in G.nodes():
-                if u <= v and (u, v) not in pairs:
+        for i, u in enumerate(G):
+            for j, v in enumerate(G):
+                if i <= j and (u, v) not in pairs:
                     pairs.add((u, v))
     else:
         for u, v in pairs:
             for n in (u, v):
                 if n not in G:
-                    msg = f"The node {str(n)} is not in the digraph."
+                    msg = f"The node {n} is not in the digraph."
                     raise nx.NodeNotFound(msg)
 
     for v, w in pairs:
