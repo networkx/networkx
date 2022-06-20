@@ -159,13 +159,13 @@ def test_pydot_issue_258():
 def test_hashable_pydot(graph_type):
     # gh-5790
     G = graph_type()
-    G.add_edge("5", frozenset([1, 2]), t='"Example:A"', l=False)
-    G.add_edge("1", 2, w=True, t=("node1", "node2"), l=frozenset(["node1", "node2"]))
+    G.add_edge("5", frozenset([1]), t='"Example:A"', l=False)
+    G.add_edge("1", 2, w=True, t=("node1",), l=frozenset(["node1"]))
     G.add_edge("node", (3, 3), w="string")
-    # Keys as integers aren't preserved in the conversion. They are read as strings.
+
     assert [
         {"t": '"Example:A"', "l": "False"},
-        {"w": "True", "t": "('node1', 'node2')", "l": "frozenset({'node1', 'node2'})"},
+        {"w": "True", "t": "('node1',)", "l": "frozenset({'node1'})"},
         {"w": "string"},
     ] == [
         attr
