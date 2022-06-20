@@ -6,6 +6,45 @@ import pytest
 import networkx as nx
 
 
+def test_attributes():
+    G = nx.path_graph(4, create_using=nx.DiGraph)
+    G.add_edge(0, 0)
+    pos = {n: 2 for n in G}
+
+    G.nodes[0]["color"] = "blue"
+    G.nodes[2]["width"] = 3
+    G.nodes[3]["label"] = "Stop"
+    G.edges[(1, 2)]["width"] = 3
+    G.edges[(2, 3)]["color"] = "green"
+    G.edges[(0, 1)]["label"] = "1st Step:near start"
+    G.edges[(2, 3)]["label"] = "3rd Step:near end"
+    G.edges[(1, 2)]["label"] = "2nd"
+
+    output_tex = nx.to_latex(G, pos=pos, as_document=False)
+    expected_tex = r"""\begin{figure}
+    \NewAdigraph{myAdigraph}{
+            0,blue,:2:;
+            1,red,:2:;
+            2,red,3:2:;
+            3,red,:2:Stop;
+        }{
+            0,1,black,:1:1st Step:near start;
+            0,0,black;
+            1,2,black,3:1:2nd;
+            2,3,green,:1:3rd Step:near end;
+        }[->]
+        \myAdigraph{}
+\end{figure}
+"""
+    # Pretty way to assert that A.to_document() == expected_tex
+    content_same = True
+    for aa, bb in zip(expected_tex.split("\n"), output_tex.split("\n")):
+        if aa != bb:
+            content_same = False
+            print(f"-{aa}|\n+{bb}|")
+    assert content_same
+
+
 def test_basic_multiple_graphs():
     H1 = nx.path_graph(4)
     H2 = nx.complete_graph(4)
@@ -48,23 +87,23 @@ expected_tex = r"""\documentclass{report}
             6,gray!90,:0.22390076694574132\textwidth,-0.4280746354634582\textwidth:;
             7,cyan!90,:0.0016249976685691753\textwidth,-0.21546218322904973\textwidth:;
         }{
-            0,4,gray!90,::;
-            0,5,gray!90,::;
-            0,6,gray!90,::;
-            0,7,gray!90,::;
-            1,4,gray!90,::;
-            1,5,gray!90,::;
-            1,6,gray!90,::;
-            1,7,gray!90,::;
-            2,4,gray!90,::;
-            2,5,gray!90,::;
-            2,6,gray!90,::;
-            2,7,gray!90,::;
-            3,4,gray!90,::;
-            3,5,gray!90,::;
-            3,6,gray!90,::;
-            3,7,gray!90,::;
-        }[]
+            0,4,gray!90;
+            0,5,gray!90;
+            0,6,gray!90;
+            0,7,gray!90;
+            1,4,gray!90;
+            1,5,gray!90;
+            1,6,gray!90;
+            1,7,gray!90;
+            2,4,gray!90;
+            2,5,gray!90;
+            2,6,gray!90;
+            2,7,gray!90;
+            3,4,gray!90;
+            3,5,gray!90;
+            3,6,gray!90;
+            3,7,gray!90;
+        }[->]
         \myAdigraph{}
     \caption{My adigraph number 1 of 2}\label{adigraph_1_2}
     \end{subfigure}
@@ -79,23 +118,23 @@ expected_tex = r"""\documentclass{report}
             6,gray!90,:0.22390076694574132\textwidth,-0.4280746354634582\textwidth:;
             7,purple!90,:0.0016249976685691753\textwidth,-0.21546218322904973\textwidth:;
         }{
-            0,4,gray!90,::;
-            0,5,gray!90,::;
-            0,6,gray!90,::;
-            0,7,gray!90,::;
-            1,4,gray!90,::;
-            1,5,gray!90,::;
-            1,6,gray!90,::;
-            1,7,gray!90,::;
-            2,4,gray!90,::;
-            2,5,gray!90,::;
-            2,6,gray!90,::;
-            2,7,gray!90,::;
-            3,4,gray!90,::;
-            3,5,gray!90,::;
-            3,6,gray!90,::;
-            3,7,gray!90,::;
-        }[]
+            0,4,gray!90;
+            0,5,gray!90;
+            0,6,gray!90;
+            0,7,gray!90;
+            1,4,gray!90;
+            1,5,gray!90;
+            1,6,gray!90;
+            1,7,gray!90;
+            2,4,gray!90;
+            2,5,gray!90;
+            2,6,gray!90;
+            2,7,gray!90;
+            3,4,gray!90;
+            3,5,gray!90;
+            3,6,gray!90;
+            3,7,gray!90;
+        }[->]
         \myAdigraph{}
     \caption{My adigraph number 2 of 2}\label{adigraph_2_2}
     \end{subfigure}
@@ -159,6 +198,7 @@ def test_basic_adigraph():
         n_rows=2,
         as_document=True,
     )
+    print(output_tex)
 
     # Pretty way to assert that A.to_document() == expected_tex
     content_same = True

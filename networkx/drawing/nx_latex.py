@@ -18,10 +18,11 @@ attribute names you like, but the default attributes are:
  - "label" the string printed inside the node, or along the edge.
  Note that you can put a location inside an edge label to adjust where along
  the edge the label goes with text like:  "My Edge:near end" or "My edge:near start"
+Possible locations are: (with fraction along edge 0, 0.125, 0.25, 0.5, 0.75, 0.875, 1)
+at end, very near end, near end, midway, near start, very near start, at start
  
 The edge styles default to arrows for directed graphs and lines for undirected edges.
-You can override this for all edges using the `edge_style` keyword argument. For 
-individual edges, you can add the style to the edge label.  TODO Does this really work?
+You can override this (for all edges only) using the `edge_style` keyword argument.
 
 To construct a figure with subfigures for each graph to be shown, provide
 `to_latex`, or `write_latex` with a list of graphs and a list of sub-captions and
@@ -31,8 +32,9 @@ To be able to refer to the figures or subfigures in latex using `\\ref`,
 the keyword `latex_label` is available for figures and `sub_labels` for
 a list of labels, one for each sub-figure.
 
-Note that some features of TikZ graph drawing are not provided by this interface.
-Let us know what you'd like to see available on github, or better yet give us
+Note that some features of the Adigraph LaTeX package are not provided here.
+And TikZ allows more options than the adigraph package.
+Let us know via github what you'd like to see available, or better yet give us
 some code to do it, or even better make a github pull request to add the feature.
 
 Examples
@@ -42,7 +44,27 @@ Examples
 >>> nx.write_latex(G, "just_my_figure.tex", as_document=True)
 >>> latex_code = nx.to_latex(G)  # a string rather than a file
 
-If you want subfigures each containing one graph, you can input a list of graphs.
+You can change the color, width, label and position of edges.
+And you can change color, outline width, and label of nodes.
+
+G=nx.path_graph(4, create_using=nx.DiGraph)
+pos = {n: 2 for n in G}  # nodes set on a circle of radius 2
+
+G.nodes[0]["color"] = "blue"
+G.nodes[2]["width"] = 3
+G.nodes[3]["label"] = "Stop"
+G.edges[(1, 2)]["width"] = 3
+G.edges[(2, 3)]["color"] = "green"
+G.edges[(0, 1)]["label"] = "1st Step:near start"
+G.edges[(2, 3)]["label"] = "3rd Step:near end"
+G.edges[(1, 2)]["label"] = "2nd Step"
+
+nx.write_latex(G, "latex_graph.tex", pos=pos, as_document=True)
+
+Then compile the LaTeX using something like ``pdflatex latex_graph.tex``
+and view the pdf file created: ``latex_graph.pdf``.
+
+If you want **subfigures** each containing one graph, you can input a list of graphs.
 
 >>> H1 = nx.path_graph(4)
 >>> H2 = nx.complete_graph(4)
@@ -68,22 +90,22 @@ If you want subfigures each containing one graph, you can input a list of graphs
 \begin{document}
 \begin{figure}
     \NewAdigraph{myAdigraph}{
-            0,None,:0.5\textwidth,9.189213592397599e-09\textwidth:;
-            1,None,:0.35355338839768036\textwidth,0.3535533844243667\textwidth:;
-            2,None,:-8.69316629112046e-09\textwidth,0.4999999960266863\textwidth:;
-            3,None,:-0.3535533620726258\textwidth,0.3535533844243667\textwidth:;
-            4,None,:-0.4999999736749454\textwidth,-3.452217354363565e-08\textwidth:;
-            5,None,:-0.3535533918749474\textwidth,-0.35355333624361784\textwidth:;
-            6,None,:1.9124967439186124e-08\textwidth,-0.4999999776482591\textwidth:;
-            7,None,:0.35355332879303714\textwidth,-0.3535534256505827\textwidth:;
+            0,red,:0.5\textwidth,9.189213592397599e-09\textwidth:;
+            1,red,:0.35355338839768036\textwidth,0.3535533844243667\textwidth:;
+            2,red,:-8.69316629112046e-09\textwidth,0.4999999960266863\textwidth:;
+            3,red,:-0.3535533620726258\textwidth,0.3535533844243667\textwidth:;
+            4,red,:-0.4999999736749454\textwidth,-3.452217354363565e-08\textwidth:;
+            5,red,:-0.3535533918749474\textwidth,-0.35355333624361784\textwidth:;
+            6,red,:1.9124967439186124e-08\textwidth,-0.4999999776482591\textwidth:;
+            7,red,:0.35355332879303714\textwidth,-0.3535534256505827\textwidth:;
         }{
-            0,1,None,::;
-            1,2,None,::;
-            2,3,None,::;
-            3,4,None,::;
-            4,5,None,::;
-            5,6,None,::;
-            6,7,None,::;
+            0,1,black;
+            1,2,black;
+            2,3,black;
+            3,4,black;
+            4,5,black;
+            5,6,black;
+            6,7,black;
         }[-]
         \myAdigraph{}
 \end{figure}
@@ -104,6 +126,7 @@ Adigraph:      https://ctan.org/pkg/adigraph
 Tikz:          https://tikz.dev/
 Tikz style details:   https://tikz.dev/tikz-shapes#sec-17.11
 """
+import numbers
 import os
 
 import networkx as nx
@@ -147,17 +170,19 @@ def to_latex_raw(
 
         adigraph_pos = {}
         for n, xy in pos.items():
-            if len(xy) == 2:
+            if isinstance(xy, numbers.Number):
+                adigraph_pos[n] = xy
+            elif len(xy) == 2:
                 x, y = xy
                 adigraph_pos[n] = f"{x/2}\\textwidth,{y/2}\\textwidth"
             elif len(xy) == 1:
-                adigraph_pos[n] = xy
+                adigraph_pos[n] = xy[0]
             else:
                 raise nx.NetworkXError("pos contains values not of length 1 or 2")
 
     # Setup edge style
     if edge_style is None:
-        edge_style = "" if G.is_directed() else "-"
+        edge_style = "->" if G.is_directed() else "-"
 
     # indent nicely
     i4 = "\n    "
@@ -177,7 +202,14 @@ def to_latex_raw(
         clr = data.get(edge_color, default_edge_color)
         wth = data.get(edge_width, "")
         lbl = data.get(edge_label, "")
-        result += i12 + f"{u},{v},{clr},{wth}::{lbl};"
+        # The :1: near lbl is doc'd as a weight which doesn't do anything
+        # but is apparently needed for adigraph to show the labels.
+        if lbl:
+            result += i12 + f"{u},{v},{clr},{wth}:1:{lbl};"
+        elif wth:
+            result += i12 + f"{u},{v},{clr},{wth};"
+        else:
+            result += i12 + f"{u},{v},{clr};"
 
     result += i8 + f"}}[{edge_style}]" + i8 + "\\myAdigraph{}\n"
     return result
@@ -205,8 +237,8 @@ _SUBFIG_WRAPPER = r"""    \begin{{subfigure}}{{{size}\textwidth}}
 def to_latex(
     Gbunch,
     pos=None,
-    default_node_color=None,
-    default_edge_color=None,
+    default_node_color="red",
+    default_edge_color="black",
     node_color="color",
     edge_color="color",
     node_width="width",
