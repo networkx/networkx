@@ -77,15 +77,23 @@ jobs:
       if: runner.os == 'Windows'
       run: choco install graphviz
 
-    - name: Install packages (Linux and macOS)
-      if: runner.os == 'Linux' || runner.os == 'macOS'
+    - name: Install packages (Linux)
+      if: runner.os == 'Linux'
       run: |
         pip install --upgrade pip wheel setuptools
         pip install -r requirements/default.txt -r requirements/test.txt
         pip install -r requirements/extra.txt
         pip install .
         pip list
-
+    - name: Install packages (macOS)
+      if: runner.os == 'macOS'
+      run: |
+        pip install --upgrade pip wheel setuptools
+        pip install -r requirements/default.txt -r requirements/test.txt
+        pip install --global-option=build_ext --global-option="-I/usr/local/include/" --global-option="-L/usr/local/lib/" pygraphviz
+        pip install -r requirements/extra.txt
+        pip install .
+        pip list
     - name: Install packages (windows)
       if: runner.os == 'Windows'
       run: |
