@@ -71,7 +71,7 @@ def descendants(G, source, include_source=False):
     """
 
     if include_source:
-        return {child for parent, child in nx.bfs_edges(G, source)}.union(source)
+        return {child for parent, child in nx.bfs_edges(G, source)}.union({source})
     return {child for parent, child in nx.bfs_edges(G, source)}
 
 
@@ -111,7 +111,7 @@ def ancestors(G, source, include_source=False):
     """
     if include_source:
         return {child for parent, child in nx.bfs_edges(G, source, reverse=True)}.union(
-            source
+            {source}
         )
     return {child for parent, child in nx.bfs_edges(G, source, reverse=True)}
 
