@@ -20,9 +20,11 @@ def main():
     # plt.show()
 
     m = {0: 0, 1: 1, 2: 2, 3: 3, 4: 4}
+    s = State(G, G, 0, None, m)
+
     for i in range(20):
-        print(prune_ISO(G, G, 5, i, m))
-        print(prune_IND(G, G, 5, i, m))
+        print(prune_ISO(G, G, 5, i, s))
+        print(prune_IND(G, G, 5, i, s))
 
     # for l in colors:
     #     print(l)
@@ -33,6 +35,29 @@ def main():
     # M = matching_order(G, G, L)
     # print('Elapsed time: ', time.time() - t0)
     # print(M)
+
+
+class State:
+    def __init__(self, G1, G2, u, node_order, mapping):
+        self.u = u
+        self.node_order = node_order
+        self.mapping = mapping
+
+        self.T1 = set()
+        self.T2 = set()
+
+        for covered_node in mapping:
+            for neighbor in G1[covered_node]:
+                if neighbor not in mapping:
+                    self.T1.add(neighbor)
+
+        for covered_node in mapping.values():  # todo: store T1 and T2 in the state.
+            for neighbor in G2[covered_node]:  # todo: should we keep the reverse mapping, instead of using values?
+                if neighbor not in mapping.values():
+                    self.T2.add(neighbor)
+
+        self.T1_out = {n1 for n1 in G1.nodes() if n1 not in mapping and n1 not in self.T1}
+        self.T2_out = {n2 for n2 in G2.nodes() if n2 not in mapping.values() and n2 not in self.T2}
 
 
 def connectivity(G, u, H):
@@ -103,22 +128,7 @@ def process_level(G1, G2, Vd, M, L):
     return M
 
 
-def prune_ISO(G1, G2, u, v, m):
-    T1 = set()
-    for covered_node in m:
-        for neighbor in G1[covered_node]:
-            if neighbor not in m:
-                T1.add(neighbor)
-
-    T2 = set()
-    for covered_node in m.values():  # todo: store T1 and T2 in the state.
-        for neighbor in G2[covered_node]:  # todo: should we keep the reverse mapping, instead of using values?
-            if neighbor not in m.values():
-                T2.add(neighbor)
-
-    T1_out = {n1 for n1 in G1.nodes() if n1 not in m and n1 not in T1}
-    T2_out = {n2 for n2 in G2.nodes() if n2 not in m.values() and n2 not in T2}
-
+def prune_ISO(G1, G2, u, v, state):
     u_neighbors_labels = {n1: G1.nodes[n1]["label"] for n1 in G1[u]}
     u_labels_neighbors = collections.OrderedDict(sorted(nx.utils.groups(u_neighbors_labels).items()))
 
@@ -133,29 +143,14 @@ def prune_ISO(G1, G2, u, v, m):
         return False
 
     for nh1, nh2 in zip(u_labels_neighbors.values(), v_labels_neighbors.values()):
-        if len(T1.intersection(nh1)) != len(T2.intersection(nh2)) or \
-                len(T1_out.intersection(nh1)) != len(T2_out.intersection(nh2)):
+        if len(state.T1.intersection(nh1)) != len(state.T2.intersection(nh2)) or \
+                len(state.T1_out.intersection(nh1)) != len(state.T2_out.intersection(nh2)):
             return False
 
     return True
 
 
-def prune_IND(G1, G2, u, v, m):
-    T1 = set()
-    for covered_node in m:
-        for neighbor in G1[covered_node]:
-            if neighbor not in m:
-                T1.add(neighbor)
-
-    T2 = set()
-    for covered_node in m.values():  # todo: store T1 and T2 in the state.
-        for neighbor in G2[covered_node]:  # todo: should we keep the reverse mapping, instead of using values?
-            if neighbor not in m.values():
-                T2.add(neighbor)
-
-    T1_out = {n1 for n1 in G1.nodes() if n1 not in m and n1 not in T1}
-    T2_out = {n2 for n2 in G2.nodes() if n2 not in m.values() and n2 not in T2}
-
+def prune_IND(G1, G2, u, v, state):
     u_neighbors_labels = {n1: G1.nodes[n1]["label"] for n1 in G1[u]}
     u_labels_neighbors = collections.OrderedDict(sorted(nx.utils.groups(u_neighbors_labels).items()))
 
@@ -170,8 +165,8 @@ def prune_IND(G1, G2, u, v, m):
         return False
 
     for nh1, nh2 in zip(u_labels_neighbors.values(), v_labels_neighbors.values()):
-        if len(T1.intersection(nh1)) < len(T2.intersection(nh2)) or \
-                len(T1_out.intersection(nh1)) < len(T2_out.intersection(nh2)):
+        if len(state.T1.intersection(nh1)) < len(state.T2.intersection(nh2)) or \
+                len(state.T1_out.intersection(nh1)) < len(state.T2_out.intersection(nh2)):
             return False
 
     return True
