@@ -68,7 +68,6 @@ def naive_all_pairs_lowest_common_ancestor(G, pairs=None):
     elif None in G:
         raise nx.NetworkXError("None is not a valid node.")
 
-    result = []
     ancestor_cache = {}
 
     if pairs is None:
@@ -94,8 +93,7 @@ def naive_all_pairs_lowest_common_ancestor(G, pairs=None):
 
         common_ancestors = ancestor_cache[v] & ancestor_cache[w]
         if common_ancestors:
-            result.append(((v, w), get_a_lowest_common_ancestor(G, common_ancestors)))
-    return iter(result)
+            yield ((v, w), get_a_lowest_common_ancestor(G, common_ancestors))
 
 
 @not_implemented_for("undirected")
