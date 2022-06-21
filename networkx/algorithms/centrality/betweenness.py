@@ -8,7 +8,7 @@ from networkx.algorithms.shortest_paths.weighted import _weight_function
 from networkx.utils import py_random_state
 from networkx.utils.decorators import not_implemented_for
 
-__all__ = ["betweenness_centrality", "edge_betweenness_centrality", "edge_betweenness"]
+__all__ = ["betweenness_centrality", "edge_betweenness_centrality"]
 
 
 @py_random_state(5)
@@ -240,14 +240,6 @@ def edge_betweenness_centrality(G, k=None, normalized=True, weight=None, seed=No
     if G.is_multigraph():
         betweenness = _add_edge_keys(G, betweenness, weight=weight)
     return betweenness
-
-
-# obsolete name
-def edge_betweenness(G, k=None, normalized=True, weight=None, seed=None):
-    warnings.warn(
-        "edge_betweeness is replaced by edge_betweenness_centrality", DeprecationWarning
-    )
-    return edge_betweenness_centrality(G, k, normalized, weight, seed)
 
 
 # helpers for betweenness centrality

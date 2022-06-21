@@ -72,9 +72,6 @@ def set_warnings():
         message="This will return a generator in 3.0*",
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="edge_betweeness"
-    )
-    warnings.filterwarnings(
         "ignore", category=PendingDeprecationWarning, message="the matrix subclass"
     )
     warnings.filterwarnings(
