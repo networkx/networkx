@@ -20,7 +20,9 @@ def main():
     # plt.show()
 
     m = {0: 0, 1: 1, 2: 2, 3: 3, 4: 4}
-    print(ISO_Feasibility(G, G, 5, 5, m))
+    for i in range(20):
+        print(prune_ISO(G, G, 5, i, m))
+        print(prune_IND(G, G, 5, i, m))
 
     # for l in colors:
     #     print(l)
@@ -101,7 +103,7 @@ def process_level(G1, G2, Vd, M, L):
     return M
 
 
-def ISO_Feasibility(G1, G2, u, v, m):
+def prune_ISO(G1, G2, u, v, m):
     T1 = set()
     for covered_node in m:
         for neighbor in G1[covered_node]:
@@ -113,6 +115,9 @@ def ISO_Feasibility(G1, G2, u, v, m):
         for neighbor in G2[covered_node]:  # todo: should we keep the reverse mapping, instead of using values?
             if neighbor not in m.values():
                 T2.add(neighbor)
+
+    T1_out = {n1 for n1 in G1.nodes() if n1 not in m and n1 not in T1}
+    T2_out = {n2 for n2 in G2.nodes() if n2 not in m.values() and n2 not in T2}
 
     u_neighbors_labels = {n1: G1.nodes[n1]["label"] for n1 in G1[u]}
     u_labels_neighbors = collections.OrderedDict(sorted(nx.utils.groups(u_neighbors_labels).items()))
@@ -128,7 +133,45 @@ def ISO_Feasibility(G1, G2, u, v, m):
         return False
 
     for nh1, nh2 in zip(u_labels_neighbors.values(), v_labels_neighbors.values()):
-        if len(T1.intersection(nh1)) != len(T2.intersection(nh2)):
+        if len(T1.intersection(nh1)) != len(T2.intersection(nh2)) or \
+                len(T1_out.intersection(nh1)) != len(T2_out.intersection(nh2)):
+            return False
+
+    return True
+
+
+def prune_IND(G1, G2, u, v, m):
+    T1 = set()
+    for covered_node in m:
+        for neighbor in G1[covered_node]:
+            if neighbor not in m:
+                T1.add(neighbor)
+
+    T2 = set()
+    for covered_node in m.values():  # todo: store T1 and T2 in the state.
+        for neighbor in G2[covered_node]:  # todo: should we keep the reverse mapping, instead of using values?
+            if neighbor not in m.values():
+                T2.add(neighbor)
+
+    T1_out = {n1 for n1 in G1.nodes() if n1 not in m and n1 not in T1}
+    T2_out = {n2 for n2 in G2.nodes() if n2 not in m.values() and n2 not in T2}
+
+    u_neighbors_labels = {n1: G1.nodes[n1]["label"] for n1 in G1[u]}
+    u_labels_neighbors = collections.OrderedDict(sorted(nx.utils.groups(u_neighbors_labels).items()))
+
+    v_neighbors_labels = {n2: G2.nodes[n2]["label"] for n2 in G2[v]}
+    v_labels_neighbors = collections.OrderedDict(sorted(nx.utils.groups(v_neighbors_labels).items()))
+    # print(u_neighbors_labels)
+    # print(u_labels_neighbors)
+    # print(v_labels_neighbors)
+
+    # if the neighbors of u, do not have the same labels as those of v, feasibility cannot be established.
+    if set(u_labels_neighbors.keys()) != set(v_labels_neighbors.keys()):
+        return False
+
+    for nh1, nh2 in zip(u_labels_neighbors.values(), v_labels_neighbors.values()):
+        if len(T1.intersection(nh1)) < len(T2.intersection(nh2)) or \
+                len(T1_out.intersection(nh1)) < len(T2_out.intersection(nh2)):
             return False
 
     return True
