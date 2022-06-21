@@ -29,6 +29,12 @@ def astar_path(G, source, target, heuristic=None, weight="weight"):
        A function to evaluate the estimate of the distance
        from the a node to the target.  The function takes
        two nodes arguments and must return a number.
+       If the heuristic is inadmissible (if it might
+       overestimate the cost of reaching the goal from a node),
+       the result may not be a shortest path.
+       The algorithm does not support updating heuristic
+       values for the same node due to caching the first
+       heuristic calculation per node.
 
     weight : string or function
        If this is a string, then edge weights will be accessed via the
@@ -156,6 +162,12 @@ def astar_path_length(G, source, target, heuristic=None, weight="weight"):
        A function to evaluate the estimate of the distance
        from the a node to the target.  The function takes
        two nodes arguments and must return a number.
+       If the heuristic is inadmissible (if it might
+       overestimate the cost of reaching the goal from a node),
+       the result may not be a shortest path.
+       The algorithm does not support updating heuristic
+       values for the same node due to caching the first
+       heuristic calculation per node.
 
     weight : string or function
        If this is a string, then edge weights will be accessed via the

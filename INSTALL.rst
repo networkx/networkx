@@ -78,7 +78,7 @@ Extra packages
 --------------
 
 .. note::
-   Some optional packages (e.g., `gdal`) may require compiling
+   Some optional packages may require compiling
    C or C++ code.  If you have difficulty installing these packages
    with `pip`, please consult the homepages of those packages.
 
@@ -89,7 +89,6 @@ version requirements.
 - `PyGraphviz <http://pygraphviz.github.io/>`_ and
   `pydot <https://github.com/erocarrera/pydot>`_ provide graph drawing
   and graph layout algorithms via `GraphViz <http://graphviz.org/>`_.
-- `gdal <http://www.gdal.org/>`_ provides shapefile format reading and writing.
 - `lxml <http://lxml.de/>`_ used for GraphML XML format.
 
 To install ``networkx`` and extra packages, do::
@@ -98,7 +97,7 @@ To install ``networkx`` and extra packages, do::
 
 To explicitly install all optional packages, do::
 
-    $ pip install pygraphviz pydot gdal lxml
+    $ pip install pygraphviz pydot lxml
 
 Or, install any optional package (e.g., ``pygraphviz``) individually::
 

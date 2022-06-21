@@ -218,7 +218,6 @@ def to_pandas_edgelist(
     target="target",
     nodelist=None,
     dtype=None,
-    order=None,
     edge_key=None,
 ):
     """Returns the graph edge list as a Pandas DataFrame.
@@ -242,12 +241,6 @@ def to_pandas_edgelist(
     dtype : dtype, default None
         Use to create the DataFrame. Data type to force.
         Only a single dtype is allowed. If None, infer.
-
-    order : None
-        An unused parameter mistakenly included in the function.
-
-        .. deprecated:: 2.6
-            This is deprecated and will be removed in NetworkX v3.0.
 
     edge_key : str or int or None, optional (default=None)
         A valid column name (string or integer) for the edge keys (for the

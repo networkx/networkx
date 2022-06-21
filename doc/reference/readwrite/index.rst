@@ -17,5 +17,4 @@ Reading and writing graphs
    leda
    sparsegraph6
    pajek
-   nx_shp
    matrix_market

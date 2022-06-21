@@ -43,9 +43,6 @@ def pytest_collection_modifyitems(config, items):
 @pytest.fixture(autouse=True)
 def set_warnings():
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="k_nearest_neighbors"
-    )
-    warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message=r"Ordered.* is deprecated"
     )
     warnings.filterwarnings(
@@ -75,9 +72,6 @@ def set_warnings():
         message="This will return a generator in 3.0*",
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="edge_betweeness"
-    )
-    warnings.filterwarnings(
         "ignore", category=PendingDeprecationWarning, message="the matrix subclass"
     )
     warnings.filterwarnings(
@@ -86,8 +80,6 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="networkx.pagerank_scipy"
     )
-    warnings.filterwarnings("ignore", category=DeprecationWarning, message="write_shp")
-    warnings.filterwarnings("ignore", category=DeprecationWarning, message="read_shp")
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="edges_from_line"
     )
@@ -235,13 +227,6 @@ except ImportError:
     has_pydot = False
 
 try:
-    import ogr
-
-    has_ogr = True
-except ImportError:
-    has_ogr = False
-
-try:
     import sympy
 
     has_sympy = True
@@ -296,7 +281,6 @@ needs_matplotlib = ["drawing/nx_pylab.py"]
 needs_pandas = ["convert_matrix.py"]
 needs_pygraphviz = ["drawing/nx_agraph.py"]
 needs_pydot = ["drawing/nx_pydot.py"]
-needs_ogr = ["readwrite/nx_shp.py"]
 needs_sympy = ["algorithms/polynomials.py"]
 
 if not has_numpy:
@@ -311,8 +295,6 @@ if not has_pygraphviz:
     collect_ignore += needs_pygraphviz
 if not has_pydot:
     collect_ignore += needs_pydot
-if not has_ogr:
-    collect_ignore += needs_ogr
 if not has_sympy:
     collect_ignore += needs_sympy
 

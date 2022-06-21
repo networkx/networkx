@@ -55,14 +55,12 @@ Version 3.0
 * In ``utils/misc.py`` remove ``default_opener``.
 * In ``utils/misc.py`` remove ``empty_generator``.
 * Remove ``utils/contextmanagers.py`` and related tests.
-* In ``algorithms/centrality/betweenness.py`` remove ``edge_betweeness``.
 * In ``linalg/algebraicconnectivity.py`` remove ``_CholeskySolver`` and related code.
 * In ``readwrite/json_graph/cytoscape.py``, change function signature for
   ``cytoscape_graph`` and ``cytoscape_data`` to replace the ``attrs`` keyword.
   argument with explicit ``name`` and ``ident`` keyword args.
 * In ``readwrite/json_graph/tree.py``, remove ``attrs`` kwarg from ``tree_graph``
   and ``tree_data``.
-* Remove ``readwrite/nx_shp.py`` and related tests (add info in alternatives).
 * Remove ``copy`` method in the coreview Filtered-related classes and related tests.
 * In ``algorithms/link_analysis/pagerank_alg.py`` replace ``pagerank`` with ``pagerank_scipy``.
 * In ``algorithms/link_analysis/pagerank_alg.py`` rename ``pagerank_numpy`` as ``_pagerank_numpy``.
@@ -71,10 +69,8 @@ Version 3.0
 * In ``algorithms/link_analysis/hits_alg.py``, remove ``hits_numpy`` and ``hist_scipy``.
 * In ``classes`` remove the ``ordered`` module and the four ``Ordered``
   classes defined therein.
-* In ``algorithms/community/quality.py`` remove ``coverage`` and ``performance``.
 * Remove ``testing``.
 * In ``linalg/graphmatrix.py`` remove ``adj_matrix``.
-* In ``algorithms/assortativity/connectivity.py`` remove ``k_nearest_neighbors``.
 * In ``algorithms/operators/binary.py`` remove ``name`` kwarg from ``union`` and docstring.
 * In ``generators/geometric.py`` remove ``euclidean`` and tests.
 * In ``algorithms/link_analysis/pagerank_alg.py``, remove the

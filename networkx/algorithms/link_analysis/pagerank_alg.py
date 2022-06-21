@@ -209,12 +209,12 @@ def google_matrix(
 
     Returns
     -------
-    A : NumPy matrix
+    A : 2D NumPy ndarray
        Google matrix of the graph
 
     Notes
     -----
-    The matrix returned represents the transition matrix that describes the
+    The array returned represents the transition matrix that describes the
     Markov chain used in PageRank. For PageRank to converge to a unique
     solution (i.e., a unique stationary distribution in a Markov chain), the
     transition matrix must be irreducible. In other words, it must be that
@@ -229,17 +229,7 @@ def google_matrix(
     --------
     pagerank, pagerank_numpy, pagerank_scipy
     """
-    # TODO: Remove this warning in version 3.0
-    import warnings
-
     import numpy as np
-
-    warnings.warn(
-        "google_matrix will return an np.ndarray instead of a np.matrix in\n"
-        "NetworkX version 3.0.",
-        FutureWarning,
-        stacklevel=2,
-    )
 
     if nodelist is None:
         nodelist = list(G)
@@ -247,8 +237,7 @@ def google_matrix(
     A = nx.to_numpy_array(G, nodelist=nodelist, weight=weight)
     N = len(G)
     if N == 0:
-        # TODO: Remove np.asmatrix wrapper in version 3.0
-        return np.asmatrix(A)
+        return A
 
     # Personalization vector
     if personalization is None:
@@ -273,8 +262,7 @@ def google_matrix(
 
     A /= A.sum(axis=1)[:, np.newaxis]  # Normalize rows to sum to 1
 
-    # TODO: Remove np.asmatrix wrapper in version 3.0
-    return np.asmatrix(alpha * A + (1 - alpha) * p)
+    return alpha * A + (1 - alpha) * p
 
 
 def pagerank_numpy(G, alpha=0.85, personalization=None, weight="weight", dangling=None):
