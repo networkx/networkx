@@ -83,8 +83,6 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="edges_from_line"
     )
-    warnings.filterwarnings("ignore", category=DeprecationWarning, message="write_yaml")
-    warnings.filterwarnings("ignore", category=DeprecationWarning, message="read_yaml")
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="FilterAtlas.copy"
     )
@@ -222,13 +220,6 @@ except ImportError:
     has_pygraphviz = False
 
 try:
-    import yaml
-
-    has_yaml = True
-except ImportError:
-    has_yaml = False
-
-try:
     import pydot
 
     has_pydot = True
@@ -288,7 +279,6 @@ needs_scipy = [
 ]
 needs_matplotlib = ["drawing/nx_pylab.py"]
 needs_pandas = ["convert_matrix.py"]
-needs_yaml = ["readwrite/nx_yaml.py"]
 needs_pygraphviz = ["drawing/nx_agraph.py"]
 needs_pydot = ["drawing/nx_pydot.py"]
 needs_sympy = ["algorithms/polynomials.py"]
@@ -301,8 +291,6 @@ if not has_matplotlib:
     collect_ignore += needs_matplotlib
 if not has_pandas:
     collect_ignore += needs_pandas
-if not has_yaml:
-    collect_ignore += needs_yaml
 if not has_pygraphviz:
     collect_ignore += needs_pygraphviz
 if not has_pydot:
