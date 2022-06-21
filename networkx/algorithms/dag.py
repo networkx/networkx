@@ -62,6 +62,9 @@ def descendants(G, source, include_source=False):
     >>> sorted(list(nx.descendants(DG, 2)))
     [3, 4]
 
+    >>> sorted(list(nx.descendants(DG, 2, True)))
+    [2, 3, 4]
+
     See also
     --------
     ancestors
@@ -98,6 +101,9 @@ def ancestors(G, source, include_source=False):
     >>> DG = nx.path_graph(5, create_using=nx.DiGraph)
     >>> sorted(list(nx.ancestors(DG, 2)))
     [0, 1]
+
+    >>> sorted(list(nx.ancestors(DG, 2, True)))
+    [0, 1, 2]
 
     See also
     --------
