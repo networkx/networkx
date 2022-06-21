@@ -35,13 +35,16 @@ __all__ = [
 chaini = chain.from_iterable
 
 
-def descendants(G, source):
+def descendants(G, source, include_source=False):
     """Returns all nodes reachable from `source` in `G`.
 
     Parameters
     ----------
     G : NetworkX Graph
     source : node in `G`
+    include_source: bool, optional (default=False)
+        If False, the source is not included as its own descendant. If True, the source node as well
+        is returned as one of its descendants.
 
     Returns
     -------
@@ -63,16 +66,22 @@ def descendants(G, source):
     --------
     ancestors
     """
+
+    if include_source:
+        return {child for parent, child in nx.bfs_edges(G, source)}.union(source)
     return {child for parent, child in nx.bfs_edges(G, source)}
 
 
-def ancestors(G, source):
+def ancestors(G, source, include_source=False):
     """Returns all nodes having a path to `source` in `G`.
 
     Parameters
     ----------
     G : NetworkX Graph
     source : node in `G`
+    include_source: bool, optional (default=False)
+        If False, the source is not included as its own descendant. If True, the source node as well
+        is returned as one of its descendants.
 
     Returns
     -------
@@ -94,6 +103,10 @@ def ancestors(G, source):
     --------
     descendants
     """
+    if include_source:
+        return {child for parent, child in nx.bfs_edges(G, source, reverse=True)}.union(
+            source
+        )
     return {child for parent, child in nx.bfs_edges(G, source, reverse=True)}
 
 
