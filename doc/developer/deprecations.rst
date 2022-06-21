@@ -55,17 +55,12 @@ Version 3.0
 * In ``utils/misc.py`` remove ``default_opener``.
 * In ``utils/misc.py`` remove ``empty_generator``.
 * Remove ``utils/contextmanagers.py`` and related tests.
-* In ``algorithms/centrality/betweenness.py`` remove ``edge_betweeness``.
 * In ``linalg/algebraicconnectivity.py`` remove ``_CholeskySolver`` and related code.
 * In ``readwrite/json_graph/cytoscape.py``, change function signature for
   ``cytoscape_graph`` and ``cytoscape_data`` to replace the ``attrs`` keyword.
   argument with explicit ``name`` and ``ident`` keyword args.
 * In ``readwrite/json_graph/tree.py``, remove ``attrs`` kwarg from ``tree_graph``
   and ``tree_data``.
-* Undo changes related to the removal of ``pyyaml``. Remove the
-  ``__getattr__`` definitions from ``networkx/__init__.py``,
-  ``networkx/readwrite/__init__.py`` and ``networkx/readwrite/nx_yaml.py`` and
-  remove ``networkx/readwrite/tests/test_getattr_nxyaml_removal.py``
 * Remove ``copy`` method in the coreview Filtered-related classes and related tests.
 * In ``algorithms/link_analysis/pagerank_alg.py`` replace ``pagerank`` with ``pagerank_scipy``.
 * In ``algorithms/link_analysis/pagerank_alg.py`` rename ``pagerank_numpy`` as ``_pagerank_numpy``.

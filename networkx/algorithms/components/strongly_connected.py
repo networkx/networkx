@@ -350,7 +350,7 @@ def is_strongly_connected(G):
             """Connectivity is undefined for the null graph."""
         )
 
-    return len(list(strongly_connected_components(G))[0]) == len(G)
+    return len(next(strongly_connected_components(G))) == len(G)
 
 
 @not_implemented_for("undirected")
