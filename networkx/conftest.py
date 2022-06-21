@@ -83,18 +83,6 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="edges_from_line"
     )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="FilterAtlas.copy"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="FilterAdjacency.copy"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="FilterMultiAdjacency.copy"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="FilterMultiInner.copy"
-    )
     warnings.filterwarnings("ignore", category=DeprecationWarning, message="consume")
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="iterable is deprecated"
