@@ -56,12 +56,6 @@ def set_warnings():
         message="literal_destringizer is deprecated",
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="\nauthority_matrix"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="\nhub_matrix"
-    )
-    warnings.filterwarnings(
         "ignore",
         category=DeprecationWarning,
         message="context manager reversed is deprecated",

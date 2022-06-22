@@ -24,6 +24,4 @@ Hits
    hits
    hits_numpy
    hits_scipy
-   hub_matrix
-   authority_matrix
 

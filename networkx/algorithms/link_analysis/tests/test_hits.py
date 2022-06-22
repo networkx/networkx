@@ -59,8 +59,6 @@ class TestHITS:
         assert nx.hits_numpy(G) == ({}, {})
         assert _hits_python(G) == ({}, {})
         assert nx.hits_scipy(G) == ({}, {})
-        assert nx.authority_matrix(G).shape == (0, 0)
-        assert nx.hub_matrix(G).shape == (0, 0)
 
     def test_hits_not_convergent(self):
         G = nx.path_graph(50)

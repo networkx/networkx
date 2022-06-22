@@ -2,7 +2,7 @@
 """
 import networkx as nx
 
-__all__ = ["hits", "hits_numpy", "hits_scipy", "authority_matrix", "hub_matrix"]
+__all__ = ["hits", "hits_numpy", "hits_scipy"]
 
 
 def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
@@ -142,44 +142,6 @@ def _hits_python(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
         for n in h:
             h[n] *= s
     return h, a
-
-
-def authority_matrix(G, nodelist=None):
-    """Returns the HITS authority matrix.
-
-    .. deprecated:: 2.6
-    """
-    import warnings
-
-    msg = (
-        "\nauthority_matrix is deprecated as of version 2.6 and will be removed "
-        "in version 3.0.\n"
-        "The authority matrix can be computed by::\n"
-        "    >>> M = nx.to_numpy_array(G, nodelist=nodelist)\n"
-        "    >>> M.T @ M"
-    )
-    warnings.warn(msg, DeprecationWarning)
-    M = nx.to_numpy_array(G, nodelist=nodelist)
-    return M.T @ M
-
-
-def hub_matrix(G, nodelist=None):
-    """Returns the HITS hub matrix.
-
-    .. deprecated:: 2.6
-    """
-    import warnings
-
-    msg = (
-        "\nhub_matrix is deprecated as of version 2.6 and will be removed "
-        "in version 3.0.\n"
-        "The hub matrix can be computed by::\n"
-        "    >>> M = nx.to_numpy_array(G, nodelist=nodelist)\n"
-        "    >>> M @ M.T"
-    )
-    warnings.warn(msg, DeprecationWarning)
-    M = nx.to_numpy_array(G, nodelist=nodelist)
-    return M @ M.T
 
 
 def hits_numpy(G, normalized=True):
