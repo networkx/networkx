@@ -2,7 +2,7 @@
 """
 import networkx as nx
 
-__all__ = ["hits", "hits_numpy", "hits_scipy"]
+__all__ = ["hits"]
 
 
 def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
@@ -144,12 +144,8 @@ def _hits_python(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
     return h, a
 
 
-def hits_numpy(G, normalized=True):
+def _hits_numpy(G, normalized=True):
     """Returns HITS hubs and authorities values for nodes.
-
-    .. deprecated:: 2.6
-
-       hits_numpy is deprecated and will be removed in networkx 3.0.
 
     The HITS algorithm computes two numbers for a node.
     Authorities estimates the node value based on the incoming links.
@@ -183,10 +179,11 @@ def hits_numpy(G, normalized=True):
     >>> hubs_matrix = adj_ary @ adj_ary.T
     >>> authority_matrix = adj_ary.T @ adj_ary
 
-    `hits_numpy` maps the eigenvector corresponding to the maximum eigenvalue
+    `_hits_numpy` maps the eigenvector corresponding to the maximum eigenvalue
     of the respective matrices to the nodes in `G`:
 
-    >>> hubs, authority = nx.hits_numpy(G)
+    >>> from networkx.algorithms.link_analysis.hits_alg import _hits_numpy
+    >>> hubs, authority = _hits_numpy(G)
 
     Notes
     -----
@@ -207,18 +204,7 @@ def hits_numpy(G, normalized=True):
        doi:10.1145/324133.324140.
        http://www.cs.cornell.edu/home/kleinber/auth.pdf.
     """
-    import warnings
-
     import numpy as np
-
-    warnings.warn(
-        (
-            "networkx.hits_numpy is deprecated and will be removed"
-            "in NetworkX 3.0, use networkx.hits instead."
-        ),
-        DeprecationWarning,
-        stacklevel=2,
-    )
 
     if len(G) == 0:
         return {}, {}
@@ -242,12 +228,9 @@ def hits_numpy(G, normalized=True):
     return hubs, authorities
 
 
-def hits_scipy(G, max_iter=100, tol=1.0e-6, nstart=None, normalized=True):
+def _hits_scipy(G, max_iter=100, tol=1.0e-6, nstart=None, normalized=True):
     """Returns HITS hubs and authorities values for nodes.
 
-    .. deprecated:: 2.6
-
-       hits_scipy is deprecated and will be removed in networkx 3.0
 
     The HITS algorithm computes two numbers for a node.
     Authorities estimates the node value based on the incoming links.
@@ -278,8 +261,9 @@ def hits_scipy(G, max_iter=100, tol=1.0e-6, nstart=None, normalized=True):
 
     Examples
     --------
+    >>> from networkx.algorithms.link_analysis.hits_alg import _hits_scipy
     >>> G = nx.path_graph(4)
-    >>> h, a = nx.hits(G)
+    >>> h, a = _hits_scipy(G)
 
     Notes
     -----
@@ -312,18 +296,7 @@ def hits_scipy(G, max_iter=100, tol=1.0e-6, nstart=None, normalized=True):
        doi:10.1145/324133.324140.
        http://www.cs.cornell.edu/home/kleinber/auth.pdf.
     """
-    import warnings
-
     import numpy as np
-
-    warnings.warn(
-        (
-            "networkx.hits_scipy is deprecated and will be removed"
-            "in NetworkX 3.0, use networkx.hits instead."
-        ),
-        DeprecationWarning,
-        stacklevel=2,
-    )
 
     if len(G) == 0:
         return {}, {}
