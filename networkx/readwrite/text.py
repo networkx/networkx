@@ -4,13 +4,15 @@ Text-based visual representations of graphs
 from collections import defaultdict
 import networkx as nx
 import warnings
+import sys
+import os
 
-__all__ = ["forest_str", "graph_str"]
+__all__ = ["forest_str", "graph_str", "generate_network_text",
+           "write_network_text"]
 
 
 def forest_str(graph, with_labels=True, sources=None, write=None, ascii_only=False):
-    """
-    Creates a nice utf8 representation of a forest
+    """Creates a nice utf8 representation of a forest
 
     This function has been superseded by :func:`nx.readwrite.text.graph_str`,
     which should be used instead.
@@ -50,16 +52,16 @@ def forest_str(graph, with_labels=True, sources=None, write=None, ascii_only=Fal
     >>> print(nx.forest_str(graph))
     ╙── 0
         ├─╼ 1
-        │   ├─╼ 3
-        │   │   ├─╼ 7
-        │   │   └─╼ 8
-        │   └─╼ 4
-        │       ├─╼ 9
-        │       └─╼ 10
+        │   ├─╼ 3
+        │   │   ├─╼ 7
+        │   │   └─╼ 8
+        │   └─╼ 4
+        │       ├─╼ 9
+        │       └─╼ 10
         └─╼ 2
             ├─╼ 5
-            │   ├─╼ 11
-            │   └─╼ 12
+            │   ├─╼ 11
+            │   └─╼ 12
             └─╼ 6
                 ├─╼ 13
                 └─╼ 14
@@ -78,7 +80,8 @@ def forest_str(graph, with_labels=True, sources=None, write=None, ascii_only=Fal
     """
     msg = (
         "\nforest_str is deprecated as of version <TBD> and will be removed "
-        "in version <TBD>. Use graph_str instead.\n"
+        "in version <TBD>. Use generate_network_text or write_network_text "
+        "instead.\n"
     )
     warnings.warn(msg, DeprecationWarning)
 
@@ -86,24 +89,85 @@ def forest_str(graph, with_labels=True, sources=None, write=None, ascii_only=Fal
         if not nx.is_forest(graph):
             raise nx.NetworkXNotImplemented("input must be a forest or the empty graph")
 
-    return graph_str(
-        graph,
-        with_labels=with_labels,
-        sources=sources,
-        write=write,
-        ascii_only=ascii_only,
-    )
+    printbuf = []
+    if write is None:
+        _write = printbuf.append
+    else:
+        _write = write
+
+    write_network_text(graph, _write, with_labels=with_labels, sources=sources,
+                       ascii_only=ascii_only, end="")
+
+    if write is None:
+        # Only return a string if the custom write function was not specified
+        return "\n".join(printbuf)
 
 
 def graph_str(graph, with_labels=True, sources=None, write=None, ascii_only=False):
+    """Creates a nice text representation of a graph
+
+    TODO: remove
+
+    Parameters
+    ----------
+    write : callable
+        Function to use to write to, if None new lines are appended to
+        a list and returned. If set to the `print` function, lines will
+        be written to stdout as they are generated. If specified,
+        this function will return None. Defaults to None.
     """
-    Creates a nice text representation of a graph
+    printbuf = []
+    if write is None:
+        _write = printbuf.append
+    else:
+        _write = write
+
+    write_network_text(graph, _write, with_labels=with_labels, sources=sources,
+                       ascii_only=ascii_only, end="")
+
+    if write is None:
+        # Only return a string if the custom write function was not specified
+        return "\n".join(printbuf)
+
+
+def generate_network_text(graph, with_labels=True, sources=None, write=None,
+                          ascii_only=False):
+    """Generate lines in the "network text" format
 
     This works via a depth-first traversal of the graph and writing a line for
     each unique node encountered. Non-tree edges are written to the right of
     each node, and connection to a non-tree edge is indicated with an ellipsis.
     This representation works best when the input graph is a forest, but any
     graph can be represented.
+
+    This notation is original to networkx, although it is simple enough that it
+    may be known in existing literature. See #5602 for details. The procedure
+    is summarized as follows:
+
+    1. Given a set of source nodes (which can be specified, or automatically
+    discovered via finding the (strongly) connected components and choosing one
+    node with minimum degree from each), we traverse the graph in depth first
+    order.
+
+    2. Each reachable node will be printed exactly once on it's own line.
+
+    3. Edges are indicated in one of three ways:
+
+        a. a parent "L-style" connection on the upper left. This corresponds to
+
+        b. a backref "<-style" connection shown directly on the right. For
+        directed graphs, these are drawn for any incoming edges to a node that
+        is not a parent edge. For undirected graphs, these are drawn for only
+        the non-parent edges that have already been represented (The edges that
+        have not been represented will be handled in the recursive case).
+
+        c. a child "L-style" connection on the lower right. Drawing of the
+        children are handled recursively.
+
+    4. The children of each node (wrt the directed DFS tree) are drawn
+    underneath and to the left of it. In the case that a child node has already
+    been drawn the connection is replaced with a "..." to indicate that there
+    is one or more connections represented elsewhere.
 
     Parameters
     ----------
@@ -119,97 +183,13 @@ def graph_str(graph, with_labels=True, sources=None, write=None, ascii_only=Fals
         reachable from one of these sources may not be shown. If unspecified,
         the minimal set of nodes needed to reach all others will be used.
 
-    write : callable
-        Function to use to write to, if None new lines are appended to
-        a list and returned. If set to the `print` function, lines will
-        be written to stdout as they are generated. If specified,
-        this function will return None. Defaults to None.
-
     ascii_only : Boolean
         If True only ASCII characters are used to construct the visualization
 
-    Returns
-    -------
-    str | None :
-        text representation of the graph
-
-    Example
-    -------
-    >>> graph = nx.balanced_tree(r=2, h=2, create_using=nx.DiGraph)
-    >>> print(nx.graph_str(graph))
-    ╙── 0
-        ├─╼ 1
-        │   ├─╼ 3
-        │   └─╼ 4
-        └─╼ 2
-            ├─╼ 5
-            └─╼ 6
-
-    >>> # A near tree with one non-tree edge
-    >>> graph.add_edge(5, 1)
-    >>> print(nx.graph_str(graph))
-    ╙── 0
-        ├─╼ 1 ╾ 5
-        │   ├─╼ 3
-        │   └─╼ 4
-        └─╼ 2
-            ├─╼ 5
-            │   └─╼  ...
-            └─╼ 6
-
-    >>> graph = nx.cycle_graph(5)
-    >>> print(nx.graph_str(graph))
-    ╙── 0
-        ├── 1
-        │   └── 2
-        │       └── 3
-        │           └── 4 ─ 0
-        └──  ...
-
-    >>> graph = nx.generators.barbell_graph(4, 2)
-    >>> print(nx.graph_str(graph))
-    ╙── 4
-        ├── 5
-        │   └── 6
-        │       ├── 7
-        │       │   ├── 8 ─ 6
-        │       │   │   └── 9 ─ 6, 7
-        │       │   └──  ...
-        │       └──  ...
-        └── 3
-            ├── 0
-            │   ├── 1 ─ 3
-            │   │   └── 2 ─ 0, 3
-            │   └──  ...
-            └──  ...
-
-    >>> graph = nx.complete_graph(5, create_using=nx.Graph)
-    >>> print(nx.graph_str(graph))
-    ╙── 0
-        ├── 1
-        │   ├── 2 ─ 0
-        │   │   ├── 3 ─ 0, 1
-        │   │   │   └── 4 ─ 0, 1, 2
-        │   │   └──  ...
-        │   └──  ...
-        └──  ...
-
-    >>> graph = nx.complete_graph(3, create_using=nx.DiGraph)
-    >>> print(nx.graph_str(graph))
-    ╙── 0 ╾ 1, 2
-        ├─╼ 1 ╾ 2
-        │   ├─╼ 2 ╾ 0
-        │   │   └─╼  ...
-        │   └─╼  ...
-        └─╼  ...
+    Yields
+    ------
+    str : a line of generated text
     """
-
-    printbuf = []
-    if write is None:
-        _write = printbuf.append
-    else:
-        _write = write
-
     # Define glphys
     # Notes on available box and arrow characters
     # https://en.wikipedia.org/wiki/Box-drawing_character
@@ -219,8 +199,8 @@ def graph_str(graph, with_labels=True, sources=None, write=None, ascii_only=Fals
         glyph_newtree_last = "+-- "
         glyph_newtree_mid = "+-- "
         glyph_endof_forest = "    "
-        glyph_within_forest = ":   "
-        glyph_within_tree = "|   "
+        glyph_within_forest = ":   "
+        glyph_within_tree = "|   "
 
         glyph_directed_last = "L-> "
         glyph_directed_mid = "|-> "
@@ -234,8 +214,8 @@ def graph_str(graph, with_labels=True, sources=None, write=None, ascii_only=Fals
         glyph_newtree_last = "╙── "
         glyph_newtree_mid = "╟── "
         glyph_endof_forest = "    "
-        glyph_within_forest = "╎   "
-        glyph_within_tree = "│   "
+        glyph_within_forest = "╎   "
+        glyph_within_tree = "│   "
 
         glyph_directed_last = "└─╼ "
         glyph_directed_mid = "├─╼ "
@@ -246,7 +226,7 @@ def graph_str(graph, with_labels=True, sources=None, write=None, ascii_only=Fals
         glyph_undirected_backedge = "─"
 
     if len(graph.nodes) == 0:
-        _write(glyph_empty)
+        yield glyph_empty
     else:
         is_directed = graph.is_directed()
         if is_directed:
@@ -404,7 +384,7 @@ def graph_str(graph, with_labels=True, sources=None, write=None, ascii_only=Fals
 
             # Emit the line for this node, this will be called for each node
             # exactly once.
-            _write(this_prefix + label + suffix)
+            yield (this_prefix + label + suffix)
 
             # Push children on the stack in reverse order so they are popped in
             # the original order.
@@ -413,6 +393,132 @@ def graph_str(graph, with_labels=True, sources=None, write=None, ascii_only=Fals
                 try_frame = (node, child, next_prefix, next_islast)
                 stack.append(try_frame)
 
-    if write is None:
-        # Only return a string if the custom write function was not specified
-        return "\n".join(printbuf)
+
+def write_network_text(graph, path=None, with_labels=True, sources=None,
+                       ascii_only=False, end="\n"):
+    """Creates a nice text representation of a graph
+
+    This works via a depth-first traversal of the graph and writing a line for
+    each unique node encountered. Non-tree edges are written to the right of
+    each node, and connection to a non-tree edge is indicated with an ellipsis.
+    This representation works best when the input graph is a forest, but any
+    graph can be represented.
+
+    Parameters
+    ----------
+    graph : nx.DiGraph | nx.Graph
+        Graph to represent
+
+    path : string or file or callable or None
+       Filename or file handle for data output.
+       if a function, then it will be called for each generated line.
+       if None, this will default to "sys.stdout.write"
+
+    with_labels : bool
+        If True will use the "label" attribute of a node to display if it
+        exists otherwise it will use the node value itself. Defaults to True.
+
+    sources : List
+        Specifies which nodes to start traversal from. Note: nodes that are not
+        reachable from one of these sources may not be shown. If unspecified,
+        the minimal set of nodes needed to reach all others will be used.
+
+    ascii_only : Boolean
+        If True only ASCII characters are used to construct the visualization
+
+    end : string
+        The line ending characater
+
+    Example
+    -------
+    >>> graph = nx.balanced_tree(r=2, h=2, create_using=nx.DiGraph)
+    >>> nx.write_network_text(graph)
+    ╙── 0
+        ├─╼ 1
+        │   ├─╼ 3
+        │   └─╼ 4
+        └─╼ 2
+            ├─╼ 5
+            └─╼ 6
+
+    >>> # A near tree with one non-tree edge
+    >>> graph.add_edge(5, 1)
+    >>> nx.write_network_text(graph)
+    ╙── 0
+        ├─╼ 1 ╾ 5
+        │   ├─╼ 3
+        │   └─╼ 4
+        └─╼ 2
+            ├─╼ 5
+            │   └─╼  ...
+            └─╼ 6
+
+    >>> graph = nx.cycle_graph(5)
+    >>> nx.write_network_text(graph)
+    ╙── 0
+        ├── 1
+        │   └── 2
+        │       └── 3
+        │           └── 4 ─ 0
+        └──  ...
+
+    >>> graph = nx.generators.barbell_graph(4, 2)
+    >>> nx.write_network_text(graph)
+    ╙── 4
+        ├── 5
+        │   └── 6
+        │       ├── 7
+        │       │   ├── 8 ─ 6
+        │       │   │   └── 9 ─ 6, 7
+        │       │   └──  ...
+        │       └──  ...
+        └── 3
+            ├── 0
+            │   ├── 1 ─ 3
+            │   │   └── 2 ─ 0, 3
+            │   └──  ...
+            └──  ...
+
+    >>> graph = nx.complete_graph(5, create_using=nx.Graph)
+    >>> nx.write_network_text(graph)
+    ╙── 0
+        ├── 1
+        │   ├── 2 ─ 0
+        │   │   ├── 3 ─ 0, 1
+        │   │   │   └── 4 ─ 0, 1, 2
+        │   │   └──  ...
+        │   └──  ...
+        └──  ...
+
+    >>> graph = nx.complete_graph(3, create_using=nx.DiGraph)
+    >>> nx.write_network_text(graph)
+    ╙── 0 ╾ 1, 2
+        ├─╼ 1 ╾ 2
+        │   ├─╼ 2 ╾ 0
+        │   │   └─╼  ...
+        │   └─╼  ...
+        └─╼  ...
+    """
+    file = None
+    if path is None:
+        # The path is unspecified, write to stdout
+        _write = sys.stdout.write
+    elif isinstance(path, (str, os.PathLike)):
+        # The path specifies a path to a file
+        file = open(path, 'w')
+    elif hasattr(path, 'write'):
+        # The path is already an open file
+        _write = path.write
+    elif callable(path):
+        # The path is a custom callable
+        _write = path
+    else:
+        raise TypeError(type(path))
+    try:
+        for line in generate_network_text(graph, with_labels=with_labels,
+                                          sources=sources,
+                                          ascii_only=ascii_only):
+            _write(line + end)
+    finally:
+        if file is not None:
+            file.close()
