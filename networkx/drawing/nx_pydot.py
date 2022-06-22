@@ -277,8 +277,8 @@ def to_pydot(N):
                 or _check_colon_quotes(v)
                 or (
                     any(
-                        (_check_colon_quotes(k) or _check_colon_quotes(v))
-                        for k, v in edgedata.items()
+                        (_check_colon_quotes(k) or _check_colon_quotes(val))
+                        for k, val in str_edgedata.items()
                     )
                 )
             )
@@ -293,15 +293,15 @@ def to_pydot(N):
 
     else:
         for u, v, edgedata in N.edges(data=True):
-            str_edgedata = {k: str(v) for k, v in edgedata.items()}
+            str_edgedata = {str(k): str(v) for k, v in edgedata.items()}
             u, v = str(u), str(v)
             raise_error = (
                 _check_colon_quotes(u)
                 or _check_colon_quotes(v)
                 or (
                     any(
-                        (_check_colon_quotes(k) or _check_colon_quotes(v))
-                        for k, v in edgedata.items()
+                        (_check_colon_quotes(k) or _check_colon_quotes(val))
+                        for k, val in str_edgedata.items()
                     )
                 )
             )
