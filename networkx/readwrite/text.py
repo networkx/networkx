@@ -5,17 +5,17 @@ from collections import defaultdict
 import networkx as nx
 import warnings
 import sys
-import os
+from networkx.utils import open_file
 
-__all__ = ["forest_str", "graph_str", "generate_network_text",
-           "write_network_text"]
+__all__ = ["forest_str", "generate_network_text", "write_network_text"]
 
 
 def forest_str(graph, with_labels=True, sources=None, write=None, ascii_only=False):
     """Creates a nice utf8 representation of a forest
 
-    This function has been superseded by :func:`nx.readwrite.text.graph_str`,
-    which should be used instead.
+    This function has been superseded by
+    :func:`nx.readwrite.text.generate_network_text`, which should be used
+    instead.
 
     Parameters
     ----------
@@ -95,43 +95,23 @@ def forest_str(graph, with_labels=True, sources=None, write=None, ascii_only=Fal
     else:
         _write = write
 
-    write_network_text(graph, _write, with_labels=with_labels, sources=sources,
-                       ascii_only=ascii_only, end="")
+    write_network_text(
+        graph,
+        _write,
+        with_labels=with_labels,
+        sources=sources,
+        ascii_only=ascii_only,
+        end="",
+    )
 
     if write is None:
         # Only return a string if the custom write function was not specified
         return "\n".join(printbuf)
 
 
-def graph_str(graph, with_labels=True, sources=None, write=None, ascii_only=False):
-    """Creates a nice text representation of a graph
-
-    TODO: remove
-
-    Parameters
-    ----------
-    write : callable
-        Function to use to write to, if None new lines are appended to
-        a list and returned. If set to the `print` function, lines will
-        be written to stdout as they are generated. If specified,
-        this function will return None. Defaults to None.
-    """
-    printbuf = []
-    if write is None:
-        _write = printbuf.append
-    else:
-        _write = write
-
-    write_network_text(graph, _write, with_labels=with_labels, sources=sources,
-                       ascii_only=ascii_only, end="")
-
-    if write is None:
-        # Only return a string if the custom write function was not specified
-        return "\n".join(printbuf)
-
-
-def generate_network_text(graph, with_labels=True, sources=None, write=None,
-                          ascii_only=False):
+def generate_network_text(
+    graph, with_labels=True, sources=None, write=None, ascii_only=False
+):
     """Generate lines in the "network text" format
 
     This works via a depth-first traversal of the graph and writing a line for
@@ -394,8 +374,10 @@ def generate_network_text(graph, with_labels=True, sources=None, write=None,
                 stack.append(try_frame)
 
 
-def write_network_text(graph, path=None, with_labels=True, sources=None,
-                       ascii_only=False, end="\n"):
+@open_file(1, "w")
+def write_network_text(
+    graph, path=None, with_labels=True, sources=None, ascii_only=False, end="\n"
+):
     """Creates a nice text representation of a graph
 
     This works via a depth-first traversal of the graph and writing a line for
@@ -499,14 +481,10 @@ def write_network_text(graph, path=None, with_labels=True, sources=None,
         │   └─╼  ...
         └─╼  ...
     """
-    file = None
     if path is None:
         # The path is unspecified, write to stdout
         _write = sys.stdout.write
-    elif isinstance(path, (str, os.PathLike)):
-        # The path specifies a path to a file
-        file = open(path, 'w')
-    elif hasattr(path, 'write'):
+    elif hasattr(path, "write"):
         # The path is already an open file
         _write = path.write
     elif callable(path):
@@ -514,11 +492,8 @@ def write_network_text(graph, path=None, with_labels=True, sources=None,
         _write = path
     else:
         raise TypeError(type(path))
-    try:
-        for line in generate_network_text(graph, with_labels=with_labels,
-                                          sources=sources,
-                                          ascii_only=ascii_only):
-            _write(line + end)
-    finally:
-        if file is not None:
-            file.close()
+
+    for line in generate_network_text(
+        graph, with_labels=with_labels, sources=sources, ascii_only=ascii_only
+    ):
+        _write(line + end)

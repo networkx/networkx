@@ -65,6 +65,7 @@ def test_write_network_text_empty_graph():
         printbuf = []
         nx.write_network_text(g, printbuf.append, end="", **kw)
         return "\n".join(printbuf)
+
     assert _graph_str(nx.DiGraph()) == "╙"
     assert _graph_str(nx.Graph()) == "╙"
     assert _graph_str(nx.DiGraph(), ascii_only=True) == "+"
@@ -798,8 +799,7 @@ def test_write_network_text_with_labels():
         graph.nodes[n]["label"] = f"Node(n={n})"
     lines = []
     write = lines.append
-    nx.write_network_text(graph, path=write, with_labels=True,
-                          ascii_only=False, end="")
+    nx.write_network_text(graph, path=write, with_labels=True, ascii_only=False, end="")
     text = "\n".join(lines)
     print(text)
     # Non trees with labels can get somewhat out of hand with network text
