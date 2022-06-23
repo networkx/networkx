@@ -176,6 +176,7 @@ def test_hashable_pydot(graph_type):
         nx.nx_pydot.from_pydot(nx.nx_pydot.to_pydot(G)).nodes
     )
 
+
 def test_pydot_numrical_name():
     G = nx.Graph()
     G.add_edges_from([("A", "B"), (0, 1)])
