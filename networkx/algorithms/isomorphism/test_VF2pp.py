@@ -55,19 +55,18 @@ def BFS_tree(source_node, G1, G1_labels, V1_unordered, label_rarity, used_degree
 
 
 def process_level(V1, G1, G1_labels, order, dlevel_nodes, label_rarity, used_degree):
-    """Update order, label_rarity and used_degree"""
     max_nodes = []
     while dlevel_nodes:
         # Get the nodes with the max used_degree
-        # max_used_deg = -1
-        # for node in dlevel_nodes:
-        #     deg = used_degree[node]
-        #     if deg >= max_used_deg:  # most common case: deg < max_deg
-        #         if deg > max_used_deg:
-        #             max_used_deg = deg
-        #             max_nodes = [node]
-        #         else:  # deg == max_deg
-        #             max_nodes.append(node)
+        max_used_deg = -1
+        for node in dlevel_nodes:
+            deg = used_degree[node]
+            if deg >= max_used_deg:  # most common case: deg < max_deg
+                if deg > max_used_deg:
+                    max_used_deg = deg
+                    max_nodes = [node]
+                else:  # deg == max_deg
+                    max_nodes.append(node)
 
         max_conn = max(len([v for v in G1[u]]) for u in dlevel_nodes)
         max_conn_nodes = [v for v in dlevel_nodes if len([k for k in G1[v]]) == max_conn]
@@ -89,41 +88,28 @@ def process_level(V1, G1, G1_labels, order, dlevel_nodes, label_rarity, used_deg
 
 
 def main():
-    G = nx.gnp_random_graph(500, 0.5, seed=19)
+    G = nx.gnp_random_graph(50, 0.5, seed=19)
     colors = ["blue", "red", "green", "orange", "grey", "yellow", "purple", "black", "white"]
 
     for i in range(len(G.nodes)):
         G.nodes[i]["label"] = colors[random.randrange(len(colors))]
 
-    # L = node_labels(G)
-
     M = matching_order(G, G)
     print(len(M))
     print(M)
 
+    show_degree_rarity(G, M)
+
+
+def show_degree_rarity(G, M):
+    L = {n: G.nodes[n]["label"] for n in G}
+    ln = nx.utils.groups(L)
+    label_rarity = {l: len(nodes) for l, nodes in ln.items()}
+
     plt.plot([i for i in range(len(M))], [G.degree[n] for n in M])
     plt.show()
-
-    # t0 = time.time()
-    # M = matching_order(G, G, L)
-    # print('Elapsed time: ', time.time() - t0)
-
-    # print("len= ", len(M))
-    # print(M)
-
-    # print("len= ", len(M2))
-    # print(M2)
-
-    # if len(M) != len(M2):
-    #     print("ERROR")
-    #     exit(0)
-    #
-    # for m1, m2 in zip(M, M2):
-    #     if m1 != m2:
-    #         print("ERROR")
-    #         exit(0)
-    #
-    # print("CORRECT")
+    plt.plot([i for i in range(len(M))], [label_rarity[G.nodes[n]["label"]] for n in M])
+    plt.show()
 
 
 main()
