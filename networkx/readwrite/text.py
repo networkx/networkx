@@ -146,7 +146,7 @@ def generate_network_text(
         children are handled recursively.
 
     4. The children of each node (wrt the directed DFS tree) are drawn
-    underneath and to the left of it. In the case that a child node has already
+    underneath and to the right of it. In the case that a child node has already
     been drawn the connection is replaced with a "..." to indicate that there
     is one or more connections represented elsewhere.
 
