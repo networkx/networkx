@@ -89,7 +89,6 @@ version requirements.
 - `PyGraphviz <http://pygraphviz.github.io/>`_ and
   `pydot <https://github.com/erocarrera/pydot>`_ provide graph drawing
   and graph layout algorithms via `GraphViz <http://graphviz.org/>`_.
-- `PyYAML <http://pyyaml.org/>`_ provides YAML format reading and writing.
 - `lxml <http://lxml.de/>`_ used for GraphML XML format.
 
 To install ``networkx`` and extra packages, do::
@@ -98,7 +97,7 @@ To install ``networkx`` and extra packages, do::
 
 To explicitly install all optional packages, do::
 
-    $ pip install pygraphviz pydot pyyaml lxml
+    $ pip install pygraphviz pydot lxml
 
 Or, install any optional package (e.g., ``pygraphviz``) individually::
 

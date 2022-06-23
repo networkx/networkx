@@ -56,12 +56,6 @@ def set_warnings():
         message="literal_destringizer is deprecated",
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="\nauthority_matrix"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="\nhub_matrix"
-    )
-    warnings.filterwarnings(
         "ignore",
         category=DeprecationWarning,
         message="context manager reversed is deprecated",
@@ -70,9 +64,6 @@ def set_warnings():
         "ignore",
         category=DeprecationWarning,
         message="This will return a generator in 3.0*",
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="edge_betweeness"
     )
     warnings.filterwarnings(
         "ignore", category=PendingDeprecationWarning, message="the matrix subclass"
@@ -85,20 +76,6 @@ def set_warnings():
     )
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="edges_from_line"
-    )
-    warnings.filterwarnings("ignore", category=DeprecationWarning, message="write_yaml")
-    warnings.filterwarnings("ignore", category=DeprecationWarning, message="read_yaml")
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="FilterAtlas.copy"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="FilterAdjacency.copy"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="FilterMultiAdjacency.copy"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="FilterMultiInner.copy"
     )
     warnings.filterwarnings("ignore", category=DeprecationWarning, message="consume")
     warnings.filterwarnings(
@@ -115,12 +92,6 @@ def set_warnings():
     )
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="`assert_graphs_equal`"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="networkx.hits_scipy"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="networkx.hits_numpy"
     )
     warnings.filterwarnings(
         "ignore",
@@ -225,13 +196,6 @@ except ImportError:
     has_pygraphviz = False
 
 try:
-    import yaml
-
-    has_yaml = True
-except ImportError:
-    has_yaml = False
-
-try:
     import pydot
 
     has_pydot = True
@@ -291,7 +255,6 @@ needs_scipy = [
 ]
 needs_matplotlib = ["drawing/nx_pylab.py"]
 needs_pandas = ["convert_matrix.py"]
-needs_yaml = ["readwrite/nx_yaml.py"]
 needs_pygraphviz = ["drawing/nx_agraph.py"]
 needs_pydot = ["drawing/nx_pydot.py"]
 needs_sympy = ["algorithms/polynomials.py"]
@@ -304,8 +267,6 @@ if not has_matplotlib:
     collect_ignore += needs_matplotlib
 if not has_pandas:
     collect_ignore += needs_pandas
-if not has_yaml:
-    collect_ignore += needs_yaml
 if not has_pygraphviz:
     collect_ignore += needs_pygraphviz
 if not has_pydot:
