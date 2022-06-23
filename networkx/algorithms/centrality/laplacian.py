@@ -4,9 +4,6 @@ import networkx as nx
 
 __all__ = ["laplacian_centrality"]
 
-# @not_implemented_for("multigraph")
-
-
 def laplacian_centrality(
     G, normalized=True, nbunch=None, **directed_laplacian_matrix_args
 ):
