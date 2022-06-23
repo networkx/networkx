@@ -432,15 +432,15 @@ def pydot_layout(G, prog="neato", root=None):
 
     node_pos = {}
     for n in G.nodes():
-        n = str(n)
+        str_n = str(n)
         # Explicitly catch nodes with ":" in node names or nodedata.
-        if _check_colon_quotes(n):
+        if _check_colon_quotes(str_n):
             raise ValueError(
                 f'Node names and node attributes should not contain ":" unless they are quoted with "".\
                 For example the string \'attribute:data1\' should be written as \'"attribute:data1"\'.\
                 Please refer https://github.com/pydot/pydot/issues/258'
             )
-        pydot_node = pydot.Node(n).get_name()
+        pydot_node = pydot.Node(str_n).get_name()
         node = Q.get_node(pydot_node)
 
         if isinstance(node, list):
