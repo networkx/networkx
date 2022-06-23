@@ -52,9 +52,10 @@ def laplacian_centrality(
 
     Examples
     --------
-    >>> nxg = nx.Graph()
-    >>> nxg.add_weighted_edges_from([(0,1,4),(0,2,2),(2,1,1),(1,3,2),(1,4,2),(4,5,1)])
-    >>> sorted((v, f"{c:0.2f}") for v, c in laplacian_centrality(nxg).items())
+    >>> G = nx.Graph()
+    >>> edges = [(0, 1, 4), (0, 2, 2), (2, 1, 1), (1, 3, 2), (1, 4, 2), (4, 5, 1)]
+    >>> G.add_weighted_edges_from(edges)
+    >>> sorted((v, f"{c:0.2f}") for v, c in laplacian_centrality(G).items())
     [(0, '0.70'), (1, '0.90'), (2, '0.28'), (3, '0.22'), (4, '0.26'), (5, '0.04')]
 
     Notes
