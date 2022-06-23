@@ -43,18 +43,10 @@ class State:
         self.node_order = node_order
         self.mapping = mapping
 
-        self.T1 = set()
-        self.T2 = set()
-
-        for covered_node in mapping:
-            for neighbor in G1[covered_node]:
-                if neighbor not in mapping:
-                    self.T1.add(neighbor)
-
-        for covered_node in mapping.values():  # todo: store T1 and T2 in the state.
-            for neighbor in G2[covered_node]:  # todo: should we keep the reverse mapping, instead of using values?
-                if neighbor not in mapping.values():
-                    self.T2.add(neighbor)
+        # todo: store T1 and T2 in the state.
+        # todo: should we keep the reverse mapping, instead of using values?
+        self.T1 = {nbr for node in mapping for nbr in G1[node] if nbr not in mapping}
+        self.T2 = {nbr for node in mapping.values() for nbr in G2[node] if nbr not in mapping.values()}
 
         self.T1_out = {n1 for n1 in G1.nodes() if n1 not in mapping and n1 not in self.T1}
         self.T2_out = {n2 for n2 in G2.nodes() if n2 not in mapping.values() and n2 not in self.T2}
