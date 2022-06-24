@@ -86,7 +86,7 @@ def geometric_edges(G, radius, p=2):
     """
     # Input validation - every node must have a "pos" attribute
     for n, pos in G.nodes(data="pos"):
-        if pos == None:
+        if pos is None:
             raise nx.NetworkXError(
                 f"All nodes in `G` must have a 'pos' attribute. Check node {n}"
             )
