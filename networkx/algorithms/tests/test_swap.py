@@ -2,8 +2,14 @@ import pytest
 
 import networkx as nx
 
-# import random
-# random.seed(0)
+
+def test_directed_edge_swap():
+    graph = nx.path_graph(200, create_using=nx.DiGraph)
+    in_degrees = sorted((n, d) for n, d in graph.in_degree())
+    out_degrees = sorted((n, d) for n, d in graph.out_degree())
+    G = nx.directed_edge_swap(graph, nswap=40, max_tries=500, seed=1)
+    assert in_degrees == sorted((n, d) for n, d in G.in_degree())
+    assert out_degrees == sorted((n, d) for n, d in G.out_degree())
 
 
 def test_double_edge_swap():
@@ -52,6 +58,31 @@ def test_connected_double_edge_swap_star_low_window_threshold():
     G = nx.connected_double_edge_swap(graph, 1, _window_threshold=0, seed=4)
     assert nx.is_connected(graph)
     assert degrees == sorted(d for n, d in graph.degree())
+
+
+def test_directed_edge_swap_small():
+    with pytest.raises(nx.NetworkXError):
+        G = nx.directed_edge_swap(nx.path_graph(3, create_using=nx.DiGraph))
+
+
+def test_directed_edge_swap_tries():
+    with pytest.raises(nx.NetworkXError):
+        G = nx.directed_edge_swap(
+            nx.path_graph(3, create_using=nx.DiGraph), nswap=1, max_tries=0
+        )
+
+
+def test_directed_exception_undirected():
+    graph = nx.Graph([(0, 1), (2, 3)])
+    with pytest.raises(nx.NetworkXNotImplemented):
+        G = nx.directed_edge_swap(graph)
+
+
+def test_directed_edge_max_tries():
+    with pytest.raises(nx.NetworkXAlgorithmError):
+        G = nx.directed_edge_swap(
+            nx.complete_graph(4, nx.DiGraph()), nswap=1, max_tries=5
+        )
 
 
 def test_double_edge_swap_small():
