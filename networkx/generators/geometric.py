@@ -84,6 +84,25 @@ def geometric_edges(G, radius, p=2):
     >>> nx.geometric_edges(G, radius=9)
     [(0, 1), (0, 2), (1, 2)]
     """
+    # Input validation - every node must have a "pos" attribute
+    for n, pos in G.nodes(data="pos"):
+        if pos is None:
+            raise nx.NetworkXError(
+                f"All nodes in `G` must have a 'pos' attribute. Check node {n}"
+            )
+
+    # NOTE: See _geometric_edges for the actual implementation. The reason this
+    # is split into two functions is to avoid the overhead of input validation
+    # every time the function is called internally in one of the other
+    # geometric generators
+    return _geometric_edges(G, radius, p)
+
+
+def _geometric_edges(G, radius, p=2):
+    """
+    Implements `geometric_edges` without input validation. See `geometric_edges`
+    for complete docstring.
+    """
     nodes_pos = G.nodes(data="pos")
     try:
         import scipy as sp
@@ -189,7 +208,7 @@ def random_geometric_graph(n, radius, dim=2, pos=None, p=2, seed=None):
         pos = {v: [seed.random() for i in range(dim)] for v in G}
     nx.set_node_attributes(G, pos, "pos")
 
-    G.add_edges_from(geometric_edges(G, radius, p))
+    G.add_edges_from(_geometric_edges(G, radius, p))
     return G
 
 
@@ -315,7 +334,7 @@ def soft_random_geometric_graph(
         dist = (sum(abs(a - b) ** p for a, b in zip(pos[u], pos[v]))) ** (1 / p)
         return seed.random() < p_dist(dist)
 
-    G.add_edges_from(filter(should_join, geometric_edges(G, radius, p)))
+    G.add_edges_from(filter(should_join, _geometric_edges(G, radius, p)))
     return G
 
 
@@ -778,7 +797,7 @@ def thresholded_random_geometric_graph(
 
     edges = (
         (u, v)
-        for u, v in geometric_edges(G, radius, p)
+        for u, v in _geometric_edges(G, radius, p)
         if weight[u] + weight[v] >= theta
     )
     G.add_edges_from(edges)
