@@ -21,8 +21,6 @@ jobs:
         run: |
           pip install --upgrade pip wheel setuptools
           pip install -r requirements/developer.txt
-          # Rm below when yaml no longer a dep
-          pip install types-PyYAML
           pip install -e .
           pip list
 

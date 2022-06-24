@@ -6,12 +6,7 @@ import pytest
 
 import networkx as nx
 from networkx import barbell_graph
-from networkx.algorithms.community import (
-    coverage,
-    modularity,
-    partition_quality,
-    performance,
-)
+from networkx.algorithms.community import modularity, partition_quality
 from networkx.algorithms.community.quality import inter_community_edges
 
 
@@ -22,14 +17,12 @@ class TestPerformance:
         """Tests that a poor partition has a low performance measure."""
         G = barbell_graph(3, 0)
         partition = [{0, 1, 4}, {2, 3, 5}]
-        assert 8 / 15 == pytest.approx(performance(G, partition), abs=1e-7)
         assert 8 / 15 == pytest.approx(partition_quality(G, partition)[1], abs=1e-7)
 
     def test_good_partition(self):
         """Tests that a good partition has a high performance measure."""
         G = barbell_graph(3, 0)
         partition = [{0, 1, 2}, {3, 4, 5}]
-        assert 14 / 15 == pytest.approx(performance(G, partition), abs=1e-7)
         assert 14 / 15 == pytest.approx(partition_quality(G, partition)[1], abs=1e-7)
 
 
@@ -40,14 +33,12 @@ class TestCoverage:
         """Tests that a poor partition has a low coverage measure."""
         G = barbell_graph(3, 0)
         partition = [{0, 1, 4}, {2, 3, 5}]
-        assert 3 / 7 == pytest.approx(coverage(G, partition), abs=1e-7)
         assert 3 / 7 == pytest.approx(partition_quality(G, partition)[0], abs=1e-7)
 
     def test_good_partition(self):
         """Tests that a good partition has a high coverage measure."""
         G = barbell_graph(3, 0)
         partition = [{0, 1, 2}, {3, 4, 5}]
-        assert 6 / 7 == pytest.approx(coverage(G, partition), abs=1e-7)
         assert 6 / 7 == pytest.approx(partition_quality(G, partition)[0], abs=1e-7)
 
 
