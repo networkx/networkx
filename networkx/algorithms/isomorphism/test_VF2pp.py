@@ -34,6 +34,4 @@ def main():
     print("feasible node: ", feasible)
 
 
-
-
 main()

@@ -5,8 +5,6 @@ class State:
         self.mapping = mapping
         self.reverse_mapping = reverse_mapping
 
-        # todo: store T1 and T2 in the state.
-        # todo: should we keep the reverse mapping, instead of using values?
         self.T1 = {nbr for node in mapping for nbr in G1[node] if nbr not in mapping}
         self.T2 = {nbr for node in reverse_mapping for nbr in G2[node] if nbr not in reverse_mapping}
 
