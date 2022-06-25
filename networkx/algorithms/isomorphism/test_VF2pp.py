@@ -9,7 +9,7 @@ from networkx.drawing.nx_agraph import graphviz_layout
 
 
 def main():
-    G = nx.gnp_random_graph(20, 0.25, seed=42)
+    G = nx.gnp_random_graph(2000, 0.35, seed=42)
     colors = ["blue", "red", "green", "orange", "grey", "yellow", "purple", "black", "white"]
 
     for i in range(len(G.nodes)):
@@ -19,29 +19,30 @@ def main():
     # nx.draw(G, pos, with_labels=True, arrows=False)
     # plt.show()
 
-    m = {0: 0, 1: 1, 2: 2, 3: 3, 4: 4}
-    s = State(G, G, 0, None, m)
+    m = {node: node for node in G.nodes() if node < G.number_of_nodes() // 4}
+    s = State(G1=G, G2=G, u=1999, node_order=None, mapping=m, reverse_mapping=m)
 
-    for i in range(20):
-        print(prune_ISO(G, G, 5, i, s))
-        print(prune_IND(G, G, 5, i, s))
+    cnt = 0
+    feasible = -1
+    for n in G.nodes():
+        if check_feasibility(node1=0, node2=n, G1=G, G2=G, state=s):
+            feasible = n
+            cnt += 1
 
-    # for l in colors:
-    #     print(l)
-    #     ul = [v for v in ul if G.nodes[v]["label"] == l]
-    #     print(ul)
+    print("Number of feasible nodes: ", cnt)
+    print("feasible node: ", feasible)
 
-    # t0 = time.time()
-    # M = matching_order(G, G, L)
-    # print('Elapsed time: ', time.time() - t0)
-    # print(M)
+    # for i in range(20):
+    #     print(prune_ISO(G, G, 5, i, s))
+    #     print(prune_IND(G, G, 5, i, s))
 
 
 class State:
-    def __init__(self, G1, G2, u, node_order, mapping):
+    def __init__(self, G1, G2, u, node_order, mapping, reverse_mapping):
         self.u = u
         self.node_order = node_order
         self.mapping = mapping
+        self.reverse_mapping = reverse_mapping
 
         # todo: store T1 and T2 in the state.
         # todo: should we keep the reverse mapping, instead of using values?
@@ -52,72 +53,31 @@ class State:
         self.T2_out = {n2 for n2 in G2.nodes() if n2 not in mapping.values() and n2 not in self.T2}
 
 
-def connectivity(G, u, H):
-    return len([v for v in G[u] if v in H])
+def check_feasibility(node1, node2, G1, G2, state):
+    # todo: add IND, SUB cases as well
+    if G1.number_of_edges(node1, node1) != G2.number_of_edges(node2, node2):
+        return False
 
+    if prune_ISO(G1, G2, node1, node2, state):
+        return False
 
-def node_labels(G):
-    return nx.get_node_attributes(G, "label")
+    # Check if every covered neighbor of u is mapped to every covered neighbor of v
+    # Also check if there is the same number of edges between the candidates and their neighbors
+    for neighbor in G1[node1]:
+        if neighbor in state.mapping:
+            if state.mapping[neighbor] not in G2[node2]:
+                return False
+            elif G1.number_of_edges(node1, neighbor) != G2.number_of_edges(node2, state.mapping[neighbor]):
+                return False
 
+    for neighbor in G2[node2]:
+        if neighbor in state.reverse_mapping:
+            if state.reverse_mapping[neighbor] not in G1[node1]:
+                return False
+            elif G1.number_of_edges(node1, state.reverse_mapping[neighbor]) !=  G1.number_of_edges(node2, neighbor):
+                return False
 
-def label_nodes(labels):
-    return nx.utils.groups(labels)
-
-
-def F(G2, M, L, label):
-    card1 = len([u for u in G2.nodes if L[u] == label])
-    card2 = len([v for v in M if L[v] == label])
-    return card1 - card2
-
-
-def argmin_F(G2, M, L, S):
-    min_unmatched_nodes = min(F(G2, M, L, L[u]) for u in S)
-    return [v for v in S if F(G2, M, L, L[v]) == min_unmatched_nodes]
-
-
-def argmax_degree(G1, S):
-    max_degree = max(G1.degree[node] for node in S)
-    return [u for u in S if G1.degree[u] == max_degree]
-
-
-def argmax_connectivity(G, Vd, M):
-    max_conn = max(connectivity(G, v, M) for v in Vd)
-    return [v for v in Vd if connectivity(G, v, M) == max_conn]
-
-
-def matching_order(G1, G2, L):
-    V1_unordered = set(G1)
-    current_labels = {node: node_labels(G1)[node] for node in V1_unordered}
-    M = []
-    while V1_unordered:
-        rare_nodes = min(label_nodes(current_labels).values(), key=len)
-        best_nodes = max(rare_nodes, key=G1.degree)
-        T, M, V1_unordered = dlevel_bfs_tree(G1, G2, M, L, V1_unordered, best_nodes)
-        del current_labels[best_nodes]
-    return M
-
-
-def dlevel_bfs_tree(G1, G2, M, L, V1_unordered, source):
-    # todo: optimize descendants_at_distance. Compute all levels once. distance(2) re-computes distance(1).
-    d = 0
-    T = []
-    d_level_successors = nx.descendants_at_distance(G1, source=source, distance=d)
-    while len(d_level_successors) > 0:
-        T.append(d_level_successors)
-        M = process_level(G1, G2, d_level_successors, M, L)
-        V1_unordered -= set(M)
-        d += 1
-        d_level_successors = nx.descendants_at_distance(G1, source=source, distance=d)
-    return T, M, V1_unordered
-
-
-def process_level(G1, G2, Vd, M, L):
-    while len(Vd) > 0:
-        m = argmin_F(G2, M, L, argmax_degree(G1, argmax_connectivity(G1, Vd, M)))
-        for node in m:
-            Vd.remove(node)
-            M.append(node)
-    return M
+    return True
 
 
 def prune_ISO(G1, G2, u, v, state):
@@ -132,14 +92,14 @@ def prune_ISO(G1, G2, u, v, state):
 
     # if the neighbors of u, do not have the same labels as those of v, feasibility cannot be established.
     if set(u_labels_neighbors.keys()) != set(v_labels_neighbors.keys()):
-        return False
+        return True
 
     for nh1, nh2 in zip(u_labels_neighbors.values(), v_labels_neighbors.values()):
         if len(state.T1.intersection(nh1)) != len(state.T2.intersection(nh2)) or \
                 len(state.T1_out.intersection(nh1)) != len(state.T2_out.intersection(nh2)):
-            return False
+            return True
 
-    return True
+    return False
 
 
 def prune_IND(G1, G2, u, v, state):
@@ -154,28 +114,14 @@ def prune_IND(G1, G2, u, v, state):
 
     # if the neighbors of u, do not have the same labels as those of v, feasibility cannot be established.
     if set(u_labels_neighbors.keys()) != set(v_labels_neighbors.keys()):
-        return False
+        return True
 
     for nh1, nh2 in zip(u_labels_neighbors.values(), v_labels_neighbors.values()):
         if len(state.T1.intersection(nh1)) < len(state.T2.intersection(nh2)) or \
                 len(state.T1_out.intersection(nh1)) < len(state.T2_out.intersection(nh2)):
-            return False
+            return True
 
-    return True
-
-
-def binary_tree():
-    T = nx.DiGraph()
-    T.add_node(0)
-    offset = 4
-    for i in range(1, 5):
-        T.add_node(i)
-        T.add_edge(0, i)
-        for j in range(2):
-            T.add_node(i + j + offset)
-            T.add_edge(i, i + j + offset)
-        offset += 1
-    return T
+    return False
 
 
 main()
