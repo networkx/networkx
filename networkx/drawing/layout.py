@@ -1184,6 +1184,7 @@ def forceatlas2_layout(
     dissuade_hubs=False,
     edge_weight_influence=False,
     linlog=False,
+    dim = 2,
 ):
     """Forceatlas2 layout for networkx
 
@@ -1217,6 +1218,8 @@ def forceatlas2_layout(
         weights
     linlog : bool
         Use log attraction rather than linear attraction
+    dim: int,
+       Sets the dimensions of the layout. This parameter is ignored if pos is given.
 
     Examples
     --------
