@@ -52,7 +52,6 @@ def closeness_centrality(G, u=None, distance=None, wf_improved=True):
       path calculations. If `None` (the default), all edges are assumed to have
       a distance of 1. No check is performed to ensure that edges have the
       provided attribute.
-      
 
     wf_improved : bool, optional (default=True)
       If True, scale by the fraction of nodes reachable. This gives the
