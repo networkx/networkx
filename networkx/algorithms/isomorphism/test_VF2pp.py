@@ -68,11 +68,11 @@ def process_level(V1, G1, G1_labels, order, dlevel_nodes, label_rarity, used_deg
                 else:  # deg == max_deg
                     max_nodes.append(node)
 
-        max_conn = max(len([v for v in G1[u]]) for u in dlevel_nodes)
-        max_conn_nodes = [v for v in dlevel_nodes if len([k for k in G1[v]]) == max_conn]
-
-        max_deg = max(G1.degree[u] for u in max_conn_nodes)
-        max_nodes = [n for n in max_conn_nodes if G1.degree[n] == max_deg]
+        # max_conn = max(len([v for v in G1[u]]) for u in dlevel_nodes)
+        # max_conn_nodes = [v for v in dlevel_nodes if len([k for k in G1[v]]) == max_conn]
+        #
+        # max_deg = max(G1.degree[u] for u in max_conn_nodes)
+        # max_nodes = [n for n in max_conn_nodes if G1.degree[n] == max_deg]
 
         # Get the max_used_degree node with the rarest label
         next_node = min(max_nodes, key=lambda x: label_rarity[G1_labels[x]])
@@ -88,7 +88,7 @@ def process_level(V1, G1, G1_labels, order, dlevel_nodes, label_rarity, used_deg
 
 
 def main():
-    G = nx.gnp_random_graph(50, 0.5, seed=19)
+    G = nx.gnp_random_graph(500, 0.5, seed=19)
     colors = ["blue", "red", "green", "orange", "grey", "yellow", "purple", "black", "white"]
 
     for i in range(len(G.nodes)):
@@ -97,19 +97,6 @@ def main():
     M = matching_order(G, G)
     print(len(M))
     print(M)
-
-    show_degree_rarity(G, M)
-
-
-def show_degree_rarity(G, M):
-    L = {n: G.nodes[n]["label"] for n in G}
-    ln = nx.utils.groups(L)
-    label_rarity = {l: len(nodes) for l, nodes in ln.items()}
-
-    plt.plot([i for i in range(len(M))], [G.degree[n] for n in M])
-    plt.show()
-    plt.plot([i for i in range(len(M))], [label_rarity[G.nodes[n]["label"]] for n in M])
-    plt.show()
 
 
 main()
