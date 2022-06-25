@@ -1229,15 +1229,25 @@ def forceatlas2_layout(
     """
     import numpy as np
 
+    # parse optional pos positions
     if pos is None:
-        pos = nx.random_layout(G)
+        pos = nx.random_layout(G, dim = dim)
+    else:
+        dim = len(next(iter(pos.values())))
 
-    dim = len(next(iter(pos.values())))
-    pos = np.asarray([i.copy() for i in pos.values()])
-    mass = np.array(
-        [G.nodes[node].get("mass", G.degree(node) + 1) for node in G.nodes()]
-    )
-    size = np.array([G.nodes[node].get("size", 1) for node in G.nodes()])
+    # default node positions proportional to the input dimensions
+    # (if it exists)
+    max_dim = max([max(i) for i in pos.values()])
+    min_dim = min([min(i) for i in pos.values()])
+    pos_arr = np.random.rand(len(G), dim) * max_dim - min_dim
+
+    mass = np.zeros(len(G))
+    size = np.zeros(len(G))
+    for idx, node in enumerate(G.nodes()):
+        if node in pos:
+            pos_arr[idx] = pos[node].copy()
+        mass[idx] = G.nodes[node].get("mass", G.degree(node) + 1)
+        size[idx] = G.nodes[node].get("size", 1)
 
     n = len(G)
     gravities = np.zeros((n, dim))
@@ -1254,7 +1264,7 @@ def forceatlas2_layout(
     traction = 1
     for idx in range(n_iter):
         # compute pairwise difference
-        diff = pos[:, None] - pos[None]
+        diff = pos_arr[:, None] - pos_arr[None]
         # compute pairwise distance
         distance = np.linalg.norm(diff, axis=-1)
 
@@ -1288,16 +1298,16 @@ def forceatlas2_layout(
 
         # gravity
         gravities = (
-            -gravity * mass[:, None] * pos / np.linalg.norm(pos, axis=-1)[:, None]
+            -gravity * mass[:, None] * pos_arr / np.linalg.norm(pos_arr, axis=-1)[:, None]
         )
         if strong_gravity:
-            gravities *= np.linalg.norm(pos, axis=-1)[:, None]
+            gravities *= np.linalg.norm(pos_arr, axis=-1)[:, None]
         # total forces
         update = attraction + repulsion + gravities
 
         # compute total swing and traction
-        swing += (mass * np.linalg.norm(pos - update, axis=-1)).sum()
-        traction += (0.5 * mass * np.linalg.norm(pos + update, axis=-1)).sum()
+        swing += (mass * np.linalg.norm(pos_arr - update, axis=-1)).sum()
+        traction += (0.5 * mass * np.linalg.norm(pos_arr + update, axis=-1)).sum()
 
         speed, speed_efficiency = estimate_factor(
             n,
@@ -1318,12 +1328,12 @@ def forceatlas2_layout(
             swinging = mass * np.linalg.norm(update, axis=-1)
             factor = speed / (1 + np.sqrt(speed * swinging))
 
-        pos += update * factor[:, None]
+        pos_arr += update * factor[:, None]
         if abs((update * factor[:, None]).sum()) < 1e-10:
             print(f"Breaking after {idx}")
             break
 
-    return {node: pos[idx] for idx, node in enumerate(G.nodes())}
+    return {node: pos_arr[idx] for idx, node in enumerate(G.nodes())}
 
 
 def rescale_layout(pos, scale=1):
