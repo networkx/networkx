@@ -25,13 +25,16 @@ class TestGraphIsomorphism:
         assert feasible == 1756
 
     def test_iso_feasibility(self):
+        G1_labels = {n: self.G.nodes[n]["label"] for n in self.G.nodes()}
+        G2_labels = G1_labels
         m = {node: node for node in self.G.nodes() if node < self.G.number_of_nodes() // 4}
         s = State(G1=self.G, G2=self.G, u=0, node_order=None, mapping=m, reverse_mapping=m)
 
         cnt = 0
         feasible = -1
         for n in self.G.nodes():
-            if check_feasibility(node1=1999, node2=n, G1=self.G, G2=self.G, state=s):
+            if check_feasibility(node1=1999, node2=n, G1=self.G, G2=self.G, G1_labels=G1_labels,
+                                 G2_labels=G2_labels, state=s):
                 feasible = n
                 cnt += 1
         assert cnt == 1
