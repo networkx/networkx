@@ -11,107 +11,50 @@ from networkx.utils import open_file
 __all__ = ["forest_str", "generate_network_text", "write_network_text"]
 
 
-def forest_str(graph, with_labels=True, sources=None, write=None, ascii_only=False):
-    """Creates a nice utf8 representation of a forest
-
-    This function has been superseded by
-    :func:`nx.readwrite.text.generate_network_text`, which should be used
-    instead.
-
-    Parameters
-    ----------
-    graph : nx.DiGraph | nx.Graph
-        Graph to represent (must be a tree, forest, or the empty graph)
-
-    with_labels : bool
-        If True will use the "label" attribute of a node to display if it
-        exists otherwise it will use the node value itself. Defaults to True.
-
-    sources : List
-        Mainly relevant for undirected forests, specifies which nodes to list
-        first. If unspecified the root nodes of each tree will be used for
-        directed forests; for undirected forests this defaults to the nodes
-        with the smallest degree.
-
-    write : callable
-        Function to use to write to, if None new lines are appended to
-        a list and returned. If set to the `print` function, lines will
-        be written to stdout as they are generated. If specified,
-        this function will return None. Defaults to None.
-
-    ascii_only : Boolean
-        If True only ASCII characters are used to construct the visualization
-
-    Returns
-    -------
-    str | None :
-        utf8 representation of the tree / forest
-
-    Example
-    -------
-    >>> graph = nx.balanced_tree(r=2, h=3, create_using=nx.DiGraph)
-    >>> print(nx.forest_str(graph))
-    ╙── 0
-        ├─╼ 1
-        │   ├─╼ 3
-        │   │   ├─╼ 7
-        │   │   └─╼ 8
-        │   └─╼ 4
-        │       ├─╼ 9
-        │       └─╼ 10
-        └─╼ 2
-            ├─╼ 5
-            │   ├─╼ 11
-            │   └─╼ 12
-            └─╼ 6
-                ├─╼ 13
-                └─╼ 14
+class _AsciiBaseGlyphs:
+    empty = "+"
+    newtree_last = "+-- "
+    newtree_mid = "+-- "
+    endof_forest = "    "
+    within_forest = ":   "
+    within_tree = "|   "
 
 
-    >>> graph = nx.balanced_tree(r=1, h=2, create_using=nx.Graph)
-    >>> print(nx.forest_str(graph))
-    ╙── 0
-        └── 1
-            └── 2
+class AsciiDirectedGlyphs(_AsciiBaseGlyphs):
+    last = "L-> "
+    mid = "|-> "
+    backedge = "<-"
 
-    >>> print(nx.forest_str(graph, ascii_only=True))
-    +-- 0
-        L-- 1
-            L-- 2
-    """
-    msg = (
-        "\nforest_str is deprecated as of version <TBD> and will be removed "
-        "in version <TBD>. Use generate_network_text or write_network_text "
-        "instead.\n"
-    )
-    warnings.warn(msg, DeprecationWarning)
 
-    if len(graph.nodes) > 0:
-        if not nx.is_forest(graph):
-            raise nx.NetworkXNotImplemented("input must be a forest or the empty graph")
+class AsciiUndirectedGlyphs(_AsciiBaseGlyphs):
+    last = "L-- "
+    mid = "|-- "
+    backedge = "-"
 
-    printbuf = []
-    if write is None:
-        _write = printbuf.append
-    else:
-        _write = write
 
-    write_network_text(
-        graph,
-        _write,
-        with_labels=with_labels,
-        sources=sources,
-        ascii_only=ascii_only,
-        end="",
-    )
+class _UtfBaseGlyphs:
+    empty = "╙"
+    newtree_last = "╙── "
+    newtree_mid = "╟── "
+    endof_forest = "    "
+    within_forest = "╎   "
+    within_tree = "│   "
 
-    if write is None:
-        # Only return a string if the custom write function was not specified
-        return "\n".join(printbuf)
+
+class UtfDirectedGlyphs(_UtfBaseGlyphs):
+    last = "└─╼ "
+    mid = "├─╼ "
+    backedge = "╾"
+
+
+class UtfUndirectedGlyphs(_UtfBaseGlyphs):
+    last = "└── "
+    mid = "├── "
+    backedge = "─"
 
 
 def generate_network_text(
-    graph, with_labels=True, sources=None, write=None, ascii_only=False
+    graph, with_labels=True, sources=None, max_depth=None, ascii_only=False
 ):
     """Generate lines in the "network text" format
 
@@ -165,6 +108,9 @@ def generate_network_text(
         reachable from one of these sources may not be shown. If unspecified,
         the minimal set of nodes needed to reach all others will be used.
 
+    max_depth : int | None
+        The maximum depth to traverse before stopping. Defaults to None.
+
     ascii_only : Boolean
         If True only ASCII characters are used to construct the visualization
 
@@ -176,98 +122,44 @@ def generate_network_text(
     # Notes on available box and arrow characters
     # https://en.wikipedia.org/wiki/Box-drawing_character
     # https://stackoverflow.com/questions/2701192/triangle-arrow
-    if ascii_only:
-        glyph_empty = "+"
-        glyph_newtree_last = "+-- "
-        glyph_newtree_mid = "+-- "
-        glyph_endof_forest = "    "
-        glyph_within_forest = ":   "
-        glyph_within_tree = "|   "
 
-        glyph_directed_last = "L-> "
-        glyph_directed_mid = "|-> "
-        glyph_directed_backedge = "<-"
+    is_directed = graph.is_directed()
 
-        glyph_undirected_last = "L-- "
-        glyph_undirected_mid = "|-- "
-        glyph_undirected_backedge = "-"
+    if is_directed:
+        glyphs = AsciiDirectedGlyphs if ascii_only else UtfDirectedGlyphs
+        succ = graph.succ
+        pred = graph.pred
     else:
-        glyph_empty = "╙"
-        glyph_newtree_last = "╙── "
-        glyph_newtree_mid = "╟── "
-        glyph_endof_forest = "    "
-        glyph_within_forest = "╎   "
-        glyph_within_tree = "│   "
+        glyphs = AsciiUndirectedGlyphs if ascii_only else UtfUndirectedGlyphs
+        succ = graph.adj
+        pred = graph.adj
 
-        glyph_directed_last = "└─╼ "
-        glyph_directed_mid = "├─╼ "
-        glyph_directed_backedge = "╾"
-
-        glyph_undirected_last = "└── "
-        glyph_undirected_mid = "├── "
-        glyph_undirected_backedge = "─"
-
-    if len(graph.nodes) == 0:
-        yield glyph_empty
+    if max_depth == 0:
+        yield glyphs.empty + " ..."
+    elif len(graph.nodes) == 0:
+        yield glyphs.empty
     else:
-        is_directed = graph.is_directed()
-        if is_directed:
-            glyph_last = glyph_directed_last
-            glyph_mid = glyph_directed_mid
-            glyph_backedge = glyph_directed_backedge
-            succ = graph.succ
-            pred = graph.pred
-        else:
-            glyph_last = glyph_undirected_last
-            glyph_mid = glyph_undirected_mid
-            glyph_backedge = glyph_undirected_backedge
-            succ = graph.adj
-            pred = graph.adj
 
+        # If the nodes to traverse are unspecified, find the minimal set of
+        # nodes that will reach the entire graph
         if sources is None:
-            # For each connected part of the graph, choose at least
-            # one node as a starting point, preferably without a parent
-            if is_directed:
-                # Choose one node from each SCC with minimum in_degree
-                sccs = list(nx.strongly_connected_components(graph))
-                # condensing the SCCs forms a dag, the nodes in this graph with
-                # 0 in-degree correspond to the SCCs from which the minimum set
-                # of nodes from which all other nodes can be reached.
-                scc_graph = nx.condensation(graph, sccs)
-                supernode_to_nodes = {sn: [] for sn in scc_graph.nodes()}
-                # Note: the order of mapping differs between pypy and cpython
-                # so we have to loop over graph nodes for consistency
-                mapping = scc_graph.graph["mapping"]
-                for n in graph.nodes:
-                    sn = mapping[n]
-                    supernode_to_nodes[sn].append(n)
-                sources = []
-                for sn in scc_graph.nodes():
-                    if scc_graph.in_degree[sn] == 0:
-                        scc = supernode_to_nodes[sn]
-                        node = min(scc, key=lambda n: graph.in_degree[n])
-                        sources.append(node)
-            else:
-                # For undirected graph, the entire graph will be reachable as
-                # long as we consider one node from every connected component
-                sources = [
-                    min(cc, key=lambda n: graph.degree[n])
-                    for cc in nx.connected_components(graph)
-                ]
-                sources = sorted(sources, key=lambda n: graph.degree[n])
+            sources = _find_sources(graph)
 
-        # Populate the stack with each source node, empty indentation, and mark
-        # the final node. Reverse the stack so sources are popped in the
-        # correct order.
+        # Populate the stack with each:
+        # 1. parent node in the DFS tree (or None for root nodes),
+        # 2. the current node in the DFS tree
+        # 2. a list of indentations indicating depth
+        # 3. a flag indicating if the node is the final one to be written.
+        # Reverse the stack so sources are popped in the correct order.
         last_idx = len(sources) - 1
         stack = [
-            (None, node, "", (idx == last_idx)) for idx, node in enumerate(sources)
+            (None, node, [], (idx == last_idx)) for idx, node in enumerate(sources)
         ][::-1]
 
         num_skipped_children = defaultdict(lambda: 0)
         seen_nodes = set()
         while stack:
-            parent, node, indent, this_islast = stack.pop()
+            parent, node, indents, this_islast = stack.pop()
 
             if node is not Ellipsis:
                 skip = node in seen_nodes
@@ -283,12 +175,12 @@ def generate_network_text(
 
                         # Append the ellipsis to be emitted last
                         next_islast = True
-                        try_frame = (node, Ellipsis, indent, next_islast)
+                        try_frame = (node, Ellipsis, indents, next_islast)
                         stack.append(try_frame)
 
                         # Redo this frame, but not as a last object
                         next_islast = False
-                        try_frame = (parent, node, indent, next_islast)
+                        try_frame = (parent, node, indents, next_islast)
                         stack.append(try_frame)
                         continue
 
@@ -296,25 +188,25 @@ def generate_network_text(
                     continue
                 seen_nodes.add(node)
 
-            if not indent:
+            if not indents:
                 # Top level items (i.e. trees in the forest) get different
                 # glyphs to indicate they are not actually connected
                 if this_islast:
-                    this_prefix = indent + glyph_newtree_last
-                    next_prefix = indent + glyph_endof_forest
+                    this_prefix = indents + [glyphs.newtree_last]
+                    next_prefix = indents + [glyphs.endof_forest]
                 else:
-                    this_prefix = indent + glyph_newtree_mid
-                    next_prefix = indent + glyph_within_forest
+                    this_prefix = indents + [glyphs.newtree_mid]
+                    next_prefix = indents + [glyphs.within_forest]
 
             else:
                 # For individual tree edges distinguish between directed and
                 # undirected cases
                 if this_islast:
-                    this_prefix = indent + glyph_last
-                    next_prefix = indent + glyph_endof_forest
+                    this_prefix = indents + [glyphs.last]
+                    next_prefix = indents + [glyphs.endof_forest]
                 else:
-                    this_prefix = indent + glyph_mid
-                    next_prefix = indent + glyph_within_tree
+                    this_prefix = indents + [glyphs.mid]
+                    next_prefix = indents + [glyphs.within_tree]
 
             if node is Ellipsis:
                 label = " ..."
@@ -343,10 +235,16 @@ def generate_network_text(
                     children = [
                         child for child in succ[node] if child not in seen_nodes
                     ]
+
                     # In the undirected case, parents are also children, so we
                     # only need to immediately show the ones we can no longer
                     # traverse
                     handled_parents = {*children, parent}
+
+                if max_depth is not None and len(indents) == max_depth - 1:
+                    if children:
+                        children = [Ellipsis]
+                    handled_parents = {parent}
 
                 # The other parents are other predecessors of this node that
                 # are not handled elsewhere.
@@ -360,13 +258,13 @@ def generate_network_text(
                         other_parents_labels = ", ".join(
                             [str(p) for p in other_parents]
                         )
-                    suffix = " ".join(["", glyph_backedge, other_parents_labels])
+                    suffix = " ".join(["", glyphs.backedge, other_parents_labels])
                 else:
                     suffix = ""
 
             # Emit the line for this node, this will be called for each node
             # exactly once.
-            yield (this_prefix + label + suffix)
+            yield "".join(this_prefix + [label, suffix])
 
             # Push children on the stack in reverse order so they are popped in
             # the original order.
@@ -378,7 +276,13 @@ def generate_network_text(
 
 @open_file(1, "w")
 def write_network_text(
-    graph, path=None, with_labels=True, sources=None, ascii_only=False, end="\n"
+    graph,
+    path=None,
+    with_labels=True,
+    sources=None,
+    max_depth=None,
+    ascii_only=False,
+    end="\n",
 ):
     """Creates a nice text representation of a graph
 
@@ -406,6 +310,9 @@ def write_network_text(
         Specifies which nodes to start traversal from. Note: nodes that are not
         reachable from one of these sources may not be shown. If unspecified,
         the minimal set of nodes needed to reach all others will be used.
+
+    max_depth : int | None
+        The maximum depth to traverse before stopping. Defaults to None.
 
     ascii_only : Boolean
         If True only ASCII characters are used to construct the visualization
@@ -496,6 +403,146 @@ def write_network_text(
         raise TypeError(type(path))
 
     for line in generate_network_text(
-        graph, with_labels=with_labels, sources=sources, ascii_only=ascii_only
+        graph,
+        with_labels=with_labels,
+        sources=sources,
+        max_depth=max_depth,
+        ascii_only=ascii_only,
     ):
         _write(line + end)
+
+
+def _find_sources(graph):
+    """
+    Determine a minimal set of nodes such that the entire graph is reachable
+    """
+    # For each connected part of the graph, choose at least
+    # one node as a starting point, preferably without a parent
+    if graph.is_directed():
+        # Choose one node from each SCC with minimum in_degree
+        sccs = list(nx.strongly_connected_components(graph))
+        # condensing the SCCs forms a dag, the nodes in this graph with
+        # 0 in-degree correspond to the SCCs from which the minimum set
+        # of nodes from which all other nodes can be reached.
+        scc_graph = nx.condensation(graph, sccs)
+        supernode_to_nodes = {sn: [] for sn in scc_graph.nodes()}
+        # Note: the order of mapping differs between pypy and cpython
+        # so we have to loop over graph nodes for consistency
+        mapping = scc_graph.graph["mapping"]
+        for n in graph.nodes:
+            sn = mapping[n]
+            supernode_to_nodes[sn].append(n)
+        sources = []
+        for sn in scc_graph.nodes():
+            if scc_graph.in_degree[sn] == 0:
+                scc = supernode_to_nodes[sn]
+                node = min(scc, key=lambda n: graph.in_degree[n])
+                sources.append(node)
+    else:
+        # For undirected graph, the entire graph will be reachable as
+        # long as we consider one node from every connected component
+        sources = [
+            min(cc, key=lambda n: graph.degree[n])
+            for cc in nx.connected_components(graph)
+        ]
+        sources = sorted(sources, key=lambda n: graph.degree[n])
+    return sources
+
+
+def forest_str(graph, with_labels=True, sources=None, write=None, ascii_only=False):
+    """Creates a nice utf8 representation of a forest
+
+    This function has been superseded by
+    :func:`nx.readwrite.text.generate_network_text`, which should be used
+    instead.
+
+    Parameters
+    ----------
+    graph : nx.DiGraph | nx.Graph
+        Graph to represent (must be a tree, forest, or the empty graph)
+
+    with_labels : bool
+        If True will use the "label" attribute of a node to display if it
+        exists otherwise it will use the node value itself. Defaults to True.
+
+    sources : List
+        Mainly relevant for undirected forests, specifies which nodes to list
+        first. If unspecified the root nodes of each tree will be used for
+        directed forests; for undirected forests this defaults to the nodes
+        with the smallest degree.
+
+    write : callable
+        Function to use to write to, if None new lines are appended to
+        a list and returned. If set to the `print` function, lines will
+        be written to stdout as they are generated. If specified,
+        this function will return None. Defaults to None.
+
+    ascii_only : Boolean
+        If True only ASCII characters are used to construct the visualization
+
+    Returns
+    -------
+    str | None :
+        utf8 representation of the tree / forest
+
+    Example
+    -------
+    >>> graph = nx.balanced_tree(r=2, h=3, create_using=nx.DiGraph)
+    >>> print(nx.forest_str(graph))
+    ╙── 0
+        ├─╼ 1
+        │   ├─╼ 3
+        │   │   ├─╼ 7
+        │   │   └─╼ 8
+        │   └─╼ 4
+        │       ├─╼ 9
+        │       └─╼ 10
+        └─╼ 2
+            ├─╼ 5
+            │   ├─╼ 11
+            │   └─╼ 12
+            └─╼ 6
+                ├─╼ 13
+                └─╼ 14
+
+
+    >>> graph = nx.balanced_tree(r=1, h=2, create_using=nx.Graph)
+    >>> print(nx.forest_str(graph))
+    ╙── 0
+        └── 1
+            └── 2
+
+    >>> print(nx.forest_str(graph, ascii_only=True))
+    +-- 0
+        L-- 1
+            L-- 2
+    """
+    msg = (
+        "\nforest_str is deprecated as of version <TBD:3.x?> and will be removed "
+        "in version <TBD:3.y?>. Use generate_network_text or write_network_text "
+        "instead.\n"
+    )
+    warnings.warn(msg, DeprecationWarning)
+
+    if len(graph.nodes) > 0:
+        if not nx.is_forest(graph):
+            raise nx.NetworkXNotImplemented("input must be a forest or the empty graph")
+
+    printbuf = []
+    if write is None:
+        _write = printbuf.append
+    else:
+        _write = write
+
+    write_network_text(
+        graph,
+        _write,
+        with_labels=with_labels,
+        sources=sources,
+        ascii_only=ascii_only,
+        end="",
+    )
+
+    if write is None:
+        # Only return a string if the custom write function was not specified
+        return "\n".join(printbuf)
