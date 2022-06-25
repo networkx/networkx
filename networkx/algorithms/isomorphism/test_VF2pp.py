@@ -64,7 +64,7 @@ def check_feasibility(node1, node2, G1, G2, G1_labels, G2_labels, state):
     if G1.number_of_edges(node1, node1) != G2.number_of_edges(node2, node2):
         return False
 
-    if prune_ISO(G1, G2, node1, node2, state):
+    if prune_ISO(G1, G2, G1_labels, G2_labels, node1, node2, state):
         return False
     # Check if every covered neighbor of u is mapped to every covered neighbor of v
     # Also check if there is the same number of edges between the candidates and their neighbors
@@ -88,11 +88,11 @@ def check_feasibility(node1, node2, G1, G2, G1_labels, G2_labels, state):
     return True
 
 
-def prune_ISO(G1, G2, u, v, state):
-    u_neighbors_labels = {n1: G1.nodes[n1]["label"] for n1 in G1[u]}
+def prune_ISO(G1, G2, G1_labels, G2_labels, u, v, state):
+    u_neighbors_labels = {n1: G1_labels[n1] for n1 in G1[u]}
     u_labels_neighbors = collections.OrderedDict(sorted(nx.utils.groups(u_neighbors_labels).items()))
 
-    v_neighbors_labels = {n2: G2.nodes[n2]["label"] for n2 in G2[v]}
+    v_neighbors_labels = {n2: G2_labels[n2] for n2 in G2[v]}
     v_labels_neighbors = collections.OrderedDict(sorted(nx.utils.groups(v_neighbors_labels).items()))
     # if the neighbors of u, do not have the same labels as those of v, feasibility cannot be established.
     if set(u_labels_neighbors.keys()) != set(v_labels_neighbors.keys()):

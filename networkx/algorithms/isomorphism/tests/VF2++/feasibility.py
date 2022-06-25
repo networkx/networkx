@@ -12,13 +12,15 @@ class TestGraphIsomorphism:
         G.nodes[i]["label"] = colors[random.randrange(len(colors))]
 
     def test_prune_iso(self):
+        G1_labels = {n: self.G.nodes[n]["label"] for n in self.G.nodes()}
+        G2_labels = G1_labels
         m = {node: node for node in self.G.nodes() if node < self.G.number_of_nodes() // 4}
         s = State(G1=self.G, G2=self.G, u=0, node_order=None, mapping=m, reverse_mapping=m)
 
         cnt = 0
         feasible = -1
         for n in self.G.nodes():
-            if not prune_ISO(G1=self.G, G2=self.G, u=1756, v=n, state=s):
+            if not prune_ISO(G1=self.G, G2=self.G, G1_labels=G1_labels, G2_labels=G2_labels, u=1756, v=n, state=s):
                 feasible = n
                 cnt += 1
         assert cnt == 1
