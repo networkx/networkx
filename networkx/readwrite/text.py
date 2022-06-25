@@ -135,6 +135,7 @@ def generate_network_text(
     3. Edges are indicated in one of three ways:
 
         a. a parent "L-style" connection on the upper left. This corresponds to
+        a traversal in the directed DFS tree.
 
         b. a backref "<-style" connection shown directly on the right. For
         directed graphs, these are drawn for any incoming edges to a node that
