@@ -33,6 +33,9 @@ class AsciiUndirectedGlyphs(_AsciiBaseGlyphs):
 
 
 class _UtfBaseGlyphs:
+    # Notes on available box and arrow characters
+    # https://en.wikipedia.org/wiki/Box-drawing_character
+    # https://stackoverflow.com/questions/2701192/triangle-arrow
     empty = "╙"
     newtree_last = "╙── "
     newtree_mid = "╟── "
@@ -118,11 +121,6 @@ def generate_network_text(
     ------
     str : a line of generated text
     """
-    # Define glphys
-    # Notes on available box and arrow characters
-    # https://en.wikipedia.org/wiki/Box-drawing_character
-    # https://stackoverflow.com/questions/2701192/triangle-arrow
-
     is_directed = graph.is_directed()
 
     if is_directed:
@@ -242,6 +240,7 @@ def generate_network_text(
                     handled_parents = {*children, parent}
 
                 if max_depth is not None and len(indents) == max_depth - 1:
+                    # Use ellipsis to indicate we have reached maximum depth
                     if children:
                         children = [Ellipsis]
                     handled_parents = {parent}
