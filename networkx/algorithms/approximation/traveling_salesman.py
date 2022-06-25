@@ -676,7 +676,9 @@ def held_karp_ascent(G, weight="weight"):
                     n_count -= 1
                 a_eq[len(G)][arb_count] = 1
                 arb_count += 1
-            program_result = optimize.linprog(c, A_eq=a_eq, b_eq=b_eq)
+            program_result = optimize.linprog(
+                c, A_eq=a_eq, b_eq=b_eq, method="interior-point"
+            )
             bool_result = program_result.x >= 0
             if program_result.status == 0 and np.sum(bool_result) == len(
                 minimum_1_arborescences
