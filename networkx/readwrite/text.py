@@ -94,8 +94,11 @@ def generate_network_text(
 
     4. The children of each node (wrt the directed DFS tree) are drawn
     underneath and to the right of it. In the case that a child node has already
-    been drawn the connection is replaced with a "..." to indicate that there
-    is one or more connections represented elsewhere.
+    been drawn the connection is replaced with an ellipsis ("...") to indicate
+    that there is one or more connections represented elsewhere.
+
+    5. If a maximum depth is specified, an edge to nodes past this maximum
+    depth will be represented by an ellipsis.
 
     Parameters
     ----------
