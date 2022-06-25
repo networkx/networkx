@@ -1,16 +1,16 @@
 """
 ***************
-VF2++ Algorithm
+VF2pp Algorithm
 ***************
 
-Implementation of the VF2++ algorithm for the Graph Isomorphism problem.
+Implementation of the VF2pp algorithm for the Graph Isomorphism problem.
 """
 
 import sys
 
 
 class GraphMatcher:
-    """Implementation of the VF2++ algorithm, for matching undirected graphs.
+    """Implementation of the VF2pp algorithm, for matching undirected graphs.
     """
 
     def __init__(self, G1, G2, check_labels=False):
