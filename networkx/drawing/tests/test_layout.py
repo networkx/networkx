@@ -78,6 +78,7 @@ class TestLayout:
         nx.kamada_kawai_layout(G)
         nx.kamada_kawai_layout(G, dim=1)
         nx.kamada_kawai_layout(G, dim=3)
+        nx.forceatlas2_layout(G)
 
     def test_smoke_string(self):
         G = self.Gs
@@ -92,6 +93,7 @@ class TestLayout:
         nx.kamada_kawai_layout(G)
         nx.kamada_kawai_layout(G, dim=1)
         nx.kamada_kawai_layout(G, dim=3)
+        nx.forceatlas2_layout(G)
 
     def check_scale_and_center(self, pos, scale, center):
         center = np.array(center)
@@ -183,6 +185,10 @@ class TestLayout:
         vpos = nx.shell_layout(G, [[0], [1, 2], [3]], rotate=0)
         assert np.linalg.norm(vpos[3]) <= 1  # ensure node 3 fits (#3753)
 
+    def test_smoke_initial_pos_forceatlas2(self):
+        pos = nx.circular_layout(self.Gi)
+        npos = nx.forceatlas2_layout(self.Gi, pos=pos)
+
     def test_smoke_initial_pos_fruchterman_reingold(self):
         pos = nx.circular_layout(self.Gi)
         npos = nx.fruchterman_reingold_layout(self.Gi, pos=pos)
@@ -253,6 +259,8 @@ class TestLayout:
         vpos = nx.multipartite_layout(G, center=(1, 1))
         assert vpos == {}
         vpos = nx.kamada_kawai_layout(G, center=(1, 1))
+        assert vpos == {}
+        vpos = nx.forceatlas2_layout(G)
         assert vpos == {}
 
     def test_bipartite_layout(self):
@@ -382,6 +390,15 @@ class TestLayout:
             assert almost_equal(
                 distances_equidistant[d], distances_equidistant[d + 1], 2
             )
+
+    def test_forceatlas2_layout(self):
+        # check whether imporatial pos input still returns a proper position
+        G = self.Gs
+        pos = nx.random_layout(G)
+        del pos[list(G.nodes())[0]]
+        pos = nx.forceatlas2_layout(G, pos = pos)
+        assert len(pos) == len(G)
+
 
     def test_rescale_layout_dict(self):
         G = nx.empty_graph()

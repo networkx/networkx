@@ -1237,8 +1237,15 @@ def forceatlas2_layout(
 
     # default node positions proportional to the input dimensions
     # (if it exists)
-    max_dim = max([max(i) for i in pos.values()])
-    min_dim = min([min(i) for i in pos.values()])
+    max_dim = 1
+    min_dim = 0
+    # check if we have a valid pos else just return (empty graph)
+    if pos:
+        max_dim = np.array([max(i) for i in pos.values()]).max()
+        min_dim = np.array(([min(i) for i in pos.values()])).min()
+    else:
+        return pos
+
     pos_arr = np.random.rand(len(G), dim) * max_dim - min_dim
 
     mass = np.zeros(len(G))
