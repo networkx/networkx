@@ -10,8 +10,6 @@ PageRank
    :toctree: generated/
 
    pagerank
-   pagerank_numpy
-   pagerank_scipy
    google_matrix
 
 Hits

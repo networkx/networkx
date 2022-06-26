@@ -69,12 +69,6 @@ def set_warnings():
         "ignore", category=PendingDeprecationWarning, message="the matrix subclass"
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="networkx.pagerank_numpy"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="networkx.pagerank_scipy"
-    )
-    warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="edges_from_line"
     )
     warnings.filterwarnings("ignore", category=DeprecationWarning, message="consume")
