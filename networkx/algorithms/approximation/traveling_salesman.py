@@ -674,7 +674,6 @@ def held_karp_ascent(G, weight="weight"):
                     a_eq[n_count][arb_count] = deg - 2
                     n_count -= 1
                 a_eq[len(G)][arb_count] = 1
-                arb_count += 1
             program_result = optimize.linprog(c, A_eq=a_eq, b_eq=b_eq)
             # If the constants exist, then the direction of ascent doesn't
             if program_result.success:
