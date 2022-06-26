@@ -35,16 +35,13 @@ __all__ = [
 chaini = chain.from_iterable
 
 
-def descendants(G, source, include_source=False):
+def descendants(G, source):
     """Returns all nodes reachable from `source` in `G`.
 
     Parameters
     ----------
     G : NetworkX Graph
     source : node in `G`
-    include_source: bool, optional (default=False)
-        If False, the source is not included as its own descendant. 
-        If True, the source node as well is returned as one of its descendants.
 
     Returns
     -------
@@ -62,29 +59,24 @@ def descendants(G, source, include_source=False):
     >>> sorted(list(nx.descendants(DG, 2)))
     [3, 4]
 
-    >>> sorted(list(nx.descendants(DG, 2, True)))
-    [2, 3, 4]
+    A node is not returned as one of its descendants. If you prefer to include the node itself too, you can perform a manual union operation as follows:
+
+    >>> nx.descendants(DG, 2).union{source}
 
     See also
     --------
     ancestors
     """
-
-    if include_source:
-        return {child for parent, child in nx.bfs_edges(G, source)}.union({source})
     return {child for parent, child in nx.bfs_edges(G, source)}
 
 
-def ancestors(G, source, include_source=False):
+def ancestors(G, source):
     """Returns all nodes having a path to `source` in `G`.
 
     Parameters
     ----------
     G : NetworkX Graph
     source : node in `G`
-    include_source: bool, optional (default=False)
-        If False, the source is not included as its own descendant. 
-        If True, the source node as well is returned as one of its descendants.
 
     Returns
     -------
@@ -102,17 +94,14 @@ def ancestors(G, source, include_source=False):
     >>> sorted(list(nx.ancestors(DG, 2)))
     [0, 1]
 
-    >>> sorted(list(nx.ancestors(DG, 2, True)))
-    [0, 1, 2]
+    A node is not returned as one of its ancestors. If you prefer to include the node itself too, you can perform a manual union operation as follows:
+
+    >>> nx.ancestors(DG, 2).union{source}
 
     See also
     --------
     descendants
     """
-    if include_source:
-        return {child for parent, child in nx.bfs_edges(G, source, reverse=True)}.union(
-            {source}
-        )
     return {child for parent, child in nx.bfs_edges(G, source, reverse=True)}
 
 
