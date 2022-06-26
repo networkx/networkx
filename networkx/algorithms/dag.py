@@ -62,7 +62,7 @@ def descendants(G, source):
 
     A node is not returned as one of its own descendantsgit . If you prefer to include the node itself as well, you can perform a manual union operation as follows:
 
-    >>> descendants = descendants.union({source})
+    >>> descendants = descendants.union({2})
 
     See also
     --------
@@ -98,7 +98,7 @@ def ancestors(G, source):
 
     A node is not returned as one of its own ancestors. If you prefer to include the node itself as well, you can perform a manual union operation as follows:
 
-    >>> ancestors = ancestors.union({source})
+    >>> ancestors = ancestors.union({2})
 
     See also
     --------
