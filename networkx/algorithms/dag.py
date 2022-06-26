@@ -43,8 +43,8 @@ def descendants(G, source, include_source=False):
     G : NetworkX Graph
     source : node in `G`
     include_source: bool, optional (default=False)
-        If False, the source is not included as its own descendant. If True, the source node as well
-        is returned as one of its descendants.
+        If False, the source is not included as its own descendant. 
+        If True, the source node as well is returned as one of its descendants.
 
     Returns
     -------
@@ -83,8 +83,8 @@ def ancestors(G, source, include_source=False):
     G : NetworkX Graph
     source : node in `G`
     include_source: bool, optional (default=False)
-        If False, the source is not included as its own descendant. If True, the source node as well
-        is returned as one of its descendants.
+        If False, the source is not included as its own descendant. 
+        If True, the source node as well is returned as one of its descendants.
 
     Returns
     -------
