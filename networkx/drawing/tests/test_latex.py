@@ -442,8 +442,9 @@ def test_exception_multiple_graphs(to_latex):
     fourpos = [pos_OK, pos_OK, pos_OK, pos_OK]
 
     # include pos dict as a list of dicts for each graph
-    with pytest.raises(nx.NetworkXError):
-        to_latex(fourG, pos_OK)
+    if to_latex is nx.to_latex_adigraph:
+        with pytest.raises(nx.NetworkXError):
+            to_latex(fourG, pos_OK)
 
     # include pos dict as a list of dicts for each graph
     with pytest.raises(nx.NetworkXError):
