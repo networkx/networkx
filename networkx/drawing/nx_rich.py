@@ -278,14 +278,21 @@ class RichGraph(JupyterMixin):
 
             ### Rich parts
             # guide_style = guide_style_stack.current + get_style(node.guide_style)
+
+            node_renderable = node_data.get('__rich__', None)
+
+            guide_style = node_data.get('guide_style', None)
+            if guide_style is None:
+                guide_style = get_style(self.style) or null_style
+            else:
+                guide_style = get_style(guide_style) or null_style
+
             style = get_style(self.style) or null_style
             # node_style = get_style(self.style) or null_style
-            guide_style = get_style(self.style) or null_style
 
             prefix = [_Segment(p, guide_style) for p in this_prefix]
 
             suffix_renderable = Text(suffix)
-            node_renderable = node_data.get('__rich__', None)
             if node_renderable is None:
                 node_renderable = Text(label)
 
@@ -466,7 +473,7 @@ def demo():
     from rich.table import Table
     import ubelt as ub
 
-    graph = nx.erdos_renyi_graph(13, 0.7, directed=False)
+    graph = nx.erdos_renyi_graph(9, 0.7, directed=False)
     rgraph_plain = RichGraph(graph.copy(), root="🌲 [b green]Plain Rich Tree", highlight=True, hide_root=True)
 
     rgraph_fancy = RichGraph(graph.copy(), root="🌲 [b green]Fancy Rich Tree", highlight=True, hide_root=True)
