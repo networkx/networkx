@@ -238,9 +238,12 @@ def _one_level(G, m, partition, resolution=1, is_directed=False, seed=None):
                 out_degree = out_degrees[u]
                 Stot_in[best_com] -= in_degree
                 Stot_out[best_com] -= out_degree
-                remove_cost = -weights2com[best_com] / (2 * m) + resolution * (
-                    out_degree * Stot_in[best_com] + in_degree * Stot_out[best_com]
-                ) / (2 * m**2)
+                remove_cost = (
+                    -weights2com[best_com] / m
+                    + resolution
+                    * (out_degree * Stot_in[best_com] + in_degree * Stot_out[best_com])
+                    / m**2
+                )
             else:
                 degree = degrees[u]
                 Stot[best_com] -= degree
@@ -251,13 +254,13 @@ def _one_level(G, m, partition, resolution=1, is_directed=False, seed=None):
                 if is_directed:
                     gain = (
                         remove_cost
-                        + wt / (2 * m)
+                        + wt / m
                         - resolution
                         * (
                             out_degree * Stot_in[nbr_com]
                             + in_degree * Stot_out[nbr_com]
                         )
-                        / (2 * m**2)
+                        / m**2
                     )
                 else:
                     gain = (
