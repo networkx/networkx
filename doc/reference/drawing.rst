@@ -105,4 +105,7 @@ LaTeX Code
 
    to_latex
    write_latex
-   to_latex_raw
+   to_latex_tikz_raw
+   to_latex_tikz
+   to_latex_adigraph_raw
+   to_latex_adigraph
