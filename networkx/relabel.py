@@ -6,6 +6,9 @@ __all__ = ["convert_node_labels_to_integers", "relabel_nodes"]
 def relabel_nodes(G, mapping, copy=True):
     """Relabel the nodes of the graph G according to a given mapping.
 
+    The original node ordering may not be preserved if `copy` is `False` and the
+    mapping includes overlap between old and new labels.
+
     Parameters
     ----------
     G : graph
@@ -124,9 +127,7 @@ def relabel_nodes(G, mapping, copy=True):
 
 
 def _relabel_inplace(G, mapping):
-    old_labels = set(mapping.keys())
-    new_labels = set(mapping.values())
-    if len(old_labels & new_labels) > 0:
+    if len(mapping.keys() & mapping.values()) > 0:
         # labels sets overlap
         # can we topological sort and still do the relabeling?
         D = nx.DiGraph(list(mapping.items()))
@@ -139,8 +140,8 @@ def _relabel_inplace(G, mapping):
                 "resolve the mapping. Use copy=True."
             ) from err
     else:
-        # non-overlapping label sets
-        nodes = old_labels
+        # non-overlapping label sets, sort them in the order of G nodes
+        nodes = [n for n in G if n in mapping]
 
     multigraph = G.is_multigraph()
     directed = G.is_directed()
