@@ -5,24 +5,25 @@ LaTeX
 
 Export NetworkX graphs in LaTeX format using the TikZ library within TeX/LaTeX.
 Usually, you will want the drawing to appear in a figure environment so
-you use :func:`to_latex(G, caption="A caption")`. If you want the raw
-drawing commends without a figure environment us `to_latex_raw(G)`.
+you use ``to_latex(G, caption="A caption")``. If you want the raw
+drawing commands without a figure environment use :func:`to_latex_tikz_raw`.
 And it you want to write to a file instead of just returning the latex
-code as a string, use `write_latex(G, "filname.tex", caption="A caption")`.
+code as a string, use ``write_latex(G, "filname.tex", caption="A caption")``.
 
 This module also provides a simpler, though feature restricted tools for
 formatting the options for each node/edge called AdiGraph.
 Note that some features of the Adigraph LaTeX package are not provided here.
-The `write_latex` command takes an optional argument `constructor` which
-should be set to `to_latex_adigraph` or its default value of `to_latex_tikz`.
+The :func:`write_latex` command takes an optional argument `constructor` which
+should be set to :func:`to_latex_adigraph` or
+its default value of :func:`to_latex_tikz`.
 
 To construct a figure with subfigures for each graph to be shown, provide
-`to_latex` or `write_latex` a list of graphs, a list of sub-captions,
-and a number of rows of sub-figures inside the figure.
+``to_latex`` or ``write_latex`` a list of graphs, a list of subcaptions,
+and a number of rows of subfigures inside the figure.
 
-To be able to refer to the figures or subfigures in latex using `\\ref`,
-the keyword `latex_label` is available for figures and `sub_labels` for
-a list of labels, one for each sub-figure.
+To be able to refer to the figures or subfigures in latex using ``\\ref``,
+the keyword ``latex_label`` is available for figures and `sub_labels` for
+a list of labels, one for each subfigure.
 
 The TikZ interface (default) allows more options than the adigraph package.
 But the adigraph package allows you to store just the e.g. width values
@@ -57,19 +58,21 @@ Examples
 
 You can change many features of the nodes and edges.
 
-G=nx.path_graph(4, create_using=nx.DiGraph)
-pos = {n: (n, n) for n in G}  # nodes set on a line
+>>> G=nx.path_graph(4, create_using=nx.DiGraph)
+>>> pos = {n: (n, n) for n in G}  # nodes set on a line
 
-G.nodes[0]["color"] = "blue"
-G.nodes[2]["width"] = "line width=3"
-G.nodes[3]["label"] = "Stop"
-G.edges[(1, 2)]["width"] = "line width=3"
-G.edges[(2, 3)]["color"] = "green"
-G.edges[(0, 1)]["label"] = "1st Step:near start"
-G.edges[(2, 3)]["label"] = "3rd Step:near end"
-G.edges[(1, 2)]["label"] = "2nd Step"
+>>> G.nodes[0]["style"] = "blue"
+>>> G.nodes[2]["style"] = "line width=3"
+>>> G.nodes[3]["label"] = "Stop"
+>>> G.edges[(1, 2)]["style"] = "line width=3"
+>>> G.edges[(2, 3)]["style"] = "green"
+>>> G.edges[(0, 1)]["label"] = "1st Step"
+>>> G.edges[(0, 1)]["label_opts"] = "near start"
+>>> G.edges[(2, 3)]["label"] = "3rd Step"
+>>> G.edges[(2, 3)]["label_opts"] = "near end"
+>>> G.edges[(1, 2)]["label"] = "2nd Step"
 
-nx.write_latex(G, "latex_graph.tex", pos=pos, as_document=True)
+>>> nx.write_latex(G, "latex_graph.tex", pos=pos, as_document=True)
 
 Then compile the LaTeX using something like ``pdflatex latex_graph.tex``
 and view the pdf file created: ``latex_graph.pdf``.
@@ -146,32 +149,24 @@ Examples
 You can change the color, width, label and position of edges.
 And you can change color, outline width, and label of nodes.
 
-G=nx.path_graph(4, create_using=nx.DiGraph)
-pos = {n: 2 for n in G}  # nodes set on a circle of radius 2
+>>> G=nx.path_graph(4, create_using=nx.DiGraph)
+>>> pos = {n: 2 for n in G}  # nodes set on a circle of radius 2
 
-G.nodes[0]["style"] = "blue"
-G.nodes[2]["style"] = "line width=3"
-G.nodes[3]["label"] = "Stop"
-G.edges[(1, 2)]["style"] = "line width=3"
-G.edges[(2, 3)]["style"] = "green"
-G.edges[(0, 1)]["label"] = "1st Step
-G.edges[(0, 1)]["label_opts"] = "near start"
-G.edges[(2, 3)]["label"] = "3rd Step"
-G.edges[(2, 3)]["label_opts"] = "near end"
-G.edges[(1, 2)]["label"] = "2nd Step"
+>>> G.nodes[0]["color"] = "blue"
+>>> G.nodes[2]["width"] = 3
+>>> G.nodes[3]["label"] = "Stop"
+>>> G.edges[(1, 2)]["width"] = 3
+>>> G.edges[(2, 3)]["color"] = "green"
+>>> G.edges[(0, 1)]["label"] = "1st Step:near start"
+>>> G.edges[(2, 3)]["label"] = "3rd Step:near end"
+>>> G.edges[(1, 2)]["label"] = "2nd Step"
 
-nx.write_latex(
-    G,
-    "latex_graph.tex",
-    pos=pos,
-    as_document=True,
-    node_options="style",
-    node_label="label",
-    edge_options="style",
-    edge_label="label",
-    edge_label_options="label_opts",
-    tikz_options="[scale=2]",
-)
+>>> nx.write_latex(
+...   G,
+...   "latex_graph.tex",
+...   constructor=nx.to_latex_adigraph,
+...   pos=pos,
+...   as_document=True)
 
 Then compile the LaTeX using something like ``pdflatex latex_graph.tex``
 and view the pdf file created: ``latex_graph.pdf``.
@@ -228,13 +223,15 @@ Notes
 If you want to change the preamble/postamble of the figure/document/subfigure
 environment, use the keyword arguments: `figure_wrapper`, `document_wrapper`,
 `subfigure_wrapper`. The default values are stored in private variables
-``nx.nx_layout._DOCUMENT_WRAPPER``, e.g.
+e.g. ``nx.nx_layout._DOCUMENT_WRAPPER``
 
 
 References
 ----------
 TikZ:          https://tikz.dev/
+
 TikZ options details:   https://tikz.dev/tikz-actions
+
 Adigraph:      https://ctan.org/pkg/adigraph
 """
 import numbers
@@ -273,39 +270,44 @@ def to_latex_tikz_raw(
     ==========
     G : NetworkX graph
         The NetworkX graph to be drawn
-    pos : string
+    pos : string or dict (default "pos")
         The name of the node attribute on `G` that holds the position of each node.
         Positions can be sequences of length 2 with numbers for (x,y) coordinates.
         They can also be strings to denote positions in TikZ style, such as (x, y)
         or (angle:radius).
-        If None, a circular layout is provided by TikZ.
-        If you are drawing many graphs in subfigures, use a list of position dicts.
+        If a dict, it should be keyed by node to a position.
+        If an empty dict, a circular layout is computed by TikZ.
     tikz_options : string
         The tikzpicture options description defining the options for the picture.
         Often large scale options like `[scale=2]`.
     default_node_options : string
         The draw options for a path of nodes. Individual node options override these.
-    node_options : string
+    node_options : string or dict
         The name of the node attribute on `G` that holds the options for each node.
-    node_label : string
+        Or a dict keyed by node to a string holding the options for that node.
+    node_label : string or dict
         The name of the node attribute on `G` that holds the node label (text)
         displayed for each node. If the attribute is "" or not present, the node
         itself is drawn as a string. LaTeX processing such as `"$A_1$" is allowed.
+        Or a dict keyed by node to a string holding the label for that node.
     default_edge_options : string
         The options for the scope drawing all edges. The default is "[-]" for
         undirected graphs and "[->]" for directed graphs.
-    edge_options : string
+    edge_options : string or dict
         The name of the edge attribute on `G` that holds the options for each edge.
         If the edge is a self-loop and ``"loop" not in edge_options`` the option
         "loop," is added to the options for the self-loop edge. Hence you can
         use "[loop above]" explicitly, but the default is "[loop]".
-    edge_label : string
+        Or a dict keyed by edge to a string holding the options for that edge.
+    edge_label : string or dict
         The name of the edge attribute on `G` that holds the edge label (text)
         displayed for each edge. If the attribute is "" or not present, no edge
         label is drawn.
-    edge_label_options : string
+        Or a dict keyed by edge to a string holding the label for that edge.
+    edge_label_options : string or dict
         The name of the edge attribute on `G` that holds the label options for
         each edge. For example, "[sloped,above,blue]". The default is no options.
+        Or a dict keyed by edge to a string holding the label options for that edge.
 
     Returns
     =======
@@ -316,6 +318,7 @@ def to_latex_tikz_raw(
     ========
     to_latex_tikz
     write_latex
+    to_latex_adigraph_raw
     """
     i4 = "\n    "
     i8 = "\n        "
@@ -325,7 +328,7 @@ def to_latex_tikz_raw(
     if not isinstance(pos, dict):
         pos = nx.get_node_attributes(G, pos)
     if not pos:
-        # circulr layout with radius 1
+        # circular layout with radius 1
         pos = {n: f"({round(2* 3.1415 * i / len(G), 3)}:1)" for i, n in enumerate(G)}
     for node in G:
         if node not in pos:
@@ -511,7 +514,7 @@ _SUBFIG_WRAPPER = r"""  \begin{{subfigure}}{{{size}\textwidth}}
 
 def to_latex_tikz(
     Gbunch,
-    pos=None,
+    pos="pos",
     tikz_options="",
     default_node_options="",
     node_options="node_options",
@@ -532,6 +535,7 @@ def to_latex_tikz(
 ):
     """Return latex code to draw the graph(s) in Gbunch
 
+    The TikZ drawing utility in LaTeX is used to draw the graph(s).
     If Gbunch is a graph, it is drawn in a figure environment.
     If Gbunch is an iterable of graphs, each is drawn in a subfigure envionment
     within a single figure environment.
@@ -551,34 +555,40 @@ def to_latex_tikz(
         Positions can be sequences of length 2 with numbers for (x,y) coordinates.
         They can also be strings to denote positions in TikZ style, such as (x, y)
         or (angle:radius).
-        If None, a circular layout is provided by TikZ.
+        If a dict, it should be keyed by node to a position.
+        If an empty dict, a circular layout is computed by TikZ.
         If you are drawing many graphs in subfigures, use a list of position dicts.
     tikz_options : string
         The tikzpicture options description defining the options for the picture.
         Often large scale options like `[scale=2]`.
     default_node_options : string
         The draw options for a path of nodes. Individual node options override these.
-    node_options : string
+    node_options : string or dict
         The name of the node attribute on `G` that holds the options for each node.
-    node_label : string
+        Or a dict keyed by node to a string holding the options for that node.
+    node_label : string or dict
         The name of the node attribute on `G` that holds the node label (text)
         displayed for each node. If the attribute is "" or not present, the node
         itself is drawn as a string. LaTeX processing such as `"$A_1$" is allowed.
+        Or a dict keyed by node to a string holding the label for that node.
     default_edge_options : string
         The options for the scope drawing all edges. The default is "[-]" for
         undirected graphs and "[->]" for directed graphs.
-    edge_options : string
+    edge_options : string or dict
         The name of the edge attribute on `G` that holds the options for each edge.
         If the edge is a self-loop and ``"loop" not in edge_options`` the option
         "loop," is added to the options for the self-loop edge. Hence you can
         use "[loop above]" explicitly, but the default is "[loop]".
-    edge_label : string
+        Or a dict keyed by edge to a string holding the options for that edge.
+    edge_label : string or dict
         The name of the edge attribute on `G` that holds the edge label (text)
         displayed for each edge. If the attribute is "" or not present, no edge
         label is drawn.
-    edge_label_options : string
+        Or a dict keyed by edge to a string holding the label for that edge.
+    edge_label_options : string or dict
         The name of the edge attribute on `G` that holds the label options for
         each edge. For example, "[sloped,above,blue]". The default is no options.
+        Or a dict keyed by edge to a string holding the label options for that edge.
     caption : string
         The caption string for the figure environment
     latex_label : string
@@ -632,8 +642,8 @@ def to_latex_tikz(
         size = 1 / n_rows
 
         N = len(Gbunch)
-        if pos is None:
-            pos = [None] * N
+        if isinstance(pos, (str, dict)):
+            pos = [pos] * N
         if sub_captions is None:
             sub_captions = [""] * N
         if sub_labels is None:
@@ -699,6 +709,7 @@ def to_latex_adigraph(
 ):
     """Return latex code to draw the graph(s) in Gbunch
 
+    The Adigraph drawing library from CTAN is used to draw the graph(s).
     If Gbunch is a graph, it is drawn in a figure environment.
     If Gbunch is an iterable of graphs, each is drawn in a subfigure envionment
     within a single figure environment.
@@ -857,37 +868,49 @@ def write_latex(Gbunch, path, constructor=to_latex_tikz, **options):
         Either `to_latex_adigraph` or `to_latex_tikz`
     options : dict
         keyword arguments that mimic the `to_latex_*` constructor functions
-        The options can be: (others are ignored)
-        pos : dict or iterable of position dict for each graph or None
-            A dict keyed by node to an (x, y) position on the drawing.
-            If None, a circular layout is provided by TikZ.
+        See `to_latex_adigraph` for details on that constructor's input.
+
+        By default, TikZ is used with options: (others are ignored):
+
+        pos : string or dict or list
+            The name of the node attribute on `G` that holds the position of each node.
+            Positions can be sequences of length 2 with numbers for (x,y) coordinates.
+            They can also be strings to denote positions in TikZ style, such as (x, y)
+            or (angle:radius).
+            If a dict, it should be keyed by node to a position.
+            If an empty dict, a circular layout is computed by TikZ.
             If you are drawing many graphs in subfigures, use a list of position dicts.
-        default_node_color : string
-            The color to use if a color is not specified in the `node_color` attribute.
-        default_edge_color : string
-            The color to use if a color is not specified in the `edge_color` attribute.
-        node_color : string or dict
-            The name of the node attribute holding a string indicating a color.
-            If that attribute does not exist for some node, `default_node_color` is used.
-        edge_color : string or dict
-            The name of the edge attribute holding a string indicating a color.
-            If that attribute does not exist for some edge, `default_edge_color` is used.
-        node_width : string or dict (default "")
-            The name of the node attribute holding a string indicating node line width.
-            If that attribute does not exist for some node, `""` is used.
-        edge_width : string or dict (default "")
-            The name of the edge attribute holding a string indicating a edge line width.
-            If that attribute does not exist for some edge, `""` is used.
-        node_label : string or dict (default "")
-            The name of node attribute holding a string for that node in the drawing.
-            By default `str(node)` is used for each node.
-        edge_label : string or dict (default "")
-            The name of the edge attribute holding a string indicating a edge line width.
-            By default, no label is drawn next to an edge.
-        edge_style : string or None
-            The ``style`` option for all edges. These can be any valid style previously
-            defained in a way TikZ can understand it. Typically this is ``"-"``, ``"->"``,
-            ``"dotted"``, or ``"dashed"``.
+        tikz_options : string
+            The tikzpicture options description defining the options for the picture.
+            Often large scale options like `[scale=2]`.
+        default_node_options : string
+            The draw options for a path of nodes. Individual node options override these.
+        node_options : string or dict
+            The name of the node attribute on `G` that holds the options for each node.
+            Or a dict keyed by node to a string holding the options for that node.
+        node_label : string or dict
+            The name of the node attribute on `G` that holds the node label (text)
+            displayed for each node. If the attribute is "" or not present, the node
+            itself is drawn as a string. LaTeX processing such as `"$A_1$" is allowed.
+            Or a dict keyed by node to a string holding the label for that node.
+        default_edge_options : string
+            The options for the scope drawing all edges. The default is "[-]" for
+            undirected graphs and "[->]" for directed graphs.
+        edge_options : string or dict
+            The name of the edge attribute on `G` that holds the options for each edge.
+            If the edge is a self-loop and ``"loop" not in edge_options`` the option
+            "loop," is added to the options for the self-loop edge. Hence you can
+            use "[loop above]" explicitly, but the default is "[loop]".
+            Or a dict keyed by edge to a string holding the options for that edge.
+        edge_label : string or dict
+            The name of the edge attribute on `G` that holds the edge label (text)
+            displayed for each edge. If the attribute is "" or not present, no edge
+            label is drawn.
+            Or a dict keyed by edge to a string holding the label for that edge.
+        edge_label_options : string or dict
+            The name of the edge attribute on `G` that holds the label options for
+            each edge. For example, "[sloped,above,blue]". The default is no options.
+            Or a dict keyed by edge to a string holding the label options for that edge.
         caption : string
             The caption string for the figure environment
         latex_label : string
