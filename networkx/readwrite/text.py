@@ -105,9 +105,11 @@ def generate_network_text(
     graph : nx.DiGraph | nx.Graph
         Graph to represent
 
-    with_labels : bool
+    with_labels : bool | str
         If True will use the "label" attribute of a node to display if it
-        exists otherwise it will use the node value itself. Defaults to True.
+        exists otherwise it will use the node value itself. If given as a
+        string, then that attribte name will be used instead of "label".
+        Defaults to True.
 
     sources : List
         Specifies which nodes to start traversal from. Note: nodes that are not
@@ -134,6 +136,13 @@ def generate_network_text(
         glyphs = AsciiUndirectedGlyphs if ascii_only else UtfUndirectedGlyphs
         succ = graph.adj
         pred = graph.adj
+
+    if isinstance(with_labels, str):
+        label_attr = with_labels
+    elif with_labels:
+        label_attr = "label"
+    else:
+        label_attr = None
 
     if max_depth == 0:
         yield glyphs.empty + " ..."
@@ -214,8 +223,8 @@ def generate_network_text(
                 suffix = ""
                 children = []
             else:
-                if with_labels:
-                    label = str(graph.nodes[node].get("label", node))
+                if label_attr is not None:
+                    label = str(graph.nodes[node].get(label_attr, node))
                 else:
                     label = str(node)
 
@@ -252,9 +261,12 @@ def generate_network_text(
                 # are not handled elsewhere.
                 other_parents = [p for p in pred[node] if p not in handled_parents]
                 if other_parents:
-                    if with_labels:
+                    if label_attr is not None:
                         other_parents_labels = ", ".join(
-                            [str(graph.nodes[p].get("label", p)) for p in other_parents]
+                            [
+                                str(graph.nodes[p].get(label_attr, p))
+                                for p in other_parents
+                            ]
                         )
                     else:
                         other_parents_labels = ", ".join(
@@ -304,9 +316,11 @@ def write_network_text(
        if a function, then it will be called for each generated line.
        if None, this will default to "sys.stdout.write"
 
-    with_labels : bool
+    with_labels : bool | str
         If True will use the "label" attribute of a node to display if it
-        exists otherwise it will use the node value itself. Defaults to True.
+        exists otherwise it will use the node value itself. If given as a
+        string, then that attribte name will be used instead of "label".
+        Defaults to True.
 
     sources : List
         Specifies which nodes to start traversal from. Note: nodes that are not
