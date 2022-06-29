@@ -49,7 +49,9 @@ def closeness_centrality(G, u=None, distance=None, wf_improved=True):
 
     distance : edge attribute key, optional (default=None)
       Use the specified edge attribute as the edge distance in shortest
-      path calculations
+      path calculations.  If `None` (the default) all edges have a distance of 1.
+      Absent edge attributes are assigned a distance of 1. Note that no check
+      is performed to ensure that edges have the provided attribute.
 
     wf_improved : bool, optional (default=True)
       If True, scale by the fraction of nodes reachable. This gives the
