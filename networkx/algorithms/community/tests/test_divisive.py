@@ -1,57 +1,51 @@
+import pytest
+
 import networkx as nx
-from nose.tools import *
+from networkx.algorithms.community import (
+    edge_betweenness_partition,
+    edge_current_flow_betweenness_partition,
+)
+
 
 def test_edge_betweenness_partition():
-    G = nx.barbell_graph(3,0)
-    C = nx.edge_betweenness_partition(G,2)
-    assert_equal([set([0,1,2]),set([3,4,5])],C)
+    G = nx.barbell_graph(3, 0)
+    C = edge_betweenness_partition(G, 2)
+    assert C == [{0, 1, 2}, {3, 4, 5}]
 
-    G = nx.barbell_graph(3,1)
-    C = nx.edge_betweenness_partition(G,3)
-    assert_equal(C,[set([0,1,2]),set([4,5,6]),set([3])])
+    G = nx.barbell_graph(3, 1)
+    C = edge_betweenness_partition(G, 3)
+    assert C == list([{0, 1, 2}, {4, 5, 6}, {3}])
 
-    C = nx.edge_betweenness_partition(G,7)
-    assert_equal(map(set,[[n] for n in G]),C)
+    C = edge_betweenness_partition(G, 7)
+    assert C == list(map(set, [[n] for n in G]))
 
-    C = nx.edge_betweenness_partition(G,1)
-    assert_equal([set(G)],C)
+    C = edge_betweenness_partition(G, 1)
+    assert C == [set(G)]
 
-    assert_raises(nx.NetworkXError,
-                  nx.edge_betweenness_partition,
-                  G,
-                  0)
+    with pytest.raises(nx.NetworkXError):
+        edge_betweenness_partition(G, 0)
 
-    assert_raises(nx.NetworkXError,
-                  nx.edge_betweenness_partition,
-                  G,
-                  -1)
-    assert_raises(nx.NetworkXError,
-                  nx.edge_betweenness_partition,
-                  G,
-                  10)
+    with pytest.raises(nx.NetworkXError):
+        edge_betweenness_partition(G, -1)
+    with pytest.raises(nx.NetworkXError):
+        edge_betweenness_partition(G, 10)
+
 
 def test_edge_current_flow_betweenness_partition():
-    G = nx.barbell_graph(3,0)
-    C = nx.edge_current_flow_betweenness_partition(G,2)
-    assert_equal([set([0,1,2]),set([3,4,5])],C)
+    G = nx.barbell_graph(3, 0)
+    C = edge_current_flow_betweenness_partition(G, 2)
+    assert C == [{0, 1, 2}, {3, 4, 5}]
 
-    G = nx.barbell_graph(3,1)
-    C = nx.edge_current_flow_betweenness_partition(G,7)
-    assert_equal(map(set,[[n] for n in G]),C)
+    G = nx.barbell_graph(3, 1)
+    C = edge_current_flow_betweenness_partition(G, 7)
+    assert C == list(map(set, [[n] for n in G]))
 
-    C = nx.edge_current_flow_betweenness_partition(G,1)
-    assert_equal([set(G)],C)
+    C = edge_current_flow_betweenness_partition(G, 1)
+    assert C == [set(G)]
+    with pytest.raises(nx.NetworkXError):
+        edge_current_flow_betweenness_partition(G, 0)
 
-    assert_raises(nx.NetworkXError,
-                  nx.edge_current_flow_betweenness_partition,
-                  G,
-                  0)
-
-    assert_raises(nx.NetworkXError,
-                  nx.edge_current_flow_betweenness_partition,
-                  G,
-                  -1)
-    assert_raises(nx.NetworkXError,
-                  nx.edge_current_flow_betweenness_partition,
-                  G,
-                  10)
+    with pytest.raises(nx.NetworkXError):
+        edge_current_flow_betweenness_partition(G, -1)
+    with pytest.raises(nx.NetworkXError):
+        edge_current_flow_betweenness_partition(G, 10)
