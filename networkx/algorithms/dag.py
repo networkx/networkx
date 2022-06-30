@@ -56,8 +56,13 @@ def descendants(G, source):
     Examples
     --------
     >>> DG = nx.path_graph(5, create_using=nx.DiGraph)
-    >>> sorted(list(nx.descendants(DG, 2)))
+    >>> sorted(nx.descendants(DG, 2))
     [3, 4]
+
+    The `source` node is not a descendant of itself, but can be included manually:
+
+    >>> sorted(nx.descendants(DG, 2) | {2})
+    [2, 3, 4]
 
     See also
     --------
@@ -87,8 +92,13 @@ def ancestors(G, source):
     Examples
     --------
     >>> DG = nx.path_graph(5, create_using=nx.DiGraph)
-    >>> sorted(list(nx.ancestors(DG, 2)))
+    >>> sorted(nx.ancestors(DG, 2))
     [0, 1]
+
+    The `source` node is not an ancestor of itself, but can be included manually:
+
+    >>> sorted(nx.ancestors(DG, 2) | {2})
+    [0, 1, 2]
 
     See also
     --------
