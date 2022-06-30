@@ -271,13 +271,12 @@ def quotient_graph(
     [(0, 1), (1, 2)]
 
     Partitions can be represented in various ways:
-    ::
 
-        (0) a list/tuple/set of block lists/tuples/sets
-        (1) a dict with block labels as keys and blocks lists/tuples/sets as values
-        (2) a dict with block lists/tuples/sets as keys and block labels as values
-        (3) a function from nodes in the original iterable to block labels
-        (4) an equivalence relation function on the target iterable
+    0. a list/tuple/set of block lists/tuples/sets
+    1. a dict with block labels as keys and blocks lists/tuples/sets as values
+    2. a dict with block lists/tuples/sets as keys and block labels as values
+    3. a function from nodes in the original iterable to block labels
+    4. an equivalence relation function on the target iterable
 
     As `quotient_graph` is designed to accept partitions represented as (0), (1) or
     (4) only, the `equivalence_classes` function can be used to get the partitions
