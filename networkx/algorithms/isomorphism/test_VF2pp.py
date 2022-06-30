@@ -8,7 +8,7 @@ from networkx.algorithms.isomorphism.VF2pp.candidates import find_candidates
 
 
 def main():
-    G = nx.gnp_random_graph(50, 0.5, seed=19)
+    G = nx.gnp_random_graph(500, 0.5, seed=19)
     colors = ["blue", "red", "green", "orange", "grey", "yellow", "purple", "black", "white"]
 
     for i in range(len(G.nodes)):
@@ -34,7 +34,7 @@ def main():
     # print("Number of feasible nodes: ", cnt)
     # print("feasible node: ", feasible)
 
-    print(find_candidates(G, G, G1_labels, G2_labels, 49, s))
+    print(find_candidates(G, G, G1_labels, G2_labels, 452, s))
 
 
 main()
