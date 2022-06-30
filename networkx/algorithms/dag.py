@@ -92,7 +92,7 @@ def ancestors(G, source):
     Examples
     --------
     >>> DG = nx.path_graph(5, create_using=nx.DiGraph)
-    >>> sorted(nx.descendants(DG, 2))
+    >>> sorted(nx.ancestors(DG, 2))
     [0, 1]
 
     The `source` node is not an ancestor of itself, but can be included manually:
