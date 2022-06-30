@@ -56,13 +56,13 @@ def descendants(G, source):
     Examples
     --------
     >>> DG = nx.path_graph(5, create_using=nx.DiGraph)
-    >>> descendants = nx.descendants(DG, 2)
-    >>> descendants
-    {3, 4}
+    >>> sorted(nx.descendants(DG, 2))
+    [3, 4]
 
-    A node is not returned as one of its own descendantsgit . If you prefer to include the node itself as well, you can perform a manual union operation as follows:
+    The `source` node is not a descendant of itself, but can be included manually:
 
-    >>> descendants = descendants.union({2})
+    >>> sorted(nx.descendants(DG, 2) | {2})
+    [2, 3, 4]
 
     See also
     --------
