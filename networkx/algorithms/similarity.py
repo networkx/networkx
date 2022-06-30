@@ -974,8 +974,9 @@ def optimize_edit_paths(
             # assert not len(pending_g)
             # assert not len(pending_h)
             # path completed!
-            # assert matched_cost <= maxcost.value
-            maxcost.value = min(maxcost.value, matched_cost)
+            # assert matched_cost <= maxcost_value
+            nonlocal maxcost_value
+            maxcost_value = min(maxcost_value, matched_cost)
             yield matched_uv, matched_gh, matched_cost
 
         else:
@@ -1159,11 +1160,7 @@ def optimize_edit_paths(
     # debug_print(Ce.C)
     # debug_print()
 
-    @dataclass
-    class MaxCost:
-        value: ...
-
-    maxcost = MaxCost(Cv.C.sum() + Ce.C.sum() + 1)
+    maxcost_value = Cv.C.sum() + Ce.C.sum() + 1
 
     if timeout is not None:
         if timeout <= 0:
@@ -1177,9 +1174,9 @@ def optimize_edit_paths(
         if upper_bound is not None:
             if cost > upper_bound:
                 return True
-        if cost > maxcost.value:
+        if cost > maxcost_value:
             return True
-        if strictly_decreasing and cost >= maxcost.value:
+        if strictly_decreasing and cost >= maxcost_value:
             return True
         return False
 
@@ -1195,7 +1192,7 @@ def optimize_edit_paths(
         # assert sorted(G1.edges) == sorted(g for g, h in edge_path if g is not None)
         # assert sorted(G2.edges) == sorted(h for g, h in edge_path if h is not None)
         # print(vertex_path, edge_path, cost, file = sys.stderr)
-        # assert cost == maxcost.value
+        # assert cost == maxcost_value
         yield list(vertex_path), list(edge_path), cost
 
 
