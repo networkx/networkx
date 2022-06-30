@@ -92,13 +92,14 @@ def ancestors(G, source):
     Examples
     --------
     >>> DG = nx.path_graph(5, create_using=nx.DiGraph)
-    >>> ancestors = nx.ancestors(DG, 2)
-    >>> ancestors
-    {0, 1}
+    >>> sorted(nx.descendants(DG, 2))
+    [0, 1]
 
-    A node is not returned as one of its own ancestors. If you prefer to include the node itself as well, you can perform a manual union operation as follows:
+    The `source` node is not an ancestor of itself, but can be included manually:
 
-    >>> ancestors = ancestors.union({2})
+    >>> sorted(nx.ancestors(DG, 2) | {2})
+    [0, 1, 2]
+
 
     See also
     --------
