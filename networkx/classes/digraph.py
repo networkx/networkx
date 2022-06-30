@@ -314,19 +314,21 @@ class DiGraph(Graph):
         self._adj = self.adjlist_outer_dict_factory()  # empty adjacency dict
         self._pred = self.adjlist_outer_dict_factory()  # predecessor
         self._succ = self._adj  # successor
-        # clear cached adjacency properties
-        if hasattr(self, "adj"):
-            delattr(self, "adj")
-        if hasattr(self, "pred"):
-            delattr(self, "pred")
-        if hasattr(self, "succ"):
-            delattr(self, "succ")
 
         # attempt to load graph with data
         if incoming_graph_data is not None:
             convert.to_networkx_graph(incoming_graph_data, create_using=self)
         # load graph attributes (must be after convert)
         self.graph.update(attr)
+
+    def __setattr__(self, name, value):
+        super().__setattr__(name, value)
+        if name in ("_adj", "_succ"):
+            for property_name in ("adj", "succ"):
+                if property_name in self.__dict__:
+                    delattr(self, property_name)
+        elif name == "_pred" and "pred" in self.__dict__:
+            delattr(self, "pred")
 
     @cached_property
     def adj(self):

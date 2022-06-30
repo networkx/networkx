@@ -132,6 +132,22 @@ class BaseDiGraphTester(BaseGraphTester):
         assert nodes_equal(G.nodes(), G.reverse().nodes())
         assert [(y, x)] == list(G.reverse().edges())
 
+    def test_di_cache_reset(self):
+        G = self.K3.copy()
+        old_succ = G.succ
+        assert id(G.succ) == id(old_succ)
+        old_adj = G.adj
+        assert id(G.adj) == id(old_adj)
+
+        G._succ = {}
+        assert id(G.succ) != id(old_succ)
+        assert id(G.adj) != id(old_adj)
+
+        old_pred = G.pred
+        assert id(G.pred) == id(old_pred)
+        G._pred = {}
+        assert id(G.pred) != id(old_pred)
+
     def test_di_attributes_cached(self):
         G = self.K3.copy()
         assert id(G.in_edges) == id(G.in_edges)

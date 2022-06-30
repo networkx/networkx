@@ -330,9 +330,6 @@ class Graph:
         self.graph = self.graph_attr_dict_factory()  # dictionary for graph attributes
         self._node = self.node_dict_factory()  # empty node attribute dict
         self._adj = self.adjlist_outer_dict_factory()  # empty adjacency dict
-        # clear cached adjacency properties
-        if hasattr(self, "adj"):
-            delattr(self, "adj")
         # attempt to load graph with data
         if incoming_graph_data is not None:
             convert.to_networkx_graph(incoming_graph_data, create_using=self)
@@ -357,6 +354,12 @@ class Graph:
         For directed graphs, `G.adj` holds outgoing (successor) info.
         """
         return AdjacencyView(self._adj)
+
+    def __setattr__(self, name, value):
+        super().__setattr__(name, value)
+        if name == "_adj":
+            if "adj" in self.__dict__:
+                delattr(self, "adj")
 
     @property
     def name(self):
