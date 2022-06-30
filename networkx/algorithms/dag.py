@@ -100,7 +100,6 @@ def ancestors(G, source):
     >>> sorted(nx.ancestors(DG, 2) | {2})
     [0, 1, 2]
 
-
     See also
     --------
     descendants
