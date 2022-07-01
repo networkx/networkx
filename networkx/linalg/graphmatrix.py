@@ -162,12 +162,4 @@ def adjacency_matrix(G, nodelist=None, dtype=None, weight="weight"):
     to_dict_of_dicts
     adjacency_spectrum
     """
-    import warnings
-
-    warnings.warn(
-        "adjacency_matrix will return a scipy.sparse array instead of a matrix in Networkx 3.0.",
-        FutureWarning,
-        stacklevel=2,
-    )
-    # TODO: Change to `to_scipy_sparse_array` for networkx 3.0
-    return nx.to_scipy_sparse_matrix(G, nodelist=nodelist, dtype=dtype, weight=weight)
+    return nx.to_scipy_sparse_array(G, nodelist=nodelist, dtype=dtype, weight=weight)
