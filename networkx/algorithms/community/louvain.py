@@ -219,10 +219,18 @@ def _one_level(G, m, partition, resolution=1, is_directed=False, seed=None):
         out_degrees = dict(G.out_degree(weight="weight"))
         Stot_in = [deg for deg in in_degrees.values()]
         Stot_out = [deg for deg in out_degrees.values()]
+        # Calculate weights for both in and out neighbours
+        nbrs = {}
+        for u in G:
+            nbrs[u] = defaultdict(float)
+            for _, n, wt in G.out_edges(u, data=True):
+                nbrs[u][n] += wt["weight"]
+            for n, _, wt in G.in_edges(u, data=True):
+                nbrs[u][n] += wt["weight"]
     else:
         degrees = dict(G.degree(weight="weight"))
         Stot = [deg for deg in degrees.values()]
-    nbrs = {u: {v: data["weight"] for v, data in G[u].items() if v != u} for u in G}
+        nbrs = {u: {v: data["weight"] for v, data in G[u].items() if v != u} for u in G}
     rand_nodes = list(G.nodes)
     seed.shuffle(rand_nodes)
     nb_moves = 1
