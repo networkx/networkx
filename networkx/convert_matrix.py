@@ -33,13 +33,10 @@ import networkx as nx
 from networkx.utils import not_implemented_for
 
 __all__ = [
-    "from_numpy_matrix",
-    "to_numpy_matrix",
     "from_pandas_adjacency",
     "to_pandas_adjacency",
     "from_pandas_edgelist",
     "to_pandas_edgelist",
-    "to_numpy_recarray",
     "from_scipy_sparse_array",
     "to_scipy_sparse_array",
     "from_numpy_array",
@@ -195,7 +192,7 @@ def from_pandas_adjacency(df, create_using=None):
     1  2  1
     >>> G = nx.from_pandas_adjacency(df)
     >>> G.name = "Graph from pandas adjacency matrix"
-    >>> print(nx.info(G))
+    >>> print(G)
     Graph named 'Graph from pandas adjacency matrix' with 2 nodes and 3 edges
     """
 
@@ -219,7 +216,6 @@ def to_pandas_edgelist(
     target="target",
     nodelist=None,
     dtype=None,
-    order=None,
     edge_key=None,
 ):
     """Returns the graph edge list as a Pandas DataFrame.
@@ -243,12 +239,6 @@ def to_pandas_edgelist(
     dtype : dtype, default None
         Use to create the DataFrame. Data type to force.
         Only a single dtype is allowed. If None, infer.
-
-    order : None
-        An unused parameter mistakenly included in the function.
-
-        .. deprecated:: 2.6
-            This is deprecated and will be removed in NetworkX v3.0.
 
     edge_key : str or int or None, optional (default=None)
         A valid column name (string or integer) for the edge keys (for the
@@ -472,323 +462,6 @@ def from_pandas_edgelist(
             g[s][t].update(zip(attr_col_headings, attrs))
 
     return g
-
-
-def to_numpy_matrix(
-    G,
-    nodelist=None,
-    dtype=None,
-    order=None,
-    multigraph_weight=sum,
-    weight="weight",
-    nonedge=0.0,
-):
-    """Returns the graph adjacency matrix as a NumPy matrix.
-
-    Parameters
-    ----------
-    G : graph
-        The NetworkX graph used to construct the NumPy matrix.
-
-    nodelist : list, optional
-        The rows and columns are ordered according to the nodes in `nodelist`.
-        If `nodelist` is None, then the ordering is produced by G.nodes().
-
-    dtype : NumPy data type, optional
-        A valid single NumPy data type used to initialize the array.
-        This must be a simple type such as int or numpy.float64 and
-        not a compound data type (see to_numpy_recarray)
-        If None, then the NumPy default is used.
-
-    order : {'C', 'F'}, optional
-        Whether to store multidimensional data in C- or Fortran-contiguous
-        (row- or column-wise) order in memory. If None, then the NumPy default
-        is used.
-
-    multigraph_weight : {sum, min, max}, optional
-        An operator that determines how weights in multigraphs are handled.
-        The default is to sum the weights of the multiple edges.
-
-    weight : string or None optional (default = 'weight')
-        The edge attribute that holds the numerical value used for
-        the edge weight. If an edge does not have that attribute, then the
-        value 1 is used instead.
-
-    nonedge : float (default = 0.0)
-        The matrix values corresponding to nonedges are typically set to zero.
-        However, this could be undesirable if there are matrix values
-        corresponding to actual edges that also have the value zero. If so,
-        one might prefer nonedges to have some other value, such as nan.
-
-    Returns
-    -------
-    M : NumPy matrix
-        Graph adjacency matrix
-
-    See Also
-    --------
-    to_numpy_recarray
-
-    Notes
-    -----
-    For directed graphs, entry i,j corresponds to an edge from i to j.
-
-    The matrix entries are assigned to the weight edge attribute. When
-    an edge does not have a weight attribute, the value of the entry is set to
-    the number 1.  For multiple (parallel) edges, the values of the entries
-    are determined by the `multigraph_weight` parameter.  The default is to
-    sum the weight attributes for each of the parallel edges.
-
-    When `nodelist` does not contain every node in `G`, the matrix is built
-    from the subgraph of `G` that is induced by the nodes in `nodelist`.
-
-    The convention used for self-loop edges in graphs is to assign the
-    diagonal matrix entry value to the weight attribute of the edge
-    (or the number 1 if the edge has no weight attribute).  If the
-    alternate convention of doubling the edge weight is desired the
-    resulting Numpy matrix can be modified as follows:
-
-    >>> import numpy as np
-    >>> G = nx.Graph([(1, 1)])
-    >>> A = nx.to_numpy_matrix(G)
-    >>> A
-    matrix([[1.]])
-    >>> A[np.diag_indices_from(A)] *= 2
-    >>> A
-    matrix([[2.]])
-
-    Examples
-    --------
-    >>> G = nx.MultiDiGraph()
-    >>> G.add_edge(0, 1, weight=2)
-    0
-    >>> G.add_edge(1, 0)
-    0
-    >>> G.add_edge(2, 2, weight=3)
-    0
-    >>> G.add_edge(2, 2)
-    1
-    >>> nx.to_numpy_matrix(G, nodelist=[0, 1, 2])
-    matrix([[0., 2., 0.],
-            [1., 0., 0.],
-            [0., 0., 4.]])
-
-    """
-    warnings.warn(
-        (
-            "to_numpy_matrix is deprecated and will be removed in NetworkX 3.0.\n"
-            "Use to_numpy_array instead, e.g. np.asmatrix(to_numpy_array(G, **kwargs))"
-        ),
-        DeprecationWarning,
-    )
-
-    import numpy as np
-
-    A = to_numpy_array(
-        G,
-        nodelist=nodelist,
-        dtype=dtype,
-        order=order,
-        multigraph_weight=multigraph_weight,
-        weight=weight,
-        nonedge=nonedge,
-    )
-    M = np.asmatrix(A, dtype=dtype)
-    return M
-
-
-def from_numpy_matrix(A, parallel_edges=False, create_using=None):
-    """Returns a graph from numpy matrix.
-
-    The numpy matrix is interpreted as an adjacency matrix for the graph.
-
-    Parameters
-    ----------
-    A : numpy matrix
-        An adjacency matrix representation of a graph
-
-    parallel_edges : Boolean
-        If True, `create_using` is a multigraph, and `A` is an
-        integer matrix, then entry *(i, j)* in the matrix is interpreted as the
-        number of parallel edges joining vertices *i* and *j* in the graph.
-        If False, then the entries in the adjacency matrix are interpreted as
-        the weight of a single edge joining the vertices.
-
-    create_using : NetworkX graph constructor, optional (default=nx.Graph)
-       Graph type to create. If graph instance, then cleared before populated.
-
-    Notes
-    -----
-    For directed graphs, explicitly mention create_using=nx.DiGraph,
-    and entry i,j of A corresponds to an edge from i to j.
-
-    If `create_using` is :class:`networkx.MultiGraph` or
-    :class:`networkx.MultiDiGraph`, `parallel_edges` is True, and the
-    entries of `A` are of type :class:`int`, then this function returns a
-    multigraph (constructed from `create_using`) with parallel edges.
-
-    If `create_using` indicates an undirected multigraph, then only the edges
-    indicated by the upper triangle of the matrix `A` will be added to the
-    graph.
-
-    If the numpy matrix has a single data type for each matrix entry it
-    will be converted to an appropriate Python data type.
-
-    If the numpy matrix has a user-specified compound data type the names
-    of the data fields will be used as attribute keys in the resulting
-    NetworkX graph.
-
-    See Also
-    --------
-    to_numpy_recarray
-
-    Examples
-    --------
-    Simple integer weights on edges:
-
-    >>> import numpy as np
-    >>> A = np.array([[1, 1], [2, 1]])
-    >>> G = nx.from_numpy_matrix(A)
-
-    If `create_using` indicates a multigraph and the matrix has only integer
-    entries and `parallel_edges` is False, then the entries will be treated
-    as weights for edges joining the nodes (without creating parallel edges):
-
-    >>> A = np.array([[1, 1], [1, 2]])
-    >>> G = nx.from_numpy_matrix(A, create_using=nx.MultiGraph)
-    >>> G[1][1]
-    AtlasView({0: {'weight': 2}})
-
-    If `create_using` indicates a multigraph and the matrix has only integer
-    entries and `parallel_edges` is True, then the entries will be treated
-    as the number of parallel edges joining those two vertices:
-
-    >>> A = np.array([[1, 1], [1, 2]])
-    >>> temp = nx.MultiGraph()
-    >>> G = nx.from_numpy_matrix(A, parallel_edges=True, create_using=temp)
-    >>> G[1][1]
-    AtlasView({0: {'weight': 1}, 1: {'weight': 1}})
-
-    User defined compound data type on edges:
-
-    >>> dt = [("weight", float), ("cost", int)]
-    >>> A = np.array([[(1.0, 2)]], dtype=dt)
-    >>> G = nx.from_numpy_matrix(A)
-    >>> list(G.edges())
-    [(0, 0)]
-    >>> G[0][0]["cost"]
-    2
-    >>> G[0][0]["weight"]
-    1.0
-
-    """
-    warnings.warn(
-        (
-            "from_numpy_matrix is deprecated and will be removed in NetworkX 3.0.\n"
-            "Use from_numpy_array instead, e.g. from_numpy_array(A, **kwargs)"
-        ),
-        DeprecationWarning,
-    )
-    return from_numpy_array(A, parallel_edges=parallel_edges, create_using=create_using)
-
-
-@not_implemented_for("multigraph")
-def to_numpy_recarray(G, nodelist=None, dtype=None, order=None):
-    """Returns the graph adjacency matrix as a NumPy recarray.
-
-    .. deprecated:: 2.7
-
-       ``to_numpy_recarray`` is deprecated and will be removed in NetworkX 3.0.
-       Use ``nx.to_numpy_array(G, dtype=dtype, weight=None).view(np.recarray)``
-       instead.
-
-    Parameters
-    ----------
-    G : graph
-        The NetworkX graph used to construct the NumPy recarray.
-
-    nodelist : list, optional
-       The rows and columns are ordered according to the nodes in `nodelist`.
-       If `nodelist` is None, then the ordering is produced by G.nodes().
-
-    dtype : NumPy data-type, optional
-        A valid NumPy named dtype used to initialize the NumPy recarray.
-        The data type names are assumed to be keys in the graph edge attribute
-        dictionary. The default is ``dtype([("weight", float)])``.
-
-    order : {'C', 'F'}, optional
-        Whether to store multidimensional data in C- or Fortran-contiguous
-        (row- or column-wise) order in memory. If None, then the NumPy default
-        is used.
-
-    Returns
-    -------
-    M : NumPy recarray
-       The graph with specified edge data as a Numpy recarray
-
-    Notes
-    -----
-    When `nodelist` does not contain every node in `G`, the adjacency
-    matrix is built from the subgraph of `G` that is induced by the nodes in
-    `nodelist`.
-
-    Examples
-    --------
-    >>> G = nx.Graph()
-    >>> G.add_edge(1, 2, weight=7.0, cost=5)
-    >>> A = nx.to_numpy_recarray(G, dtype=[("weight", float), ("cost", int)])
-    >>> print(A.weight)
-    [[0. 7.]
-     [7. 0.]]
-    >>> print(A.cost)
-    [[0 5]
-     [5 0]]
-
-    """
-    import warnings
-
-    import numpy as np
-
-    warnings.warn(
-        (
-            "to_numpy_recarray is deprecated and will be removed in version 3.0.\n"
-            "Use to_numpy_array instead::\n\n"
-            "    nx.to_numpy_array(G, dtype=dtype, weight=None).view(np.recarray)"
-        ),
-        DeprecationWarning,
-        stacklevel=2,
-    )
-
-    if dtype is None:
-        dtype = [("weight", float)]
-
-    if nodelist is None:
-        nodelist = list(G)
-        nodeset = G
-        nlen = len(G)
-    else:
-        nlen = len(nodelist)
-        nodeset = set(G.nbunch_iter(nodelist))
-        if nlen != len(nodeset):
-            for n in nodelist:
-                if n not in G:
-                    raise nx.NetworkXError(f"Node {n} in nodelist is not in G")
-            raise nx.NetworkXError("nodelist contains duplicates.")
-
-    undirected = not G.is_directed()
-    index = dict(zip(nodelist, range(nlen)))
-    M = np.zeros((nlen, nlen), dtype=dtype, order=order)
-
-    names = M.dtype.names
-    for u, v, attrs in G.edges(data=True):
-        if (u in nodeset) and (v in nodeset):
-            i, j = index[u], index[v]
-            values = tuple(attrs[n] for n in names)
-            M[i, j] = values
-            if undirected:
-                M[j, i] = M[i, j]
-
-    return M.view(np.recarray)
 
 
 def to_scipy_sparse_array(G, nodelist=None, dtype=None, weight="weight", format="csr"):

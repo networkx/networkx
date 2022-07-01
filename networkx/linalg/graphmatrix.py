@@ -3,7 +3,7 @@ Adjacency matrix and incidence matrix of graphs.
 """
 import networkx as nx
 
-__all__ = ["incidence_matrix", "adj_matrix", "adjacency_matrix"]
+__all__ = ["incidence_matrix", "adjacency_matrix"]
 
 
 def incidence_matrix(G, nodelist=None, edgelist=None, oriented=False, weight=None):
@@ -163,20 +163,3 @@ def adjacency_matrix(G, nodelist=None, dtype=None, weight="weight"):
     adjacency_spectrum
     """
     return nx.to_scipy_sparse_array(G, nodelist=nodelist, dtype=dtype, weight=weight)
-
-
-def _adj_matrix_warning(G, nodelist=None, dtype=None, weight="weight"):
-    import warnings
-
-    warnings.warn(
-        (
-            "adj_matrix is deprecated and will be removed in version 3.0.\n"
-            "Use `adjacency_matrix` instead\n"
-        ),
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    return adjacency_matrix(G, nodelist, dtype, weight)
-
-
-adj_matrix = _adj_matrix_warning

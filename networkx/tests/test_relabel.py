@@ -300,3 +300,35 @@ class TestRelabel:
         H = nx.relabel_nodes(G, mapping, copy=True)
         with pytest.raises(nx.NetworkXUnfeasible):
             H = nx.relabel_nodes(G, mapping, copy=False)
+
+    def test_relabel_preserve_node_order_full_mapping_with_copy_true(self):
+        G = nx.path_graph(3)
+        original_order = list(G.nodes())
+        mapping = {2: "a", 1: "b", 0: "c"}  # dictionary keys out of order on purpose
+        H = nx.relabel_nodes(G, mapping, copy=True)
+        new_order = list(H.nodes())
+        assert [mapping.get(i, i) for i in original_order] == new_order
+
+    def test_relabel_preserve_node_order_full_mapping_with_copy_false(self):
+        G = nx.path_graph(3)
+        original_order = list(G)
+        mapping = {2: "a", 1: "b", 0: "c"}  # dictionary keys out of order on purpose
+        H = nx.relabel_nodes(G, mapping, copy=False)
+        new_order = list(H)
+        assert [mapping.get(i, i) for i in original_order] == new_order
+
+    def test_relabel_preserve_node_order_partial_mapping_with_copy_true(self):
+        G = nx.path_graph(3)
+        original_order = list(G)
+        mapping = {1: "a", 0: "b"}  # partial mapping and keys out of order on purpose
+        H = nx.relabel_nodes(G, mapping, copy=True)
+        new_order = list(H)
+        assert [mapping.get(i, i) for i in original_order] == new_order
+
+    def test_relabel_preserve_node_order_partial_mapping_with_copy_false(self):
+        G = nx.path_graph(3)
+        original_order = list(G)
+        mapping = {1: "a", 0: "b"}  # partial mapping and keys out of order on purpose
+        H = nx.relabel_nodes(G, mapping, copy=False)
+        new_order = list(H)
+        assert [mapping.get(i, i) for i in original_order] != new_order
