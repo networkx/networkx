@@ -184,6 +184,12 @@ def write_dot(G, path):
        A networkx graph
     path : filename
        Filename or file handle to write
+
+    Notes
+    -----
+    To use a specific graph layout, call ``A.layout`` prior to `write_dot`.
+    Note that some graphviz layouts are not guaranteed to be deterministic,
+    see https://gitlab.com/graphviz/graphviz/-/issues/1767 for more info.
     """
     A = to_agraph(G)
     A.write(path)
@@ -227,7 +233,7 @@ def graphviz_layout(G, prog="neato", root=None, args=""):
 
     Returns
     -------
-      Dictionary of x, y, positions keyed by node.
+    Dictionary of x, y, positions keyed by node.
 
     Examples
     --------
@@ -238,6 +244,9 @@ def graphviz_layout(G, prog="neato", root=None, args=""):
     Notes
     -----
     This is a wrapper for pygraphviz_layout.
+
+    Note that some graphviz layouts are not guaranteed to be deterministic,
+    see https://gitlab.com/graphviz/graphviz/-/issues/1767 for more info.
     """
     return pygraphviz_layout(G, prog=prog, root=root, args=args)
 
@@ -279,6 +288,8 @@ def pygraphviz_layout(G, prog="neato", root=None, args=""):
         >>> H_layout = nx.nx_agraph.pygraphviz_layout(G, prog="dot")
         >>> G_layout = {H.nodes[n]["node_label"]: p for n, p in H_layout.items()}
 
+    Note that some graphviz layouts are not guaranteed to be deterministic,
+    see https://gitlab.com/graphviz/graphviz/-/issues/1767 for more info.
     """
     try:
         import pygraphviz
@@ -345,6 +356,9 @@ def view_pygraphviz(
     If this function is called in succession too quickly, sometimes the
     image is not displayed. So you might consider time.sleep(.5) between
     calls if you experience problems.
+
+    Note that some graphviz layouts are not guaranteed to be deterministic,
+    see https://gitlab.com/graphviz/graphviz/-/issues/1767 for more info.
 
     """
     if not len(G):
