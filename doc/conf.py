@@ -41,7 +41,8 @@ sphinx_gallery_conf = {
             "../examples/algorithms",
             "../examples/advanced",
             "../examples/external",
-            "../examples/geospatial",
+#             TODO: bring back geospatial example builds once libpysal supports scipy 1.8
+#             "../examples/geospatial",
             "../examples/subclass",
         ]
     ),
