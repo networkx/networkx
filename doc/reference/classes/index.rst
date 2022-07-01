@@ -40,8 +40,9 @@ Basic graph types
    ordered
 
 .. note:: NetworkX uses `dicts` to store the nodes and neighbors in a graph.
-   So the reporting of nodes and edges for the base graph classes will not
-   necessarily be consistent across versions and platforms.
+   So the reporting of nodes and edges for the base graph classes may not
+   necessarily be consistent across versions and platforms; however, the reporting
+   for CPython is consistent across versions and platforms.
 
 Graph Views
 ===========
