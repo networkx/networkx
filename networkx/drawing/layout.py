@@ -1083,11 +1083,16 @@ def multipartite_layout(G, subset_key="subset", align="vertical", scale=1, cente
             raise ValueError(msg)
         layers[layer] = [v] + layers.get(layer, [])
 
+    # Sort by layer, if possible
+    try:
+        layers = sorted(layers.items())
+    except TypeError:
+        layers = list(layers.items())
+
     pos = None
     nodes = []
-
     width = len(layers)
-    for i, layer in enumerate(layers.values()):
+    for i, (_, layer) in enumerate(layers):
         height = len(layer)
         xs = np.repeat(i, height)
         ys = np.arange(0, height, dtype=float)

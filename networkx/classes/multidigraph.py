@@ -579,14 +579,14 @@ class MultiDiGraph(MultiGraph, DiGraph):
         as well as edge attribute lookup. When called, it also provides
         an EdgeDataView object which allows control of access to edge
         attributes (but does not provide set-like operations).
-        Hence, `G.edges[u, v, k]['color']` provides the value of the color
-        attribute for edge from `u` to `v` with key `k` while
-        `for (u, v, k, c) in G.edges(data='color', default='red',
-        keys=True):` iterates through all the edges yielding the color
-        attribute with default `'red'` if no color attribute exists.
+        Hence, ``G.edges[u, v, k]['color']`` provides the value of the color
+        attribute for the edge from ``u`` to ``v`` with key ``k`` while
+        ``for (u, v, k, c) in G.edges(data='color', default='red', keys=True):``
+        iterates through all the edges yielding the color attribute with
+        default `'red'` if no color attribute exists.
 
         Edges are returned as tuples with optional data and keys
-        in the order (node, neighbor, key, data). If `keys=True` is not
+        in the order (node, neighbor, key, data). If ``keys=True`` is not
         provided, the tuples will just be (node, neighbor, data), but
         multiple tuples with the same node and neighbor will be
         generated when multiple edges between two nodes exist.
@@ -609,10 +609,10 @@ class MultiDiGraph(MultiGraph, DiGraph):
 
         Returns
         -------
-        edges : EdgeView
+        edges : OutMultiEdgeView
             A view of edge attributes, usually it iterates over (u, v)
             (u, v, k) or (u, v, k, d) tuples of edges, but can also be
-            used for attribute lookup as `edges[u, v, k]['foo']`.
+            used for attribute lookup as ``edges[u, v, k]['foo']``.
 
         Notes
         -----
