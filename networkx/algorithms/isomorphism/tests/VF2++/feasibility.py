@@ -5,7 +5,7 @@ from networkx.algorithms.isomorphism.VF2pp import State, check_feasibility
 from networkx.algorithms.isomorphism.VF2pp_helpers.feasibility import prune_ISO
 
 
-class TestGraphIsomorphism:
+class TestFeasibilityISO:
     V = 2000
     G = nx.gnp_random_graph(V, 0.67, seed=42)
     colors = ["blue", "red", "green", "orange", "grey", "yellow", "purple", "black", "white"]
