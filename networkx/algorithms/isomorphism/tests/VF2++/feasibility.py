@@ -2,7 +2,7 @@ import random
 import pytest
 import networkx as nx
 from networkx.algorithms.isomorphism.VF2pp import State, check_feasibility
-from networkx.algorithms.isomorphism.VF2pp.feasibility import prune_ISO
+from networkx.algorithms.isomorphism.VF2pp_helpers.feasibility import prune_ISO
 
 
 class TestGraphIsomorphism:

@@ -40,9 +40,9 @@ def prune_ISO(G1, G2, G1_labels, G2_labels, u, v, state):
     if set(u_labels_neighbors.keys()) != set(v_labels_neighbors.keys()):
         return True
 
-    for nh1, nh2 in zip(u_labels_neighbors.values(), v_labels_neighbors.values()):
-        if len(state.T1.intersection(nh1)) != len(state.T2.intersection(nh2)) or \
-                len(state.T1_out.intersection(nh1)) != len(state.T2_out.intersection(nh2)):
+    for labeled_nh1, labeled_nh2 in zip(u_labels_neighbors.values(), v_labels_neighbors.values()):
+        if len(state.T1.intersection(labeled_nh1)) != len(state.T2.intersection(labeled_nh2)) or \
+                len(state.T1_out.intersection(labeled_nh1)) != len(state.T2_out.intersection(labeled_nh2)):
             return True
 
     return False
