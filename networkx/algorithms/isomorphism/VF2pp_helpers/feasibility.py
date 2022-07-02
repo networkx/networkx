@@ -20,16 +20,12 @@ def check_feasibility(node1, node2, G1, G2, G1_labels, G2_labels, state):
                 return False
             elif G1.number_of_edges(node1, neighbor) != G2.number_of_edges(node2, state.mapping[neighbor]):
                 return False
-            elif G1_labels[neighbor] != G2_labels[state.mapping[neighbor]]:
-                return False
 
     for neighbor in G2[node2]:
         if neighbor in state.reverse_mapping:
             if state.reverse_mapping[neighbor] not in G1[node1]:
                 return False
             elif G1.number_of_edges(node1, state.reverse_mapping[neighbor]) != G2.number_of_edges(node2, neighbor):
-                return False
-            elif G1_labels[state.reverse_mapping[neighbor]] != G2_labels[neighbor]:
                 return False
     return True
 
@@ -40,7 +36,7 @@ def prune_ISO(G1, G2, G1_labels, G2_labels, u, v, state):
 
     v_neighbors_labels = {n2: G2_labels[n2] for n2 in G2[v]}
     v_labels_neighbors = collections.OrderedDict(sorted(nx.utils.groups(v_neighbors_labels).items()))
-    # if the neighbors of u, do not have the same labels as those of v, feasibility cannot be established.
+    # if the neighbors of u, do not have the same labels as those of v, NOT feasible.
     if set(u_labels_neighbors.keys()) != set(v_labels_neighbors.keys()):
         return True
 

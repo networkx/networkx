@@ -1,7 +1,8 @@
-import collections
 import random
+import pytest
 import networkx as nx
-from networkx.algorithms.isomorphism.test_VF2pp import State, prune_ISO, check_feasibility
+from networkx.algorithms.isomorphism.VF2pp import State, check_feasibility
+from networkx.algorithms.isomorphism.VF2pp.feasibility import prune_ISO
 
 
 class TestGraphIsomorphism:

@@ -12,7 +12,7 @@ def matching_order(G1, G2):
         label_rarity = {label: len(nodes) for label, nodes in nodes_of_G2Labels.items()}
 
         node_order, label_rarity, dlevel_nodes, used_degrees, V1_unordered = \
-            BFS_tree(max_node, G1, G1_labels, V1_unordered, label_rarity, used_degrees, node_order)
+            BFS_levels(max_node, G1, G1_labels, V1_unordered, label_rarity, used_degrees, node_order)
 
         node_order.append(max_node)
         V1_unordered.discard(max_node)
@@ -32,7 +32,7 @@ def initialise_preprocess(G1, G2):
     return G1_labels, G2_labels, nodes_of_G1Labels, nodes_of_G2Labels, V1_unordered, current_labels
 
 
-def BFS_tree(source_node, G1, G1_labels, V1_unordered, label_rarity, used_degrees, node_order):
+def BFS_levels(source_node, G1, G1_labels, V1_unordered, label_rarity, used_degrees, node_order):
     dlevel_nodes = set()
     for node, nbr in nx.bfs_edges(G1, source_node):
         if node not in dlevel_nodes:  # This checks for when we finish one depth of the BFS
