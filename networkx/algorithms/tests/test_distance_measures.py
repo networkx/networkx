@@ -118,50 +118,46 @@ class TestWeightedDistance:
         self.G = G
 
     def test_eccentricity(self):
-        assert nx.eccentricity(self.G, 1, weighted=True) == 1.5
-        e = nx.eccentricity(self.G, weighted=True)
+        assert nx.eccentricity(self.G, 1) == 1.5
+        e = nx.eccentricity(self.G)
         assert e[1] == 1.5
 
-        e = nx.eccentricity(self.G, v=1, weighted=True)
+        e = nx.eccentricity(self.G, v=1)
         assert e == 1.5
 
         # This behavior changed in version 1.8 (ticket #739)
-        e = nx.eccentricity(self.G, v=[1, 1], weighted=True)
+        e = nx.eccentricity(self.G, v=[1, 1])
         assert e[1] == 1.5
-        e = nx.eccentricity(self.G, v=[1, 2], weighted=True)
+        e = nx.eccentricity(self.G, v=[1, 2])
         assert e[1] == 1.5
 
     def test_diameter(self):
-        assert nx.diameter(self.G, weighted=True) == 1.6
+        assert nx.diameter(self.G) == 1.6
 
     def test_radius(self):
-        assert nx.radius(self.G, weighted=True) == 0.9
+        assert nx.radius(self.G) == 0.9
 
     def test_periphery(self):
-        for v in set(nx.periphery(self.G, weighted=True)):
-            assert nx.eccentricity(self.G, v, weighted=True) == nx.diameter(
-                self.G, weighted=True
-            )
+        for v in set(nx.periphery(self.G)):
+            assert nx.eccentricity(self.G, v) == nx.diameter(self.G)
 
     def test_center(self):
-        for v in set(nx.center(self.G, weighted=True)):
-            assert nx.eccentricity(self.G, v, weighted=True) == nx.radius(
-                self.G, weighted=True
-            )
+        for v in set(nx.center(self.G)):
+            assert nx.eccentricity(self.G, v) == nx.radius(self.G)
 
     def test_bound_diameter(self):
-        assert nx.diameter(self.G, usebounds=True, weighted=True) == 1.6
+        assert nx.diameter(self.G, usebounds=True) == 1.6
 
     def test_bound_radius(self):
-        assert nx.radius(self.G, usebounds=True, weighted=True) == 0.9
+        assert nx.radius(self.G, usebounds=True) == 0.9
 
     def test_bound_periphery(self):
         result = {4, 5}
-        assert set(nx.periphery(self.G, usebounds=True, weighted=True)) == result
+        assert set(nx.periphery(self.G, usebounds=True)) == result
 
     def test_bound_center(self):
         result = {0, 2}
-        assert set(nx.center(self.G, usebounds=True, weighted=True)) == result
+        assert set(nx.center(self.G, usebounds=True)) == result
 
 
 class TestResistanceDistance:

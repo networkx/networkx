@@ -15,7 +15,7 @@ __all__ = [
 ]
 
 
-def extrema_bounding(G, compute="diameter", weighted=False):
+def extrema_bounding(G, compute="diameter", weight="weight"):
     """Compute requested extreme distance metric of undirected graph G
 
     .. deprecated:: 2.8
@@ -40,8 +40,19 @@ def extrema_bounding(G, compute="diameter", weighted=False):
        "center" for the set of nodes with eccentricity equal to the radius,
        "eccentricities" for the maximum distance from each node to all other nodes in G
 
-    weighted : bool
-      Specifies if calculation should account for edge weights.
+    weight : string or function
+        If this is a string, then edge weights will be accessed via the
+        edge attribute with this key (that is, the weight of the edge
+        joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
+        such edge attribute exists, the weight of the edge is assumed to
+        be one.
+
+        If this is a function, the weight of an edge is the value
+        returned by the function. The function must accept exactly three
+        positional arguments: the two endpoints of an edge and the
+        dictionary of edge attributes for that edge. The function must
+        return a number.
+
 
     Returns
     -------
@@ -86,10 +97,10 @@ def extrema_bounding(G, compute="diameter", weighted=False):
         msg += f"Use nx.eccentricity(G) instead."
     warnings.warn(msg, DeprecationWarning, stacklevel=2)
 
-    return _extrema_bounding(G, compute=compute)
+    return _extrema_bounding(G, compute=compute, weight=weight)
 
 
-def _extrema_bounding(G, compute="diameter"):
+def _extrema_bounding(G, compute="diameter", weight="weight"):
     """Compute requested extreme distance metric of undirected graph G
 
     Computation is based on smart lower and upper bounds, and in practice
@@ -107,6 +118,19 @@ def _extrema_bounding(G, compute="diameter"):
        "periphery" for the set of nodes with eccentricity equal to the diameter,
        "center" for the set of nodes with eccentricity equal to the radius,
        "eccentricities" for the maximum distance from each node to all other nodes in G
+
+    weight : string or function
+        If this is a string, then edge weights will be accessed via the
+        edge attribute with this key (that is, the weight of the edge
+        joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
+        such edge attribute exists, the weight of the edge is assumed to
+        be one.
+
+        If this is a function, the weight of an edge is the value
+        returned by the function. The function must accept exactly three
+        positional arguments: the two endpoints of an edge and the
+        dictionary of edge attributes for that edge. The function must
+        return a number.
 
     Returns
     -------
@@ -139,7 +163,7 @@ def _extrema_bounding(G, compute="diameter"):
     Real-World Graphs, Theoretical Computer Science 586: 59-80, 2015.
     doi: https://doi.org/10.1016/j.tcs.2015.02.033
     """
-
+    G_succ = G._succ if G.is_directed() else G._adj
     # init variables
     degrees = dict(G.degree())  # start with the highest degree node
     minlowernode = max(degrees, key=degrees.get)
@@ -166,17 +190,19 @@ def _extrema_bounding(G, compute="diameter"):
         high = not high
 
         # get distances from/to current node and derive eccentricity
-        if weighted:
-            dist = dict(nx.single_source_bellman_ford_path_length(G, current))
-            decimal_places = [
-                str(w)[::-1].find(".")
-                for w in nx.get_edge_attributes(G, "weight").values()
-            ]
+        dist = nx.single_source_bellman_ford_path_length(
+            G=G, source=current, weight=weight
+        )
+        if isinstance(weight, str):
+            edge_weights = nx.get_edge_attributes(G, "weight").values()
+        else:
+            edge_weights = [weight(v, u, e) for u, e in G_succ[n].items()]
+
+        decimal_places = [str(w)[::-1].find(".") for w in edge_weights if w]
+        if decimal_places:
             decimal_places = max(decimal_places)
             for k in dist.keys():
                 dist[k] = round(dist[k], decimal_places)
-        else:
-            dist = dict(nx.single_source_shortest_path_length(G, current))
 
         if len(dist) != N:
             msg = "Cannot compute metric because graph is not connected."
@@ -299,7 +325,7 @@ def _extrema_bounding(G, compute="diameter"):
     return None
 
 
-def eccentricity(G, v=None, sp=None, weighted=False):
+def eccentricity(G, v=None, sp=None, weight="weight"):
     """Returns the eccentricity of nodes in G.
 
     The eccentricity of a node v is the maximum distance from v to
@@ -316,8 +342,18 @@ def eccentricity(G, v=None, sp=None, weighted=False):
     sp : dict of dicts, optional
        All pairs shortest path lengths as a dictionary of dictionaries
 
-    weighted : bool
-      Specifies if calculation should account for edge weights.
+    weight : string or function (default="weight")
+        If this is a string, then edge weights will be accessed via the
+        edge attribute with this key (that is, the weight of the edge
+        joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
+        such edge attribute exists, the weight of the edge is assumed to
+        be one.
+
+        If this is a function, the weight of an edge is the value
+        returned by the function. The function must accept exactly three
+        positional arguments: the two endpoints of an edge and the
+        dictionary of edge attributes for that edge. The function must
+        return a number.
 
     Returns
     -------
@@ -340,22 +376,25 @@ def eccentricity(G, v=None, sp=None, weighted=False):
     #        nodes=[v]
     #    else:                      # assume v is a container of nodes
     #        nodes=v
+    G_succ = G._succ if G.is_directed() else G._adj
     order = G.order()
-
     e = {}
     for n in G.nbunch_iter(v):
         if sp is None:
-            if weighted:
-                length = nx.single_source_bellman_ford_path_length(G, n)
-                decimal_places = [
-                    str(w)[::-1].find(".")
-                    for w in nx.get_edge_attributes(G, "weight").values()
-                ]
+            length = nx.single_source_bellman_ford_path_length(
+                G=G, source=n, weight=weight
+            )
+            if isinstance(weight, str):
+                edge_weights = nx.get_edge_attributes(G, "weight").values()
+            else:
+                edge_weights = [weight(v, u, e) for u, e in G_succ[n].items()]
+
+            decimal_places = [str(w)[::-1].find(".") for w in edge_weights if w]
+            if decimal_places:
                 decimal_places = max(decimal_places)
                 for k in length.keys():
                     length[k] = round(length[k], decimal_places)
-            else:
-                length = nx.single_source_shortest_path_length(G, n)
+
             L = len(length)
         else:
             try:
@@ -380,7 +419,7 @@ def eccentricity(G, v=None, sp=None, weighted=False):
     return e
 
 
-def diameter(G, e=None, usebounds=False, weighted=False):
+def diameter(G, e=None, usebounds=False, weight="weight"):
     """Returns the diameter of the graph G.
 
     The diameter is the maximum eccentricity.
@@ -393,8 +432,18 @@ def diameter(G, e=None, usebounds=False, weighted=False):
     e : eccentricity dictionary, optional
       A precomputed dictionary of eccentricities.
 
-    weighted : bool
-      Specifies if calculation should account for edge weights.
+    weight : string or function
+        If this is a string, then edge weights will be accessed via the
+        edge attribute with this key (that is, the weight of the edge
+        joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
+        such edge attribute exists, the weight of the edge is assumed to
+        be one.
+
+        If this is a function, the weight of an edge is the value
+        returned by the function. The function must accept exactly three
+        positional arguments: the two endpoints of an edge and the
+        dictionary of edge attributes for that edge. The function must
+        return a number.
 
     Returns
     -------
@@ -412,13 +461,13 @@ def diameter(G, e=None, usebounds=False, weighted=False):
     eccentricity
     """
     if usebounds is True and e is None and not G.is_directed():
-        return extrema_bounding(G, compute="diameter", weighted=weighted)
+        return extrema_bounding(G, compute="diameter", weight=weight)
     if e is None:
-        e = eccentricity(G, weighted=weighted)
+        e = eccentricity(G, weight=weight)
     return max(e.values())
 
 
-def periphery(G, e=None, usebounds=False, weighted=False):
+def periphery(G, e=None, usebounds=False, weight="weight"):
     """Returns the periphery of the graph G.
 
     The periphery is the set of nodes with eccentricity equal to the diameter.
@@ -431,8 +480,18 @@ def periphery(G, e=None, usebounds=False, weighted=False):
     e : eccentricity dictionary, optional
       A precomputed dictionary of eccentricities.
 
-    weighted : bool
-      Specifies if calculation should account for edge weights.
+    weight : string or function
+        If this is a string, then edge weights will be accessed via the
+        edge attribute with this key (that is, the weight of the edge
+        joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
+        such edge attribute exists, the weight of the edge is assumed to
+        be one.
+
+        If this is a function, the weight of an edge is the value
+        returned by the function. The function must accept exactly three
+        positional arguments: the two endpoints of an edge and the
+        dictionary of edge attributes for that edge. The function must
+        return a number.
 
     Returns
     -------
@@ -451,15 +510,15 @@ def periphery(G, e=None, usebounds=False, weighted=False):
     center
     """
     if usebounds is True and e is None and not G.is_directed():
-        return extrema_bounding(G, compute="periphery", weighted=weighted)
+        return extrema_bounding(G, compute="periphery", weight=weight)
     if e is None:
-        e = eccentricity(G, weighted=weighted)
+        e = eccentricity(G, weight=weight)
     diameter = max(e.values())
     p = [v for v in e if e[v] == diameter]
     return p
 
 
-def radius(G, e=None, usebounds=False, weighted=False):
+def radius(G, e=None, usebounds=False, weight="weight"):
     """Returns the radius of the graph G.
 
     The radius is the minimum eccentricity.
@@ -472,8 +531,18 @@ def radius(G, e=None, usebounds=False, weighted=False):
     e : eccentricity dictionary, optional
       A precomputed dictionary of eccentricities.
 
-    weighted : bool
-      Specifies if calculation should account for edge weights.
+    weight : string or function
+        If this is a string, then edge weights will be accessed via the
+        edge attribute with this key (that is, the weight of the edge
+        joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
+        such edge attribute exists, the weight of the edge is assumed to
+        be one.
+
+        If this is a function, the weight of an edge is the value
+        returned by the function. The function must accept exactly three
+        positional arguments: the two endpoints of an edge and the
+        dictionary of edge attributes for that edge. The function must
+        return a number.
 
     Returns
     -------
@@ -488,13 +557,13 @@ def radius(G, e=None, usebounds=False, weighted=False):
 
     """
     if usebounds is True and e is None and not G.is_directed():
-        return extrema_bounding(G, compute="radius", weighted=weighted)
+        return extrema_bounding(G, compute="radius", weight=weight)
     if e is None:
-        e = eccentricity(G, weighted=weighted)
+        e = eccentricity(G, weight=weight)
     return min(e.values())
 
 
-def center(G, e=None, usebounds=False, weighted=False):
+def center(G, e=None, usebounds=False, weight="weight"):
     """Returns the center of the graph G.
 
     The center is the set of nodes with eccentricity equal to radius.
@@ -507,8 +576,18 @@ def center(G, e=None, usebounds=False, weighted=False):
     e : eccentricity dictionary, optional
       A precomputed dictionary of eccentricities.
 
-    weighted : bool
-      Specifies if calculation should account for edge weights.
+    weight : string or function
+        If this is a string, then edge weights will be accessed via the
+        edge attribute with this key (that is, the weight of the edge
+        joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
+        such edge attribute exists, the weight of the edge is assumed to
+        be one.
+
+        If this is a function, the weight of an edge is the value
+        returned by the function. The function must accept exactly three
+        positional arguments: the two endpoints of an edge and the
+        dictionary of edge attributes for that edge. The function must
+        return a number.
 
     Returns
     -------
@@ -527,9 +606,9 @@ def center(G, e=None, usebounds=False, weighted=False):
     periphery
     """
     if usebounds is True and e is None and not G.is_directed():
-        return extrema_bounding(G, compute="center", weighted=weighted)
+        return extrema_bounding(G, compute="center", weight=weight)
     if e is None:
-        e = eccentricity(G, weighted=weighted)
+        e = eccentricity(G, weight=weight)
     radius = min(e.values())
     p = [v for v in e if e[v] == radius]
     return p
