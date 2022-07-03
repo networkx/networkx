@@ -310,6 +310,7 @@ Resolution
 To make slicing intuitive for new users, we went ahead with **Option 1** in the
 discussion above. Users will now see `NetworkXError` when they try to slice a
 `*View` object.::
+
    >>> G.edges()[0:10]
    Traceback (most recent call last)
       ...

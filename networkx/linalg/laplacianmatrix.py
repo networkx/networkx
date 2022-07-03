@@ -6,6 +6,7 @@ from networkx.utils import not_implemented_for
 __all__ = [
     "laplacian_matrix",
     "normalized_laplacian_matrix",
+    "total_spanning_tree_weight",
     "directed_laplacian_matrix",
     "directed_combinatorial_laplacian_matrix",
 ]
@@ -38,7 +39,7 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
 
     Notes
     -----
-    For MultiGraph/MultiDiGraph, the edges weights are summed.
+    For MultiGraph, the edges weights are summed.
 
     See Also
     --------
@@ -77,7 +78,7 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
         N = D^{-1/2} L D^{-1/2}
 
     where `L` is the graph Laplacian and `D` is the diagonal matrix of
-    node degrees.
+    node degrees [1]_.
 
     Parameters
     ----------
@@ -99,10 +100,10 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
 
     Notes
     -----
-    For MultiGraph/MultiDiGraph, the edges weights are summed.
-    See to_numpy_array for other options.
+    For MultiGraph, the edges weights are summed.
+    See :func:`to_numpy_array` for other options.
 
-    If the Graph contains selfloops, D is defined as diag(sum(A,1)), where A is
+    If the Graph contains selfloops, D is defined as ``diag(sum(A, 1))``, where A is
     the adjacency matrix [2]_.
 
     See Also
@@ -146,9 +147,40 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
     return sp.sparse.csr_matrix(DH @ (L @ DH))
 
 
+def total_spanning_tree_weight(G, weight=None):
+    """
+    Returns the total weight of all spanning trees of `G`.
+
+    Kirchoff's Tree Matrix Theorem states that the determinant of any cofactor of the
+    Laplacian matrix of a graph is the number of spanning trees in the graph. For a
+    weighted Laplacian matrix, it is the sum across all spanning trees of the
+    multiplicative weight of each tree. That is, the weight of each tree is the
+    product of its edge weights.
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+        The graph to use Kirchhoff's theorem on.
+
+    weight : string or None
+        The key for the edge attribute holding the edge weight. If `None`, then
+        each edge is assumed to have a weight of 1 and this function returns the
+        total number of spanning trees in `G`.
+
+    Returns
+    -------
+    float
+        The sum of the total multiplicative weights for all spanning trees in `G`
+    """
+    import numpy as np
+
+    G_laplacian = nx.laplacian_matrix(G, weight=weight).toarray()
+    # Determinant ignoring first row and column
+    return abs(np.linalg.det(G_laplacian[1:, 1:]))
+
+
 ###############################################################################
-# Code based on
-# https://bitbucket.org/bedwards/networkx-community/src/370bd69fc02f/networkx/algorithms/community/
+# Code based on work from https://github.com/bjedwards
 
 
 @not_implemented_for("undirected")
@@ -166,7 +198,7 @@ def directed_laplacian_matrix(
 
     where `I` is the identity matrix, `P` is the transition matrix of the
     graph, and `\Phi` a matrix with the Perron vector of `P` in the diagonal and
-    zeros elsewhere.
+    zeros elsewhere [1]_.
 
     Depending on the value of walk_type, `P` can be the transition matrix
     induced by a random walk, a lazy random walk, or a random walk with
@@ -262,7 +294,7 @@ def directed_combinatorial_laplacian_matrix(
         L = \Phi - (\Phi P + P^T \Phi) / 2
 
     where `P` is the transition matrix of the graph and `\Phi` a matrix
-    with the Perron vector of `P` in the diagonal and zeros elsewhere.
+    with the Perron vector of `P` in the diagonal and zeros elsewhere [1]_.
 
     Depending on the value of walk_type, `P` can be the transition matrix
     induced by a random walk, a lazy random walk, or a random walk with
@@ -367,7 +399,7 @@ def _transition_matrix(G, nodelist=None, weight="weight", walk_type=None, alpha=
 
     Returns
     -------
-    P : NumPy matrix
+    P : numpy.ndarray
       transition matrix of G.
 
     Raises

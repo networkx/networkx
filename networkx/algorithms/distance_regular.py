@@ -6,6 +6,7 @@ Distance-regular graphs
 
 import networkx as nx
 from networkx.utils import not_implemented_for
+
 from .distance_measures import diameter
 
 __all__ = [

@@ -81,7 +81,7 @@ Version 3.0
 * In ``utils/misc.py`` remove ``generate_unique_node`` and related tests.
 * In ``algorithms/link_analysis/hits_alg.py`` remove ``hub_matrix`` and ``authority_matrix``
 * In ``algorithms/link_analysis/hits_alg.py``, remove ``hits_numpy`` and ``hist_scipy``.
-* In ``networkx.classes`` remove the ``ordered`` module and the four ``Ordered``
+* In ``classes`` remove the ``ordered`` module and the four ``Ordered``
   classes defined therein.
 * In ``utils/decorators.py`` remove ``preserve_random_state``.
 * In ``algorithms/community/quality.py`` remove ``coverage`` and ``performance``.
@@ -92,15 +92,32 @@ Version 3.0
 * In ``algorithms/assortativity/connectivity.py`` remove ``k_nearest_neighbors``.
 * In ``utils/decorators.py`` remove ``random_state``.
 * In ``algorithms/operators/binary.py`` remove ``name`` kwarg from ``union`` and docstring.
-* In ``networkx/generators/geometric.py`` remove ``euclidean`` and tests.
-* In ``networkx/algorithms/node_classification/`` remove ``hmn.py``, ``lgc.py``,
+* In ``generators/geometric.py`` remove ``euclidean`` and tests.
+* In ``algorithms/node_classification/`` remove ``hmn.py``, ``lgc.py``,
   and ``utils.py`` after moving the functions defined therein into the newly created
   ``node_classification.py`` module, which will replace the current package.
-* In ``networkx/algorithms/link_analysis/pagerank_alg.py``, remove the
+* In ``algorithms/link_analysis/pagerank_alg.py``, remove the
   ``np.asmatrix`` wrappers on the return values of ``google_matrix`` and remove
   the associated FutureWarning.
-* In ``networkx/convert_matrix.py`` remove ``from_scipy_sparse_matrix`` and
+* In ``convert_matrix.py`` remove ``from_scipy_sparse_matrix`` and
   ``to_scipy_sparse_matrix``.
-* In ``networkx/linalg/attrmatrix.py`` remove the FutureWarning, update the
+* In ``linalg/attrmatrix.py`` remove the FutureWarning, update the
   return type by removing ``np.asmatrix``, and update the docstring to
   reflect that the function returns a ``numpy.ndarray`` instance.
+* In ``generators/small.py`` remove ``make_small_graph`` and
+  ``make_small_undirected_graph``.
+* In ``convert_matrix.py`` remove ``to_numpy_recarray``.
+* In ``classes/function.py`` remove ``info``.
+* In ``algorithms/community/modularity_max.py``, remove the deprecated
+  ``n_communities`` parameter from the ``greedy_modularity_communities``
+  function.
+* In ``algorithms/distance_measures.py`` remove ``extrema_bounding``.
+* In ``utils/misc.py`` remove ``dict_to_numpy_array1`` and ``dict_to_numpy_array2``.
+* In ``utils/misc.py`` remove ``to_tuple``.
+* In ``algorithms/matching.py``, remove parameter ``maxcardinality`` from ``min_weight_matching``.
+* In ``drawing/nx_pydot.py``, change PendingDeprecationWarning to DeprecationWarning.
+
+Version 3.2
+~~~~~~~~~~~
+* In ``generators/directed.py`` remove the ``create_using`` keyword argument
+  for the ``scale_free_graph`` function.

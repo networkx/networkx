@@ -283,6 +283,12 @@ def number_strongly_connected_components(G):
     NetworkXNotImplemented
         If G is undirected.
 
+    Examples
+    --------
+    >>> G = nx.DiGraph([(0, 1), (1, 2), (2, 0), (2, 3), (4, 5), (3, 4), (5, 6), (6, 3), (6, 7)])
+    >>> nx.number_strongly_connected_components(G)
+    3
+
     See Also
     --------
     strongly_connected_components
@@ -312,6 +318,15 @@ def is_strongly_connected(G):
     -------
     connected : bool
       True if the graph is strongly connected, False otherwise.
+
+    Examples
+    --------
+    >>> G = nx.DiGraph([(0, 1), (1, 2), (2, 3), (3, 0), (2, 4), (4, 2)])
+    >>> nx.is_strongly_connected(G)
+    True
+    >>> G.remove_edge(2, 3)
+    >>> nx.is_strongly_connected(G)
+    False
 
     Raises
     ------

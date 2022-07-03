@@ -1,8 +1,8 @@
 """
 Mixing matrices for node attributes and degree.
 """
+from networkx.algorithms.assortativity.pairs import node_attribute_xy, node_degree_xy
 from networkx.utils import dict_to_numpy_array
-from networkx.algorithms.assortativity.pairs import node_degree_xy, node_attribute_xy
 
 __all__ = [
     "attribute_mixing_matrix",
@@ -292,7 +292,7 @@ def mixing_dict(xy, normalized=False):
         psum += 1
 
     if normalized:
-        for k, jdict in d.items():
+        for _, jdict in d.items():
             for j in jdict:
                 jdict[j] /= psum
     return d

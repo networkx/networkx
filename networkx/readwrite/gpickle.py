@@ -27,10 +27,10 @@ See https://docs.python.org/3/library/pickle.html
 
 __all__ = ["read_gpickle", "write_gpickle"]
 
-from networkx.utils import open_file
-
 import pickle
 import warnings
+
+from networkx.utils import open_file
 
 
 @open_file(1, mode="wb")

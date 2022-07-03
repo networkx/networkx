@@ -1,7 +1,7 @@
 """Unit tests for layout functions."""
-import networkx as nx
-
 import pytest
+
+import networkx as nx
 
 np = pytest.importorskip("numpy")
 pytest.importorskip("scipy")
@@ -371,6 +371,15 @@ class TestLayout:
             distances_equidistant[1:], distances_equidistant[-1], atol=0.01
         )
 
+    def test_spiral_layout_equidistant(self):
+        G = nx.path_graph(10)
+        pos = nx.spiral_layout(G, equidistant=True)
+        # Extract individual node positions as an array
+        p = np.array(list(pos.values()))
+        # Elementwise-distance between node positions
+        dist = np.linalg.norm(p[1:] - p[:-1], axis=1)
+        assert np.allclose(np.diff(dist), 0, atol=1e-3)
+
     def test_rescale_layout_dict(self):
         G = nx.empty_graph()
         vpos = nx.random_layout(G, center=(1, 1))
@@ -413,3 +422,24 @@ def test_multipartite_layout_nonnumeric_partition_labels():
     G.add_edges_from([(0, 2), (0, 3), (1, 2)])
     pos = nx.multipartite_layout(G)
     assert len(pos) == len(G)
+
+
+def test_multipartite_layout_layer_order():
+    """Return the layers in sorted order if the layers of the multipartite
+    graph are sortable. See gh-5691"""
+    G = nx.Graph()
+    for node, layer in zip(("a", "b", "c", "d", "e"), (2, 3, 1, 2, 4)):
+        G.add_node(node, subset=layer)
+
+    # Horizontal alignment, therefore y-coord determines layers
+    pos = nx.multipartite_layout(G, align="horizontal")
+
+    # Nodes "a" and "d" are in the same layer
+    assert pos["a"][-1] == pos["d"][-1]
+    # positions should be sorted according to layer
+    assert pos["c"][-1] < pos["a"][-1] < pos["b"][-1] < pos["e"][-1]
+
+    # Make sure that multipartite_layout still works when layers are not sortable
+    G.nodes["a"]["subset"] = "layer_0"  # Can't sort mixed strs/ints
+    pos_nosort = nx.multipartite_layout(G)  # smoke test: this should not raise
+    assert pos_nosort.keys() == pos.keys()

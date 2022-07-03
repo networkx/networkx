@@ -7,9 +7,9 @@ from itertools import combinations
 
 import networkx as nx
 from networkx import NetworkXError
+from networkx.algorithms.community.community_utils import is_partition
 from networkx.utils import not_implemented_for
 from networkx.utils.decorators import argmap
-from networkx.algorithms.community.community_utils import is_partition
 
 __all__ = ["coverage", "modularity", "performance", "partition_quality"]
 
@@ -334,12 +334,12 @@ def modularity(G, communities, weight="weight", resolution=1):
         out_degree = dict(G.out_degree(weight=weight))
         in_degree = dict(G.in_degree(weight=weight))
         m = sum(out_degree.values())
-        norm = 1 / m ** 2
+        norm = 1 / m**2
     else:
         out_degree = in_degree = dict(G.degree(weight=weight))
         deg_sum = sum(out_degree.values())
         m = deg_sum / 2
-        norm = 1 / deg_sum ** 2
+        norm = 1 / deg_sum**2
 
     def community_contribution(community):
         comm = set(community)

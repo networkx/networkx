@@ -11,10 +11,12 @@ General guidelines for writing good tests:
   and add the module to the relevant entries below.
 
 """
-import pytest
-import networkx
 import sys
 import warnings
+
+import pytest
+
+import networkx
 
 
 def pytest_addoption(parser):
@@ -226,6 +228,21 @@ def set_warnings():
         "ignore", category=DeprecationWarning, message="\nfind_cores"
     )
     warnings.filterwarnings("ignore", category=FutureWarning, message="attr_matrix")
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message=r"\n\nmake_small_.*"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="to_numpy_recarray"
+    )
+    warnings.filterwarnings("ignore", category=DeprecationWarning, message="info")
+    warnings.filterwarnings("ignore", category=DeprecationWarning, message="to_tuple")
+    # create_using for scale_free_graph
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="The create_using argument"
+    )
+    warnings.filterwarnings(
+        "ignore", category=PendingDeprecationWarning, message="nx.nx_pydot"
+    )
 
 
 @pytest.fixture(autouse=True)
@@ -291,6 +308,13 @@ try:
 except ImportError:
     has_ogr = False
 
+try:
+    import sympy
+
+    has_sympy = True
+except ImportError:
+    has_sympy = False
+
 
 # List of files that pytest should ignore
 
@@ -343,6 +367,7 @@ needs_yaml = ["readwrite/nx_yaml.py"]
 needs_pygraphviz = ["drawing/nx_agraph.py"]
 needs_pydot = ["drawing/nx_pydot.py"]
 needs_ogr = ["readwrite/nx_shp.py"]
+needs_sympy = ["algorithms/polynomials.py"]
 
 if not has_numpy:
     collect_ignore += needs_numpy
@@ -360,6 +385,8 @@ if not has_pydot:
     collect_ignore += needs_pydot
 if not has_ogr:
     collect_ignore += needs_ogr
+if not has_sympy:
+    collect_ignore += needs_sympy
 
 # FIXME:  This is to avoid errors on AppVeyor
 if sys.platform.startswith("win"):

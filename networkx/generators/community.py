@@ -1,9 +1,9 @@
 """Generators for classes of graphs used in studying social networks."""
 import itertools
 import math
+
 import networkx as nx
 from networkx.utils import py_random_state
-
 
 __all__ = [
     "caveman_graph",
@@ -367,7 +367,7 @@ def gaussian_random_partition_graph(n, s, v, p_in, p_out, directed=False, seed=N
     assigned = 0
     sizes = []
     while True:
-        size = int(seed.gauss(s, float(s) / v + 0.5))
+        size = int(seed.gauss(s, s / v + 0.5))
         if size < 1:  # how to handle 0 or negative sizes?
             continue
         if assigned + size >= n:
@@ -826,9 +826,9 @@ def LFR_benchmark_graph(
           case a suitable minimum degree will be found.
 
        ``max_degree`` can also be specified, otherwise it will be set to
-       ``n``. Each node *u* will have `\mu \mathrm{deg}(u)` edges
-       joining it to nodes in communities other than its own and `(1 -
-       \mu) \mathrm{deg}(u)` edges joining it to nodes in its own
+       ``n``. Each node *u* will have $\mu \mathrm{deg}(u)$ edges
+       joining it to nodes in communities other than its own and $(1 -
+       \mu) \mathrm{deg}(u)$ edges joining it to nodes in its own
        community.
     2) Generate community sizes according to a power law distribution
        with exponent ``tau2``. If ``min_community`` and
@@ -837,12 +837,12 @@ def LFR_benchmark_graph(
        are generated until the sum of their sizes equals ``n``.
     3) Each node will be randomly assigned a community with the
        condition that the community is large enough for the node's
-       intra-community degree, `(1 - \mu) \mathrm{deg}(u)` as
+       intra-community degree, $(1 - \mu) \mathrm{deg}(u)$ as
        described in step 2. If a community grows too large, a random node
        will be selected for reassignment to a new community, until all
        nodes have been assigned a community.
-    4) Each node *u* then adds `(1 - \mu) \mathrm{deg}(u)`
-       intra-community edges and `\mu \mathrm{deg}(u)` inter-community
+    4) Each node *u* then adds $(1 - \mu) \mathrm{deg}(u)$
+       intra-community edges and $\mu \mathrm{deg}(u)$ inter-community
        edges.
 
     Parameters

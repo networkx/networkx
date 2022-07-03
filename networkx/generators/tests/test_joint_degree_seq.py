@@ -1,11 +1,12 @@
 import time
+
 from networkx.algorithms.assortativity import degree_mixing_dict
-from networkx.generators import powerlaw_cluster_graph, gnm_random_graph
+from networkx.generators import gnm_random_graph, powerlaw_cluster_graph
 from networkx.generators.joint_degree_seq import (
-    is_valid_joint_degree,
-    joint_degree_graph,
     directed_joint_degree_graph,
     is_valid_directed_joint_degree,
+    is_valid_joint_degree,
+    joint_degree_graph,
 )
 
 

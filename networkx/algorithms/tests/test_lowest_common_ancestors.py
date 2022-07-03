@@ -1,5 +1,6 @@
-import pytest
 from itertools import chain, combinations, product
+
+import pytest
 
 import networkx as nx
 

@@ -1,6 +1,7 @@
 import pytest
+
 import networkx as nx
-from networkx.utils import nodes_equal, edges_equal, graphs_equal
+from networkx.utils import edges_equal, graphs_equal, nodes_equal
 
 np = pytest.importorskip("numpy")
 pd = pytest.importorskip("pandas")
@@ -18,7 +19,7 @@ class TestConvertPandas:
         self.df = df
 
         mdf = pd.DataFrame([[4, 16, "A", "D"]], columns=["weight", "cost", 0, "b"])
-        self.mdf = df.append(mdf)
+        self.mdf = pd.concat([df, mdf])
 
     def test_exceptions(self):
         G = pd.DataFrame(["a"])  # adj

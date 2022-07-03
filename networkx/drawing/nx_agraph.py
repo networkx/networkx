@@ -19,6 +19,7 @@ See Also
 """
 import os
 import tempfile
+
 import networkx as nx
 
 __all__ = [
@@ -469,8 +470,9 @@ def display_pygraphviz(graph, path, format=None, prog=None, args=""):
     calls if you experience problems.
 
     """
-    from PIL import Image
     import warnings
+
+    from PIL import Image
 
     warnings.warn(
         "display_pygraphviz is deprecated and will be removed in NetworkX 3.0. "

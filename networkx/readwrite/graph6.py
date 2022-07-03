@@ -14,7 +14,7 @@ from itertools import islice
 
 import networkx as nx
 from networkx.exception import NetworkXError
-from networkx.utils import open_file, not_implemented_for
+from networkx.utils import not_implemented_for, open_file
 
 __all__ = ["from_graph6_bytes", "read_graph6", "to_graph6_bytes", "write_graph6"]
 
@@ -41,7 +41,7 @@ def _generate_graph6_bytes(G, nodes, header):
 
     """
     n = len(G)
-    if n >= 2 ** 36:
+    if n >= 2**36:
         raise ValueError(
             "graph6 is only defined if number of nodes is less " "than 2 ** 36"
         )
@@ -128,6 +128,8 @@ def from_graph6_bytes(bytes_in):
     return G
 
 
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def to_graph6_bytes(G, nodes=None, header=True):
     """Convert a simple undirected graph to bytes in graph6 format.
 

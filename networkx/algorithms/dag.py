@@ -5,14 +5,14 @@ In general, these functions do not check for acyclic-ness, so it is up
 to the user to check for that.
 """
 
+import heapq
 from collections import deque
-from math import gcd
 from functools import partial
 from itertools import chain, product, starmap
-import heapq
+from math import gcd
 
 import networkx as nx
-from networkx.utils import arbitrary_element, pairwise, not_implemented_for
+from networkx.utils import arbitrary_element, not_implemented_for, pairwise
 
 __all__ = [
     "descendants",
@@ -621,7 +621,7 @@ def transitive_closure(G, reflexive=False):
     reflexive : Bool or None, optional (default: False)
         Determines when cycles create self-loops in the Transitive Closure.
         If True, trivial cycles (length 0) create self-loops. The result
-        is a reflexive tranistive closure of G.
+        is a reflexive transitive closure of G.
         If False (the default) non-trivial cycles create self-loops.
         If None, self-loops are not created.
 
@@ -905,7 +905,7 @@ def dag_longest_path(G, weight="weight", default_weight=1, topo_order=None):
         The weight of edges that do not have a weight attribute
 
     topo_order: list or tuple, optional
-        A topological order for G (if None, the function will compute one)
+        A topological order for `G` (if None, the function will compute one)
 
     Returns
     -------
@@ -925,6 +925,17 @@ def dag_longest_path(G, weight="weight", default_weight=1, topo_order=None):
     >>> nx.dag_longest_path(DG)
     [0, 1, 2]
     >>> nx.dag_longest_path(DG, weight="cost")
+    [0, 2]
+
+    In the case where multiple valid topological orderings exist, `topo_order`
+    can be used to specify a specific ordering:
+
+    >>> DG = nx.DiGraph([(0, 1), (0, 2)])
+    >>> sorted(nx.all_topological_sorts(DG))  # Valid topological orderings
+    [[0, 1, 2], [0, 2, 1]]
+    >>> nx.dag_longest_path(DG, topo_order=[0, 1, 2])
+    [0, 1]
+    >>> nx.dag_longest_path(DG, topo_order=[0, 2, 1])
     [0, 2]
 
     See also

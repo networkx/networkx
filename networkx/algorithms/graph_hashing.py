@@ -223,6 +223,7 @@ def weisfeiler_lehman_subgraph_hashes(
     Examples
     --------
     Finding similar nodes in different graphs:
+
     >>> G1 = nx.Graph()
     >>> G1.add_edges_from([
     ...     (1, 2), (2, 3), (2, 4), (3, 5), (4, 6), (5, 7), (6, 7)

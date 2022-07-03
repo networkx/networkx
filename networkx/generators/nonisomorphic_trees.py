@@ -174,7 +174,6 @@ def _layout_to_matrix(layout):
 def _layout_to_graph(layout):
     """Create a NetworkX Graph for the tree specified by the
     given layout(level sequence)"""
-    result = [[0] * len(layout) for i in range(len(layout))]
     G = nx.Graph()
     stack = []
     for i in range(len(layout)):

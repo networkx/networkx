@@ -1,5 +1,6 @@
-import pytest
 import pickle
+
+import pytest
 
 import networkx as nx
 

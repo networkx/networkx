@@ -2,9 +2,9 @@
 """
 
 import math
-from networkx.utils import py_random_state
 
 import networkx as nx
+from networkx.utils import py_random_state
 
 __all__ = ["double_edge_swap", "connected_double_edge_swap"]
 
@@ -220,7 +220,7 @@ def connected_double_edge_swap(G, nswap=1, _window_threshold=3, seed=None):
                     fail = True
             # If one of the swaps failed, reduce the window size.
             if fail:
-                window = int(math.ceil(window / 2))
+                window = math.ceil(window / 2)
             else:
                 window += 1
         # If the window is large, then there is a good chance that a bunch of
@@ -265,5 +265,5 @@ def connected_double_edge_swap(G, nswap=1, _window_threshold=3, seed=None):
                     G.remove_edge(u, x)
                     G.remove_edge(v, y)
                     swapcount -= 1
-                window = int(math.ceil(window / 2))
+                window = math.ceil(window / 2)
     return swapcount

@@ -1,18 +1,19 @@
 """Base class for directed graphs."""
 from copy import deepcopy
+from functools import cached_property
 
 import networkx as nx
-from networkx.classes.graph import Graph
+import networkx.convert as convert
 from networkx.classes.coreviews import AdjacencyView
+from networkx.classes.graph import Graph
 from networkx.classes.reportviews import (
-    OutEdgeView,
-    InEdgeView,
     DiDegreeView,
     InDegreeView,
+    InEdgeView,
     OutDegreeView,
+    OutEdgeView,
 )
 from networkx.exception import NetworkXError
-import networkx.convert as convert
 
 __all__ = ["DiGraph"]
 
@@ -38,8 +39,8 @@ class DiGraph(Graph):
         Data to initialize graph. If None (default) an empty
         graph is created.  The data can be any format that is supported
         by the to_networkx_graph() function, currently including edge list,
-        dict of dicts, dict of lists, NetworkX graph, NumPy matrix
-        or 2d ndarray, SciPy sparse matrix, or PyGraphviz graph.
+        dict of dicts, dict of lists, NetworkX graph, 2D NumPy array, SciPy
+        sparse matrix, or PyGraphviz graph.
 
     attr : keyword arguments, optional (default= no attributes)
         Attributes to add to graph as key=value pairs.
@@ -170,8 +171,8 @@ class DiGraph(Graph):
     Simple graph information is obtained using object-attributes and methods.
     Reporting usually provides views instead of containers to reduce memory
     usage. The views update as the graph is updated similarly to dict-views.
-    The objects `nodes, `edges` and `adj` provide access to data attributes
-    via lookup (e.g. `nodes[n], `edges[u, v]`, `adj[u][v]`) and iteration
+    The objects `nodes`, `edges` and `adj` provide access to data attributes
+    via lookup (e.g. `nodes[n]`, `edges[u, v]`, `adj[u][v]`) and iteration
     (e.g. `nodes.items()`, `nodes.data('color')`,
     `nodes.data('color', default='blue')` and similarly for `edges`)
     Views exist for `nodes`, `edges`, `neighbors()`/`adj` and `degree`.
@@ -274,8 +275,8 @@ class DiGraph(Graph):
             Data to initialize graph.  If None (default) an empty
             graph is created.  The data can be an edge list, or any
             NetworkX graph object.  If the corresponding optional Python
-            packages are installed the data can also be a NumPy matrix
-            or 2d ndarray, a SciPy sparse matrix, or a PyGraphviz graph.
+            packages are installed the data can also be a 2D NumPy array, a
+            SciPy sparse matrix, or a PyGraphviz graph.
 
         attr : keyword arguments, optional (default= no attributes)
             Attributes to add to graph as key=value pairs.
@@ -313,6 +314,13 @@ class DiGraph(Graph):
         self._adj = self.adjlist_outer_dict_factory()  # empty adjacency dict
         self._pred = self.adjlist_outer_dict_factory()  # predecessor
         self._succ = self._adj  # successor
+        # clear cached adjacency properties
+        if hasattr(self, "adj"):
+            delattr(self, "adj")
+        if hasattr(self, "pred"):
+            delattr(self, "pred")
+        if hasattr(self, "succ"):
+            delattr(self, "succ")
 
         # attempt to load graph with data
         if incoming_graph_data is not None:
@@ -320,7 +328,7 @@ class DiGraph(Graph):
         # load graph attributes (must be after convert)
         self.graph.update(attr)
 
-    @property
+    @cached_property
     def adj(self):
         """Graph adjacency object holding the neighbors of each node.
 
@@ -339,7 +347,7 @@ class DiGraph(Graph):
         """
         return AdjacencyView(self._succ)
 
-    @property
+    @cached_property
     def succ(self):
         """Graph adjacency object holding the successors of each node.
 
@@ -360,7 +368,7 @@ class DiGraph(Graph):
         """
         return AdjacencyView(self._succ)
 
-    @property
+    @cached_property
     def pred(self):
         """Graph adjacency object holding the predecessors of each node.
 
@@ -836,7 +844,7 @@ class DiGraph(Graph):
         except KeyError as err:
             raise NetworkXError(f"The node {n} is not in the digraph.") from err
 
-    @property
+    @cached_property
     def edges(self):
         """An OutEdgeView of the DiGraph as G.edges or G.edges().
 
@@ -900,9 +908,13 @@ class DiGraph(Graph):
         return OutEdgeView(self)
 
     # alias out_edges to edges
-    out_edges = edges
+    @cached_property
+    def out_edges(self):
+        return OutEdgeView(self)
 
-    @property
+    out_edges.__doc__ = edges.__doc__
+
+    @cached_property
     def in_edges(self):
         """An InEdgeView of the Graph as G.in_edges or G.in_edges().
 
@@ -933,7 +945,7 @@ class DiGraph(Graph):
         """
         return InEdgeView(self)
 
-    @property
+    @cached_property
     def degree(self):
         """A DegreeView for the Graph as G.degree or G.degree().
 
@@ -956,13 +968,10 @@ class DiGraph(Graph):
 
         Returns
         -------
-        If a single node is requested
-        deg : int
-            Degree of the node
-
-        OR if multiple nodes are requested
-        nd_iter : iterator
-            The iterator returns two-tuples of (node, degree).
+        DiDegreeView or int
+            If multiple nodes are requested (the default), returns a `DiDegreeView`
+            mapping nodes to their degree.
+            If a single node is requested, returns the degree of the node as an integer.
 
         See Also
         --------
@@ -980,7 +989,7 @@ class DiGraph(Graph):
         """
         return DiDegreeView(self)
 
-    @property
+    @cached_property
     def in_degree(self):
         """An InDegreeView for (node, in_degree) or in_degree for single node.
 
@@ -1027,7 +1036,7 @@ class DiGraph(Graph):
         """
         return InDegreeView(self)
 
-    @property
+    @cached_property
     def out_degree(self):
         """An OutDegreeView for (node, out_degree)
 

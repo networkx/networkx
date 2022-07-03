@@ -5,9 +5,8 @@ from collections import Counter
 from itertools import chain
 
 import networkx as nx
-from networkx.utils import pairwise, not_implemented_for
-from networkx.classes.graphviews import subgraph_view, reverse_view
-
+from networkx.classes.graphviews import reverse_view, subgraph_view
+from networkx.utils import not_implemented_for, pairwise
 
 __all__ = [
     "nodes",
@@ -385,9 +384,11 @@ def induced_subgraph(G, nbunch):
     Examples
     --------
     >>> G = nx.path_graph(4)  # or DiGraph, MultiGraph, MultiDiGraph, etc
-    >>> H = G.subgraph([0, 1, 2])
+    >>> H = nx.induced_subgraph(G, [0, 1, 3])
     >>> list(H.edges)
-    [(0, 1), (1, 2)]
+    [(0, 1)]
+    >>> list(H.nodes)
+    [0, 1, 3]
     """
     induced_nodes = nx.filters.show_nodes(G.nbunch_iter(nbunch))
     return nx.graphviews.subgraph_view(G, induced_nodes)
@@ -574,7 +575,16 @@ def info(G, n=None):
     NetworkXError
         If n is not in the graph G
 
+    .. deprecated:: 2.7
+       ``info`` is deprecated and will be removed in NetworkX 3.0.
     """
+    import warnings
+
+    warnings.warn(
+        ("info is deprecated and will be removed in version 3.0.\n"),
+        DeprecationWarning,
+        stacklevel=2,
+    )
     if n is None:
         return str(G)
     if n not in G:
@@ -1279,8 +1289,8 @@ def path_weight(G, path, weight):
 
     Returns
     -------
-    cost: int
-        A integer representing the total cost with respect to the
+    cost: int or float
+        An integer or a float representing the total cost with respect to the
         specified weight of the specified path
 
     Raises

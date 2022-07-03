@@ -58,10 +58,9 @@ References
 """
 
 from collections import deque
-from typing import AbstractSet
 
 import networkx as nx
-from networkx.utils import not_implemented_for, UnionFind
+from networkx.utils import UnionFind, not_implemented_for
 
 __all__ = ["d_separated"]
 

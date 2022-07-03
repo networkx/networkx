@@ -3,11 +3,22 @@
 
 repos:
 -   repo: https://github.com/psf/black
-    rev: 21.12b0
+    rev: 22.3.0
     hooks:
     - id: black
 -   repo: https://github.com/asottile/pyupgrade
-    rev: v2.29.1
+    rev: v2.32.1
     hooks:
     -   id: pyupgrade
         args: [--py38-plus]
+-   repo: https://github.com/asottile/blacken-docs
+    rev: v1.12.1
+    hooks:
+    -   id: blacken-docs
+-   repo: https://github.com/pycqa/isort
+    rev: 5.10.1
+    hooks:
+    -   id: isort
+        name: isort (python)
+        args: ["--profile", "black", "--filter-files", "--skip", "__init__.py"]
+        files: ^networkx/

@@ -1,9 +1,10 @@
 import pytest
+
 from networkx.utils import (
     powerlaw_sequence,
-    zipf_rv,
     random_weighted_sample,
     weighted_choice,
+    zipf_rv,
 )
 
 

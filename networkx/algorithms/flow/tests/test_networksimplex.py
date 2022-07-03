@@ -1,6 +1,8 @@
-import pytest
-import networkx as nx
 import os
+
+import pytest
+
+import networkx as nx
 
 
 @pytest.fixture

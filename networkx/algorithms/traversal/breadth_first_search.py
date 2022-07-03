@@ -1,6 +1,7 @@
 """Basic algorithms for breadth-first searching the nodes of a graph."""
-import networkx as nx
 from collections import deque
+
+import networkx as nx
 
 __all__ = [
     "bfs_edges",

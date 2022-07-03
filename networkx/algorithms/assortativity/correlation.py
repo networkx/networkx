@@ -1,9 +1,8 @@
 """Node assortativity coefficients and correlation measures.
 """
 from networkx.algorithms.assortativity.mixing import (
-    degree_mixing_matrix,
     attribute_mixing_matrix,
-    numeric_mixing_matrix,
+    degree_mixing_matrix,
 )
 from networkx.algorithms.assortativity.pairs import node_degree_xy
 
@@ -96,7 +95,7 @@ def degree_assortativity_coefficient(G, x="out", y="in", weight=None, nodes=None
     mapping = {d: i for i, d, in enumerate(degrees)}
     M = degree_mixing_matrix(G, x=x, y=y, nodes=nodes, weight=weight, mapping=mapping)
 
-    return numeric_ac(M, mapping=mapping)
+    return _numeric_ac(M, mapping=mapping)
 
 
 def degree_pearson_correlation_coefficient(G, x="out", y="in", weight=None, nodes=None):
@@ -250,7 +249,7 @@ def numeric_assortativity_coefficient(G, attribute, nodes=None):
     vals = {G.nodes[n][attribute] for n in nodes}
     mapping = {d: i for i, d, in enumerate(vals)}
     M = attribute_mixing_matrix(G, attribute, nodes, mapping)
-    return numeric_ac(M, mapping)
+    return _numeric_ac(M, mapping)
 
 
 def attribute_ac(M):
@@ -280,21 +279,20 @@ def attribute_ac(M):
     return r
 
 
-def numeric_ac(M, mapping):
-    # M is a numpy matrix or array
+def _numeric_ac(M, mapping):
+    # M is a 2D numpy array
     # numeric assortativity coefficient, pearsonr
     import numpy as np
 
     if M.sum() != 1.0:
-        M = M / float(M.sum())
-    nx, ny = M.shape  # nx=ny
+        M = M / M.sum()
     x = np.array(list(mapping.keys()))
     y = x  # x and y have the same support
     idx = list(mapping.values())
     a = M.sum(axis=0)
     b = M.sum(axis=1)
-    vara = (a[idx] * x ** 2).sum() - ((a[idx] * x).sum()) ** 2
-    varb = (b[idx] * y ** 2).sum() - ((b[idx] * y).sum()) ** 2
+    vara = (a[idx] * x**2).sum() - ((a[idx] * x).sum()) ** 2
+    varb = (b[idx] * y**2).sum() - ((b[idx] * y).sum()) ** 2
     xy = np.outer(x, y)
     ab = np.outer(a[idx], b[idx])
     return (xy * (M - ab)).sum() / np.sqrt(vara * varb)

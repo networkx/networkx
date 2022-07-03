@@ -36,8 +36,8 @@ __all__ = [
     "write_weighted_edgelist",
 ]
 
-from networkx.utils import open_file
 import networkx as nx
+from networkx.utils import open_file
 
 
 def generate_edgelist(G, delimiter=" ", data=True):

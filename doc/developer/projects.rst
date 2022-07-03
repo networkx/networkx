@@ -35,6 +35,11 @@ Pedagogical Interactive Notebooks for Algorithms Implemented in NetworkX
 - Interested Mentors: `@dschult <https://github.com/dschult/>`__,
   `@MridulS <https://github.com/MridulS/>`__,
   `@rossbar <https://github.com/rossbar/>`__
+  
+- Expected time commitment: This project can be either a medium project (~175 hours)
+  or a large project (~350 hours). The contributor is expected to contribute 2-3
+  pedagogical interactive notebooks for the medium duration project and 4-5 notebooks
+  for the long duration project.
 
 Implement the VF2++ Graph Isomorphism Algorithm
 -----------------------------------------------
@@ -59,6 +64,8 @@ Implement the VF2++ Graph Isomorphism Algorithm
 
 .. _`Graph Isomorphism Problem`: https://en.wikipedia.org/wiki/Graph_isomorphism_problem
 .. _VF2++: https://doi.org/10.1016/j.dam.2018.02.018
+
+- Expected time commitment: Long project (~350 hours)
 
 Completed Projects
 ==================

@@ -1,8 +1,5 @@
 """Provides functions for computing minors of a graph."""
-from itertools import chain
-from itertools import combinations
-from itertools import permutations
-from itertools import product
+from itertools import chain, combinations, permutations, product
 
 import networkx as nx
 from networkx import density

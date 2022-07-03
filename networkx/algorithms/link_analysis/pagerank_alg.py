@@ -1,5 +1,6 @@
 """PageRank analysis of graph structure. """
 from warnings import warn
+
 import networkx as nx
 
 __all__ = ["pagerank", "pagerank_numpy", "pagerank_scipy", "google_matrix"]
@@ -122,10 +123,7 @@ def _pagerank_python(
     if len(G) == 0:
         return {}
 
-    if not G.is_directed():
-        D = G.to_directed()
-    else:
-        D = G
+    D = G.to_directed()
 
     # Create a copy in (right) stochastic form
     W = nx.stochastic_graph(D, weight=weight)
@@ -136,21 +134,21 @@ def _pagerank_python(
         x = dict.fromkeys(W, 1.0 / N)
     else:
         # Normalized nstart vector
-        s = float(sum(nstart.values()))
+        s = sum(nstart.values())
         x = {k: v / s for k, v in nstart.items()}
 
     if personalization is None:
         # Assign uniform personalization vector if not given
         p = dict.fromkeys(W, 1.0 / N)
     else:
-        s = float(sum(personalization.values()))
+        s = sum(personalization.values())
         p = {k: v / s for k, v in personalization.items()}
 
     if dangling is None:
         # Use personalization vector if dangling vector not specified
         dangling_weights = p
     else:
-        s = float(sum(dangling.values()))
+        s = sum(dangling.values())
         dangling_weights = {k: v / s for k, v in dangling.items()}
     dangling_nodes = [n for n in W if W.out_degree(n, weight=weight) == 0.0]
 
@@ -231,10 +229,10 @@ def google_matrix(
     --------
     pagerank, pagerank_numpy, pagerank_scipy
     """
-    import numpy as np
-
     # TODO: Remove this warning in version 3.0
     import warnings
+
+    import numpy as np
 
     warnings.warn(
         "google_matrix will return an np.ndarray instead of a np.matrix in\n"
@@ -361,7 +359,7 @@ def pagerank_numpy(G, alpha=0.85, personalization=None, weight="weight", danglin
     ind = np.argmax(eigenvalues)
     # eigenvector of largest eigenvalue is at ind, normalized
     largest = np.array(eigenvectors[:, ind]).flatten().real
-    norm = float(largest.sum())
+    norm = largest.sum()
     return dict(zip(G, map(float, largest / norm)))
 
 
@@ -480,7 +478,7 @@ def pagerank_scipy(
         x = np.repeat(1.0 / N, N)
     else:
         x = np.array([nstart.get(n, 0) for n in nodelist], dtype=float)
-        x = x / x.sum()
+        x /= x.sum()
 
     # Personalization vector
     if personalization is None:
@@ -489,7 +487,7 @@ def pagerank_scipy(
         p = np.array([personalization.get(n, 0) for n in nodelist], dtype=float)
         if p.sum() == 0:
             raise ZeroDivisionError
-        p = p / p.sum()
+        p /= p.sum()
     # Dangling nodes
     if dangling is None:
         dangling_weights = p

@@ -7,9 +7,8 @@ Learning with local and global consistency.
 Advances in neural information processing systems, 16(16), 321-328.
 """
 import networkx as nx
-
-from networkx.utils.decorators import not_implemented_for
 from networkx.algorithms.node_classification.utils import _get_label_info
+from networkx.utils.decorators import not_implemented_for
 
 __all__ = ["local_and_global_consistency"]
 

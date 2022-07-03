@@ -1,7 +1,9 @@
 import random
+
 import pytest
+
 import networkx as nx
-from networkx.utils import nodes_equal, edges_equal
+from networkx.utils import edges_equal, nodes_equal
 
 
 class TestFunction:

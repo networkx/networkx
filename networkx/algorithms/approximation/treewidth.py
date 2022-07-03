@@ -29,12 +29,12 @@ There are two different functions for computing a tree decomposition:
 
 """
 
+import itertools
 import sys
+from heapq import heapify, heappop, heappush
 
 import networkx as nx
 from networkx.utils import not_implemented_for
-from heapq import heappush, heappop, heapify
-import itertools
 
 __all__ = ["treewidth_min_degree", "treewidth_min_fill_in"]
 

@@ -1,21 +1,24 @@
 """Functions to convert NetworkX graphs to and from common data containers
-like numpy arrays, scipy sparse matrices, and pandas DataFrames.
+like numpy arrays, scipy sparse arrays, and pandas DataFrames.
 
 The preferred way of converting data to a NetworkX graph is through the
-graph constructor.  The constructor calls the to_networkx_graph() function
-which attempts to guess the input type and convert it automatically.
+graph constructor.  The constructor calls the `~networkx.convert.to_networkx_graph`
+function which attempts to guess the input type and convert it automatically.
 
 Examples
 --------
 Create a 10 node random graph from a numpy array
 
 >>> import numpy as np
->>> a = np.random.randint(0, 2, size=(10, 10))
->>> D = nx.DiGraph(a)
+>>> rng = np.random.default_rng()
+>>> a = rng.integers(low=0, high=2, size=(10, 10))
+>>> DG = nx.from_numpy_array(a, create_using=nx.DiGraph)
 
-or equivalently
+or equivalently:
 
->>> D = nx.to_networkx_graph(a, create_using=nx.DiGraph)
+>>> DG = nx.DiGraph(a)
+
+which calls `from_numpy_array` internally based on the type of ``a``.
 
 See Also
 --------
@@ -25,6 +28,7 @@ nx_agraph, nx_pydot
 import itertools
 import warnings
 from collections import defaultdict
+
 import networkx as nx
 from networkx.utils import not_implemented_for
 
@@ -694,6 +698,12 @@ def from_numpy_matrix(A, parallel_edges=False, create_using=None):
 def to_numpy_recarray(G, nodelist=None, dtype=None, order=None):
     """Returns the graph adjacency matrix as a NumPy recarray.
 
+    .. deprecated:: 2.7
+
+       ``to_numpy_recarray`` is deprecated and will be removed in NetworkX 3.0.
+       Use ``nx.to_numpy_array(G, dtype=dtype, weight=None).view(np.recarray)``
+       instead.
+
     Parameters
     ----------
     G : graph
@@ -706,7 +716,7 @@ def to_numpy_recarray(G, nodelist=None, dtype=None, order=None):
     dtype : NumPy data-type, optional
         A valid NumPy named dtype used to initialize the NumPy recarray.
         The data type names are assumed to be keys in the graph edge attribute
-        dictionary.
+        dictionary. The default is ``dtype([("weight", float)])``.
 
     order : {'C', 'F'}, optional
         Whether to store multidimensional data in C- or Fortran-contiguous
@@ -737,7 +747,19 @@ def to_numpy_recarray(G, nodelist=None, dtype=None, order=None):
      [5 0]]
 
     """
+    import warnings
+
     import numpy as np
+
+    warnings.warn(
+        (
+            "to_numpy_recarray is deprecated and will be removed in version 3.0.\n"
+            "Use to_numpy_array instead::\n\n"
+            "    nx.to_numpy_array(G, dtype=dtype, weight=None).view(np.recarray)"
+        ),
+        DeprecationWarning,
+        stacklevel=2,
+    )
 
     if dtype is None:
         dtype = [("weight", float)]
@@ -1271,8 +1293,12 @@ def to_numpy_array(
         If `nodelist` is ``None``, then the ordering is produced by ``G.nodes()``.
 
     dtype : NumPy data type, optional
-        A NumPy data type used to initialize the array.
-        If None, then the NumPy default is used.
+        A NumPy data type used to initialize the array. If None, then the NumPy
+        default is used. The dtype can be structured if `weight=None`, in which
+        case the dtype field names are used to look up edge attributes. The
+        result is a structured array where each named field in the dtype
+        corresponds to the adjaceny for that edge attribute. See examples for
+        details.
 
     order : {'C', 'F'}, optional
         Whether to store multidimensional data in C- or Fortran-contiguous
@@ -1287,7 +1313,8 @@ def to_numpy_array(
     weight : string or None optional (default = 'weight')
         The edge attribute that holds the numerical value used for
         the edge weight. If an edge does not have that attribute, then the
-        value 1 is used instead.
+        value 1 is used instead. `weight` must be ``None`` if a structured
+        dtype is used.
 
     nonedge : array_like (default = 0.0)
         The value used to represent non-edges in the adjaceny matrix.
@@ -1300,6 +1327,13 @@ def to_numpy_array(
     -------
     A : NumPy ndarray
         Graph adjacency matrix
+
+    Raises
+    ------
+    NetworkXError
+        If `dtype` is a structured dtype and `G` is a multigraph
+    ValueError
+        If `dtype` is a structured dtype and `weight` is not `None`
 
     See Also
     --------
@@ -1349,6 +1383,53 @@ def to_numpy_array(
            [1., 0., 0.],
            [0., 0., 4.]])
 
+    When `nodelist` argument is used, nodes of `G` which do not appear in the `nodelist`
+    and their edges are not included in the adjacency matrix. Here is an example:
+
+    >>> G = nx.Graph()
+    >>> G.add_edge(3, 1)
+    >>> G.add_edge(2, 0)
+    >>> G.add_edge(2, 1)
+    >>> G.add_edge(3, 0)
+    >>> nx.to_numpy_array(G, nodelist=[1, 2, 3])
+    array([[0., 1., 1.],
+           [1., 0., 0.],
+           [1., 0., 0.]])
+
+    This function can also be used to create adjacency matrices for multiple
+    edge attributes with structured dtypes:
+
+    >>> G = nx.Graph()
+    >>> G.add_edge(0, 1, weight=10)
+    >>> G.add_edge(1, 2, cost=5)
+    >>> G.add_edge(2, 3, weight=3, cost=-4.0)
+    >>> dtype = np.dtype([("weight", int), ("cost", float)])
+    >>> A = nx.to_numpy_array(G, dtype=dtype, weight=None)
+    >>> A["weight"]
+    array([[ 0, 10,  0,  0],
+           [10,  0,  1,  0],
+           [ 0,  1,  0,  3],
+           [ 0,  0,  3,  0]])
+    >>> A["cost"]
+    array([[ 0.,  1.,  0.,  0.],
+           [ 1.,  0.,  5.,  0.],
+           [ 0.,  5.,  0., -4.],
+           [ 0.,  0., -4.,  0.]])
+
+    As stated above, the argument "nonedge" is useful especially when there are
+    actually edges with weight 0 in the graph. Setting a nonedge value different than 0,
+    makes it much clearer to differentiate such 0-weighted edges and actual nonedge values.
+
+    >>> G = nx.Graph()
+    >>> G.add_edge(3, 1, weight=2)
+    >>> G.add_edge(2, 0, weight=0)
+    >>> G.add_edge(2, 1, weight=0)
+    >>> G.add_edge(3, 0, weight=1)
+    >>> nx.to_numpy_array(G, nonedge=-1.)
+    array([[-1.,  2., -1.,  1.],
+           [ 2., -1.,  0., -1.],
+           [-1.,  0., -1.,  0.],
+           [ 1., -1.,  0., -1.]])
     """
     import numpy as np
 
@@ -1369,6 +1450,18 @@ def to_numpy_array(
     if nlen == 0 or G.number_of_edges() == 0:
         return A
 
+    # If dtype is structured and weight is None, use dtype field names as
+    # edge attributes
+    edge_attrs = None  # Only single edge attribute by default
+    if A.dtype.names:
+        if weight is None:
+            edge_attrs = dtype.names
+        else:
+            raise ValueError(
+                "Specifying `weight` not supported for structured dtypes\n."
+                "To create adjacency matrices from structured dtypes, use `weight=None`."
+            )
+
     # Map nodes to row/col in matrix
     idx = dict(zip(nodelist, range(nlen)))
     if len(nodelist) < len(G):
@@ -1376,6 +1469,10 @@ def to_numpy_array(
 
     # Collect all edge weights and reduce with `multigraph_weights`
     if G.is_multigraph():
+        if edge_attrs:
+            raise nx.NetworkXError(
+                "Structured arrays are not supported for MultiGraphs"
+            )
         d = defaultdict(list)
         for u, v, wt in G.edges(data=weight, default=1.0):
             d[(idx[u], idx[v])].append(wt)
@@ -1383,6 +1480,23 @@ def to_numpy_array(
         wts = [multigraph_weight(ws) for ws in d.values()]  # reduced weights
     else:
         i, j, wts = [], [], []
+
+        # Special branch: multi-attr adjacency from structured dtypes
+        if edge_attrs:
+            # Extract edges with all data
+            for u, v, data in G.edges(data=True):
+                i.append(idx[u])
+                j.append(idx[v])
+                wts.append(data)
+            # Map each attribute to the appropriate named field in the
+            # structured dtype
+            for attr in edge_attrs:
+                attr_data = [wt.get(attr, 1.0) for wt in wts]
+                A[attr][i, j] = attr_data
+                if not G.is_directed():
+                    A[attr][j, i] = attr_data
+            return A
+
         for u, v, wt in G.edges(data=weight, default=1.0):
             i.append(idx[u])
             j.append(idx[v])

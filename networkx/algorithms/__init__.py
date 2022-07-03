@@ -55,6 +55,7 @@ from networkx.algorithms.triads import *
 from networkx.algorithms.vitality import *
 from networkx.algorithms.voronoi import *
 from networkx.algorithms.wiener import *
+from networkx.algorithms.polynomials import *
 
 # Make certain subpackages available to the user as direct imports from
 # the `networkx` namespace.

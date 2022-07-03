@@ -13,16 +13,14 @@ be found about `Triangular Tiling`_, and `Square, Hex and Triangle Grids`_
 
 """
 
+from itertools import repeat
 from math import sqrt
 
 from networkx.classes import set_node_attributes
 from networkx.exception import NetworkXError
+from networkx.generators.classic import cycle_graph, empty_graph, path_graph
 from networkx.relabel import relabel_nodes
 from networkx.utils import flatten, nodes_or_number, pairwise
-from networkx.generators.classic import cycle_graph
-from networkx.generators.classic import empty_graph
-from networkx.generators.classic import path_graph
-from itertools import repeat
 
 __all__ = [
     "grid_2d_graph",

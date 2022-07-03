@@ -1,4 +1,5 @@
 from itertools import chain
+
 import networkx as nx
 
 __all__ = ["tree_data", "tree_graph"]

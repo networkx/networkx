@@ -8,14 +8,14 @@ on:
 
 jobs:
   report:
-    runs-on: Ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
-        python-version: [3.8]
+        python-version: ["3.10"]
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.python-version }}
 
@@ -34,5 +34,5 @@ jobs:
 
     - name: Test NetworkX
       run: |
-        pytest --cov=networkx --runslow --doctest-modules --pyargs networkx
+        pytest --cov=networkx --runslow --doctest-modules --durations=20 --pyargs networkx
         codecov

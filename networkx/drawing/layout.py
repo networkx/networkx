@@ -337,7 +337,7 @@ def bipartite_layout(
     pos = np.concatenate([top_pos, bottom_pos])
     pos = rescale_layout(pos, scale=scale) + center
     if align == "horizontal":
-        pos = np.flip(pos, 1)
+        pos = pos[:, ::-1]  # swap x and y coords
     pos = dict(zip(nodes, pos))
     return pos
 
@@ -530,7 +530,7 @@ def _fruchterman_reingold(
     t = max(max(pos.T[0]) - min(pos.T[0]), max(pos.T[1]) - min(pos.T[1])) * 0.1
     # simple cooling scheme.
     # linearly step down by dt on each iteration so last iteration is size dt.
-    dt = t / float(iterations + 1)
+    dt = t / (iterations + 1)
     delta = np.zeros((pos.shape[0], pos.shape[0], pos.shape[1]), dtype=A.dtype)
     # the inscrutable (but fast) version
     # this is still O(V^2)
@@ -544,7 +544,7 @@ def _fruchterman_reingold(
         np.clip(distance, 0.01, None, out=distance)
         # displacement "force"
         displacement = np.einsum(
-            "ijk,ij->ik", delta, (k * k / distance ** 2 - A * distance / k)
+            "ijk,ij->ik", delta, (k * k / distance**2 - A * distance / k)
         )
         # update positions
         length = np.linalg.norm(displacement, axis=-1)
@@ -602,7 +602,7 @@ def _sparse_fruchterman_reingold(
     t = max(max(pos.T[0]) - min(pos.T[0]), max(pos.T[1]) - min(pos.T[1])) * 0.1
     # simple cooling scheme.
     # linearly step down by dt on each iteration so last iteration is size dt.
-    dt = t / float(iterations + 1)
+    dt = t / (iterations + 1)
 
     displacement = np.zeros((dim, nnodes))
     for iteration in range(iterations):
@@ -614,17 +614,17 @@ def _sparse_fruchterman_reingold(
             # difference between this row's node position and all others
             delta = (pos[i] - pos).T
             # distance between points
-            distance = np.sqrt((delta ** 2).sum(axis=0))
+            distance = np.sqrt((delta**2).sum(axis=0))
             # enforce minimum distance of 0.01
             distance = np.where(distance < 0.01, 0.01, distance)
             # the adjacency matrix row
             Ai = A.getrowview(i).toarray()  # TODO: revisit w/ sparse 1D container
             # displacement "force"
             displacement[:, i] += (
-                delta * (k * k / distance ** 2 - Ai * distance / k)
+                delta * (k * k / distance**2 - Ai * distance / k)
             ).sum(axis=1)
         # update positions
-        length = np.sqrt((displacement ** 2).sum(axis=0))
+        length = np.sqrt((displacement**2).sum(axis=0))
         length = np.where(length < 0.01, 0.1, length)
         delta_pos = (displacement * t / length).T
         pos += delta_pos
@@ -747,14 +747,14 @@ def _kamada_kawai_costfn(pos_vec, np, invdist, meanweight, dim):
     offset = nodesep * invdist - 1.0
     offset[np.diag_indices(nNodes)] = 0
 
-    cost = 0.5 * np.sum(offset ** 2)
+    cost = 0.5 * np.sum(offset**2)
     grad = np.einsum("ij,ij,ijk->ik", invdist, offset, direction) - np.einsum(
         "ij,ij,ijk->jk", invdist, offset, direction
     )
 
     # Additional parabolic term to encourage mean position to be near origin:
     sumpos = np.sum(pos_arr, axis=0)
-    cost += 0.5 * meanweight * np.sum(sumpos ** 2)
+    cost += 0.5 * meanweight * np.sum(sumpos**2)
     grad += meanweight * sumpos
 
     return (cost, grad.ravel())
@@ -957,14 +957,17 @@ def spiral_layout(G, scale=1, center=None, dim=2, resolution=0.35, equidistant=F
         Scale factor for positions.
     center : array-like or None
         Coordinate pair around which to center the layout.
-    dim : int
+    dim : int, default=2
         Dimension of layout, currently only dim=2 is supported.
         Other dimension values result in a ValueError.
-    resolution : float
+    resolution : float, default=0.35
         The compactness of the spiral layout returned.
         Lower values result in more compressed spiral layouts.
-    equidistant : bool
-        If True, nodes will be plotted equidistant from each other.
+    equidistant : bool, default=False
+        If True, nodes will be positioned equidistant from each other
+        by decreasing angle further from center.
+        If False, nodes will be positioned at equal angles
+        from each other by increasing separation further from center.
 
     Returns
     -------
@@ -980,6 +983,7 @@ def spiral_layout(G, scale=1, center=None, dim=2, resolution=0.35, equidistant=F
     --------
     >>> G = nx.path_graph(4)
     >>> pos = nx.spiral_layout(G)
+    >>> nx.draw(G, pos=pos)
 
     Notes
     -----
@@ -1003,6 +1007,7 @@ def spiral_layout(G, scale=1, center=None, dim=2, resolution=0.35, equidistant=F
         chord = 1
         step = 0.5
         theta = resolution
+        theta += chord / (step * theta)
         for _ in range(len(G)):
             r = step * theta
             theta += chord / r
@@ -1078,11 +1083,16 @@ def multipartite_layout(G, subset_key="subset", align="vertical", scale=1, cente
             raise ValueError(msg)
         layers[layer] = [v] + layers.get(layer, [])
 
+    # Sort by layer, if possible
+    try:
+        layers = sorted(layers.items())
+    except TypeError:
+        layers = list(layers.items())
+
     pos = None
     nodes = []
-
     width = len(layers)
-    for i, layer in enumerate(layers.values()):
+    for i, (_, layer) in enumerate(layers):
         height = len(layer)
         xs = np.repeat(i, height)
         ys = np.arange(0, height, dtype=float)
@@ -1095,7 +1105,7 @@ def multipartite_layout(G, subset_key="subset", align="vertical", scale=1, cente
         nodes.extend(layer)
     pos = rescale_layout(pos, scale=scale) + center
     if align == "horizontal":
-        pos = np.flip(pos, 1)
+        pos = pos[:, ::-1]  # swap x and y coords
     pos = dict(zip(nodes, pos))
     return pos
 
