@@ -77,6 +77,8 @@ def naive_all_pairs_lowest_common_ancestor(G, pairs=None):
                 if i <= j and (u, v) not in pairs:
                     pairs.add((u, v))
     else:
+        if type(pairs) != list:
+            pairs = list(pairs)
         for u, v in pairs:
             for n in (u, v):
                 if n not in G:
