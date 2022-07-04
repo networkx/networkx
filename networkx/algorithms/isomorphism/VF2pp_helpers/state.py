@@ -37,11 +37,14 @@ def restore_Tinout(G1, G2, T1, T2, T1_out, T2_out, popped_node1, popped_node2, m
     is_added = False
     for nbr in G1[popped_node1]:
         if nbr in mapping:
-            T1.add(popped_node1)
+            T1.add(popped_node1)  # if a neighbor of the excluded node1 is in the mapping, keep node1 in T1
             is_added = True
-            break
+        else:  # check if its neighbor has another connection with a covered node. If not, only then exclude it from T1
+            if len({nbr2 for nbr2 in G1[nbr] if nbr2 in mapping}) == 0:  # todo: break the loop
+                T1.discard(nbr)
+                T1_out.add(nbr)
 
-    # Case where the node does not exist in neither the mapping nor T1. By deffinition it should belong to T1_out
+    # Case where the node is not present in neither the mapping nor T1. By deffinition it should belong to T1_out
     if not is_added:
         T1_out.add(popped_node1)
 
@@ -49,7 +52,11 @@ def restore_Tinout(G1, G2, T1, T2, T1_out, T2_out, popped_node1, popped_node2, m
     for nbr in G2[popped_node2]:
         if nbr in reverse_mapping:
             T2.add(popped_node2)
-            break
+            is_added = True
+        else:
+            if len({nbr2 for nbr2 in G2[nbr] if nbr2 in reverse_mapping}) == 0:
+                T2.discard(nbr)
+                T2_out.add(nbr)
 
     if not is_added:
         T2_out.add(popped_node2)

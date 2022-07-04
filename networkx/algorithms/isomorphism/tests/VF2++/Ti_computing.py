@@ -1,5 +1,5 @@
 import networkx as nx
-from networkx.algorithms.isomorphism.VF2pp import update_Tinout
+from networkx.algorithms.isomorphism.VF2pp import update_Tinout, restore_Tinout
 
 
 class TestTinoutUpdating:
@@ -46,3 +46,25 @@ class TestTinoutUpdating:
             assert correct_T2 == self.T2
             assert correct_T1_out == self.T1_out
             assert correct_T2_out == self.T2_out
+
+    def test_restoring(self):
+        # Create a dummy mapping
+        self.mapping = {node: node for node in self.G.nodes()}
+        self.reverse_mapping = {node: node for node in self.G.nodes()}
+
+        # Initialize Ti/Ti_out
+        self.T1, self.T2, self.T1_out, self.T2_out = self.compute_Ti(self.G, self.G)
+
+        # Remove every node from the mapping one by one and verify the correct restoring of Ti/Ti_out
+        for node in [key_node for key_node in self.mapping.keys()]:
+            self.mapping.pop(node)
+            self.reverse_mapping.pop(node)
+
+            T1, T2, T1_out, T2_out = self.compute_Ti(self.G, self.G)
+            self.T1, self.T2, self.T1_out, self.T2_out = restore_Tinout(self.G, self.G, self.T1, self.T2, self.T1_out,
+                                                                        self.T2_out, node, node, self.mapping,
+                                                                        self.reverse_mapping)
+            assert self.T1 == T1
+            assert self.T2 == T2
+            assert self.T1_out == T1_out
+            assert self.T2_out == T2_out

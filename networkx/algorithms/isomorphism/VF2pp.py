@@ -3,7 +3,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from networkx.drawing.nx_agraph import graphviz_layout
 from networkx.algorithms.isomorphism.VF2pp_helpers.feasibility import check_feasibility
-from networkx.algorithms.isomorphism.VF2pp_helpers.state import State, update_Tinout
+from networkx.algorithms.isomorphism.VF2pp_helpers.state import State, update_Tinout, restore_Tinout
 from networkx.algorithms.isomorphism.VF2pp_helpers.candidates import find_candidates
 
 
@@ -57,45 +57,123 @@ def main():
     print(slow_T1_out)
     print(slow_T2_out)
 
-    # Insert new nodes in the mapping
-    print("After mapping nodes 0-0")
+    mapping = {node: node for node in G.nodes()}
+    reverse_mapping = {node: node for node in G.nodes()}
 
-    mapping.update({0: 0})
-    reverse_mapping.update({0: 0})
-    T1, T2, T1_out, T2_out = update_Tinout(G, G, T1, T2, T1_out, T2_out, 0, 0, mapping, reverse_mapping)
-
-    print("fast")
-    print(T1)
-    print(T2)
-    print(T1_out)
-    print(T2_out)
-
+    print("Mapping extended")
     slow_T1, slow_T2, slow_T1_out, slow_T2_out = compute_Ti(G, G, mapping, reverse_mapping)
+    T1, T2, T1_out, T2_out = compute_Ti(G, G, mapping, reverse_mapping)
 
-    print("slow")
+    print("Correct")
     print(slow_T1)
     print(slow_T2)
     print(slow_T1_out)
     print(slow_T2_out)
 
-    print("After mapping nodes 5-5")
-
-    mapping.update({5: 5})
-    reverse_mapping.update({5: 5})
-    T1, T2, T1_out, T2_out = update_Tinout(G, G, T1, T2, T1_out, T2_out, 5, 5, mapping, reverse_mapping)
-
-    print("fast")
+    print("Test")
     print(T1)
     print(T2)
     print(T1_out)
     print(T2_out)
 
-    slow_T1, slow_T2, slow_T1_out, slow_T2_out = compute_Ti(G, G, mapping, reverse_mapping)
+    # Remove a pair of nodes from the mapping
+    print("Removing pair from the mapping")
+    mapping.pop(1)
+    reverse_mapping.pop(1)
 
-    print("slow")
+    slow_T1, slow_T2, slow_T1_out, slow_T2_out = compute_Ti(G, G, mapping, reverse_mapping)
+    T1, T2, T1_out, T2_out = restore_Tinout(G, G, T1, T2, T1_out, T2_out, 1, 1, mapping, reverse_mapping)
+
+    print("Correct")
     print(slow_T1)
     print(slow_T2)
     print(slow_T1_out)
     print(slow_T2_out)
+
+    print("Test")
+    print(T1)
+    print(T2)
+    print(T1_out)
+    print(T2_out)
+
+    print("Removing pair from the mapping")
+    mapping.pop(8)
+    reverse_mapping.pop(8)
+
+    slow_T1, slow_T2, slow_T1_out, slow_T2_out = compute_Ti(G, G, mapping, reverse_mapping)
+    T1, T2, T1_out, T2_out = restore_Tinout(G, G, T1, T2, T1_out, T2_out, 8, 8, mapping, reverse_mapping)
+
+    print("Correct")
+    print(slow_T1)
+    print(slow_T2)
+    print(slow_T1_out)
+    print(slow_T2_out)
+
+    print("Test")
+    print(T1)
+    print(T2)
+    print(T1_out)
+    print(T2_out)
+
+    print("Removing pair from the mapping")
+    mapping.pop(3)
+    reverse_mapping.pop(3)
+
+    slow_T1, slow_T2, slow_T1_out, slow_T2_out = compute_Ti(G, G, mapping, reverse_mapping)
+    T1, T2, T1_out, T2_out = restore_Tinout(G, G, T1, T2, T1_out, T2_out, 3, 3, mapping, reverse_mapping)
+
+    print("Correct")
+    print(slow_T1)
+    print(slow_T2)
+    print(slow_T1_out)
+    print(slow_T2_out)
+
+    print("Test")
+    print(T1)
+    print(T2)
+    print(T1_out)
+    print(T2_out)
+
+    # # Insert new nodes in the mapping
+    # print("After mapping nodes 0-0")
+    #
+    # mapping.update({0: 0})
+    # reverse_mapping.update({0: 0})
+    # T1, T2, T1_out, T2_out = update_Tinout(G, G, T1, T2, T1_out, T2_out, 0, 0, mapping, reverse_mapping)
+    #
+    # print("fast")
+    # print(T1)
+    # print(T2)
+    # print(T1_out)
+    # print(T2_out)
+    #
+    # slow_T1, slow_T2, slow_T1_out, slow_T2_out = compute_Ti(G, G, mapping, reverse_mapping)
+    #
+    # print("slow")
+    # print(slow_T1)
+    # print(slow_T2)
+    # print(slow_T1_out)
+    # print(slow_T2_out)
+    #
+    # print("After mapping nodes 5-5")
+    #
+    # mapping.update({5: 5})
+    # reverse_mapping.update({5: 5})
+    # T1, T2, T1_out, T2_out = update_Tinout(G, G, T1, T2, T1_out, T2_out, 5, 5, mapping, reverse_mapping)
+    #
+    # print("fast")
+    # print(T1)
+    # print(T2)
+    # print(T1_out)
+    # print(T2_out)
+    #
+    # slow_T1, slow_T2, slow_T1_out, slow_T2_out = compute_Ti(G, G, mapping, reverse_mapping)
+    #
+    # print("slow")
+    # print(slow_T1)
+    # print(slow_T2)
+    # print(slow_T1_out)
+    # print(slow_T2_out)
+
 
 main()
