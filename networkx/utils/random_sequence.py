@@ -6,6 +6,15 @@ random selections.
 import networkx as nx
 from networkx.utils import py_random_state
 
+__all__ = [
+    "powerlaw_sequence",
+    "zipf_rv",
+    "cumulative_distribution",
+    "discrete_sequence",
+    "random_weighted_sample",
+    "weighted_choice",
+]
+
 
 # The same helpers for choosing random sequences from distributions
 # uses Python's random module
@@ -74,7 +83,7 @@ def zipf_rv(alpha, xmin=1, seed=None):
     if alpha <= 1:
         raise ValueError("a <= 1.0")
     a1 = alpha - 1.0
-    b = 2 ** a1
+    b = 2**a1
     while True:
         u = 1.0 - seed.random()  # u in (0,1]
         v = seed.random()  # v in [0,1)
@@ -89,7 +98,7 @@ def cumulative_distribution(distribution):
     """Returns normalized cumulative distribution from discrete distribution."""
 
     cdf = [0.0]
-    psum = float(sum(distribution))
+    psum = sum(distribution)
     for i in range(0, len(distribution)):
         cdf.append(cdf[i] + distribution[i] / psum)
     return cdf

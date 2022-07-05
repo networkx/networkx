@@ -1,12 +1,10 @@
 """
 Label propagation community detection algorithms.
 """
-from collections import Counter
+from collections import Counter, defaultdict
 
 import networkx as nx
-from networkx.utils import groups
-from networkx.utils import not_implemented_for
-from networkx.utils import py_random_state
+from networkx.utils import groups, not_implemented_for, py_random_state
 
 __all__ = ["label_propagation_communities", "asyn_lpa_communities"]
 
@@ -64,31 +62,42 @@ def asyn_lpa_communities(G, weight=None, seed=None):
 
     labels = {n: i for i, n in enumerate(G)}
     cont = True
+
     while cont:
         cont = False
         nodes = list(G)
         seed.shuffle(nodes)
-        # Calculate the label for each node
+
         for node in nodes:
-            if len(G[node]) < 1:
+
+            if not G[node]:
                 continue
 
-            # Get label frequencies. Depending on the order they are processed
-            # in some nodes with be in t and others in t-1, making the
-            # algorithm asynchronous.
-            label_freq = Counter()
-            for v in G[node]:
-                label_freq.update(
-                    {labels[v]: G.edges[node, v][weight] if weight else 1}
-                )
-            # Choose the label with the highest frecuency. If more than 1 label
-            # has the highest frecuency choose one randomly.
+            # Get label frequencies among adjacent nodes.
+            # Depending on the order they are processed in,
+            # some nodes will be in iteration t and others in t-1,
+            # making the algorithm asynchronous.
+            if weight is None:
+                # initialising a Counter from an iterator of labels is
+                # faster for getting unweighted label frequencies
+                label_freq = Counter(map(labels.get, G[node]))
+            else:
+                # updating a defaultdict is substantially faster
+                # for getting weighted label frequencies
+                label_freq = defaultdict(float)
+                for _, v, wt in G.edges(node, data=weight, default=1):
+                    label_freq[labels[v]] += wt
+
+            # Get the labels that appear with maximum frequency.
             max_freq = max(label_freq.values())
             best_labels = [
                 label for label, freq in label_freq.items() if freq == max_freq
             ]
 
-            # Continue until all nodes have a majority label
+            # If the node does not have one of the maximum frequency labels,
+            # randomly choose one of them and update the node's label.
+            # Continue the iteration as long as at least one node
+            # doesn't have a maximum frequency label.
             if labels[node] not in best_labels:
                 labels[node] = seed.choice(best_labels)
                 cont = True
@@ -101,7 +110,7 @@ def label_propagation_communities(G):
     """Generates community sets determined by label propagation
 
     Finds communities in `G` using a semi-synchronous label propagation
-    method[1]_. This method combines the advantages of both the synchronous
+    method [1]_. This method combines the advantages of both the synchronous
     and asynchronous models. Not implemented for directed graphs.
 
     Parameters
@@ -109,10 +118,10 @@ def label_propagation_communities(G):
     G : graph
         An undirected NetworkX graph.
 
-    Yields
-    ------
-    communities : generator
-        Yields sets of the nodes in each community.
+    Returns
+    -------
+    communities : iterable
+        A dict_values object that contains a set of nodes for each community.
 
     Raises
     ------
@@ -135,8 +144,10 @@ def label_propagation_communities(G):
             for n in nodes:
                 _update_label(n, labeling, G)
 
-    for label in set(labeling.values()):
-        yield {x for x in labeling if labeling[x] == label}
+    clusters = defaultdict(set)
+    for node, label in labeling.items():
+        clusters[label].add(node)
+    return clusters.values()
 
 
 def _color_network(G):

@@ -1,12 +1,39 @@
-**********************************
-Version 1.10 notes and API changes
-**********************************
+NetworkX 1.10
+=============
 
-This page includes more detailed release information and API changes from
-NetworkX 1.9 to NetworkX 1.10.
+Release date: 2 August 2015
 
-Please send comments and questions to the networkx-discuss mailing list:
-<http://groups.google.com/group/networkx-discuss>.
+Support for Python 2.6 is dropped in this release.
+
+Highlights
+~~~~~~~~~~
+
+- Connected components now return generators
+- new functions including
+
+  + enumerate_all_cliques, greedy_coloring, edge_dfs, find_cycle
+    immediate_dominators, harmonic_centrality
+  + Hopcraft--Karp algorithm for maximum matchings
+  + optimum branchings and arborescences.
+  + all_simple_paths
+
+- pyparsing dependence removed from GML reader/parser
+- improve flow algorithms
+- new generators related to expander graphs.
+- new generators for multipartite graphs, nonisomorphic trees,
+  circulant graphs
+- allow graph subclasses to use dict-like objects in place of dicts
+- added ordered graph subclasses
+- pandas dataframe read/write added.
+- data keyword in G.edges() allows requesting edge attribute directly
+- expanded layout flexibility for node subsets
+- Kanesky's algorithm for cut sets and k_components
+- power function for graphs
+- approximation of node connectivity
+- transitive closure, triadic census and antichains
+- quotient graphs and minors
+- longest_path for DAGS
+- modularity matrix routines
 
 API changes
 -----------

@@ -1,4 +1,4 @@
-lxml>=4.5
-pygraphviz>=1.5, <2.0
-pydot>=1.4.1
-pyyaml>=5.3
+lxml>=4.6
+pygraphviz>=1.9
+pydot>=1.4.2
+sympy>=1.10

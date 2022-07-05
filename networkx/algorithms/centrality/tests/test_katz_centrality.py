@@ -1,8 +1,8 @@
 import math
 
-import networkx as nx
-from networkx.testing import almost_equal
 import pytest
+
+import networkx as nx
 
 
 class TestKatzCentrality:
@@ -14,11 +14,11 @@ class TestKatzCentrality:
         v = math.sqrt(1 / 5.0)
         b_answer = dict.fromkeys(G, v)
         for n in sorted(G):
-            assert almost_equal(b[n], b_answer[n])
+            assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
         nstart = {n: 1 for n in G}
         b = nx.katz_centrality(G, alpha, nstart=nstart)
         for n in sorted(G):
-            assert almost_equal(b[n], b_answer[n])
+            assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
     def test_P3(self):
         """Katz centrality: P3"""
@@ -27,11 +27,11 @@ class TestKatzCentrality:
         b_answer = {0: 0.5598852584152165, 1: 0.6107839182711449, 2: 0.5598852584152162}
         b = nx.katz_centrality(G, alpha)
         for n in sorted(G):
-            assert almost_equal(b[n], b_answer[n], places=4)
+            assert b[n] == pytest.approx(b_answer[n], abs=1e-4)
 
     def test_maxiter(self):
         with pytest.raises(nx.PowerIterationFailedConvergence):
-            b = nx.katz_centrality(nx.path_graph(3), 0.1, max_iter=0)
+            nx.katz_centrality(nx.path_graph(3), 0.1, max_iter=0)
 
     def test_beta_as_scalar(self):
         alpha = 0.1
@@ -40,7 +40,7 @@ class TestKatzCentrality:
         G = nx.path_graph(3)
         b = nx.katz_centrality(G, alpha, beta)
         for n in sorted(G):
-            assert almost_equal(b[n], b_answer[n], places=4)
+            assert b[n] == pytest.approx(b_answer[n], abs=1e-4)
 
     def test_beta_as_dict(self):
         alpha = 0.1
@@ -49,7 +49,7 @@ class TestKatzCentrality:
         G = nx.path_graph(3)
         b = nx.katz_centrality(G, alpha, beta)
         for n in sorted(G):
-            assert almost_equal(b[n], b_answer[n], places=4)
+            assert b[n] == pytest.approx(b_answer[n], abs=1e-4)
 
     def test_multiple_alpha(self):
         alpha_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6]
@@ -89,11 +89,11 @@ class TestKatzCentrality:
             G = nx.path_graph(3)
             b = nx.katz_centrality(G, alpha)
             for n in sorted(G):
-                assert almost_equal(b[n], b_answer[alpha][n], places=4)
+                assert b[n] == pytest.approx(b_answer[alpha][n], abs=1e-4)
 
     def test_multigraph(self):
         with pytest.raises(nx.NetworkXException):
-            e = nx.katz_centrality(nx.MultiGraph(), 0.1)
+            nx.katz_centrality(nx.MultiGraph(), 0.1)
 
     def test_empty(self):
         e = nx.katz_centrality(nx.Graph(), 0.1)
@@ -103,12 +103,12 @@ class TestKatzCentrality:
         with pytest.raises(nx.NetworkXException):
             G = nx.Graph([(0, 1)])
             beta = {0: 77}
-            e = nx.katz_centrality(G, 0.1, beta=beta)
+            nx.katz_centrality(G, 0.1, beta=beta)
 
     def test_bad_beta_numbe(self):
         with pytest.raises(nx.NetworkXException):
             G = nx.Graph([(0, 1)])
-            e = nx.katz_centrality(G, 0.1, beta="foo")
+            nx.katz_centrality(G, 0.1, beta="foo")
 
 
 class TestKatzCentralityNumpy:
@@ -126,11 +126,10 @@ class TestKatzCentralityNumpy:
         v = math.sqrt(1 / 5.0)
         b_answer = dict.fromkeys(G, v)
         for n in sorted(G):
-            assert almost_equal(b[n], b_answer[n])
-        nstart = {n: 1 for n in G}
+            assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
         b = nx.eigenvector_centrality_numpy(G)
         for n in sorted(G):
-            assert almost_equal(b[n], b_answer[n], places=3)
+            assert b[n] == pytest.approx(b_answer[n], abs=1e-3)
 
     def test_P3(self):
         """Katz centrality: P3"""
@@ -139,7 +138,7 @@ class TestKatzCentralityNumpy:
         b_answer = {0: 0.5598852584152165, 1: 0.6107839182711449, 2: 0.5598852584152162}
         b = nx.katz_centrality_numpy(G, alpha)
         for n in sorted(G):
-            assert almost_equal(b[n], b_answer[n], places=4)
+            assert b[n] == pytest.approx(b_answer[n], abs=1e-4)
 
     def test_beta_as_scalar(self):
         alpha = 0.1
@@ -148,7 +147,7 @@ class TestKatzCentralityNumpy:
         G = nx.path_graph(3)
         b = nx.katz_centrality_numpy(G, alpha, beta)
         for n in sorted(G):
-            assert almost_equal(b[n], b_answer[n], places=4)
+            assert b[n] == pytest.approx(b_answer[n], abs=1e-4)
 
     def test_beta_as_dict(self):
         alpha = 0.1
@@ -157,7 +156,7 @@ class TestKatzCentralityNumpy:
         G = nx.path_graph(3)
         b = nx.katz_centrality_numpy(G, alpha, beta)
         for n in sorted(G):
-            assert almost_equal(b[n], b_answer[n], places=4)
+            assert b[n] == pytest.approx(b_answer[n], abs=1e-4)
 
     def test_multiple_alpha(self):
         alpha_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6]
@@ -197,11 +196,11 @@ class TestKatzCentralityNumpy:
             G = nx.path_graph(3)
             b = nx.katz_centrality_numpy(G, alpha)
             for n in sorted(G):
-                assert almost_equal(b[n], b_answer[alpha][n], places=4)
+                assert b[n] == pytest.approx(b_answer[alpha][n], abs=1e-4)
 
     def test_multigraph(self):
         with pytest.raises(nx.NetworkXException):
-            e = nx.katz_centrality(nx.MultiGraph(), 0.1)
+            nx.katz_centrality(nx.MultiGraph(), 0.1)
 
     def test_empty(self):
         e = nx.katz_centrality(nx.Graph(), 0.1)
@@ -211,12 +210,12 @@ class TestKatzCentralityNumpy:
         with pytest.raises(nx.NetworkXException):
             G = nx.Graph([(0, 1)])
             beta = {0: 77}
-            e = nx.katz_centrality_numpy(G, 0.1, beta=beta)
+            nx.katz_centrality_numpy(G, 0.1, beta=beta)
 
     def test_bad_beta_numbe(self):
         with pytest.raises(nx.NetworkXException):
             G = nx.Graph([(0, 1)])
-            e = nx.katz_centrality_numpy(G, 0.1, beta="foo")
+            nx.katz_centrality_numpy(G, 0.1, beta="foo")
 
     def test_K5_unweighted(self):
         """Katz centrality: K5"""
@@ -226,11 +225,10 @@ class TestKatzCentralityNumpy:
         v = math.sqrt(1 / 5.0)
         b_answer = dict.fromkeys(G, v)
         for n in sorted(G):
-            assert almost_equal(b[n], b_answer[n])
-        nstart = {n: 1 for n in G}
+            assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
         b = nx.eigenvector_centrality_numpy(G, weight=None)
         for n in sorted(G):
-            assert almost_equal(b[n], b_answer[n], places=3)
+            assert b[n] == pytest.approx(b_answer[n], abs=1e-3)
 
     def test_P3_unweighted(self):
         """Katz centrality: P3"""
@@ -239,7 +237,7 @@ class TestKatzCentralityNumpy:
         b_answer = {0: 0.5598852584152165, 1: 0.6107839182711449, 2: 0.5598852584152162}
         b = nx.katz_centrality_numpy(G, alpha, weight=None)
         for n in sorted(G):
-            assert almost_equal(b[n], b_answer[n], places=4)
+            assert b[n] == pytest.approx(b_answer[n], abs=1e-4)
 
 
 class TestKatzCentralityDirected:
@@ -298,14 +296,14 @@ class TestKatzCentralityDirected:
         alpha = self.G.alpha
         p = nx.katz_centrality(G, alpha, weight="weight")
         for (a, b) in zip(list(p.values()), self.G.evc):
-            assert almost_equal(a, b)
+            assert a == pytest.approx(b, abs=1e-7)
 
     def test_katz_centrality_unweighted(self):
         H = self.H
         alpha = self.H.alpha
         p = nx.katz_centrality(H, alpha, weight="weight")
         for (a, b) in zip(list(p.values()), self.H.evc):
-            assert almost_equal(a, b)
+            assert a == pytest.approx(b, abs=1e-7)
 
 
 class TestKatzCentralityDirectedNumpy(TestKatzCentralityDirected):
@@ -314,20 +312,21 @@ class TestKatzCentralityDirectedNumpy(TestKatzCentralityDirected):
         global np
         np = pytest.importorskip("numpy")
         pytest.importorskip("scipy")
+        super().setup_class()
 
     def test_katz_centrality_weighted(self):
         G = self.G
         alpha = self.G.alpha
         p = nx.katz_centrality_numpy(G, alpha, weight="weight")
         for (a, b) in zip(list(p.values()), self.G.evc):
-            assert almost_equal(a, b)
+            assert a == pytest.approx(b, abs=1e-7)
 
     def test_katz_centrality_unweighted(self):
         H = self.H
         alpha = self.H.alpha
         p = nx.katz_centrality_numpy(H, alpha, weight="weight")
         for (a, b) in zip(list(p.values()), self.H.evc):
-            assert almost_equal(a, b)
+            assert a == pytest.approx(b, abs=1e-7)
 
 
 class TestKatzEigenvectorVKatz:
@@ -339,8 +338,8 @@ class TestKatzEigenvectorVKatz:
 
     def test_eigenvector_v_katz_random(self):
         G = nx.gnp_random_graph(10, 0.5, seed=1234)
-        l = float(max(np.linalg.eigvals(nx.adjacency_matrix(G).todense())))
+        l = max(np.linalg.eigvals(nx.adjacency_matrix(G).todense()))
         e = nx.eigenvector_centrality_numpy(G)
         k = nx.katz_centrality_numpy(G, 1.0 / l)
         for n in G:
-            assert almost_equal(e[n], k[n])
+            assert e[n] == pytest.approx(k[n], abs=1e-7)

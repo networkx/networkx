@@ -1,4 +1,5 @@
 from itertools import chain
+
 import networkx as nx
 
 __all__ = ["adjacency_data", "adjacency_graph"]
@@ -90,11 +91,6 @@ def adjacency_graph(data, directed=False, multigraph=True, attrs=_attrs):
     data : dict
         Adjacency list formatted graph data
 
-    Returns
-    -------
-    G : NetworkX graph
-       A NetworkX graph object
-
     directed : bool
         If True, and direction not specified in data, return a directed graph.
 
@@ -106,6 +102,11 @@ def adjacency_graph(data, directed=False, multigraph=True, attrs=_attrs):
         values provide the attribute names for storing NetworkX-internal graph
         data. The values should be unique. Default value:
         :samp:`dict(id='id', key='key')`.
+
+    Returns
+    -------
+    G : NetworkX graph
+       A NetworkX graph object
 
     Examples
     --------

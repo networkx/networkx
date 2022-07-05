@@ -25,16 +25,16 @@ There are two different functions for computing a tree decomposition:
       http://www.cs.uu.nl
 
 .. [3] K. Wang, Z. Lu, and J. Hicks *Treewidth*.
-      http://web.eecs.utk.edu/~cphillip/cs594_spring2015_projects/treewidth.pdf
+      https://web.archive.org/web/20210507025929/http://web.eecs.utk.edu/~cphill25/cs594_spring2015_projects/treewidth.pdf
 
 """
 
+import itertools
 import sys
+from heapq import heapify, heappop, heappush
 
 import networkx as nx
 from networkx.utils import not_implemented_for
-from heapq import heappush, heappop, heapify
-import itertools
 
 __all__ = ["treewidth_min_degree", "treewidth_min_fill_in"]
 

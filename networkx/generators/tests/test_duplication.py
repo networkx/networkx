@@ -4,8 +4,10 @@
 import pytest
 
 from networkx.exception import NetworkXError
-from networkx.generators.duplication import duplication_divergence_graph
-from networkx.generators.duplication import partial_duplication_graph
+from networkx.generators.duplication import (
+    duplication_divergence_graph,
+    partial_duplication_graph,
+)
 
 
 class TestDuplicationDivergenceGraph:

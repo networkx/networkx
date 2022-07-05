@@ -3,7 +3,7 @@ Adjacency matrix and incidence matrix of graphs.
 """
 import networkx as nx
 
-__all__ = ["incidence_matrix", "adj_matrix", "adjacency_matrix"]
+__all__ = ["incidence_matrix", "adjacency_matrix"]
 
 
 def incidence_matrix(G, nodelist=None, edgelist=None, oriented=False, weight=None):
@@ -54,7 +54,7 @@ def incidence_matrix(G, nodelist=None, edgelist=None, oriented=False, weight=Non
     References
     ----------
     .. [1] Gil Strang, Network applications: A = incidence matrix,
-       http://academicearth.org/lectures/network-applications-incidence-matrix
+       http://videolectures.net/mit18085f07_strang_lec03/
     """
     import scipy as sp
     import scipy.sparse  # call as sp.sparse
@@ -66,7 +66,7 @@ def incidence_matrix(G, nodelist=None, edgelist=None, oriented=False, weight=Non
             edgelist = list(G.edges(keys=True))
         else:
             edgelist = list(G.edges())
-    A = sp.sparse.lil_matrix((len(nodelist), len(edgelist)))
+    A = sp.sparse.lil_array((len(nodelist), len(edgelist)))
     node_index = {node: i for i, node in enumerate(nodelist)}
     for ei, e in enumerate(edgelist):
         (u, v) = e[:2]
@@ -75,10 +75,10 @@ def incidence_matrix(G, nodelist=None, edgelist=None, oriented=False, weight=Non
         try:
             ui = node_index[u]
             vi = node_index[v]
-        except KeyError as e:
+        except KeyError as err:
             raise nx.NetworkXError(
-                f"node {u} or {v} in edgelist " f"but not in nodelist"
-            ) from e
+                f"node {u} or {v} in edgelist but not in nodelist"
+            ) from err
         if weight is None:
             wt = 1
         else:
@@ -93,10 +93,18 @@ def incidence_matrix(G, nodelist=None, edgelist=None, oriented=False, weight=Non
         else:
             A[ui, ei] = wt
             A[vi, ei] = wt
+    import warnings
+
+    warnings.warn(
+        "incidence_matrix will return a scipy.sparse array instead of a matrix in Networkx 3.0.",
+        FutureWarning,
+        stacklevel=2,
+    )
+    # TODO: Rm sp.sparse.csc_matrix in Networkx 3.0
     return A.asformat("csc")
 
 
-def adjacency_matrix(G, nodelist=None, weight="weight"):
+def adjacency_matrix(G, nodelist=None, dtype=None, weight="weight"):
     """Returns adjacency matrix of G.
 
     Parameters
@@ -107,6 +115,10 @@ def adjacency_matrix(G, nodelist=None, weight="weight"):
     nodelist : list, optional
        The rows and columns are ordered according to the nodes in nodelist.
        If nodelist is None, then the ordering is produced by G.nodes().
+
+    dtype : NumPy data-type, optional
+        The desired data-type for the array.
+        If None, then the NumPy default is used.
 
     weight : string or None, optional (default='weight')
        The edge data key used to provide each value in the matrix.
@@ -146,11 +158,8 @@ def adjacency_matrix(G, nodelist=None, weight="weight"):
     See Also
     --------
     to_numpy_array
-    to_scipy_sparse_matrix
+    to_scipy_sparse_array
     to_dict_of_dicts
     adjacency_spectrum
     """
-    return nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight)
-
-
-adj_matrix = adjacency_matrix
+    return nx.to_scipy_sparse_array(G, nodelist=nodelist, dtype=dtype, weight=weight)

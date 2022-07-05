@@ -1,11 +1,8 @@
 import pytest
 
 import networkx as nx
-
-edge_dfs = nx.algorithms.edge_dfs
-
-FORWARD = nx.algorithms.edgedfs.FORWARD
-REVERSE = nx.algorithms.edgedfs.REVERSE
+from networkx.algorithms import edge_dfs
+from networkx.algorithms.traversal.edgedfs import FORWARD, REVERSE
 
 # These tests can fail with hash randomization. The easiest and clearest way
 # to write these unit tests is for the edges to be output in an expected total

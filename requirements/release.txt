@@ -1,2 +1,3 @@
-twine>=3.2
-wheel>=0.34
+build>=0.8
+twine>=4.0
+wheel>=0.37

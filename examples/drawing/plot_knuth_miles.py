@@ -15,7 +15,7 @@ This example is described in Section 1.1 of
 
 The data file can be found at:
 
-- https://github.com/networkx/networkx/blob/master/examples/drawing/knuth_miles.txt.gz
+- https://github.com/networkx/networkx/blob/main/examples/drawing/knuth_miles.txt.gz
 """
 
 import gzip
@@ -66,7 +66,7 @@ def miles_graph():
             G.add_node(city)
             # assign position - Convert string to lat/long
             G.position[city] = (-float(x) / 100, float(y) / 100)
-            G.population[city] = float(pop) / 1000.0
+            G.population[city] = float(pop) / 1000
     return G
 
 

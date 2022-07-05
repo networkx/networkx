@@ -1,7 +1,12 @@
-Announcement: NetworkX 2.0
-==========================
+NetworkX 2.0
+============
 
-We're happy to announce the release of NetworkX 2.0!
+Release date: 20 September 2017
+
+Support for Python 3.6 added, drop support for Python 3.3.
+
+See :doc:`migration_guide_from_1.x_to_2.0`.
+
 NetworkX is a Python package for the creation, manipulation, and study of the
 structure, dynamics, and functions of complex networks.
 
@@ -216,8 +221,8 @@ The following deprecated functions will be removed in 2.1.
   deprecated in favor of ``to_pandas_adjacency``, ``from_pandas_adjacency``,
   ``to_pandas_edgelist``, and ``from_pandas_edgelist``.
 
-Contributors to this release
-----------------------------
+Contributors
+------------
 
 - Niels van Adrichem
 - Kevin Arvai
@@ -307,8 +312,8 @@ Contributors to this release
 - yash14123
 - Neil Girdhar
 
-Pull requests merged in this release
-------------------------------------
+Merged PRs
+----------
 
 - Gml read fix. (#1962)
 - Small changes leftover from #1847 (#1966)

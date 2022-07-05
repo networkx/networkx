@@ -1,11 +1,12 @@
-from itertools import chain
-from itertools import combinations
+from itertools import chain, combinations
 
 import pytest
 
 import networkx as nx
-from networkx.algorithms.community import label_propagation_communities
-from networkx.algorithms.community import asyn_lpa_communities
+from networkx.algorithms.community import (
+    asyn_lpa_communities,
+    label_propagation_communities,
+)
 
 
 def test_directed_not_supported():
@@ -16,6 +17,14 @@ def test_directed_not_supported():
         test.add_edge("a", "c")
         test.add_edge("b", "d")
         result = label_propagation_communities(test)
+
+
+def test_iterator_vs_iterable():
+    G = nx.empty_graph("a")
+    assert list(label_propagation_communities(G)) == [{"a"}]
+    for community in label_propagation_communities(G):
+        assert community == {"a"}
+    pytest.raises(TypeError, next, label_propagation_communities(G))
 
 
 def test_one_node():

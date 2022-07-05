@@ -1,5 +1,6 @@
+import pytest
+
 import networkx as nx
-from networkx.testing import almost_equal
 
 
 class TestAverageNeighbor:
@@ -13,13 +14,15 @@ class TestAverageNeighbor:
         nd = nx.average_neighbor_degree(D)
         assert nd == answer
 
-        D = G.to_directed()
+        D = nx.DiGraph(G.edges(data=True))
         nd = nx.average_neighbor_degree(D)
-        assert nd == answer
-
-        D = G.to_directed()
-        nd = nx.average_neighbor_degree(D, source="in", target="in")
-        assert nd == answer
+        assert nd == {0: 1, 1: 1, 2: 0, 3: 0}
+        nd = nx.average_neighbor_degree(D, "in", "out")
+        assert nd == {0: 0, 1: 1, 2: 1, 3: 1}
+        nd = nx.average_neighbor_degree(D, "out", "in")
+        assert nd == {0: 1, 1: 1, 2: 1, 3: 0}
+        nd = nx.average_neighbor_degree(D, "in", "in")
+        assert nd == {0: 0, 1: 0, 2: 1, 3: 1}
 
     def test_degree_p4_weighted(self):
         G = nx.path_graph(4)
@@ -31,6 +34,19 @@ class TestAverageNeighbor:
         D = G.to_directed()
         nd = nx.average_neighbor_degree(D, weight="weight")
         assert nd == answer
+
+        D = nx.DiGraph(G.edges(data=True))
+        print(D.edges(data=True))
+        nd = nx.average_neighbor_degree(D, weight="weight")
+        assert nd == {0: 1, 1: 1, 2: 0, 3: 0}
+        nd = nx.average_neighbor_degree(D, "out", "out", weight="weight")
+        assert nd == {0: 1, 1: 1, 2: 0, 3: 0}
+        nd = nx.average_neighbor_degree(D, "in", "in", weight="weight")
+        assert nd == {0: 0, 1: 0, 2: 1, 3: 1}
+        nd = nx.average_neighbor_degree(D, "in", "out", weight="weight")
+        assert nd == {0: 0, 1: 1, 2: 1, 3: 1}
+        nd = nx.average_neighbor_degree(D, "out", "in", weight="weight")
+        assert nd == {0: 1, 1: 1, 2: 1, 3: 0}
 
         D = G.to_directed()
         nd = nx.average_neighbor_degree(D, weight="weight")
@@ -73,4 +89,16 @@ class TestAverageNeighbor:
         nd = nx.average_neighbor_degree(G)[5]
         assert nd == 1.8
         nd = nx.average_neighbor_degree(G, weight="weight")[5]
-        assert almost_equal(nd, 3.222222, places=5)
+        assert nd == pytest.approx(3.222222, abs=1e-5)
+
+    def test_error_invalid_source_target(self):
+        G = nx.path_graph(4)
+        with pytest.raises(nx.NetworkXError):
+            nx.average_neighbor_degree(G, "error")
+        with pytest.raises(nx.NetworkXError):
+            nx.average_neighbor_degree(G, "in", "error")
+        G = G.to_directed()
+        with pytest.raises(nx.NetworkXError):
+            nx.average_neighbor_degree(G, "error")
+        with pytest.raises(nx.NetworkXError):
+            nx.average_neighbor_degree(G, "in", "error")

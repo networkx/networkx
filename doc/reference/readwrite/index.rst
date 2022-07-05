@@ -12,11 +12,9 @@ Reading and writing graphs
    edgelist
    gexf
    gml
-   gpickle
    graphml
    json_graph
    leda
-   yaml
    sparsegraph6
    pajek
-   nx_shp
+   matrix_market

@@ -3,6 +3,13 @@
 Contributor Guide
 =================
 
+.. note::
+   This document assumes some familiarity with contributing to open source
+   scientific Python projects using GitHub pull requests. If this does not
+   describe you, you may first want to see the :ref:`contributing_faq`.
+
+.. _dev_workflow:
+
 Development Workflow
 --------------------
 
@@ -27,20 +34,20 @@ Development Workflow
 
    * Next, you need to set up your build environment.
      Here are instructions for two popular environment managers:
-   
+
      * ``venv`` (pip based)
-     
+
        ::
-     
+
          # Create a virtualenv named ``networkx-dev`` that lives in the directory of
          # the same name
          python -m venv networkx-dev
          # Activate it
          source networkx-dev/bin/activate
          # Install main development and runtime dependencies of networkx
-         pip install -r <(cat requirements/{default,developer,doc,optional,test}.txt)
+         pip install -r requirements/default.txt -r requirements/test.txt -r requirements/developer.txt
          #
-         # (Optional) Install pygraphviz, pydot, and gdal packages
+         # (Optional) Install pygraphviz and pydot packages
          # These packages require that you have your system properly configured
          # and what that involves differs on various systems.
          # pip install -r requirements/extra.txt
@@ -49,25 +56,25 @@ Development Workflow
          pip install -e .
          # Test your installation
          PYTHONPATH=. pytest networkx
-     
+
      * ``conda`` (Anaconda or Miniconda)
-    
+
        ::
- 
+
          # Create a conda environment named ``networkx-dev``
          conda create --name networkx-dev
          # Activate it
          conda activate networkx-dev
          # Install main development and runtime dependencies of networkx
-         conda install -c conda-forge `for i in requirements/{default,developer,doc,optional,test}.txt; do echo -n " --file $i "; done`
+         conda install -c conda-forge --file requirements/default.txt --file requirements/test.txt --file requirements/developer.txt
          #
-         # (Optional) Install pygraphviz, pydot, and gdal packages
+         # (Optional) Install pygraphviz and pydot packages
          # These packages require that you have your system properly configured
          # and what that involves differs on various systems.
-         # pip install -r requirements/extra.txt
+         # conda install -c conda-forge --file requirements/extra.txt
          #
          # Install networkx from source
-         pip install -e . --no-deps
+         pip install -e .
          # Test your installation
          PYTHONPATH=. pytest networkx
 
@@ -80,8 +87,8 @@ Development Workflow
 
    * Pull the latest changes from upstream::
 
-      git checkout master
-      git pull upstream master
+      git checkout main
+      git pull upstream main
 
    * Create a branch for the feature you want to work on. Since the
      branch name will appear in the merge message, use a sensible name
@@ -101,7 +108,6 @@ Development Workflow
      problems early and reduces the load on the continuous integration
      system.
 
-
 4. Submit your contribution:
 
    * Push your changes back to your fork on GitHub::
@@ -115,14 +121,17 @@ Development Workflow
      <http://groups.google.com/group/networkx-discuss>`_ to explain your changes or
      to ask for review.
 
-For a more detailed discussion, read these :doc:`detailed documents
-<gitwash/index>` on how to use Git with ``networkx``
-(`<https://networkx.org/documentation/latest/developer/gitwash/index.html>`_).
-
 5. Review process:
 
+   * Every Pull Request (PR) update triggers a set of `continuous integration
+     <https://en.wikipedia.org/wiki/Continuous_integration>`_ services
+     that check that the code is up to standards and passes all our tests.
+     These checks must pass before your PR can be merged.  If one of the
+     checks fails, you can find out why by clicking on the "failed" icon (red
+     cross) and inspecting the build and test log.
+
    * Reviewers (the other developers and interested community members) will
-     write inline and/or general comments on your Pull Request (PR) to help
+     write inline and/or general comments on your PR to help
      you improve its implementation, documentation, and style.  Every single
      developer working on the project has their code reviewed, and we've come
      to see it as friendly conversation from which we all learn and the
@@ -131,19 +140,9 @@ For a more detailed discussion, read these :doc:`detailed documents
      of project, not to criticize (we are, after all, very grateful for the
      time you're donating!).
 
-   * To update your pull request, make your changes on your local repository
+   * To update your PR, make your changes on your local repository
      and commit. As soon as those changes are pushed up (to the same branch as
-     before) the pull request will update automatically.
-
-   * `Travis-CI <https://travis-ci.org/>`_, a continuous integration service,
-     is triggered after each Pull Request update to build the code and run unit
-     tests of your branch. The Travis tests must pass before your PR can be merged.
-     If Travis fails, you can find out why by clicking on the "failed" icon (red
-     cross) and inspecting the build and test log.
-
-   * `AppVeyor <http://ci.appveyor.com>`_, is another continuous integration
-     service that we use.  You will also need to make sure that the AppVeyor
-     tests pass.
+     before) the PR will update automatically.
 
    .. note::
 
@@ -157,25 +156,49 @@ For a more detailed discussion, read these :doc:`detailed documents
    If your change introduces any API modifications, please update
    ``doc/release/release_dev.rst``.
 
-   If your change introduces a deprecation, add a reminder to
-   ``doc/developer/deprecations.rst`` for the team to remove the
-   deprecated functionality in the future.
+   To set up a function for deprecation:
+
+   - Use a deprecation warning to warn users. For example::
+
+         msg = "curly_hair is deprecated and will be removed in v3.0. Use sum() instead."
+         warnings.warn(msg, DeprecationWarning)
+
+   - Add a warning to ``networkx/conftest.py``::
+
+         warnings.filterwarnings(
+             "ignore", category=DeprecationWarning, message=<start of message>
+         )
+
+   - Add a reminder to ``doc/developer/deprecations.rst`` for the team
+     to remove the deprecated functionality in the future. For example:
+
+     .. code-block:: rst
+
+        * In ``utils/misc.py`` remove ``generate_unique_node`` and related tests.
+
+   - Add a note (and a link to the PR) to ``doc/release/release_dev.rst``:
+
+     .. code-block:: rst
+
+        [`#4281 <https://github.com/networkx/networkx/pull/4281>`_]
+        Deprecate ``read_yaml`` and ``write_yaml``.
+
 
    .. note::
-   
+
       To reviewers: make sure the merge message has a brief description of the
       change(s) and if the PR closes an issue add, for example, "Closes #123"
       where 123 is the issue number.
 
 
-Divergence from ``upstream master``
------------------------------------
+Divergence from ``upstream main``
+---------------------------------
 
 If GitHub indicates that the branch of your Pull Request can no longer
-be merged automatically, merge the master branch into yours::
+be merged automatically, merge the main branch into yours::
 
-   git fetch upstream master
-   git merge upstream/master
+   git fetch upstream main
+   git merge upstream/main
 
 If any conflicts occur, they need to be fixed before continuing.  See
 which files are in conflict using::
@@ -194,8 +217,8 @@ Inside the conflicted file, you'll find sections like these::
    <<<<<<< HEAD
    The way the text looks in your branch
    =======
-   The way the text looks in the master branch
-   >>>>>>> master
+   The way the text looks in the main branch
+   >>>>>>> main
 
 Choose one version of the text that should be kept, and delete the
 rest::
@@ -213,9 +236,8 @@ Once you've fixed all merge conflicts, do::
 
 .. note::
 
-   Advanced Git users are encouraged to `rebase instead of merge
-   <https://networkx.org/documentation/stable/developer/gitwash/development_workflow.html#rebase-on-trunk>`__,
-   but we squash and merge most PRs either way.
+   Advanced Git users may want to rebase instead of merge,
+   but we squash and merge PRs either way.
 
 
 Guidelines
@@ -223,7 +245,7 @@ Guidelines
 
 * All code should have tests.
 * All code should be documented, to the same
-  `standard <https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt#docstring-standard>`_
+  `standard <https://numpydoc.readthedocs.io/en/latest/format.html#docstring-standard>`_
   as NumPy and SciPy.
 * All changes are reviewed.  Ask on the
   `mailing list <http://groups.google.com/group/networkx-discuss>`_ if
@@ -243,15 +265,15 @@ Guidelines
    import scipy as sp
    import matplotlib as mpl
    import matplotlib.pyplot as plt
-   import pandas as pd 
+   import pandas as pd
    import networkx as nx
 
   After importing `sp`` for ``scipy``::
 
    import scipy as sp
 
-  use the following imports:: 
- 
+  use the following imports::
+
    import scipy.linalg  # call as sp.linalg
    import scipy.sparse  # call as sp.sparse
    import scipy.sparse.linalg  # call as sp.sparse.linalg
@@ -268,14 +290,15 @@ Guidelines
   be the graph object to be checked.
 
   .. code-block:: python
-  
-      @nx.not_implemented_for('directed', 'multigraph')
+
+      @nx.not_implemented_for("directed", "multigraph")
       def function_not_for_MultiDiGraph(G, others):
           # function not for graphs that are directed *and* multigraph
           pass
-  
-      @nx.not_implemented_for('directed')
-      @nx.not_implemented_for('multigraph')
+
+
+      @nx.not_implemented_for("directed")
+      @nx.not_implemented_for("multigraph")
       def function_only_for_Graph(G, others):
           # function not for directed graphs *or* for multigraphs
           pass
@@ -302,11 +325,11 @@ Or the tests for a specific submodule::
 
 Or tests from a specific file::
 
-    $ PYTHONPATH=. pytest networkx/readwrite/tests/test_yaml.py
+    $ PYTHONPATH=. pytest networkx/readwrite/tests/test_edgelist.py
 
 Or a single test within that file::
 
-    $ PYTHONPATH=. pytest networkx/readwrite/tests/test_yaml.py::TestYaml::testUndirected
+    $ PYTHONPATH=. pytest networkx/readwrite/tests/test_edgelist.py::test_parse_edgelist_with_data_list
 
 Use ``--doctest-modules`` to run doctests.
 For example, run all tests and all doctests using::
@@ -331,8 +354,114 @@ detailing the test coverage::
   networkx/algorithms/approximation/clique.py         42      1     18      1    97%
   ...
 
+Adding tests
+------------
+
+If you're **new to testing**, see existing test files for examples of things to do.
+**Don't let the tests keep you from submitting your contribution!**
+If you're not sure how to do this or are having trouble, submit your pull request
+anyway.
+We will help you create the tests and sort out any kind of problem during code review.
+
+Adding examples
+---------------
+
+The gallery examples are managed by
+`sphinx-gallery <https://sphinx-gallery.readthedocs.io/>`_.
+The source files for the example gallery are ``.py`` scripts in ``examples/`` that
+generate one or more figures. They are executed automatically by sphinx-gallery when the
+documentation is built. The output is gathered and assembled into the gallery.
+
+You can **add a new** plot by placing a new ``.py`` file in one of the directories inside the
+``examples`` directory of the repository. See the other examples to get an idea for the
+format.
+
+.. note:: Gallery examples should start with ``plot_``, e.g. ``plot_new_example.py``
+
+General guidelines for making a good gallery plot:
+
+* Examples should highlight a single feature/command.
+* Try to make the example as simple as possible.
+* Data needed by examples should be included in the same directory and the example script.
+* Add comments to explain things are aren't obvious from reading the code.
+* Describe the feature that you're showcasing and link to other relevant parts of the
+  documentation.
+
+Adding References
+-----------------
+
+If you are contributing a new algorithm (or an improvement to a current algorithm),
+a reference paper or resource should also be provided in the function docstring.
+For references to published papers, we try to follow the
+`Chicago Citation Style <https://en.wikipedia.org/wiki/The_Chicago_Manual_of_Style>`__.
+The quickest way of generating citation in this style is
+by searching for the paper on `Google Scholar <https://scholar.google.com/>`_ and clicking on
+the ``cite`` button. It will pop up the citation of the paper in multiple formats, and copy the
+``Chicago`` style.
+
+We prefer adding DOI links for URLs. If the DOI link resolves to a paywalled version of
+the article, we prefer adding a link to the arXiv version (if available) or any other
+publicly accessible copy of the paper.
+
+An example of a reference::
+
+    .. [1] Cheong, Se-Hang, and Yain-Whar Si. "Force-directed algorithms for schematic drawings and
+    placement: A survey." Information Visualization 19, no. 1 (2020): 65-91.
+    https://doi.org/10.1177%2F1473871618821740
+
+
+If the resource is uploaded as a PDF/DOCX/PPT on the web (lecture notes, presentations) it is better
+to use the `wayback machine <https://web.archive.org/>`_ to create a snapshot of the resource
+and link the internet archive link. The URL of the resource can change, and it creates unreachable
+links from the documentation.
+
+
+Image comparison
+----------------
+
+To run image comparisons::
+
+    $ PYTHONPATH=. pytest --mpl --pyargs networkx.drawing
+
+The ``--mpl`` tells ``pytest`` to use ``pytest-mpl`` to compare the generated plots
+with baseline ones stored in ``networkx/drawing/tests/baseline``.
+
+To add a new test, add a test function to ``networkx/drawing/tests`` that
+returns a Matplotlib figure (or any figure object that has a savefig method)
+and decorate it as follows::
+
+    @pytest.mark.mpl_image_compare
+    def test_barbell():
+        fig = plt.figure()
+        barbell = nx.barbell_graph(4, 6)
+        # make sure to fix any randomness
+        pos = nx.spring_layout(barbell, seed=42)
+        nx.draw(barbell, pos=pos)
+        return fig
+
+Then create a baseline image to compare against later::
+
+    $ pytest -k test_barbell --mpl-generate-path=networkx/drawing/tests/baseline
+
+.. note: In order to keep the size of the repository from becoming too large, we
+   prefer to limit the size and number of baseline images we include.
+
+And test::
+
+    $ pytest -k test_barbell --mpl
 
 Bugs
 ----
 
 Please `report bugs on GitHub <https://github.com/networkx/networkx/issues>`_.
+
+Policies
+--------
+
+All interactions with the project are subject to the
+:doc:`NetworkX code of conduct <code_of_conduct>`.
+
+We also follow these policies:
+
+* :doc:`NetworkX deprecation policy <deprecations>`
+* :doc:`Python version support <nep-0029-deprecation_policy>`

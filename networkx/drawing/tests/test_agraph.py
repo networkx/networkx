@@ -1,14 +1,14 @@
 """Unit tests for PyGraphviz interface."""
 import os
 import tempfile
+
 import pytest
 
 pygraphviz = pytest.importorskip("pygraphviz")
 
 
-from networkx.testing import assert_edges_equal, assert_nodes_equal, assert_graphs_equal
-
 import networkx as nx
+from networkx.utils import edges_equal, graphs_equal, nodes_equal
 
 
 class TestAGraph:
@@ -20,8 +20,8 @@ class TestAGraph:
         return G
 
     def assert_equal(self, G1, G2):
-        assert_nodes_equal(G1.nodes(), G2.nodes())
-        assert_edges_equal(G1.edges(), G2.edges())
+        assert nodes_equal(G1.nodes(), G2.nodes())
+        assert edges_equal(G1.edges(), G2.edges())
         assert G1.graph["metal"] == G2.graph["metal"]
 
     def agraph_checks(self, G):
@@ -30,11 +30,12 @@ class TestAGraph:
         H = nx.nx_agraph.from_agraph(A)
         self.assert_equal(G, H)
 
-        fname = tempfile.mktemp()
+        fd, fname = tempfile.mkstemp()
         nx.drawing.nx_agraph.write_dot(H, fname)
         Hin = nx.nx_agraph.read_dot(fname)
-        os.unlink(fname)
         self.assert_equal(H, Hin)
+        os.close(fd)
+        os.unlink(fname)
 
         (fd, fname) = tempfile.mkstemp()
         with open(fname, "w") as fh:
@@ -42,6 +43,7 @@ class TestAGraph:
 
         with open(fname) as fh:
             Hin = nx.nx_agraph.read_dot(fh)
+        os.close(fd)
         os.unlink(fname)
         self.assert_equal(H, Hin)
 
@@ -186,21 +188,21 @@ class TestAGraph:
         G = nx.Graph()
         A = nx.nx_agraph.to_agraph(G)
         H = nx.nx_agraph.from_agraph(A)
-        # assert_graphs_equal(G, H)
+        # assert graphs_equal(G, H)
         AA = nx.nx_agraph.to_agraph(H)
         HH = nx.nx_agraph.from_agraph(AA)
-        assert_graphs_equal(H, HH)
+        assert graphs_equal(H, HH)
         G.graph["graph"] = {}
         G.graph["node"] = {}
         G.graph["edge"] = {}
-        assert_graphs_equal(G, HH)
+        assert graphs_equal(G, HH)
 
     @pytest.mark.xfail(reason="integer->string node conversion in round trip")
     def test_round_trip_integer_nodes(self):
         G = nx.complete_graph(3)
         A = nx.nx_agraph.to_agraph(G)
         H = nx.nx_agraph.from_agraph(A)
-        assert_graphs_equal(G, H)
+        assert graphs_equal(G, H)
 
     def test_graphviz_alias(self):
         G = self.build_graph(nx.Graph())
@@ -238,12 +240,3 @@ class TestAGraph:
         pos = list(pos.values())
         assert len(pos) == 5
         assert len(pos[0]) == 3
-
-    def test_display_pygraphviz_deprecation_warning(self):
-        G = nx.complete_graph(2)
-        path_name, A = nx.nx_agraph.view_pygraphviz(G, show=False)
-        # Monkeypatch default_opener to prevent window opening
-        nx.utils.default_opener = lambda x: None
-        with pytest.warns(DeprecationWarning, match="display_pygraphviz is deprecated"):
-            with open(path_name, "wb") as fh:
-                nx.nx_agraph.display_pygraphviz(A, fh, prog="dot")

@@ -14,7 +14,7 @@ objects (in this case a list of email messages).
 
 The sample unix email mailbox called "unix_email.mbox" may be found here:
 
-- https://github.com/networkx/networkx/blob/master/examples/drawing/unix_email.mbox
+- https://github.com/networkx/networkx/blob/main/examples/drawing/unix_email.mbox
 """
 
 from email.utils import getaddresses, parseaddr

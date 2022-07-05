@@ -67,8 +67,14 @@ def min_weighted_vertex_cover(G, weight=None):
     cost = dict(G.nodes(data=weight, default=1))
     # While there are uncovered edges, choose an uncovered and update
     # the cost of the remaining edges.
+    cover = set()
     for u, v in G.edges():
-        min_cost = min(cost[u], cost[v])
-        cost[u] -= min_cost
-        cost[v] -= min_cost
-    return {u for u, c in cost.items() if c == 0}
+        if u in cover or v in cover:
+            continue
+        if cost[u] <= cost[v]:
+            cover.add(u)
+            cost[v] -= cost[u]
+        else:
+            cover.add(v)
+            cost[u] -= cost[v]
+    return cover

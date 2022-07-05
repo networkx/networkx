@@ -42,7 +42,7 @@ networkx.egg-info/
 # Vim's swap files
 *.sw[op]
 
-#Spyder project file
+# Spyder project file
 .spyderproject
 
 # PyCharm project file
@@ -53,3 +53,6 @@ networkx.egg-info/
 
 # PyTest Cache
 .pytest_cache
+
+# Virtual environment directory
+networkx-dev/

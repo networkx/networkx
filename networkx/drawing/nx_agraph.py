@@ -13,10 +13,13 @@ Examples
 
 See Also
 --------
-Pygraphviz: http://pygraphviz.github.io/
+ - Pygraphviz: http://pygraphviz.github.io/
+ - Graphviz:      https://www.graphviz.org
+ - DOT Language:  http://www.graphviz.org/doc/info/lang.html
 """
 import os
 import tempfile
+
 import networkx as nx
 
 __all__ = [
@@ -128,8 +131,10 @@ def to_agraph(N):
     """
     try:
         import pygraphviz
-    except ImportError as e:
-        raise ImportError("requires pygraphviz " "http://pygraphviz.github.io/") from e
+    except ImportError as err:
+        raise ImportError(
+            "requires pygraphviz " "http://pygraphviz.github.io/"
+        ) from err
     directed = N.is_directed()
     strict = nx.number_of_selfloops(N) == 0 and not N.is_multigraph()
     A = pygraphviz.AGraph(name=N.name, strict=strict, directed=directed)
@@ -179,6 +184,12 @@ def write_dot(G, path):
        A networkx graph
     path : filename
        Filename or file handle to write
+
+    Notes
+    -----
+    To use a specific graph layout, call ``A.layout`` prior to `write_dot`.
+    Note that some graphviz layouts are not guaranteed to be deterministic,
+    see https://gitlab.com/graphviz/graphviz/-/issues/1767 for more info.
     """
     A = to_agraph(G)
     A.write(path)
@@ -196,10 +207,10 @@ def read_dot(path):
     """
     try:
         import pygraphviz
-    except ImportError as e:
+    except ImportError as err:
         raise ImportError(
             "read_dot() requires pygraphviz " "http://pygraphviz.github.io/"
-        ) from e
+        ) from err
     A = pygraphviz.AGraph(file=path)
     gr = from_agraph(A)
     A.clear()
@@ -222,7 +233,7 @@ def graphviz_layout(G, prog="neato", root=None, args=""):
 
     Returns
     -------
-      Dictionary of x, y, positions keyed by node.
+    Dictionary of x, y, positions keyed by node.
 
     Examples
     --------
@@ -233,6 +244,9 @@ def graphviz_layout(G, prog="neato", root=None, args=""):
     Notes
     -----
     This is a wrapper for pygraphviz_layout.
+
+    Note that some graphviz layouts are not guaranteed to be deterministic,
+    see https://gitlab.com/graphviz/graphviz/-/issues/1767 for more info.
     """
     return pygraphviz_layout(G, prog=prog, root=root, args=args)
 
@@ -274,11 +288,15 @@ def pygraphviz_layout(G, prog="neato", root=None, args=""):
         >>> H_layout = nx.nx_agraph.pygraphviz_layout(G, prog="dot")
         >>> G_layout = {H.nodes[n]["node_label"]: p for n, p in H_layout.items()}
 
+    Note that some graphviz layouts are not guaranteed to be deterministic,
+    see https://gitlab.com/graphviz/graphviz/-/issues/1767 for more info.
     """
     try:
         import pygraphviz
-    except ImportError as e:
-        raise ImportError("requires pygraphviz " "http://pygraphviz.github.io/") from e
+    except ImportError as err:
+        raise ImportError(
+            "requires pygraphviz " "http://pygraphviz.github.io/"
+        ) from err
     if root is not None:
         args += f"-Groot={root}"
     A = to_agraph(G)
@@ -322,7 +340,7 @@ def view_pygraphviz(
         The filename used to save the image.  If None, save to a temporary
         file.  File formats are the same as those from pygraphviz.agraph.draw.
     show : bool, default = True
-        Whether to display the graph with `networkx.utils.default_opener`,
+        Whether to display the graph with :mod:`PIL.Image.show`,
         default is `True`. If `False`, the rendered graph is still available
         at `path`.
 
@@ -338,6 +356,9 @@ def view_pygraphviz(
     If this function is called in succession too quickly, sometimes the
     image is not displayed. So you might consider time.sleep(.5) between
     calls if you experience problems.
+
+    Note that some graphviz layouts are not guaranteed to be deterministic,
+    see https://gitlab.com/graphviz/graphviz/-/issues/1767 for more info.
 
     """
     if not len(G):
@@ -396,7 +417,7 @@ def view_pygraphviz(
 
     # If the user passed in an edgelabel, we update the labels for all edges.
     if edgelabel is not None:
-        if not hasattr(edgelabel, "__call__"):
+        if not callable(edgelabel):
 
             def func(data):
                 return "".join(["  ", str(data[edgelabel]), "  "])
@@ -432,52 +453,8 @@ def view_pygraphviz(
 
     # Show graph in a new window (depends on platform configuration)
     if show:
-        nx.utils.default_opener(path.name)
+        from PIL import Image
+
+        Image.open(path.name).show()
 
     return path.name, A
-
-
-def display_pygraphviz(graph, path, format=None, prog=None, args=""):
-    """Internal function to display a graph in OS dependent manner.
-
-    Parameters
-    ----------
-    graph : PyGraphviz graph
-        A PyGraphviz AGraph instance.
-    path :  file object
-        An already opened file object that will be closed.
-    format : str, None
-        An attempt is made to guess the output format based on the extension
-        of the filename. If that fails, the value of `format` is used.
-    prog : string
-        Name of Graphviz layout program.
-    args : str
-        Additional arguments to pass to the Graphviz layout program.
-
-    Notes
-    -----
-    If this function is called in succession too quickly, sometimes the
-    image is not displayed. So you might consider time.sleep(.5) between
-    calls if you experience problems.
-
-    """
-    import warnings
-
-    warnings.warn(
-        "display_pygraphviz is deprecated and will be removed in NetworkX 3.0. "
-        "To view a graph G using pygraphviz, use nx.nx_agraph.view_pygraphviz(G). "
-        "To view a graph from file, consider nx.utils.default_opener(filename).",
-        DeprecationWarning,
-    )
-    if format is None:
-        filename = path.name
-        format = os.path.splitext(filename)[1].lower()[1:]
-    if not format:
-        # Let the draw() function use its default
-        format = None
-
-    # Save to a file and display in the default viewer.
-    # We must close the file before viewing it.
-    graph.draw(path, format, prog, args)
-    path.close()
-    nx.utils.default_opener(filename)

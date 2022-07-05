@@ -83,6 +83,12 @@ def number_weakly_connected_components(G):
     NetworkXNotImplemented
         If G is undirected.
 
+    Examples
+    --------
+    >>> G = nx.DiGraph([(0, 1), (2, 1), (3, 4)])
+    >>> nx.number_weakly_connected_components(G)
+    2
+
     See Also
     --------
     weakly_connected_components
@@ -123,6 +129,16 @@ def is_weakly_connected(G):
     NetworkXNotImplemented
         If G is undirected.
 
+    Examples
+    --------
+    >>> G = nx.DiGraph([(0, 1), (2, 1)])
+    >>> G.add_node(3)
+    >>> nx.is_weakly_connected(G)  # node 3 is not connected to the graph
+    False
+    >>> G.add_edge(2, 3)
+    >>> nx.is_weakly_connected(G)
+    True
+
     See Also
     --------
     is_strongly_connected
@@ -141,7 +157,7 @@ def is_weakly_connected(G):
             """Connectivity is undefined for the null graph."""
         )
 
-    return len(list(weakly_connected_components(G))[0]) == len(G)
+    return len(next(weakly_connected_components(G))) == len(G)
 
 
 def _plain_bfs(G, source):

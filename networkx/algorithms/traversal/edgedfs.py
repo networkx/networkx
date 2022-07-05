@@ -80,14 +80,14 @@ def edge_dfs(G, source=None, orientation=None):
     -----
     The goal of this function is to visit edges. It differs from the more
     familiar depth-first traversal of nodes, as provided by
-    :func:`networkx.algorithms.traversal.depth_first_search.dfs_edges`, in
+    :func:`~networkx.algorithms.traversal.depth_first_search.dfs_edges`, in
     that it does not stop once every node has been visited. In a directed graph
     with edges [(0, 1), (1, 2), (2, 1)], the edge (2, 1) would not be visited
     if not for the functionality provided by this function.
 
     See Also
     --------
-    dfs_edges
+    :func:`~networkx.algorithms.traversal.depth_first_search.dfs_edges`
 
     """
     nodes = list(G.nbunch_iter(source))

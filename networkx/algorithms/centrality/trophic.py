@@ -1,6 +1,5 @@
 """Trophic levels"""
 import networkx as nx
-
 from networkx.utils import not_implemented_for
 
 __all__ = ["trophic_levels", "trophic_differences", "trophic_incoherence_parameter"]
@@ -34,7 +33,7 @@ def trophic_levels(G, weight="weight"):
     Returns
     -------
     nodes : dict
-        Dictionary of nodes with trophic level as the vale.
+        Dictionary of nodes with trophic level as the value.
 
     References
     ----------

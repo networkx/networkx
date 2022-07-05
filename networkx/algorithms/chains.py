@@ -3,6 +3,8 @@
 import networkx as nx
 from networkx.utils import not_implemented_for
 
+__all__ = ["chain_decomposition"]
+
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
@@ -41,6 +43,12 @@ def chain_decomposition(G, root=None):
     ------
     NodeNotFound
        If `root` is not in the graph `G`.
+
+    Examples
+    --------
+    >>> G = nx.Graph([(0, 1), (1, 4), (3, 4), (3, 5), (4, 5)])
+    >>> list(nx.chain_decomposition(G))
+    [[(4, 5), (5, 3), (3, 4)]]
 
     Notes
     -----

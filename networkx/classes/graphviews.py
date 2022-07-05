@@ -23,18 +23,17 @@ the chain is tricky and much harder with restricted_views than
 with induced subgraphs.
 Often it is easiest to use .copy() to avoid chains.
 """
+import networkx as nx
 from networkx.classes.coreviews import (
+    FilterAdjacency,
+    FilterAtlas,
+    FilterMultiAdjacency,
     UnionAdjacency,
     UnionMultiAdjacency,
-    FilterAtlas,
-    FilterAdjacency,
-    FilterMultiAdjacency,
 )
 from networkx.classes.filters import no_filter
 from networkx.exception import NetworkXError
 from networkx.utils import not_implemented_for
-
-import networkx as nx
 
 __all__ = ["generic_graph_view", "subgraph_view", "reverse_view"]
 
@@ -153,13 +152,13 @@ def subgraph_view(G, filter_node=no_filter, filter_edge=no_filter):
     if G.is_multigraph():
         Adj = FilterMultiAdjacency
 
-        def reverse_edge(u, v, k):
+        def reverse_edge(u, v, k=None):
             return filter_edge(v, u, k)
 
     else:
         Adj = FilterAdjacency
 
-        def reverse_edge(u, v):
+        def reverse_edge(u, v, k=None):
             return filter_edge(v, u)
 
     if G.is_directed():

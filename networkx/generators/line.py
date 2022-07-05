@@ -1,9 +1,10 @@
 """Functions for generating line graphs."""
-from itertools import combinations
 from collections import defaultdict
+from functools import partial
+from itertools import combinations
 
 import networkx as nx
-from networkx.utils import arbitrary_element, generate_unique_node
+from networkx.utils import arbitrary_element
 from networkx.utils.decorators import not_implemented_for
 
 __all__ = ["line_graph", "inverse_line_graph"]
@@ -41,6 +42,18 @@ def line_graph(G, create_using=None):
     >>> L = nx.line_graph(G)
     >>> print(sorted(map(sorted, L.edges())))  # makes a 3-clique, K3
     [[(0, 1), (0, 2)], [(0, 1), (0, 3)], [(0, 2), (0, 3)]]
+
+    Edge attributes from `G` are not copied over as node attributes in `L`, but
+    attributes can be copied manually:
+
+    >>> G = nx.path_graph(4)
+    >>> G.add_edges_from((u, v, {"tot": u+v}) for u, v in G.edges)
+    >>> G.edges(data=True)
+    EdgeDataView([(0, 1, {'tot': 1}), (1, 2, {'tot': 3}), (2, 3, {'tot': 5})])
+    >>> H = nx.line_graph(G)
+    >>> H.add_nodes_from((node, G.edges[node]) for node in H)
+    >>> H.nodes(data=True)
+    NodeDataView({(0, 1): {'tot': 1}, (2, 3): {'tot': 5}, (1, 2): {'tot': 3}})
 
     Notes
     -----
@@ -105,55 +118,6 @@ def line_graph(G, create_using=None):
     return L
 
 
-def _node_func(G):
-    """Returns a function which returns a sorted node for line graphs.
-
-    When constructing a line graph for undirected graphs, we must normalize
-    the ordering of nodes as they appear in the edge.
-
-    """
-    if G.is_multigraph():
-
-        def sorted_node(u, v, key):
-            return (u, v, key) if u <= v else (v, u, key)
-
-    else:
-
-        def sorted_node(u, v):
-            return (u, v) if u <= v else (v, u)
-
-    return sorted_node
-
-
-def _edge_func(G):
-    """Returns the edges from G, handling keys for multigraphs as necessary."""
-    if G.is_multigraph():
-
-        def get_edges(nbunch=None):
-            return G.edges(nbunch, keys=True)
-
-    else:
-
-        def get_edges(nbunch=None):
-            return G.edges(nbunch)
-
-    return get_edges
-
-
-def _sorted_edge(u, v):
-    """Returns a sorted edge.
-
-    During the construction of a line graph for undirected graphs, the data
-    structure can be a multigraph even though the line graph will never have
-    multiple edges between its nodes.  For this reason, we must make sure not
-    to add any edge more than once.  This requires that we build up a list of
-    edges to add and then remove all duplicates.  And so, we must normalize
-    the representation of the edges.
-
-    """
-    return (u, v) if u <= v else (v, u)
-
-
 def _lg_directed(G, create_using=None):
     """Returns the line graph L of the (multi)digraph G.
 
@@ -173,7 +137,7 @@ def _lg_directed(G, create_using=None):
     L = nx.empty_graph(0, create_using, default=G.__class__)
 
     # Create a graph specific edge function.
-    get_edges = _edge_func(G)
+    get_edges = partial(G.edges, keys=True) if G.is_multigraph() else G.edges
 
     for from_node in get_edges():
         # from_node is: (u,v) or (u,v,key)
@@ -210,17 +174,24 @@ def _lg_undirected(G, selfloops=False, create_using=None):
     """
     L = nx.empty_graph(0, create_using, default=G.__class__)
 
-    # Graph specific functions for edges and sorted nodes.
-    get_edges = _edge_func(G)
-    sorted_node = _node_func(G)
+    # Graph specific functions for edges.
+    get_edges = partial(G.edges, keys=True) if G.is_multigraph() else G.edges
 
     # Determine if we include self-loops or not.
     shift = 0 if selfloops else 1
 
+    # Introduce numbering of nodes
+    node_index = {n: i for i, n in enumerate(G)}
+
+    # Lift canonical representation of nodes to edges in line graph
+    edge_key_function = lambda edge: (node_index[edge[0]], node_index[edge[1]])
+
     edges = set()
     for u in G:
         # Label nodes as a sorted tuple of nodes in original graph.
-        nodes = [sorted_node(*x) for x in get_edges(u)]
+        # Decide on representation of {u, v} as (u, v) or (v, u) depending on node_index.
+        # -> This ensures a canonical representation and avoids comparing values of different types.
+        nodes = [tuple(sorted(x[:2], key=node_index.get)) + x[2:] for x in get_edges(u)]
 
         if len(nodes) == 1:
             # Then the edge will be an isolated node in L.
@@ -230,7 +201,12 @@ def _lg_undirected(G, selfloops=False, create_using=None):
         # especially important for multigraphs, we store the edges in
         # canonical form in a set.
         for i, a in enumerate(nodes):
-            edges.update([_sorted_edge(a, b) for b in nodes[i + shift :]])
+            edges.update(
+                [
+                    tuple(sorted((a, b), key=edge_key_function))
+                    for b in nodes[i + shift :]
+                ]
+            )
 
     L.add_edges_from(edges)
     return L
@@ -241,11 +217,11 @@ def _lg_undirected(G, selfloops=False, create_using=None):
 def inverse_line_graph(G):
     """Returns the inverse line graph of graph G.
 
-    If H is a graph, and G is the line graph of H, such that H = L(G).
+    If H is a graph, and G is the line graph of H, such that G = L(H).
     Then H is the inverse line graph of G.
 
     Not all graphs are line graphs and these do not have an inverse line graph.
-    In these cases this generator returns a NetworkXError.
+    In these cases this function raises a NetworkXError.
 
     Parameters
     ----------
@@ -288,12 +264,9 @@ def inverse_line_graph(G):
 
     """
     if G.number_of_nodes() == 0:
-        a = generate_unique_node()
-        H = nx.Graph()
-        H.add_node(a)
-        return H
+        return nx.empty_graph(1)
     elif G.number_of_nodes() == 1:
-        v = list(G)[0]
+        v = arbitrary_element(G)
         a = (v, 0)
         b = (v, 1)
         H = nx.Graph([(a, b)])
@@ -308,26 +281,26 @@ def inverse_line_graph(G):
     starting_cell = _select_starting_cell(G)
     P = _find_partition(G, starting_cell)
     # count how many times each vertex appears in the partition set
-    P_count = {u: 0 for u in G.nodes()}
+    P_count = {u: 0 for u in G.nodes}
     for p in P:
         for u in p:
             P_count[u] += 1
 
     if max(P_count.values()) > 2:
-        msg = "G is not a line graph (vertex found in more " "than two partition cells)"
+        msg = "G is not a line graph (vertex found in more than two partition cells)"
         raise nx.NetworkXError(msg)
-    W = tuple([(u,) for u in P_count if P_count[u] == 1])
+    W = tuple((u,) for u in P_count if P_count[u] == 1)
     H = nx.Graph()
     H.add_nodes_from(P)
     H.add_nodes_from(W)
-    for a, b in combinations(H.nodes(), 2):
-        if len(set(a).intersection(set(b))) > 0:
+    for a, b in combinations(H.nodes, 2):
+        if any(a_bit in b for a_bit in a):
             H.add_edge(a, b)
     return H
 
 
 def _triangles(G, e):
-    """ Return list of all triangles containing edge e"""
+    """Return list of all triangles containing edge e"""
     u, v = e
     if u not in G:
         raise nx.NetworkXError(f"Vertex {u} not in graph")
@@ -457,10 +430,10 @@ def _select_starting_cell(G, starting_edge=None):
     triangles is the same as in the Roussopoulos paper cited above.
     """
     if starting_edge is None:
-        e = arbitrary_element(list(G.edges()))
+        e = arbitrary_element(G.edges())
     else:
         e = starting_edge
-        if e[0] not in G[e[1]]:
+        if e[1] not in G[e[0]]:
             msg = f"starting_edge ({e[0]}, {e[1]}) is not in the Graph"
             raise nx.NetworkXError(msg)
     e_triangles = _triangles(G, e)

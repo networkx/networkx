@@ -1,51 +1,79 @@
-"""
-Setup script for networkx
-
-You can install networkx with
-
-python setup.py install
-"""
 from glob import glob
 import os
 import sys
-
-if os.path.exists("MANIFEST"):
-    os.remove("MANIFEST")
-
 from setuptools import setup
 
-if sys.argv[-1] == "setup.py":
-    print("To install, run 'python setup.py install'")
-    print()
-
-if sys.version_info[:2] < (3, 7):
+if sys.version_info[:2] < (3, 8):
     error = (
-        "NetworkX 2.6+ requires Python 3.7 or later (%d.%d detected). \n"
+        "NetworkX 2.7+ requires Python 3.8 or later (%d.%d detected). \n"
         "For Python 2.7, please install version 2.2 using: \n"
         "$ pip install 'networkx==2.2'" % sys.version_info[:2]
     )
     sys.stderr.write(error + "\n")
     sys.exit(1)
 
-# Write the version information.
-sys.path.insert(0, "networkx")
-import release
 
-version = release.write_versionfile()
-sys.path.pop(0)
+name = "networkx"
+description = "Python package for creating and manipulating graphs and networks"
+authors = {
+    "Hagberg": ("Aric Hagberg", "hagberg@lanl.gov"),
+    "Schult": ("Dan Schult", "dschult@colgate.edu"),
+    "Swart": ("Pieter Swart", "swart@lanl.gov"),
+}
+maintainer = "NetworkX Developers"
+maintainer_email = "networkx-discuss@googlegroups.com"
+url = "https://networkx.org/"
+project_urls = {
+    "Bug Tracker": "https://github.com/networkx/networkx/issues",
+    "Documentation": "https://networkx.org/documentation/stable/",
+    "Source Code": "https://github.com/networkx/networkx",
+}
+platforms = ["Linux", "Mac OSX", "Windows", "Unix"]
+keywords = [
+    "Networks",
+    "Graph Theory",
+    "Mathematics",
+    "network",
+    "graph",
+    "discrete mathematics",
+    "math",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Topic :: Scientific/Engineering :: Physics",
+]
+
+with open("networkx/__init__.py") as fid:
+    for line in fid:
+        if line.startswith("__version__"):
+            version = line.strip().split()[-1][1:-1]
+            break
 
 packages = [
     "networkx",
     "networkx.algorithms",
     "networkx.algorithms.assortativity",
     "networkx.algorithms.bipartite",
-    "networkx.algorithms.node_classification",
     "networkx.algorithms.centrality",
     "networkx.algorithms.community",
     "networkx.algorithms.components",
     "networkx.algorithms.connectivity",
     "networkx.algorithms.coloring",
     "networkx.algorithms.flow",
+    "networkx.algorithms.minors",
     "networkx.algorithms.traversal",
     "networkx.algorithms.isomorphism",
     "networkx.algorithms.shortest_paths",
@@ -60,7 +88,6 @@ packages = [
     "networkx.readwrite",
     "networkx.readwrite.json_graph",
     "networkx.tests",
-    "networkx.testing",
     "networkx.utils",
 ]
 
@@ -100,12 +127,12 @@ package_data = {
     "networkx.algorithms": ["tests/*.py"],
     "networkx.algorithms.assortativity": ["tests/*.py"],
     "networkx.algorithms.bipartite": ["tests/*.py"],
-    "networkx.algorithms.node_classification": ["tests/*.py"],
     "networkx.algorithms.centrality": ["tests/*.py"],
     "networkx.algorithms.community": ["tests/*.py"],
     "networkx.algorithms.components": ["tests/*.py"],
     "networkx.algorithms.connectivity": ["tests/*.py"],
     "networkx.algorithms.coloring": ["tests/*.py"],
+    "networkx.algorithms.minors": ["tests/*.py"],
     "networkx.algorithms.flow": ["tests/*.py", "tests/*.bz2"],
     "networkx.algorithms.isomorphism": ["tests/*.py", "tests/*.*99"],
     "networkx.algorithms.link_analysis": ["tests/*.py"],
@@ -116,52 +143,51 @@ package_data = {
     "networkx.algorithms.tree": ["tests/*.py"],
     "networkx.classes": ["tests/*.py"],
     "networkx.generators": ["tests/*.py", "atlas.dat.gz"],
-    "networkx.drawing": ["tests/*.py"],
+    "networkx.drawing": ["tests/*.py", "tests/baseline/*png"],
     "networkx.linalg": ["tests/*.py"],
     "networkx.readwrite": ["tests/*.py"],
     "networkx.readwrite.json_graph": ["tests/*.py"],
-    "networkx.testing": ["tests/*.py"],
     "networkx.utils": ["tests/*.py"],
 }
 
 
 def parse_requirements_file(filename):
-    with open(filename, encoding="utf-8") as fid:
-        requires = [l.strip() for l in fid.readlines() if l]
+    with open(filename) as fid:
+        requires = [l.strip() for l in fid.readlines() if not l.startswith("#")]
 
     return requires
 
 
-install_requires = parse_requirements_file("requirements/default.txt")
+install_requires = []
 extras_require = {
     dep: parse_requirements_file("requirements/" + dep + ".txt")
-    for dep in ["developer", "doc", "extra", "test"]
+    for dep in ["default", "developer", "doc", "extra", "test"]
 }
 
-with open("README.rst", "r") as fh:
+with open("README.rst") as fh:
     long_description = fh.read()
 
 if __name__ == "__main__":
 
     setup(
-        name=release.name.lower(),
+        name=name,
         version=version,
-        maintainer=release.maintainer,
-        maintainer_email=release.maintainer_email,
-        author=release.authors["Hagberg"][0],
-        author_email=release.authors["Hagberg"][1],
-        description=release.description,
-        keywords=release.keywords,
+        maintainer=maintainer,
+        maintainer_email=maintainer_email,
+        author=authors["Hagberg"][0],
+        author_email=authors["Hagberg"][1],
+        description=description,
+        keywords=keywords,
         long_description=long_description,
-        platforms=release.platforms,
-        url=release.url,
-        project_urls=release.project_urls,
-        classifiers=release.classifiers,
+        platforms=platforms,
+        url=url,
+        project_urls=project_urls,
+        classifiers=classifiers,
         packages=packages,
         data_files=data,
         package_data=package_data,
         install_requires=install_requires,
         extras_require=extras_require,
-        python_requires=">=3.7",
+        python_requires=">=3.8",
         zip_safe=False,
     )

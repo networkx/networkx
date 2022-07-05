@@ -1,10 +1,13 @@
 import itertools
+
 import pytest
 
 import networkx as nx
 from networkx.algorithms import flow
-from networkx.algorithms.connectivity import local_edge_connectivity
-from networkx.algorithms.connectivity import local_node_connectivity
+from networkx.algorithms.connectivity import (
+    local_edge_connectivity,
+    local_node_connectivity,
+)
 
 flow_funcs = [
     flow.boykov_kolmogorov,
@@ -111,7 +114,7 @@ def test_brandes_erlebach():
 
 def test_white_harary_1():
     # Figure 1b white and harary (2001)
-    # # http://eclectic.ss.uci.edu/~drwhite/sm-w23.PDF
+    # https://doi.org/10.1111/0081-1750.00098
     # A graph with high adhesion (edge connectivity) and low cohesion
     # (vertex connectivity)
     G = nx.disjoint_union(nx.complete_graph(4), nx.complete_graph(4))
@@ -130,7 +133,7 @@ def test_white_harary_1():
 
 def test_white_harary_2():
     # Figure 8 white and harary (2001)
-    # # http://eclectic.ss.uci.edu/~drwhite/sm-w23.PDF
+    # https://doi.org/10.1111/0081-1750.00098
     G = nx.disjoint_union(nx.complete_graph(4), nx.complete_graph(4))
     G.add_edge(0, 4)
     # kappa <= lambda <= delta

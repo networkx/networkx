@@ -1,6 +1,7 @@
 import pytest
+
 import networkx as nx
-from networkx.testing import assert_edges_equal
+from networkx.utils import edges_equal
 
 
 def test_tensor_product_raises():
@@ -375,7 +376,7 @@ def test_graph_power():
     G.add_edge(9, 2)
     H = nx.power(G, 2)
 
-    assert_edges_equal(
+    assert edges_equal(
         list(H.edges()),
         [
             (0, 1),
@@ -424,3 +425,11 @@ def test_rooted_product():
     R = nx.rooted_product(G, H, "a")
     assert len(R) == len(G) * len(H)
     assert R.size() == G.size() + len(G) * H.size()
+
+
+def test_corona_product():
+    G = nx.cycle_graph(3)
+    H = nx.path_graph(2)
+    C = nx.corona_product(G, H)
+    assert len(C) == (len(G) * len(H)) + len(G)
+    assert C.size() == G.size() + len(G) * H.size() + len(G) * len(H)

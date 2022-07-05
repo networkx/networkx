@@ -3,6 +3,7 @@
 """
 
 import itertools
+
 import networkx as nx
 
 __all__ = [
@@ -14,15 +15,15 @@ __all__ = [
 
 
 def cc_dot(nu, nv):
-    return float(len(nu & nv)) / len(nu | nv)
+    return len(nu & nv) / len(nu | nv)
 
 
 def cc_max(nu, nv):
-    return float(len(nu & nv)) / max(len(nu), len(nv))
+    return len(nu & nv) / max(len(nu), len(nv))
 
 
 def cc_min(nu, nv):
-    return float(len(nu & nv)) / min(len(nu), len(nv))
+    return len(nu & nv) / min(len(nu), len(nv))
 
 
 modes = {"dot": cc_dot, "min": cc_min, "max": cc_max}
@@ -96,8 +97,8 @@ def latapy_clustering(G, nodes=None, mode="dot"):
     See Also
     --------
     robins_alexander_clustering
-    square_clustering
     average_clustering
+    networkx.algorithms.cluster.square_clustering
 
     References
     ----------
@@ -110,10 +111,10 @@ def latapy_clustering(G, nodes=None, mode="dot"):
 
     try:
         cc_func = modes[mode]
-    except KeyError as e:
+    except KeyError as err:
         raise nx.NetworkXError(
             "Mode for bipartite clustering must be: dot, min or max"
-        ) from e
+        ) from err
 
     if nodes is None:
         nodes = G
@@ -205,7 +206,7 @@ def average_clustering(G, nodes=None, mode="dot"):
     if nodes is None:
         nodes = G
     ccs = latapy_clustering(G, nodes=nodes, mode=mode)
-    return float(sum(ccs[v] for v in nodes)) / len(nodes)
+    return sum(ccs[v] for v in nodes) / len(nodes)
 
 
 def robins_alexander_clustering(G):
@@ -239,7 +240,7 @@ def robins_alexander_clustering(G):
     See Also
     --------
     latapy_clustering
-    square_clustering
+    networkx.algorithms.cluster.square_clustering
 
     References
     ----------

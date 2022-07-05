@@ -6,8 +6,8 @@ from .ordered import *
 
 from .function import *
 
-import networkx.classes.filters
+from networkx.classes import filters
 
-import networkx.classes.coreviews
-import networkx.classes.graphviews
-import networkx.classes.reportviews
+from networkx.classes import coreviews
+from networkx.classes import graphviews
+from networkx.classes import reportviews

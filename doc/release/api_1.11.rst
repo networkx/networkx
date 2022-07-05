@@ -1,12 +1,18 @@
-**********************************
-Version 1.11 notes and API changes
-**********************************
+NetworkX 1.11
+=============
 
-This page includes more detailed release information and API changes from
-NetworkX 1.10 to NetworkX 1.11.
+Release date: 30 January 2016
 
-Please send comments and questions to the networkx-discuss mailing list:
-<http://groups.google.com/group/networkx-discuss>.
+Support for Python 3.5 added, drop support for Python 3.2.
+
+Highlights
+~~~~~~~~~~
+
+Pydot features now use pydotplus.
+Fixes installation on some machines and test with appveyor.
+Restores default center and scale of layout routines.
+Fixes various docs including no symbolic links in examples.
+Docs can now build using autosummary on readthedocs.org.
 
 API changes
 -----------

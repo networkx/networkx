@@ -24,10 +24,10 @@ def degree_centrality(G, nodes):
 
     See Also
     --------
-    betweenness_centrality,
-    closeness_centrality,
-    sets,
-    is_bipartite
+    betweenness_centrality
+    closeness_centrality
+    :func:`~networkx.algorithms.bipartite.basic.sets`
+    :func:`~networkx.algorithms.bipartite.basic.is_bipartite`
 
     Notes
     -----
@@ -59,7 +59,7 @@ def degree_centrality(G, nodes):
     .. [1] Borgatti, S.P. and Halgin, D. In press. "Analyzing Affiliation
         Networks". In Carrington, P. and Scott, J. (eds) The Sage Handbook
         of Social Network Analysis. Sage Publications.
-        http://www.steveborgatti.com/research/publications/bhaffiliations.pdf
+        https://dx.doi.org/10.4135/9781446294413.n28
     """
     top = set(nodes)
     bottom = set(G) - top
@@ -122,10 +122,10 @@ def betweenness_centrality(G, nodes):
 
     See Also
     --------
-    degree_centrality,
-    closeness_centrality,
-    sets,
-    is_bipartite
+    degree_centrality
+    closeness_centrality
+    :func:`~networkx.algorithms.bipartite.basic.sets`
+    :func:`~networkx.algorithms.bipartite.basic.is_bipartite`
 
     Notes
     -----
@@ -140,23 +140,21 @@ def betweenness_centrality(G, nodes):
     .. [1] Borgatti, S.P. and Halgin, D. In press. "Analyzing Affiliation
         Networks". In Carrington, P. and Scott, J. (eds) The Sage Handbook
         of Social Network Analysis. Sage Publications.
-        http://www.steveborgatti.com/research/publications/bhaffiliations.pdf
+        https://dx.doi.org/10.4135/9781446294413.n28
     """
     top = set(nodes)
     bottom = set(G) - top
-    n = float(len(top))
-    m = float(len(bottom))
-    s = (n - 1) // m
-    t = (n - 1) % m
+    n = len(top)
+    m = len(bottom)
+    s, t = divmod(n - 1, m)
     bet_max_top = (
-        ((m ** 2) * ((s + 1) ** 2))
+        ((m**2) * ((s + 1) ** 2))
         + (m * (s + 1) * (2 * t - s - 1))
         - (t * ((2 * s) - t + 3))
     ) / 2.0
-    p = (m - 1) // n
-    r = (m - 1) % n
+    p, r = divmod(m - 1, n)
     bet_max_bot = (
-        ((n ** 2) * ((p + 1) ** 2))
+        ((n**2) * ((p + 1) ** 2))
         + (n * (p + 1) * (2 * r - p - 1))
         - (r * ((2 * p) - r + 3))
     ) / 2.0
@@ -194,10 +192,10 @@ def closeness_centrality(G, nodes, normalized=True):
 
     See Also
     --------
-    betweenness_centrality,
+    betweenness_centrality
     degree_centrality
-    sets,
-    is_bipartite
+    :func:`~networkx.algorithms.bipartite.basic.sets`
+    :func:`~networkx.algorithms.bipartite.basic.is_bipartite`
 
     Notes
     -----
@@ -237,32 +235,32 @@ def closeness_centrality(G, nodes, normalized=True):
     .. [1] Borgatti, S.P. and Halgin, D. In press. "Analyzing Affiliation
         Networks". In Carrington, P. and Scott, J. (eds) The Sage Handbook
         of Social Network Analysis. Sage Publications.
-        http://www.steveborgatti.com/research/publications/bhaffiliations.pdf
+        https://dx.doi.org/10.4135/9781446294413.n28
     """
     closeness = {}
     path_length = nx.single_source_shortest_path_length
     top = set(nodes)
     bottom = set(G) - top
-    n = float(len(top))
-    m = float(len(bottom))
+    n = len(top)
+    m = len(bottom)
     for node in top:
         sp = dict(path_length(G, node))
         totsp = sum(sp.values())
         if totsp > 0.0 and len(G) > 1:
             closeness[node] = (m + 2 * (n - 1)) / totsp
             if normalized:
-                s = (len(sp) - 1.0) / (len(G) - 1)
+                s = (len(sp) - 1) / (len(G) - 1)
                 closeness[node] *= s
         else:
-            closeness[n] = 0.0
+            closeness[node] = 0.0
     for node in bottom:
         sp = dict(path_length(G, node))
         totsp = sum(sp.values())
         if totsp > 0.0 and len(G) > 1:
             closeness[node] = (n + 2 * (m - 1)) / totsp
             if normalized:
-                s = (len(sp) - 1.0) / (len(G) - 1)
+                s = (len(sp) - 1) / (len(G) - 1)
                 closeness[node] *= s
         else:
-            closeness[n] = 0.0
+            closeness[node] = 0.0
     return closeness

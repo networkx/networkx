@@ -32,7 +32,7 @@ def build_auxiliary_node_connectivity(G):
     .. [1] Kammer, Frank and Hanjo Taubig. Graph Connectivity. in Brandes and
         Erlebach, 'Network Analysis: Methodological Foundations', Lecture
         Notes in Computer Science, Volume 3418, Springer-Verlag, 2005.
-        http://www.informatik.uni-augsburg.de/thi/personen/kammer/Graph_Connectivity.pdf
+        https://doi.org/10.1007/978-3-540-31955-9_7
 
     """
     directed = G.is_directed()

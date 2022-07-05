@@ -145,12 +145,12 @@ def boykov_kolmogorov(
            of min-cut/max-flow algorithms for energy minimization in vision.
            Pattern Analysis and Machine Intelligence, IEEE Transactions on,
            26(9), 1124-1137.
-           http://www.csd.uwo.ca/~yuri/Papers/pami04.pdf
+           https://doi.org/10.1109/TPAMI.2004.60
 
     .. [2] Vladimir Kolmogorov. Graph-based Algorithms for Multi-camera
            Reconstruction Problem. PhD thesis, Cornell University, CS Department,
            2003. pp. 109-114.
-           https://pub.ist.ac.at/~vnk/papers/thesis.pdf
+           https://web.archive.org/web/20170809091249/https://pub.ist.ac.at/~vnk/papers/thesis.pdf
 
     """
     R = boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff)

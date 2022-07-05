@@ -1,4 +1,5 @@
-# https://github.com/scikit-image/scikit-image/blob/master/doc/release/contribs.py
+# https://github.com/networkx/networkx/pull/2542
+# https://github.com/scikit-image/scikit-image/blob/main/tools/generate_release_notes.py
 from subprocess import check_output
 import sys
 import string
@@ -12,7 +13,7 @@ tag = sys.argv[1]
 
 
 def call(cmd):
-    return check_output(shlex.split(cmd), universal_newlines=True).split("\n")
+    return check_output(shlex.split(cmd), text=True).split("\n")
 
 
 tag_date = call(f"git log -n1 --format='%ci' {tag}")[0]

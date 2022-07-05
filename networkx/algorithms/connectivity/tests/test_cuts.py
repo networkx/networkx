@@ -2,8 +2,7 @@ import pytest
 
 import networkx as nx
 from networkx.algorithms import flow
-from networkx.algorithms.connectivity import minimum_st_edge_cut
-from networkx.algorithms.connectivity import minimum_st_node_cut
+from networkx.algorithms.connectivity import minimum_st_edge_cut, minimum_st_node_cut
 from networkx.utils import arbitrary_element
 
 flow_funcs = [
@@ -93,7 +92,7 @@ def test_brandes_erlebach_book():
 
 def test_white_harary_paper():
     # Figure 1b white and harary (2001)
-    # http://eclectic.ss.uci.edu/~drwhite/sm-w23.PDF
+    # https://doi.org/10.1111/0081-1750.00098
     # A graph with high adhesion (edge connectivity) and low cohesion
     # (node connectivity)
     G = nx.disjoint_union(nx.complete_graph(4), nx.complete_graph(4))

@@ -4,12 +4,7 @@ from collections.abc import Mapping, Set
 from itertools import chain, count
 
 import networkx as nx
-from networkx.utils import (
-    arbitrary_element,
-    not_implemented_for,
-    UnionFind,
-    generate_unique_node,
-)
+from networkx.utils import UnionFind, arbitrary_element, not_implemented_for
 
 __all__ = [
     "all_pairs_lowest_common_ancestor",
@@ -217,7 +212,12 @@ def all_pairs_lowest_common_ancestor(G, pairs=None):
         super_root = None
     else:
         G = G.copy()
-        super_root = root = generate_unique_node()
+        # find unused node
+        root = -1
+        while root in G:
+            root -= 1
+        # use that as the super_root below all sources
+        super_root = root
         for source in sources:
             G.add_edge(root, source)
 
@@ -269,7 +269,7 @@ def all_pairs_lowest_common_ancestor(G, pairs=None):
     ancestors = {}
     for v in dag:
         if pairs is None or v in pairset:
-            my_ancestors = nx.dag.ancestors(dag, v)
+            my_ancestors = nx.ancestors(G, v)
             my_ancestors.add(v)
             ancestors[v] = sorted(my_ancestors, key=euler_tour_pos.get)
 

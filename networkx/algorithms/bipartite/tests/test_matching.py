@@ -1,15 +1,16 @@
 """Unit tests for the :mod:`networkx.algorithms.bipartite.matching` module."""
 import itertools
 
-import networkx as nx
-
 import pytest
 
-from networkx.algorithms.bipartite.matching import eppstein_matching
-from networkx.algorithms.bipartite.matching import hopcroft_karp_matching
-from networkx.algorithms.bipartite.matching import maximum_matching
-from networkx.algorithms.bipartite.matching import minimum_weight_full_matching
-from networkx.algorithms.bipartite.matching import to_vertex_cover
+import networkx as nx
+from networkx.algorithms.bipartite.matching import (
+    eppstein_matching,
+    hopcroft_karp_matching,
+    maximum_matching,
+    minimum_weight_full_matching,
+    to_vertex_cover,
+)
 
 
 class TestMatching:
@@ -175,6 +176,16 @@ class TestMatching:
 
     def test_vertex_cover_issue_2384(self):
         G = nx.Graph([(0, 3), (1, 3), (1, 4), (2, 3)])
+        matching = maximum_matching(G)
+        vertex_cover = to_vertex_cover(G, matching)
+        for u, v in G.edges():
+            assert u in vertex_cover or v in vertex_cover
+
+    def test_vertex_cover_issue_3306(self):
+        G = nx.Graph()
+        edges = [(0, 2), (1, 0), (1, 1), (1, 2), (2, 2)]
+        G.add_edges_from([((i, "L"), (j, "R")) for i, j in edges])
+
         matching = maximum_matching(G)
         vertex_cover = to_vertex_cover(G, matching)
         for u, v in G.edges():

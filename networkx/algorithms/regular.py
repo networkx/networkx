@@ -68,7 +68,7 @@ def k_factor(G, k, matching_weight="weight"):
     G : NetworkX graph
       Undirected graph
 
-    weight: string, optional (default='weight')
+    matching_weight: string, optional (default='weight')
        Edge data key corresponding to the edge weight.
        Used for finding the max-weighted perfect matching.
        If key not found, uses 1 as weight.
@@ -85,8 +85,7 @@ def k_factor(G, k, matching_weight="weight"):
        Information processing letters, 2009.
     """
 
-    from networkx.algorithms.matching import max_weight_matching
-    from networkx.algorithms.matching import is_perfect_matching
+    from networkx.algorithms.matching import is_perfect_matching, max_weight_matching
 
     class LargeKGadget:
         def __init__(self, k, degree, node, g):

@@ -17,7 +17,7 @@ loops.  (cf. 400pungency:400 401 403 405).
 
 The data file can be found at:
 
-- https://github.com/networkx/networkx/blob/master/examples/graph/roget_dat.txt.gz
+- https://github.com/networkx/networkx/blob/main/examples/graph/roget_dat.txt.gz
 """
 
 import gzip
