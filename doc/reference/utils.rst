@@ -12,12 +12,13 @@ Helper Functions
    :toctree: generated/
 
    arbitrary_element
-   is_string_like
    flatten
    make_list_of_ints
+   dict_to_numpy_array
    pairwise
    groups
    create_random_state
+   create_py_random_state
    nodes_equal
    edges_equal
    graphs_equal
