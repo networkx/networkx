@@ -14,6 +14,8 @@ class TestCandidateSelection:
     G1.add_node(0)
     G2.add_node(0)
 
+    mapped_nodes = {0: 0, 1: 9, 2: 8, 3: 7, 4: 6, 5: 5, 6: 4, 7: 1, 8: 3, 9: 2}
+
     def get_labels(self):
         return {node: self.G1.nodes[node]["label"] for node in self.G1.nodes()}, {node: self.G2.nodes[node]["label"] for
                                                                                   node in self.G2.nodes()}
@@ -24,7 +26,20 @@ class TestCandidateSelection:
             self.G2.nodes[n]["label"] = "blue"
 
         G1_labels, G2_labels = self.get_labels()
-        mapped_nodes = {0: 0, 1: 9, 2: 8, 3: 7, 4: 6, 5: 5, 6: 4, 7: 1, 8: 3, 9: 2}
 
         for node in self.G1.nodes():
-            assert mapped_nodes[node] in find_candidates(self.G1, self.G2, G1_labels, G2_labels, node, dict(), dict())
+            assert self.mapped_nodes[node] in find_candidates(self.G1, self.G2, G1_labels, G2_labels, node, dict(),
+                                                              dict())
+
+    def test_different_labels(self):
+        colors = ["white", "black", "green", "purple", "orange", "red", "blue", "pink", "yellow", "none"]
+        for node, color in zip(self.G1.nodes, colors):
+            self.G1.nodes[node]["label"] = color
+            self.G2.nodes[self.mapped_nodes[node]]["label"] = color
+
+        G1_labels, G2_labels = self.get_labels()
+
+        for node in self.G1.nodes():
+            candidates = find_candidates(self.G1, self.G2, G1_labels, G2_labels, node, dict(), dict())
+            assert len(candidates) == 1
+            assert self.mapped_nodes[node] in candidates
