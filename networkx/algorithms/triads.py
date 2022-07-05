@@ -496,8 +496,8 @@ def random_triad(G):
     Examples
     --------
     >>> G = nx.DiGraph([(1, 2), (1, 3), (2, 3), (3, 1), (5, 6), (5, 4), (6, 7)])
-    >>> Random = nx.random_triad(G)
-    >>> nx.edges(Random)
+    >>> triad = nx.random_triad(G)
+    >>> nx.edges(triad)
     OutEdgeView([(1, 3), (3, 1)])
 
     """
