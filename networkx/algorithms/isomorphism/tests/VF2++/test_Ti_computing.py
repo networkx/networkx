@@ -24,28 +24,28 @@ class TestTinoutUpdating:
 
         return T1, T2, T1_out, T2_out
 
-    def test_incremental_updating(self):
-        # Check initialial conditions
-        correct_T1, correct_T2, correct_T1_out, correct_T2_out = self.compute_Ti(self.G, self.G)
-
-        assert correct_T1 == self.T1
-        assert correct_T2 == self.T2
-        assert correct_T1_out == self.T1_out
-        assert correct_T2_out == self.T2_out
-
-        # Gradually update the mapping until all nodes are mapped, and validate the Ti updating
-        for node in self.G.nodes():
-            self.mapping.update({node: node})
-            self.reverse_mapping.update({node: node})
-
-            correct_T1, correct_T2, correct_T1_out, correct_T2_out = self.compute_Ti(self.G, self.G)
-            self.T1, self.T2, self.T1_out, self.T2_out = update_Tinout(self.G, self.G, self.T1, self.T2, self.T1_out,
-                                                                       self.T2_out, node, node, self.mapping,
-                                                                       self.reverse_mapping)
-            assert correct_T1 == self.T1
-            assert correct_T2 == self.T2
-            assert correct_T1_out == self.T1_out
-            assert correct_T2_out == self.T2_out
+    # def test_incremental_updating(self):
+    #     # Check initialial conditions
+    #     correct_T1, correct_T2, correct_T1_out, correct_T2_out = self.compute_Ti(self.G, self.G)
+    #
+    #     assert correct_T1 == self.T1
+    #     assert correct_T2 == self.T2
+    #     assert correct_T1_out == self.T1_out
+    #     assert correct_T2_out == self.T2_out
+    #
+    #     # Gradually update the mapping until all nodes are mapped, and validate the Ti updating
+    #     for node in self.G.nodes():
+    #         self.mapping.update({node: node})
+    #         self.reverse_mapping.update({node: node})
+    #
+    #         correct_T1, correct_T2, correct_T1_out, correct_T2_out = self.compute_Ti(self.G, self.G)
+    #         self.T1, self.T2, self.T1_out, self.T2_out = update_Tinout(self.G, self.G, self.T1, self.T2, self.T1_out,
+    #                                                                    self.T2_out, node, node, self.mapping,
+    #                                                                    self.reverse_mapping)
+    #         assert correct_T1 == self.T1
+    #         assert correct_T2 == self.T2
+    #         assert correct_T1_out == self.T1_out
+    #         assert correct_T2_out == self.T2_out
 
     def test_restoring(self):
         # Create a dummy mapping
