@@ -57,20 +57,20 @@ def main():
 
     mapped_nodes = {0: 0, 1: 9, 2: 8, 3: 7, 4: 6, 5: 5, 6: 4, 7: 1, 8: 3, 9: 2}
 
-    colors = ["white", "black", "green", "purple", "orange", "red", "blue", "pink", "yellow", "none"]
-    for node, color in zip(G1.nodes, colors):
-        G1.nodes[node]["label"] = color
-        G2.nodes[mapped_nodes[node]]["label"] = color
+    # colors = ["white", "black", "green", "purple", "orange", "red", "blue", "pink", "yellow", "none"]
+    # for node, color in zip(G1.nodes, colors):
+    #     G1.nodes[node]["label"] = color
+    #     G2.nodes[mapped_nodes[node]]["label"] = color
 
-    # for n in G1.nodes():
-    #     G1.nodes[n]["label"] = "blue"
-    #     G2.nodes[n]["label"] = "blue"
+    for n in G1.nodes():
+        G1.nodes[n]["label"] = "blue"
+        G2.nodes[n]["label"] = "blue"
 
     G1_labels = {node: G1.nodes[node]["label"] for node in G1.nodes()}
     G2_labels = {node: G2.nodes[node]["label"] for node in G2.nodes()}
 
-    for node in G1.nodes():
-        print(f"candidates for node {node}: {find_candidates(G1, G2, G1_labels, G2_labels, node, dict(), dict())}")
+    # for node in G1.nodes():
+    #     print(f"candidates for node {node}: {check_feasibility(node, mapped_nodes[node], G1, G2, G1_labels, G2_labels, s)}")
 
 
 main()
