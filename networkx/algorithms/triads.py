@@ -254,10 +254,9 @@ def is_triad(G):
     >>> G = nx.DiGraph([(1, 2), (2, 3), (3, 1)])
     >>> nx.is_triad(G)
     True
-    >>> G.add_edges_from([(0, 1)])
+    >>> G.add_edge(0, 1)
     >>> nx.is_triad(G)
     False
-
     """
     if isinstance(G, nx.Graph):
         if G.order() == 3 and nx.is_directed(G):
@@ -401,7 +400,7 @@ def triad_type(G):
     >>> G = nx.DiGraph([(1, 2), (2, 3), (3, 1)])
     >>> nx.triad_type(G)
     '030C'
-    >>> G.add_edges_from([(1, 3)])
+    >>> G.add_edge(1, 3)
     >>> nx.triad_type(G)
     '120C'
 
@@ -497,7 +496,7 @@ def random_triad(G):
     --------
     >>> G = nx.DiGraph([(1, 2), (1, 3), (2, 3), (3, 1), (5, 6), (5, 4), (6, 7)])
     >>> triad = nx.random_triad(G)
-    >>> nx.edges(triad)
+    >>> triad.edges
     OutEdgeView([(1, 3), (3, 1)])
 
     """
