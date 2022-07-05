@@ -1,8 +1,9 @@
 import networkx as nx
 
 
-def matching_order(G1, G2):
-    G1_labels, G2_labels, nodes_of_G1Labels, nodes_of_G2Labels, V1_unordered, current_labels = initialise_preprocess(G1, G2)
+def matching_order(G1, G2, G1_labels, G2_labels):
+    nodes_of_G1Labels, nodes_of_G2Labels, V1_unordered, current_labels = initialise_preprocess(G1, G2, G1_labels,
+                                                                                               G2_labels)
     used_degrees = {node: 0 for node in G1}
     node_order = []
 
@@ -21,15 +22,13 @@ def matching_order(G1, G2):
     return node_order
 
 
-def initialise_preprocess(G1, G2):
-    G1_labels = nx.get_node_attributes(G1, "label")
-    G2_labels = nx.get_node_attributes(G2, "label")
+def initialise_preprocess(G1, G2, G1_labels, G2_labels):
     nodes_of_G1Labels = nx.utils.groups(G1_labels)
     nodes_of_G2Labels = nx.utils.groups(G2_labels)
 
     V1_unordered = set(G1)
     current_labels = {node: G1_labels[node] for node in V1_unordered}
-    return G1_labels, G2_labels, nodes_of_G1Labels, nodes_of_G2Labels, V1_unordered, current_labels
+    return nodes_of_G1Labels, nodes_of_G2Labels, V1_unordered, current_labels
 
 
 def BFS_levels(source_node, G1, G1_labels, V1_unordered, label_rarity, used_degrees, node_order):
