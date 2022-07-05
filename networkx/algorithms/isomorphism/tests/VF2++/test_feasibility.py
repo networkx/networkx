@@ -37,6 +37,8 @@ class TestFeasibilityISO:
         assert feasible == 1756
 
     def test_iso_feasibility1(self):
+        """Uses the same graph as G1 and G2, and checks if there is only one feasible candidate for every node of G1.
+        """
         G1_labels = {n: self.G.nodes[n]["label"] for n in self.G.nodes()}
         G2_labels = G1_labels
         m = {node: node for node in self.G.nodes() if node < self.G.number_of_nodes() // 4}
@@ -52,6 +54,10 @@ class TestFeasibilityISO:
         assert feasible == 1999
 
     def test_iso_feasibility2(self):
+        """Uses two isomorphic graphs with different nodes but same labels. For every node of G1, its mapped node from
+        G2 must be feasible. Apart from its mapped counterpart, there could be more than one feasible candidates,
+        because all the nodes have the same label, so the checking is based on degree mainly.
+        """
         G1 = nx.Graph()
         G2 = nx.Graph()
 
@@ -84,6 +90,10 @@ class TestFeasibilityISO:
                                              T1_out, T2, T2_out)
 
     def test_iso_feasibility3(self):
+        """Uses two isomorphic graphs with different nodes and labels. For every node of G1, ONLY its mapped node from
+        G2 must be feasible. We cannot have more than one feasible candidates, because every mapped pair has a unique
+        label tha represents it.
+        """
         G1 = nx.Graph()
         G2 = nx.Graph()
 
