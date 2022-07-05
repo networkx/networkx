@@ -35,6 +35,28 @@ def tree_all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
     lcas : generator of tuples `((u, v), lca)` where `u` and `v` are nodes
         in `pairs` and `lca` is their lowest common ancestor.
 
+    Examples
+    --------
+    >>> import pprint
+    >>> G = nx.DiGraph([(1, 3), (2, 4), (1, 2)])
+    >>> pprint.pprint(dict(nx.tree_all_pairs_lowest_common_ancestor(G)))
+    {(1, 1): 1,
+     (2, 1): 1,
+     (2, 2): 2,
+     (3, 1): 1,
+     (3, 2): 1,
+     (3, 3): 3,
+     (3, 4): 1,
+     (4, 1): 1,
+     (4, 2): 2,
+     (4, 4): 4}
+
+    We can also use `pairs` argument to specify the pairs of nodes for which we
+    want to compute lowest common ancestors. Here is an example:
+
+    >>> dict(nx.tree_all_pairs_lowest_common_ancestor(G, pairs=[(1, 4), (2, 3)]))
+    {(2, 3): 1, (1, 4): 1}
+
     Notes
     -----
     Only defined on non-null trees represented with directed edges from
@@ -130,6 +152,19 @@ def lowest_common_ancestor(G, node1, node2, default=None):
     The lowest common ancestor of node1 and node2,
     or default if they have no common ancestors.
 
+    Examples
+    --------
+    >>> G = nx.DiGraph([(0, 1), (0, 2), (2, 3), (2, 4), (1, 6), (4, 5)])
+    >>> nx.lowest_common_ancestor(G, 3, 5)
+    2
+
+    We can also set `default` argument as below. The value of default is returned
+    if there are no common ancestors of given two nodes.
+
+    >>> G = nx.DiGraph([(4, 5), (12, 13)])
+    >>> nx.lowest_common_ancestor(G, 12, 5, default="No common ancestors!")
+    'No common ancestors!'
+
     Notes
     -----
     Only defined on non-null directed acyclic graphs.
@@ -169,6 +204,12 @@ def all_pairs_lowest_common_ancestor(G, pairs=None):
     the pairs specified and lca is a lowest common ancestor of the pair.
     Note that for the default of all pairs in G, we consider
     unordered pairs, e.g. you will not get both (b, a) and (a, b).
+
+    Example
+    -------
+    >>> G = nx.DiGraph([(0, 1), (0, 3), (1, 2)])
+    >>> dict(nx.all_pairs_lowest_common_ancestor(G, pairs=[(1, 2), (2, 3)]))
+    {(2, 3): 0, (1, 2): 1}
 
     Notes
     -----
