@@ -1,10 +1,11 @@
+import time
+
 import networkx as nx
 from networkx.algorithms.isomorphism.VF2pp import isomorphic_VF2pp
 
-
 # Graph initialization
-G1 = nx.gnp_random_graph(15, 0.6, 42)
-G2 = nx.gnp_random_graph(15, 0.6, 42)
+G1 = nx.gnp_random_graph(200, 0.8, 42)
+G2 = nx.gnp_random_graph(200, 0.8, 42)
 
 # nx.draw(G1, with_labels=True)
 # plt.show()
@@ -36,5 +37,12 @@ G2_labels = nx.get_node_attributes(G2, "label")
 node_order = [n for n in G1.nodes()]  # todo: dummy ordering until the issue with "match_ordering" is fixed
 
 # VF2++
+t0 = time.time()
 mapping = isomorphic_VF2pp(G1, G2, G1_labels, G2_labels, node_order)
+print(f"VF2++ elapsed time: {time.time() - t0}")
+
+t0 = time.time()
+nx.is_isomorphic(G1, G2)
+print(f"VF2 elapsed time: {time.time() - t0}")
+
 print(mapping)
