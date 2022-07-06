@@ -72,6 +72,7 @@ def naive_all_pairs_lowest_common_ancestor(G, pairs=None):
 
     if pairs is None:
         from itertools import combinations_with_replacement
+
         pairs = combinations_with_replacement(G, 2)
     else:
         if type(pairs) != list:
@@ -92,7 +93,7 @@ def naive_all_pairs_lowest_common_ancestor(G, pairs=None):
 
         common_ancestors = ancestor_cache[v] & ancestor_cache[w]
         if common_ancestors:
-            yield ((v, w), get_a_lowest_common_ancestor(G, common_ancestors))
+            yield ((v, w), _get_a_lowest_common_ancestor(G, common_ancestors))
 
 
 @not_implemented_for("undirected")
