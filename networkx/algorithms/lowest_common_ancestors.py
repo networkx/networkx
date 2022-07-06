@@ -15,7 +15,7 @@ __all__ = [
 ]
 
 
-def get_a_lowest_common_ancestor(G, common_ancestors):
+def _get_a_lowest_common_ancestor(G, common_ancestors):
     """Return a lowest common ancestor from the given set of common ancestors"""
     # Start with an arbitrary node v from the set of common ancestors.  Follow
     # arbitrary outgoing edges, remaining in the set of common ancestors, until
@@ -71,11 +71,8 @@ def naive_all_pairs_lowest_common_ancestor(G, pairs=None):
     ancestor_cache = {}
 
     if pairs is None:
-        pairs = set()
-        for i, u in enumerate(G):
-            for j, v in enumerate(G):
-                if i <= j and (u, v) not in pairs:
-                    pairs.add((u, v))
+        from itertools import combinations_with_replacement
+        pairs = combinations_with_replacement(G, 2)
     else:
         if type(pairs) != list:
             pairs = list(pairs)
@@ -125,8 +122,7 @@ def naive_lowest_common_ancestor(G, node1, node2, default=None):
     if ans:
         assert len(ans) == 1
         return ans[0][1]
-    else:
-        return default
+    return default
 
 
 @not_implemented_for("undirected")
