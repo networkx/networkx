@@ -4,7 +4,6 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from networkx.drawing.nx_agraph import graphviz_layout
 from networkx.algorithms.isomorphism.VF2pp_helpers.feasibility import check_feasibility
-from networkx.algorithms.isomorphism.VF2pp_helpers.node_ordering import matching_order
 from networkx.algorithms.isomorphism.VF2pp_helpers.state import State, update_Tinout, restore_Tinout
 from networkx.algorithms.isomorphism.VF2pp_helpers.candidates import find_candidates
 
@@ -49,7 +48,7 @@ def isomorphic_VF2pp(G1, G2, G1_labels, G2_labels, node_order):
 
         except StopIteration:
             # Restore the previous state of the algorithm
-            entering_node, _ = stack.pop()
+            entering_node, _ = stack.pop()  # The node to be returned to the ordering
             node_order.insert(0, entering_node)
             if len(stack) == 0:
                 break
