@@ -1,5 +1,7 @@
 """Unit tests for bridge-finding algorithms."""
 
+import pytest
+
 import networkx as nx
 
 
@@ -49,6 +51,53 @@ class TestBridges:
         ]
         G = nx.MultiGraph(edges)
         assert list(nx.bridges(G)) == [(2, 3)]
+
+
+class TestHasBridges:
+    """Unit tests for the has bridges function."""
+
+    def test_single_bridge(self):
+        edges = [
+            # DFS tree edges.
+            (1, 2),
+            (2, 3),
+            (3, 4),
+            (3, 5),
+            (5, 6),
+            (6, 7),
+            (7, 8),
+            (5, 9),
+            (9, 10),
+            # Nontree edges.
+            (1, 3),
+            (1, 4),
+            (2, 5),
+            (5, 10),
+            (6, 8),
+        ]
+        G = nx.Graph(edges)
+        source = 1
+        has_bridges = nx.has_bridges(G, source)
+        assert has_bridges == True
+
+    def test_barbell_graph(self):
+        # The (3, 0) barbell graph has two triangles joined by a single edge.
+        G = nx.barbell_graph(3, 0)
+        source = 6
+        pytest.raises(nx.NodeNotFound, nx.has_bridges, G, source)
+
+    def test_multiedge_bridge(self):
+        edges = [
+            (0, 1),
+            (0, 2),
+            (1, 2),
+            (1, 2),
+            (2, 3),
+            (3, 4),
+            (3, 4),
+        ]
+        G = nx.MultiGraph(edges)
+        assert nx.has_bridges(G) == True
 
 
 class TestLocalBridges:

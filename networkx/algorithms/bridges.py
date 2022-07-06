@@ -128,7 +128,7 @@ def has_bridges(G, root=None):
 
     """
     try:
-        next(bridges(G))
+        next(bridges(G, root=root))
     except StopIteration:
         return False
     else:
