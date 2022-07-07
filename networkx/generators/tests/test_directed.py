@@ -49,7 +49,7 @@ class TestGeneratorsDirected:
             gamma=0.3,
             delta_in=0.3,
             delta_out=0.1,
-            create_using=MultiDiGraph,
+            initial_graph=nx.cycle_graph(4, create_using=MultiDiGraph),
             seed=1,
         )
         pytest.raises(ValueError, scale_free_graph, 100, 0.5, 0.4, 0.3)
