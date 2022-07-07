@@ -6,8 +6,8 @@ from networkx.algorithms.isomorphism.VF2pp import isomorphic_VF2pp
 
 # Graph initialization
 
-G1 = nx.gnp_random_graph(250, 0.65, 42)
-G2 = nx.gnp_random_graph(250, 0.65, 42)
+G1 = nx.gnp_random_graph(50, 0.65, 42)
+G2 = nx.gnp_random_graph(50, 0.65, 42)
 
 # nx.draw(G1, with_labels=True)
 # plt.show()
@@ -48,8 +48,10 @@ t0 = time.time()
 mapping = isomorphic_VF2pp(G1, G2, G1_labels, G2_labels, node_order)
 print(f"VF2++ elapsed time: {time.time() - t0}")
 
-t0 = time.time()
-nx.is_isomorphic(G1, G2)
-print(f"VF2 elapsed time: {time.time() - t0}")
+# node_order = [n for n in G1.nodes()]
 
-print(mapping)
+# t0 = time.time()
+# nx.is_isomorphic(G1, G2)
+# print(f"VF2 elapsed time: {time.time() - t0}")
+
+# print(mapping)
