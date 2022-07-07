@@ -4,9 +4,6 @@ import collections
 
 def check_feasibility(node1, node2, G1, G2, G1_labels, G2_labels, mapping, reverse_mapping, T1, T1_out, T2, T2_out):
     # todo: add IND, SUB cases as well
-    if G1_labels[node1] != G2_labels[node2]:
-        return False
-
     if G1.number_of_edges(node1, node1) != G2.number_of_edges(node2, node2):
         return False
 
