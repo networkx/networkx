@@ -5,7 +5,7 @@ from functools import cached_property
 import networkx as nx
 import networkx.convert as convert
 from networkx.classes.coreviews import AdjacencyView
-from networkx.classes.graph import Graph
+from networkx.classes.graph import Graph, _CachedPropertyResetter
 from networkx.classes.reportviews import (
     DiDegreeView,
     InDegreeView,
@@ -16,6 +16,25 @@ from networkx.classes.reportviews import (
 from networkx.exception import NetworkXError
 
 __all__ = ["DiGraph"]
+
+
+class _CachedPropertyResetterAdjAndSucc:
+    """Data Descriptor class that resets two cached property objects: adj and succ
+
+    This assumes that the cached property should be reset whenever the
+    attribute value is changed. The `__dict__` entries "_adj" and "_succ"
+    are both set to the same value (synced) and the cached_properties
+    "adj" and "succ" that refer to them are reset at that time.
+    """
+
+    def __set__(self, obj, value):
+        od = vars(obj)
+        od["_adj"] = value
+        od["_succ"] = value
+        # reset cached properties
+        for name in ("adj", "succ"):
+            if name in od:
+                del od[name]
 
 
 class DiGraph(Graph):
@@ -266,6 +285,10 @@ class DiGraph(Graph):
     a dictionary-like object.
     """
 
+    _adj = _CachedPropertyResetterAdjAndSucc()
+    _succ = _CachedPropertyResetterAdjAndSucc()
+    _pred = _CachedPropertyResetter()
+
     def __init__(self, incoming_graph_data=None, **attr):
         """Initialize a graph with edges, name, or graph attributes.
 
@@ -311,24 +334,15 @@ class DiGraph(Graph):
         # We store two adjacency lists:
         # the predecessors of node n are stored in the dict self._pred
         # the successors of node n are stored in the dict self._succ=self._adj
-        self._adj = self.adjlist_outer_dict_factory()  # empty adjacency dict
+        self._adj = self.adjlist_outer_dict_factory()  # empty adjacency dict successor
         self._pred = self.adjlist_outer_dict_factory()  # predecessor
-        self._succ = self._adj  # successor
+        # Note: self._succ = self._adj  # successor
 
         # attempt to load graph with data
         if incoming_graph_data is not None:
             convert.to_networkx_graph(incoming_graph_data, create_using=self)
         # load graph attributes (must be after convert)
         self.graph.update(attr)
-
-    def __setattr__(self, name, value):
-        super().__setattr__(name, value)
-        if name in ("_adj", "_succ"):
-            for property_name in ("adj", "succ"):
-                if property_name in self.__dict__:
-                    delattr(self, property_name)
-        elif name == "_pred" and "pred" in self.__dict__:
-            delattr(self, "pred")
 
     @cached_property
     def adj(self):

@@ -19,6 +19,28 @@ from networkx.exception import NetworkXError
 __all__ = ["Graph"]
 
 
+class _CachedPropertyResetter:
+    """Data Descriptor class that resets a cached property when needed
+
+    This assumes that the cached property should be reset whenever an
+    attribute is changed that has the same name only prepended by a
+    single character (usually an underscore).  Thus cached_property G.adj
+    should be reset whenever G._adj is set to a new value.
+    """
+
+    def __set_name__(self, owner, name):
+        self.name = name
+
+    def __set__(self, obj, value):
+        od = vars(obj)
+        name = self.name
+        od[name] = value
+
+        prop_name = name[1:]  # remove leading underscore to get property name
+        if prop_name in od:
+            del od[prop_name]
+
+
 class Graph:
     """
     Base class for undirected graphs.
@@ -264,6 +286,8 @@ class Graph:
     a dictionary-like object.
     """
 
+    _adj = _CachedPropertyResetter()
+
     node_dict_factory = dict
     node_attr_dict_factory = dict
     adjlist_outer_dict_factory = dict
@@ -354,12 +378,6 @@ class Graph:
         For directed graphs, `G.adj` holds outgoing (successor) info.
         """
         return AdjacencyView(self._adj)
-
-    def __setattr__(self, name, value):
-        super().__setattr__(name, value)
-        if name == "_adj":
-            if "adj" in self.__dict__:
-                delattr(self, "adj")
 
     @property
     def name(self):
