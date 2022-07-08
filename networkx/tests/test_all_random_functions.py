@@ -134,6 +134,7 @@ def run_all_random_functions(seed):
     t(nx.random_clustered_graph, joint_degree_sequence, seed=seed)
     constructor = [(3, 3, 0.5), (10, 10, 0.7)]
     t(nx.random_shell_graph, constructor, seed=seed)
+    t(nx.random_triad, G.to_directed(), seed=seed)
     mapping = {1: 0.4, 2: 0.3, 3: 0.3}
     t(nx.utils.random_weighted_sample, mapping, k, seed=seed)
     t(nx.utils.weighted_choice, mapping, seed=seed)
