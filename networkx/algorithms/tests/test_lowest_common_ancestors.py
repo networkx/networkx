@@ -375,12 +375,6 @@ class TestNaiveLCA:
         ans = naive_all_pairs_lca(self.DG, pairs=all_pairs)
         self.assert_lca_dicts_same(dict(ans), self.gold)
 
-    def test_naive_all_pairs_lowest_common_ancestor4(self):
-        """Test that pairs not in the graph raises error."""
-        with pytest.raises(nx.NodeNotFound):
-            gen = naive_all_pairs_lca(self.DG, [(-1, -1)])
-            next(gen)
-
     def test_naive_all_pairs_lowest_common_ancestor5(self):
         """Test that LCA on null graph bails."""
         with pytest.raises(nx.NetworkXPointlessConcept):

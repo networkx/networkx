@@ -1,7 +1,7 @@
 """Algorithms for finding the lowest common ancestor of trees and DAGs."""
 from collections import defaultdict
 from collections.abc import Mapping, Set
-from itertools import chain, count
+from itertools import chain, combinations_with_replacement, count
 
 import networkx as nx
 from networkx.utils import UnionFind, arbitrary_element, not_implemented_for
@@ -71,17 +71,8 @@ def naive_all_pairs_lowest_common_ancestor(G, pairs=None):
     ancestor_cache = {}
 
     if pairs is None:
-        from itertools import combinations_with_replacement
 
         pairs = combinations_with_replacement(G, 2)
-    else:
-        if type(pairs) != list:
-            pairs = list(pairs)
-        for u, v in pairs:
-            for n in (u, v):
-                if n not in G:
-                    msg = f"The node {n} is not in the digraph."
-                    raise nx.NodeNotFound(msg)
 
     for v, w in pairs:
         if v not in ancestor_cache:
@@ -114,6 +105,14 @@ def naive_lowest_common_ancestor(G, node1, node2, default=None):
     -------
     The lowest common ancestor of node1 and node2,
     or default if they have no common ancestors.
+
+    Example
+    -------
+    >>> G = nx.DiGraph()
+    >>> nx.add_path(G, (0, 1, 2, 3))
+    >>> nx.add_path(G, (0, 4, 3))
+    >>> nx.naive_lowest_common_ancestor(G, 2, 4)
+    0
 
     See Also
     --------
