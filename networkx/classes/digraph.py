@@ -5,7 +5,7 @@ from functools import cached_property
 import networkx as nx
 import networkx.convert as convert
 from networkx.classes.coreviews import AdjacencyView
-from networkx.classes.graph import Graph, _CachedPropertyResetter
+from networkx.classes.graph import Graph
 from networkx.classes.reportviews import (
     DiDegreeView,
     InDegreeView,
@@ -21,20 +21,35 @@ __all__ = ["DiGraph"]
 class _CachedPropertyResetterAdjAndSucc:
     """Data Descriptor class that resets two cached property objects: adj and succ
 
-    This assumes that the cached property should be reset whenever the
+    This assumes that the cached properties should be reset whenever the
     attribute value is changed. The `__dict__` entries "_adj" and "_succ"
     are both set to the same value (synced) and the cached_properties
     "adj" and "succ" that refer to them are reset at that time.
     """
 
     def __set__(self, obj, value):
-        od = vars(obj)
+        od = obj.__dict__
         od["_adj"] = value
         od["_succ"] = value
         # reset cached properties
-        for name in ("adj", "succ"):
-            if name in od:
-                del od[name]
+        if "adj" in od:
+            del od["adj"]
+        if "succ" in od:
+            del od["succ"]
+
+
+class _CachedPropertyResetterPred:
+    """Data Descriptor class for _pred that resets ``pred`` cached_property when needed
+
+    This assumes that the ``cached_property`` ``G.pred`` should be reset whenever
+    ``G._pred`` is set to a new value.
+    """
+
+    def __set__(self, obj, value):
+        od = obj.__dict__
+        od["_pred"] = value
+        if "pred" in od:
+            del od["pred"]
 
 
 class DiGraph(Graph):
@@ -286,8 +301,8 @@ class DiGraph(Graph):
     """
 
     _adj = _CachedPropertyResetterAdjAndSucc()  # type: ignore
-    _succ = _CachedPropertyResetterAdjAndSucc()
-    _pred = _CachedPropertyResetter()
+    _succ = _adj  # type: ignore
+    _pred = _CachedPropertyResetterPred()
 
     def __init__(self, incoming_graph_data=None, **attr):
         """Initialize a graph with edges, name, or graph attributes.
