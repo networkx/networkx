@@ -2,6 +2,8 @@ import math
 import random
 from itertools import combinations
 
+import pytest
+
 import networkx as nx
 
 
@@ -318,3 +320,10 @@ class TestThresholdedRandomGeometricGraph:
             # Adjacent vertices must be within the given distance.
             if v in G[u]:
                 assert (G.nodes[u]["weight"] + G.nodes[v]["weight"]) >= 0.1
+
+
+def test_geometric_edges_raises_no_pos():
+    G = nx.path_graph(3)
+    msg = "All nodes in `G` must have a 'pos' attribute"
+    with pytest.raises(nx.NetworkXError, match=msg):
+        nx.geometric_edges(G, radius=1)

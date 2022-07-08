@@ -1,5 +1,5 @@
-Next Release
-============
+NetworkX 3.0 (unreleased)
+=========================
 
 Release date: TBD
 
@@ -22,7 +22,8 @@ X contributors. Highlights include:
 
 Improvements
 ------------
-
+- [`#5663 <https://github.com/networkx/networkx/pull/5663>`_]
+  Implements edge swapping for directed graphs.
 
 API Changes
 -----------

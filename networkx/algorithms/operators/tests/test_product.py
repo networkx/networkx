@@ -425,3 +425,11 @@ def test_rooted_product():
     R = nx.rooted_product(G, H, "a")
     assert len(R) == len(G) * len(H)
     assert R.size() == G.size() + len(G) * H.size()
+
+
+def test_corona_product():
+    G = nx.cycle_graph(3)
+    H = nx.path_graph(2)
+    C = nx.corona_product(G, H)
+    assert len(C) == (len(G) * len(H)) + len(G)
+    assert C.size() == G.size() + len(G) * H.size() + len(G) * len(H)

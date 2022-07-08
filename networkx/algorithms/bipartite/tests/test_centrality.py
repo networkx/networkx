@@ -51,9 +51,9 @@ class TestBipartiteCentrality:
         G.add_node(0)
         G.add_node(1)
         c = bipartite.closeness_centrality(G, [0])
-        assert c == {1: 0.0}
+        assert c == {0: 0.0, 1: 0.0}
         c = bipartite.closeness_centrality(G, [1])
-        assert c == {1: 0.0}
+        assert c == {0: 0.0, 1: 0.0}
 
     def test_davis_degree_centrality(self):
         G = self.davis

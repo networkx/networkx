@@ -73,7 +73,6 @@ Small
 .. autosummary::
    :toctree: generated/
 
-   make_small_graph
    LCF_graph
    bull_graph
    chvatal_graph

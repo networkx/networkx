@@ -15,6 +15,7 @@ period.
    :maxdepth: 2
 
    release_dev
+   release_2.8.4
    release_2.8.3
    release_2.8.2
    release_2.8.1
