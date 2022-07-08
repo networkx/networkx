@@ -285,7 +285,7 @@ class DiGraph(Graph):
     a dictionary-like object.
     """
 
-    _adj = _CachedPropertyResetterAdjAndSucc()
+    _adj = _CachedPropertyResetterAdjAndSucc()  # type: ignore
     _succ = _CachedPropertyResetterAdjAndSucc()
     _pred = _CachedPropertyResetter()
 
