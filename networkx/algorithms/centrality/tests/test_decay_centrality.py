@@ -3,6 +3,7 @@ Unit tests for decay centrality
 """
 
 import pytest
+
 import networkx as nx
 
 
