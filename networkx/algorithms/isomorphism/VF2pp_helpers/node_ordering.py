@@ -2,6 +2,9 @@ import networkx as nx
 
 
 def matching_order(G1, G2, G1_labels, G2_labels):
+    if not G1 and not G2:
+        return {}
+
     nodes_of_G1Labels, nodes_of_G2Labels, V1_unordered, current_labels = initialise_preprocess(G1, G2, G1_labels,
                                                                                                G2_labels)
     used_degrees = {node: 0 for node in G1}
