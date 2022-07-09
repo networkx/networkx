@@ -55,3 +55,11 @@ class TestNodeOrdering:
                 G1, G2 = assign_labels(G1, G2)
                 l1, l2 = get_labes(G1, G2)
                 assert len(set(matching_order(G1, G2, l1, l2))) == Vi
+
+    def test_barbel_graph(self):
+        G1 = nx.barbell_graph(100, 250)
+        G2 = nx.barbell_graph(100, 250)
+
+        G1, G2 = assign_labels(G1, G2)
+        l1, l2 = get_labes(G1, G2)
+        assert len(set(matching_order(G1, G2, l1, l2))) == 100 + 250 + 100

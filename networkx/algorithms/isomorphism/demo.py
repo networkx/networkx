@@ -5,12 +5,8 @@ from networkx.algorithms.isomorphism.VF2pp_helpers.node_ordering import matching
 from networkx.algorithms.isomorphism.VF2pp import isomorphic_VF2pp
 
 # Graph initialization
-G1 = nx.gnp_random_graph(550, 0.75, 12)
-G2 = nx.gnp_random_graph(550, 0.75, 12)
-# G1 = nx.Graph()
-# G2 = nx.Graph()
-# G1.add_node("A")
-# G2.add_node("A")
+G1 = nx.gnp_random_graph(650, 0.5, 42)
+G2 = nx.gnp_random_graph(650, 0.5, 42)
 
 # G1 = nx.barbell_graph(5, 0)
 # G2 = nx.barbell_graph(5, 0)
@@ -47,25 +43,13 @@ for node in G1.nodes():
 G1_labels = nx.get_node_attributes(G1, "label")
 G2_labels = nx.get_node_attributes(G2, "label")
 
-m = matching_order(G1, G2, G1_labels, G2_labels)
-print(len(m))
-# print(m)
-
-# Node ordering
-# node_order = [n for n in G1.nodes()]  # todo: dummy ordering until the issue with "match_ordering" is fixed
-# node_order.pop(-1)
-# node_order.insert(0, 555)
-# print(node_order)
-
 # VF2++
-# t0 = time.time()
-# mapping = isomorphic_VF2pp(G1, G2, G1_labels, G2_labels, node_order)
-# print(f"VF2++ elapsed time: {time.time() - t0}")
+t0 = time.time()
+mapping = isomorphic_VF2pp(G1, G2, G1_labels, G2_labels)
+print(f"VF2++ elapsed time: {time.time() - t0}")
 
-# node_order = [n for n in G1.nodes()]
-
-# t0 = time.time()
-# nx.is_isomorphic(G1, G2)
-# print(f"VF2 elapsed time: {time.time() - t0}")
+t0 = time.time()
+nx.is_isomorphic(G1, G2)
+print(f"VF2 elapsed time: {time.time() - t0}")
 
 # print(mapping)

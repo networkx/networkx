@@ -6,14 +6,17 @@ from networkx.drawing.nx_agraph import graphviz_layout
 from networkx.algorithms.isomorphism.VF2pp_helpers.feasibility import check_feasibility
 from networkx.algorithms.isomorphism.VF2pp_helpers.state import update_Tinout, restore_Tinout
 from networkx.algorithms.isomorphism.VF2pp_helpers.candidates import find_candidates
+from networkx.algorithms.isomorphism.VF2pp_helpers.node_ordering import matching_order
 
 
-def isomorphic_VF2pp(G1, G2, G1_labels, G2_labels, node_order):
+def isomorphic_VF2pp(G1, G2, G1_labels, G2_labels):
     mapping, reverse_mapping = dict(), dict()
     T1, T2 = set(), set()
     T1_out, T2_out = set(G1.nodes()), set(G2.nodes())
     visited = set()
-    # todo: add unit tests
+
+    node_order = matching_order(G1, G2, G1_labels, G2_labels)
+
     starting_node = node_order.pop(0)  # todo: examine if we can keep track of the node using a pointer
     candidates = find_candidates(G1, G2, G1_labels, G2_labels, starting_node, mapping, reverse_mapping)
     stack = [(starting_node, iter(candidates))]
@@ -57,5 +60,5 @@ def isomorphic_VF2pp(G1, G2, G1_labels, G2_labels, node_order):
                                                     reverse_mapping)
 
     if len(mapping) == G1.number_of_nodes():
-        return mapping
+        return True, mapping
     return False
