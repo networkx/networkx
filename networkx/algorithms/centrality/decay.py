@@ -79,11 +79,13 @@ def decay_centrality(G, u=None, delta=0.5, mode="all", weight=None):
 
     decay_centrality = {}
 
-    path_length = nx.shortest_path_length
-
     if mode == "all" and G.is_directed():
-        temp_G = G
         G = G.to_undirected()
+
+    if mode == "in" and G.is_directed():
+        path_length = lambda x: nx.shortest_path_length(G, target=x, weight=weight)
+    else:
+        path_length = lambda x: nx.shortest_path_length(G, source=x, weight=weight)
 
     if u is None:
         nodes = G.nodes
@@ -91,10 +93,8 @@ def decay_centrality(G, u=None, delta=0.5, mode="all", weight=None):
         nodes = [u]
 
     for n in nodes:
-        if mode == "in" and G.is_directed():
-            geodisc_distance_for_n = path_length(G, target=n, weight=weight)
-        else:
-            geodisc_distance_for_n = path_length(G, source=n, weight=weight)
+
+        geodisc_distance_for_n = path_length(n)
 
         decay_centrality[n] = 0
 
@@ -102,11 +102,6 @@ def decay_centrality(G, u=None, delta=0.5, mode="all", weight=None):
             if v == n or geodisc_distance_for_n[v] == 0:
                 continue
             decay_centrality[n] += delta ** (geodisc_distance_for_n[v])
-
-    try:
-        G = temp_G
-    except:
-        pass
 
     if u is not None:
         return decay_centrality[u]
