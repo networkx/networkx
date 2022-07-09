@@ -57,8 +57,9 @@ class TestDecayCentrality:
         )
 
     def test_decay_centrality_K(self):
-        d = nx.decay_centrality(self.K)
-        assert d == {
+        c = nx.decay_centrality(self.K)
+
+        d = {
             0: 2.9375,
             1: 2.9375,
             2: 2.6875,
@@ -71,13 +72,18 @@ class TestDecayCentrality:
             9: 1.3125,
         }
 
+        for n in sorted(self.K):
+            assert c[n] == pytest.approx(d[n], abs=1e-3)
+
     def test_decay_centrality_T(self):
-        d = nx.decay_centrality(self.T)
-        assert d == {0: 2.0, 1: 2.0, 2: 2.0, 3: 1.5, 4: 1.5, 5: 1.5, 6: 1.5}
+        c = nx.decay_centrality(self.T)
+        d = {0: 2.0, 1: 2.0, 2: 2.0, 3: 1.5, 4: 1.5, 5: 1.5, 6: 1.5}
+        for n in sorted(self.T):
+            assert c[n] == pytest.approx(d[n], abs=1e-3)
 
     def test_decay_centrality_D(self):
-        d = nx.decay_centrality(self.D, mode="in")
-        assert d == {
+        c = nx.decay_centrality(self.D, mode="in")
+        d = {
             1: 0,
             3: 0.5,
             5: 1.0,
@@ -88,8 +94,11 @@ class TestDecayCentrality:
             7: 1.25,
             8: 1.375,
         }
-        d = nx.decay_centrality(self.D, mode="out")
-        assert d == {
+        for n in sorted(self.D):
+            assert c[n] == pytest.approx(d[n], abs=1e-3)
+
+        c = nx.decay_centrality(self.D, mode="out")
+        d = {
             1: 3.125,
             3: 1.25,
             5: 1.0,
@@ -100,8 +109,11 @@ class TestDecayCentrality:
             7: 0.5,
             8: 0,
         }
-        d = nx.decay_centrality(self.D, mode="all")
-        assert d == {
+        for n in sorted(self.D):
+            assert c[n] == pytest.approx(d[n], abs=1e-3)
+
+        c = nx.decay_centrality(self.D, mode="all")
+        d = {
             1: 3.125,
             3: 2.3125,
             5: 2.5625,
@@ -112,12 +124,15 @@ class TestDecayCentrality:
             7: 2.25,
             8: 1.625,
         }
+        for n in sorted(self.D):
+            assert c[n] == pytest.approx(d[n], abs=1e-3)
+
         assert self.D.is_directed()
 
     def test_decay_centrality_Gb(self):
 
-        d = nx.decay_centrality(self.Gb, delta=0.05)
-        assert d == {
+        c = nx.decay_centrality(self.Gb, delta=0.05)
+        d = {
             1: 0.255125,
             3: 0.15525625,
             5: 0.20275625,
@@ -128,8 +143,11 @@ class TestDecayCentrality:
             7: 0.15299999999999997,
             8: 0.10265,
         }
-        d = nx.decay_centrality(self.Gb, delta=0.15)
-        assert d == {
+        for n in sorted(self.Gb):
+            assert c[n] == pytest.approx(d[n], abs=1e-3)
+
+        c = nx.decay_centrality(self.Gb, delta=0.15)
+        d = {
             1: 0.798375,
             3: 0.5022562500000001,
             5: 0.62975625,
@@ -140,8 +158,11 @@ class TestDecayCentrality:
             7: 0.48600000000000004,
             8: 0.32789999999999997,
         }
-        d = nx.decay_centrality(self.Gb, delta=0.25)
-        assert d == {
+        for n in sorted(self.Gb):
+            assert c[n] == pytest.approx(d[n], abs=1e-3)
+
+        c = nx.decay_centrality(self.Gb, delta=0.25)
+        d = {
             1: 1.390625,
             3: 0.91015625,
             5: 1.09765625,
@@ -153,8 +174,11 @@ class TestDecayCentrality:
             8: 0.59375,
         }
 
-        d = nx.decay_centrality(self.Gb, delta=0.35)
-        assert d == {
+        for n in sorted(self.Gb):
+            assert c[n] == pytest.approx(d[n], abs=1e-3)
+
+        c = nx.decay_centrality(self.Gb, delta=0.35)
+        d = {
             1: 2.037875,
             3: 1.3957562499999998,
             5: 1.6232562499999998,
@@ -165,9 +189,11 @@ class TestDecayCentrality:
             7: 1.3439999999999999,
             8: 0.9253999999999999,
         }
+        for n in sorted(self.Gb):
+            assert c[n] == pytest.approx(d[n], abs=1e-3)
 
-        d = nx.decay_centrality(self.Gb, delta=0.45)
-        assert d == {
+        c = nx.decay_centrality(self.Gb, delta=0.45)
+        d = {
             1: 2.746125,
             3: 1.97825625,
             5: 2.22575625,
@@ -178,9 +204,11 @@ class TestDecayCentrality:
             7: 1.9169999999999998,
             8: 1.3576499999999996,
         }
+        for n in sorted(self.Gb):
+            assert c[n] == pytest.approx(d[n], abs=1e-3)
 
-        d = nx.decay_centrality(self.Gb, delta=0.55)
-        assert d == {
+        c = nx.decay_centrality(self.Gb, delta=0.55)
+        d = {
             1: 3.5213750000000004,
             3: 2.6792562500000003,
             5: 2.9267562500000004,
@@ -191,9 +219,11 @@ class TestDecayCentrality:
             7: 2.618,
             8: 1.9349000000000007,
         }
+        for n in sorted(self.Gb):
+            assert c[n] == pytest.approx(d[n], abs=1e-3)
 
-        d = nx.decay_centrality(self.Gb, delta=0.65)
-        assert d == {
+        c = nx.decay_centrality(self.Gb, delta=0.65)
+        d = {
             1: 4.369625,
             3: 3.5227562499999996,
             5: 3.7502562499999996,
@@ -204,9 +234,11 @@ class TestDecayCentrality:
             7: 3.4709999999999996,
             8: 2.7111499999999995,
         }
+        for n in sorted(self.Gb):
+            assert c[n] == pytest.approx(d[n], abs=1e-3)
 
-        d = nx.decay_centrality(self.Gb, delta=0.75)
-        assert d == {
+        c = nx.decay_centrality(self.Gb, delta=0.75)
+        d = {
             1: 5.296875,
             3: 4.53515625,
             5: 4.72265625,
@@ -217,9 +249,11 @@ class TestDecayCentrality:
             7: 4.5,
             8: 3.75,
         }
+        for n in sorted(self.Gb):
+            assert c[n] == pytest.approx(d[n], abs=1e-3)
 
-        d = nx.decay_centrality(self.Gb, delta=0.85)
-        assert d == {
+        c = nx.decay_centrality(self.Gb, delta=0.85)
+        d = {
             1: 6.309125,
             3: 5.745256249999999,
             5: 5.872756249999998,
@@ -230,9 +264,11 @@ class TestDecayCentrality:
             7: 5.728999999999999,
             8: 5.124649999999999,
         }
+        for n in sorted(self.Gb):
+            assert c[n] == pytest.approx(d[n], abs=1e-3)
 
-        d = nx.decay_centrality(self.Gb, delta=0.95)
-        assert d == {
+        c = nx.decay_centrality(self.Gb, delta=0.95)
+        d = {
             1: 7.412375,
             3: 7.18425625,
             5: 7.23175625,
@@ -243,3 +279,5 @@ class TestDecayCentrality:
             7: 7.182,
             8: 6.9178999999999995,
         }
+        for n in sorted(self.Gb):
+            assert c[n] == pytest.approx(d[n], abs=1e-3)
