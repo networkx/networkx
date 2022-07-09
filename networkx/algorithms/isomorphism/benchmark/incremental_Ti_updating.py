@@ -72,7 +72,7 @@ colors = ["white", "black", "green", "purple", "orange", "red", "blue", "pink", 
 times_brute_force = []
 times_incremental = []
 
-number_of_nodes = [20, 50, 70, 100, 130, 160, 180, 210, 250, 280, 310, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850]
+number_of_nodes = [20, 50, 70, 100, 130, 160, 180, 210, 250, 280, 310, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800]
 for V in number_of_nodes:
     print(V)
     G1 = nx.gnp_random_graph(V, 0.7, 42)
@@ -120,12 +120,13 @@ for V in number_of_nodes:
 
     t0 = time.time()
     mapping1 = isomorphic_VF2pp2(G1, G2, G1_labels, G2_labels, node_order)
-    # nx.is_isomorphic(G1, G2)
     times_brute_force.append(time.time() - t0)
 
     # print(mapping)
 
-plt.plot(number_of_nodes, times_brute_force, number_of_nodes, times_incremental)
+plt.plot(number_of_nodes, times_brute_force, label="Brute Force", linestyle='dashed')
+plt.plot(number_of_nodes, times_incremental, label="Incremental")
 plt.xlabel("Number of nodes")
 plt.ylabel("Time seconds")
+plt.legend()
 plt.show()

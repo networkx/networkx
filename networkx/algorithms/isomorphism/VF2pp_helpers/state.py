@@ -29,7 +29,7 @@ def restore_Tinout(G1, G2, T1, T2, T1_out, T2_out, popped_node1, popped_node2, m
             if any(nbr2 in mapping for nbr2 in G1[nbr]):
                 continue
             T1.discard(nbr)
-            T1_out.add(nbr)
+            T1_out.add(nbr)     # todo: maybe split into two loops
 
     # Case where the node is not present in neither the mapping nor T1. By deffinition it should belong to T1_out
     if not is_added:
