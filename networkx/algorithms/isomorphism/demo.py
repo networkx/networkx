@@ -5,8 +5,8 @@ from networkx.algorithms.isomorphism.VF2pp_helpers.node_ordering import matching
 from networkx.algorithms.isomorphism.VF2pp import isomorphic_VF2pp
 
 # Graph initialization
-G1 = nx.gnp_random_graph(650, 0.5, 42)
-G2 = nx.gnp_random_graph(650, 0.5, 42)
+G1 = nx.gnp_random_graph(600, 0.5, 42)
+G2 = nx.gnp_random_graph(600, 0.5, 42)
 
 # G1 = nx.barbell_graph(5, 0)
 # G2 = nx.barbell_graph(5, 0)
@@ -52,4 +52,3 @@ t0 = time.time()
 nx.is_isomorphic(G1, G2)
 print(f"VF2 elapsed time: {time.time() - t0}")
 
-# print(mapping)
