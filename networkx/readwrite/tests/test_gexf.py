@@ -276,7 +276,7 @@ org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/\
 
     def test_write_with_node_attributes(self):
         # Addresses #673.
-        G = nx.OrderedGraph()
+        G = nx.Graph()
         G.add_edges_from([(0, 1), (1, 2), (2, 3)])
         for i in range(4):
             G.nodes[i]["id"] = i

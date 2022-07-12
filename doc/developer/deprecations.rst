@@ -67,8 +67,6 @@ Version 3.0
 * In ``convert_matrix.py`` remove ``order`` kwarg from ``to_pandas_edgelist`` and docstring
 * In ``algorithms/link_analysis/hits_alg.py`` remove ``hub_matrix`` and ``authority_matrix``
 * In ``algorithms/link_analysis/hits_alg.py``, remove ``hits_numpy`` and ``hist_scipy``.
-* In ``classes`` remove the ``ordered`` module and the four ``Ordered``
-  classes defined therein.
 * Remove ``testing``.
 * In ``linalg/graphmatrix.py`` remove ``adj_matrix``.
 * In ``algorithms/operators/binary.py`` remove ``name`` kwarg from ``union`` and docstring.
