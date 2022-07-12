@@ -223,10 +223,10 @@ def _one_level(G, m, partition, resolution=1, is_directed=False, seed=None):
         nbrs = {}
         for u in G:
             nbrs[u] = defaultdict(float)
-            for _, n, wt in G.out_edges(u, data=True):
-                nbrs[u][n] += wt["weight"]
-            for n, _, wt in G.in_edges(u, data=True):
-                nbrs[u][n] += wt["weight"]
+            for _, n, wt in G.out_edges(u, data="weight"):
+                nbrs[u][n] += wt
+            for n, _, wt in G.in_edges(u, data="weight"):
+                nbrs[u][n] += wt
     else:
         degrees = dict(G.degree(weight="weight"))
         Stot = [deg for deg in degrees.values()]
