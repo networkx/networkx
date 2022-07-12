@@ -50,6 +50,7 @@ def test_directed_partition():
     """
     G = nx.DiGraph()
     H = nx.DiGraph()
+    G.add_nodes_from(range(10))
     H.add_nodes_from([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
     G_edges = [
         (0, 2),
