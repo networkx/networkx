@@ -15,24 +15,6 @@ __all__ = [
 ]
 
 
-def _get_a_lowest_common_ancestor(G, common_ancestors):
-    """Return a lowest common ancestor from the given set of common ancestors"""
-    # Start with an arbitrary node v from the set of common ancestors.  Follow
-    # arbitrary outgoing edges, remaining in the set of common ancestors, until
-    # reaching a node with no outgoing edge to another of the common ancestors.
-
-    v = next(iter(common_ancestors))
-    while True:
-        successor = None
-        for w in G.successors(v):
-            if w in common_ancestors:
-                successor = w
-                break
-        if successor is None:
-            return v
-        v = successor
-
-
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
 def naive_all_pairs_lowest_common_ancestor(G, pairs=None):
@@ -83,8 +65,19 @@ def naive_all_pairs_lowest_common_ancestor(G, pairs=None):
             ancestor_cache[w].add(w)
 
         common_ancestors = ancestor_cache[v] & ancestor_cache[w]
+
         if common_ancestors:
-            yield ((v, w), _get_a_lowest_common_ancestor(G, common_ancestors))
+            common_ancestor = next(iter(common_ancestors))
+            while True:
+                successor = None
+                for lower_ancestor in G.successors(common_ancestor):
+                    if lower_ancestor in common_ancestors:
+                        successor = lower_ancestor
+                        break
+                if successor is None:
+                    break
+                common_ancestor = successor
+            yield ((v, w), common_ancestor)
 
 
 @not_implemented_for("undirected")
@@ -293,8 +286,7 @@ def lowest_common_ancestor(G, node1, node2, default=None):
     if ans:
         assert len(ans) == 1
         return ans[0][1]
-    else:
-        return default
+    return default
 
 
 @not_implemented_for("undirected")

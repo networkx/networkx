@@ -375,19 +375,19 @@ class TestNaiveLCA:
         ans = naive_all_pairs_lca(self.DG, pairs=all_pairs)
         self.assert_lca_dicts_same(dict(ans), self.gold)
 
-    def test_naive_all_pairs_lowest_common_ancestor5(self):
+    def test_naive_all_pairs_lowest_common_ancestor4(self):
         """Test that LCA on null graph bails."""
         with pytest.raises(nx.NetworkXPointlessConcept):
             gen = naive_all_pairs_lca(nx.DiGraph())
             next(gen)
 
-    def test_naive_all_pairs_lowest_common_ancestor6(self):
+    def test_naive_all_pairs_lowest_common_ancestor5(self):
         """Test that LCA on non-dags bails."""
         with pytest.raises(nx.NetworkXError):
             gen = naive_all_pairs_lca(nx.DiGraph([(3, 4), (4, 3)]))
             next(gen)
 
-    def test_naive_all_pairs_lowest_common_ancestor7(self):
+    def test_naive_all_pairs_lowest_common_ancestor6(self):
         """Test that pairs with no LCA specified emits nothing."""
         G = self.DG.copy()
         G.add_node(-1)
