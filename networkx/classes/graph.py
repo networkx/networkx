@@ -51,7 +51,6 @@ class Graph:
     DiGraph
     MultiGraph
     MultiDiGraph
-    OrderedGraph
 
     Examples
     --------
@@ -258,10 +257,6 @@ class Graph:
     >>> G.add_edge(2, 2)
     >>> G[2][1] is G[2][2]
     True
-
-    Please see :mod:`~networkx.classes.ordered` for more examples of
-    creating graph subclasses by overwriting the base class `dict` with
-    a dictionary-like object.
     """
 
     node_dict_factory = dict

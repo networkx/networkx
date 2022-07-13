@@ -215,7 +215,7 @@ graph
     def test_tuplelabels(self):
         # https://github.com/networkx/networkx/pull/1048
         # Writing tuple labels to GML failed.
-        G = nx.OrderedGraph()
+        G = nx.Graph()
         G.add_edge((0, 1), (1, 0))
         data = "\n".join(nx.generate_gml(G, stringizer=literal_stringizer))
         answer = """graph [
