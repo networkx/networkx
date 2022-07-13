@@ -219,10 +219,18 @@ def _one_level(G, m, partition, resolution=1, is_directed=False, seed=None):
         out_degrees = dict(G.out_degree(weight="weight"))
         Stot_in = [deg for deg in in_degrees.values()]
         Stot_out = [deg for deg in out_degrees.values()]
+        # Calculate weights for both in and out neighbours
+        nbrs = {}
+        for u in G:
+            nbrs[u] = defaultdict(float)
+            for _, n, wt in G.out_edges(u, data="weight"):
+                nbrs[u][n] += wt
+            for n, _, wt in G.in_edges(u, data="weight"):
+                nbrs[u][n] += wt
     else:
         degrees = dict(G.degree(weight="weight"))
         Stot = [deg for deg in degrees.values()]
-    nbrs = {u: {v: data["weight"] for v, data in G[u].items() if v != u} for u in G}
+        nbrs = {u: {v: data["weight"] for v, data in G[u].items() if v != u} for u in G}
     rand_nodes = list(G.nodes)
     seed.shuffle(rand_nodes)
     nb_moves = 1
@@ -238,22 +246,36 @@ def _one_level(G, m, partition, resolution=1, is_directed=False, seed=None):
                 out_degree = out_degrees[u]
                 Stot_in[best_com] -= in_degree
                 Stot_out[best_com] -= out_degree
+                remove_cost = (
+                    -weights2com[best_com] / m
+                    + resolution
+                    * (out_degree * Stot_in[best_com] + in_degree * Stot_out[best_com])
+                    / m**2
+                )
             else:
                 degree = degrees[u]
                 Stot[best_com] -= degree
+                remove_cost = -weights2com[best_com] / m + resolution * (
+                    Stot[best_com] * degree
+                ) / (2 * m**2)
             for nbr_com, wt in weights2com.items():
                 if is_directed:
                     gain = (
-                        wt
+                        remove_cost
+                        + wt / m
                         - resolution
                         * (
                             out_degree * Stot_in[nbr_com]
                             + in_degree * Stot_out[nbr_com]
                         )
-                        / m
+                        / m**2
                     )
                 else:
-                    gain = 2 * wt - resolution * (Stot[nbr_com] * degree) / m
+                    gain = (
+                        remove_cost
+                        + wt / m
+                        - resolution * (Stot[nbr_com] * degree) / (2 * m**2)
+                    )
                 if gain > best_mod:
                     best_mod = gain
                     best_com = nbr_com
