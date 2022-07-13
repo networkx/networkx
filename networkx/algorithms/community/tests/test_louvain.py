@@ -86,7 +86,7 @@ def test_directed_partition():
     G.add_edges_from(G_edges)
     H.add_edges_from(H_edges)
 
-    G_expected_partition = [{0, 1, 2}, {3, 4}, {8, 7}, {9, 10}]
+    G_expected_partition = [{0, 1, 2}, {3, 4}, {5}, {6}, {8, 7}, {9, 10}]
     G_partition = louvain_communities(G, seed=123, weight=None)
 
     H_expected_partition = [{2, 3, 4, 5}, {8, 1, 6, 7}, {9, 10, 11}]
