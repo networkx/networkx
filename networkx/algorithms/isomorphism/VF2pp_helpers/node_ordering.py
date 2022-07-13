@@ -13,10 +13,11 @@ def matching_order(G1, G2, G1_labels, G2_labels):
     node_order = []
 
     while V1_unordered:
-        nodes_of_current_labels = nx.utils.groups(current_labels)
-        # todo: it's probably max() because max len is min rarity and we want the most common nodes
-        max_rarity = min(len(v) for v in nodes_of_current_labels.values())
-        rare_nodes = {u for l, nodes in nodes_of_current_labels.items() for u in nodes if len(nodes) == max_rarity}
+        # nodes_of_current_labels = nx.utils.groups(current_labels)
+        rarest_node = min(V1_unordered, key=lambda x: label_rarity[G1_labels[x]])
+        rare_nodes = [n for n in V1_unordered if label_rarity[G1_labels[n]] == label_rarity[G1_labels[rarest_node]]]
+        # max_rarity = min(len(v) for v in nodes_of_current_labels.values())
+        # rare_nodes = {u for l, nodes in nodes_of_current_labels.items() for u in nodes if len(nodes) == max_rarity}
         max_node = max(rare_nodes, key=G1.degree)
 
         node_order, label_rarity, dlevel_nodes, used_degrees, V1_unordered, current_labels = \
@@ -25,17 +26,9 @@ def matching_order(G1, G2, G1_labels, G2_labels):
         node_order.append(max_node)
         V1_unordered.discard(max_node)
         current_labels.pop(max_node)
+        label_rarity[G1_labels[max_node]] -= 1
 
     return node_order
-
-
-def initialise_preprocess(G1, G2, G1_labels, G2_labels):
-    nodes_of_G1Labels = nx.utils.groups(G1_labels)
-    nodes_of_G2Labels = nx.utils.groups(G2_labels)
-
-    V1_unordered = set(G1)
-    current_labels = {node: G1_labels[node] for node in V1_unordered}
-    return nodes_of_G1Labels, nodes_of_G2Labels, V1_unordered, current_labels
 
 
 def BFS_levels(source_node, G1, G1_labels, V1_unordered, label_rarity, used_degrees, node_order, current_labels):
@@ -59,6 +52,7 @@ def BFS_levels(source_node, G1, G1_labels, V1_unordered, label_rarity, used_degr
 
 def process_level(V1, G1, G1_labels, order, dlevel_nodes, label_rarity, used_degree, current_labels):
     max_nodes = []
+    max_degree = 0
     while dlevel_nodes:
         # Get the nodes with the max used_degree
         max_used_deg = -1
@@ -68,11 +62,16 @@ def process_level(V1, G1, G1_labels, order, dlevel_nodes, label_rarity, used_deg
                 if deg > max_used_deg:
                     max_used_deg = deg
                     max_nodes = [node]
+                    max_degree = G1.degree[node]
                 else:  # deg == max_deg
                     max_nodes.append(node)
+                    if G1.degree[node] > max_degree:
+                        max_degree = G1.degree[node]
 
         # Get the max_used_degree node with the rarest label
-        next_node = min(max_nodes, key=lambda x: label_rarity[G1_labels[x]])
+        max_deg_nodes = [node for node in max_nodes if
+                         G1.degree[node] == max_degree]  # todo: this can be computed on the go
+        next_node = min(max_deg_nodes, key=lambda x: label_rarity[G1_labels[x]])
         order.append(next_node)
         current_labels.pop(next_node)
 
@@ -83,3 +82,12 @@ def process_level(V1, G1, G1_labels, order, dlevel_nodes, label_rarity, used_deg
         label_rarity[G1_labels[next_node]] -= 1
         V1.discard(next_node)
     return order, label_rarity, dlevel_nodes, used_degree, V1, current_labels
+
+
+def initialise_preprocess(G1, G2, G1_labels, G2_labels):
+    nodes_of_G1Labels = nx.utils.groups(G1_labels)
+    nodes_of_G2Labels = nx.utils.groups(G2_labels)
+
+    V1_unordered = set(G1)
+    current_labels = {node: G1_labels[node] for node in V1_unordered}
+    return nodes_of_G1Labels, nodes_of_G2Labels, V1_unordered, current_labels

@@ -1,3 +1,4 @@
+import collections
 import random
 import time
 import networkx as nx
@@ -5,8 +6,8 @@ from networkx.algorithms.isomorphism.VF2pp_helpers.node_ordering import matching
 from networkx.algorithms.isomorphism.VF2pp import isomorphic_VF2pp
 
 # Graph initialization
-G1 = nx.gnp_random_graph(600, 0.5, 42)
-G2 = nx.gnp_random_graph(600, 0.5, 42)
+G1 = nx.gnp_random_graph(400, 0.55, 42)
+G2 = nx.gnp_random_graph(400, 0.55, 42)
 
 # G1 = nx.barbell_graph(5, 0)
 # G2 = nx.barbell_graph(5, 0)
@@ -21,15 +22,12 @@ G2 = nx.gnp_random_graph(600, 0.5, 42)
 
 # G1.add_edges_from(G1_edges)
 # G2.add_edges_from(G2_edges)
-# G1.add_node(0)  # todo: problem when a node is not connected to the graph. Figure out the problem.
+# G1.add_node(0)
 # G2.add_node(0)
 
 # mapped_nodes = {0: 0, 1: 9, 2: 8, 3: 7, 4: 6, 5: 5, 6: 4, 7: 1, 8: 3, 9: 2}
 
 colors = ["white", "black", "green", "purple", "orange", "red", "blue", "pink", "yellow", "none"]
-# for node, color in zip(G1.nodes, colors):
-#     G1.nodes[node]["label"] = color
-#     G2.nodes[mapped_nodes[node]]["label"] = color
 
 # VF2++ initialization
 for node in G1.nodes():
@@ -45,7 +43,8 @@ G2_labels = nx.get_node_attributes(G2, "label")
 
 # VF2++
 t0 = time.time()
-mapping = isomorphic_VF2pp(G1, G2, G1_labels, G2_labels)
+flag, mapping = isomorphic_VF2pp(G1, G2, G1_labels, G2_labels)
+# matching_order(G1, G2, G1_labels, G2_labels)
 print(f"VF2++ elapsed time: {time.time() - t0}")
 
 t0 = time.time()

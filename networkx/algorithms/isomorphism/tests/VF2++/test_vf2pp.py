@@ -31,7 +31,8 @@ class TestVF2pp:
             G1, G2 = assign_labels(G1, G2)
             l1, l2 = get_labes(G1, G2)
 
-            assert isomorphic_VF2pp(G1, G2, l1, l2)
+            isomorphic, mapping = isomorphic_VF2pp(G1, G2, l1, l2)
+            assert isomorphic
 
     def test_complete_graph_iso(self):
         num_nodes = [100, 330, 411]
@@ -41,7 +42,9 @@ class TestVF2pp:
 
             G1, G2 = assign_labels(G1, G2)
             l1, l2 = get_labes(G1, G2)
-            assert isomorphic_VF2pp(G1, G2, l1, l2)
+
+            isomorphic, mapping = isomorphic_VF2pp(G1, G2, l1, l2)
+            assert isomorphic
 
     def test_cases_iso(self):
         # Two isomorphic GNP graphs
@@ -51,7 +54,8 @@ class TestVF2pp:
         G1, G2 = assign_labels(G1, G2)
         l1, l2 = get_labes(G1, G2)
 
-        assert isomorphic_VF2pp(G1, G2, l1, l2)
+        isomorphic, mapping = isomorphic_VF2pp(G1, G2, l1, l2)
+        assert isomorphic
 
         # Add one node per graph and give different labels
         G1.add_node(400)
@@ -61,29 +65,34 @@ class TestVF2pp:
         l1.update({400: "blue"})
         l2.update({400: "red"})
 
-        assert not isomorphic_VF2pp(G1, G2, l1, l2)
+        isomorphic, mapping = isomorphic_VF2pp(G1, G2, l1, l2)
+        assert not isomorphic
 
         # Add same number of edges between the new node and the rest of the graph
         G1.add_edges_from([(400, i) for i in range(73)])
         G2.add_edges_from([(400, i) for i in range(73)])
 
-        assert not isomorphic_VF2pp(G1, G2, l1, l2)
+        isomorphic, mapping = isomorphic_VF2pp(G1, G2, l1, l2)
+        assert not isomorphic
 
         # Assign same label to the new node in G1 and G2
         G2.nodes[400]["label"] = "blue"
         l2.update({400: "blue"})
 
-        assert isomorphic_VF2pp(G1, G2, l1, l2)
+        isomorphic, mapping = isomorphic_VF2pp(G1, G2, l1, l2)
+        assert isomorphic
 
         # Add an extra edge between the new node and itself in one graph
         G1.add_edge(400, 400)
-        assert not isomorphic_VF2pp(G1, G2, l1, l2)
+        isomorphic, mapping = isomorphic_VF2pp(G1, G2, l1, l2)
+        assert not isomorphic
 
         # Add two edges between the new node and itself in both graphs
         G1.add_edge(400, 400)
         G2.add_edge(400, 400)
         G2.add_edge(400, 400)
 
-        assert isomorphic_VF2pp(G1, G2, l1, l2)
+        isomorphic, mapping = isomorphic_VF2pp(G1, G2, l1, l2)
+        assert isomorphic
 
 

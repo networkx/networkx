@@ -1,3 +1,4 @@
+import collections
 import random
 import time
 import networkx as nx
@@ -16,8 +17,9 @@ def isomorphic_VF2pp(G1, G2, G1_labels, G2_labels):
     visited = set()
 
     node_order = matching_order(G1, G2, G1_labels, G2_labels)
+    node_order = collections.deque(node_order)
 
-    starting_node = node_order.pop(0)  # todo: examine if we can keep track of the node using a pointer
+    starting_node = node_order.popleft()
     candidates = find_candidates(G1, G2, G1_labels, G2_labels, starting_node, mapping, reverse_mapping)
     stack = [(starting_node, iter(candidates))]
 
@@ -39,14 +41,14 @@ def isomorphic_VF2pp(G1, G2, G1_labels, G2_labels):
                 if not node_order:
                     break
 
-                next_node = node_order.pop(0)
+                next_node = node_order.popleft()
                 candidates = find_candidates(G1, G2, G1_labels, G2_labels, next_node, mapping, reverse_mapping)
                 stack.append((next_node, iter(candidates)))
 
         except StopIteration:
             # Restore the previous state of the algorithm
             entering_node, _ = stack.pop()  # The node to be returned to the ordering
-            node_order.insert(0, entering_node)  # todo: replace with collections.deque
+            node_order.appendleft(entering_node)
             if not stack:
                 break
 
@@ -61,4 +63,4 @@ def isomorphic_VF2pp(G1, G2, G1_labels, G2_labels):
 
     if len(mapping) == G1.number_of_nodes():
         return True, mapping
-    return False
+    return False, None
