@@ -1,6 +1,7 @@
 """Unit tests for matplotlib drawing functions."""
 import itertools
 import os
+from contextlib import suppress
 
 import pytest
 
@@ -33,10 +34,8 @@ def test_draw():
             plt.savefig("test.ps")
 
     finally:
-        try:
+        with suppress(OSError):
             os.unlink("test.ps")
-        except OSError:
-            pass
 
 
 def test_draw_shell_nlist():
@@ -45,10 +44,8 @@ def test_draw_shell_nlist():
         nx.draw_shell(barbell, nlist=nlist)
         plt.savefig("test.ps")
     finally:
-        try:
+        with suppress(OSError):
             os.unlink("test.ps")
-        except OSError:
-            pass
 
 
 def test_edge_colormap():
@@ -272,7 +269,7 @@ def test_edge_width_single_value_directed(edgewidth, expected):
     "edgelist",
     (
         [(0, 1), (1, 2), (2, 3)],  # one width specification per edge
-        None,  #  fewer widths than edges - widths cycle
+        None,  # fewer widths than edges - widths cycle
         [(0, 1), (1, 2)],  # More widths than edges - unused widths ignored
     ),
 )
@@ -456,8 +453,6 @@ def test_empty_graph():
 
 def test_draw_empty_nodes_return_values():
     # See Issue #3833
-    import matplotlib.collections  # call as mpl.collections
-
     G = nx.Graph([(1, 2), (2, 3)])
     DG = nx.DiGraph([(1, 2), (2, 3)])
     pos = nx.circular_layout(G)
@@ -641,9 +636,6 @@ def test_draw_edges_toggling_with_arrows_kwarg():
       - ``arrows=True`` -> FancyArrowPatches
       - ``arrows=False`` -> LineCollection
     """
-    import matplotlib.collections
-    import matplotlib.patches
-
     UG = nx.path_graph(3)
     DG = nx.path_graph(3, create_using=nx.DiGraph)
     pos = {n: (n, n) for n in UG}
@@ -669,8 +661,6 @@ def test_draw_edges_toggling_with_arrows_kwarg():
 
 @pytest.mark.parametrize("drawing_func", (nx.draw, nx.draw_networkx))
 def test_draw_networkx_arrows_default_undirected(drawing_func):
-    import matplotlib.collections
-
     G = nx.path_graph(3)
     fig, ax = plt.subplots()
     drawing_func(G, ax=ax)
@@ -681,8 +671,6 @@ def test_draw_networkx_arrows_default_undirected(drawing_func):
 
 @pytest.mark.parametrize("drawing_func", (nx.draw, nx.draw_networkx))
 def test_draw_networkx_arrows_default_directed(drawing_func):
-    import matplotlib.collections
-
     G = nx.path_graph(3, create_using=nx.DiGraph)
     fig, ax = plt.subplots()
     drawing_func(G, ax=ax)

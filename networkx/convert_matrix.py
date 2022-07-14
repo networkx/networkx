@@ -26,11 +26,9 @@ nx_agraph, nx_pydot
 """
 
 import itertools
-import warnings
 from collections import defaultdict
 
 import networkx as nx
-from networkx.utils import not_implemented_for
 
 __all__ = [
     "from_pandas_adjacency",

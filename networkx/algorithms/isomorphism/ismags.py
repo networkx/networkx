@@ -196,7 +196,7 @@ def partition_to_color(partitions):
     -------
     dict
     """
-    colors = dict()
+    colors = {}
     for color, keys in enumerate(partitions):
         for key in keys:
             colors[key] = color
@@ -720,7 +720,7 @@ class ISMAGS:
             counts[node1][ecolor, node_colors[node2]] += 1
             counts[node2][ecolor, node_colors[node1]] += 1
 
-        node_edge_colors = dict()
+        node_edge_colors = {}
         for node in graph.nodes:
             node_edge_colors[node] = node_colors[node], set(counts[node].items())
 

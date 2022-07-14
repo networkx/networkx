@@ -1,6 +1,7 @@
 """Asynchronous Fluid Communities algorithm for community detection."""
 
 from collections import Counter
+from contextlib import suppress
 
 from networkx.algorithms.components import is_connected
 from networkx.exception import NetworkXError
@@ -95,10 +96,8 @@ def asyn_fluidc(G, k, max_iter=100, seed=None):
             # Updating rule
             com_counter = Counter()
             # Take into account self vertex community
-            try:
+            with suppress(KeyError):
                 com_counter.update({communities[vertex]: density[communities[vertex]]})
-            except KeyError:
-                pass
             # Gather neighbour vertex communities
             for v in G[vertex]:
                 try:
@@ -127,13 +126,11 @@ def asyn_fluidc(G, k, max_iter=100, seed=None):
                     # Randomly chose a new community from candidates
                     new_com = seed.choice(best_communities)
                     # Update previous community status
-                    try:
+                    with suppress(KeyError):
                         com_to_numvertices[communities[vertex]] -= 1
                         density[communities[vertex]] = (
                             max_density / com_to_numvertices[communities[vertex]]
                         )
-                    except KeyError:
-                        pass
                     # Update new community status
                     communities[vertex] = new_com
                     com_to_numvertices[communities[vertex]] += 1

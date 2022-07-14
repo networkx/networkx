@@ -339,7 +339,6 @@ def capacity_scaling(
             pred = {s: None}
             h = heap()
             h_insert = h.insert
-            h_get = h.get
             h_insert(s, 0)
             while h:
                 u, d_u = h.pop()

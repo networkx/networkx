@@ -17,7 +17,7 @@ interact with different languages and even different Python versions.
 Re-importing from gml is also a concern.
 
 Without specifying a `stringizer`/`destringizer`, the code is capable of
-writing `int`/`float`/`str`/`dict`/`list` data as required by the GML 
+writing `int`/`float`/`str`/`dict`/`list` data as required by the GML
 specification.  For writing other data types, and for reading data other
 than `str` you need to explicitly supply a `stringizer`/`destringizer`.
 
@@ -32,6 +32,7 @@ import re
 import warnings
 from ast import literal_eval
 from collections import defaultdict
+from contextlib import suppress
 from enum import Enum
 from io import StringIO
 from typing import Any, NamedTuple
@@ -359,10 +360,8 @@ def parse_gml_lines(lines, label, destringizer):
             elif category == Pattern.STRINGS:
                 value = unescape(curr_token.value[1:-1])
                 if destringizer:
-                    try:
+                    with suppress(ValueError):
                         value = destringizer(value)
-                    except ValueError:
-                        pass
                 curr_token = next(tokens)
             elif category == Pattern.DICT_START:
                 curr_token, value = parse_dict(curr_token)
@@ -373,10 +372,8 @@ def parse_gml_lines(lines, label, destringizer):
                         # String convert the token value
                         value = unescape(str(curr_token.value))
                         if destringizer:
-                            try:
+                            with suppress(ValueError):
                                 value = destringizer(value)
-                            except ValueError:
-                                pass
                         curr_token = next(tokens)
                     except Exception:
                         msg = (

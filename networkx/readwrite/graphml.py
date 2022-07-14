@@ -42,6 +42,7 @@ for examples.
 """
 import warnings
 from collections import defaultdict
+from contextlib import suppress
 
 import networkx as nx
 from networkx.utils import open_file
@@ -405,7 +406,7 @@ class GraphML:
         # These additions to types allow writing numpy types
         try:
             import numpy as np
-        except:
+        except ImportError:
             pass
         else:
             # prepend so that python types are created upon read (last entry wins)
@@ -941,10 +942,8 @@ class GraphMLReader(GraphML):
         if edge_id:
             # self.edge_ids is used by `make_graph` method for non-multigraphs
             self.edge_ids[source, target] = edge_id
-            try:
+            with suppress(ValueError):  # Could not convert.
                 edge_id = self.edge_key_type(edge_id)
-            except ValueError:  # Could not convert.
-                pass
         else:
             edge_id = data.get("key")
 

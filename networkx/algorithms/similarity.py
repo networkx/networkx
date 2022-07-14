@@ -16,9 +16,7 @@ alternative GED algorithms, in order to improve the choices available.
 import math
 import time
 import warnings
-from functools import reduce
 from itertools import product
-from operator import mul
 
 import networkx as nx
 

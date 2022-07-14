@@ -24,6 +24,8 @@ For each edge (u, v) the node u is assigned to part 0 and the node v to part 1.
 """
 __all__ = ["generate_edgelist", "write_edgelist", "parse_edgelist", "read_edgelist"]
 
+from contextlib import suppress
+
 import networkx as nx
 from networkx.utils import not_implemented_for, open_file
 
@@ -139,10 +141,8 @@ def generate_edgelist(G, delimiter=" ", data=True):
         for n in part0:
             for u, v, d in G.edges(n, data=True):
                 edge = [u, v]
-                try:
+                with suppress(KeyError):  # missing data for this edge, should warn?
                     edge.extend(d[k] for k in data)
-                except KeyError:
-                    pass  # missing data for this edge, should warn?
                 yield delimiter.join(map(str, edge))
 
 

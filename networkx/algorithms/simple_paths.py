@@ -1,3 +1,4 @@
+from contextlib import suppress
 from heapq import heappop, heappush
 from itertools import count
 
@@ -543,7 +544,7 @@ def shortest_simple_paths(G, source, target, weight=None):
                 for path in listA:
                     if path[:i] == root:
                         ignore_edges.add((path[i - 1], path[i]))
-                try:
+                with suppress(nx.NetworkXNoPath):
                     length, spur = shortest_path_func(
                         G,
                         root[-1],
@@ -554,8 +555,6 @@ def shortest_simple_paths(G, source, target, weight=None):
                     )
                     path = root[:-1] + spur
                     listB.push(root_length + length, path)
-                except nx.NetworkXNoPath:
-                    pass
                 ignore_nodes.add(root[-1])
 
         if listB:

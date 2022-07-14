@@ -8,6 +8,7 @@ see the Wikipedia article on the clique problem [1]_.
 
 """
 from collections import defaultdict, deque
+from contextlib import suppress
 from itertools import chain, combinations, islice
 
 import networkx as nx
@@ -207,7 +208,7 @@ def find_cliques(G, nodes=None):
     u = max(subg, key=lambda u: len(cand & adj[u]))
     ext_u = cand - adj[u]
 
-    try:
+    with suppress(IndexError):
         while True:
             if ext_u:
                 q = ext_u.pop()
@@ -229,8 +230,6 @@ def find_cliques(G, nodes=None):
             else:
                 Q.pop()
                 subg, cand, ext_u = stack.pop()
-    except IndexError:
-        pass
 
 
 # TODO Should this also be not implemented for directed graphs?

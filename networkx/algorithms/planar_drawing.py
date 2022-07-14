@@ -108,7 +108,7 @@ def combinatorial_embedding_to_pos(embedding, fully_triangulate=False):
             left_t_child[vk] = None
 
     # 2. Phase: Set absolute positions
-    pos = dict()
+    pos = {}
     pos[v1] = (0, y_coordinate[v1])
     remaining_nodes = [v1]
     while remaining_nodes:
@@ -316,7 +316,7 @@ def triangulate_face(embedding, v1, v2):
     """
     _, v3 = embedding.next_face_half_edge(v1, v2)
     _, v4 = embedding.next_face_half_edge(v2, v3)
-    if v1 == v2 or v1 == v3:
+    if v1 in (v2, v3):
         # The component has less than 3 nodes
         return
     while v1 != v4:

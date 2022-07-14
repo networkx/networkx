@@ -15,6 +15,7 @@ for format information.
 """
 
 import warnings
+from contextlib import suppress
 
 import networkx as nx
 from networkx.utils import open_file
@@ -190,7 +191,7 @@ def parse_pajek(lines):
     while lines:
         try:
             l = next(lines)
-        except:  # EOF
+        except StopIteration:  # EOF
             break
         if l.lower().startswith("*network"):
             try:
@@ -216,13 +217,11 @@ def parse_pajek(lines):
                 G.add_node(label)
                 nodelabels[id] = label
                 G.nodes[label]["id"] = id
-                try:
+                with suppress(Exception):
                     x, y, shape = splitline[2:5]
                     G.nodes[label].update(
                         {"x": float(x), "y": float(y), "shape": shape}
                     )
-                except:
-                    pass
                 extra_attr = zip(splitline[5::2], splitline[6::2])
                 G.nodes[label].update(extra_attr)
         elif l.lower().startswith("*edges") or l.lower().startswith("*arcs"):

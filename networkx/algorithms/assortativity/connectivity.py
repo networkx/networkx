@@ -93,7 +93,7 @@ def average_degree_connectivity(
     else:
         if source != "in+out" or target != "in+out":
             raise nx.NetworkXError(
-                f"source and target arguments are only supported for directed graphs"
+                "source and target arguments are only supported for directed graphs"
             )
         source_degree = G.degree
         target_degree = G.degree

@@ -651,7 +651,7 @@ def draw_networkx_edges(
     # for directed graphs.
     # The `arrows` keyword can be used to override the default behavior
 
-    if arrowstyle == None:
+    if arrowstyle is None:
         if G.is_directed():
             arrowstyle = "-|>"
         else:

@@ -6,7 +6,6 @@ Illustrate `~networkx.drawing.nx_agraph.write_dot` in conjunction with the
 Graphviz command line interface to create visualizations.
 """
 
-import matplotlib.pyplot as plt
 import networkx as nx
 
 # %%

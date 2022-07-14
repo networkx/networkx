@@ -83,6 +83,7 @@ EdgeDataView
     The argument `nbunch` restricts edges to those incident to nodes in nbunch.
 """
 from collections.abc import Mapping, Set
+from contextlib import suppress
 
 import networkx as nx
 
@@ -426,13 +427,11 @@ class DiDegreeView:
             if weight == self._weight:
                 return self
             return self.__class__(self._graph, None, weight)
-        try:
+        with suppress(TypeError):
             if nbunch in self._nodes:
                 if weight == self._weight:
                     return self[nbunch]
                 return self.__class__(self._graph, None, weight)[nbunch]
-        except TypeError:
-            pass
         return self.__class__(self._graph, nbunch, weight)
 
     def __getitem__(self, n):
@@ -543,7 +542,6 @@ class OutDegreeView(DiDegreeView):
     """A DegreeView class to report out_degree for a DiGraph; See DegreeView"""
 
     def __getitem__(self, n):
-        weight = self._weight
         nbrs = self._succ[n]
         if self._weight is None:
             return len(nbrs)
@@ -1387,7 +1385,7 @@ class MultiEdgeView(OutMultiEdgeView):
         for n, nbrs in self._nodes_nbrs():
             for nbr, kd in nbrs.items():
                 if nbr not in seen:
-                    for k, dd in kd.items():
+                    for k in kd.keys():
                         yield (n, nbr, k)
             seen[n] = 1
         del seen

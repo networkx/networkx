@@ -1,6 +1,5 @@
 """Functions for computing and verifying matchings in a graph."""
-from collections import Counter
-from itertools import combinations, repeat
+from itertools import repeat
 
 import networkx as nx
 from networkx.utils import not_implemented_for

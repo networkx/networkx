@@ -7,6 +7,8 @@ This implementation is based on:
     233–240. URL: http://archive.org/details/jresv71Bn4p233
 
 """
+import string
+
 # TODO: Implement method from Gabow, Galil, Spence and Tarjan:
 #
 # @article{
@@ -26,9 +28,8 @@ This implementation is based on:
 #    pages={109-122},
 #    language={English}
 # }
-import string
+from contextlib import suppress
 from dataclasses import dataclass, field
-from enum import Enum
 from operator import itemgetter
 from queue import PriorityQueue
 
@@ -437,7 +438,6 @@ class Edmonds:
         D = set()
         nodes = iter(list(G.nodes()))
         attr = self._attr
-        G_pred = G.pred
 
         def desired_edge(v):
             """
@@ -932,7 +932,7 @@ class ArborescenceIterator:
         self.partition_queue.put(
             self.Partition(
                 mst_weight if self.minimum else -mst_weight,
-                dict()
+                {}
                 if self.init_partition is None
                 else self.init_partition.partition_dict,
             )
@@ -989,7 +989,7 @@ class ArborescenceIterator:
                 p2.partition_dict[e] = nx.EdgePartition.INCLUDED
 
                 self._write_partition(p1)
-                try:
+                with suppress(nx.NetworkXException):
                     p1_mst = self.method(
                         self.G,
                         self.weight,
@@ -1000,8 +1000,6 @@ class ArborescenceIterator:
                     p1_mst_weight = p1_mst.size(weight=self.weight)
                     p1.mst_weight = p1_mst_weight if self.minimum else -p1_mst_weight
                     self.partition_queue.put(p1.__copy__())
-                except nx.NetworkXException:
-                    pass
 
                 p1.partition_dict = p2.partition_dict.copy()
 

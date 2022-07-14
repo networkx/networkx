@@ -20,6 +20,7 @@ See Also
  - DOT Language:  http://www.graphviz.org/doc/info/lang.html
 """
 import warnings
+from contextlib import suppress
 from locale import getpreferredencoding
 
 import networkx as nx
@@ -181,14 +182,10 @@ def from_pydot(P):
     pattr = P.get_attributes()
     if pattr:
         N.graph["graph"] = pattr
-    try:
+    with suppress(IndexError, TypeError):  # N.graph['node']={}
         N.graph["node"] = P.get_node_defaults()[0]
-    except (IndexError, TypeError):
-        pass  # N.graph['node']={}
-    try:
+    with suppress(IndexError, TypeError):  # N.graph['edge']={}
         N.graph["edge"] = P.get_edge_defaults()[0]
-    except (IndexError, TypeError):
-        pass  # N.graph['edge']={}
     return N
 
 
@@ -240,14 +237,10 @@ def to_pydot(N):
         P = pydot.Dot(
             f'"{name}"', graph_type=graph_type, strict=strict, **graph_defaults
         )
-    try:
+    with suppress(KeyError):
         P.set_node_defaults(**N.graph["node"])
-    except KeyError:
-        pass
-    try:
+    with suppress(KeyError):
         P.set_edge_defaults(**N.graph["edge"])
-    except KeyError:
-        pass
 
     for n, nodedata in N.nodes(data=True):
         str_nodedata = {str(k): str(v) for k, v in nodedata.items()}
@@ -261,7 +254,7 @@ def to_pydot(N):
         )
         if raise_error:
             raise ValueError(
-                f'Node names and attributes should not contain ":" unless they are quoted with "".\
+                'Node names and attributes should not contain ":" unless they are quoted with "".\
                 For example the string \'attribute:data1\' should be written as \'"attribute:data1"\'.\
                 Please refer https://github.com/pydot/pydot/issues/258'
             )
@@ -284,7 +277,7 @@ def to_pydot(N):
             )
             if raise_error:
                 raise ValueError(
-                    f'Node names and attributes should not contain ":" unless they are quoted with "".\
+                    'Node names and attributes should not contain ":" unless they are quoted with "".\
                     For example the string \'attribute:data1\' should be written as \'"attribute:data1"\'.\
                     Please refer https://github.com/pydot/pydot/issues/258'
                 )
@@ -307,7 +300,7 @@ def to_pydot(N):
             )
             if raise_error:
                 raise ValueError(
-                    f'Node names and attributes should not contain ":" unless they are quoted with "".\
+                    'Node names and attributes should not contain ":" unless they are quoted with "".\
                     For example the string \'attribute:data1\' should be written as \'"attribute:data1"\'.\
                     Please refer https://github.com/pydot/pydot/issues/258'
                 )
@@ -436,7 +429,7 @@ def pydot_layout(G, prog="neato", root=None):
         # Explicitly catch nodes with ":" in node names or nodedata.
         if _check_colon_quotes(str_n):
             raise ValueError(
-                f'Node names and node attributes should not contain ":" unless they are quoted with "".\
+                'Node names and node attributes should not contain ":" unless they are quoted with "".\
                 For example the string \'attribute:data1\' should be written as \'"attribute:data1"\'.\
                 Please refer https://github.com/pydot/pydot/issues/258'
             )

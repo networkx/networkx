@@ -234,9 +234,9 @@ def test_hamiltonian_path():
 def test_cutoff_zero():
     G = nx.complete_graph(4)
     paths = nx.all_simple_paths(G, 0, 3, cutoff=0)
-    assert list(list(p) for p in paths) == []
+    assert [list(p) for p in paths] == []
     paths = nx.all_simple_paths(nx.MultiGraph(G), 0, 3, cutoff=0)
-    assert list(list(p) for p in paths) == []
+    assert [list(p) for p in paths] == []
 
 
 def test_source_missing():
@@ -418,15 +418,15 @@ def test_hamiltonian__edge_path():
     G = nx.complete_graph(4)
     paths = hamiltonian_edge_path(G, 0)
     exact = [list(pairwise([0] + list(p))) for p in permutations([1, 2, 3], 3)]
-    assert sorted(exact) == [p for p in sorted(paths)]
+    assert sorted(exact) == sorted(paths)
 
 
 def test_edge_cutoff_zero():
     G = nx.complete_graph(4)
     paths = nx.all_simple_edge_paths(G, 0, 3, cutoff=0)
-    assert list(list(p) for p in paths) == []
+    assert [list(p) for p in paths] == []
     paths = nx.all_simple_edge_paths(nx.MultiGraph(G), 0, 3, cutoff=0)
-    assert list(list(p) for p in paths) == []
+    assert [list(p) for p in paths] == []
 
 
 def test_edge_source_missing():
@@ -457,7 +457,7 @@ def test_shortest_simple_paths():
 def test_shortest_simple_paths_directed():
     G = nx.cycle_graph(7, create_using=nx.DiGraph())
     paths = nx.shortest_simple_paths(G, 0, 3)
-    assert [path for path in paths] == [[0, 1, 2, 3]]
+    assert list(paths) == [[0, 1, 2, 3]]
 
 
 def test_shortest_simple_paths_directed_with_weight_fucntion():
@@ -479,7 +479,7 @@ def test_shortest_simple_paths_with_weight_fucntion():
 
     G = nx.cycle_graph(7, create_using=nx.DiGraph())
     paths = nx.shortest_simple_paths(G, 0, 3, weight=cost)
-    assert [path for path in paths] == [[0, 1, 2, 3]]
+    assert list(paths) == [[0, 1, 2, 3]]
 
 
 def test_Greg_Bernstein():

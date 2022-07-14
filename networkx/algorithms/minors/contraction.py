@@ -308,7 +308,7 @@ def quotient_graph(
     # If the partition is a dict, it is assumed to be one where the keys are
     # user-defined block labels, and values are block lists, tuples or sets.
     if isinstance(partition, dict):
-        partition = [block for block in partition.values()]
+        partition = list(partition.values())
 
     # If the user provided partition as a collection of sets. Then we
     # need to check if partition covers all of G nodes. If the answer
@@ -344,9 +344,12 @@ def _quotient_graph(
 
         def node_data(b):
             S = G.subgraph(b)
-            return dict(
-                graph=S, nnodes=len(S), nedges=S.number_of_edges(), density=density(S)
-            )
+            return {
+                "graph": S,
+                "nnodes": len(S),
+                "nedges": S.number_of_edges(),
+                "density": density(S),
+            }
 
     # Each block of the partition becomes a node in the quotient graph.
     partition = [frozenset(b) for b in partition]

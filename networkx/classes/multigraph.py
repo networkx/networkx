@@ -1,4 +1,5 @@
 """Base class for MultiGraph."""
+from contextlib import suppress
 from copy import deepcopy
 from functools import cached_property
 
@@ -712,10 +713,8 @@ class MultiGraph(Graph):
 
         """
         for e in ebunch:
-            try:
+            with suppress(NetworkXError):
                 self.remove_edge(*e[:3])
-            except NetworkXError:
-                pass
 
     def has_edge(self, u, v, key=None):
         """Returns True if the graph has an edge between nodes u and v.

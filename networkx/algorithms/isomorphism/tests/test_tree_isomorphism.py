@@ -134,7 +134,7 @@ def test_hardcoded():
     isomorphism = sorted(rooted_tree_isomorphism(t1, root1, t2, root2))
 
     # is correct by hand
-    assert (isomorphism == isomorphism1) or (isomorphism == isomorphism2)
+    assert isomorphism in (isomorphism1, isomorphism2)
 
     # check algorithmically
     assert check_isomorphism(t1, t2, isomorphism)
@@ -151,7 +151,7 @@ def test_hardcoded():
     isomorphism = sorted(rooted_tree_isomorphism(t1, root1, t2, root2))
 
     # is correct by hand
-    assert (isomorphism == isomorphism1) or (isomorphism == isomorphism2)
+    assert isomorphism in (isomorphism1, isomorphism2)
 
     # check algorithmically
     assert check_isomorphism(t1, t2, isomorphism)
@@ -173,7 +173,7 @@ def positive_single_tree(t1):
 
     assert nx.is_tree(t1)
 
-    nodes1 = [n for n in t1.nodes()]
+    nodes1 = list(t1.nodes())
     # get a random permutation of this
     nodes2 = nodes1.copy()
     random.shuffle(nodes2)

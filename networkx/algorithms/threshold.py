@@ -535,7 +535,6 @@ def degree_correlation(creation_sequence):
     s2 = 0  # deg_i^2+deg_j^2
     s3 = 0  # deg_i+deg_j
     m = 0  # number of edges
-    rd = cs.count("d")  # number of d nodes to the right
     rdi = [i for i, sym in enumerate(cs) if sym == "d"]  # index of "d"s
     ds = degree_sequence(cs)
     for i, sym in enumerate(cs):

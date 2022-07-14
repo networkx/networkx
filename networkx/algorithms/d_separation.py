@@ -101,7 +101,7 @@ References
 
 .. [1] Pearl, J.  (2009).  Causality.  Cambridge: Cambridge University Press.
 
-.. [2] Darwiche, A.  (2009).  Modeling and reasoning with Bayesian networks. 
+.. [2] Darwiche, A.  (2009).  Modeling and reasoning with Bayesian networks.
    Cambridge: Cambridge University Press.
 
 .. [3] Shachter, R.  D.  (1998).

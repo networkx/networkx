@@ -1,7 +1,6 @@
 import pytest
 
 import networkx as nx
-from networkx.generators import directed
 
 # Unit tests for the :func:`~networkx.weisfeiler_lehman_graph_hash` function
 

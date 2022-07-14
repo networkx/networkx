@@ -144,7 +144,7 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
                 return nx.from_numpy_array(data, create_using=create_using)
             except Exception as err:
                 raise nx.NetworkXError(
-                    f"Failed to interpret array as an adjacency matrix."
+                    "Failed to interpret array as an adjacency matrix."
                 ) from err
     except ImportError:
         warnings.warn("numpy not found, skipping conversion test.", ImportWarning)

@@ -143,7 +143,7 @@ def test_directed_laplacian():
                    [-0.2357, -0.0722,  0.5   ,  0.    , -0.0456,  0.    ],
                    [ 0.    ,  0.    ,  0.    ,  0.5   , -0.25  , -0.25  ],
                    [ 0.    , -0.1581, -0.0456, -0.25  ,  0.5   , -0.125 ],
-                   [-0.1614,  0.    ,  0.    , -0.25  , -0.125 ,  0.5   ]])  
+                   [-0.1614,  0.    ,  0.    , -0.25  , -0.125 ,  0.5   ]])
     # fmt: on
     L = nx.directed_laplacian_matrix(G, alpha=0.9, nodelist=sorted(G), walk_type="lazy")
     np.testing.assert_almost_equal(L, GL, decimal=3)

@@ -128,7 +128,7 @@ class MappedQueue:
             self.heap = [_HeapElement(v, k) for k, v in data.items()]
         else:
             self.heap = list(data)
-        self.position = dict()
+        self.position = {}
         self._heapify()
 
     def _heapify(self):
@@ -214,7 +214,6 @@ class MappedQueue:
         """
         heap, position = self.heap, self.position
         end_pos = len(heap)
-        startpos = pos
         newitem = heap[pos]
         # Shift up the smaller child until hitting a leaf
         child_pos = (pos << 1) + 1  # start with leftmost child position

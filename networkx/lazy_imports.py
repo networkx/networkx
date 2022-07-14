@@ -4,6 +4,7 @@ import inspect
 import os
 import sys
 import types
+from contextlib import suppress
 
 __all__ = ["attach", "_lazy_import"]
 
@@ -159,10 +160,8 @@ def _lazy_import(fullname):
         Actual loading of the module occurs upon first attribute request.
 
     """
-    try:
+    with suppress(KeyError):
         return sys.modules[fullname]
-    except:
-        pass
 
     # Not previously loaded -- look it up
     spec = importlib.util.find_spec(fullname)

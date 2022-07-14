@@ -11,11 +11,10 @@ can be accessed, for example, as
 1
 """
 
-import sys
-import uuid
 import warnings
-from collections import defaultdict, deque
+from collections import defaultdict
 from collections.abc import Iterable, Iterator, Sized
+from contextlib import suppress
 from itertools import chain, tee
 
 import networkx as nx
@@ -118,10 +117,8 @@ def _dict_to_numpy_array2(d, mapping=None):
     a = np.zeros((n, n))
     for k1, i in mapping.items():
         for k2, j in mapping.items():
-            try:
+            with suppress(KeyError):
                 a[i, j] = d[k1][k2]
-            except KeyError:
-                pass
     return a
 
 

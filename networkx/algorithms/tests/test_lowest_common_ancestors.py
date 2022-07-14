@@ -337,7 +337,7 @@ class TestDAGLCA:
             ]
         )
 
-        assert nx.lowest_common_ancestor(G, 7, 9) == None
+        assert nx.lowest_common_ancestor(G, 7, 9) is None
 
     def test_naive_lowest_common_ancestor2(self):
         """Test that the one-pair function works for issue #4942."""

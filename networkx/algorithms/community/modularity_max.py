@@ -2,7 +2,6 @@
 
 from collections import defaultdict
 
-import networkx as nx
 from networkx.algorithms.community.quality import modularity
 from networkx.utils import not_implemented_for
 from networkx.utils.mapped_queue import MappedQueue
@@ -190,7 +189,6 @@ def _greedy_modularity_communities_generator(G, weight=None, resolution=1):
         # Remove row/col u from dq_dict matrix
         for w in dq_dict[u]:
             # Remove from dict
-            dq_old = dq_dict[w][u]
             del dq_dict[w][u]
             # Remove from heaps if we haven't already
             if w != v:

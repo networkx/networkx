@@ -3,6 +3,7 @@
 
 import heapq
 import math
+from contextlib import suppress
 from itertools import chain, combinations, zip_longest
 from operator import itemgetter
 
@@ -740,10 +741,8 @@ def random_degree_sequence_graph(sequence, seed=None, tries=10):
     """
     DSRG = DegreeSequenceRandomGraph(sequence, seed)
     for try_n in range(tries):
-        try:
+        with suppress(nx.NetworkXUnfeasible):
             return DSRG.generate()
-        except nx.NetworkXUnfeasible:
-            pass
     raise nx.NetworkXError(f"failed to generate graph in {tries} tries")
 
 

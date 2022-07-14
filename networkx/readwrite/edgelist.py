@@ -36,6 +36,8 @@ __all__ = [
     "write_weighted_edgelist",
 ]
 
+from contextlib import suppress
+
 import networkx as nx
 from networkx.utils import open_file
 
@@ -116,10 +118,8 @@ def generate_edgelist(G, delimiter=" ", data=True):
     else:
         for u, v, d in G.edges(data=True):
             e = [u, v]
-            try:
+            with suppress(KeyError):  # missing data for this edge, should warn?
                 e.extend(d[k] for k in data)
-            except KeyError:
-                pass  # missing data for this edge, should warn?
             yield delimiter.join(map(str, e))
 
 

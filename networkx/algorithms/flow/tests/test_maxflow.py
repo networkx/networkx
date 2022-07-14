@@ -451,8 +451,8 @@ class TestMaxFlowMinCutInterface:
         G = self.H
         fv = 1.0
         to_test = (
-            (shortest_augmenting_path, dict(two_phase=True)),
-            (preflow_push, dict(global_relabel_freq=5)),
+            (shortest_augmenting_path, {"two_phase": True}),
+            (preflow_push, {"global_relabel_freq": 5}),
         )
         for interface_func in interface_funcs:
             for flow_func, kwargs in to_test:

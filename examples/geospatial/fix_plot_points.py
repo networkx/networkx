@@ -10,7 +10,7 @@ The methods shown here can also work directly with polygonal data using their
 centroids as representative points. 
 """
 
-from libpysal import weights, examples
+from libpysal import weights
 from contextily import add_basemap
 import matplotlib.pyplot as plt
 import networkx as nx

@@ -118,7 +118,7 @@ def average_neighbor_degree(G, source="out", target="out", nodes=None, weight=No
     else:
         if source != "out" or target != "out":
             raise nx.NetworkXError(
-                f"source and target arguments are only supported for directed graphs"
+                "source and target arguments are only supported for directed graphs"
             )
         source_degree = target_degree = G.degree
 

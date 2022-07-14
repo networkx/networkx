@@ -187,7 +187,7 @@ def kruskal_mst_edges(
         edges = G.edges(data=True)
 
     """
-    Sort the edges of the graph with respect to the partition data. 
+    Sort the edges of the graph with respect to the partition data.
     Edges are returned in the following order:
 
     * Included edges
@@ -1022,7 +1022,7 @@ class SpanningTreeIterator:
         ).size(weight=self.weight)
 
         self.partition_queue.put(
-            self.Partition(mst_weight if self.minimum else -mst_weight, dict())
+            self.Partition(mst_weight if self.minimum else -mst_weight, {})
         )
 
         return self
