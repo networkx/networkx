@@ -19,12 +19,19 @@ __all__ = ["DiGraph"]
 
 
 class _CachedPropertyResetterAdjAndSucc:
-    """Data Descriptor class that resets two cached property objects: adj and succ
+    """Data Descriptor class that syncs and resets cached properties adj and succ
 
-    This assumes that the cached properties should be reset whenever the
-    attribute value is changed. The `__dict__` entries "_adj" and "_succ"
-    are both set to the same value (synced) and the cached_properties
-    "adj" and "succ" that refer to them are reset at that time.
+    The cached properties `adj` and `succ` are reset whenever `_adj` or `_succ`
+    are set to new objects. In addition, the attributes `_succ` and `_adj`
+    are synced so these two names point to the same object.
+
+    This object sits on a class and ensures that any instance of that
+    class clears its cached properties "succ" and "adj" whenever the
+    underlying instance attributes "_succ" or "_adj" are set to a new object.
+    It only affects the set process of the obj._adj and obj._succ attribute.
+    All get/del operations act as they normally would.
+
+    For info on Data Descriptors see: https://docs.python.org/3/howto/descriptor.html
     """
 
     def __set__(self, obj, value):
@@ -43,6 +50,14 @@ class _CachedPropertyResetterPred:
 
     This assumes that the ``cached_property`` ``G.pred`` should be reset whenever
     ``G._pred`` is set to a new value.
+
+    This object sits on a class and ensures that any instance of that
+    class clears its cached property "pred" whenever the underlying
+    instance attribute "_pred" is set to a new object. It only affects
+    the set process of the obj._pred attribute. All get/del operations
+    act as they normally would.
+
+    For info on Data Descriptors see: https://docs.python.org/3/howto/descriptor.html
     """
 
     def __set__(self, obj, value):

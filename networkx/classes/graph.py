@@ -24,6 +24,14 @@ class _CachedPropertyResetterAdj:
 
     This assumes that the ``cached_property`` ``G.adj`` should be reset whenever
     ``G._adj`` is set to a new value.
+
+    This object sits on a class and ensures that any instance of that
+    class clears its cached property "adj" whenever the underlying
+    instance attribute "_adj" is set to a new object. It only affects
+    the set process of the obj._adj attribute. All get/del operations
+    act as they normally would.
+
+    For info on Data Descriptors see: https://docs.python.org/3/howto/descriptor.html
     """
 
     def __set__(self, obj, value):
