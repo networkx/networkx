@@ -99,8 +99,8 @@ def naive_lowest_common_ancestor(G, node1, node2, default=None):
     The lowest common ancestor of node1 and node2,
     or default if they have no common ancestors.
 
-    Example
-    -------
+    Examples
+    --------
     >>> G = nx.DiGraph()
     >>> nx.add_path(G, (0, 1, 2, 3))
     >>> nx.add_path(G, (0, 4, 3))
@@ -309,8 +309,8 @@ def all_pairs_lowest_common_ancestor(G, pairs=None):
     Note that for the default of all pairs in G, we consider
     unordered pairs, e.g. you will not get both (b, a) and (a, b).
 
-    Example
-    -------
+    Examples
+    --------
     >>> G = nx.DiGraph([(0, 1), (0, 3), (1, 2)])
     >>> dict(nx.all_pairs_lowest_common_ancestor(G, pairs=[(1, 2), (2, 3)]))
     {(2, 3): 0, (1, 2): 1}
