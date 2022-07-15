@@ -130,6 +130,7 @@ def process_level(
         max_deg_nodes = [
             node for node in max_nodes if G1.degree[node] == max_degree
         ]  # todo: this can be computed on the go
+
         next_node = min(max_deg_nodes, key=lambda x: label_rarity[G1_labels[x]])
         order.append(next_node)
         current_labels.pop(next_node)
