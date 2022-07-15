@@ -74,8 +74,16 @@ class TestVF2pp:
         G2 = nx.Graph()
 
         edges1 = [(1, 2), (1, 3), (1, 4), (2, 3), (3, 4), (5, 1), (5, 2), (5, 4)]
-        edges2 = [("A", "B"), ("A", "C"), ("A", "D"), ("B", "C"), ("C", "D"), ("Z", "A"), ("Z", "B"),
-                  ("Z", "D")]
+        edges2 = [
+            ("A", "B"),
+            ("A", "C"),
+            ("A", "D"),
+            ("B", "C"),
+            ("C", "D"),
+            ("Z", "A"),
+            ("Z", "B"),
+            ("Z", "D"),
+        ]
         G1.add_edges_from(edges1)
         G2.add_edges_from(edges2)
 
@@ -104,7 +112,16 @@ class TestVF2pp:
         G2 = nx.Graph()
 
         edges1 = [(1, 2), (1, 5), (5, 6), (2, 3), (2, 4), (3, 4), (4, 5), (2, 7)]
-        edges2 = [("A", "C"), ("C", "D"), ("C", "B"), ("C", "E"), ("D", "E"), ("E", "G"), ("G", "F"), ("A", "G")]
+        edges2 = [
+            ("A", "C"),
+            ("C", "D"),
+            ("C", "B"),
+            ("C", "E"),
+            ("D", "E"),
+            ("E", "G"),
+            ("G", "F"),
+            ("A", "G"),
+        ]
 
         G1.add_edges_from(edges1)
         G2.add_edges_from(edges2)
@@ -123,17 +140,18 @@ class TestVF2pp:
         G2 = nx.Graph()
 
         edges1 = [(1, 2), (1, 5), (5, 6), (2, 3), (2, 4), (3, 4), (4, 5), (2, 7)]
-        edges2 = [("A", "C"), ("C", "D"), ("C", "B"), ("C", "E"), ("D", "E"), ("E", "G"), ("G", "F"), ("A", "G")]
-
-        colors = [
-            "white",
-            "black",
-            "green",
-            "purple",
-            "orange",
-            "red",
-            "blue"
+        edges2 = [
+            ("A", "C"),
+            ("C", "D"),
+            ("C", "B"),
+            ("C", "E"),
+            ("D", "E"),
+            ("E", "G"),
+            ("G", "F"),
+            ("A", "G"),
         ]
+
+        colors = ["white", "black", "green", "purple", "orange", "red", "blue"]
         G1.add_edges_from(edges1)
         G2.add_edges_from(edges2)
 
@@ -178,6 +196,98 @@ class TestVF2pp:
         isomorphic, mapping = isomorphic_VF2pp(G1, G2, l1, l2)
         assert isomorphic
         assert mapping == mapped
+
+    def test_custom_graph3(self):
+        G1 = nx.Graph()
+        G2 = nx.Graph()
+        edges1 = [(1, 2), (1, 3), (2, 3), (3, 4), (4, 5), (4, 7), (4, 9), (5, 8), (8, 9), (5, 6), (6, 7), (5, 2)]
+        edges2 = [(9, 8), (8, 7), (9, 7), (6, 7), (6, 3), (3, 2), (2, 1), (1, 6), (3, 5), (5, 4), (4, 6), (3, 8)]
+
+        G1.add_edges_from(edges1)
+        G2.add_edges_from(edges2)
+
+        colors = ["white", "black", "green", "purple", "orange", "red", "blue", "grey", "none"]
+        mapped = {1: 9, 2: 8, 3: 7, 4: 6, 5: 3, 8: 5, 9: 4, 7: 1, 6: 2}
+
+        for node in G1.nodes():
+            color = colors.pop()
+            G1.nodes[node]["label"] = color
+            G2.nodes[mapped[node]]["label"] = color
+
+        l1, l2 = get_labes(G1, G2)
+        isomorphic, mapping = isomorphic_VF2pp(G1, G2, l1, l2)
+        assert isomorphic
+        assert mapping == mapped
+
+    def test_custom_graph3_cases(self):
+        G1 = nx.Graph()
+        G2 = nx.Graph()
+        edges1 = [(1, 2), (1, 3), (2, 3), (3, 4), (4, 5), (4, 7), (4, 9), (5, 8), (8, 9), (5, 6), (6, 7), (5, 2)]
+        edges2 = [(9, 8), (8, 7), (9, 7), (6, 7), (6, 3), (3, 2), (2, 1), (1, 6), (3, 5), (5, 4), (4, 6), (3, 8)]
+
+        G1.add_edges_from(edges1)
+        G2.add_edges_from(edges2)
+
+        colors = ["white", "black", "green", "purple", "orange", "red", "blue", "grey", "none"]
+        mapped = {1: 9, 2: 8, 3: 7, 4: 6, 5: 3, 8: 5, 9: 4, 7: 1, 6: 2}
+
+        for node in G1.nodes():
+            color = colors.pop()
+            G1.nodes[node]["label"] = color
+            G2.nodes[mapped[node]]["label"] = color
+
+        l1, l2 = get_labes(G1, G2)
+
+        # Add extra edge to G1
+        G1.add_edge(1, 7)
+        isomorphic, mapping = isomorphic_VF2pp(G1, G2, l1, l2)
+        assert not isomorphic
+        assert not mapping
+
+        # Compensate in G2
+        G2.add_edge(9, 1)
+        isomorphic, mapping = isomorphic_VF2pp(G1, G2, l1, l2)
+        assert isomorphic
+        assert mapping == mapped
+
+        # Add extra node
+        G1.add_node("A")
+        G2.add_node("K")
+        G1.nodes["A"]["label"] = "green"
+        G2.nodes["K"]["label"] = "green"
+        l1, l2 = get_labes(G1, G2)
+        mapped.update({"A": "K"})
+
+        isomorphic, mapping = isomorphic_VF2pp(G1, G2, l1, l2)
+        assert isomorphic
+        assert mapping == mapped
+
+        # Connect A to one side of G1 and K to the opposite
+        G1.add_edge("A", 6)
+        G2.add_edge("K", 5)
+        isomorphic, mapping = isomorphic_VF2pp(G1, G2, l1, l2)
+        assert not isomorphic
+        assert not mapping
+
+        # Make the graphs symmetrical
+        G1.add_edge(1, 5)
+        G1.add_edge(2, 9)
+        G2.add_edge(9, 3)
+        G2.add_edge(8, 4)
+        isomorphic, mapping = isomorphic_VF2pp(G1, G2, l1, l2)
+        assert not isomorphic
+        assert not mapping
+
+        # Assign same colors so the two opposite sides are identical
+        for node in G1.nodes():
+            color = "red"
+            G1.nodes[node]["label"] = color
+            G2.nodes[mapped[node]]["label"] = color
+
+        l1, l2 = get_labes(G1, G2)
+        isomorphic, mapping = isomorphic_VF2pp(G1, G2, l1, l2)
+        assert isomorphic
+        assert mapping
 
     def test_random_graph_cases(self):
         # Two isomorphic GNP graphs
