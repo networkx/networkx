@@ -2,6 +2,22 @@ import networkx as nx
 import random
 from networkx.algorithms.isomorphism.VF2pp import isomorphic_VF2pp
 
+def test_both_graphs_empty():
+    G = nx.Graph()
+    H = nx.Graph()
+    assert isomorphic_VF2pp(G, H, {}, {})
+
+
+def test_first_graph_empty():
+    G = nx.Graph()
+    H = nx.Graph([(0, 1)])
+    assert not isomorphic_VF2pp(G, H, {}, {})
+
+
+def test_second_graph_empty():
+    G = nx.Graph([(0, 1)])
+    H = nx.Graph()
+    assert not isomorphic_VF2pp(G, H, {}, {})
 
 def assign_labels(G1, G2):
     colors = [
