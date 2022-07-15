@@ -4,7 +4,18 @@ from networkx.algorithms.isomorphism.VF2pp_helpers.node_ordering import matching
 
 
 def assign_labels(G1, G2):
-    colors = ["white", "black", "green", "purple", "orange", "red", "blue", "pink", "yellow", "none"]
+    colors = [
+        "white",
+        "black",
+        "green",
+        "purple",
+        "orange",
+        "red",
+        "blue",
+        "pink",
+        "yellow",
+        "none",
+    ]
     for node in G1.nodes():
         color = colors[random.randrange(0, len(colors))]
         G1.nodes[node]["label"] = color

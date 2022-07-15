@@ -27,16 +27,24 @@ G2 = nx.gnp_random_graph(400, 0.55, 42)
 
 # mapped_nodes = {0: 0, 1: 9, 2: 8, 3: 7, 4: 6, 5: 5, 6: 4, 7: 1, 8: 3, 9: 2}
 
-colors = ["white", "black", "green", "purple", "orange", "red", "blue", "pink", "yellow", "none"]
+colors = [
+    "white",
+    "black",
+    "green",
+    "purple",
+    "orange",
+    "red",
+    "blue",
+    "pink",
+    "yellow",
+    "none",
+]
 
 # VF2++ initialization
 for node in G1.nodes():
     color = colors[random.randrange(0, len(colors))]
     G1.nodes[node]["label"] = color
     G2.nodes[node]["label"] = color
-
-# G1.nodes[555]["label"] = "red"
-# G2.nodes[555]["label"] = "green"
 
 G1_labels = nx.get_node_attributes(G1, "label")
 G2_labels = nx.get_node_attributes(G2, "label")
@@ -50,4 +58,3 @@ print(f"VF2++ elapsed time: {time.time() - t0}")
 t0 = time.time()
 nx.is_isomorphic(G1, G2)
 print(f"VF2 elapsed time: {time.time() - t0}")
-

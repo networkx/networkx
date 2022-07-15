@@ -4,7 +4,18 @@ from networkx.algorithms.isomorphism.VF2pp import isomorphic_VF2pp
 
 
 def assign_labels(G1, G2):
-    colors = ["white", "black", "green", "purple", "orange", "red", "blue", "pink", "yellow", "none"]
+    colors = [
+        "white",
+        "black",
+        "green",
+        "purple",
+        "orange",
+        "red",
+        "blue",
+        "pink",
+        "yellow",
+        "none",
+    ]
     for node in G1.nodes():
         color = colors[random.randrange(0, len(colors))]
         G1.nodes[node]["label"] = color
@@ -94,5 +105,3 @@ class TestVF2pp:
 
         isomorphic, mapping = isomorphic_VF2pp(G1, G2, l1, l2)
         assert isomorphic
-
-
