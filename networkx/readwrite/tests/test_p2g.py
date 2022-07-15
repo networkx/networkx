@@ -43,7 +43,7 @@ c
 
 """
         fh = io.BytesIO()
-        G = nx.OrderedDiGraph()
+        G = nx.DiGraph()
         G.name = "foo"
         G.add_edges_from([(1, 2), (2, 3)])
         write_p2g(G, fh)

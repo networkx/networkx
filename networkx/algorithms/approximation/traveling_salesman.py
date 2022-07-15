@@ -668,19 +668,15 @@ def held_karp_ascent(G, weight="weight"):
             a_eq = np.empty((len(G) + 1, len(minimum_1_arborescences)), dtype=int)
             b_eq = np.zeros(len(G) + 1, dtype=int)
             b_eq[len(G)] = 1
-            arb_count = 0
-            for arborescence in minimum_1_arborescences:
+            for arb_count, arborescence in enumerate(minimum_1_arborescences):
                 n_count = len(G) - 1
                 for n, deg in arborescence.degree:
                     a_eq[n_count][arb_count] = deg - 2
                     n_count -= 1
                 a_eq[len(G)][arb_count] = 1
-                arb_count += 1
             program_result = optimize.linprog(c, A_eq=a_eq, b_eq=b_eq)
-            bool_result = program_result.x >= 0
-            if program_result.status == 0 and np.sum(bool_result) == len(
-                minimum_1_arborescences
-            ):
+            # If the constants exist, then the direction of ascent doesn't
+            if program_result.success:
                 # There is no direction of ascent
                 return None, minimum_1_arborescences
 

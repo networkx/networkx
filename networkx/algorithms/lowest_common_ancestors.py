@@ -1,7 +1,7 @@
 """Algorithms for finding the lowest common ancestor of trees and DAGs."""
 from collections import defaultdict
 from collections.abc import Mapping, Set
-from itertools import chain, count
+from itertools import chain, combinations_with_replacement, count
 
 import networkx as nx
 from networkx.utils import UnionFind, arbitrary_element, not_implemented_for
@@ -10,7 +10,112 @@ __all__ = [
     "all_pairs_lowest_common_ancestor",
     "tree_all_pairs_lowest_common_ancestor",
     "lowest_common_ancestor",
+    "naive_lowest_common_ancestor",
+    "naive_all_pairs_lowest_common_ancestor",
 ]
+
+
+@not_implemented_for("undirected")
+@not_implemented_for("multigraph")
+def naive_all_pairs_lowest_common_ancestor(G, pairs=None):
+    """Return the lowest common ancestor of all pairs or the provided pairs
+
+    Parameters
+    ----------
+    G : NetworkX directed graph
+
+    pairs : iterable of pairs of nodes, optional (default: all pairs)
+        The pairs of nodes of interest.
+        If None, will find the LCA of all pairs of nodes.
+
+    Returns
+    -------
+    An iterator over ((node1, node2), lca) where (node1, node2) are
+    the pairs specified and lca is a lowest common ancestor of the pair.
+    Note that for the default of all pairs in G, we consider
+    unordered pairs, e.g. you will not get both (b, a) and (a, b).
+
+    Notes
+    -----
+    Only defined on non-null directed acyclic graphs.
+
+    See Also
+    --------
+    naive_lowest_common_ancestor
+    """
+    if not nx.is_directed_acyclic_graph(G):
+        raise nx.NetworkXError("LCA only defined on directed acyclic graphs.")
+    elif len(G) == 0:
+        raise nx.NetworkXPointlessConcept("LCA meaningless on null graphs.")
+    elif None in G:
+        raise nx.NetworkXError("None is not a valid node.")
+
+    ancestor_cache = {}
+
+    if pairs is None:
+
+        pairs = combinations_with_replacement(G, 2)
+
+    for v, w in pairs:
+        if v not in ancestor_cache:
+            ancestor_cache[v] = nx.ancestors(G, v)
+            ancestor_cache[v].add(v)
+        if w not in ancestor_cache:
+            ancestor_cache[w] = nx.ancestors(G, w)
+            ancestor_cache[w].add(w)
+
+        common_ancestors = ancestor_cache[v] & ancestor_cache[w]
+
+        if common_ancestors:
+            common_ancestor = next(iter(common_ancestors))
+            while True:
+                successor = None
+                for lower_ancestor in G.successors(common_ancestor):
+                    if lower_ancestor in common_ancestors:
+                        successor = lower_ancestor
+                        break
+                if successor is None:
+                    break
+                common_ancestor = successor
+            yield ((v, w), common_ancestor)
+
+
+@not_implemented_for("undirected")
+@not_implemented_for("multigraph")
+def naive_lowest_common_ancestor(G, node1, node2, default=None):
+    """Compute the lowest common ancestor of the given pair of nodes.
+
+    Parameters
+    ----------
+    G : NetworkX directed graph
+
+    node1, node2 : nodes in the graph.
+
+    default : object
+        Returned if no common ancestor between `node1` and `node2`
+
+    Returns
+    -------
+    The lowest common ancestor of node1 and node2,
+    or default if they have no common ancestors.
+
+    Example
+    -------
+    >>> G = nx.DiGraph()
+    >>> nx.add_path(G, (0, 1, 2, 3))
+    >>> nx.add_path(G, (0, 4, 3))
+    >>> nx.naive_lowest_common_ancestor(G, 2, 4)
+    0
+
+    See Also
+    --------
+    naive_all_pairs_lowest_common_ancestor"""
+
+    ans = list(naive_all_pairs_lowest_common_ancestor(G, pairs=[(node1, node2)]))
+    if ans:
+        assert len(ans) == 1
+        return ans[0][1]
+    return default
 
 
 @not_implemented_for("undirected")
@@ -34,6 +139,28 @@ def tree_all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
     -------
     lcas : generator of tuples `((u, v), lca)` where `u` and `v` are nodes
         in `pairs` and `lca` is their lowest common ancestor.
+
+    Examples
+    --------
+    >>> import pprint
+    >>> G = nx.DiGraph([(1, 3), (2, 4), (1, 2)])
+    >>> pprint.pprint(dict(nx.tree_all_pairs_lowest_common_ancestor(G)))
+    {(1, 1): 1,
+     (2, 1): 1,
+     (2, 2): 2,
+     (3, 1): 1,
+     (3, 2): 1,
+     (3, 3): 3,
+     (3, 4): 1,
+     (4, 1): 1,
+     (4, 2): 2,
+     (4, 4): 4}
+
+    We can also use `pairs` argument to specify the pairs of nodes for which we
+    want to compute lowest common ancestors. Here is an example:
+
+    >>> dict(nx.tree_all_pairs_lowest_common_ancestor(G, pairs=[(1, 4), (2, 3)]))
+    {(2, 3): 1, (1, 4): 1}
 
     Notes
     -----
@@ -130,6 +257,19 @@ def lowest_common_ancestor(G, node1, node2, default=None):
     The lowest common ancestor of node1 and node2,
     or default if they have no common ancestors.
 
+    Examples
+    --------
+    >>> G = nx.DiGraph([(0, 1), (0, 2), (2, 3), (2, 4), (1, 6), (4, 5)])
+    >>> nx.lowest_common_ancestor(G, 3, 5)
+    2
+
+    We can also set `default` argument as below. The value of default is returned
+    if there are no common ancestors of given two nodes.
+
+    >>> G = nx.DiGraph([(4, 5), (12, 13)])
+    >>> nx.lowest_common_ancestor(G, 12, 5, default="No common ancestors!")
+    'No common ancestors!'
+
     Notes
     -----
     Only defined on non-null directed acyclic graphs.
@@ -146,8 +286,7 @@ def lowest_common_ancestor(G, node1, node2, default=None):
     if ans:
         assert len(ans) == 1
         return ans[0][1]
-    else:
-        return default
+    return default
 
 
 @not_implemented_for("undirected")
@@ -169,6 +308,12 @@ def all_pairs_lowest_common_ancestor(G, pairs=None):
     the pairs specified and lca is a lowest common ancestor of the pair.
     Note that for the default of all pairs in G, we consider
     unordered pairs, e.g. you will not get both (b, a) and (a, b).
+
+    Example
+    -------
+    >>> G = nx.DiGraph([(0, 1), (0, 3), (1, 2)])
+    >>> dict(nx.all_pairs_lowest_common_ancestor(G, pairs=[(1, 2), (2, 3)]))
+    {(2, 3): 0, (1, 2): 1}
 
     Notes
     -----

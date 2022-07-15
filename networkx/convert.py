@@ -57,7 +57,7 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
          generator of edges
          Pandas DataFrame (row per edge)
          2D numpy array
-         scipy sparse matrix
+         scipy sparse array
          pygraphviz agraph
 
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
@@ -149,16 +149,16 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
     except ImportError:
         warnings.warn("numpy not found, skipping conversion test.", ImportWarning)
 
-    # scipy sparse matrix - any format
+    # scipy sparse array - any format
     try:
         import scipy
 
         if hasattr(data, "format"):
             try:
-                return nx.from_scipy_sparse_matrix(data, create_using=create_using)
+                return nx.from_scipy_sparse_array(data, create_using=create_using)
             except Exception as err:
                 raise nx.NetworkXError(
-                    "Input is not a correct scipy sparse matrix type."
+                    "Input is not a correct scipy sparse array type."
                 ) from err
     except ImportError:
         warnings.warn("scipy not found, skipping conversion test.", ImportWarning)

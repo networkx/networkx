@@ -202,7 +202,7 @@ class TestLRPlanarity:
         self.check_graph(G, is_planar=True)
 
     def test_graph1(self):
-        G = nx.OrderedGraph(
+        G = nx.Graph(
             [
                 (3, 10),
                 (2, 13),
@@ -219,7 +219,7 @@ class TestLRPlanarity:
         self.check_graph(G, is_planar=True)
 
     def test_graph2(self):
-        G = nx.OrderedGraph(
+        G = nx.Graph(
             [
                 (1, 2),
                 (4, 13),
@@ -243,7 +243,7 @@ class TestLRPlanarity:
         self.check_graph(G, is_planar=False)
 
     def test_graph3(self):
-        G = nx.OrderedGraph(
+        G = nx.Graph(
             [
                 (0, 7),
                 (3, 11),
