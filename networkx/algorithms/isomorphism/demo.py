@@ -1,9 +1,7 @@
 import collections
 import random
-
 import time
 import networkx as nx
-
 from networkx.algorithms.isomorphism.VF2pp_helpers.node_ordering import matching_order
 from networkx.algorithms.isomorphism.VF2pp import isomorphic_VF2pp
 

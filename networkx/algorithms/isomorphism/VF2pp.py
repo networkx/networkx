@@ -14,6 +14,11 @@ from networkx.algorithms.isomorphism.VF2pp_helpers.node_ordering import matching
 
 
 def isomorphic_VF2pp(G1, G2, G1_labels, G2_labels):
+    if not G1 and not G2:
+        return True, {}
+    elif not G1 or not G2:
+        return False, None
+
     mapping, reverse_mapping = dict(), dict()
     T1, T2 = set(), set()
     T1_out, T2_out = set(G1.nodes()), set(G2.nodes())
