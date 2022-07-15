@@ -416,7 +416,7 @@ class CustomDictClass(UserDict):
     pass
 
 
-class SubMultiDiGraph(nx.MultiDiGraph):
+class MultiDiGraphSubClass(nx.MultiDiGraph):
     node_dict_factory = CustomDictClass  # type: ignore
     node_attr_dict_factory = CustomDictClass  # type: ignore
     adjlist_outer_dict_factory = CustomDictClass  # type: ignore
@@ -428,7 +428,7 @@ class SubMultiDiGraph(nx.MultiDiGraph):
 
 class TestMultiDiGraphSubclass(TestMultiDiGraph):
     def setup_method(self):
-        self.Graph = SubMultiDiGraph
+        self.Graph = MultiDiGraphSubClass
         # build K3
         self.k3edges = [(0, 1), (0, 2), (1, 2)]
         self.k3nodes = [0, 1, 2]
