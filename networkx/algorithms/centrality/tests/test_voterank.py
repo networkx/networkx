@@ -26,21 +26,21 @@ class TestVoteRankCentrality:
                 (4, 6),
             ]
         )
-        assert [0, 7, 6] == nx.voterank(G)
+        assert [0, 7, 6] == [node for node, vote in nx.voterank(G)]
 
     # Graph unit test
     def test_voterank_centrality_2(self):
         G = nx.florentine_families_graph()
         d = nx.voterank(G, 4)
         exact = ["Medici", "Strozzi", "Guadagni", "Castellani"]
-        assert exact == d
+        assert exact == [node for node, vote in d]
 
     # DiGraph unit test
     def test_voterank_centrality_3(self):
         G = nx.gnc_graph(10, seed=7)
         d = nx.voterank(G, 4)
         exact = [3, 6, 8]
-        assert exact == d
+        assert exact == [node for node, vote in d]
 
     # MultiGraph unit test
     def test_voterank_centrality_4(self):
@@ -49,7 +49,7 @@ class TestVoteRankCentrality:
             [(0, 1), (0, 1), (1, 2), (2, 5), (2, 5), (5, 6), (5, 6), (2, 4), (4, 3)]
         )
         exact = [2, 1, 5, 4]
-        assert exact == nx.voterank(G)
+        assert exact == [node for node, vote in nx.voterank(G)]
 
     # MultiDiGraph unit test
     def test_voterank_centrality_5(self):
@@ -58,4 +58,4 @@ class TestVoteRankCentrality:
             [(0, 1), (0, 1), (1, 2), (2, 5), (2, 5), (5, 6), (5, 6), (2, 4), (4, 3)]
         )
         exact = [2, 0, 5, 4]
-        assert exact == nx.voterank(G)
+        assert exact == [node for node, vote in nx.voterank(G)]

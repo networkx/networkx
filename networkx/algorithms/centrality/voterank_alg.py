@@ -76,13 +76,13 @@ def voterank(G, number_of_nodes=None):
             vote_rank[n][0] += vote_rank[nbr][1]
             if not G.is_directed():
                 vote_rank[nbr][0] += vote_rank[n][1]
-        for n in influential_nodes:
+        for n, v in influential_nodes:
             vote_rank[n][0] = 0
         # step 3 - select top node
         n = max(G.nodes, key=lambda x: vote_rank[x][0])
         if vote_rank[n][0] == 0:
             return influential_nodes
-        influential_nodes.append(n)
+        influential_nodes.append((n, vote_rank[n][0]))
         # weaken the selected node
         vote_rank[n] = [0, 0]
         # step 4 - update voterank properties
