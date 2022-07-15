@@ -5,7 +5,8 @@ Morse Trie
 
 A prefix tree (aka a "trie") representing the Morse encoding of the alphabet.
 A letter can be encoded by tracing the path from the corresponding node in the
-tree to the root node.
+tree to the root node, reversing the order of the symbols encountered along
+the path.
 """
 import networkx as nx
 
