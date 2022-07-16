@@ -128,7 +128,8 @@ class TestThinDiGraph(BaseDiGraphTester):
         self.k3edges = [(0, 1), (0, 2), (1, 2)]
         self.k3nodes = [0, 1, 2]
         self.K3 = self.Graph()
-        self.K3._adj = self.K3._succ = self.k3adj
+        self.K3._succ = self.k3adj
+        # K3._adj is synced with K3._succ
         self.K3._pred = {0: {1: ed3, 2: ed5}, 1: {0: ed1, 2: ed6}, 2: {0: ed2, 1: ed4}}
         self.K3._node = {}
         self.K3._node[0] = {}
@@ -137,8 +138,8 @@ class TestThinDiGraph(BaseDiGraphTester):
 
         ed1, ed2 = (all_edge_dict, all_edge_dict)
         self.P3 = self.Graph()
-        self.P3._adj = {0: {1: ed1}, 1: {2: ed2}, 2: {}}
-        self.P3._succ = self.P3._adj
+        self.P3._succ = {0: {1: ed1}, 1: {2: ed2}, 2: {}}
+        # P3._adj is synced with P3._succ
         self.P3._pred = {0: {}, 1: {0: ed1}, 2: {1: ed2}}
         self.P3._node = {}
         self.P3._node[0] = {}

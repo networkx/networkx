@@ -259,8 +259,8 @@ class TestMultiDiGraph(BaseMultiDiGraphTester, _TestMultiGraph):
         self.k3edges = [(0, 1), (0, 2), (1, 2)]
         self.k3nodes = [0, 1, 2]
         self.K3 = self.Graph()
-        self.K3._adj = {0: {}, 1: {}, 2: {}}
-        self.K3._succ = self.K3._adj
+        self.K3._succ = {0: {}, 1: {}, 2: {}}
+        # K3._adj is synced with K3._succ
         self.K3._pred = {0: {}, 1: {}, 2: {}}
         for u in self.k3nodes:
             for v in self.k3nodes:
@@ -433,14 +433,14 @@ class TestMultiDiGraphSubclass(TestMultiDiGraph):
         self.k3edges = [(0, 1), (0, 2), (1, 2)]
         self.k3nodes = [0, 1, 2]
         self.K3 = self.Graph()
-        self.K3._adj = self.K3.adjlist_outer_dict_factory(
+        self.K3._succ = self.K3.adjlist_outer_dict_factory(
             {
                 0: self.K3.adjlist_inner_dict_factory(),
                 1: self.K3.adjlist_inner_dict_factory(),
                 2: self.K3.adjlist_inner_dict_factory(),
             }
         )
-        self.K3._succ = self.K3._adj
+        # K3._adj is synced with K3._succ
         self.K3._pred = {0: {}, 1: {}, 2: {}}
         for u in self.k3nodes:
             for v in self.k3nodes:
