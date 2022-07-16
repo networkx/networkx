@@ -13,10 +13,26 @@ from networkx.algorithms.isomorphism.VF2pp_helpers.candidates import find_candid
 from networkx.algorithms.isomorphism.VF2pp_helpers.node_ordering import matching_order
 
 
+def precheck(G1, G2, G1_labels, G2_labels):
+    if not G1 or not G2:
+        return False
+    if G1.order() != G2.order():
+        return False
+    if sorted(d for n, d in G1.degree()) != sorted(d for n, d in G2.degree()):
+        return False
+
+    nodes_per_label1 = {label: len(nodes) for label, nodes in nx.utils.groups(G1_labels).items()}
+    nodes_per_label2 = {label: len(nodes) for label, nodes in nx.utils.groups(G2_labels).items()}
+
+    if nodes_per_label1 != nodes_per_label2:
+        return False
+
+    return True
+
 def isomorphic_VF2pp(G1, G2, G1_labels, G2_labels):
     if not G1 and not G2:
         return True, {}
-    elif not G1 or not G2:
+    if not precheck(G1, G2, G1_labels, G2_labels):
         return False, None
 
     mapping, reverse_mapping = dict(), dict()

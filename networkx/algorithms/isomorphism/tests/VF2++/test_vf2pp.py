@@ -200,13 +200,49 @@ class TestVF2pp:
     def test_custom_graph3(self):
         G1 = nx.Graph()
         G2 = nx.Graph()
-        edges1 = [(1, 2), (1, 3), (2, 3), (3, 4), (4, 5), (4, 7), (4, 9), (5, 8), (8, 9), (5, 6), (6, 7), (5, 2)]
-        edges2 = [(9, 8), (8, 7), (9, 7), (6, 7), (6, 3), (3, 2), (2, 1), (1, 6), (3, 5), (5, 4), (4, 6), (3, 8)]
+        edges1 = [
+            (1, 2),
+            (1, 3),
+            (2, 3),
+            (3, 4),
+            (4, 5),
+            (4, 7),
+            (4, 9),
+            (5, 8),
+            (8, 9),
+            (5, 6),
+            (6, 7),
+            (5, 2),
+        ]
+        edges2 = [
+            (9, 8),
+            (8, 7),
+            (9, 7),
+            (6, 7),
+            (6, 3),
+            (3, 2),
+            (2, 1),
+            (1, 6),
+            (3, 5),
+            (5, 4),
+            (4, 6),
+            (3, 8),
+        ]
 
         G1.add_edges_from(edges1)
         G2.add_edges_from(edges2)
 
-        colors = ["white", "black", "green", "purple", "orange", "red", "blue", "grey", "none"]
+        colors = [
+            "white",
+            "black",
+            "green",
+            "purple",
+            "orange",
+            "red",
+            "blue",
+            "grey",
+            "none",
+        ]
         mapped = {1: 9, 2: 8, 3: 7, 4: 6, 5: 3, 8: 5, 9: 4, 7: 1, 6: 2}
 
         for node in G1.nodes():
@@ -222,13 +258,49 @@ class TestVF2pp:
     def test_custom_graph3_cases(self):
         G1 = nx.Graph()
         G2 = nx.Graph()
-        edges1 = [(1, 2), (1, 3), (2, 3), (3, 4), (4, 5), (4, 7), (4, 9), (5, 8), (8, 9), (5, 6), (6, 7), (5, 2)]
-        edges2 = [(9, 8), (8, 7), (9, 7), (6, 7), (6, 3), (3, 2), (2, 1), (1, 6), (3, 5), (5, 4), (4, 6), (3, 8)]
+        edges1 = [
+            (1, 2),
+            (1, 3),
+            (2, 3),
+            (3, 4),
+            (4, 5),
+            (4, 7),
+            (4, 9),
+            (5, 8),
+            (8, 9),
+            (5, 6),
+            (6, 7),
+            (5, 2),
+        ]
+        edges2 = [
+            (9, 8),
+            (8, 7),
+            (9, 7),
+            (6, 7),
+            (6, 3),
+            (3, 2),
+            (2, 1),
+            (1, 6),
+            (3, 5),
+            (5, 4),
+            (4, 6),
+            (3, 8),
+        ]
 
         G1.add_edges_from(edges1)
         G2.add_edges_from(edges2)
 
-        colors = ["white", "black", "green", "purple", "orange", "red", "blue", "grey", "none"]
+        colors = [
+            "white",
+            "black",
+            "green",
+            "purple",
+            "orange",
+            "red",
+            "blue",
+            "grey",
+            "none",
+        ]
         mapped = {1: 9, 2: 8, 3: 7, 4: 6, 5: 3, 8: 5, 9: 4, 7: 1, 6: 2}
 
         for node in G1.nodes():
