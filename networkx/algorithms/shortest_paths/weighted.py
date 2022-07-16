@@ -813,7 +813,7 @@ def _dijkstra_multisource(
     as arguments. No need to explicitly return pred or paths.
 
     """
-    G_succ = G._succ if G.is_directed() else G._adj
+    G_succ = G._adj  # For speed-up (and works for both directed and undirected graphs)
 
     push = heappush
     pop = heappop
@@ -1394,7 +1394,7 @@ def _inner_bellman_ford(
     pred_edge = {v: None for v in sources}
     recent_update = {v: nonexistent_edge for v in sources}
 
-    G_succ = G.succ if G.is_directed() else G.adj
+    G_succ = G._adj  # For speed-up (and works for both directed and undirected graphs)
     inf = float("inf")
     n = len(G)
 
@@ -1978,10 +1978,7 @@ def goldberg_radzik(G, source, weight="weight"):
     if len(G) == 1:
         return {source: None}, {source: 0}
 
-    if G.is_directed():
-        G_succ = G.succ
-    else:
-        G_succ = G.adj
+    G_succ = G._adj  # For speed-up (and works for both directed and undirected graphs)
 
     inf = float("inf")
     d = {u: inf for u in G}

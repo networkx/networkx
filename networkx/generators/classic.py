@@ -481,13 +481,14 @@ def empty_graph(n=0, create_using=None, default=Graph):
     """
     if create_using is None:
         G = default()
-    elif hasattr(create_using, "_adj"):
+    elif type(create_using) is type:
+        G = create_using()
+    elif not hasattr(create_using, "adj"):
+        raise TypeError("create_using is not a valid NetworkX graph type or instance")
+    else:
         # create_using is a NetworkX style Graph
         create_using.clear()
         G = create_using
-    else:
-        # try create_using as constructor
-        G = create_using()
 
     _, nodes = n
     G.add_nodes_from(nodes)

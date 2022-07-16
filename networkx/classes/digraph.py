@@ -18,6 +18,55 @@ from networkx.exception import NetworkXError
 __all__ = ["DiGraph"]
 
 
+class _CachedPropertyResetterAdjAndSucc:
+    """Data Descriptor class that syncs and resets cached properties adj and succ
+
+    The cached properties `adj` and `succ` are reset whenever `_adj` or `_succ`
+    are set to new objects. In addition, the attributes `_succ` and `_adj`
+    are synced so these two names point to the same object.
+
+    This object sits on a class and ensures that any instance of that
+    class clears its cached properties "succ" and "adj" whenever the
+    underlying instance attributes "_succ" or "_adj" are set to a new object.
+    It only affects the set process of the obj._adj and obj._succ attribute.
+    All get/del operations act as they normally would.
+
+    For info on Data Descriptors see: https://docs.python.org/3/howto/descriptor.html
+    """
+
+    def __set__(self, obj, value):
+        od = obj.__dict__
+        od["_adj"] = value
+        od["_succ"] = value
+        # reset cached properties
+        if "adj" in od:
+            del od["adj"]
+        if "succ" in od:
+            del od["succ"]
+
+
+class _CachedPropertyResetterPred:
+    """Data Descriptor class for _pred that resets ``pred`` cached_property when needed
+
+    This assumes that the ``cached_property`` ``G.pred`` should be reset whenever
+    ``G._pred`` is set to a new value.
+
+    This object sits on a class and ensures that any instance of that
+    class clears its cached property "pred" whenever the underlying
+    instance attribute "_pred" is set to a new object. It only affects
+    the set process of the obj._pred attribute. All get/del operations
+    act as they normally would.
+
+    For info on Data Descriptors see: https://docs.python.org/3/howto/descriptor.html
+    """
+
+    def __set__(self, obj, value):
+        od = obj.__dict__
+        od["_pred"] = value
+        if "pred" in od:
+            del od["pred"]
+
+
 class DiGraph(Graph):
     """
     Base class for directed graphs.
@@ -260,6 +309,10 @@ class DiGraph(Graph):
     True
     """
 
+    _adj = _CachedPropertyResetterAdjAndSucc()  # type: ignore
+    _succ = _adj  # type: ignore
+    _pred = _CachedPropertyResetterPred()
+
     def __init__(self, incoming_graph_data=None, **attr):
         """Initialize a graph with edges, name, or graph attributes.
 
@@ -298,16 +351,9 @@ class DiGraph(Graph):
         # We store two adjacency lists:
         # the predecessors of node n are stored in the dict self._pred
         # the successors of node n are stored in the dict self._succ=self._adj
-        self._adj = self.adjlist_outer_dict_factory()  # empty adjacency dict
+        self._adj = self.adjlist_outer_dict_factory()  # empty adjacency dict successor
         self._pred = self.adjlist_outer_dict_factory()  # predecessor
-        self._succ = self._adj  # successor
-        # clear cached adjacency properties
-        if hasattr(self, "adj"):
-            delattr(self, "adj")
-        if hasattr(self, "pred"):
-            delattr(self, "pred")
-        if hasattr(self, "succ"):
-            delattr(self, "succ")
+        # Note: self._succ = self._adj  # successor
 
         # attempt to load graph with data
         if incoming_graph_data is not None:
