@@ -19,13 +19,18 @@ def precheck(G1, G2, G1_labels, G2_labels):
     if sorted(d for n, d in G1.degree()) != sorted(d for n, d in G2.degree()):
         return False
 
-    nodes_per_label1 = {label: len(nodes) for label, nodes in nx.utils.groups(G1_labels).items()}
-    nodes_per_label2 = {label: len(nodes) for label, nodes in nx.utils.groups(G2_labels).items()}
+    nodes_per_label1 = {
+        label: len(nodes) for label, nodes in nx.utils.groups(G1_labels).items()
+    }
+    nodes_per_label2 = {
+        label: len(nodes) for label, nodes in nx.utils.groups(G2_labels).items()
+    }
 
     if nodes_per_label1 != nodes_per_label2:
         return False
 
     return True
+
 
 def isomorphic_VF2pp(G1, G2, G1_labels, G2_labels):
     if not G1 and not G2:

@@ -38,12 +38,43 @@ class TestPreCheck:
             G1.nodes[node1]["label"] = "a"
             G2.nodes[node2]["label"] = "a"
 
-        l1, l2 = nx.get_node_attributes(G1, "label"), nx.get_node_attributes(G2, "label")
+        l1, l2 = nx.get_node_attributes(G1, "label"), nx.get_node_attributes(
+            G2, "label"
+        )
         assert precheck(G1, G2, l1, l2)
 
     def test_different_degree_sequences2(self):
-        G1 = nx.Graph([(0, 1), (1, 2), (0, 2), (2, 3), (3, 4), (4, 5), (5, 6), (6, 3), (4, 7), (7, 8), (8, 3)])
-        G2 = nx.Graph([(0, 1), (1, 2), (0, 2), (2, 3), (3, 4), (4, 5), (5, 6), (6, 3), (4, 7), (7, 8), (8, 3), (8, 0)])
+        G1 = nx.Graph(
+            [
+                (0, 1),
+                (1, 2),
+                (0, 2),
+                (2, 3),
+                (3, 4),
+                (4, 5),
+                (5, 6),
+                (6, 3),
+                (4, 7),
+                (7, 8),
+                (8, 3),
+            ]
+        )
+        G2 = nx.Graph(
+            [
+                (0, 1),
+                (1, 2),
+                (0, 2),
+                (2, 3),
+                (3, 4),
+                (4, 5),
+                (5, 6),
+                (6, 3),
+                (4, 7),
+                (7, 8),
+                (8, 3),
+                (8, 0),
+            ]
+        )
         assert not precheck(G1, G2, None, None)
 
         G1.add_edge(6, 1)
@@ -51,12 +82,16 @@ class TestPreCheck:
             G1.nodes[node1]["label"] = "a"
             G2.nodes[node2]["label"] = "a"
 
-        l1, l2 = nx.get_node_attributes(G1, "label"), nx.get_node_attributes(G2, "label")
+        l1, l2 = nx.get_node_attributes(G1, "label"), nx.get_node_attributes(
+            G2, "label"
+        )
         assert precheck(G1, G2, l1, l2)
 
     def test_different_degree_sequences3(self):
         G1 = nx.Graph([(0, 1), (0, 2), (1, 2), (2, 3), (2, 4), (3, 4), (2, 5), (2, 6)])
-        G2 = nx.Graph([(0, 1), (0, 6), (0, 2), (1, 2), (2, 3), (2, 4), (3, 4), (2, 5), (2, 6)])
+        G2 = nx.Graph(
+            [(0, 1), (0, 6), (0, 2), (1, 2), (2, 3), (2, 4), (3, 4), (2, 5), (2, 6)]
+        )
         assert not precheck(G1, G2, None, None)
 
         G1.add_edge(3, 5)
@@ -64,7 +99,9 @@ class TestPreCheck:
             G1.nodes[node1]["label"] = "a"
             G2.nodes[node2]["label"] = "a"
 
-        l1, l2 = nx.get_node_attributes(G1, "label"), nx.get_node_attributes(G2, "label")
+        l1, l2 = nx.get_node_attributes(G1, "label"), nx.get_node_attributes(
+            G2, "label"
+        )
         assert precheck(G1, G2, l1, l2)
 
     def test_label_distribution1(self):
@@ -77,7 +114,9 @@ class TestPreCheck:
             G1.nodes[n1]["label"] = color
             G2.nodes[n2]["label"] = color
 
-        l1, l2 = nx.get_node_attributes(G1, "label"), nx.get_node_attributes(G2, "label")
+        l1, l2 = nx.get_node_attributes(G1, "label"), nx.get_node_attributes(
+            G2, "label"
+        )
         assert precheck(G1, G2, l1, l2)
 
         G1.nodes[0]["label"] = "orange"
@@ -94,7 +133,9 @@ class TestPreCheck:
             G1.nodes[n1]["label"] = color
             G2.nodes[n2]["label"] = color
 
-        l1, l2 = nx.get_node_attributes(G1, "label"), nx.get_node_attributes(G2, "label")
+        l1, l2 = nx.get_node_attributes(G1, "label"), nx.get_node_attributes(
+            G2, "label"
+        )
         assert precheck(G1, G2, l1, l2)
 
         G1.nodes[0]["labels"] = "green"
@@ -114,10 +155,14 @@ class TestPreCheck:
             G1.nodes[n1]["label"] = color1
             G2.nodes[n2]["label"] = color2
 
-        l1, l2 = nx.get_node_attributes(G1, "label"), nx.get_node_attributes(G2, "label")
+        l1, l2 = nx.get_node_attributes(G1, "label"), nx.get_node_attributes(
+            G2, "label"
+        )
         assert not precheck(G1, G2, l1, l2)
 
         G2.nodes[3]["label"] = "blue"
         l2.update({3: "blue"})
-        l1, l2 = nx.get_node_attributes(G1, "label"), nx.get_node_attributes(G2, "label")
+        l1, l2 = nx.get_node_attributes(G1, "label"), nx.get_node_attributes(
+            G2, "label"
+        )
         assert precheck(G1, G2, l1, l2)

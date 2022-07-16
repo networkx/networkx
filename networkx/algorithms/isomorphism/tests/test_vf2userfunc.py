@@ -149,7 +149,9 @@ class TestEdgeMatch_MultiGraph:
             self.emcm = iso.categorical_multiedge_match(["color", "weight"], ["", 1])
             self.emg1 = iso.generic_multiedge_match("color", "red", eq)
             self.emg2 = iso.generic_multiedge_match(
-                ["color", "weight", "size"], ["red", 1, 0.5], [eq, eq, math.isclose],
+                ["color", "weight", "size"],
+                ["red", 1, 0.5],
+                [eq, eq, math.isclose],
             )
         else:
             self.em = iso.numerical_edge_match("weight", 1)
@@ -157,7 +159,9 @@ class TestEdgeMatch_MultiGraph:
             self.emcm = iso.categorical_edge_match(["color", "weight"], ["", 1])
             self.emg1 = iso.generic_multiedge_match("color", "red", eq)
             self.emg2 = iso.generic_edge_match(
-                ["color", "weight", "size"], ["red", 1, 0.5], [eq, eq, math.isclose],
+                ["color", "weight", "size"],
+                ["red", 1, 0.5],
+                [eq, eq, math.isclose],
             )
 
     def test_weights_only(self):

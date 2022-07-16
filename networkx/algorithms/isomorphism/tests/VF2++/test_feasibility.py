@@ -69,8 +69,7 @@ class TestFeasibilityISO:
         assert feasible == 1756
 
     def test_iso_feasibility1(self):
-        """Uses the same graph as G1 and G2, and checks if there is only one feasible candidate for every node of G1.
-        """
+        """Uses the same graph as G1 and G2, and checks if there is only one feasible candidate for every node of G1."""
         G1_labels = {n: self.G.nodes[n]["label"] for n in self.G.nodes()}
         G2_labels = G1_labels
         m = {
