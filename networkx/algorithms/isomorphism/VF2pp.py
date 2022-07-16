@@ -14,8 +14,6 @@ from networkx.algorithms.isomorphism.VF2pp_helpers.node_ordering import matching
 
 
 def precheck(G1, G2, G1_labels, G2_labels):
-    if not G1 or not G2:
-        return False
     if G1.order() != G2.order():
         return False
     if sorted(d for n, d in G1.degree()) != sorted(d for n, d in G2.degree()):
