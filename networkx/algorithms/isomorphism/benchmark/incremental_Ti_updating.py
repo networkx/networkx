@@ -5,6 +5,7 @@ import networkx as nx
 from networkx.algorithms.isomorphism.VF2pp import isomorphic_VF2pp
 from networkx.algorithms.isomorphism.VF2pp_helpers.candidates import find_candidates
 from networkx.algorithms.isomorphism.VF2pp_helpers.feasibility import check_feasibility
+from networkx.algorithms.isomorphism.VF2pp_helpers.node_ordering import matching_order
 
 
 def compute_Ti(G1, G2, mapping, reverse_mapping):
@@ -21,12 +22,13 @@ def compute_Ti(G1, G2, mapping, reverse_mapping):
     return T1, T2, T1_out, T2_out
 
 
-def isomorphic_VF2pp2(G1, G2, G1_labels, G2_labels, node_order):
+def isomorphic_VF2pp2(G1, G2, G1_labels, G2_labels):
     mapping, reverse_mapping = dict(), dict()
     T1, T2 = set(), set()
     T1_out, T2_out = set(G1.nodes()), set(G2.nodes())
     visited = set()
 
+    node_order = matching_order(G1, G2,G1_labels, G2_labels)
     starting_node = node_order.pop(0)
     candidates = find_candidates(
         G1, G2, G1_labels, G2_labels, starting_node, mapping, reverse_mapping
@@ -143,7 +145,7 @@ for V in number_of_nodes:
 
     # G1.add_edges_from(G1_edges)
     # G2.add_edges_from(G2_edges)
-    # G1.add_node(0)  # todo: problem when a node is not connected to the graph. Figure out the problem.
+    # G1.add_node(0)
     # G2.add_node(0)
 
     # mapped_nodes = {0: 0, 1: 9, 2: 8, 3: 7, 4: 6, 5: 5, 6: 4, 7: 1, 8: 3, 9: 2}
@@ -165,20 +167,13 @@ for V in number_of_nodes:
     G1_labels = nx.get_node_attributes(G1, "label")
     G2_labels = nx.get_node_attributes(G2, "label")
 
-    # Node ordering
-    node_order = [
-        n for n in G1.nodes()
-    ]  # todo: dummy ordering until the issue with "match_ordering" is fixed
-
     # VF2++
     t0 = time.time()
-    mapping = isomorphic_VF2pp(G1, G2, G1_labels, G2_labels, node_order)
+    mapping = isomorphic_VF2pp(G1, G2, G1_labels, G2_labels)
     times_incremental.append(time.time() - t0)
 
-    node_order = [n for n in G1.nodes()]
-
     t0 = time.time()
-    mapping1 = isomorphic_VF2pp2(G1, G2, G1_labels, G2_labels, node_order)
+    mapping1 = isomorphic_VF2pp2(G1, G2, G1_labels, G2_labels)
     times_brute_force.append(time.time() - t0)
 
     # print(mapping)
