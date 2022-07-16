@@ -56,8 +56,6 @@ class TestFeasibilityISO:
                 G2_labels,
                 1756,
                 n,
-                m,
-                m,
                 T1,
                 T1_out,
                 T2,

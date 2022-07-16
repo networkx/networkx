@@ -1,9 +1,5 @@
 import collections
-import random
-import time
 import networkx as nx
-import matplotlib.pyplot as plt
-from networkx.drawing.nx_agraph import graphviz_layout
 from networkx.algorithms.isomorphism.VF2pp_helpers.feasibility import check_feasibility
 from networkx.algorithms.isomorphism.VF2pp_helpers.state import (
     update_Tinout,
@@ -13,26 +9,21 @@ from networkx.algorithms.isomorphism.VF2pp_helpers.candidates import find_candid
 from networkx.algorithms.isomorphism.VF2pp_helpers.node_ordering import matching_order
 
 
-def precheck(G1, G2, G1_labels, G2_labels):
-    if G1.order() != G2.order():
-        return False
-    if sorted(d for n, d in G1.degree()) != sorted(d for n, d in G2.degree()):
-        return False
-
-    nodes_per_label1 = {
-        label: len(nodes) for label, nodes in nx.utils.groups(G1_labels).items()
-    }
-    nodes_per_label2 = {
-        label: len(nodes) for label, nodes in nx.utils.groups(G2_labels).items()
-    }
-
-    if nodes_per_label1 != nodes_per_label2:
-        return False
-
-    return True
-
-
 def isomorphic_VF2pp(G1, G2, G1_labels, G2_labels):
+    """Implementation of the VF2++ algorithm.
+
+    Parameters
+    ----------
+    G1,G2: NetworkX Graph or MultiGraph instances.
+        The two graphs to check for isomorphism or monomorphism.
+
+    G1_labels,G2_labels: dict
+        The label of every node in G1 and G2 respectively.
+
+    Returns
+    -------
+    True and the node mapping, if the two graphs are isomorphic. False and None otherwise.
+    """
     if not G1 and not G2:
         return True, {}
     if not precheck(G1, G2, G1_labels, G2_labels):
@@ -127,3 +118,40 @@ def isomorphic_VF2pp(G1, G2, G1_labels, G2_labels):
     if len(mapping) == G1.number_of_nodes():
         return True, mapping
     return False, None
+
+
+def precheck(G1, G2, G1_labels, G2_labels):
+    """Checks if all the pre-requisites are satisfied before calling the isomorphism solver.
+
+    Notes
+    -----
+    Before trying to create the mapping between the nodes of the two graphs, we must check if:
+    1. The two graphs have equal number of nodes
+    2. The degree sequences in the two graphs are identical
+    3. The two graphs have the same label distribution. For example, if G1 has orange nodes but G2 doesn't, there's no
+    point in proceeding to create a mapping.
+
+    Parameters
+    ----------
+    G1,G2: NetworkX Graph or MultiGraph instances.
+        The two graphs to check for isomorphism or monomorphism.
+
+    G1_labels,G2_labels: dict
+        The label of every node in G1 and G2 respectively.
+    """
+    if G1.order() != G2.order():
+        return False
+    if sorted(d for n, d in G1.degree()) != sorted(d for n, d in G2.degree()):
+        return False
+
+    nodes_per_label1 = {
+        label: len(nodes) for label, nodes in nx.utils.groups(G1_labels).items()
+    }
+    nodes_per_label2 = {
+        label: len(nodes) for label, nodes in nx.utils.groups(G2_labels).items()
+    }
+
+    if nodes_per_label1 != nodes_per_label2:
+        return False
+
+    return True
