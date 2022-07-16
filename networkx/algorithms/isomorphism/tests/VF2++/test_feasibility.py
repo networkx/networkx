@@ -1,7 +1,7 @@
 import random
 import networkx as nx
 from networkx.algorithms.isomorphism.VF2pp import check_feasibility
-from networkx.algorithms.isomorphism.VF2pp_helpers.feasibility import prune_ISO
+from networkx.algorithms.isomorphism.VF2pp_helpers.feasibility import cut_PT
 
 
 def compute_Ti(G1, G2, mapping, reverse_mapping):
@@ -49,7 +49,7 @@ class TestFeasibilityISO:
         cnt = 0
         feasible = -1
         for n in self.G.nodes():
-            if not prune_ISO(
+            if not cut_PT(
                 self.G,
                 self.G,
                 G1_labels,

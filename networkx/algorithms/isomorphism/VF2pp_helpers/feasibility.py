@@ -15,6 +15,7 @@ def check_feasibility(
     T1_out,
     T2,
     T2_out,
+    PT="ISO"
 ):
     """Given a candidate pair of nodes u and v from G1 and G2 respectively, checks if it's feasible to extend the
     mapping, i.e. if u and v can be matched.
@@ -47,6 +48,9 @@ def check_feasibility(
     T1_out, T2_out: set
         Ti_out contains all the nodes from Gi, that are neither in the mapping nor in Ti.
 
+    PT: string
+        The problem type we are trying to solve. Values for PT are ("")
+
     Returns
     -------
     True if all checks are successful, False otherwise.
@@ -54,42 +58,27 @@ def check_feasibility(
     if G1.number_of_edges(node1, node1) != G2.number_of_edges(node2, node2):
         return False
 
-    if prune_ISO(
-        G1,
-        G2,
-        G1_labels,
-        G2_labels,
-        node1,
-        node2,
-        T1,
-        T1_out,
-        T2,
-        T2_out,
+    if cut_PT(
+            G1,
+            G2,
+            G1_labels,
+            G2_labels,
+            node1,
+            node2,
+            T1,
+            T1_out,
+            T2,
+            T2_out
     ):
         return False
-    # Check if every covered neighbor of u is mapped to every covered neighbor of v
-    # Also check if there is the same number of edges between the candidates and their neighbors
-    for neighbor in G1[node1]:
-        if neighbor in mapping:
-            if mapping[neighbor] not in G2[node2]:
-                return False
-            elif G1.number_of_edges(node1, neighbor) != G2.number_of_edges(
-                node2, mapping[neighbor]
-            ):
-                return False
 
-    for neighbor in G2[node2]:
-        if neighbor in reverse_mapping:
-            if reverse_mapping[neighbor] not in G1[node1]:
-                return False
-            elif G1.number_of_edges(
-                node1, reverse_mapping[neighbor]
-            ) != G2.number_of_edges(node2, neighbor):
-                return False
+    if not consistent_PT(G1, G2, node1, node2, mapping, reverse_mapping):
+        return False
+
     return True
 
 
-def prune_ISO(
+def cut_PT(
     G1, G2, G1_labels, G2_labels, u, v, T1, T1_out, T2, T2_out
 ):
     """Implements the cutting rules for the ISO problem.
@@ -140,3 +129,48 @@ def prune_ISO(
             return True
 
     return False
+
+
+def consistent_PT(G1, G2, u, v, mapping, reverse_mapping):
+    """Checks the consistency of extending the mapping using the current node pair.
+
+    Parameters
+    ----------
+    G1,G2: NetworkX Graph or MultiGraph instances.
+        The two graphs to check for isomorphism or monomorphism.
+
+    u, v: int
+        The two candidate nodes being examined.
+
+    mapping: dict
+        The mapping as extended so far. Maps nodes of G1 to nodes of G2.
+
+    reverse_mapping: dict
+        The reverse mapping as extended so far. Maps nodes from G2 to nodes of G1. It's basically "mapping" reversed.
+
+    Returns
+    -------
+    True if the pair passes all the consistency checks successfully. False otherwise.
+    """
+    # Check if every covered neighbor of u is mapped to every covered neighbor of v
+    # Also check if there is the same number of edges between the candidates and their neighbors
+    for neighbor in G1[u]:
+        if neighbor in mapping:
+            if mapping[neighbor] not in G2[v]:
+                return False
+            elif G1.number_of_edges(u, neighbor) != G2.number_of_edges(
+                    v, mapping[neighbor]
+            ):
+                return False
+
+    for neighbor in G2[v]:
+        if neighbor in reverse_mapping:
+            if reverse_mapping[neighbor] not in G1[u]:
+                return False
+            elif G1.number_of_edges(
+                    u, reverse_mapping[neighbor]
+            ) != G2.number_of_edges(v, neighbor):
+                return False
+    return True
+
+

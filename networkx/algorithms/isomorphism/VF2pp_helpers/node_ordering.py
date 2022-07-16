@@ -27,11 +27,9 @@ def matching_order(G1, G2, G1_labels, G2_labels):
     if not G1 and not G2:
         return {}
 
-    (
-        nodes_of_G1Labels,
-        nodes_of_G2Labels,
-        V1_unordered
-    ) = initialise_preprocess(G1, G1_labels, G2_labels)
+    (nodes_of_G1Labels, nodes_of_G2Labels, V1_unordered) = initialise_preprocess(
+        G1, G1_labels, G2_labels
+    )
     label_rarity = {label: len(nodes) for label, nodes in nodes_of_G2Labels.items()}
     used_degrees = {node: 0 for node in G1}
     node_order = []
@@ -72,13 +70,7 @@ def matching_order(G1, G2, G1_labels, G2_labels):
 
 
 def BFS_levels(
-        source_node,
-        G1,
-        G1_labels,
-        V1_unordered,
-        label_rarity,
-        used_degree,
-        node_order
+    source_node, G1, G1_labels, V1_unordered, label_rarity, used_degree, node_order
 ):
     """Performs a BFS search, storing and processing each level of the BFS, separately.
 
@@ -112,25 +104,19 @@ def BFS_levels(
     dlevel_nodes = set()
     for node, nbr in nx.bfs_edges(G1, source_node):
         if (
-                node not in dlevel_nodes
+            node not in dlevel_nodes
         ):  # This checks for when we finish one depth of the BFS
             dlevel_nodes.add(nbr)
             continue
 
-        (
-            node_order,
-            label_rarity,
-            _,
-            used_degree,
-            V1_unordered
-        ) = process_level(
+        (node_order, label_rarity, _, used_degree, V1_unordered) = process_level(
             V1_unordered,
             G1,
             G1_labels,
             node_order,
             dlevel_nodes,
             label_rarity,
-            used_degree
+            used_degree,
         )
 
         # initialize next level to indicate that we finished the next depth of the BFS
@@ -138,18 +124,12 @@ def BFS_levels(
         dlevel_nodes = {nbr}
     # Process the last level
     return process_level(
-        V1_unordered,
-        G1,
-        G1_labels,
-        node_order,
-        dlevel_nodes,
-        label_rarity,
-        used_degree
+        V1_unordered, G1, G1_labels, node_order, dlevel_nodes, label_rarity, used_degree
     )
 
 
 def process_level(
-        V1_unordered, G1, G1_labels, order, dlevel_nodes, label_rarity, used_degree
+    V1_unordered, G1, G1_labels, order, dlevel_nodes, label_rarity, used_degree
 ):
     """Processes the nodes of a BFS level.
 
