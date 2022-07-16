@@ -787,6 +787,10 @@ def set_edge_attributes(G, values, name=None):
         >>> G[1][2]["attr2"]
         3
 
+    The attributes of one Graph can be used to set those of another.
+        >>> H = nx.path_graph(3)
+        >>> nx.set_edge_attributes(H, G.edges)
+
     Note that if the dict contains edges that are not in `G`, they are
     silently ignored::
 
@@ -798,30 +802,25 @@ def set_edge_attributes(G, values, name=None):
     For multigraphs, the `values` dict is expected to be keyed by 3-tuples
     including the edge key::
 
-        >>> G = nx.MultiGraph()
+        >>> MG = nx.MultiGraph()
         >>> edges = [(0, 1), (0, 1)]
-        >>> G.add_edges_from(edges)  # Returns list of edge keys
+        >>> MG.add_edges_from(edges)  # Returns list of edge keys
         [0, 1]
         >>> attributes = {(0, 1, 0): {"cost": 21}, (0, 1, 1): {"cost": 7}}
-        >>> nx.set_edge_attributes(G, attributes)
-        >>> G[0][1][0]["cost"]
+        >>> nx.set_edge_attributes(MG, attributes)
+        >>> MG[0][1][0]["cost"]
         21
-        >>> G[0][1][1]["cost"]
+        >>> MG[0][1][1]["cost"]
         7
 
-    The Attributes of one Graph can be set for another. It doesn't matter the
-    exact type of Graph. If its Multigraph attributes assigned to a Path Graph
-    with same nodes, the edge would take the last attribute value being passed
-    for the same edge. If the edge doesn't exist it is simpy ignored. An example
-    continuing from the previous case is shown below::
+    If MultiGraph attributes are desired for a Graph, you must convert the 3-tuple
+    multiedge to a 2-tuple edge and the last multiedge's attribute value will
+    overwrite the previous values. Continuing from the previous case we get::
 
         >>> H = nx.path_graph([0, 1, 2])
-        >>> attributesH = {(u, v) : attributes for u, v, attributes in list(G.edges(data = True))}
-        >>> attributesH
-        {(0, 1): {'cost': 7}}
-        >>> nx.set_edge_attributes(H, attributesH)
-        >>> H[0][1]["cost"]
-        7
+        >>> nx.set_edge_attributes(H, {(u, v): ed for u, v, ed in MG.edges.data()})
+        >>> nx.get_edge_attributes(H, "cost")
+        {(0, 1): 7}
 
     """
     if name is not None:
