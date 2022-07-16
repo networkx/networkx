@@ -28,7 +28,7 @@ def isomorphic_VF2pp2(G1, G2, G1_labels, G2_labels):
     T1_out, T2_out = set(G1.nodes()), set(G2.nodes())
     visited = set()
 
-    node_order = matching_order(G1, G2,G1_labels, G2_labels)
+    node_order = matching_order(G1, G2, G1_labels, G2_labels)
     starting_node = node_order.pop(0)
     candidates = find_candidates(
         G1, G2, G1_labels, G2_labels, starting_node, mapping, reverse_mapping
