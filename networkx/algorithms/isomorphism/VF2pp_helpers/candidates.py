@@ -6,11 +6,8 @@ def find_candidates(G1, G2, G1_labels, G2_labels, u, mapping, reverse_mapping):
     G1,G2: NetworkX Graph or MultiGraph instances.
         The two graphs to check for isomorphism or monomorphism.
 
-    G1_labels: dict
-        The label of every node in G1.
-
-    G2_labels: dict
-        The label of every node in G2.
+    G1_labels,G2_labels: dict
+        The label of every node in G1 and G2 respectively.
 
     u: int
         The node from G1 for which to find the candidates from G2.

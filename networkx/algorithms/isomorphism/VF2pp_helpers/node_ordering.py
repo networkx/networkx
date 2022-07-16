@@ -17,11 +17,8 @@ def matching_order(G1, G2, G1_labels, G2_labels):
     G1,G2: NetworkX Graph or MultiGraph instances.
         The two graphs to check for isomorphism or monomorphism.
 
-    G1_labels: dict
-        The label of every node in G1.
-
-    G2_labels: dict
-        The label of every node in G2.
+    G1_labels,G2_labels: dict
+        The label of every node in G1 and G2 respectively.
 
     Returns
     -------
@@ -225,11 +222,8 @@ def initialise_preprocess(G1, G1_labels, G2_labels):
     G1: NetworkX Graph or MultiGraph instances.
         The graph on which the BFS is performed.
 
-    G1_labels: dict
-        The label of every node in G1.
-
-    G2_labels: dict
-        The label of every node in G2.
+    G1_labels,G2_labels: dict
+        The label of every node in G1 and G2 respectively.
     """
     nodes_of_G1Labels = nx.utils.groups(G1_labels)
     nodes_of_G2Labels = nx.utils.groups(G2_labels)

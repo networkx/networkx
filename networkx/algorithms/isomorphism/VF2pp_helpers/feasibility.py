@@ -16,7 +16,41 @@ def check_feasibility(
     T2,
     T2_out,
 ):
-    # todo: add IND, SUB cases as well
+    """Given a candidate pair of nodes u and v from G1 and G2 respectively, checks if it's feasible to extend the
+    mapping, i.e. if u and v can be matched.
+
+    Notes
+    -----
+    This function performs all the necessary checking by applying both consistency and cutting rules.
+
+    Parameters
+    ----------
+    node1,node2: int
+        The two candidate nodes being checked.
+
+    G1,G2: NetworkX Graph or MultiGraph instances.
+        The two graphs to check for isomorphism or monomorphism.
+
+    G1_labels,G2_labels: dict
+        The label of every node in G1 and G2 respectively.
+
+    mapping: dict
+        The mapping as extended so far. Maps nodes of G1 to nodes of G2.
+
+    reverse_mapping: dict
+        The reverse mapping as extended so far. Maps nodes from G2 to nodes of G1. It's basically "mapping" reversed.
+
+    T1, T2: set
+        Ti contains uncovered neighbors of covered nodes from Gi, i.e. nodes that are not in the mapping, but are
+        neighbors of nodes that are.
+
+    T1_out, T2_out: set
+        Ti_out contains all the nodes from Gi, that are neither in the mapping nor in Ti.
+
+    Returns
+    -------
+    True if all checks are successful, False otherwise.
+    """
     if G1.number_of_edges(node1, node1) != G2.number_of_edges(node2, node2):
         return False
 
@@ -27,8 +61,6 @@ def check_feasibility(
         G2_labels,
         node1,
         node2,
-        mapping,
-        reverse_mapping,
         T1,
         T1_out,
         T2,
@@ -58,8 +90,32 @@ def check_feasibility(
 
 
 def prune_ISO(
-    G1, G2, G1_labels, G2_labels, u, v, mapping, reverse_mapping, T1, T1_out, T2, T2_out
+    G1, G2, G1_labels, G2_labels, u, v, T1, T1_out, T2, T2_out
 ):
+    """Implements the cutting rules for the ISO problem.
+
+    Parameters
+    ----------
+    G1,G2: NetworkX Graph or MultiGraph instances.
+        The two graphs to check for isomorphism or monomorphism.
+
+    G1_labels,G2_labels: dict
+        The label of every node in G1 and G2 respectively.
+
+    u, v: int
+        The two candidate nodes being examined.
+
+    T1, T2: set
+        Ti contains uncovered neighbors of covered nodes from Gi, i.e. nodes that are not in the mapping, but are
+        neighbors of nodes that are.
+
+    T1_out, T2_out: set
+        Ti_out contains all the nodes from Gi, that are neither in the mapping nor in Ti.
+
+    Returns
+    -------
+    True if we should prune this branch, i.e. the node pair failed the cutting checks. False otherwise.
+    """
     u_neighbors_labels = {n1: G1_labels[n1] for n1 in G1[u]}
     u_labels_neighbors = collections.OrderedDict(
         sorted(nx.utils.groups(u_neighbors_labels).items())
