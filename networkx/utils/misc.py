@@ -20,8 +20,6 @@ from itertools import chain, tee
 
 import networkx as nx
 
-np = nx.lazy_import("numpy")
-
 __all__ = [
     "is_string_like",
     "iterable",
@@ -256,6 +254,8 @@ def _dict_to_numpy_array2(d, mapping=None):
     with optional mapping.
 
     """
+    import numpy as np
+
     if mapping is None:
         s = set(d.keys())
         for k, v in d.items():
@@ -291,6 +291,8 @@ def dict_to_numpy_array1(d, mapping=None):
 
 def _dict_to_numpy_array1(d, mapping=None):
     """Convert a dictionary of numbers to a 1d numpy array with optional mapping."""
+    import numpy as np
+
     if mapping is None:
         s = set(d.keys())
         mapping = dict(zip(s, range(len(s))))
@@ -472,6 +474,8 @@ def create_random_state(random_state=None):
         if None or numpy.random, return the global random number generator used
         by numpy.random.
     """
+    import numpy as np
+
     if random_state is None or random_state is np.random:
         return np.random.mtrand._rand
     if isinstance(random_state, np.random.RandomState):
@@ -507,6 +511,8 @@ class PythonRandomInterface:
         return a + (b - a) * self._rng.random()
 
     def randrange(self, a, b=None):
+        import numpy as np
+
         if isinstance(self._rng, np.random.Generator):
             return self._rng.integers(a, b)
         return self._rng.randint(a, b)
@@ -514,6 +520,8 @@ class PythonRandomInterface:
     # NOTE: the numpy implementations of `choice` don't support strings, so
     # this cannot be replaced with self._rng.choice
     def choice(self, seq):
+        import numpy as np
+
         if isinstance(self._rng, np.random.Generator):
             idx = self._rng.integers(0, len(seq))
         else:
@@ -533,6 +541,8 @@ class PythonRandomInterface:
         return self._rng.choice(list(seq), size=(k,), replace=False)
 
     def randint(self, a, b):
+        import numpy as np
+
         if isinstance(self._rng, np.random.Generator):
             return self._rng.integers(a, b + 1)
         return self._rng.randint(a, b + 1)
