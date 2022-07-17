@@ -5,7 +5,7 @@ import os
 import sys
 import types
 
-__all__ = ["attach", "lazy_import"]
+__all__ = ["attach", "_lazy_import"]
 
 
 def attach(module_name, submodules=None, submod_attrs=None):
@@ -99,9 +99,27 @@ class DelayedImportErrorModule(types.ModuleType):
             )
 
 
-def lazy_import(fullname):
+def _lazy_import(fullname):
     """Return a lazily imported proxy for a module or library.
 
+    Warning
+    -------
+    Importing using this function can currently cause trouble
+    when the user tries to import from a subpackage of a module before
+    the package is fully imported. In particular, this idiom may not work:
+
+      np = lazy_import("numpy")
+      from numpy.lib import recfunctions
+
+    This is due to a difference in the way Python's LazyLoader handles
+    subpackage imports compared to the normal import process. Hopefully
+    we will get Python's LazyLoader to fix this, or find a workaround.
+    In the meantime, this is a potential problem.
+
+    The workaround is to import numpy before importing from the subpackage.
+
+    Notes
+    -----
     We often see the following pattern::
 
       def myfunc():
