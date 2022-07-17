@@ -8,8 +8,8 @@ import networkx.lazy_imports as lazy
 
 
 def test_lazy_import_basics():
-    math = lazy.lazy_import("math")
-    anything_not_real = lazy.lazy_import("anything_not_real")
+    math = lazy._lazy_import("math")
+    anything_not_real = lazy._lazy_import("anything_not_real")
 
     # Now test that accessing attributes does what it should
     assert math.sin(math.pi) == pytest.approx(0, 1e-6)
@@ -29,8 +29,8 @@ def test_lazy_import_basics():
 
 
 def test_lazy_import_impact_on_sys_modules():
-    math = lazy.lazy_import("math")
-    anything_not_real = lazy.lazy_import("anything_not_real")
+    math = lazy._lazy_import("math")
+    anything_not_real = lazy._lazy_import("anything_not_real")
 
     assert type(math) == types.ModuleType
     assert "math" in sys.modules
@@ -39,7 +39,7 @@ def test_lazy_import_impact_on_sys_modules():
 
     # only do this if numpy is installed
     np_test = pytest.importorskip("numpy")
-    np = lazy.lazy_import("numpy")
+    np = lazy._lazy_import("numpy")
     assert type(np) == types.ModuleType
     assert "numpy" in sys.modules
 
@@ -50,8 +50,8 @@ def test_lazy_import_impact_on_sys_modules():
 
 
 def test_lazy_import_nonbuiltins():
-    sp = lazy.lazy_import("scipy")
-    np = lazy.lazy_import("numpy")
+    sp = lazy._lazy_import("scipy")
+    np = lazy._lazy_import("numpy")
     if isinstance(sp, lazy.DelayedImportErrorModule):
         try:
             sp.pi
