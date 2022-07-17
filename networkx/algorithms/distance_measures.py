@@ -14,9 +14,7 @@ __all__ = [
 ]
 
 
-def _extrema_bounding(
-    G, compute="diameter", weight="weight", distance_method="dijkstra"
-):
+def _extrema_bounding(G, compute="diameter", weight="weight"):
 
     """Compute requested extreme distance metric of undirected graph G
 
@@ -49,12 +47,10 @@ def _extrema_bounding(
         dictionary of edge attributes for that edge. The function must
         return a number.
 
-    distance_method : string, optional (default = "dijkstra")
-        The algorithm to use to compute the path length.
-        Supported options: "dijkstra", "bellman-ford"
-        Other inputs produce a ValueError.
-        If `weight` is None, unweighted graph methods are used, and this
-        suggestion is ignored.
+        Weights stored as floating point values can lead to small round-off
+        errors in distances. Use integer weights to avoid this.
+
+        Weights should be positive, since they are distances.
 
     Returns
     -------
@@ -69,6 +65,7 @@ def _extrema_bounding(
         If the graph consists of multiple components
     ValueError
         If `compute` is not one of "diameter", "radius", "periphery", "center", or "eccentricities".
+
     Notes
     -----
     This algorithm was proposed in the following papers:
@@ -113,9 +110,7 @@ def _extrema_bounding(
         high = not high
 
         # get distances from/to current node and derive eccentricity
-        dist = nx.shortest_path_length(
-            G=G, source=current, weight=weight, method=distance_method
-        )
+        dist = nx.shortest_path_length(G=G, source=current, weight=weight)
 
         if len(dist) != N:
             msg = "Cannot compute metric because graph is not connected."
@@ -238,7 +233,7 @@ def _extrema_bounding(
     return None
 
 
-def eccentricity(G, v=None, sp=None, weight="weight", distance_method="dijkstra"):
+def eccentricity(G, v=None, sp=None, weight="weight"):
     """Returns the eccentricity of nodes in G.
 
     The eccentricity of a node v is the maximum distance from v to
@@ -268,12 +263,10 @@ def eccentricity(G, v=None, sp=None, weight="weight", distance_method="dijkstra"
         dictionary of edge attributes for that edge. The function must
         return a number.
 
-    distance_method : string, optional (default = "dijkstra")
-        The algorithm to use to compute the path length.
-        Supported options: "dijkstra", "bellman-ford"
-        Other inputs produce a ValueError.
-        If `weight` is None, unweighted graph methods are used, and this
-        suggestion is ignored.
+        Weights stored as floating point values can lead to small round-off
+        errors in distances. Use integer weights to avoid this.
+
+        Weights should be positive, since they are distances.
 
     Returns
     -------
@@ -300,9 +293,7 @@ def eccentricity(G, v=None, sp=None, weight="weight", distance_method="dijkstra"
     e = {}
     for n in G.nbunch_iter(v):
         if sp is None:
-            length = nx.shortest_path_length(
-                G=G, source=n, weight=weight, method=distance_method
-            )
+            length = nx.shortest_path_length(G=G, source=n, weight=weight)
 
             L = len(length)
         else:
@@ -328,7 +319,7 @@ def eccentricity(G, v=None, sp=None, weight="weight", distance_method="dijkstra"
     return e
 
 
-def diameter(G, e=None, usebounds=False, weight="weight", distance_method="dijkstra"):
+def diameter(G, e=None, usebounds=False, weight="weight"):
     """Returns the diameter of the graph G.
 
     The diameter is the maximum eccentricity.
@@ -354,12 +345,10 @@ def diameter(G, e=None, usebounds=False, weight="weight", distance_method="dijks
         dictionary of edge attributes for that edge. The function must
         return a number.
 
-    distance_method : string, optional (default = "dijkstra")
-        The algorithm to use to compute the path length.
-        Supported options: "dijkstra", "bellman-ford"
-        Other inputs produce a ValueError.
-        If `weight` is None, unweighted graph methods are used, and this
-        suggestion is ignored.
+        Weights stored as floating point values can lead to small round-off
+        errors in distances. Use integer weights to avoid this.
+
+        Weights should be positive, since they are distances.
 
     Returns
     -------
@@ -377,15 +366,13 @@ def diameter(G, e=None, usebounds=False, weight="weight", distance_method="dijks
     eccentricity
     """
     if usebounds is True and e is None and not G.is_directed():
-        return _extrema_bounding(
-            G=G, compute="diameter", weight=weight, distance_method=distance_method
-        )
+        return _extrema_bounding(G=G, compute="diameter", weight=weight)
     if e is None:
-        e = eccentricity(G, weight=weight, distance_method=distance_method)
+        e = eccentricity(G, weight=weight)
     return max(e.values())
 
 
-def periphery(G, e=None, usebounds=False, weight="weight", distance_method="dijkstra"):
+def periphery(G, e=None, usebounds=False, weight="weight"):
     """Returns the periphery of the graph G.
 
     The periphery is the set of nodes with eccentricity equal to the diameter.
@@ -411,12 +398,10 @@ def periphery(G, e=None, usebounds=False, weight="weight", distance_method="dijk
         dictionary of edge attributes for that edge. The function must
         return a number.
 
-    distance_method : string, optional (default = "dijkstra")
-        The algorithm to use to compute the path length.
-        Supported options: "dijkstra", "bellman-ford"
-        Other inputs produce a ValueError.
-        If `weight` is None, unweighted graph methods are used, and this
-        suggestion is ignored.
+        Weights stored as floating point values can lead to small round-off
+        errors in distances. Use integer weights to avoid this.
+
+        Weights should be positive, since they are distances.
 
     Returns
     -------
@@ -435,17 +420,15 @@ def periphery(G, e=None, usebounds=False, weight="weight", distance_method="dijk
     center
     """
     if usebounds is True and e is None and not G.is_directed():
-        return _extrema_bounding(
-            G=G, compute="periphery", weight=weight, distance_method=distance_method
-        )
+        return _extrema_bounding(G=G, compute="periphery", weight=weight)
     if e is None:
-        e = eccentricity(G, weight=weight, distance_method=distance_method)
+        e = eccentricity(G, weight=weight)
     diameter = max(e.values())
     p = [v for v in e if e[v] == diameter]
     return p
 
 
-def radius(G, e=None, usebounds=False, weight="weight", distance_method="dijkstra"):
+def radius(G, e=None, usebounds=False, weight="weight"):
     """Returns the radius of the graph G.
 
     The radius is the minimum eccentricity.
@@ -471,12 +454,10 @@ def radius(G, e=None, usebounds=False, weight="weight", distance_method="dijkstr
         dictionary of edge attributes for that edge. The function must
         return a number.
 
-    distance_method : string, optional (default = "dijkstra")
-        The algorithm to use to compute the path length.
-        Supported options: "dijkstra", "bellman-ford"
-        Other inputs produce a ValueError.
-        If `weight` is None, unweighted graph methods are used, and this
-        suggestion is ignored.
+        Weights stored as floating point values can lead to small round-off
+        errors in distances. Use integer weights to avoid this.
+
+        Weights should be positive, since they are distances.
 
     Returns
     -------
@@ -491,15 +472,13 @@ def radius(G, e=None, usebounds=False, weight="weight", distance_method="dijkstr
 
     """
     if usebounds is True and e is None and not G.is_directed():
-        return _extrema_bounding(
-            G=G, compute="radius", weight=weight, distance_method=distance_method
-        )
+        return _extrema_bounding(G=G, compute="radius", weight=weight)
     if e is None:
-        e = eccentricity(G, weight=weight, distance_method=distance_method)
+        e = eccentricity(G, weight=weight)
     return min(e.values())
 
 
-def center(G, e=None, usebounds=False, weight="weight", distance_method="dijkstra"):
+def center(G, e=None, usebounds=False, weight="weight"):
     """Returns the center of the graph G.
 
     The center is the set of nodes with eccentricity equal to radius.
@@ -525,12 +504,10 @@ def center(G, e=None, usebounds=False, weight="weight", distance_method="dijkstr
         dictionary of edge attributes for that edge. The function must
         return a number.
 
-    distance_method : string, optional (default = "dijkstra")
-        The algorithm to use to compute the path length.
-        Supported options: "dijkstra", "bellman-ford"
-        Other inputs produce a ValueError.
-        If `weight` is None, unweighted graph methods are used, and this
-        suggestion is ignored.
+        Weights stored as floating point values can lead to small round-off
+        errors in distances. Use integer weights to avoid this.
+
+        Weights should be positive, since they are distances.
 
     Returns
     -------
@@ -549,11 +526,9 @@ def center(G, e=None, usebounds=False, weight="weight", distance_method="dijkstr
     periphery
     """
     if usebounds is True and e is None and not G.is_directed():
-        return _extrema_bounding(
-            G=G, compute="center", weight=weight, distance_method=distance_method
-        )
+        return _extrema_bounding(G=G, compute="center", weight=weight)
     if e is None:
-        e = eccentricity(G, weight=weight, distance_method=distance_method)
+        e = eccentricity(G, weight=weight)
     radius = min(e.values())
     p = [v for v in e if e[v] == radius]
     return p
