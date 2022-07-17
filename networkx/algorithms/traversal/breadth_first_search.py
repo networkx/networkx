@@ -9,6 +9,7 @@ __all__ = [
     "bfs_predecessors",
     "bfs_successors",
     "descendants_at_distance",
+    "bfs_layers",
 ]
 
 
@@ -368,6 +369,62 @@ def bfs_successors(G, source, depth_limit=None, sort_neighbors=None):
         children = [c]
         parent = p
     yield (parent, children)
+
+
+def bfs_layers(G, sources, layer_limit=None):
+    """Returns all the layes of bfs traversal.
+    Parameters
+    ----------
+    G : NetworkX graph
+        A graph
+
+    source : node in `G` or list of nodes in `G`
+
+    layer_limit : int, optional(default=len(G))
+        Specify the maximum layer depth
+
+    Returns
+    -------
+    dict()
+        key is the distance of layers from the sources and value is the set of nodes in that layer
+
+    Examples
+    --------
+    >>> G = nx.path_graph(5)
+    >>> nx.bfs_layers(G, [0, 4])
+    {0: {0, 4}, 1: {1, 3}, 2: {2}}
+    >>> H = nx.Graph()
+    >>> H.add_edges_from([(0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6)])
+    >>> nx.bfs_layers(H, 1)
+    {0: {1}, 1: {0, 3, 4}, 2: {2}, 3: {5, 6}}
+    >>> nx.bfs_layers(H, [1, 6])
+    {0: {1, 6}, 1: {0, 2, 3, 4}, 2: {5}}
+    """
+    if sources in G:
+        sources = [sources]
+
+    if layer_limit is None:
+        layer_limit = len(G)
+
+    current_distance = 0
+    current_layer = {node for node in sources}
+    visited = {node for node in sources}
+    all_layers = dict()
+
+    # this is basically BFS, except that the current layer only stores the nodes at
+    # current_distance from source at each iteration
+    while current_distance < layer_limit and len(current_layer) != 0:
+        next_layer = set()
+        for node in current_layer:
+            for child in G[node]:
+                if child not in visited:
+                    visited.add(child)
+                    next_layer.add(child)
+        all_layers[current_distance] = current_layer
+        current_layer = next_layer
+        current_distance += 1
+
+    return all_layers
 
 
 def descendants_at_distance(G, source, distance):
