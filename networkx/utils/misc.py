@@ -20,8 +20,6 @@ from itertools import chain, tee
 
 import networkx as nx
 
-np = nx.lazy_import("numpy")
-
 __all__ = [
     "flatten",
     "make_list_of_ints",
