@@ -100,33 +100,33 @@ class TestDistance:
 class TestWeightedDistance:
     def setup_method(self):
         G = nx.Graph()
-        G.add_edge(0, 1, weight=0.6)
-        G.add_edge(0, 2, weight=0.2)
-        G.add_edge(2, 3, weight=0.1)
-        G.add_edge(2, 4, weight=0.7)
-        G.add_edge(2, 5, weight=0.9)
-        G.add_edge(1, 5, weight=0.3)
+        G.add_edge(0, 1, weight=6)
+        G.add_edge(0, 2, weight=2)
+        G.add_edge(2, 3, weight=1)
+        G.add_edge(2, 4, weight=7)
+        G.add_edge(2, 5, weight=9)
+        G.add_edge(1, 5, weight=3)
         self.G = G
 
     def test_eccentricity(self):
-        assert nx.eccentricity(self.G, 1) == 1.5
+        assert nx.eccentricity(self.G, 1) == 15
         e = nx.eccentricity(self.G)
-        assert e[1] == 1.5
+        assert e[1] == 15
 
         e = nx.eccentricity(self.G, v=1)
-        assert e == 1.5
+        assert e == 15
 
         # This behavior changed in version 1.8 (ticket #739)
         e = nx.eccentricity(self.G, v=[1, 1])
-        assert e[1] == 1.5
+        assert e[1] == 15
         e = nx.eccentricity(self.G, v=[1, 2])
-        assert e[1] == 1.5
+        assert e[1] == 15
 
     def test_diameter(self):
-        assert nx.diameter(self.G) == 1.6
+        assert nx.diameter(self.G) == 16
 
     def test_radius(self):
-        assert nx.radius(self.G) == 0.9
+        assert nx.radius(self.G) == 9
 
     def test_periphery(self):
         for v in set(nx.periphery(self.G)):
@@ -137,17 +137,17 @@ class TestWeightedDistance:
             assert nx.eccentricity(self.G, v) == nx.radius(self.G)
 
     def test_bound_diameter(self):
-        assert nx.diameter(self.G, usebounds=True) == 1.6
+        assert nx.diameter(self.G, usebounds=True) == 9
 
     def test_bound_radius(self):
-        assert nx.radius(self.G, usebounds=True) == 0.9
+        assert nx.radius(self.G, usebounds=True) == 6
 
     def test_bound_periphery(self):
-        result = {4, 5}
+        result = {2, 5}
         assert set(nx.periphery(self.G, usebounds=True)) == result
 
     def test_bound_center(self):
-        result = {0, 2}
+        result = {0, 1, 2, 3, 4, 5}
         assert set(nx.center(self.G, usebounds=True)) == result
 
 
