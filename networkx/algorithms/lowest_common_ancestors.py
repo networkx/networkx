@@ -47,8 +47,6 @@ def naive_all_pairs_lowest_common_ancestor(G, pairs=None):
         raise nx.NetworkXError("LCA only defined on directed acyclic graphs.")
     elif len(G) == 0:
         raise nx.NetworkXPointlessConcept("LCA meaningless on null graphs.")
-    elif None in G:
-        raise nx.NetworkXError("None is not a valid node.")
 
     ancestor_cache = {}
 
@@ -180,8 +178,6 @@ def tree_all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
     """
     if len(G) == 0:
         raise nx.NetworkXPointlessConcept("LCA meaningless on null graphs.")
-    elif None in G:
-        raise nx.NetworkXError("None is not a valid node.")
 
     # Index pairs of interest for efficient lookup from either side.
     if pairs is not None:
@@ -333,8 +329,6 @@ def all_pairs_lowest_common_ancestor(G, pairs=None):
         raise nx.NetworkXError("LCA only defined on directed acyclic graphs.")
     elif len(G) == 0:
         raise nx.NetworkXPointlessConcept("LCA meaningless on null graphs.")
-    elif None in G:
-        raise nx.NetworkXError("None is not a valid node.")
 
     # The copy isn't ideal, neither is the switch-on-type, but without it users
     # passing an iterable will encounter confusing errors, and itertools.tee
