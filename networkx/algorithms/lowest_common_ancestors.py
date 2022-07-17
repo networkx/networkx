@@ -28,12 +28,26 @@ def naive_all_pairs_lowest_common_ancestor(G, pairs=None):
         The pairs of nodes of interest.
         If None, will find the LCA of all pairs of nodes.
 
-    Returns
-    -------
-    An iterator over ((node1, node2), lca) where (node1, node2) are
-    the pairs specified and lca is a lowest common ancestor of the pair.
-    Note that for the default of all pairs in G, we consider
-    unordered pairs, e.g. you will not get both (b, a) and (a, b).
+    Yields
+    ------
+    ((node1, node2), lca): lowest common ancestor of node1 and node2
+    For default of all pairs in G, unordered pairs are considered,
+    for e.g. both (b, a) and (a, b) will not be returned.
+
+    Raises
+    ------
+    NetworkXPointlessConcept if G is null.
+    NetworkXError if None is in node list or G is not DAG.
+
+    Examples
+    --------
+    >>> G = nx.DiGraph([(0, 1), (0, 3), (1, 2)])
+    >>> dict(nx.all_pairs_lowest_common_ancestor(G, pairs=[(1, 2), (2, 3)]))
+    {(1, 2): 1, (2, 3): 0}
+
+    >>> G = nx.DiGraph([(0, 1), (0, 3), (1, 2)])
+    >>> dict(nx.all_pairs_lowest_common_ancestor(G))
+    {(0, 0): 0, (0, 1): 0, (0, 3): 0, (0, 2): 0, (1, 1): 1, (1, 3): 0, (1, 2): 1, (3, 3): 3, (3, 2): 0, (2, 2): 2}
 
     Notes
     -----
@@ -302,18 +316,28 @@ def all_pairs_lowest_common_ancestor(G, pairs=None):
         The pairs of nodes of interest.
         If None, will find the LCA of all pairs of nodes.
 
-    Returns
-    -------
-    An iterator over ((node1, node2), lca) where (node1, node2) are
-    the pairs specified and lca is a lowest common ancestor of the pair.
-    Note that for the default of all pairs in G, we consider
-    unordered pairs, e.g. you will not get both (b, a) and (a, b).
+
+    Yields
+    ------
+    ((node1, node2), lca): lowest common ancestor of node1 and node2
+    For default of all pairs in G, unordered pairs are considered,
+    for e.g. both (b, a) and (a, b) will not be returned.
+
+    Raises
+    ------
+    NetworkXPointlessConcept if G is null.
+    NetworkXError if None is in node list or G is not DAG.
+    NodeNotFound if a node in pairs is not in G.
 
     Examples
     --------
     >>> G = nx.DiGraph([(0, 1), (0, 3), (1, 2)])
     >>> dict(nx.all_pairs_lowest_common_ancestor(G, pairs=[(1, 2), (2, 3)]))
     {(2, 3): 0, (1, 2): 1}
+
+    >>> G = nx.DiGraph([(0, 1), (0, 3), (1, 2)])
+    >>> dict(nx.all_pairs_lowest_common_ancestor(G))
+    {(2, 2): 2, (1, 1): 1, (2, 1): 1, (1, 3): 0, (2, 3): 0, (3, 3): 3, (0, 0): 0, (1, 0): 0, (2, 0): 0, (3, 0): 0}
 
     Notes
     -----
