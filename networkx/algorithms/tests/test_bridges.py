@@ -63,7 +63,7 @@ class TestHasBridges:
             (2, 3),
             (3, 4),
             (3, 5),
-            (5, 6),
+            (5, 6),  # The only bridge edge
             (6, 7),
             (7, 8),
             (5, 9),
@@ -76,15 +76,14 @@ class TestHasBridges:
             (6, 8),
         ]
         G = nx.Graph(edges)
-        source = 1
-        has_bridges = nx.has_bridges(G, source)
-        assert has_bridges == True
+        assert nx.has_bridges(G)  # Default root
+        assert nx.has_bridges(G, root=1)  # arbitrary root in G
 
-    def test_barbell_graph(self):
+    def test_has_bridges_raises_root_not_in_G(self):
         # The (3, 0) barbell graph has two triangles joined by a single edge.
         G = nx.barbell_graph(3, 0)
-        source = 6
-        pytest.raises(nx.NodeNotFound, nx.has_bridges, G, source)
+        with pytest.raises(nx.NodeNotFound):
+            nx.has_bridges(G, root=6)
 
     def test_multiedge_bridge(self):
         edges = [
@@ -97,8 +96,10 @@ class TestHasBridges:
             (3, 4),
         ]
         G = nx.MultiGraph(edges)
-        assert nx.has_bridges(G) == True
-
+        assert nx.has_bridges(G)
+        # Make every edge a multiedge
+        G.add_edges_from([(0, 1), (0, 2), (2, 3)])
+        assert not nx.has_bridges(G)
 
 class TestLocalBridges:
     """Unit tests for the local_bridge function."""
