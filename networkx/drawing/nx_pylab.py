@@ -36,6 +36,7 @@ __all__ = [
     "draw_networkx_edges",
     "draw_networkx_labels",
     "draw_networkx_edge_labels",
+    "draw_networkx_curved_edges",
     "draw_circular",
     "draw_kamada_kawai",
     "draw_random",
@@ -888,6 +889,207 @@ def draw_networkx_edges(
     )
 
     return edge_viz_obj
+
+
+def draw_networkx_curved_edges(
+    G,
+    pos,
+    edgelist=None,
+    width=1.0,
+    edge_color="k",
+    style="solid",
+    alpha=None,
+    arrowstyle=None,
+    arrowsize=10,
+    edge_cmap=None,
+    edge_vmin=None,
+    edge_vmax=None,
+    ax=None,
+    label=None,
+    node_size=300,
+    nodelist=None,
+    node_shape="o",
+    connectionstyle="arc3",
+    min_source_margin=0,
+    min_target_margin=0,
+):
+    r"""Draw curved edges of the graph G.
+
+    This draws only the edges of the graph G.
+
+    Parameters
+    ----------
+    G : graph
+        A networkx graph
+
+    pos : dictionary
+        A dictionary with nodes as keys and positions as values.
+        Positions should be sequences of length 2.
+
+    edgelist : collection of edge tuples (default=G.edges())
+        Draw only specified edges
+
+    width : float or array of floats (default=1.0)
+        Line width of edges
+
+    edge_color : color or array of colors (default='k')
+        Edge color. Can be a single color or a sequence of colors with the same
+        length as edgelist. Color can be string or rgb (or rgba) tuple of
+        floats from 0-1. If numeric values are specified they will be
+        mapped to colors using the edge_cmap and edge_vmin,edge_vmax parameters.
+
+    style : string or array of strings (default='solid')
+        Edge line style e.g.: '-', '--', '-.', ':'
+        or words like 'solid' or 'dashed'.
+        Can be a single style or a sequence of styles with the same
+        length as the edge list.
+        If less styles than edges are given the styles will cycle.
+        If more styles than edges are given the styles will be used sequentially
+        and not be exhausted.
+        Also, `(offset, onoffseq)` tuples can be used as style instead of a strings.
+        (See `matplotlib.patches.FancyArrowPatch`: `linestyle`)
+
+    alpha : float or None (default=None)
+        The edge transparency
+
+    edge_cmap : Matplotlib colormap, optional
+        Colormap for mapping intensities of edges
+
+    edge_vmin,edge_vmax : floats, optional
+        Minimum and maximum for edge colormap scaling
+
+    ax : Matplotlib Axes object, optional
+        Draw the graph in the specified Matplotlib axes.
+
+    arrowstyle : str (default='-\|>' for directed graphs)
+        For directed graphs defaults to '-\|>',
+        For undirected graphs default to '-'.
+
+        See `matplotlib.patches.ArrowStyle` for more options.
+
+    connectionstyle : string (default="arc3")
+        For multiedges, connectionstyle is overriden by the method. For other edges,
+        pass the connectionstyle parameter to create curved arc of rounding
+        radius rad. For example, connectionstyle='arc3,rad=0.2'.
+        See `matplotlib.patches.ConnectionStyle` and
+        `matplotlib.patches.FancyArrowPatch` for more info.
+
+    arrowsize : int (default=10)
+        For directed graphs, choose the size of the arrow head's length and
+        width. See `matplotlib.patches.FancyArrowPatch` for attribute
+        `mutation_scale` for more info.
+
+    node_size : scalar or array (default=300)
+        Size of nodes. Though the nodes are not drawn with this function, the
+        node size is used in determining edge positioning.
+
+    nodelist : list, optional (default=G.nodes())
+       This provides the node order for the `node_size` array (if it is an array).
+
+    node_shape :  string (default='o')
+        The marker used for nodes, used in determining edge positioning.
+        Specification is as a `matplotlib.markers` marker, e.g. one of 'so^>v<dph8'.
+
+    label : None or string
+        Label for legend
+
+    min_source_margin : int (default=0)
+        The minimum margin (gap) at the begining of the edge at the source.
+
+    min_target_margin : int (default=0)
+        The minimum margin (gap) at the end of the edge at the target.
+
+    Example
+    -------
+    >>> G = nx.MultiGraph([(0, 1), (0, 1), (0, 2), (0, 2), (0, 2), (3, 0)])
+    >>> positions = {0: (0, 0), 1: (1, -2), 2: (2, 0), 3: (2, 2)}
+    >>> nx.draw_networkx_curved_edges(G, pos=positions)
+
+    Notes
+    -----
+    For directed graphs, arrows are drawn at the head end.  Arrows can be
+    turned off by passing an arrowstyle without
+    an arrow on the end.
+
+    Be sure to include `node_size` as a keyword argument; arrows are
+    drawn considering the size of nodes.
+
+    Self-loops are always drawn with `~matplotlib.patches.FancyArrowPatch`
+    regardless of the value of `arrows` or whether `G` is directed.
+    When ``arrows=False`` or ``arrows=None`` and `G` is undirected, the
+    FancyArrowPatches corresponding to the self-loops are not explicitly
+    returned. They should instead be accessed via the ``Axes.patches``
+    attribute (see examples)."""
+
+    if edgelist == None:
+        edgelist = G.edges()
+
+    if arrowstyle == None:
+        if G.is_directed():
+            arrowstyle = "-|>"
+        else:
+            arrowstyle = "-"
+
+    multiEdgeDict = {}
+    for edge in edgelist:
+        if edge not in multiEdgeDict:
+            multiEdgeDict[edge] = 1
+        else:
+            multiEdgeDict[edge] += 1
+
+    for edge in multiEdgeDict:
+        if multiEdgeDict[edge] == 1 and list(G.edges()).count((edge[1], edge[0])) == 0:
+            nx.draw_networkx_edges(
+                G,
+                pos,
+                edgelist=[edge],
+                width=width,
+                edge_color=edge_color,
+                style=style,
+                alpha=alpha,
+                arrowstyle=arrowstyle,
+                arrowsize=arrowsize,
+                edge_cmap=edge_cmap,
+                edge_vmin=edge_vmin,
+                edge_vmax=edge_vmax,
+                ax=ax,
+                arrows=True,
+                label=label,
+                node_size=node_size,
+                nodelist=nodelist,
+                node_shape=node_shape,
+                connectionstyle=connectionstyle,
+                min_source_margin=min_source_margin,
+                min_target_margin=min_target_margin,
+            )
+        else:
+            bend = 0.5 / multiEdgeDict[edge]
+            rad = bend
+            for i in range(multiEdgeDict[edge]):
+                nx.draw_networkx_edges(
+                    G,
+                    pos,
+                    edgelist=[edge],
+                    width=width,
+                    edge_color=edge_color,
+                    style=style,
+                    alpha=alpha,
+                    arrowstyle=arrowstyle,
+                    arrowsize=arrowsize,
+                    edge_cmap=edge_cmap,
+                    edge_vmin=edge_vmin,
+                    edge_vmax=edge_vmax,
+                    ax=ax,
+                    arrows=True,
+                    label=label,
+                    node_size=node_size,
+                    nodelist=nodelist,
+                    node_shape=node_shape,
+                    connectionstyle="arc3,rad=" + str(rad)[:3],
+                    min_source_margin=min_source_margin,
+                    min_target_margin=min_target_margin,
+                )
+                rad += bend
 
 
 def draw_networkx_labels(
