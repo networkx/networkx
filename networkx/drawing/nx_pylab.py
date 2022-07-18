@@ -1172,6 +1172,7 @@ def draw_networkx_labels(
     draw_networkx
     draw_networkx_nodes
     draw_networkx_edges
+    draw_networkx_curved_edges
     draw_networkx_edge_labels
     """
     import matplotlib.pyplot as plt
@@ -1304,6 +1305,7 @@ def draw_networkx_edge_labels(
     draw_networkx
     draw_networkx_nodes
     draw_networkx_edges
+    draw_networkx_curved_edges
     draw_networkx_labels
     """
     import matplotlib.pyplot as plt
