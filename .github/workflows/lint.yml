@@ -1,6 +1,12 @@
 name: style
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - v2.8
+  pull_request:
+    branches:
+      - v2.8
 
 jobs:
   format:

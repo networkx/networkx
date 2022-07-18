@@ -2,7 +2,7 @@ name: deploy
 
 on:
   push:
-    branches: [ main ]
+    branches: [ v2.8 ]
 
 jobs:
   documentation:
