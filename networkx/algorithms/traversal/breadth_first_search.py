@@ -377,9 +377,9 @@ def bfs_layers(G, sources):
     Parameters
     ----------
     G : NetworkX graph
-        A graph over which to find the layers using breadth first search.
+        A graph over which to find the layers using breadth-first search.
 
-    sources : list of nodes in `G`
+    sources : node in `G` or list of nodes in `G`
         Specify starting nodes for single source or multiple sources breadth-first search
 
     Yields
@@ -399,22 +399,25 @@ def bfs_layers(G, sources):
     >>> dict(enumerate(nx.bfs_layers(H, [1, 6])))
     {0: [1, 6], 1: [0, 3, 4, 2], 2: [5]}
     """
-    for source in list(sources):
-        if not G.has_node(source):
-            raise nx.NetworkXError(f"The node {source} is not in the graph.")
+    if sources in G:
+        sources = [sources]
 
     current_layer = list(sources)
     visited = set(sources)
 
+    for source in current_layer:
+        if source not in G:
+            raise nx.NetworkXError(f"The node {source} is not in the graph.")
+
     # this is basically BFS, except that the current layer only stores the nodes at
     while current_layer:
+        yield current_layer
         next_layer = list()
         for node in current_layer:
             for child in G[node]:
                 if child not in visited:
                     visited.add(child)
                     next_layer.append(child)
-        yield current_layer
         current_layer = next_layer
 
 
