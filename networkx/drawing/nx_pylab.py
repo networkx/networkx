@@ -36,7 +36,7 @@ __all__ = [
     "draw_networkx_edges",
     "draw_networkx_labels",
     "draw_networkx_edge_labels",
-    "draw_networkx_curved_edges",
+    "draw_networkx_multigraph_edges",
     "draw_circular",
     "draw_kamada_kawai",
     "draw_random",
@@ -891,7 +891,7 @@ def draw_networkx_edges(
     return edge_viz_obj
 
 
-def draw_networkx_curved_edges(
+def draw_networkx_multigraph_edges(
     G,
     pos,
     edgelist=None,
@@ -1003,7 +1003,7 @@ def draw_networkx_curved_edges(
     -------
     >>> G = nx.MultiGraph([(0, 1), (0, 1), (0, 2), (0, 2), (0, 2), (3, 0)])
     >>> positions = {0: (0, 0), 1: (1, -2), 2: (2, 0), 3: (2, 2)}
-    >>> nx.draw_networkx_curved_edges(G, pos=positions)
+    >>> nx.draw_networkx_multigraph_edges(G, pos=positions)
 
     Notes
     -----
@@ -1172,7 +1172,7 @@ def draw_networkx_labels(
     draw_networkx
     draw_networkx_nodes
     draw_networkx_edges
-    draw_networkx_curved_edges
+    draw_networkx_multigraph_edges
     draw_networkx_edge_labels
     """
     import matplotlib.pyplot as plt
@@ -1305,7 +1305,7 @@ def draw_networkx_edge_labels(
     draw_networkx
     draw_networkx_nodes
     draw_networkx_edges
-    draw_networkx_curved_edges
+    draw_networkx_multigraph_edges
     draw_networkx_labels
     """
     import matplotlib.pyplot as plt
