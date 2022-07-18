@@ -70,7 +70,7 @@ def bridges(G, root=None):
     chains = nx.chain_decomposition(H, root=root)
     chain_edges = set(chain.from_iterable(chains))
     H_copy = H.copy()
-    if root is None:
+    if root is not None:
         cc_root = nx.node_connected_component(H, root)
         for node in H.nodes():
             if node not in cc_root:
