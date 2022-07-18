@@ -67,21 +67,22 @@ def _extrema_bounding(G, compute="diameter", weight="weight"):
 
     Notes
     -----
-    This algorithm was proposed in the following papers:
+    This algorithm was proposed in [1]_ and discussed further in [2]_ and [3]_.
 
-    F.W. Takes and W.A. Kosters, Determining the Diameter of Small World
-    Networks, in Proceedings of the 20th ACM International Conference on
-    Information and Knowledge Management (CIKM 2011), pp. 1191-1196, 2011.
-    doi: https://doi.org/10.1145/2063576.2063748
-
-    F.W. Takes and W.A. Kosters, Computing the Eccentricity Distribution of
-    Large Graphs, Algorithms 6(1): 100-118, 2013.
-    doi: https://doi.org/10.3390/a6010100
-
-    M. Borassi, P. Crescenzi, M. Habib, W.A. Kosters, A. Marino and F.W. Takes,
-    Fast Graph Diameter and Radius BFS-Based Computation in (Weakly Connected)
-    Real-World Graphs, Theoretical Computer Science 586: 59-80, 2015.
-    doi: https://doi.org/10.1016/j.tcs.2015.02.033
+    References
+    ----------
+    .. [1] F. W. Takes, W. A. Kosters,
+       "Determining the diameter of small world networks."
+       Proceedings of the 20th ACM international conference on Information and knowledge management, 2011
+       https://dl.acm.org/doi/abs/10.1145/2063576.2063748
+    .. [2] F. W. Takes, W. A. Kosters,
+       "Computing the Eccentricity Distribution of Large Graphs."
+       Algorithms, 2013
+       https://www.mdpi.com/1999-4893/6/1/100
+    .. [3] M. Borassi, P. Crescenzi, M. Habib, W. A. Kosters, A. Marino, F. W. Takes,
+       "Fast diameter and radius BFS-based computation in (weakly connected) real-world graphs: With an application to the six degrees of separation games. "
+       Theoretical Computer Science, 2015
+       https://www.sciencedirect.com/science/article/pii/S0304397515001644
     """
     # init variables
     degrees = dict(G.degree())  # start with the highest degree node
@@ -668,15 +669,23 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
 
     Notes
     -----
-    Overview discussion:
-    * https://en.wikipedia.org/wiki/Resistance_distance
-    * http://mathworld.wolfram.com/ResistanceDistance.html
+    Overviews are provided in [1]_ and [2]_. Additional details on computational
+    methods, proofs of properties, and corresponding MATLAB codes are provided
+    in [3]_.
 
-    Additional details:
-    Vaya Sapobi Samui Vos, “Methods for determining the effective resistance,” M.S.,
-    Mathematisch Instituut, Universiteit Leiden, Leiden, Netherlands, 2016
-    Available: `Link to thesis: <https://www.universiteitleiden.nl/binaries/
-    content/assets/science/mi/scripties/master/vos_vaya_master.pdf>`_
+    References
+    ----------
+    .. [1] Wikipedia
+       "Resistance distance."
+       https://en.wikipedia.org/wiki/Resistance_distance
+    .. [2] E. W. Weisstein
+       "Resistance Distance."
+       MathWorld--A Wolfram Web Resource
+       https://mathworld.wolfram.com/ResistanceDistance.html
+    .. [3] V. S. S. Vos,
+       "Methods for determining the effective resistance."
+       Mestrado, Mathematisch Instituut Universiteit Leiden, 2016
+       https://www.universiteitleiden.nl/binaries/content/assets/science/mi/scripties/master/vos_vaya_master.pdf
     """
     import numpy as np
     import scipy as sp
