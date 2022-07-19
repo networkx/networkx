@@ -35,7 +35,7 @@ def isomorphic_VF2pp(G1, G2, G1_labels, G2_labels):
         G1, G2, G1_labels, G2_labels
     )
 
-    while True:
+    while stack:
         current_node, candidate_nodes = stack[-1]
 
         try:
@@ -46,7 +46,7 @@ def isomorphic_VF2pp(G1, G2, G1_labels, G2_labels):
                 visited.add(candidate)
                 update_state(current_node, candidate, graph_params, state_params)
 
-                if not node_order:
+                if not node_order:  # When we match the last node
                     break
 
                 next_node = node_order.popleft()
@@ -54,13 +54,12 @@ def isomorphic_VF2pp(G1, G2, G1_labels, G2_labels):
                 stack.append((next_node, iter(candidates)))
 
         except StopIteration:
-            # Restore the previous state of the algorithm
-            entering_node, _ = stack.pop()  # The node to be returned to the ordering
+            entering_node, _ = stack.pop()
             node_order.appendleft(entering_node)
-            if not stack:
-                break
-
-            restore_state(stack, visited, graph_params, state_params)
+            if (
+                stack
+            ):  # in the last iteration, it will continue and the while condition will terminate
+                restore_state(stack, visited, graph_params, state_params)
 
     if len(state_params.mapping) == G1.number_of_nodes():
         return True, state_params.mapping
