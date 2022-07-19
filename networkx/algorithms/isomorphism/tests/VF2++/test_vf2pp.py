@@ -71,23 +71,13 @@ class TestVF2pp:
 
     def test_custom_graph1(self):
         G1 = nx.Graph()
-        G2 = nx.Graph()
 
-        edges1 = [(1, 2), (1, 3), (1, 4), (2, 3), (3, 4), (5, 1), (5, 2), (5, 4)]
-        edges2 = [
-            ("A", "B"),
-            ("A", "C"),
-            ("A", "D"),
-            ("B", "C"),
-            ("C", "D"),
-            ("Z", "A"),
-            ("Z", "B"),
-            ("Z", "D"),
-        ]
+        mapped = {1: "A", 2: "B", 3: "C", 4: "D", 5: "Z", 6: "E"}
+        edges1 = [(1, 2), (1, 3), (1, 4), (2, 3), (2, 6), (3, 4), (5, 1), (5, 2)]
+
         G1.add_edges_from(edges1)
-        G2.add_edges_from(edges2)
+        G2 = nx.relabel_nodes(G1, mapped)
 
-        mapped = {1: "A", 2: "B", 3: "C", 4: "D", 5: "Z"}
         G1, G2 = assign_labels(G1, G2, mapped)
         l1, l2 = get_labes(G1, G2)
 
@@ -109,24 +99,12 @@ class TestVF2pp:
 
     def test_custom_graph2(self):
         G1 = nx.Graph()
-        G2 = nx.Graph()
-
-        edges1 = [(1, 2), (1, 5), (5, 6), (2, 3), (2, 4), (3, 4), (4, 5), (2, 7)]
-        edges2 = [
-            ("A", "C"),
-            ("C", "D"),
-            ("C", "B"),
-            ("C", "E"),
-            ("D", "E"),
-            ("E", "G"),
-            ("G", "F"),
-            ("A", "G"),
-        ]
-
-        G1.add_edges_from(edges1)
-        G2.add_edges_from(edges2)
 
         mapped = {1: "A", 2: "C", 3: "D", 4: "E", 5: "G", 7: "B", 6: "F"}
+        edges1 = [(1, 2), (1, 5), (5, 6), (2, 3), (2, 4), (3, 4), (4, 5), (2, 7)]
+
+        G1.add_edges_from(edges1)
+        G2 = nx.relabel_nodes(G1, mapped)
 
         G1, G2 = assign_labels(G1, G2, mapped)
         l1, l2 = get_labes(G1, G2)
@@ -137,25 +115,14 @@ class TestVF2pp:
 
     def test_custom_graph2_cases(self):
         G1 = nx.Graph()
-        G2 = nx.Graph()
 
+        mapped = {1: "A", 2: "C", 3: "D", 4: "E", 5: "G", 7: "B", 6: "F"}
         edges1 = [(1, 2), (1, 5), (5, 6), (2, 3), (2, 4), (3, 4), (4, 5), (2, 7)]
-        edges2 = [
-            ("A", "C"),
-            ("C", "D"),
-            ("C", "B"),
-            ("C", "E"),
-            ("D", "E"),
-            ("E", "G"),
-            ("G", "F"),
-            ("A", "G"),
-        ]
 
         colors = ["white", "black", "green", "purple", "orange", "red", "blue"]
         G1.add_edges_from(edges1)
-        G2.add_edges_from(edges2)
+        G2 = nx.relabel_nodes(G1, mapped)
 
-        mapped = {1: "A", 2: "C", 3: "D", 4: "E", 5: "G", 7: "B", 6: "F"}
         for node in G1.nodes():
             color = colors.pop()
             G1.nodes[node]["label"] = color
@@ -200,6 +167,8 @@ class TestVF2pp:
     def test_custom_graph3(self):
         G1 = nx.Graph()
         G2 = nx.Graph()
+
+        mapped = {1: 9, 2: 8, 3: 7, 4: 6, 5: 3, 8: 5, 9: 4, 7: 1, 6: 2}
         edges1 = [
             (1, 2),
             (1, 3),
@@ -214,23 +183,9 @@ class TestVF2pp:
             (6, 7),
             (5, 2),
         ]
-        edges2 = [
-            (9, 8),
-            (8, 7),
-            (9, 7),
-            (6, 7),
-            (6, 3),
-            (3, 2),
-            (2, 1),
-            (1, 6),
-            (3, 5),
-            (5, 4),
-            (4, 6),
-            (3, 8),
-        ]
 
         G1.add_edges_from(edges1)
-        G2.add_edges_from(edges2)
+        G2 = nx.relabel_nodes(G1, mapped)
 
         colors = [
             "white",
@@ -243,7 +198,6 @@ class TestVF2pp:
             "grey",
             "none",
         ]
-        mapped = {1: 9, 2: 8, 3: 7, 4: 6, 5: 3, 8: 5, 9: 4, 7: 1, 6: 2}
 
         for node in G1.nodes():
             color = colors.pop()
@@ -257,7 +211,8 @@ class TestVF2pp:
 
     def test_custom_graph3_cases(self):
         G1 = nx.Graph()
-        G2 = nx.Graph()
+
+        mapped = {1: 9, 2: 8, 3: 7, 4: 6, 5: 3, 8: 5, 9: 4, 7: 1, 6: 2}
         edges1 = [
             (1, 2),
             (1, 3),
@@ -272,23 +227,8 @@ class TestVF2pp:
             (6, 7),
             (5, 2),
         ]
-        edges2 = [
-            (9, 8),
-            (8, 7),
-            (9, 7),
-            (6, 7),
-            (6, 3),
-            (3, 2),
-            (2, 1),
-            (1, 6),
-            (3, 5),
-            (5, 4),
-            (4, 6),
-            (3, 8),
-        ]
-
         G1.add_edges_from(edges1)
-        G2.add_edges_from(edges2)
+        G2 = nx.relabel_nodes(G1, mapped)
 
         colors = [
             "white",
@@ -301,7 +241,6 @@ class TestVF2pp:
             "grey",
             "none",
         ]
-        mapped = {1: 9, 2: 8, 3: 7, 4: 6, 5: 3, 8: 5, 9: 4, 7: 1, 6: 2}
 
         for node in G1.nodes():
             color = colors.pop()

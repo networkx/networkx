@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import networkx as nx
 from networkx.algorithms.isomorphism.VF2pp import isomorphic_VF2pp
 from networkx.algorithms.isomorphism.VF2pp_helpers.candidates import find_candidates
-from networkx.algorithms.isomorphism.VF2pp_helpers.feasibility import check_feasibility
+from networkx.algorithms.isomorphism.VF2pp_helpers.feasibility import feasibility
 from networkx.algorithms.isomorphism.VF2pp_helpers.node_ordering import matching_order
 
 
@@ -41,7 +41,7 @@ def isomorphic_VF2pp2(G1, G2, G1_labels, G2_labels):
         try:
             candidate = next(candidate_nodes)
             if (
-                check_feasibility(
+                feasibility(
                     current_node,
                     candidate,
                     G1,

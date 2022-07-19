@@ -2,7 +2,7 @@ import networkx as nx
 import collections
 
 
-def check_feasibility(
+def feasibility(
     node1,
     node2,
     G1,
@@ -14,8 +14,7 @@ def check_feasibility(
     T1,
     T1_out,
     T2,
-    T2_out,
-    PT="ISO"
+    T2_out
 ):
     """Given a candidate pair of nodes u and v from G1 and G2 respectively, checks if it's feasible to extend the
     mapping, i.e. if u and v can be matched.

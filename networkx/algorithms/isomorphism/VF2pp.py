@@ -1,6 +1,6 @@
 import collections
 import networkx as nx
-from networkx.algorithms.isomorphism.VF2pp_helpers.feasibility import check_feasibility
+from networkx.algorithms.isomorphism.VF2pp_helpers.feasibility import feasibility
 from networkx.algorithms.isomorphism.VF2pp_helpers.state import (
     update_Tinout,
     restore_Tinout,
@@ -48,7 +48,7 @@ def isomorphic_VF2pp(G1, G2, G1_labels, G2_labels):
 
         try:
             candidate = next(candidate_nodes)
-            if candidate not in visited and check_feasibility(
+            if candidate not in visited and feasibility(
                 current_node,
                 candidate,
                 G1,
