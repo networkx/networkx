@@ -1,3 +1,5 @@
+import collections
+
 import networkx as nx
 from networkx.algorithms.isomorphism.VF2pp_helpers.candidates import find_candidates
 
@@ -42,6 +44,14 @@ class TestCandidateSelection:
 
     mapped_nodes = {0: 0, 1: 9, 2: 8, 3: 7, 4: 6, 5: 5, 6: 4, 7: 1, 8: 3, 9: 2}
 
+    GraphParameters = collections.namedtuple(
+        "GraphParameters", ["G1", "G2", "G1_labels", "G2_labels"]
+    )
+    StateParameters = collections.namedtuple(
+        "StateParameters",
+        ["mapping", "reverse_mapping", "T1", "T1_out", "T2", "T2_out"],
+    )
+
     def get_labels(self):
         return (
             {node: self.G1.nodes[node]["label"] for node in self.G1.nodes()},
@@ -54,10 +64,12 @@ class TestCandidateSelection:
             self.G2.nodes[n]["label"] = "blue"
 
         G1_labels, G2_labels = self.get_labels()
+        graph_params = self.GraphParameters(self.G1, self.G2, G1_labels, G2_labels)
+        state_params = self.StateParameters(dict(), dict(), None, None, None, None)
 
         for node in self.G1.nodes():
             assert self.mapped_nodes[node] in find_candidates(
-                self.G1, self.G2, G1_labels, G2_labels, node, dict(), dict()
+                node, graph_params, state_params
             )
 
     def test_different_labels(self):
@@ -79,9 +91,10 @@ class TestCandidateSelection:
 
         G1_labels, G2_labels = self.get_labels()
 
+        graph_params = self.GraphParameters(self.G1, self.G2, G1_labels, G2_labels)
+        state_params = self.StateParameters(dict(), dict(), None, None, None, None)
+
         for node in self.G1.nodes():
-            candidates = find_candidates(
-                self.G1, self.G2, G1_labels, G2_labels, node, dict(), dict()
-            )
+            candidates = find_candidates(node, graph_params, state_params)
             assert len(candidates) == 1
             assert self.mapped_nodes[node] in candidates

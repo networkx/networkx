@@ -53,22 +53,22 @@ class TestVF2pp:
         assert not isomorphic
         assert mapping is None
 
-    def test_disconnected_graph(self):
-        num_nodes = [100, 330, 579, 631, 799]
-        for Vi in num_nodes:
-            nodes = [i for i in range(Vi)]
-            G1 = nx.Graph()
-            G2 = nx.Graph()
-
-            G1.add_nodes_from(nodes)
-            G2.add_nodes_from(nodes)
-
-            G1, G2 = assign_labels(G1, G2)
-            l1, l2 = get_labes(G1, G2)
-
-            isomorphic, mapping = isomorphic_VF2pp(G1, G2, l1, l2)
-            assert isomorphic
-            assert len(set(mapping)) == G1.number_of_nodes()
+    # def test_disconnected_graph(self):
+    #     num_nodes = [100, 330, 579, 631, 799]
+    #     for Vi in num_nodes:
+    #         nodes = [i for i in range(Vi)]
+    #         G1 = nx.Graph()
+    #         G2 = nx.Graph()
+    #
+    #         G1.add_nodes_from(nodes)
+    #         G2.add_nodes_from(nodes)
+    #
+    #         G1, G2 = assign_labels(G1, G2)
+    #         l1, l2 = get_labes(G1, G2)
+    #
+    #         isomorphic, mapping = isomorphic_VF2pp(G1, G2, l1, l2)
+    #         assert isomorphic
+    #         assert len(set(mapping)) == G1.number_of_nodes()
 
     def test_custom_graph1(self):
         G1 = nx.Graph()

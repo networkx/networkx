@@ -1,4 +1,5 @@
 import random
+import collections
 
 import networkx as nx
 from networkx.algorithms.isomorphism.VF2pp import feasibility
@@ -47,21 +48,21 @@ class TestFeasibilityISO:
         }
         T1, T2, T1_out, T2_out = compute_Ti(self.G, self.G, m, m)
 
+        GraphParameters = collections.namedtuple(
+            "GraphParameters", ["G1", "G2", "G1_labels", "G2_labels"]
+        )
+        StateParameters = collections.namedtuple(
+            "StateParameters",
+            ["mapping", "reverse_mapping", "T1", "T1_out", "T2", "T2_out"],
+        )
+
+        graph_params = GraphParameters(self.G, self.G, G1_labels, G2_labels)
+        state_params = StateParameters(m, m, T1, T1_out, T2, T2_out)
+
         cnt = 0
         feasible = -1
         for n in self.G.nodes():
-            if not cut_PT(
-                self.G,
-                self.G,
-                G1_labels,
-                G2_labels,
-                1756,
-                n,
-                T1,
-                T1_out,
-                T2,
-                T2_out,
-            ):
+            if not cut_PT(1756, n, graph_params, state_params):
                 feasible = n
                 cnt += 1
         assert cnt == 1
@@ -78,23 +79,21 @@ class TestFeasibilityISO:
         }
         T1, T2, T1_out, T2_out = compute_Ti(self.G, self.G, m, m)
 
+        GraphParameters = collections.namedtuple(
+            "GraphParameters", ["G1", "G2", "G1_labels", "G2_labels"]
+        )
+        StateParameters = collections.namedtuple(
+            "StateParameters",
+            ["mapping", "reverse_mapping", "T1", "T1_out", "T2", "T2_out"],
+        )
+
+        graph_params = GraphParameters(self.G, self.G, G1_labels, G2_labels)
+        state_params = StateParameters(m, m, T1, T1_out, T2, T2_out)
+
         cnt = 0
         feasible = -1
         for n in self.G.nodes():
-            if feasibility(
-                1999,
-                n,
-                self.G,
-                self.G,
-                G1_labels,
-                G2_labels,
-                m,
-                m,
-                T1,
-                T1_out,
-                T2,
-                T2_out,
-            ):
+            if feasibility(1999, n, graph_params, state_params):
                 feasible = n
                 cnt += 1
         assert cnt == 1
@@ -156,23 +155,21 @@ class TestFeasibilityISO:
         reverse_mapping = dict()
         T1, T2, T1_out, T2_out = compute_Ti(G1, G2, mapping, reverse_mapping)
 
+        GraphParameters = collections.namedtuple(
+            "GraphParameters", ["G1", "G2", "G1_labels", "G2_labels"]
+        )
+        StateParameters = collections.namedtuple(
+            "StateParameters",
+            ["mapping", "reverse_mapping", "T1", "T1_out", "T2", "T2_out"],
+        )
+
+        graph_params = GraphParameters(G1, G2, G1_labels, G2_labels)
+        state_params = StateParameters(mapping, reverse_mapping, T1, T1_out, T2, T2_out)
+
         for node1 in G1.nodes():
             for node2 in G2.nodes():
                 if node2 == mapped_nodes[node1]:
-                    assert feasibility(
-                        node1,
-                        node2,
-                        G1,
-                        G2,
-                        G1_labels,
-                        G2_labels,
-                        mapping,
-                        reverse_mapping,
-                        T1,
-                        T1_out,
-                        T2,
-                        T2_out,
-                    )
+                    assert feasibility(node1, node2, graph_params, state_params)
 
     def test_iso_feasibility3(self):
         """Uses two isomorphic graphs with different nodes and labels. For every node of G1, ONLY its mapped node from
@@ -242,23 +239,21 @@ class TestFeasibilityISO:
         reverse_mapping = dict()
         T1, T2, T1_out, T2_out = compute_Ti(G1, G2, mapping, reverse_mapping)
 
+        GraphParameters = collections.namedtuple(
+            "GraphParameters", ["G1", "G2", "G1_labels", "G2_labels"]
+        )
+        StateParameters = collections.namedtuple(
+            "StateParameters",
+            ["mapping", "reverse_mapping", "T1", "T1_out", "T2", "T2_out"],
+        )
+
+        graph_params = GraphParameters(G1, G2, G1_labels, G2_labels)
+        state_params = StateParameters(mapping, reverse_mapping, T1, T1_out, T2, T2_out)
+
         for node1 in G1.nodes():
             for node2 in G2.nodes():
                 if node2 == mapped_nodes[node1]:
-                    assert feasibility(
-                        node1,
-                        node2,
-                        G1,
-                        G2,
-                        G1_labels,
-                        G2_labels,
-                        mapping,
-                        reverse_mapping,
-                        T1,
-                        T1_out,
-                        T2,
-                        T2_out,
-                    )
+                    assert feasibility(node1, node2, graph_params, state_params)
                 # else:
                 #     assert not check_feasibility(node1, node2, G1, G2, G1_labels, G2_labels, mapping, reverse_mapping,
                 #                                  T1, T1_out, T2, T2_out)

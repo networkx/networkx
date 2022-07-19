@@ -1,6 +1,4 @@
-def update_Tinout(
-    G1, G2, T1, T2, T1_out, T2_out, new_node1, new_node2, mapping, reverse_mapping
-):
+def update_Tinout(new_node1, new_node2, graph_params, state_params):
     """Updates the Ti/Ti_out (i=1,2) when a new node pair u-v is added to the mapping.
 
     Notes
@@ -32,27 +30,28 @@ def update_Tinout(
     reverse_mapping: dict
         The reverse mapping as extended so far. Maps nodes from G2 to nodes of G1. It's basically "mapping" reversed.
     """
-    uncovered_neighbors_G1 = {nbr for nbr in G1[new_node1] if nbr not in mapping}
+    uncovered_neighbors_G1 = {
+        nbr for nbr in graph_params.G1[new_node1] if nbr not in state_params.mapping
+    }
     uncovered_neighbors_G2 = {
-        nbr for nbr in G2[new_node2] if nbr not in reverse_mapping
+        nbr
+        for nbr in graph_params.G2[new_node2]
+        if nbr not in state_params.reverse_mapping
     }
 
     # Add the uncovered neighbors of node1 and node2 in T1 and T2 respectively
-    T1.discard(new_node1)
-    T2.discard(new_node2)
-    T1.update(uncovered_neighbors_G1)
-    T2.update(uncovered_neighbors_G2)
+    state_params.T1.discard(new_node1)
+    state_params.T2.discard(new_node2)
+    state_params.T1.update(uncovered_neighbors_G1)
+    state_params.T2.update(uncovered_neighbors_G2)
 
-    T1_out.discard(new_node1)
-    T2_out.discard(new_node2)
-    T1_out -= uncovered_neighbors_G1
-    T2_out -= uncovered_neighbors_G2
-    return T1, T2
+    state_params.T1_out.discard(new_node1)
+    state_params.T2_out.discard(new_node2)
+    state_params.T1_out.difference_update(uncovered_neighbors_G1)
+    state_params.T2_out.difference_update(uncovered_neighbors_G2)
 
 
-def restore_Tinout(
-    G1, G2, T1, T2, T1_out, T2_out, popped_node1, popped_node2, mapping, reverse_mapping
-):
+def restore_Tinout(popped_node1, popped_node2, graph_params, state_params):
     """Restores the previous version of Ti/Ti_out when a node pair is deleted from the mapping.
 
     Notes
@@ -82,32 +81,50 @@ def restore_Tinout(
     """
     # If the node we want to remove from the mapping, has at least one covered neighbor, add it to T1.
     is_added = False
-    for nbr in G1[popped_node1]:
-        if nbr in mapping:
-            T1.add(
+    for nbr in graph_params.G1[popped_node1]:
+        if nbr in state_params.mapping:
+            state_params.T1.add(
                 popped_node1
             )  # if a neighbor of the excluded node1 is in the mapping, keep node1 in T1
             is_added = True
         else:  # check if its neighbor has another connection with a covered node. If not, only then exclude it from T1
-            if any(nbr2 in mapping for nbr2 in G1[nbr]):
+            if any(nbr2 in state_params.mapping for nbr2 in graph_params.G1[nbr]):
                 continue
-            T1.discard(nbr)
-            T1_out.add(nbr)  # todo: maybe split into two loops
+            state_params.T1.discard(nbr)
+            state_params.T1_out.add(nbr)  # todo: maybe split into two loops
 
     # Case where the node is not present in neither the mapping nor T1. By deffinition it should belong to T1_out
     if not is_added:
-        T1_out.add(popped_node1)
+        state_params.T1_out.add(popped_node1)
 
     is_added = False
-    for nbr in G2[popped_node2]:
-        if nbr in reverse_mapping:
-            T2.add(popped_node2)
+    for nbr in graph_params.G2[popped_node2]:
+        if nbr in state_params.reverse_mapping:
+            state_params.T2.add(popped_node2)
             is_added = True
         else:
-            if any(nbr2 in reverse_mapping for nbr2 in G2[nbr]):
+            if any(
+                nbr2 in state_params.reverse_mapping for nbr2 in graph_params.G2[nbr]
+            ):
                 continue
-            T2.discard(nbr)
-            T2_out.add(nbr)
+            state_params.T2.discard(nbr)
+            state_params.T2_out.add(nbr)
 
     if not is_added:
-        T2_out.add(popped_node2)
+        state_params.T2_out.add(popped_node2)
+
+
+def update_state(node, candidate, graph_params, state_params):
+    state_params.mapping.update({node: candidate})
+    state_params.reverse_mapping.update({candidate: node})
+    update_Tinout(node, candidate, graph_params, state_params)
+
+
+def restore_state(stack, visited, graph_params, state_params):
+    popped_node1, _ = stack[-1]
+    popped_node2 = state_params.mapping[popped_node1]
+    state_params.mapping.pop(popped_node1)
+    state_params.reverse_mapping.pop(popped_node2)
+    visited.remove(popped_node2)
+
+    restore_Tinout(popped_node1, popped_node2, graph_params, state_params)
