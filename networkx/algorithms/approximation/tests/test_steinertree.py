@@ -8,25 +8,37 @@ from networkx.utils import edges_equal
 class TestSteinerTree:
     @classmethod
     def setup_class(cls):
-        G = nx.Graph()
-        G.add_edge(1, 2, weight=10)
-        G.add_edge(2, 3, weight=10)
-        G.add_edge(3, 4, weight=10)
-        G.add_edge(4, 5, weight=10)
-        G.add_edge(5, 6, weight=10)
-        G.add_edge(2, 7, weight=1)
-        G.add_edge(7, 5, weight=1)
-        cls.G = G
-        cls.term_nodes = [1, 2, 3, 4, 5]
+        G1 = nx.Graph()
+        G1.add_edge(1, 2, weight=10)
+        G1.add_edge(2, 3, weight=10)
+        G1.add_edge(3, 4, weight=10)
+        G1.add_edge(4, 5, weight=10)
+        G1.add_edge(5, 6, weight=10)
+        G1.add_edge(2, 7, weight=1)
+        G1.add_edge(7, 5, weight=1)
+
+        G2 = nx.Graph()
+        G2.add_edge(0, 5, weight=6)
+        G2.add_edge(1, 2, weight=2)
+        G2.add_edge(1, 5, weight=3)
+        G2.add_edge(2, 4, weight=4)
+        G2.add_edge(3, 5, weight=5)
+        G2.add_edge(4, 5, weight=1)
+
+        cls.G1 = G1
+        cls.G2 = G2
+        cls.G1_term_nodes = [1, 2, 3, 4, 5]
+        cls.G2_term_nodes = [0, 2, 3]
+
         cls.methods = ["wu", "kou", "mehlhorn"]
 
     def test_connected_metric_closure(self):
-        G = self.G.copy()
+        G = self.G1.copy()
         G.add_node(100)
         pytest.raises(nx.NetworkXError, metric_closure, G)
 
     def test_metric_closure(self):
-        M = metric_closure(self.G)
+        M = metric_closure(self.G1)
         mc = [
             (1, 2, {"distance": 10, "path": [1, 2]}),
             (1, 3, {"distance": 20, "path": [1, 2, 3]}),
@@ -55,26 +67,47 @@ class TestSteinerTree:
     def test_steiner_tree(self):
         valid_steiner_trees = [
             [
-                (1, 2, {"weight": 10}),
-                (2, 3, {"weight": 10}),
-                (2, 7, {"weight": 1}),
-                (3, 4, {"weight": 10}),
-                (5, 7, {"weight": 1}),
+                [
+                    (1, 2, {"weight": 10}),
+                    (2, 3, {"weight": 10}),
+                    (2, 7, {"weight": 1}),
+                    (3, 4, {"weight": 10}),
+                    (5, 7, {"weight": 1}),
+                ],
+                [
+                    (1, 2, {"weight": 10}),
+                    (3, 4, {"weight": 10}),
+                    (2, 7, {"weight": 1}),
+                    (4, 5, {"weight": 10}),
+                    (5, 7, {"weight": 1}),
+                ],
             ],
             [
-                (1, 2, {"weight": 10}),
-                (3, 4, {"weight": 10}),
-                (2, 7, {"weight": 1}),
-                (4, 5, {"weight": 10}),
-                (5, 7, {"weight": 1}),
+                [
+                    (0, 5, {"weight": 6}),
+                    (1, 2, {"weight": 2}),
+                    (1, 5, {"weight": 3}),
+                    (3, 5, {"weight": 5}),
+                ],
+                [
+                    (0, 5, {"weight": 6}),
+                    (4, 2, {"weight": 2}),
+                    (4, 5, {"weight": 1}),
+                    (3, 5, {"weight": 5}),
+                ],
             ],
         ]
         for method in self.methods:
-            S = steiner_tree(self.G, self.term_nodes, method=method)
-            assert any(
-                edges_equal(list(S.edges(data=True)), valid_tree)
-                for valid_tree in valid_steiner_trees
-            )
+            for G, term_nodes, valid_trees in zip(
+                [self.G1, self.G2],
+                [self.G1_term_nodes, self.G2_term_nodes],
+                valid_steiner_trees,
+            ):
+                S = steiner_tree(G, term_nodes, method=method)
+                assert any(
+                    edges_equal(list(S.edges(data=True)), valid_tree)
+                    for valid_tree in valid_trees
+                )
 
     def test_multigraph_steiner_tree(self):
         G = nx.MultiGraph()
