@@ -101,6 +101,12 @@ class TestHasBridges:
         G.add_edges_from([(0, 1), (0, 2), (2, 3)])
         assert not nx.has_bridges(G)
 
+    def test_bridges_multiple_components(self):
+        G = nx.Graph()
+        nx.add_path(G, [0, 1, 2])  # One connected component
+        nx.add_path(G, [4, 5, 6])  # Another connected component
+        assert list(nx.bridges(G, root=4)) == [(4, 5), (5, 6)]
+
 
 class TestLocalBridges:
     """Unit tests for the local_bridge function."""
