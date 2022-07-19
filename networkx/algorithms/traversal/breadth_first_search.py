@@ -450,22 +450,11 @@ def descendants_at_distance(G, source, distance):
     >>> nx.descendants_at_distance(H, 5, 1)
     set()
     """
-    if not G.has_node(source):
+    if source not in G:
         raise nx.NetworkXError(f"The node {source} is not in the graph.")
-    current_distance = 0
-    current_layer = {source}
-    visited = {source}
 
-    # this is basically BFS, except that the current layer only stores the nodes at
-    # current_distance from source at each iteration
-    while current_distance < distance:
-        next_layer = set()
-        for node in current_layer:
-            for child in G[node]:
-                if child not in visited:
-                    visited.add(child)
-                    next_layer.add(child)
-        current_layer = next_layer
-        current_distance += 1
-
-    return current_layer
+    bfs_generator = nx.bfs_layers(G, source)
+    for i, layer in enumerate(bfs_generator):
+        if i == distance:
+            return set(layer)
+    return set()
