@@ -1,9 +1,8 @@
-import heapq
+from heapq import heappush, heappop
 from itertools import chain
 
-from networkx.utils import pairwise, not_implemented_for, UnionFind
-from heapq import heappush, heappop
 import networkx as nx
+from networkx.utils import pairwise, not_implemented_for, UnionFind
 
 __all__ = ["metric_closure", "steiner_tree"]
 
@@ -57,7 +56,7 @@ def metric_closure(G, weight="weight"):
     return M
 
 
-def mehlhorn_steiner_tree(G, S, weight):
+def _mehlhorn_steiner_tree(G, S, weight):
     paths = nx.multi_source_dijkstra_path(G, S)
 
     d_1 = {}
@@ -66,16 +65,16 @@ def mehlhorn_steiner_tree(G, S, weight):
         s[v] = paths[v][0]
         d_1[(v, s[v])] = len(paths[v]) - 1
 
-    new_edges = {}
-    for e in G.edges(data=True):
-        u, v, data = e
-        weight_here = d_1[(u, s[u])] + data.get(weight, 1) + d_1[(v, s[v])]
-        key = tuple(sorted([s[u], s[v]]))
-        new_edges[key] = min(new_edges.get(key, float("inf")), weight_here)
-
+    # G1-G4 names match those from the Mehlhorn 1988 paper.
     G_1_prime = nx.Graph()
-    for (n1, n2), edge_weight in new_edges.items():
-        G_1_prime.add_edge(n1, n2, weight=edge_weight)
+    for u, v, data in G.edges(data=True):
+        su, sv = s[u], s[v]
+        weight_here = d_1[(u, su)] + data.get(weight, 1) + d_1[(v, sv)]
+        if not G_1_prime.has_edge(su, sv):
+            G_1_prime.add_edge(su, sv, weight=weight_here)
+        else:
+            new_weight = min(weight_here, G_1_prime[su][sv][weight])
+            G_1_prime.add_edge(su, sv, weight=new_weight)
 
     G_2 = nx.minimum_spanning_edges(G_1_prime, data=True)
 
@@ -89,7 +88,7 @@ def mehlhorn_steiner_tree(G, S, weight):
     return G_4
 
 
-def kou_steiner_tree(G, terminal_nodes, weight):
+def _kou_steiner_tree(G, terminal_nodes, weight):
     # H is the subgraph induced by terminal_nodes in the metric closure M of G.
     M = metric_closure(G, weight=weight)
     H = M.subgraph(terminal_nodes)
@@ -100,7 +99,7 @@ def kou_steiner_tree(G, terminal_nodes, weight):
     return edges
 
 
-def wu_steiner_tree(G, terminal_nodes, weight):
+def _wu_steiner_tree(G, terminal_nodes, weight):
     # Step 1
     source = {q: q for q in terminal_nodes}
     length = {q: 0 for q in terminal_nodes}
@@ -112,7 +111,7 @@ def wu_steiner_tree(G, terminal_nodes, weight):
     for q in terminal_nodes:
         for r in G.neighbors(q):
             if r in terminal_nodes:
-                both_in_terminal_nodes.add((min(r, q), max(r, q)))
+                both_in_terminal_nodes.add(frozenset([q, r]))
                 continue
             d_q_r = G[q][r].get(weight, 1)
             heappush(priority_queue, HeapEntry(d_q_r, (r, d_q_r, q, None, None)))
@@ -157,7 +156,7 @@ def wu_steiner_tree(G, terminal_nodes, weight):
                 n_subtrees -= 1
             else:
                 # case 3.2
-                heapq.heappush(
+                heappush(
                     priority_queue,
                     HeapEntry(d + length[t], (source[t], d + length[t], s, p1, t)),
                 )
@@ -190,9 +189,9 @@ def wu_steiner_tree(G, terminal_nodes, weight):
 
 
 ALGORITHMS = {
-    "wu": wu_steiner_tree,
-    "kou": kou_steiner_tree,
-    "mehlhorn": mehlhorn_steiner_tree,
+    "wu": _wu_steiner_tree,
+    "kou": _kou_steiner_tree,
+    "mehlhorn": _mehlhorn_steiner_tree,
 }
 
 
@@ -274,8 +273,8 @@ def steiner_tree(G, terminal_nodes, weight="weight", method=None):
         import warnings
 
         msg = (
-            "steiner_tree will change default method from 'kou' to 'wu' "
-            "in version 3.0.\nSet the `method` kwarg to remove this warning."
+            "steiner_tree will change default method from 'kou' to 'wu'"
+            "in version 3.2.\nSet the `method` kwarg to remove this warning."
         )
         warnings.warn(msg, FutureWarning, stacklevel=4)
         method = "kou"
