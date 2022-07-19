@@ -70,11 +70,22 @@ def naive_all_pairs_lowest_common_ancestor(G, pairs=None):
     if len(G) == 0:
         raise nx.NetworkXPointlessConcept("LCA meaningless on null graphs.")
 
+    if pairs is None:
+        pairs = combinations_with_replacement(G, 2)
+    else:
+        # Convert iterator to iterable, if necessary, trim duplicates
+        pairs = set(pairs)
+        # Verify that each of the nodes in the provided pairs is in G
+        nodeset = set(G)
+        for pair in pairs:
+            if set(pair) - nodeset:
+                raise nx.NodeNotFound(
+                    f"Node(s) {set(pair) - nodeset} from pair {pair} not in G."
+                )
+
     # Once input validation is done, construct the generator
     def generate_lca_from_pairs(G, pairs):
         ancestor_cache = {}
-        if pairs is None:
-            pairs = combinations_with_replacement(G, 2)
 
         for v, w in pairs:
             if v not in ancestor_cache:
