@@ -27,7 +27,7 @@ def matching_order(G1, G2, G1_labels, G2_labels):
     if not G1 and not G2:
         return {}
 
-    (nodes_of_G1Labels, nodes_of_G2Labels, V1_unordered) = initialise_preprocess(
+    (nodes_of_G1Labels, nodes_of_G2Labels, V1_unordered) = initialize_preprocess(
         G1, G1_labels, G2_labels
     )
     label_rarity = {label: len(nodes) for label, nodes in nodes_of_G2Labels.items()}
@@ -35,24 +35,15 @@ def matching_order(G1, G2, G1_labels, G2_labels):
     node_order = []
 
     while V1_unordered:
-        # nodes_of_current_labels = nx.utils.groups(current_labels)
         rarest_node = min(V1_unordered, key=lambda x: label_rarity[G1_labels[x]])
         rare_nodes = [
             n
             for n in V1_unordered
             if label_rarity[G1_labels[n]] == label_rarity[G1_labels[rarest_node]]
         ]
-        # max_rarity = min(len(v) for v in nodes_of_current_labels.values())
-        # rare_nodes = {u for l, nodes in nodes_of_current_labels.items() for u in nodes if len(nodes) == max_rarity}
         max_node = max(rare_nodes, key=G1.degree)
 
-        (
-            node_order,
-            label_rarity,
-            dlevel_nodes,
-            used_degrees,
-            V1_unordered,
-        ) = BFS_levels(
+        BFS_levels(
             max_node,
             G1,
             G1_labels,
@@ -96,10 +87,6 @@ def BFS_levels(
 
     node_order: list
         Contains all the nodes that have been ordered until now.
-
-    Returns
-    -------
-    @see process_level
     """
     dlevel_nodes = set()
     for node, nbr in nx.bfs_edges(G1, source_node):
@@ -109,7 +96,7 @@ def BFS_levels(
             dlevel_nodes.add(nbr)
             continue
 
-        (node_order, label_rarity, _, used_degree, V1_unordered) = process_level(
+        process_level(
             V1_unordered,
             G1,
             G1_labels,
@@ -123,7 +110,7 @@ def BFS_levels(
         V1_unordered -= dlevel_nodes
         dlevel_nodes = {nbr}
     # Process the last level
-    return process_level(
+    process_level(
         V1_unordered, G1, G1_labels, node_order, dlevel_nodes, label_rarity, used_degree
     )
 
@@ -155,10 +142,6 @@ def process_level(
 
     used_degree: dict
         Nodes are used as keys. Indicates how many neighbors of each node have been ordered.
-
-    Returns
-    -------
-    The updated order, label_rarity, dlevel_nodes, used_degree, V1_unordered
     """
     max_nodes = []
     max_degree = 0
@@ -190,10 +173,9 @@ def process_level(
         dlevel_nodes.remove(next_node)
         label_rarity[G1_labels[next_node]] -= 1
         V1_unordered.discard(next_node)
-    return order, label_rarity, dlevel_nodes, used_degree, V1_unordered
 
 
-def initialise_preprocess(G1, G1_labels, G2_labels):
+def initialize_preprocess(G1, G1_labels, G2_labels):
     """Initializes basic information, needed for the ordering
 
     Parameters

@@ -47,9 +47,6 @@ def feasibility(
     T1_out, T2_out: set
         Ti_out contains all the nodes from Gi, that are neither in the mapping nor in Ti.
 
-    PT: string
-        The problem type we are trying to solve. Values for PT are ("")
-
     Returns
     -------
     True if all checks are successful, False otherwise.

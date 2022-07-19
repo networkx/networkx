@@ -52,7 +52,7 @@ class TestTinoutUpdating:
             correct_T1, correct_T2, correct_T1_out, correct_T2_out = self.compute_Ti(
                 self.G, self.G
             )
-            self.T1, self.T2, self.T1_out, self.T2_out = update_Tinout(
+            update_Tinout(
                 self.G,
                 self.G,
                 self.T1,
@@ -83,7 +83,7 @@ class TestTinoutUpdating:
             self.reverse_mapping.pop(node)
 
             T1, T2, T1_out, T2_out = self.compute_Ti(self.G, self.G)
-            self.T1, self.T2, self.T1_out, self.T2_out = restore_Tinout(
+            restore_Tinout(
                 self.G,
                 self.G,
                 self.T1,

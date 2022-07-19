@@ -67,7 +67,7 @@ def isomorphic_VF2pp(G1, G2, G1_labels, G2_labels):
                 # Update the mapping and Ti/Ti_out
                 mapping.update({current_node: candidate})
                 reverse_mapping.update({candidate: current_node})
-                T1, T2, T1_out, T2_out = update_Tinout(
+                update_Tinout(
                     G1,
                     G2,
                     T1,
@@ -102,7 +102,7 @@ def isomorphic_VF2pp(G1, G2, G1_labels, G2_labels):
             reverse_mapping.pop(popped_node2)
             visited.remove(popped_node2)
 
-            T1, T2, T1_out, T2_out = restore_Tinout(
+            restore_Tinout(
                 G1,
                 G2,
                 T1,

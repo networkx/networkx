@@ -31,10 +31,6 @@ def update_Tinout(
 
     reverse_mapping: dict
         The reverse mapping as extended so far. Maps nodes from G2 to nodes of G1. It's basically "mapping" reversed.
-
-    Returns
-    -------
-    The updated Ti/Ti_out (i=1,2)
     """
     uncovered_neighbors_G1 = {nbr for nbr in G1[new_node1] if nbr not in mapping}
     uncovered_neighbors_G2 = {
@@ -44,15 +40,14 @@ def update_Tinout(
     # Add the uncovered neighbors of node1 and node2 in T1 and T2 respectively
     T1.discard(new_node1)
     T2.discard(new_node2)
-    T1 = T1.union(uncovered_neighbors_G1)
-    T2 = T2.union(uncovered_neighbors_G2)
+    T1.update(uncovered_neighbors_G1)
+    T2.update(uncovered_neighbors_G2)
 
     T1_out.discard(new_node1)
     T2_out.discard(new_node2)
-    T1_out = T1_out - uncovered_neighbors_G1
-    T2_out = T2_out - uncovered_neighbors_G2
-
-    return T1, T2, T1_out, T2_out
+    T1_out -= uncovered_neighbors_G1
+    T2_out -= uncovered_neighbors_G2
+    return T1, T2
 
 
 def restore_Tinout(
@@ -84,10 +79,6 @@ def restore_Tinout(
 
     reverse_mapping: dict
         The reverse mapping as extended so far. Maps nodes from G2 to nodes of G1. It's basically "mapping" reversed.
-
-    Returns
-    -------
-    The restored Ti/Ti_out (i=1,2)
     """
     # If the node we want to remove from the mapping, has at least one covered neighbor, add it to T1.
     is_added = False
@@ -120,5 +111,3 @@ def restore_Tinout(
 
     if not is_added:
         T2_out.add(popped_node2)
-
-    return T1, T2, T1_out, T2_out
