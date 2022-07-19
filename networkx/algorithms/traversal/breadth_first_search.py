@@ -410,7 +410,7 @@ def bfs_layers(G, sources):
             raise nx.NetworkXError(f"The node {source} is not in the graph.")
 
     # this is basically BFS, except that the current layer only stores the nodes at
-    # the same distance from sources at each iteration
+    # same distance from sources at each iteration
     while current_layer:
         yield current_layer
         next_layer = list()
