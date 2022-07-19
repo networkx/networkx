@@ -70,12 +70,9 @@ def bridges(G, root=None):
     chains = nx.chain_decomposition(H, root=root)
     chain_edges = set(chain.from_iterable(chains))
     H_copy = H.copy()
-    if root is not None:
-        cc_root = nx.node_connected_component(H, root)
-        for node in H.nodes():
-            if node not in cc_root:
-                H_copy.remove_node(node)
-    for u, v in H_copy.edges():
+    if root:
+        H = H.subgraph(nx.node_connected_component(H, root)).copy()
+    for u, v in H.edges():
         if (u, v) not in chain_edges and (v, u) not in chain_edges:
             if multigraph and len(G[u][v]) > 1:
                 continue
