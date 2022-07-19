@@ -7,8 +7,8 @@ from networkx.algorithms.isomorphism.VF2pp import isomorphic_VF2pp
 from networkx.algorithms.isomorphism.VF2pp_helpers.node_ordering import matching_order
 
 # Graph initialization
-G1 = nx.gnp_random_graph(650, 0.6, 42)
-G2 = nx.gnp_random_graph(650, 0.6, 42)
+G1 = nx.gnp_random_graph(500, 0.6, 42)
+G2 = nx.gnp_random_graph(500, 0.6, 42)
 
 # G1 = nx.barbell_graph(5, 0)
 # G2 = nx.barbell_graph(5, 0)
@@ -54,6 +54,8 @@ G2_labels = nx.get_node_attributes(G2, "label")
 t0 = time.time()
 flag, mapping = isomorphic_VF2pp(G1, G2, G1_labels, G2_labels)
 print(f"VF2++ elapsed time: {time.time() - t0}")
+
+assert flag
 
 t0 = time.time()
 nx.is_isomorphic(G1, G2)

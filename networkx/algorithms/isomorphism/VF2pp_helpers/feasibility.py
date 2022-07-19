@@ -39,9 +39,8 @@ def feasibility(node1, node2, graph_params, state_params):
     -------
     True if all checks are successful, False otherwise.
     """
-    if graph_params.G1.number_of_edges(node1, node1) != graph_params.G2.number_of_edges(
-        node2, node2
-    ):
+    G1, G2 = graph_params.G1, graph_params.G2
+    if G1.number_of_edges(node1, node1) != G2.number_of_edges(node2, node2):
         return False
 
     if cut_PT(node1, node2, graph_params, state_params):
@@ -78,12 +77,25 @@ def cut_PT(u, v, graph_params, state_params):
     -------
     True if we should prune this branch, i.e. the node pair failed the cutting checks. False otherwise.
     """
-    u_neighbors_labels = {n1: graph_params.G1_labels[n1] for n1 in graph_params.G1[u]}
+    G1, G2, G1_labels, G2_labels = (
+        graph_params.G1,
+        graph_params.G2,
+        graph_params.G1_labels,
+        graph_params.G2_labels,
+    )
+    T1, T1_out, T2, T2_out = (
+        state_params.T1,
+        state_params.T1_out,
+        state_params.T2,
+        state_params.T2_out,
+    )
+
+    u_neighbors_labels = {n1: G1_labels[n1] for n1 in G1[u]}
     u_labels_neighbors = collections.OrderedDict(
         sorted(nx.utils.groups(u_neighbors_labels).items())
     )
 
-    v_neighbors_labels = {n2: graph_params.G2_labels[n2] for n2 in graph_params.G2[v]}
+    v_neighbors_labels = {n2: G2_labels[n2] for n2 in G2[v]}
     v_labels_neighbors = collections.OrderedDict(
         sorted(nx.utils.groups(v_neighbors_labels).items())
     )
@@ -94,10 +106,10 @@ def cut_PT(u, v, graph_params, state_params):
     for labeled_nh1, labeled_nh2 in zip(
         u_labels_neighbors.values(), v_labels_neighbors.values()
     ):
-        if len(state_params.T1.intersection(labeled_nh1)) != len(
-            state_params.T2.intersection(labeled_nh2)
-        ) or len(state_params.T1_out.intersection(labeled_nh1)) != len(
-            state_params.T2_out.intersection(labeled_nh2)
+        if len(T1.intersection(labeled_nh1)) != len(
+            T2.intersection(labeled_nh2)
+        ) or len(T1_out.intersection(labeled_nh1)) != len(
+            T2_out.intersection(labeled_nh2)
         ):
             return True
 
@@ -127,21 +139,24 @@ def consistent_PT(u, v, graph_params, state_params):
     """
     # Check if every covered neighbor of u is mapped to every covered neighbor of v
     # Also check if there is the same number of edges between the candidates and their neighbors
-    for neighbor in graph_params.G1[u]:
-        if neighbor in state_params.mapping:
-            if state_params.mapping[neighbor] not in graph_params.G2[v]:
+    G1, G2 = graph_params.G1, graph_params.G2
+    mapping, reverse_mapping = state_params.mapping, state_params.reverse_mapping
+
+    for neighbor in G1[u]:
+        if neighbor in mapping:
+            if mapping[neighbor] not in G2[v]:
                 return False
-            elif graph_params.G1.number_of_edges(
-                u, neighbor
-            ) != graph_params.G2.number_of_edges(v, state_params.mapping[neighbor]):
+            elif G1.number_of_edges(u, neighbor) != G2.number_of_edges(
+                v, mapping[neighbor]
+            ):
                 return False
 
-    for neighbor in graph_params.G2[v]:
-        if neighbor in state_params.reverse_mapping:
-            if state_params.reverse_mapping[neighbor] not in graph_params.G1[u]:
+    for neighbor in G2[v]:
+        if neighbor in reverse_mapping:
+            if reverse_mapping[neighbor] not in G1[u]:
                 return False
-            elif graph_params.G1.number_of_edges(
-                u, state_params.reverse_mapping[neighbor]
-            ) != graph_params.G2.number_of_edges(v, neighbor):
+            elif G1.number_of_edges(u, reverse_mapping[neighbor]) != G2.number_of_edges(
+                v, neighbor
+            ):
                 return False
     return True

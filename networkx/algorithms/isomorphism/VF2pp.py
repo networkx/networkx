@@ -30,10 +30,10 @@ def isomorphic_VF2pp(G1, G2, G1_labels, G2_labels):
     if not precheck(G1, G2, G1_labels, G2_labels):
         return False, None
 
+    visited = set()
     graph_params, state_params, node_order, stack = initialize_VF2pp(
         G1, G2, G1_labels, G2_labels
     )
-    visited = set()
 
     while True:
         current_node, candidate_nodes = stack[-1]

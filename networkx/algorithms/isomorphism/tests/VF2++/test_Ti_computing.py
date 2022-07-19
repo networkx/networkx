@@ -1,7 +1,10 @@
 import collections
 
 import networkx as nx
-from networkx.algorithms.isomorphism.VF2pp import restore_Tinout, update_Tinout
+from networkx.algorithms.isomorphism.VF2pp_helpers.state import (
+    restore_Tinout,
+    update_Tinout,
+)
 
 
 class TestTinoutUpdating:
