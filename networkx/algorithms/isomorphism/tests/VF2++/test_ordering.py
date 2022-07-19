@@ -1,5 +1,6 @@
-import networkx as nx
 import random
+
+import networkx as nx
 from networkx.algorithms.isomorphism.VF2pp_helpers.node_ordering import matching_order
 
 

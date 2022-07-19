@@ -1,12 +1,13 @@
 import collections
+
 import networkx as nx
-from networkx.algorithms.isomorphism.VF2pp_helpers.feasibility import feasibility
-from networkx.algorithms.isomorphism.VF2pp_helpers.state import (
-    update_Tinout,
-    restore_Tinout,
-)
 from networkx.algorithms.isomorphism.VF2pp_helpers.candidates import find_candidates
+from networkx.algorithms.isomorphism.VF2pp_helpers.feasibility import feasibility
 from networkx.algorithms.isomorphism.VF2pp_helpers.node_ordering import matching_order
+from networkx.algorithms.isomorphism.VF2pp_helpers.state import (
+    restore_Tinout,
+    update_Tinout,
+)
 
 
 def isomorphic_VF2pp(G1, G2, G1_labels, G2_labels):

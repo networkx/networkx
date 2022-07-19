@@ -1,4 +1,5 @@
 import random
+
 import networkx as nx
 from networkx.algorithms.isomorphism.VF2pp import feasibility
 from networkx.algorithms.isomorphism.VF2pp_helpers.feasibility import cut_PT

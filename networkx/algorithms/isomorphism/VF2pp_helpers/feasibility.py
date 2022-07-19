@@ -1,5 +1,6 @@
-import networkx as nx
 import collections
+
+import networkx as nx
 
 
 def feasibility(

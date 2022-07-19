@@ -1,5 +1,5 @@
 import networkx as nx
-from networkx.algorithms.isomorphism.VF2pp import update_Tinout, restore_Tinout
+from networkx.algorithms.isomorphism.VF2pp import restore_Tinout, update_Tinout
 
 
 class TestTinoutUpdating:
