@@ -70,34 +70,36 @@ def naive_all_pairs_lowest_common_ancestor(G, pairs=None):
     if len(G) == 0:
         raise nx.NetworkXPointlessConcept("LCA meaningless on null graphs.")
 
-    ancestor_cache = {}
+    # Once input validation is done, construct the generator
+    def generate_lca_from_pairs(G, pairs):
+        ancestor_cache = {}
+        if pairs is None:
+            pairs = combinations_with_replacement(G, 2)
 
-    if pairs is None:
+        for v, w in pairs:
+            if v not in ancestor_cache:
+                ancestor_cache[v] = nx.ancestors(G, v)
+                ancestor_cache[v].add(v)
+            if w not in ancestor_cache:
+                ancestor_cache[w] = nx.ancestors(G, w)
+                ancestor_cache[w].add(w)
 
-        pairs = combinations_with_replacement(G, 2)
+            common_ancestors = ancestor_cache[v] & ancestor_cache[w]
 
-    for v, w in pairs:
-        if v not in ancestor_cache:
-            ancestor_cache[v] = nx.ancestors(G, v)
-            ancestor_cache[v].add(v)
-        if w not in ancestor_cache:
-            ancestor_cache[w] = nx.ancestors(G, w)
-            ancestor_cache[w].add(w)
-
-        common_ancestors = ancestor_cache[v] & ancestor_cache[w]
-
-        if common_ancestors:
-            common_ancestor = next(iter(common_ancestors))
-            while True:
-                successor = None
-                for lower_ancestor in G.successors(common_ancestor):
-                    if lower_ancestor in common_ancestors:
-                        successor = lower_ancestor
+            if common_ancestors:
+                common_ancestor = next(iter(common_ancestors))
+                while True:
+                    successor = None
+                    for lower_ancestor in G.successors(common_ancestor):
+                        if lower_ancestor in common_ancestors:
+                            successor = lower_ancestor
+                            break
+                    if successor is None:
                         break
-                if successor is None:
-                    break
-                common_ancestor = successor
-            yield ((v, w), common_ancestor)
+                    common_ancestor = successor
+                yield ((v, w), common_ancestor)
+
+    return generate_lca_from_pairs(G, pairs)
 
 
 @not_implemented_for("undirected")
