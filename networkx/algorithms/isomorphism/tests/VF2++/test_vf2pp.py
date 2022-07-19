@@ -166,7 +166,6 @@ class TestVF2pp:
 
     def test_custom_graph3(self):
         G1 = nx.Graph()
-        G2 = nx.Graph()
 
         mapped = {1: 9, 2: 8, 3: 7, 4: 6, 5: 3, 8: 5, 9: 4, 7: 1, 6: 2}
         edges1 = [
