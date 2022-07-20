@@ -125,6 +125,6 @@ def restore_state(stack, visited, graph_params, state_params):
     popped_node2 = state_params.mapping[popped_node1]
     state_params.mapping.pop(popped_node1)
     state_params.reverse_mapping.pop(popped_node2)
-    visited.remove(popped_node2)
+    visited.discard(popped_node2)
 
     restore_Tinout(popped_node1, popped_node2, graph_params, state_params)

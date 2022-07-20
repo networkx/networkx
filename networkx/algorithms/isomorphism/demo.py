@@ -72,21 +72,23 @@ edges1 = [(1, 2), (1, 3), (1, 4), (2, 3), (2, 6), (3, 4), (5, 1), (5, 2)]
 G1.add_edges_from(edges1)
 G2 = nx.relabel_nodes(G1, mapped)
 
-for node in G1.nodes():
-    color = colors[random.randrange(0, len(colors))]
+for node, color in zip(G1.nodes(), colors):
     G1.nodes[node]["label"] = color
     G2.nodes[mapped[node]]["label"] = color
 
 l1, l2 = nx.get_node_attributes(G1, "label"), nx.get_node_attributes(G2, "label")
 
-isomorphic, mapping = isomorphic_VF2pp(G1, G2, l1, l2)
+try:
+    mapping = next(isomorphic_VF2pp(G1, G2, l1, l2))
+    print(mapping)
+except StopIteration:
+    exit(0)
 
 # VF2++
 # t0 = time.time()
 # flag, mapping = isomorphic_VF2pp(G1, G2, G1_labels, G2_labels)
 # print(f"VF2++ elapsed time: {time.time() - t0}")
 
-print(mapping)
 # assert mapping == mapped
 
 # t0 = time.time()

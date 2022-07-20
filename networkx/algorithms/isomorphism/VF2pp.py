@@ -26,9 +26,9 @@ def isomorphic_VF2pp(G1, G2, G1_labels, G2_labels):
     True and the node mapping, if the two graphs are isomorphic. False and None otherwise.
     """
     if not G1 and not G2:
-        return True, {}
+        return False
     if not precheck(G1, G2, G1_labels, G2_labels):
-        return False, None
+        return False
 
     visited = set()
     graph_params, state_params, node_order, stack = initialize_VF2pp(
@@ -47,7 +47,9 @@ def isomorphic_VF2pp(G1, G2, G1_labels, G2_labels):
                 update_state(current_node, candidate, graph_params, state_params)
 
                 if not node_order:  # When we match the last node
-                    break
+                    yield state_params.mapping
+                    # prepare_next(stack, node_order, visited, state_params)
+                    # continue
 
                 next_node = node_order.popleft()
                 candidates = find_candidates(next_node, graph_params, state_params)
@@ -60,10 +62,6 @@ def isomorphic_VF2pp(G1, G2, G1_labels, G2_labels):
                 stack
             ):  # in the last iteration, it will continue and the while condition will terminate
                 restore_state(stack, visited, graph_params, state_params)
-
-    if len(state_params.mapping) == G1.number_of_nodes():
-        return True, state_params.mapping
-    return False, None
 
 
 def precheck(G1, G2, G1_labels, G2_labels):
@@ -127,3 +125,13 @@ def initialize_VF2pp(G1, G2, G1_labels, G2_labels):
     stack = [(starting_node, iter(candidates))]
 
     return graph_params, state_params, node_order, stack
+
+
+def prepare_next(stack, node_order, visited, state_params):
+    entering_node, _ = stack.pop()
+    node_order.appendleft(entering_node)
+    popped_node1, _ = stack[-1]
+    popped_node2 = state_params.mapping[popped_node1]
+    state_params.mapping.pop(popped_node1)
+    state_params.reverse_mapping.pop(popped_node2)
+    visited.clear()
