@@ -480,8 +480,8 @@ class TestVF2pp:
 
     def test_random_graph_cases(self):
         # Two isomorphic GNP graphs
-        G1 = nx.gnp_random_graph(300, 0.4, 23)
-        G2 = nx.gnp_random_graph(300, 0.4, 23)
+        G1 = nx.gnp_random_graph(300, 0.4, seed=23)
+        G2 = nx.gnp_random_graph(300, 0.4, seed=23)
 
         assign_labels(G1, G2)
         l1, l2 = get_labes(G1, G2)
