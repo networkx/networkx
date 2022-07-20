@@ -2,10 +2,23 @@ import random
 import time
 import matplotlib.pyplot as plt
 import networkx as nx
+from networkx.algorithms.isomorphism.VF2pp import (
+    precheck,
+    initialize_VF2pp,
+    update_state,
+    restore_state,
+    feasibility,
+    find_candidates,
+)
 from networkx.algorithms.isomorphism.VF2pp import isomorphic_VF2pp
-from networkx.algorithms.isomorphism.VF2pp_helpers.candidates import find_candidates
-from networkx.algorithms.isomorphism.VF2pp_helpers.feasibility import feasibility
-from networkx.algorithms.isomorphism.VF2pp_helpers.node_ordering import matching_order
+
+
+def VF2pp(G1, G2, l1, l2):
+    try:
+        m = next(isomorphic_VF2pp(G1, G2, l1, l2))
+        return m
+    except StopIteration:
+        return None
 
 
 def compute_Ti(G1, G2, mapping, reverse_mapping):
@@ -23,74 +36,64 @@ def compute_Ti(G1, G2, mapping, reverse_mapping):
 
 
 def isomorphic_VF2pp2(G1, G2, G1_labels, G2_labels):
-    mapping, reverse_mapping = dict(), dict()
-    T1, T2 = set(), set()
-    T1_out, T2_out = set(G1.nodes()), set(G2.nodes())
-    visited = set()
+    if not G1 and not G2:
+        return False
+    if not precheck(G1, G2, G1_labels, G2_labels):
+        return False
 
-    node_order = matching_order(G1, G2, G1_labels, G2_labels)
-    starting_node = node_order.pop(0)
-    candidates = find_candidates(
-        G1, G2, G1_labels, G2_labels, starting_node, mapping, reverse_mapping
+    visited = set()
+    graph_params, state_params, node_order, stack = initialize_VF2pp(
+        G1, G2, G1_labels, G2_labels
     )
-    stack = [(starting_node, iter(candidates))]
 
     while stack:
         current_node, candidate_nodes = stack[-1]
 
         try:
             candidate = next(candidate_nodes)
-            if (
-                feasibility(
-                    current_node,
-                    candidate,
-                    G1,
-                    G2,
-                    G1_labels,
-                    G2_labels,
-                    mapping,
-                    reverse_mapping,
-                    T1,
-                    T1_out,
-                    T2,
-                    T2_out,
-                )
-                and candidate not in visited
+            if candidate not in visited and feasibility(
+                current_node, candidate, graph_params, state_params
             ):
                 visited.add(candidate)
-
-                # Update the mapping and Ti/Ti_out
-                mapping.update({current_node: candidate})
-                reverse_mapping.update({candidate: current_node})
-                T1, T2, T1_out, T2_out = compute_Ti(G1, G2, mapping, reverse_mapping)
-                # Feasibile pair found, extend mapping and descent to the DFS tree searching for another feasible pair
-                if not node_order:
-                    break
-
-                next_node = node_order.pop(0)
-                candidates = find_candidates(
-                    G1, G2, G1_labels, G2_labels, next_node, mapping, reverse_mapping
+                state_params.mapping.update({node: candidate})
+                state_params.reverse_mapping.update({candidate: node})
+                (
+                    state_params.T1,
+                    state_params.T2,
+                    state_params.T1_out,
+                    state_params.T2_out,
+                ) = compute_Ti(
+                    G1, G2, state_params.mapping, state_params.reverse_mapping
                 )
+
+                if not node_order:  # When we match the last node
+                    yield state_params.mapping
+                    # prepare_next(stack, node_order, visited, state_params)
+                    # continue
+
+                next_node = node_order.popleft()
+                candidates = find_candidates(next_node, graph_params, state_params)
                 stack.append((next_node, iter(candidates)))
 
         except StopIteration:
-            # Restore the previous state of the algorithm
-            entering_node, _ = stack.pop()  # The node to be returned to the ordering
-            node_order.insert(0, entering_node)
-            if not stack:
-                break
-
-            popped_node1, _ = stack[-1]
-            popped_node2 = mapping[popped_node1]
-            mapping.pop(popped_node1)
-            reverse_mapping.pop(popped_node2)
-            visited.remove(popped_node2)  # todo: do we need this?
-
-            T1, T2, T1_out, T2_out = compute_Ti(G1, G2, mapping, reverse_mapping)
-
-    if len(mapping) == G1.number_of_nodes():
-        return mapping
-    return False
+            entering_node, _ = stack.pop()
+            node_order.appendleft(entering_node)
+            if (
+                stack
+            ):  # in the last iteration, it will continue and the while condition will terminate
+                popped_node1, _ = stack[-1]
+                popped_node2 = state_params.mapping[popped_node1]
+                state_params.mapping.pop(popped_node1)
+                state_params.reverse_mapping.pop(popped_node2)
+                visited.discard(popped_node2)
+                (
+                    state_params.T1,
+                    state_params.T2,
+                    state_params.T1_out,
+                    state_params.T2_out,
+                ) = compute_Ti(
+                    G1, G2, state_params.mapping, state_params.reverse_mapping
+                )
 
 
 # Graph initialization
@@ -132,6 +135,7 @@ number_of_nodes = [
     750,
     800,
 ]
+
 for V in number_of_nodes:
     print(V)
     G1 = nx.gnp_random_graph(V, 0.7, 42)
@@ -169,7 +173,7 @@ for V in number_of_nodes:
 
     # VF2++
     t0 = time.time()
-    mapping = isomorphic_VF2pp(G1, G2, G1_labels, G2_labels)
+    mapping = VF2pp(G1, G2, G1_labels, G2_labels)
     times_incremental.append(time.time() - t0)
 
     t0 = time.time()
