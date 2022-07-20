@@ -69,7 +69,7 @@ class TestCandidateSelection:
 
         for node in self.G1.nodes():
             assert self.mapped_nodes[node] in find_candidates(
-                node, {}, graph_params, state_params
+                node, graph_params, state_params
             )
 
     def test_different_labels(self):
@@ -95,6 +95,6 @@ class TestCandidateSelection:
         state_params = self.StateParameters(dict(), dict(), None, None, None, None)
 
         for node in self.G1.nodes():
-            candidates = find_candidates(node, {}, graph_params, state_params)
+            candidates = find_candidates(node, graph_params, state_params)
             assert len(candidates) == 1
             assert self.mapped_nodes[node] in candidates

@@ -30,7 +30,6 @@ def isomorphic_VF2pp(G1, G2, G1_labels, G2_labels):
     if not precheck(G1, G2, G1_labels, G2_labels):
         return False
 
-    visited = set()
     graph_params, state_params, node_order, stack = initialize_VF2pp(
         G1, G2, G1_labels, G2_labels
     )
@@ -53,7 +52,6 @@ def isomorphic_VF2pp(G1, G2, G1_labels, G2_labels):
                     matching_node,
                     node_order,
                     stack,
-                    visited,
                     graph_params,
                     state_params,
                 )
@@ -63,7 +61,7 @@ def isomorphic_VF2pp(G1, G2, G1_labels, G2_labels):
             stack.pop()
             matching_node -= 1
             if stack:
-                restore_state(stack, visited, graph_params, state_params)
+                restore_state(stack, graph_params, state_params)
 
 
 def precheck(G1, G2, G1_labels, G2_labels):
@@ -122,7 +120,7 @@ def initialize_VF2pp(G1, G2, G1_labels, G2_labels):
     node_order = matching_order(G1, G2, G1_labels, G2_labels)
 
     starting_node = node_order[0]
-    candidates = find_candidates(starting_node, set(), graph_params, state_params)
+    candidates = find_candidates(starting_node, graph_params, state_params)
     stack = [(starting_node, iter(candidates))]
 
     return graph_params, state_params, node_order, stack
