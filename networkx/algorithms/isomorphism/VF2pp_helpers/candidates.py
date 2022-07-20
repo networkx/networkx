@@ -1,4 +1,4 @@
-def find_candidates(u, graph_params, state_params):
+def find_candidates(u, visited, graph_params, state_params):
     """Given a node u of G1, finds the candidates of u from G2.
 
     Parameters
@@ -11,6 +11,9 @@ def find_candidates(u, graph_params, state_params):
 
     u: int
         The node from G1 for which to find the candidates from G2.
+
+    visited: set()
+        Contains all the nodes, visited by the DFS so far.
 
     mapping: dict
         The mapping as extended so far. Maps nodes of G1 to nodes of G2.
@@ -32,6 +35,7 @@ def find_candidates(u, graph_params, state_params):
             node
             for node in G2.nodes()
             if node not in reverse_mapping
+            and node not in visited
             and G2.degree[node] == G1.degree[u]
             and G2_labels[node] == G1_labels[u]
             and not {nbr2 for nbr2 in G2[node] if nbr2 in reverse_mapping}
@@ -49,7 +53,9 @@ def find_candidates(u, graph_params, state_params):
         {
             node
             for node in common_nodes
-            if G1_labels[u] == G2_labels[node] and G1.degree[u] == G2.degree[node]
+            if node not in visited
+            and G1_labels[u] == G2_labels[node]
+            and G1.degree[u] == G2.degree[node]
         }
     )
     return common_nodes

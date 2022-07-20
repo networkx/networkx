@@ -41,23 +41,22 @@ def isomorphic_VF2pp(G1, G2, G1_labels, G2_labels):
 
         try:
             candidate = next(candidate_nodes)
-            if candidate not in visited and feasibility(
-                current_node, candidate, graph_params, state_params
-            ):
-                visited.add(candidate)
-                update_state(current_node, candidate, graph_params, state_params)
-
-                if (
-                    len(state_params.mapping) == G1.number_of_nodes()
-                ):  # When we match the last node
+            if feasibility(current_node, candidate, graph_params, state_params):
+                if len(state_params.mapping) == G1.number_of_nodes() - 1:
+                    state_params.mapping.update({current_node: candidate})
                     yield state_params.mapping
-                    # prepare_next(stack, node_order, visited, state_params)
-                    # continue
 
-                next_node = node_order[matching_node]
+                update_state(
+                    current_node,
+                    candidate,
+                    matching_node,
+                    node_order,
+                    stack,
+                    visited,
+                    graph_params,
+                    state_params,
+                )
                 matching_node += 1
-                candidates = find_candidates(next_node, graph_params, state_params)
-                stack.append((next_node, iter(candidates)))
 
         except StopIteration:
             stack.pop()
@@ -124,7 +123,7 @@ def initialize_VF2pp(G1, G2, G1_labels, G2_labels):
     node_order = matching_order(G1, G2, G1_labels, G2_labels)
 
     starting_node = node_order[0]
-    candidates = find_candidates(starting_node, graph_params, state_params)
+    candidates = find_candidates(starting_node, set(), graph_params, state_params)
     stack = [(starting_node, iter(candidates))]
 
     return graph_params, state_params, node_order, stack
