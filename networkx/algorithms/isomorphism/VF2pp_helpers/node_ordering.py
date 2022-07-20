@@ -35,13 +35,9 @@ def matching_order(G1, G2, G1_labels, G2_labels):
     node_order = []
 
     while V1_unordered:
-        rarest_node = min(V1_unordered, key=lambda x: label_rarity[G1_labels[x]])
-        rare_nodes = [
-            n
-            for n in V1_unordered
-            if label_rarity[G1_labels[n]] == label_rarity[G1_labels[rarest_node]]
-        ]
-        max_node = max(rare_nodes, key=G1.degree)
+        max_node = max(
+            rarest_nodes(V1_unordered, G1_labels, label_rarity), key=G1.degree
+        )
 
         BFS_levels(
             max_node,
@@ -107,7 +103,7 @@ def BFS_levels(
         )
 
         # initialize next level to indicate that we finished the next depth of the BFS
-        V1_unordered -= dlevel_nodes
+        V1_unordered.difference_update(dlevel_nodes)
         dlevel_nodes = {nbr}
     # Process the last level
     process_level(
@@ -144,6 +140,7 @@ def process_level(
         Nodes are used as keys. Indicates how many neighbors of each node have been ordered.
     """
     max_nodes = []
+    max_deg_nodes = []
     max_degree = 0
     while dlevel_nodes:
         # Get the nodes with the max used_degree
@@ -155,15 +152,17 @@ def process_level(
                     max_used_deg = deg
                     max_nodes = [node]
                     max_degree = G1.degree[node]
+                    max_deg_nodes = [node]
                 else:  # deg == max_deg
                     max_nodes.append(node)
-                    if G1.degree[node] > max_degree:
-                        max_degree = G1.degree[node]
+                    deg = G1.degree[node]
+                    if deg > max_degree:
+                        max_degree = deg
+                        max_deg_nodes = [node]
+                    elif deg == max_degree:
+                        max_deg_nodes.append(node)
 
         # Get the max_used_degree node with the rarest label
-        max_deg_nodes = [
-            node for node in max_nodes if G1.degree[node] == max_degree
-        ]  # todo: this can be computed on the go
         next_node = min(max_deg_nodes, key=lambda x: label_rarity[G1_labels[x]])
         order.append(next_node)
 
@@ -191,3 +190,17 @@ def initialize_preprocess(G1, G1_labels, G2_labels):
 
     V1_unordered = set(G1)
     return nodes_of_G1Labels, nodes_of_G2Labels, V1_unordered
+
+
+def rarest_nodes(V1_unordered, G1_labels, label_rarity):
+    rare = []
+    rarest = float("inf")
+    for n in V1_unordered:
+        if label_rarity[G1_labels[n]] < rarest:
+            rarest = label_rarity[G1_labels[n]]
+            rare = [n]
+            continue
+        if label_rarity[G1_labels[n]] == rarest:
+            rare.append(n)
+
+    return rare
