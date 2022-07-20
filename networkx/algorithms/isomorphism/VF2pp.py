@@ -34,6 +34,7 @@ def isomorphic_VF2pp(G1, G2, G1_labels, G2_labels):
     graph_params, state_params, node_order, stack = initialize_VF2pp(
         G1, G2, G1_labels, G2_labels
     )
+    matching_node = 1
 
     while stack:
         current_node, candidate_nodes = stack[-1]
@@ -46,18 +47,21 @@ def isomorphic_VF2pp(G1, G2, G1_labels, G2_labels):
                 visited.add(candidate)
                 update_state(current_node, candidate, graph_params, state_params)
 
-                if not node_order:  # When we match the last node
+                if (
+                    len(state_params.mapping) == G1.number_of_nodes()
+                ):  # When we match the last node
                     yield state_params.mapping
                     # prepare_next(stack, node_order, visited, state_params)
                     # continue
 
-                next_node = node_order.popleft()
+                next_node = node_order[matching_node]
+                matching_node += 1
                 candidates = find_candidates(next_node, graph_params, state_params)
                 stack.append((next_node, iter(candidates)))
 
         except StopIteration:
-            entering_node, _ = stack.pop()
-            node_order.appendleft(entering_node)
+            stack.pop()
+            matching_node -= 1
             if (
                 stack
             ):  # in the last iteration, it will continue and the while condition will terminate
@@ -118,9 +122,8 @@ def initialize_VF2pp(G1, G2, G1_labels, G2_labels):
     state_params = StateParameters(mapping, reverse_mapping, T1, T1_out, T2, T2_out)
 
     node_order = matching_order(G1, G2, G1_labels, G2_labels)
-    node_order = collections.deque(node_order)
 
-    starting_node = node_order.popleft()
+    starting_node = node_order[0]
     candidates = find_candidates(starting_node, graph_params, state_params)
     stack = [(starting_node, iter(candidates))]
 
