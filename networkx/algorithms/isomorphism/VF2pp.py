@@ -35,6 +35,7 @@ def isomorphic_VF2pp(G1, G2, G1_labels, G2_labels):
         G1, G2, G1_labels, G2_labels
     )
     matching_node = 1
+    mapping = state_params.mapping
 
     while stack:
         current_node, candidate_nodes = stack[-1]
@@ -42,8 +43,8 @@ def isomorphic_VF2pp(G1, G2, G1_labels, G2_labels):
         try:
             candidate = next(candidate_nodes)
             if feasibility(current_node, candidate, graph_params, state_params):
-                if len(state_params.mapping) == G1.number_of_nodes() - 1:
-                    state_params.mapping.update({current_node: candidate})
+                if len(mapping) == G1.number_of_nodes() - 1:
+                    mapping.update({current_node: candidate})
                     yield state_params.mapping
 
                 update_state(
@@ -61,9 +62,7 @@ def isomorphic_VF2pp(G1, G2, G1_labels, G2_labels):
         except StopIteration:
             stack.pop()
             matching_node -= 1
-            if (
-                stack
-            ):  # in the last iteration, it will continue and the while condition will terminate
+            if stack:
                 restore_state(stack, visited, graph_params, state_params)
 
 
