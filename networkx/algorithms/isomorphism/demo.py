@@ -7,8 +7,8 @@ from networkx.algorithms.isomorphism.VF2pp import isomorphic_VF2pp
 from networkx.algorithms.isomorphism.VF2pp_helpers.node_ordering import matching_order
 
 # Graph initialization
-G1 = nx.gnp_random_graph(350, 0.75, 42)
-G2 = nx.gnp_random_graph(350, 0.75, 42)
+G1 = nx.gnp_random_graph(350, 0.7, 42)
+G2 = nx.gnp_random_graph(350, 0.7, 42)
 # G1, G2 = nx.Graph(), nx.Graph()
 #
 # G1_edges = [(1, 2), (1, 4), (1, 5), (2, 3), (2, 4), (3, 4), (4, 5), (1, 6), (6, 7), (6, 8), (8, 9), (7, 9), (7, 10)]

@@ -77,40 +77,24 @@ def cut_PT(u, v, graph_params, state_params):
     -------
     True if we should prune this branch, i.e. the node pair failed the cutting checks. False otherwise.
     """
-    G1, G2, G1_labels, G2_labels = (
-        graph_params.G1,
-        graph_params.G2,
-        graph_params.G1_labels,
-        graph_params.G2_labels,
-    )
-    T1, T1_out, T2, T2_out = (
-        state_params.T1,
-        state_params.T1_out,
-        state_params.T2,
-        state_params.T2_out,
-    )
+    G1, G2, G1_labels, G2_labels = graph_params
+    _, _, T1, T1_out, T2, T2_out = state_params
 
     u_neighbors_labels = {n1: G1_labels[n1] for n1 in G1[u]}
-    u_labels_neighbors = collections.OrderedDict(
-        sorted(nx.utils.groups(u_neighbors_labels).items())
-    )
+    u_labels_neighbors = nx.utils.groups(u_neighbors_labels)
 
     v_neighbors_labels = {n2: G2_labels[n2] for n2 in G2[v]}
-    v_labels_neighbors = collections.OrderedDict(
-        sorted(nx.utils.groups(v_neighbors_labels).items())
-    )
+    v_labels_neighbors = nx.utils.groups(v_neighbors_labels)
+
     # if the neighbors of u, do not have the same labels as those of v, NOT feasible.
     if set(u_labels_neighbors.keys()) != set(v_labels_neighbors.keys()):
         return True
 
-    for labeled_nh1, labeled_nh2 in zip(
-        u_labels_neighbors.values(), v_labels_neighbors.values()
-    ):
-        if len(T1.intersection(labeled_nh1)) != len(
-            T2.intersection(labeled_nh2)
-        ) or len(T1_out.intersection(labeled_nh1)) != len(
-            T2_out.intersection(labeled_nh2)
-        ):
+    for label, G1_nbh in u_labels_neighbors.items():
+        G2_nbh = v_labels_neighbors[label]
+        if len(T1.intersection(G1_nbh)) != len(T2.intersection(G2_nbh)) or len(
+            T1_out.intersection(G1_nbh)
+        ) != len(T2_out.intersection(G2_nbh)):
             return True
 
     return False

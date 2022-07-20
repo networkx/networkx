@@ -24,15 +24,19 @@ def assign_labels(G1, G2, mapped_nodes=None):
         "pink",
         "yellow",
         "none",
+        "ocean",
+        "brown",
+        "solarized",
     ]
+
+    c = 0
     for node in G1.nodes():
-        color = colors[random.randrange(0, len(colors))]
+        color = colors[c % len(colors)]
         G1.nodes[node]["label"] = color
         if mapped_nodes:
             node = mapped_nodes[node]
         G2.nodes[node]["label"] = color
-
-    return G1, G2
+        c += 1
 
 
 def get_labels(G1, G2):
@@ -68,7 +72,7 @@ class TestVF2pp:
         G1.add_edges_from(edges1)
         G2 = nx.relabel_nodes(G1, mapped)
 
-        G1, G2 = assign_labels(G1, G2, mapped)
+        assign_labels(G1, G2, mapped)
         l1, l2 = get_labes(G1, G2)
 
         m = VF2pp(G1, G2, l1, l2)
@@ -84,7 +88,7 @@ class TestVF2pp:
         G1.add_edges_from(edges1)
         G2 = nx.relabel_nodes(G1, mapped)
 
-        G1, G2 = assign_labels(G1, G2, mapped)
+        assign_labels(G1, G2, mapped)
         l1, l2 = get_labes(G1, G2)
 
         m = VF2pp(G1, G2, l1, l2)
@@ -101,10 +105,7 @@ class TestVF2pp:
         G1.add_edges_from(edges1)
         G2 = nx.relabel_nodes(G1, mapped)
 
-        for node in G1.nodes():
-            color = colors.pop()
-            G1.nodes[node]["label"] = color
-            G2.nodes[mapped[node]]["label"] = color
+        assign_labels(G1, G2, mapped)
 
         # Adding new nodes
         G1.add_node(0)
@@ -162,24 +163,9 @@ class TestVF2pp:
         G1.add_edges_from(edges1)
         G2 = nx.relabel_nodes(G1, mapped)
 
-        colors = [
-            "white",
-            "black",
-            "green",
-            "purple",
-            "orange",
-            "red",
-            "blue",
-            "grey",
-            "none",
-        ]
-
-        for node in G1.nodes():
-            color = colors.pop()
-            G1.nodes[node]["label"] = color
-            G2.nodes[mapped[node]]["label"] = color
-
+        assign_labels(G1, G2, mapped)
         l1, l2 = get_labes(G1, G2)
+
         m = VF2pp(G1, G2, l1, l2)
         assert m
         assert m == mapped
@@ -459,14 +445,9 @@ class TestVF2pp:
 
         colors = ["red", "blue", "grey", "none", "brown", "solarized", "yellow", "pink"]
 
-        c = 0
-        for node in G1.nodes():
-            color = colors[c]
-            G1.nodes[node]["label"] = color
-            G2.nodes[mapped[node]]["label"] = color
-            c += 1
-
+        assign_labels(G1, G2, mapped)
         l1, l2 = get_labes(G1, G2)
+
         m = VF2pp(G1, G2, l1, l2)
         assert m
         assert m == mapped
@@ -499,10 +480,10 @@ class TestVF2pp:
 
     def test_random_graph_cases(self):
         # Two isomorphic GNP graphs
-        G1 = nx.gnp_random_graph(300, 0.4, 23)
-        G2 = nx.gnp_random_graph(300, 0.4, 23)
+        G1 = nx.gnp_random_graph(300, 0.4, seed=23)
+        G2 = nx.gnp_random_graph(300, 0.4, seed=23)
 
-        G1, G2 = assign_labels(G1, G2)
+        assign_labels(G1, G2)
         l1, l2 = get_labes(G1, G2)
 
         m = VF2pp(G1, G2, l1, l2)
@@ -548,6 +529,7 @@ class TestVF2pp:
 
     def test_disconnected_graph(self):
         num_nodes = [100, 330, 579, 631, 799]
+
         for Vi in num_nodes:
             nodes = [i for i in range(Vi)]
             G1 = nx.Graph()
@@ -556,7 +538,7 @@ class TestVF2pp:
             G1.add_nodes_from(nodes)
             G2.add_nodes_from(nodes)
 
-            G1, G2 = assign_labels(G1, G2)
+            assign_labels(G1, G2)
             l1, l2 = get_labes(G1, G2)
 
             m = VF2pp(G1, G2, l1, l2)
@@ -568,7 +550,7 @@ class TestVF2pp:
             G1 = nx.complete_graph(Vi)
             G2 = nx.complete_graph(Vi)
 
-            G1, G2 = assign_labels(G1, G2)
+            assign_labels(G1, G2)
             l1, l2 = get_labes(G1, G2)
 
             m = VF2pp(G1, G2, l1, l2)

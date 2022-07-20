@@ -30,42 +30,38 @@ def isomorphic_VF2pp(G1, G2, G1_labels, G2_labels):
     if not precheck(G1, G2, G1_labels, G2_labels):
         return False
 
-    visited = set()
     graph_params, state_params, node_order, stack = initialize_VF2pp(
         G1, G2, G1_labels, G2_labels
     )
     matching_node = 1
+    mapping = state_params.mapping
 
     while stack:
         current_node, candidate_nodes = stack[-1]
 
         try:
             candidate = next(candidate_nodes)
-            if candidate not in visited and feasibility(
-                current_node, candidate, graph_params, state_params
-            ):
-                visited.add(candidate)
-                update_state(current_node, candidate, graph_params, state_params)
-
-                if (
-                    len(state_params.mapping) == G1.number_of_nodes()
-                ):  # When we match the last node
+            if feasibility(current_node, candidate, graph_params, state_params):
+                if len(mapping) == G1.number_of_nodes() - 1:
+                    mapping.update({current_node: candidate})
                     yield state_params.mapping
-                    # prepare_next(stack, node_order, visited, state_params)
-                    # continue
 
-                next_node = node_order[matching_node]
+                update_state(
+                    current_node,
+                    candidate,
+                    matching_node,
+                    node_order,
+                    stack,
+                    graph_params,
+                    state_params,
+                )
                 matching_node += 1
-                candidates = find_candidates(next_node, graph_params, state_params)
-                stack.append((next_node, iter(candidates)))
 
         except StopIteration:
             stack.pop()
             matching_node -= 1
-            if (
-                stack
-            ):  # in the last iteration, it will continue and the while condition will terminate
-                restore_state(stack, visited, graph_params, state_params)
+            if stack:
+                restore_state(stack, graph_params, state_params)
 
 
 def precheck(G1, G2, G1_labels, G2_labels):

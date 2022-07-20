@@ -1,3 +1,6 @@
+from networkx.algorithms.isomorphism.VF2pp_helpers.candidates import find_candidates
+
+
 def update_Tinout(new_node1, new_node2, graph_params, state_params):
     """Updates the Ti/Ti_out (i=1,2) when a new node pair u-v is added to the mapping.
 
@@ -114,17 +117,22 @@ def restore_Tinout(popped_node1, popped_node2, graph_params, state_params):
         T2_out.add(popped_node2)
 
 
-def update_state(node, candidate, graph_params, state_params):
+def update_state(
+    node, candidate, matching_node, order, stack, graph_params, state_params
+):
     state_params.mapping.update({node: candidate})
     state_params.reverse_mapping.update({candidate: node})
     update_Tinout(node, candidate, graph_params, state_params)
 
+    next_node = order[matching_node]
+    candidates = find_candidates(next_node, graph_params, state_params)
+    stack.append((next_node, iter(candidates)))
 
-def restore_state(stack, visited, graph_params, state_params):
+
+def restore_state(stack, graph_params, state_params):
     popped_node1, _ = stack[-1]
     popped_node2 = state_params.mapping[popped_node1]
     state_params.mapping.pop(popped_node1)
     state_params.reverse_mapping.pop(popped_node2)
-    visited.discard(popped_node2)
 
     restore_Tinout(popped_node1, popped_node2, graph_params, state_params)

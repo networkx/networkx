@@ -20,10 +20,13 @@ def assign_labels(G1, G2):
         "yellow",
         "none",
     ]
+
+    c = 0
     for node in G1.nodes():
-        color = colors[random.randrange(0, len(colors))]
+        color = colors[c % len(colors)]
         G1.nodes[node]["label"] = color
         G2.nodes[node]["label"] = color
+        c += 1
 
     return G1, G2
 
@@ -66,8 +69,8 @@ class TestNodeOrdering:
 
     def test_rare_nodes_exhaustive(self):
         for p in [0.04, 0.1, 0.25, 0.4, 0.65, 0.87, 1]:
-            G1 = nx.gnp_random_graph(500, p, 12)
-            G2 = nx.gnp_random_graph(500, p, 12)
+            G1 = nx.gnp_random_graph(500, p, seed=12)
+            G2 = nx.gnp_random_graph(500, p, seed=12)
 
             G1, G2 = assign_labels(G1, G2)
             l1, l2 = get_labes(G1, G2)
@@ -111,8 +114,8 @@ class TestNodeOrdering:
 
         for Vi in num_nodes:
             for p in probabilities:
-                G1 = nx.gnp_random_graph(Vi, p, 12)
-                G2 = nx.gnp_random_graph(Vi, p, 12)
+                G1 = nx.gnp_random_graph(Vi, p, seed=12)
+                G2 = nx.gnp_random_graph(Vi, p, seed=12)
 
                 G1, G2 = assign_labels(G1, G2)
                 l1, l2 = get_labes(G1, G2)
