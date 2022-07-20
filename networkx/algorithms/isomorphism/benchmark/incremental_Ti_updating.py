@@ -1,16 +1,17 @@
 import random
 import time
+
 import matplotlib.pyplot as plt
 import networkx as nx
 from networkx.algorithms.isomorphism.VF2pp import (
-    precheck,
-    initialize_VF2pp,
-    update_state,
-    restore_state,
     feasibility,
     find_candidates,
+    initialize_VF2pp,
+    isomorphic_VF2pp,
+    precheck,
+    restore_state,
+    update_state,
 )
-from networkx.algorithms.isomorphism.VF2pp import isomorphic_VF2pp
 
 
 def VF2pp(G1, G2, l1, l2):
