@@ -73,8 +73,8 @@ def naive_all_pairs_lowest_common_ancestor(G, pairs=None):
     if pairs is None:
         pairs = combinations_with_replacement(G, 2)
     else:
-        # Convert iterator to iterable, if necessary, trim duplicates
-        pairs = set(pairs)
+        # Convert iterator to iterable, if necessary. Trim duplicates.
+        pairs = dict.fromkeys(pairs)
         # Verify that each of the nodes in the provided pairs is in G
         nodeset = set(G)
         for pair in pairs:
