@@ -114,7 +114,14 @@ class TestSteinerTree:
                 ],
                 [
                     (1, 2, {"weight": 10}),
+                    (2, 7, {"weight": 1}),
                     (3, 4, {"weight": 10}),
+                    (4, 5, {"weight": 10}),
+                    (5, 7, {"weight": 1}),
+                ],
+                [
+                    (1, 2, {"weight": 10}),
+                    (2, 3, {"weight": 10}),
                     (2, 7, {"weight": 1}),
                     (4, 5, {"weight": 10}),
                     (5, 7, {"weight": 1}),
