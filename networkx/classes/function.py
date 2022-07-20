@@ -788,6 +788,7 @@ def set_edge_attributes(G, values, name=None):
         3
 
     The attributes of one Graph can be used to set those of another.
+
         >>> H = nx.path_graph(3)
         >>> nx.set_edge_attributes(H, G.edges)
 
