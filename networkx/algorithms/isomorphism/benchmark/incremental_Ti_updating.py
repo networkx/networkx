@@ -9,8 +9,6 @@ from networkx.algorithms.isomorphism.VF2pp import (
     initialize_VF2pp,
     isomorphic_VF2pp,
     precheck,
-    restore_state,
-    update_state,
 )
 
 
@@ -64,6 +62,7 @@ def isomorphic_VF2pp2(G1, G2, G1_labels, G2_labels):
     graph_params, state_params, node_order, stack = initialize_VF2pp(
         G1, G2, G1_labels, G2_labels
     )
+    matching_node = 1
 
     while stack:
         current_node, candidate_nodes = stack[-1]
@@ -80,18 +79,21 @@ def isomorphic_VF2pp2(G1, G2, G1_labels, G2_labels):
 
                 compute_Ti(graph_params, state_params)
 
-                if not node_order:  # When we match the last node
+                if (
+                    len(state_params.mapping) == G1.number_of_nodes()
+                ):  # When we match the last node
                     yield state_params.mapping
                     # prepare_next(stack, node_order, visited, state_params)
                     # continue
 
-                next_node = node_order.popleft()
+                next_node = node_order[matching_node]
+                matching_node += 1
                 candidates = find_candidates(next_node, graph_params, state_params)
                 stack.append((next_node, iter(candidates)))
 
         except StopIteration:
-            entering_node, _ = stack.pop()
-            node_order.appendleft(entering_node)
+            stack.pop()
+            matching_node -= 1
             if (
                 stack
             ):  # in the last iteration, it will continue and the while condition will terminate
@@ -146,23 +148,6 @@ for V in number_of_nodes:
     print(V)
     G1 = nx.gnp_random_graph(V, 0.7, 42)
     G2 = nx.gnp_random_graph(V, 0.7, 42)
-
-    # nx.draw(G1, with_labels=True)
-    # plt.show()
-
-    # G1_edges = [(1, 2), (1, 4), (1, 5), (2, 3), (2, 4), (3, 4), (4, 5), (1, 6), (6, 7), (6, 8), (8, 9), (7, 9)]
-    # G2_edges = [(1, 2), (2, 3), (3, 4), (1, 4), (4, 9), (9, 8), (8, 7), (7, 6), (8, 6), (9, 6), (5, 6), (5, 9)]
-
-    # G1.add_edges_from(G1_edges)
-    # G2.add_edges_from(G2_edges)
-    # G1.add_node(0)
-    # G2.add_node(0)
-
-    # mapped_nodes = {0: 0, 1: 9, 2: 8, 3: 7, 4: 6, 5: 5, 6: 4, 7: 1, 8: 3, 9: 2}
-
-    # for node, color in zip(G1.nodes, colors):
-    #     G1.nodes[node]["label"] = color
-    #     G2.nodes[mapped_nodes[node]]["label"] = color
 
     # VF2++ initialization
     for node in G1.nodes():
