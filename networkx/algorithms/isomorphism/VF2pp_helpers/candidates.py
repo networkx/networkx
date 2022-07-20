@@ -26,7 +26,7 @@ def find_candidates(u, graph_params, state_params):
     G1, G2, G1_labels, G2_labels = graph_params
     mapping, reverse_mapping, T1, T1_out, T2, T2_out = state_params
 
-    covered_neighbors = {nbr for nbr in G1[u] if nbr in mapping}
+    covered_neighbors = [nbr for nbr in G1[u] if nbr in mapping]
     if len(covered_neighbors) == 0:
         return {
             node
@@ -37,18 +37,20 @@ def find_candidates(u, graph_params, state_params):
             and len([nbr2 for nbr2 in G2[node] if nbr2 in reverse_mapping]) == 0
         }
 
-    G2_uncovered_neighborhoods = []
-    for neighbor1 in covered_neighbors:
-        current_neighborhood = set()
-        for neighbor2 in G2[mapping[neighbor1]]:
-            current_neighborhood.add(neighbor2)
-        G2_uncovered_neighborhoods.append(current_neighborhood)
-
-    common_nodes = set.intersection(*G2_uncovered_neighborhoods)
-    candidates = {
-        node
-        for node in common_nodes
-        if G1_labels[u] == G2_labels[node] and G1.degree[u] == G2.degree[node]
+    nbr1 = covered_neighbors[0]
+    current_neighborhood = {
+        nbr2
+        for nbr2 in G2[mapping[nbr1]]
+        if G1_labels[u] == G2_labels[nbr2] and G1.degree[u] == G2.degree[nbr2]
     }
+    common_nodes = current_neighborhood.copy()
 
-    return candidates
+    for nbr1 in covered_neighbors[1:]:
+        current_neighborhood = {
+            nbr2
+            for nbr2 in G2[mapping[nbr1]]
+            if G1_labels[u] == G2_labels[nbr2] and G1.degree[u] == G2.degree[nbr2]
+        }
+        common_nodes.intersection_update(current_neighborhood)
+
+    return common_nodes
