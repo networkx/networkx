@@ -73,7 +73,7 @@ class TestVF2pp:
         G2 = nx.relabel_nodes(G1, mapped)
 
         assign_labels(G1, G2, mapped)
-        l1, l2 = get_labes(G1, G2)
+        l1, l2 = get_labels(G1, G2)
 
         m = VF2pp(G1, G2, l1, l2)
         assert m
@@ -89,7 +89,7 @@ class TestVF2pp:
         G2 = nx.relabel_nodes(G1, mapped)
 
         assign_labels(G1, G2, mapped)
-        l1, l2 = get_labes(G1, G2)
+        l1, l2 = get_labels(G1, G2)
 
         m = VF2pp(G1, G2, l1, l2)
         assert m
@@ -112,7 +112,7 @@ class TestVF2pp:
         G2.add_node("Z")
         G1.nodes[0]["label"] = G1.nodes[1]["label"]
         G2.nodes["Z"]["label"] = G1.nodes[1]["label"]
-        l1, l2 = get_labes(G1, G2)
+        l1, l2 = get_labels(G1, G2)
         mapped.update({0: "Z"})
 
         m = VF2pp(G1, G2, l1, l2)
@@ -121,7 +121,7 @@ class TestVF2pp:
 
         # Change the color of one of the nodes
         G2.nodes["Z"]["label"] = G1.nodes[2]["label"]
-        l1, l2 = get_labes(G1, G2)
+        l1, l2 = get_labels(G1, G2)
 
         m = VF2pp(G1, G2, l1, l2)
         assert not m
@@ -129,7 +129,7 @@ class TestVF2pp:
         # Add an extra edge
         G1.nodes[0]["label"] = "blue"
         G2.nodes["Z"]["label"] = "blue"
-        l1, l2 = get_labes(G1, G2)
+        l1, l2 = get_labels(G1, G2)
         G1.add_edge(0, 0)
 
         m = VF2pp(G1, G2, l1, l2)
@@ -164,7 +164,7 @@ class TestVF2pp:
         G2 = nx.relabel_nodes(G1, mapped)
 
         assign_labels(G1, G2, mapped)
-        l1, l2 = get_labes(G1, G2)
+        l1, l2 = get_labels(G1, G2)
 
         m = VF2pp(G1, G2, l1, l2)
         assert m
@@ -208,7 +208,7 @@ class TestVF2pp:
             G1.nodes[node]["label"] = color
             G2.nodes[mapped[node]]["label"] = color
 
-        l1, l2 = get_labes(G1, G2)
+        l1, l2 = get_labels(G1, G2)
 
         # Add extra edge to G1
         G1.add_edge(1, 7)
@@ -226,7 +226,7 @@ class TestVF2pp:
         G2.add_node("K")
         G1.nodes["A"]["label"] = "green"
         G2.nodes["K"]["label"] = "green"
-        l1, l2 = get_labes(G1, G2)
+        l1, l2 = get_labels(G1, G2)
         mapped.update({"A": "K"})
 
         m = VF2pp(G1, G2, l1, l2)
@@ -253,7 +253,7 @@ class TestVF2pp:
             G1.nodes[node]["label"] = color
             G2.nodes[mapped[node]]["label"] = color
 
-        l1, l2 = get_labes(G1, G2)
+        l1, l2 = get_labels(G1, G2)
         m = VF2pp(G1, G2, l1, l2)
         assert m
 
@@ -316,7 +316,7 @@ class TestVF2pp:
             G1.nodes[node]["label"] = color
             G2.nodes[mapped[node]]["label"] = color
 
-        l1, l2 = get_labes(G1, G2)
+        l1, l2 = get_labels(G1, G2)
 
         m = VF2pp(G1, G2, l1, l2)
         assert m == mapped
@@ -364,7 +364,7 @@ class TestVF2pp:
             G1.nodes[node]["label"] = color
             G2.nodes[mapped[node]]["label"] = color
 
-        l1, l2 = get_labes(G1, G2)
+        l1, l2 = get_labels(G1, G2)
 
         m = VF2pp(G1, G2, l1, l2)
         assert m
@@ -446,7 +446,7 @@ class TestVF2pp:
         colors = ["red", "blue", "grey", "none", "brown", "solarized", "yellow", "pink"]
 
         assign_labels(G1, G2, mapped)
-        l1, l2 = get_labes(G1, G2)
+        l1, l2 = get_labels(G1, G2)
 
         m = VF2pp(G1, G2, l1, l2)
         assert m
@@ -461,7 +461,7 @@ class TestVF2pp:
             G2.nodes[mapped[node]]["label"] = color2
             c += 1
 
-        l1, l2 = get_labes(G1, G2)
+        l1, l2 = get_labels(G1, G2)
         m = VF2pp(G1, G2, l1, l2)
         assert not m
 
@@ -474,7 +474,7 @@ class TestVF2pp:
             H2.nodes[node2]["label"] = "red"
             c += 1
 
-        l1, l2 = get_labes(H1, H2)
+        l1, l2 = get_labels(H1, H2)
         m = VF2pp(H1, H2, l1, l2)
         assert m
 
@@ -484,7 +484,7 @@ class TestVF2pp:
         G2 = nx.gnp_random_graph(300, 0.4, seed=23)
 
         assign_labels(G1, G2)
-        l1, l2 = get_labes(G1, G2)
+        l1, l2 = get_labels(G1, G2)
 
         m = VF2pp(G1, G2, l1, l2)
         assert m
@@ -539,7 +539,7 @@ class TestVF2pp:
             G2.add_nodes_from(nodes)
 
             assign_labels(G1, G2)
-            l1, l2 = get_labes(G1, G2)
+            l1, l2 = get_labels(G1, G2)
 
             m = VF2pp(G1, G2, l1, l2)
             assert m
@@ -551,7 +551,7 @@ class TestVF2pp:
             G2 = nx.complete_graph(Vi)
 
             assign_labels(G1, G2)
-            l1, l2 = get_labes(G1, G2)
+            l1, l2 = get_labels(G1, G2)
 
             m = VF2pp(G1, G2, l1, l2)
             assert m

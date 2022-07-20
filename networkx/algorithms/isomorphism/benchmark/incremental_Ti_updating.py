@@ -1,7 +1,6 @@
 import random
 import time
 
-import matplotlib.pyplot as plt
 import networkx as nx
 from networkx.algorithms.isomorphism.VF2pp import (
     feasibility,
@@ -172,9 +171,9 @@ for V in number_of_nodes:
     times_brute_force.append(time.time() - t0)
 
 
-plt.plot(number_of_nodes, times_brute_force, label="Brute Force", linestyle="dashed")
-plt.plot(number_of_nodes, times_incremental, label="Incremental")
-plt.xlabel("Number of nodes")
-plt.ylabel("Time seconds")
-plt.legend()
-plt.show()
+# plt.plot(number_of_nodes, times_brute_force, label="Brute Force", linestyle="dashed")
+# plt.plot(number_of_nodes, times_incremental, label="Incremental")
+# plt.xlabel("Number of nodes")
+# plt.ylabel("Time seconds")
+# plt.legend()
+# plt.show()
