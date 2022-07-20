@@ -56,8 +56,8 @@ def metric_closure(G, weight="weight"):
     return M
 
 
-def _mehlhorn_steiner_tree(G, S, weight):
-    paths = nx.multi_source_dijkstra_path(G, S)
+def _mehlhorn_steiner_tree(G, terminal_nodes, weight):
+    paths = nx.multi_source_dijkstra_path(G, terminal_nodes)
 
     d_1 = {}
     s = {}
@@ -84,8 +84,14 @@ def _mehlhorn_steiner_tree(G, S, weight):
         for n1, n2 in pairwise(path):
             G_3.add_edge(n1, n2)
 
-    G_4 = nx.minimum_spanning_edges(G_3, data=False)
-    return G_4
+    G_3_mst = list(nx.minimum_spanning_edges(G_3, data=False))
+    if G.is_multigraph():
+        G_3_mst = (
+            (u, v, min(G[u][v], key=lambda k: G[u][v][k][weight])) for u, v in G_3_mst
+        )
+    G_4 = G.edge_subgraph(G_3_mst).copy()
+    _remove_nonterminal_leaves(G_4, terminal_nodes)
+    return G_4.edges()
 
 
 def _kou_steiner_tree(G, terminal_nodes, weight):
