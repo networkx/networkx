@@ -25,10 +25,48 @@ class TestSteinerTree:
         G2.add_edge(3, 5, weight=5)
         G2.add_edge(4, 5, weight=1)
 
+        G3 = nx.Graph()
+        G3.add_edge(1, 2, weight=8)
+        G3.add_edge(1, 9, weight=3)
+        G3.add_edge(1, 8, weight=6)
+        G3.add_edge(1, 10, weight=2)
+        G3.add_edge(1, 14, weight=3)
+        G3.add_edge(2, 3, weight=6)
+        G3.add_edge(3, 4, weight=3)
+        G3.add_edge(3, 10, weight=2)
+        G3.add_edge(3, 11, weight=1)
+        G3.add_edge(4, 5, weight=1)
+        G3.add_edge(4, 11, weight=1)
+        G3.add_edge(5, 6, weight=4)
+        G3.add_edge(5, 11, weight=2)
+        G3.add_edge(5, 12, weight=1)
+        G3.add_edge(5, 13, weight=3)
+        G3.add_edge(6, 7, weight=2)
+        G3.add_edge(6, 12, weight=3)
+        G3.add_edge(6, 13, weight=1)
+        G3.add_edge(7, 8, weight=3)
+        G3.add_edge(7, 9, weight=3)
+        G3.add_edge(7, 11, weight=5)
+        G3.add_edge(7, 13, weight=2)
+        G3.add_edge(7, 14, weight=4)
+        G3.add_edge(8, 9, weight=2)
+        G3.add_edge(9, 14, weight=1)
+        G3.add_edge(10, 11, weight=2)
+        G3.add_edge(10, 14, weight=1)
+        G3.add_edge(11, 12, weight=1)
+        G3.add_edge(11, 14, weight=7)
+        G3.add_edge(12, 14, weight=3)
+        G3.add_edge(12, 15, weight=1)
+        G3.add_edge(13, 14, weight=4)
+        G3.add_edge(13, 15, weight=1)
+        G3.add_edge(14, 15, weight=2)
+
         cls.G1 = G1
         cls.G2 = G2
+        cls.G3 = G3
         cls.G1_term_nodes = [1, 2, 3, 4, 5]
         cls.G2_term_nodes = [0, 2, 3]
+        cls.G3_term_nodes = [1, 3, 5, 6, 8, 10, 11, 12, 13]
 
         cls.methods = ["wu", "kou", "mehlhorn"]
 
@@ -96,11 +134,26 @@ class TestSteinerTree:
                     (3, 5, {"weight": 5}),
                 ],
             ],
+            [
+                [
+                    (1, 10, {"weight": 2}),
+                    (3, 10, {"weight": 2}),
+                    (3, 11, {"weight": 1}),
+                    (5, 12, {"weight": 1}),
+                    (6, 13, {"weight": 1}),
+                    (8, 9, {"weight": 2}),
+                    (9, 14, {"weight": 1}),
+                    (10, 14, {"weight": 1}),
+                    (11, 12, {"weight": 1}),
+                    (12, 15, {"weight": 1}),
+                    (13, 15, {"weight": 1}),
+                ]
+            ],
         ]
         for method in self.methods:
             for G, term_nodes, valid_trees in zip(
-                [self.G1, self.G2],
-                [self.G1_term_nodes, self.G2_term_nodes],
+                [self.G1, self.G2, self.G3],
+                [self.G1_term_nodes, self.G2_term_nodes, self.G3_term_nodes],
                 valid_steiner_trees,
             ):
                 S = steiner_tree(G, term_nodes, method=method)
