@@ -35,7 +35,7 @@ def assign_labels(G1, G2, mapped_nodes=None):
     return G1, G2
 
 
-def get_labes(G1, G2):
+def get_labels(G1, G2):
     return nx.get_node_attributes(G1, "label"), nx.get_node_attributes(G2, "label")
 
 
