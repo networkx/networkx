@@ -41,20 +41,15 @@ def find_candidates(u, graph_params, state_params):
         }
 
     nbr1 = covered_neighbors[0]
-    current_neighborhood = {nbr2 for nbr2 in G2[mapping[nbr1]]}
-    common_nodes = current_neighborhood.copy()
+    common_nodes = {nbr2 for nbr2 in G2[mapping[nbr1]]}
 
     for nbr1 in covered_neighbors[1:]:
-        current_neighborhood = {nbr2 for nbr2 in G2[mapping[nbr1]]}
-        common_nodes.intersection_update(current_neighborhood)
+        common_nodes.intersection_update({nbr2 for nbr2 in G2[mapping[nbr1]]})
 
-    common_nodes.intersection_update(
-        {
-            node
-            for node in common_nodes
-            if node not in reverse_mapping
-            and G1_labels[u] == G2_labels[node]
-            and G1.degree[u] == G2.degree[node]
-        }
-    )
-    return common_nodes
+    return {
+        node
+        for node in common_nodes
+        if node not in reverse_mapping
+        and G1_labels[u] == G2_labels[node]
+        and G1.degree[u] == G2.degree[node]
+    }

@@ -20,10 +20,13 @@ def assign_labels(G1, G2):
         "yellow",
         "none",
     ]
+
+    c = 0
     for node in G1.nodes():
-        color = colors[random.randrange(0, len(colors))]
+        color = colors[c % len(colors)]
         G1.nodes[node]["label"] = color
         G2.nodes[node]["label"] = color
+        c += 1
 
     return G1, G2
 
