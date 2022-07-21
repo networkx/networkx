@@ -436,7 +436,7 @@ class TestColoring:
         def color_remaining_nodes(G, colored_vertices):
             color_assignments = []
             aux_colored_vertices = {
-                key:value for key,value in colored_vertices.items()
+                key : value for key,value in colored_vertices.items()
                 }
             scratch_iterator = nx.algorithms.coloring.greedy_coloring.strategy_saturation_largest_first(
                 G, aux_colored_vertices
@@ -444,7 +444,9 @@ class TestColoring:
 
             for u in scratch_iterator:
                 # Set to keep track of colors of neighbours
-                neighbour_colors = {aux_colored_vertices[v] for v in G[u] if v in aux_colored_vertices}
+                neighbour_colors = {
+                    aux_colored_vertices[v] for v in G[u] if v in aux_colored_vertices
+                    }
                 # Find the first unused color.
                 for color in itertools.count():
                     if color not in neighbour_colors:
@@ -470,12 +472,12 @@ class TestColoring:
                 colored_vertices[vertex] = color
 
                 (
-                    partial_color_assignment, 
+                    partial_color_assignment,
                     partial_colored_vertices,
                 ) = color_remaining_nodes(G, colored_vertices)
 
                 # check that the color assignment and order of remaining nodes are the same
-                assert full_color_assignment[ind + 1:] == partial_color_assignment
+                assert full_color_assignment[ind + 1 :] == partial_color_assignment
                 assert full_colored_vertices == partial_colored_vertices
                 
 

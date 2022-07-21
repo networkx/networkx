@@ -222,8 +222,8 @@ def strategy_saturation_largest_first(G, colors):
         for vertex, color in colors.items():
             if color in distinct_colors[vertex]:
                 raise nx.NetworkXError(
-            "Neighboring vertices must have different colors"
-            )
+                    "Neighboring vertices must have different colors"
+                    )
 
     # If 0 nodes have been colored, simply choose the node of highest degree.
     if len(colors) == 0:
