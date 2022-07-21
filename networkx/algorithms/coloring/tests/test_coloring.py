@@ -432,11 +432,10 @@ class TestColoring:
         check_state(**params)
 
     def test_strategy_saturation_largest_first(self):
-        
         def color_remaining_nodes(G, colored_vertices):
             color_assignments = []
             aux_colored_vertices = {
-                key : value for key, value in colored_vertices.items()
+                key: value for key, value in colored_vertices.items()
             }
             scratch_iterator = nx.algorithms.coloring.greedy_coloring.strategy_saturation_largest_first(
                 G, aux_colored_vertices
@@ -458,7 +457,7 @@ class TestColoring:
             return color_assignments, aux_colored_vertices
 
         for G, _, _ in SPECIAL_TEST_CASES["saturation_largest_first"]:
-    
+
             G = G()
 
             # Get a full color assignment, (including the order in which nodes were colored)
@@ -479,7 +478,7 @@ class TestColoring:
                 # check that the color assignment and order of remaining nodes are the same
                 assert full_color_assignment[ind + 1 :] == partial_color_assignment
                 assert full_colored_vertices == partial_colored_vertices
-                
+
 
 #  ############################  Utility functions ############################
 def verify_coloring(graph, coloring):
