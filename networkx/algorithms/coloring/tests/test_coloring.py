@@ -2,8 +2,10 @@
 
 """
 
-import pytest
 import itertools
+
+import pytest
+
 import networkx as nx
 
 is_coloring = nx.algorithms.coloring.equitable_coloring.is_coloring
@@ -433,8 +435,12 @@ class TestColoring:
         
         def color_remaining_nodes(G, colored_vertices):
             color_assignments = []
-            aux_colored_vertices = {key:value for key,value in colored_vertices.items()}
-            scratch_iterator = nx.algorithms.coloring.greedy_coloring.strategy_saturation_largest_first(G, aux_colored_vertices)
+            aux_colored_vertices = {
+                key:value for key,value in colored_vertices.items()
+                }
+            scratch_iterator = nx.algorithms.coloring.greedy_coloring.strategy_saturation_largest_first(
+                G, aux_colored_vertices
+                )
 
             for u in scratch_iterator:
                 # Set to keep track of colors of neighbours
@@ -445,7 +451,7 @@ class TestColoring:
                         break
                 # Assign the new color to the current node.
                 aux_colored_vertices[u] = color
-                color_assignments.append((u,color))
+                color_assignments.append((u, color))
 
             return color_assignments, aux_colored_vertices
 
@@ -455,16 +461,21 @@ class TestColoring:
 
             # Get a full color assignment, (including the order in which nodes were colored)
             colored_vertices = {}
-            full_color_assignment, full_colored_vertices = color_remaining_nodes(G, colored_vertices)
+            full_color_assignment, full_colored_vertices = color_remaining_nodes(
+                G, colored_vertices
+                )
 
             # for each node in the color assignment, add it to colored_vertices and re-run the function
             for ind, (vertex, color) in enumerate(full_color_assignment):
                 colored_vertices[vertex] = color
 
-                partial_color_assignment, partial_colored_vertices = color_remaining_nodes(G, colored_vertices)
+                (
+                    partial_color_assignment, 
+                    partial_colored_vertices,
+                ) = color_remaining_nodes(G, colored_vertices)
 
                 # check that the color assignment and order of remaining nodes are the same
-                assert full_color_assignment[ind+1:] == partial_color_assignment
+                assert full_color_assignment[ind + 1:] == partial_color_assignment
                 assert full_colored_vertices == partial_colored_vertices
                 
 

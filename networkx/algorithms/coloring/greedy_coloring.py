@@ -210,7 +210,7 @@ def strategy_saturation_largest_first(G, colors):
     """
     distinct_colors = {v: set() for v in G}
 
-    # Add the node color assignments given in colors to the 
+    # Add the node color assignments given in colors to the
     # distinct colors set for each neighbor of that node
     for vertex, color in colors.items():
         for neighbor in G[vertex]:
@@ -221,7 +221,9 @@ def strategy_saturation_largest_first(G, colors):
     if len(colors) >= 2:
         for vertex, color in colors.items():
             if color in distinct_colors[vertex]:
-                raise nx.NetworkXError('Neighboring vertices must have different colors')
+                raise nx.NetworkXError(
+            "Neighboring vertices must have different colors"
+            )
 
     # If 0 nodes have been colored, simply choose the node of highest degree.
     if len(colors) == 0:
@@ -232,12 +234,10 @@ def strategy_saturation_largest_first(G, colors):
         for v in G[node]:
             distinct_colors[v].add(0)
 
-    for i in range(len(G)-len(colors)):
+    for i in range(len(G) - len(colors)):
         # Compute the maximum saturation and the set of nodes that
         # achieve that saturation.
-        saturation = {
-            v: len(c) for v, c in distinct_colors.items() if v not in colors
-        }
+        saturation = {v: len(c) for v, c in distinct_colors.items() if v not in colors}
         # Yield the node with the highest saturation, and break ties by
         # degree.
         node = max(saturation, key=lambda v: (saturation[v], G.degree(v)))
