@@ -68,7 +68,7 @@ class TestSteinerTree:
         cls.G2_term_nodes = [0, 2, 3]
         cls.G3_term_nodes = [1, 3, 5, 6, 8, 10, 11, 12, 13]
 
-        cls.methods = ["wu", "kou", "mehlhorn"]
+        cls.methods = ["kou", "mehlhorn"]
 
     def test_connected_metric_closure(self):
         G = self.G1.copy()
