@@ -226,7 +226,7 @@ def strategy_saturation_largest_first(G, colors):
                 )
 
     # If 0 nodes have been colored, simply choose the node of highest degree.
-    if len(colors) == 0:
+    if not colors:
         node = max(G, key=G.degree)
         yield node
         # Add the color 0 to the distinct colors set for each
