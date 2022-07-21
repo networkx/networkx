@@ -123,7 +123,7 @@ data.append((dd, glob(os.path.join(pp, "*"))))
 
 # add the tests
 package_data = {
-    "networkx": ["tests/*.py"],
+    "networkx": ["py.typed", "tests/*.py"],
     "networkx.algorithms": ["tests/*.py"],
     "networkx.algorithms.assortativity": ["tests/*.py"],
     "networkx.algorithms.bipartite": ["tests/*.py"],
