@@ -43,6 +43,10 @@ Improvements
 ------------
 - [`#5663 <https://github.com/networkx/networkx/pull/5663>`_]
   Implements edge swapping for directed graphs.
+- [`#5663 <https://github.com/networkx/networkx/pull/5883>`_]
+  Replace the implementation of ``lowest_common_ancestor`` and
+  ``all_pairs_lowest_common_ancestor`` with a "naive" algorithm to fix
+  several bugs and improve performance.
 
 API Changes
 -----------
