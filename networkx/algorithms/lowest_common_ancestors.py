@@ -10,14 +10,12 @@ __all__ = [
     "all_pairs_lowest_common_ancestor",
     "tree_all_pairs_lowest_common_ancestor",
     "lowest_common_ancestor",
-    "naive_lowest_common_ancestor",
-    "naive_all_pairs_lowest_common_ancestor",
 ]
 
 
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
-def naive_all_pairs_lowest_common_ancestor(G, pairs=None):
+def all_pairs_lowest_common_ancestor(G, pairs=None):
     """Return the lowest common ancestor of all pairs or the provided pairs
 
     Parameters
@@ -48,13 +46,13 @@ def naive_all_pairs_lowest_common_ancestor(G, pairs=None):
     possible combinations of nodes in `G`, including self-pairings:
 
     >>> G = nx.DiGraph([(0, 1), (0, 3), (1, 2)])
-    >>> dict(nx.naive_all_pairs_lowest_common_ancestor(G))
+    >>> dict(nx.all_pairs_lowest_common_ancestor(G))
     {(0, 0): 0, (0, 1): 0, (0, 3): 0, (0, 2): 0, (1, 1): 1, (1, 3): 0, (1, 2): 1, (3, 3): 3, (3, 2): 0, (2, 2): 2}
 
     The pairs argument can be used to limit the output to only the
     specified node pairings:
 
-    >>> dict(nx.naive_all_pairs_lowest_common_ancestor(G, pairs=[(1, 2), (2, 3)]))
+    >>> dict(nx.all_pairs_lowest_common_ancestor(G, pairs=[(1, 2), (2, 3)]))
     {(1, 2): 1, (2, 3): 0}
 
     Notes
@@ -63,7 +61,7 @@ def naive_all_pairs_lowest_common_ancestor(G, pairs=None):
 
     See Also
     --------
-    naive_lowest_common_ancestor
+    lowest_common_ancestor
     """
     if not nx.is_directed_acyclic_graph(G):
         raise nx.NetworkXError("LCA only defined on directed acyclic graphs.")
@@ -115,7 +113,7 @@ def naive_all_pairs_lowest_common_ancestor(G, pairs=None):
 
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
-def naive_lowest_common_ancestor(G, node1, node2, default=None):
+def lowest_common_ancestor(G, node1, node2, default=None):
     """Compute the lowest common ancestor of the given pair of nodes.
 
     Parameters
@@ -137,14 +135,14 @@ def naive_lowest_common_ancestor(G, node1, node2, default=None):
     >>> G = nx.DiGraph()
     >>> nx.add_path(G, (0, 1, 2, 3))
     >>> nx.add_path(G, (0, 4, 3))
-    >>> nx.naive_lowest_common_ancestor(G, 2, 4)
+    >>> nx.lowest_common_ancestor(G, 2, 4)
     0
 
     See Also
     --------
-    naive_all_pairs_lowest_common_ancestor"""
+    all_pairs_lowest_common_ancestor"""
 
-    ans = list(naive_all_pairs_lowest_common_ancestor(G, pairs=[(node1, node2)]))
+    ans = list(all_pairs_lowest_common_ancestor(G, pairs=[(node1, node2)]))
     if ans:
         assert len(ans) == 1
         return ans[0][1]
@@ -318,10 +316,3 @@ def lowest_common_ancestor(G, node1, node2, default=None):
         assert len(ans) == 1
         return ans[0][1]
     return default
-
-
-# TODO: For now, directly alias the original functions to the "naive" versions,
-# just to see what happens when the test suite for the original functions is
-# run against the naive implementations.
-all_pairs_lowest_common_ancestor = naive_all_pairs_lowest_common_ancestor
-lowest_common_ancestor = naive_lowest_common_ancestor

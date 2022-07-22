@@ -6,8 +6,6 @@ import networkx as nx
 
 tree_all_pairs_lca = nx.tree_all_pairs_lowest_common_ancestor
 all_pairs_lca = nx.all_pairs_lowest_common_ancestor
-naive_lca = nx.naive_lowest_common_ancestor
-naive_all_pairs_lca = nx.naive_all_pairs_lowest_common_ancestor
 
 
 def get_pair(dictionary, n1, n2):
@@ -359,41 +357,6 @@ class TestNaiveLCA:
                 root_distance[get_pair(d1, a, b)] == root_distance[get_pair(d2, a, b)]
             )
 
-    def test_naive_all_pairs_lowest_common_ancestor1(self):
-        """Produces the correct results."""
-        self.assert_lca_dicts_same(dict(naive_all_pairs_lca(self.DG)), self.gold)
-
-    def test_naive_all_pairs_lowest_common_ancestor2(self):
-        """Produces the correct results when all pairs given."""
-        all_pairs = list(product(self.DG.nodes(), self.DG.nodes()))
-        ans = naive_all_pairs_lca(self.DG, pairs=all_pairs)
-        self.assert_lca_dicts_same(dict(ans), self.gold)
-
-    def test_naive_all_pairs_lowest_common_ancestor3(self):
-        """Produces the correct results when all pairs given as a generator."""
-        all_pairs = product(self.DG.nodes(), self.DG.nodes())
-        ans = naive_all_pairs_lca(self.DG, pairs=all_pairs)
-        self.assert_lca_dicts_same(dict(ans), self.gold)
-
-    def test_naive_all_pairs_lowest_common_ancestor4(self):
-        """Test that LCA on null graph bails."""
-        with pytest.raises(nx.NetworkXPointlessConcept):
-            gen = naive_all_pairs_lca(nx.DiGraph())
-            next(gen)
-
-    def test_naive_all_pairs_lowest_common_ancestor5(self):
-        """Test that LCA on non-dags bails."""
-        with pytest.raises(nx.NetworkXError):
-            gen = naive_all_pairs_lca(nx.DiGraph([(3, 4), (4, 3)]))
-            next(gen)
-
-    def test_naive_all_pairs_lowest_common_ancestor6(self):
-        """Test that pairs with no LCA specified emits nothing."""
-        G = self.DG.copy()
-        G.add_node(-1)
-        gen = naive_all_pairs_lca(G, [(-1, -1), (-1, 0)])
-        assert dict(gen) == {(-1, -1): -1}
-
     def test_naive_lowest_common_ancestor1(self):
         """Test that the one-pair function works for issue #4574."""
         G = nx.DiGraph()
@@ -419,7 +382,7 @@ class TestNaiveLCA:
             ]
         )
 
-        assert naive_lca(G, 7, 9) == None
+        assert nx.lowest_common_ancestor(G, 7, 9) == None
 
     def test_naive_lowest_common_ancestor2(self):
         """Test that the one-pair function works for issue #4942."""
@@ -430,4 +393,4 @@ class TestNaiveLCA:
         G.add_edge(4, 0)
         G.add_edge(5, 2)
 
-        assert naive_lca(G, 1, 3) == 2
+        assert nx.lowest_common_ancestor(G, 1, 3) == 2
