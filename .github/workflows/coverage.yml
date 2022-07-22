@@ -2,9 +2,9 @@ name: coverage
 
 on:
   push:
-    branches: [ v2.8 ]
+    branches: [ main ]
   pull_request:
-    branches: [ v2.8 ]
+    branches: [ main ]
 
 jobs:
   report:
