@@ -1,7 +1,7 @@
 """Algorithms for finding the lowest common ancestor of trees and DAGs."""
 from collections import defaultdict
 from collections.abc import Mapping, Set
-from itertools import chain, combinations_with_replacement, count
+from itertools import combinations_with_replacement
 
 import networkx as nx
 from networkx.utils import UnionFind, arbitrary_element, not_implemented_for
