@@ -60,29 +60,6 @@ def VF2pp(G1, G2, G1_labels, G2_labels):
         return None
 
 
-G1 = nx.MultiGraph()
-
-mapped = {1: "A", 2: "B", 3: "C", 4: "D", 5: "Z", 6: "E"}
-edges1 = [
-    (1, 2),
-    (1, 3),
-    (1, 4),
-    (1, 4),
-    (1, 4),
-    (2, 3),
-    (2, 6),
-    (2, 6),
-    (3, 4),
-    (3, 4),
-    (5, 1),
-    (5, 1),
-    (5, 2),
-    (5, 2),
-]
-
-G1.add_edges_from(edges1)
-G2 = nx.relabel_nodes(G1, mapped)
-
 # print(G1.edges)
 # print(sorted(d for n, d in G1.degree()))
 # print(sorted(d for n, d in G2.degree()))
@@ -90,40 +67,11 @@ G2 = nx.relabel_nodes(G1, mapped)
 # print(sorted(d for n, d in G1.degree()))
 # print(G1.edges)
 
-colors = [
-    "white",
-    "black",
-    "green",
-    "purple",
-    "orange",
-    "red",
-    "blue",
-    "pink",
-    "yellow",
-    "none",
-    "ocean",
-    "brown",
-    "solarized",
-]
-mapped = {1: "A", 2: "B", 3: "C", 4: "D", 5: "Z", 6: "E"}
-c = 0
-for node in G1.nodes():
-    color = colors[c % len(colors)]
-    G1.nodes[node]["label"] = color
-    G2.nodes[mapped[node]]["label"] = color
-    c += 1
-
-l1, l2 = nx.get_node_attributes(G1, "label"), nx.get_node_attributes(G2, "label")
-
-G1.remove_edge(1, 4)
-G1.add_edge(1, 5)
 
 # VF2++
-# t0 = time.time()
-m = VF2pp(G1, G2, l1, l2)
-print(m)
-# print(matching_order(G1, G2, l1, l2))
-# print(f"VF2++ elapsed time: {time.time() - t0}")
+t0 = time.time()
+m = VF2pp(G1, G2, G1_labels, G2_labels)
+print(f"VF2++ elapsed time: {time.time() - t0}")
 #
 # t0 = time.time()
 # nx.is_isomorphic(G1, G2)

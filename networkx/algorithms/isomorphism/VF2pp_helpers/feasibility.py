@@ -63,7 +63,7 @@ def cut_PT(u, v, graph_params, state_params):
     G1_labels,G2_labels: dict
         The label of every node in G1 and G2 respectively.
 
-    u, v: int
+    u, v: Graph node
         The two candidate nodes being examined.
 
     T1, T2: set
@@ -108,7 +108,7 @@ def consistent_PT(u, v, graph_params, state_params):
     G1,G2: NetworkX Graph or MultiGraph instances.
         The two graphs to check for isomorphism or monomorphism.
 
-    u, v: int
+    u, v: Graph node
         The two candidate nodes being examined.
 
     mapping: dict
