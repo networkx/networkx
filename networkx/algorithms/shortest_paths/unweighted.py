@@ -485,6 +485,7 @@ def predecessor(G, source, target=None, cutoff=None, return_seen=None):
     pred : dictionary
         Dictionary, keyed by node, of predecessors in the shortest path.
 
+
     (pred, seen): tuple of dictionaries
         If `return_seen` argument is set to `True`, then a tuple of dictionaries
         is returned. The first element is the dictionary, keyed by node, of
@@ -501,6 +502,7 @@ def predecessor(G, source, target=None, cutoff=None, return_seen=None):
     {0: [], 1: [0], 2: [1], 3: [2]}
     >>> nx.predecessor(G, 0, return_seen=True)
     ({0: [], 1: [0], 2: [1], 3: [2]}, {0: 0, 1: 1, 2: 2, 3: 3})
+
 
     """
     if source not in G:
