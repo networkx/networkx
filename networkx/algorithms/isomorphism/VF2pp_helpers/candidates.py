@@ -1,25 +1,35 @@
 def find_candidates(u, graph_params, state_params):
-    """Given a node u of G1, finds the candidates of u from G2.
+    """Given node u of G1, finds the candidates of u from G2.
 
     Parameters
     ----------
-    G1,G2: NetworkX Graph or MultiGraph instances.
-        The two graphs to check for isomorphism or monomorphism.
-
-    G1_labels,G2_labels: dict
-        The label of every node in G1 and G2 respectively.
-
-    u: int
+    u: Graph node
         The node from G1 for which to find the candidates from G2.
 
-    visited: set()
-        Contains all the nodes, visited by the DFS so far.
+    graph_params: namedtuple
+        Contains all the Graph-related parameters:
 
-    mapping: dict
-        The mapping as extended so far. Maps nodes of G1 to nodes of G2.
+        G1,G2: NetworkX Graph or MultiGraph instances.
+            The two graphs to check for isomorphism or monomorphism
 
-    reverse_mapping: dict
-        The reverse mapping as extended so far. Maps nodes from G2 to nodes of G1. It's basically "mapping" reversed.
+        G1_labels,G2_labels: dict
+            The label of every node in G1 and G2 respectively
+
+    state_params: namedtuple
+        Contains all the State-related parameters:
+
+        mapping: dict
+            The mapping as extended so far. Maps nodes of G1 to nodes of G2
+
+        reverse_mapping: dict
+            The reverse mapping as extended so far. Maps nodes from G2 to nodes of G1. It's basically "mapping" reversed
+
+        T1, T2: set
+            Ti contains uncovered neighbors of covered nodes from Gi, i.e. nodes that are not in the mapping, but are
+            neighbors of nodes that are.
+
+        T1_out, T2_out: set
+            Ti_out contains all the nodes from Gi, that are neither in the mapping nor in Ti
 
     Returns
     -------

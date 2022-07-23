@@ -23,7 +23,7 @@ def isomorphic_VF2pp(G1, G2, G1_labels, G2_labels):
 
     Returns
     -------
-    True and the node mapping, if the two graphs are isomorphic. False and None otherwise.
+    Node mapping, if the two graphs are isomorphic. None otherwise.
     """
     if not G1 and not G2:
         return False
@@ -102,6 +102,40 @@ def precheck(G1, G2, G1_labels, G2_labels):
 
 
 def initialize_VF2pp(G1, G2, G1_labels, G2_labels):
+    """Initializes all the necessary parameters for VF2++
+
+    Parameters
+    ----------
+    G1,G2: NetworkX Graph or MultiGraph instances.
+        The two graphs to check for isomorphism or monomorphism
+
+    G1_labels,G2_labels: dict
+        The label of every node in G1 and G2 respectively
+
+    Returns
+    -------
+    graph_params: namedtuple
+        Contains all the Graph-related parameters:
+
+        G1,G2
+        G1_labels,G2_labels: dict
+
+    state_params: namedtuple
+        Contains all the State-related parameters:
+
+        mapping: dict
+            The mapping as extended so far. Maps nodes of G1 to nodes of G2
+
+        reverse_mapping: dict
+            The reverse mapping as extended so far. Maps nodes from G2 to nodes of G1. It's basically "mapping" reversed
+
+        T1, T2: set
+            Ti contains uncovered neighbors of covered nodes from Gi, i.e. nodes that are not in the mapping, but are
+            neighbors of nodes that are.
+
+        T1_out, T2_out: set
+            Ti_out contains all the nodes from Gi, that are neither in the mapping nor in Ti
+    """
     mapping, reverse_mapping = dict(), dict()
     T1, T2 = set(), set()
     T1_out, T2_out = set(G1.nodes()), set(G2.nodes())
@@ -126,11 +160,33 @@ def initialize_VF2pp(G1, G2, G1_labels, G2_labels):
     return graph_params, state_params, node_order, stack
 
 
-def prepare_next(stack, node_order, visited, state_params):
+def prepare_next(stack, node_order, state_params):
+    """Sets VF2++ after yielding the first mapping, so it can continue producing different mappings.
+    stack: list
+        Stack of the DFS, containing a node and its candidates
+
+    node_order: list
+        Contains the ordered nodes of G1, as obtained by the preprocessing
+
+    state_params: namedtuple
+        Contains all the State-related parameters:
+
+        mapping: dict
+            The mapping as extended so far. Maps nodes of G1 to nodes of G2
+
+        reverse_mapping: dict
+            The reverse mapping as extended so far. Maps nodes from G2 to nodes of G1. It's basically "mapping" reversed
+
+        T1, T2: set
+            Ti contains uncovered neighbors of covered nodes from Gi, i.e. nodes that are not in the mapping, but are
+            neighbors of nodes that are.
+
+        T1_out, T2_out: set
+            Ti_out contains all the nodes from Gi, that are neither in the mapping nor in Ti
+    """
     entering_node, _ = stack.pop()
     node_order.appendleft(entering_node)
     popped_node1, _ = stack[-1]
     popped_node2 = state_params.mapping[popped_node1]
     state_params.mapping.pop(popped_node1)
     state_params.reverse_mapping.pop(popped_node2)
-    visited.clear()

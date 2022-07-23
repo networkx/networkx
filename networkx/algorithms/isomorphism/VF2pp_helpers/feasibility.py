@@ -1,5 +1,3 @@
-import collections
-
 import networkx as nx
 
 
@@ -13,27 +11,33 @@ def feasibility(node1, node2, graph_params, state_params):
 
     Parameters
     ----------
-    node1,node2: int
-        The two candidate nodes being checked.
+    node1, node2: Graph node
+        The candidate pair of nodes being checked for matching
 
-    G1,G2: NetworkX Graph or MultiGraph instances.
-        The two graphs to check for isomorphism or monomorphism.
+    graph_params: namedtuple
+        Contains all the Graph-related parameters:
 
-    G1_labels,G2_labels: dict
-        The label of every node in G1 and G2 respectively.
+        G1,G2: NetworkX Graph or MultiGraph instances.
+            The two graphs to check for isomorphism or monomorphism
 
-    mapping: dict
-        The mapping as extended so far. Maps nodes of G1 to nodes of G2.
+        G1_labels,G2_labels: dict
+            The label of every node in G1 and G2 respectively
 
-    reverse_mapping: dict
-        The reverse mapping as extended so far. Maps nodes from G2 to nodes of G1. It's basically "mapping" reversed.
+    state_params: namedtuple
+        Contains all the State-related parameters:
 
-    T1, T2: set
-        Ti contains uncovered neighbors of covered nodes from Gi, i.e. nodes that are not in the mapping, but are
-        neighbors of nodes that are.
+        mapping: dict
+            The mapping as extended so far. Maps nodes of G1 to nodes of G2
 
-    T1_out, T2_out: set
-        Ti_out contains all the nodes from Gi, that are neither in the mapping nor in Ti.
+        reverse_mapping: dict
+            The reverse mapping as extended so far. Maps nodes from G2 to nodes of G1. It's basically "mapping" reversed
+
+        T1, T2: set
+            Ti contains uncovered neighbors of covered nodes from Gi, i.e. nodes that are not in the mapping, but are
+            neighbors of nodes that are.
+
+        T1_out, T2_out: set
+            Ti_out contains all the nodes from Gi, that are neither in the mapping nor in Ti
 
     Returns
     -------
@@ -57,21 +61,33 @@ def cut_PT(u, v, graph_params, state_params):
 
     Parameters
     ----------
-    G1,G2: NetworkX Graph or MultiGraph instances.
-        The two graphs to check for isomorphism or monomorphism.
-
-    G1_labels,G2_labels: dict
-        The label of every node in G1 and G2 respectively.
-
     u, v: Graph node
         The two candidate nodes being examined.
 
-    T1, T2: set
-        Ti contains uncovered neighbors of covered nodes from Gi, i.e. nodes that are not in the mapping, but are
-        neighbors of nodes that are.
+    graph_params: namedtuple
+        Contains all the Graph-related parameters:
 
-    T1_out, T2_out: set
-        Ti_out contains all the nodes from Gi, that are neither in the mapping nor in Ti.
+        G1,G2: NetworkX Graph or MultiGraph instances.
+            The two graphs to check for isomorphism or monomorphism
+
+        G1_labels,G2_labels: dict
+            The label of every node in G1 and G2 respectively
+
+    state_params: namedtuple
+        Contains all the State-related parameters:
+
+        mapping: dict
+            The mapping as extended so far. Maps nodes of G1 to nodes of G2
+
+        reverse_mapping: dict
+            The reverse mapping as extended so far. Maps nodes from G2 to nodes of G1. It's basically "mapping" reversed
+
+        T1, T2: set
+            Ti contains uncovered neighbors of covered nodes from Gi, i.e. nodes that are not in the mapping, but are
+            neighbors of nodes that are.
+
+        T1_out, T2_out: set
+            Ti_out contains all the nodes from Gi, that are neither in the mapping nor in Ti
 
     Returns
     -------
@@ -93,16 +109,17 @@ def cut_PT(u, v, graph_params, state_params):
     for label, G1_nbh in u_labels_neighbors.items():
         G2_nbh = v_labels_neighbors[label]
 
-        # Check for every neighbor in the neighborhood, if u-nbr1 has same edges as v-nbr2
-        u_nbrs_edges = sorted(
-            (n for n in G1_nbh), key=lambda x: G1.number_of_edges(u, x)
-        )
-        v_nbrs_edges = sorted(
-            (n for n in G2_nbh), key=lambda x: G2.number_of_edges(v, x)
-        )
-        for u_nbr, v_nbr in zip(u_nbrs_edges, v_nbrs_edges):
-            if G1.number_of_edges(u, u_nbr) != G2.number_of_edges(v, v_nbr):
-                return True
+        if isinstance(G1, nx.MultiGraph):
+            # Check for every neighbor in the neighborhood, if u-nbr1 has same edges as v-nbr2
+            u_nbrs_edges = sorted(
+                (n for n in G1_nbh), key=lambda x: G1.number_of_edges(u, x)
+            )
+            v_nbrs_edges = sorted(
+                (n for n in G2_nbh), key=lambda x: G2.number_of_edges(v, x)
+            )
+            for u_nbr, v_nbr in zip(u_nbrs_edges, v_nbrs_edges):
+                if G1.number_of_edges(u, u_nbr) != G2.number_of_edges(v, v_nbr):
+                    return True
 
         if len(T1.intersection(G1_nbh)) != len(T2.intersection(G2_nbh)) or len(
             T1_out.intersection(G1_nbh)
@@ -117,17 +134,33 @@ def consistent_PT(u, v, graph_params, state_params):
 
     Parameters
     ----------
-    G1,G2: NetworkX Graph or MultiGraph instances.
-        The two graphs to check for isomorphism or monomorphism.
-
     u, v: Graph node
         The two candidate nodes being examined.
 
-    mapping: dict
-        The mapping as extended so far. Maps nodes of G1 to nodes of G2.
+    graph_params: namedtuple
+        Contains all the Graph-related parameters:
 
-    reverse_mapping: dict
-        The reverse mapping as extended so far. Maps nodes from G2 to nodes of G1. It's basically "mapping" reversed.
+        G1,G2: NetworkX Graph or MultiGraph instances.
+            The two graphs to check for isomorphism or monomorphism
+
+        G1_labels,G2_labels: dict
+            The label of every node in G1 and G2 respectively
+
+    state_params: namedtuple
+        Contains all the State-related parameters:
+
+        mapping: dict
+            The mapping as extended so far. Maps nodes of G1 to nodes of G2
+
+        reverse_mapping: dict
+            The reverse mapping as extended so far. Maps nodes from G2 to nodes of G1. It's basically "mapping" reversed
+
+        T1, T2: set
+            Ti contains uncovered neighbors of covered nodes from Gi, i.e. nodes that are not in the mapping, but are
+            neighbors of nodes that are.
+
+        T1_out, T2_out: set
+            Ti_out contains all the nodes from Gi, that are neither in the mapping nor in Ti
 
     Returns
     -------

@@ -10,28 +10,36 @@ def update_Tinout(new_node1, new_node2, graph_params, state_params):
     purpose of this function is to avoid brute force computing of Ti/Ti_out by iterating over all nodes of the graph
     and checking which nodes satisfy the necessary conditions. Instead, in every step of the algorithm we focus
     exclusively on the two nodes that are being added to the mapping, incrementally updating Ti/Ti_out.
-    todo: explain how it works
 
     Parameters
     ----------
-    G1,G2: NetworkX Graph or MultiGraph instances.
-        The two graphs to check for isomorphism or monomorphism.
-
-    T1, T2: set
-        Ti contains uncovered neighbors of covered nodes from Gi, i.e. nodes that are not in the mapping, but are
-        neighbors of nodes that are.
-
-    T1_out, T2_out: set
-        Ti_out contains all the nodes from Gi, that are neither in the mapping nor in Ti.
-
     new_node1, new_node2: int
         The two new nodes, added to the mapping.
 
-    mapping: dict
-        The mapping as extended so far. Maps nodes of G1 to nodes of G2.
+    graph_params: namedtuple
+        Contains all the Graph-related parameters:
 
-    reverse_mapping: dict
-        The reverse mapping as extended so far. Maps nodes from G2 to nodes of G1. It's basically "mapping" reversed.
+        G1,G2: NetworkX Graph or MultiGraph instances.
+            The two graphs to check for isomorphism or monomorphism
+
+        G1_labels,G2_labels: dict
+            The label of every node in G1 and G2 respectively
+
+    state_params: namedtuple
+        Contains all the State-related parameters:
+
+        mapping: dict
+            The mapping as extended so far. Maps nodes of G1 to nodes of G2
+
+        reverse_mapping: dict
+            The reverse mapping as extended so far. Maps nodes from G2 to nodes of G1. It's basically "mapping" reversed
+
+        T1, T2: set
+            Ti contains uncovered neighbors of covered nodes from Gi, i.e. nodes that are not in the mapping, but are
+            neighbors of nodes that are.
+
+        T1_out, T2_out: set
+            Ti_out contains all the nodes from Gi, that are neither in the mapping nor in Ti
     """
     G1, G2, _, _ = graph_params
     mapping, reverse_mapping, T1, T1_out, T2, T2_out = state_params
@@ -56,30 +64,35 @@ def update_Tinout(new_node1, new_node2, graph_params, state_params):
 def restore_Tinout(popped_node1, popped_node2, graph_params, state_params):
     """Restores the previous version of Ti/Ti_out when a node pair is deleted from the mapping.
 
-    Notes
-    -----
-    todo: explain how it works
-
     Parameters
     ----------
-    G1,G2: NetworkX Graph or MultiGraph instances.
-        The two graphs to check for isomorphism or monomorphism.
-
-    T1, T2: set
-        Ti contains uncovered neighbors of covered nodes from Gi, i.e. nodes that are not in the mapping, but are
-        neighbors of nodes that are.
-
-    T1_out, T2_out: set
-        Ti_out contains all the nodes from Gi, that are neither in the mapping nor in Ti.
-
     popped_node1, popped_node2: int
         The two nodes deleted from the mapping.
 
-    mapping: dict
-        The mapping as extended so far. Maps nodes of G1 to nodes of G2.
+    graph_params: namedtuple
+        Contains all the Graph-related parameters:
 
-    reverse_mapping: dict
-        The reverse mapping as extended so far. Maps nodes from G2 to nodes of G1. It's basically "mapping" reversed.
+        G1,G2: NetworkX Graph or MultiGraph instances.
+            The two graphs to check for isomorphism or monomorphism
+
+        G1_labels,G2_labels: dict
+            The label of every node in G1 and G2 respectively
+
+    state_params: namedtuple
+        Contains all the State-related parameters:
+
+        mapping: dict
+            The mapping as extended so far. Maps nodes of G1 to nodes of G2
+
+        reverse_mapping: dict
+            The reverse mapping as extended so far. Maps nodes from G2 to nodes of G1. It's basically "mapping" reversed
+
+        T1, T2: set
+            Ti contains uncovered neighbors of covered nodes from Gi, i.e. nodes that are not in the mapping, but are
+            neighbors of nodes that are.
+
+        T1_out, T2_out: set
+            Ti_out contains all the nodes from Gi, that are neither in the mapping nor in Ti
     """
     # If the node we want to remove from the mapping, has at least one covered neighbor, add it to T1.
     G1, G2, _, _ = graph_params
@@ -120,6 +133,47 @@ def restore_Tinout(popped_node1, popped_node2, graph_params, state_params):
 def update_state(
     node, candidate, matching_node, order, stack, graph_params, state_params
 ):
+    """Updates all the necessary parameters of VF2++, after a successful node matching
+
+    Parameters
+    ----------
+    node, candidate: Graph node
+        The matched node pair, just added to the mapping
+
+    matching_node: int
+        Index, keeping track of the currently examined node from the ordering
+
+    order: list
+        The node ordering as computed by the VF2++ pre-processing
+
+    stack: list
+        The DFS stack, storing each node, along with its candidates
+
+    graph_params: namedtuple
+        Contains all the Graph-related parameters:
+
+        G1,G2: NetworkX Graph or MultiGraph instances.
+            The two graphs to check for isomorphism or monomorphism
+
+        G1_labels,G2_labels: dict
+            The label of every node in G1 and G2 respectively
+
+    state_params: namedtuple
+        Contains all the State-related parameters:
+
+        mapping: dict
+            The mapping as extended so far. Maps nodes of G1 to nodes of G2
+
+        reverse_mapping: dict
+            The reverse mapping as extended so far. Maps nodes from G2 to nodes of G1. It's basically "mapping" reversed
+
+        T1, T2: set
+            Ti contains uncovered neighbors of covered nodes from Gi, i.e. nodes that are not in the mapping, but are
+            neighbors of nodes that are.
+
+        T1_out, T2_out: set
+            Ti_out contains all the nodes from Gi, that are neither in the mapping nor in Ti
+    """
     state_params.mapping.update({node: candidate})
     state_params.reverse_mapping.update({candidate: node})
     update_Tinout(node, candidate, graph_params, state_params)
@@ -130,6 +184,39 @@ def update_state(
 
 
 def restore_state(stack, graph_params, state_params):
+    """Restores the previous DFS state, when a node pair is popped from the mapping, in case of exhaustion of the
+    candidates for a specific node
+
+    Parameters
+    ----------
+    stack: list
+        The DFS stack, storing each node, along with its candidates
+
+    graph_params: namedtuple
+        Contains all the Graph-related parameters:
+
+        G1,G2: NetworkX Graph or MultiGraph instances.
+            The two graphs to check for isomorphism or monomorphism
+
+        G1_labels,G2_labels: dict
+            The label of every node in G1 and G2 respectively
+
+    state_params: namedtuple
+        Contains all the State-related parameters:
+
+        mapping: dict
+            The mapping as extended so far. Maps nodes of G1 to nodes of G2
+
+        reverse_mapping: dict
+            The reverse mapping as extended so far. Maps nodes from G2 to nodes of G1. It's basically "mapping" reversed
+
+        T1, T2: set
+            Ti contains uncovered neighbors of covered nodes from Gi, i.e. nodes that are not in the mapping, but are
+            neighbors of nodes that are.
+
+        T1_out, T2_out: set
+            Ti_out contains all the nodes from Gi, that are neither in the mapping nor in Ti
+    """
     popped_node1, _ = stack[-1]
     popped_node2 = state_params.mapping[popped_node1]
     state_params.mapping.pop(popped_node1)
