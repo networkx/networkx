@@ -10,7 +10,7 @@ def VF2pp(G1, G2, l1, l2):
         return None
 
 
-def assign_labels(G1, G2, mapped_nodes=None):
+def assign_labels(G1, G2, mapped_nodes=None, same=False):
     colors = [
         "white",
         "black",
@@ -27,6 +27,12 @@ def assign_labels(G1, G2, mapped_nodes=None):
         "solarized",
     ]
 
+    if same:
+        for n1, n2 in zip(G1.nodes(), G2.nodes()):
+            G1.nodes[n1]["label"] = "blue"
+            G2.nodes[n2]["label"] = "blue"
+        return
+
     c = 0
     for node in G1.nodes():
         color = colors[c % len(colors)]
@@ -41,7 +47,7 @@ def get_labels(G1, G2):
     return nx.get_node_attributes(G1, "label"), nx.get_node_attributes(G2, "label")
 
 
-class TestVF2pp:
+class TestGraphISOVF2pp:
     def test_both_graphs_empty(self):
         G = nx.Graph()
         H = nx.Graph()
@@ -61,7 +67,41 @@ class TestVF2pp:
         m = VF2pp(G, H, {}, {})
         assert not m
 
-    def test_custom_graph1(self):
+    def test_custom_graph1_same_labels(self):
+        G1 = nx.Graph()
+
+        mapped = {1: "A", 2: "B", 3: "C", 4: "D", 5: "Z", 6: "E"}
+        edges1 = [(1, 2), (1, 3), (1, 4), (2, 3), (2, 6), (3, 4), (5, 1), (5, 2)]
+
+        G1.add_edges_from(edges1)
+        G2 = nx.relabel_nodes(G1, mapped)
+
+        assign_labels(G1, G2, mapped, same=True)
+        l1, l2 = get_labels(G1, G2)
+
+        m = VF2pp(G1, G2, l1, l2)
+        assert m
+
+        # Add edge making G1 symmetrical
+        G1.add_edge(3, 7)
+        l1.update({7: "blue"})
+        m = VF2pp(G1, G2, l1, l2)
+        assert not m
+
+        # Make G2 isomorphic to G1
+        G2.add_edges_from([(mapped[3], "X"), (mapped[6], mapped[5])])
+        G1.add_edge(4, 7)
+        l2.update({"X": "blue"})
+        m = VF2pp(G1, G2, l1, l2)
+        assert m
+
+        # Re-structure maintaining isomorphism
+        G1.remove_edges_from([(1, 4), (1, 3)])
+        G2.remove_edges_from([(mapped[1], mapped[5]), (mapped[1], mapped[2])])
+        m = VF2pp(G1, G2, l1, l2)
+        assert m
+
+    def test_custom_graph1_different_labels(self):
         G1 = nx.Graph()
 
         mapped = {1: "A", 2: "B", 3: "C", 4: "D", 5: "Z", 6: "E"}
@@ -77,7 +117,7 @@ class TestVF2pp:
         assert m
         assert m == mapped
 
-    def test_custom_graph2(self):
+    def test_custom_graph2_same_labels(self):
         G1 = nx.Graph()
 
         mapped = {1: "A", 2: "C", 3: "D", 4: "E", 5: "G", 7: "B", 6: "F"}
@@ -86,14 +126,29 @@ class TestVF2pp:
         G1.add_edges_from(edges1)
         G2 = nx.relabel_nodes(G1, mapped)
 
-        assign_labels(G1, G2, mapped)
+        assign_labels(G1, G2, mapped, same=True)
         l1, l2 = get_labels(G1, G2)
 
         m = VF2pp(G1, G2, l1, l2)
         assert m
-        assert m == mapped
 
-    def test_custom_graph2_cases(self):
+        # Obtain two isomorphic subgraphs from the graph
+        G2.remove_edge(mapped[1], mapped[2])
+        G2.add_edge(mapped[1], mapped[4])
+        H1 = nx.Graph(G1.subgraph([2, 3, 4, 7]))
+        H2 = nx.Graph(G2.subgraph([mapped[1], mapped[4], mapped[5], mapped[6]]))
+
+        l1, l2 = get_labels(H1, H2)
+        m = VF2pp(H1, H2, l1, l2)
+        assert m
+
+        # Add edges maintaining isomorphism
+        H1.add_edges_from([(3, 7), (4, 7)])
+        H2.add_edges_from([(mapped[1], mapped[6]), (mapped[4], mapped[6])])
+        m = VF2pp(H1, H2, l1, l2)
+        assert m
+
+    def test_custom_graph2_different_labels(self):
         G1 = nx.Graph()
 
         mapped = {1: "A", 2: "C", 3: "D", 4: "E", 5: "G", 7: "B", 6: "F"}
@@ -139,7 +194,7 @@ class TestVF2pp:
         assert m
         assert m == mapped
 
-    def test_custom_graph3(self):
+    def test_custom_graph3_same_labels(self):
         G1 = nx.Graph()
 
         mapped = {1: 9, 2: 8, 3: 7, 4: 6, 5: 3, 8: 5, 9: 4, 7: 1, 6: 2}
@@ -157,7 +212,88 @@ class TestVF2pp:
             (6, 7),
             (5, 2),
         ]
+        G1.add_edges_from(edges1)
+        G2 = nx.relabel_nodes(G1, mapped)
 
+        assign_labels(G1, G2, mapped, same=True)
+        l1, l2 = get_labels(G1, G2)
+        m = VF2pp(G1, G2, l1, l2)
+        assert m
+
+        # Connect nodes maintaining symmetry
+        G1.add_edges_from([(6, 9), (7, 8)])
+        G2.add_edges_from([(mapped[6], mapped[8]), (mapped[7], mapped[9])])
+        m = VF2pp(G1, G2, l1, l2)
+        assert not m
+
+        # Make isomorphic
+        G1.add_edges_from([(6, 8), (7, 9)])
+        G2.add_edges_from([(mapped[6], mapped[9]), (mapped[7], mapped[8])])
+        m = VF2pp(G1, G2, l1, l2)
+        assert m
+
+        # Connect more nodes
+        G1.add_edges_from([(2, 7), (3, 6)])
+        G2.add_edges_from([(mapped[2], mapped[7]), (mapped[3], mapped[6])])
+        G1.add_node(10)
+        G2.add_node("Z")
+        G1.nodes[10]["label"] = "blue"
+        G2.nodes["Z"]["label"] = "blue"
+        l1.update({10: "blue"})
+        l2.update({"Z": "blue"})
+
+        m = VF2pp(G1, G2, l1, l2)
+        assert m
+
+        # Connect the newly added node, to opposite sides of the graph
+        G1.add_edges_from([(10, 1), (10, 5), (10, 8)])
+        G2.add_edges_from([("Z", mapped[1]), ("Z", mapped[4]), ("Z", mapped[9])])
+        m = VF2pp(G1, G2, l1, l2)
+        assert m
+
+        # Get two subgraphs that are not isomorphic but are easy to make
+        H1 = nx.Graph(G1.subgraph([2, 3, 4, 5, 6, 7, 10]))
+        H2 = nx.Graph(
+            G2.subgraph(
+                [mapped[4], mapped[5], mapped[6], mapped[7], mapped[8], mapped[9], "Z"]
+            )
+        )
+        l1, l2 = get_labels(H1, H2)
+        m = VF2pp(H1, H2, l1, l2)
+        assert not m
+
+        # Restructure both to make them isomorphic
+        H1.add_edges_from([(10, 2), (10, 6), (3, 6), (2, 7), (2, 6), (3, 7)])
+        H2.add_edges_from(
+            [("Z", mapped[7]), (mapped[6], mapped[9]), (mapped[7], mapped[8])]
+        )
+        m = VF2pp(H1, H2, l1, l2)
+        assert m
+
+        # Add edges with opposite direction in each Graph
+        H1.add_edge(3, 5)
+        H2.add_edge(mapped[5], mapped[7])
+        m = VF2pp(H1, H2, l1, l2)
+        assert not m
+
+    def test_custom_graph3_different_labels(self):
+        G1 = nx.Graph()
+
+        mapped = {1: 9, 2: 8, 3: 7, 4: 6, 5: 3, 8: 5, 9: 4, 7: 1, 6: 2}
+        edges1 = [
+            (1, 2),
+            (1, 3),
+            (2, 3),
+            (3, 4),
+            (4, 5),
+            (4, 7),
+            (4, 9),
+            (5, 8),
+            (8, 9),
+            (5, 6),
+            (6, 7),
+            (5, 2),
+        ]
         G1.add_edges_from(edges1)
         G2 = nx.relabel_nodes(G1, mapped)
 
@@ -167,46 +303,6 @@ class TestVF2pp:
         m = VF2pp(G1, G2, l1, l2)
         assert m
         assert m == mapped
-
-    def test_custom_graph3_cases(self):
-        G1 = nx.Graph()
-
-        mapped = {1: 9, 2: 8, 3: 7, 4: 6, 5: 3, 8: 5, 9: 4, 7: 1, 6: 2}
-        edges1 = [
-            (1, 2),
-            (1, 3),
-            (2, 3),
-            (3, 4),
-            (4, 5),
-            (4, 7),
-            (4, 9),
-            (5, 8),
-            (8, 9),
-            (5, 6),
-            (6, 7),
-            (5, 2),
-        ]
-        G1.add_edges_from(edges1)
-        G2 = nx.relabel_nodes(G1, mapped)
-
-        colors = [
-            "white",
-            "black",
-            "green",
-            "purple",
-            "orange",
-            "red",
-            "blue",
-            "grey",
-            "none",
-        ]
-
-        for node in G1.nodes():
-            color = colors.pop()
-            G1.nodes[node]["label"] = color
-            G2.nodes[mapped[node]]["label"] = color
-
-        l1, l2 = get_labels(G1, G2)
 
         # Add extra edge to G1
         G1.add_edge(1, 7)
@@ -255,7 +351,7 @@ class TestVF2pp:
         m = VF2pp(G1, G2, l1, l2)
         assert m
 
-    def test_custom_graph4(self):
+    def test_custom_graph4_different_labels(self):
         G1 = nx.Graph()
         edges1 = [
             (1, 2),
@@ -293,33 +389,13 @@ class TestVF2pp:
         G1.add_edges_from(edges1)
         G2 = nx.relabel_nodes(G1, mapped)
 
-        colors = [
-            "white",
-            "black",
-            "green",
-            "purple",
-            "orange",
-            "red",
-            "blue",
-            "grey",
-            "none",
-            "brown",
-            "solarized",
-            "yellow",
-            "pink",
-        ]
-
-        for node in G1.nodes():
-            color = colors.pop()
-            G1.nodes[node]["label"] = color
-            G2.nodes[mapped[node]]["label"] = color
-
+        assign_labels(G1, G2, mapped)
         l1, l2 = get_labels(G1, G2)
 
         m = VF2pp(G1, G2, l1, l2)
         assert m == mapped
 
-    def test_custom_graph4_cases(self):
+    def test_custom_graph4_same_labels(self):
         G1 = nx.Graph()
         edges1 = [
             (1, 2),
@@ -419,9 +495,72 @@ class TestVF2pp:
         m = VF2pp(G1, G2, l1, l2)
         assert m
 
-    def test_custom_graph5(self):
+    def test_custom_graph5_same_labels(self):
         G1 = nx.Graph()
+        edges1 = [
+            (1, 5),
+            (1, 2),
+            (1, 4),
+            (2, 3),
+            (2, 6),
+            (3, 4),
+            (3, 7),
+            (4, 8),
+            (5, 8),
+            (5, 6),
+            (6, 7),
+            (7, 8),
+        ]
+        mapped = {1: "a", 2: "h", 3: "d", 4: "i", 5: "g", 6: "b", 7: "j", 8: "c"}
 
+        G1.add_edges_from(edges1)
+        G2 = nx.relabel_nodes(G1, mapped)
+
+        assign_labels(G1, G2, mapped, same=True)
+        l1, l2 = get_labels(G1, G2)
+        m = VF2pp(G1, G2, l1, l2)
+        assert m
+
+        # Add different edges in each graph, maintaining symmetry
+        G1.add_edges_from([(3, 6), (2, 7), (2, 5), (1, 3), (4, 7), (6, 8)])
+        G2.add_edges_from(
+            [
+                (mapped[6], mapped[3]),
+                (mapped[2], mapped[7]),
+                (mapped[1], mapped[6]),
+                (mapped[5], mapped[7]),
+                (mapped[3], mapped[8]),
+                (mapped[2], mapped[4]),
+            ]
+        )
+        m = VF2pp(G1, G2, l1, l2)
+        assert m
+
+        # Obtain two different but isomorphic subgraphs from G1 and G2
+        H1 = nx.Graph(G1.subgraph([1, 5, 8, 6, 7, 3]))
+        H2 = nx.Graph(
+            G2.subgraph(
+                [mapped[1], mapped[4], mapped[8], mapped[7], mapped[3], mapped[5]]
+            )
+        )
+        l1, l2 = get_labels(H1, H2)
+        m = VF2pp(H1, H2, l1, l2)
+        assert m
+
+        # Delete corresponding node from the two graphs
+        H1.remove_node(8)
+        H2.remove_node(mapped[7])
+        m = VF2pp(H1, H2, l1, l2)
+        assert m
+
+        # Re-orient, maintaining isomorphism
+        H1.add_edge(1, 6)
+        H1.remove_edge(3, 6)
+        m = VF2pp(H1, H2, l1, l2)
+        assert m
+
+    def test_custom_graph5_different_labels(self):
+        G1 = nx.Graph()
         edges1 = [
             (1, 5),
             (1, 2),
@@ -476,80 +615,58 @@ class TestVF2pp:
         m = VF2pp(H1, H2, l1, l2)
         assert m
 
-    def test_random_graph_cases(self):
-        # Two isomorphic GNP graphs
-        G1 = nx.gnp_random_graph(300, 0.4, seed=23)
-        G2 = nx.gnp_random_graph(300, 0.4, seed=23)
+    def test_disconnected_graph_all_same_labels(self):
+        G1 = nx.Graph()
+        G1.add_nodes_from([i for i in range(10)])
 
-        assign_labels(G1, G2)
+        mapped = {0: 9, 1: 8, 2: 7, 3: 6, 4: 5, 5: 4, 6: 3, 7: 2, 8: 1, 9: 0}
+        G2 = nx.relabel_nodes(G1, mapped)
+
+        assign_labels(G1, G2, same=True)
+        l1, l2 = get_labels(G1, G2)
+        m = VF2pp(G1, G2, l1, l2)
+        assert m
+
+    def test_disconnected_graph_all_different_labels(self):
+        G1 = nx.Graph()
+        G1.add_nodes_from([i for i in range(10)])
+
+        mapped = {0: 9, 1: 8, 2: 7, 3: 6, 4: 5, 5: 4, 6: 3, 7: 2, 8: 1, 9: 0}
+        G2 = nx.relabel_nodes(G1, mapped)
+
+        assign_labels(G1, G2, mapped)
         l1, l2 = get_labels(G1, G2)
 
         m = VF2pp(G1, G2, l1, l2)
         assert m
+        assert m == mapped
 
-        # Add one node per graph and give different labels
-        G1.add_node(400)
-        G2.add_node(400)
-        G1.nodes[400]["label"] = "blue"
-        G2.nodes[400]["label"] = "red"
-        l1.update({400: "blue"})
-        l2.update({400: "red"})
+    def test_disconnected_graph_some_same_labels(self):
+        G1 = nx.Graph()
+        G1.add_nodes_from([i for i in range(10)])
 
-        m = VF2pp(G1, G2, l1, l2)
-        assert not m
+        mapped = {0: 9, 1: 8, 2: 7, 3: 6, 4: 5, 5: 4, 6: 3, 7: 2, 8: 1, 9: 0}
+        G2 = nx.relabel_nodes(G1, mapped)
 
-        # Add same number of edges between the new node and the rest of the graph
-        G1.add_edges_from([(400, i) for i in range(73)])
-        G2.add_edges_from([(400, i) for i in range(73)])
+        colors = [
+            "white",
+            "white",
+            "white",
+            "purple",
+            "purple",
+            "red",
+            "red",
+            "pink",
+            "pink",
+            "pink",
+        ]
 
-        m = VF2pp(G1, G2, l1, l2)
-        assert not m
+        for n in G1.nodes():
+            color = colors.pop()
+            G1.nodes[n]["label"] = color
+            G2.nodes[mapped[n]]["label"] = color
 
-        # Assign same label to the new node in G1 and G2
-        G2.nodes[400]["label"] = "blue"
-        l2.update({400: "blue"})
-
-        m = VF2pp(G1, G2, l1, l2)
-        assert m
-
-        # Add an extra edge between the new node and itself in one graph
-        G1.add_edge(400, 400)
-        m = VF2pp(G1, G2, l1, l2)
-        assert not m
-
-        # Add two edges between the new node and itself in both graphs
-        G1.add_edge(400, 400)
-        G2.add_edge(400, 400)
-        G2.add_edge(400, 400)
+        l1, l2 = get_labels(G1, G2)
 
         m = VF2pp(G1, G2, l1, l2)
         assert m
-
-    def test_disconnected_graph(self):
-        num_nodes = [100, 330, 579, 631, 799]
-
-        for Vi in num_nodes:
-            nodes = [i for i in range(Vi)]
-            G1 = nx.Graph()
-            G2 = nx.Graph()
-
-            G1.add_nodes_from(nodes)
-            G2.add_nodes_from(nodes)
-
-            assign_labels(G1, G2)
-            l1, l2 = get_labels(G1, G2)
-
-            m = VF2pp(G1, G2, l1, l2)
-            assert m
-
-    def test_complete_graph_exhaustive(self):
-        num_nodes = [100, 330, 411]
-        for Vi in num_nodes:
-            G1 = nx.complete_graph(Vi)
-            G2 = nx.complete_graph(Vi)
-
-            assign_labels(G1, G2)
-            l1, l2 = get_labels(G1, G2)
-
-            m = VF2pp(G1, G2, l1, l2)
-            assert m

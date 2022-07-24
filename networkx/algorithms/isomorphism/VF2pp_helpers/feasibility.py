@@ -50,8 +50,9 @@ def feasibility(node1, node2, graph_params, state_params):
     if cut_PT(node1, node2, graph_params, state_params):
         return False
 
-    if not consistent_PT(node1, node2, graph_params, state_params):
-        return False
+    if isinstance(G1, nx.MultiGraph):
+        if not consistent_PT(node1, node2, graph_params, state_params):
+            return False
 
     return True
 
@@ -166,25 +167,19 @@ def consistent_PT(u, v, graph_params, state_params):
     -------
     True if the pair passes all the consistency checks successfully. False otherwise.
     """
-    # Check if every covered neighbor of u is mapped to every covered neighbor of v
-    # Also check if there is the same number of edges between the candidates and their neighbors
     G1, G2 = graph_params.G1, graph_params.G2
     mapping, reverse_mapping = state_params.mapping, state_params.reverse_mapping
 
     for neighbor in G1[u]:
         if neighbor in mapping:
-            if mapping[neighbor] not in G2[v]:
-                return False
-            elif G1.number_of_edges(u, neighbor) != G2.number_of_edges(
+            if G1.number_of_edges(u, neighbor) != G2.number_of_edges(
                 v, mapping[neighbor]
             ):
                 return False
 
     for neighbor in G2[v]:
         if neighbor in reverse_mapping:
-            if reverse_mapping[neighbor] not in G1[u]:
-                return False
-            elif G1.number_of_edges(u, reverse_mapping[neighbor]) != G2.number_of_edges(
+            if G1.number_of_edges(u, reverse_mapping[neighbor]) != G2.number_of_edges(
                 v, neighbor
             ):
                 return False
