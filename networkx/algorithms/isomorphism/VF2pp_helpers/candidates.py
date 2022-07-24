@@ -54,7 +54,7 @@ def find_candidates(u, graph_params, state_params):
     common_nodes = {nbr2 for nbr2 in G2[mapping[nbr1]]}
 
     for nbr1 in covered_neighbors[1:]:
-        common_nodes.intersection_update({nbr2 for nbr2 in G2[mapping[nbr1]]})
+        common_nodes.intersection_update(G2[mapping[nbr1]])
 
     return {
         node

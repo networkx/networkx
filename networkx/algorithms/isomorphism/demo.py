@@ -72,7 +72,9 @@ def VF2pp(G1, G2, G1_labels, G2_labels):
 t0 = time.time()
 m = VF2pp(G1, G2, G1_labels, G2_labels)
 print(f"VF2++ elapsed time: {time.time() - t0}")
-#
-# t0 = time.time()
-# nx.is_isomorphic(G1, G2)
-# print(f"VF2 elapsed time: {time.time() - t0}")
+
+assert m
+
+t0 = time.time()
+nx.is_isomorphic(G1, G2)
+print(f"VF2 elapsed time: {time.time() - t0}")
