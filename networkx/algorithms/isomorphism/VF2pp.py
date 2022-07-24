@@ -10,6 +10,14 @@ from networkx.algorithms.isomorphism.VF2pp_helpers.state import (
 )
 
 
+def VF2pp(G1, G2, G1_labels, G2_labels):
+    try:
+        m = next(isomorphic_VF2pp(G1, G2, G1_labels, G2_labels))
+        return m
+    except StopIteration:
+        return None
+
+
 def isomorphic_VF2pp(G1, G2, G1_labels, G2_labels):
     """Implementation of the VF2++ algorithm.
 
