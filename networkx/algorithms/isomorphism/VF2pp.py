@@ -93,17 +93,17 @@ def precheck(G1, G2, G1_labels, G2_labels):
     """
     if G1.order() != G2.order():
         return False
-    if sorted(d for n, d in G1.degree()) != sorted(d for n, d in G2.degree()):
+    if sorted({d for n, d in G1.degree()}) != sorted({d for n, d in G2.degree()}):
         return False
 
-    nodes_per_label1 = {
+    G1_nodes_per_label = {
         label: len(nodes) for label, nodes in nx.utils.groups(G1_labels).items()
     }
-    nodes_per_label2 = {
-        label: len(nodes) for label, nodes in nx.utils.groups(G2_labels).items()
-    }
 
-    if nodes_per_label1 != nodes_per_label2:
+    if any(
+        label not in G1_nodes_per_label or G1_nodes_per_label[label] != len(nodes)
+        for label, nodes in nx.utils.groups(G2_labels).items()
+    ):
         return False
 
     return True
