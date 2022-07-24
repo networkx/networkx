@@ -97,11 +97,8 @@ def cut_PT(u, v, graph_params, state_params):
     G1, G2, G1_labels, G2_labels = graph_params
     _, _, T1, T1_out, T2, T2_out = state_params
 
-    u_neighbors_labels = {n1: G1_labels[n1] for n1 in G1[u]}
-    u_labels_neighbors = nx.utils.groups(u_neighbors_labels)
-
-    v_neighbors_labels = {n2: G2_labels[n2] for n2 in G2[v]}
-    v_labels_neighbors = nx.utils.groups(v_neighbors_labels)
+    u_labels_neighbors = nx.utils.groups({n1: G1_labels[n1] for n1 in G1[u]})
+    v_labels_neighbors = nx.utils.groups({n2: G2_labels[n2] for n2 in G2[v]})
 
     # if the neighbors of u, do not have the same labels as those of v, NOT feasible.
     if set(u_labels_neighbors.keys()) != set(v_labels_neighbors.keys()):
@@ -112,15 +109,13 @@ def cut_PT(u, v, graph_params, state_params):
 
         if isinstance(G1, nx.MultiGraph):
             # Check for every neighbor in the neighborhood, if u-nbr1 has same edges as v-nbr2
-            u_nbrs_edges = sorted(
-                (n for n in G1_nbh), key=lambda x: G1.number_of_edges(u, x)
-            )
-            v_nbrs_edges = sorted(
-                (n for n in G2_nbh), key=lambda x: G2.number_of_edges(v, x)
-            )
-            for u_nbr, v_nbr in zip(u_nbrs_edges, v_nbrs_edges):
-                if G1.number_of_edges(u, u_nbr) != G2.number_of_edges(v, v_nbr):
-                    return True
+            u_nbrs_edges = sorted(G1.number_of_edges(u, x) for x in G1_nbh)
+            v_nbrs_edges = sorted(G2.number_of_edges(v, x) for x in G2_nbh)
+            if any(
+                u_nbr_edges != v_nbr_edges
+                for u_nbr_edges, v_nbr_edges in zip(u_nbrs_edges, v_nbrs_edges)
+            ):
+                return True
 
         if len(T1.intersection(G1_nbh)) != len(T2.intersection(G2_nbh)) or len(
             T1_out.intersection(G1_nbh)
