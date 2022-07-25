@@ -460,8 +460,7 @@ def all_pairs_shortest_path(G, cutoff=None):
 
 
 def predecessor(G, source, target=None, cutoff=None, return_seen=None):
-    """Returns dict of predecessors for the path from source to all nodes in G
-
+    """Returns dict of predecessors for the path from source to all nodes in G.
 
     Parameters
     ----------
@@ -477,11 +476,22 @@ def predecessor(G, source, target=None, cutoff=None, return_seen=None):
     cutoff : integer, optional
         Depth to stop the search. Only paths of length <= cutoff are returned.
 
+    return_seen : bool, optional (default=None)
+        Whether to return a dictionary, keyed by node, of the level (number of
+        hops) to reach the node (as seen during breadth-first-search).
 
     Returns
     -------
     pred : dictionary
         Dictionary, keyed by node, of predecessors in the shortest path.
+
+
+    (pred, seen): tuple of dictionaries
+        If `return_seen` argument is set to `True`, then a tuple of dictionaries
+        is returned. The first element is the dictionary, keyed by node, of
+        predecessors in the shortest path. The second element is the dictionary,
+        keyed by node, of the level (number of hops) to reach the node (as seen
+        during breadth-first-search).
 
     Examples
     --------
@@ -490,6 +500,9 @@ def predecessor(G, source, target=None, cutoff=None, return_seen=None):
     [0, 1, 2, 3]
     >>> nx.predecessor(G, 0)
     {0: [], 1: [0], 2: [1], 3: [2]}
+    >>> nx.predecessor(G, 0, return_seen=True)
+    ({0: [], 1: [0], 2: [1], 3: [2]}, {0: 0, 1: 1, 2: 2, 3: 3})
+
 
     """
     if source not in G:
