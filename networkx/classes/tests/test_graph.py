@@ -178,6 +178,11 @@ class BaseGraphTester:
         G._adj = {}
         assert id(G.adj) != id(old_adj)
 
+        old_nodes = G.nodes
+        assert id(G.nodes) == id(old_nodes)
+        G._node = {}
+        assert id(G.nodes) != id(old_nodes)
+
     def test_attributes_cached(self):
         G = self.K3.copy()
         assert id(G.nodes) == id(G.nodes)
