@@ -102,12 +102,12 @@ class TestWeightedDistance:
 
     def setup_method(self):
         G = nx.Graph()
-        G.add_edge(0, 1, weight=0.6, cost=0.6)
-        G.add_edge(0, 2, weight=0.2, cost=0.2)
-        G.add_edge(2, 3, weight=0.1, cost=0.1)
-        G.add_edge(2, 4, weight=0.7, cost=0.7)
-        G.add_edge(2, 5, weight=0.9, cost=0.9)
-        G.add_edge(1, 5, weight=0.3, cost=0.3)
+        G.add_edge(0, 1, weight=0.6, cost=0.6, high_cost=6)
+        G.add_edge(0, 2, weight=0.2, cost=0.2, high_cost=2)
+        G.add_edge(2, 3, weight=0.1, cost=0.1, high_cost=1)
+        G.add_edge(2, 4, weight=0.7, cost=0.7, high_cost=7)
+        G.add_edge(2, 5, weight=0.9, cost=0.9, high_cost=9)
+        G.add_edge(1, 5, weight=0.3, cost=0.3, high_cost=3)
         self.G = G
         self.weight_fn = lambda v, u, e: 2
 
@@ -128,7 +128,11 @@ class TestWeightedDistance:
     def test_eccentricity_weight_attr(self):
         assert nx.eccentricity(self.G, 1, weight="weight") == 1.5
         e = nx.eccentricity(self.G, weight="weight")
-        assert e == nx.eccentricity(self.G, weight="cost")
+        assert (
+            e
+            == nx.eccentricity(self.G, weight="cost")
+            != nx.eccentricity(self.G, weight="high_cost")
+        )
         assert e[1] == 1.5
 
         e = nx.eccentricity(self.G, v=1, weight="weight")
@@ -162,6 +166,7 @@ class TestWeightedDistance:
             nx.diameter(self.G, weight="weight")
             == nx.diameter(self.G, weight="cost")
             == 1.6
+            != nx.diameter(self.G, weight="high_cost")
         )
 
     def test_diameter_weight_fn(self):
@@ -175,6 +180,7 @@ class TestWeightedDistance:
             pytest.approx(nx.radius(self.G, weight="weight"))
             == pytest.approx(nx.radius(self.G, weight="cost"))
             == 0.9
+            != nx.radius(self.G, weight="high_cost")
         )
 
     def test_radius_weight_fn(self):
@@ -188,13 +194,22 @@ class TestWeightedDistance:
 
     def test_periphery_weight_attr(self):
         periphery = set(nx.periphery(self.G, weight="weight"))
-        assert periphery == set(nx.periphery(self.G, weight="cost"))
+        assert (
+            periphery
+            == set(nx.periphery(self.G, weight="cost"))
+            == set(nx.periphery(self.G, weight="high_cost"))
+        )
         for v in periphery:
             assert (
-                nx.eccentricity(self.G, v, weight="weight")
+                nx.eccentricity(self.G, v, weight="high_cost")
+                != nx.eccentricity(self.G, v, weight="weight")
                 == nx.eccentricity(self.G, v, weight="cost")
                 == nx.diameter(self.G, weight="weight")
                 == nx.diameter(self.G, weight="cost")
+                != nx.diameter(self.G, weight="high_cost")
+            )
+            assert nx.eccentricity(self.G, v, weight="high_cost") == nx.diameter(
+                self.G, weight="high_cost"
             )
 
     def test_periphery_weight_fn(self):
@@ -211,13 +226,22 @@ class TestWeightedDistance:
 
     def test_center_weight_attr(self):
         center = set(nx.center(self.G, weight="weight"))
-        assert center == set(nx.center(self.G, weight="cost"))
+        assert (
+            center
+            == set(nx.center(self.G, weight="cost"))
+            != set(nx.center(self.G, weight="high_cost"))
+        )
         for v in center:
             assert (
-                pytest.approx(nx.eccentricity(self.G, v, weight="weight"))
+                nx.eccentricity(self.G, v, weight="high_cost")
+                != pytest.approx(nx.eccentricity(self.G, v, weight="weight"))
                 == pytest.approx(nx.eccentricity(self.G, v, weight="cost"))
                 == nx.radius(self.G, weight="weight")
                 == nx.radius(self.G, weight="cost")
+                != nx.radius(self.G, weight="high_cost")
+            )
+            assert nx.eccentricity(self.G, v, weight="high_cost") == nx.radius(
+                self.G, weight="high_cost"
             )
 
     def test_center_weight_fn(self):
@@ -231,9 +255,14 @@ class TestWeightedDistance:
 
     def test_bound_diameter_weight_attr(self):
         assert (
-            nx.diameter(self.G, usebounds=True, weight="weight")
+            nx.diameter(self.G, usebounds=True, weight="high_cost")
+            != nx.diameter(self.G, usebounds=True, weight="weight")
             == nx.diameter(self.G, usebounds=True, weight="cost")
             == 1.6
+            != nx.diameter(self.G, usebounds=True, weight="high_cost")
+        )
+        assert nx.diameter(self.G, usebounds=True, weight="high_cost") == nx.diameter(
+            self.G, usebounds=True, weight="high_cost"
         )
 
     def test_bound_diameter_weight_fn(self):
@@ -244,9 +273,14 @@ class TestWeightedDistance:
 
     def test_bound_radius_weight_attr(self):
         assert (
-            pytest.approx(nx.radius(self.G, usebounds=True, weight="weight"))
+            nx.radius(self.G, usebounds=True, weight="high_cost")
+            != pytest.approx(nx.radius(self.G, usebounds=True, weight="weight"))
             == pytest.approx(nx.radius(self.G, usebounds=True, weight="cost"))
             == 0.9
+            != nx.radius(self.G, usebounds=True, weight="high_cost")
+        )
+        assert nx.radius(self.G, usebounds=True, weight="high_cost") == nx.radius(
+            self.G, usebounds=True, weight="high_cost"
         )
 
     def test_bound_radius_weight_fn(self):
