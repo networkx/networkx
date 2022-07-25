@@ -14,7 +14,7 @@ __all__ = [
 ]
 
 
-def _extrema_bounding(G, compute="diameter", weight="weight"):
+def _extrema_bounding(G, compute="diameter", weight=None):
     """Compute requested extreme distance metric of undirected graph G
 
     Computation is based on smart lower and upper bounds, and in practice
@@ -33,7 +33,7 @@ def _extrema_bounding(G, compute="diameter", weight="weight"):
        "center" for the set of nodes with eccentricity equal to the radius,
        "eccentricities" for the maximum distance from each node to all other nodes in G
 
-    weight : string or function
+    weight : string, function, or None
         If this is a string, then edge weights will be accessed via the
         edge attribute with this key (that is, the weight of the edge
         joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
@@ -45,6 +45,8 @@ def _extrema_bounding(G, compute="diameter", weight="weight"):
         positional arguments: the two endpoints of an edge and the
         dictionary of edge attributes for that edge. The function must
         return a number.
+
+        If this is None, every edge has weight/distance/cost 1.
 
         Weights stored as floating point values can lead to small round-off
         errors in distances. Use integer weights to avoid this.
@@ -233,7 +235,7 @@ def _extrema_bounding(G, compute="diameter", weight="weight"):
     return None
 
 
-def eccentricity(G, v=None, sp=None, weight="weight"):
+def eccentricity(G, v=None, sp=None, weight=None):
     """Returns the eccentricity of nodes in G.
 
     The eccentricity of a node v is the maximum distance from v to
@@ -250,7 +252,7 @@ def eccentricity(G, v=None, sp=None, weight="weight"):
     sp : dict of dicts, optional
        All pairs shortest path lengths as a dictionary of dictionaries
 
-    weight : string or function (default="weight")
+    weight : string, function, or None (default=None)
         If this is a string, then edge weights will be accessed via the
         edge attribute with this key (that is, the weight of the edge
         joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
@@ -262,6 +264,8 @@ def eccentricity(G, v=None, sp=None, weight="weight"):
         positional arguments: the two endpoints of an edge and the
         dictionary of edge attributes for that edge. The function must
         return a number.
+
+        If this is None, every edge has weight/distance/cost 1.
 
         Weights stored as floating point values can lead to small round-off
         errors in distances. Use integer weights to avoid this.
@@ -319,7 +323,7 @@ def eccentricity(G, v=None, sp=None, weight="weight"):
     return e
 
 
-def diameter(G, e=None, usebounds=False, weight="weight"):
+def diameter(G, e=None, usebounds=False, weight=None):
     """Returns the diameter of the graph G.
 
     The diameter is the maximum eccentricity.
@@ -332,7 +336,7 @@ def diameter(G, e=None, usebounds=False, weight="weight"):
     e : eccentricity dictionary, optional
       A precomputed dictionary of eccentricities.
 
-    weight : string or function
+    weight : string, function, or None
         If this is a string, then edge weights will be accessed via the
         edge attribute with this key (that is, the weight of the edge
         joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
@@ -344,6 +348,8 @@ def diameter(G, e=None, usebounds=False, weight="weight"):
         positional arguments: the two endpoints of an edge and the
         dictionary of edge attributes for that edge. The function must
         return a number.
+
+        If this is None, every edge has weight/distance/cost 1.
 
         Weights stored as floating point values can lead to small round-off
         errors in distances. Use integer weights to avoid this.
@@ -372,7 +378,7 @@ def diameter(G, e=None, usebounds=False, weight="weight"):
     return max(e.values())
 
 
-def periphery(G, e=None, usebounds=False, weight="weight"):
+def periphery(G, e=None, usebounds=False, weight=None):
     """Returns the periphery of the graph G.
 
     The periphery is the set of nodes with eccentricity equal to the diameter.
@@ -385,7 +391,7 @@ def periphery(G, e=None, usebounds=False, weight="weight"):
     e : eccentricity dictionary, optional
       A precomputed dictionary of eccentricities.
 
-    weight : string or function
+    weight : string, function, or None
         If this is a string, then edge weights will be accessed via the
         edge attribute with this key (that is, the weight of the edge
         joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
@@ -397,6 +403,8 @@ def periphery(G, e=None, usebounds=False, weight="weight"):
         positional arguments: the two endpoints of an edge and the
         dictionary of edge attributes for that edge. The function must
         return a number.
+
+        If this is None, every edge has weight/distance/cost 1.
 
         Weights stored as floating point values can lead to small round-off
         errors in distances. Use integer weights to avoid this.
@@ -428,7 +436,7 @@ def periphery(G, e=None, usebounds=False, weight="weight"):
     return p
 
 
-def radius(G, e=None, usebounds=False, weight="weight"):
+def radius(G, e=None, usebounds=False, weight=None):
     """Returns the radius of the graph G.
 
     The radius is the minimum eccentricity.
@@ -441,7 +449,7 @@ def radius(G, e=None, usebounds=False, weight="weight"):
     e : eccentricity dictionary, optional
       A precomputed dictionary of eccentricities.
 
-    weight : string or function
+    weight : string, function, or None
         If this is a string, then edge weights will be accessed via the
         edge attribute with this key (that is, the weight of the edge
         joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
@@ -453,6 +461,8 @@ def radius(G, e=None, usebounds=False, weight="weight"):
         positional arguments: the two endpoints of an edge and the
         dictionary of edge attributes for that edge. The function must
         return a number.
+
+        If this is None, every edge has weight/distance/cost 1.
 
         Weights stored as floating point values can lead to small round-off
         errors in distances. Use integer weights to avoid this.
@@ -478,7 +488,7 @@ def radius(G, e=None, usebounds=False, weight="weight"):
     return min(e.values())
 
 
-def center(G, e=None, usebounds=False, weight="weight"):
+def center(G, e=None, usebounds=False, weight=None):
     """Returns the center of the graph G.
 
     The center is the set of nodes with eccentricity equal to radius.
@@ -491,7 +501,7 @@ def center(G, e=None, usebounds=False, weight="weight"):
     e : eccentricity dictionary, optional
       A precomputed dictionary of eccentricities.
 
-    weight : string or function
+    weight : string, function, or None
         If this is a string, then edge weights will be accessed via the
         edge attribute with this key (that is, the weight of the edge
         joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
@@ -503,6 +513,8 @@ def center(G, e=None, usebounds=False, weight="weight"):
         positional arguments: the two endpoints of an edge and the
         dictionary of edge attributes for that edge. The function must
         return a number.
+
+        If this is None, every edge has weight/distance/cost 1.
 
         Weights stored as floating point values can lead to small round-off
         errors in distances. Use integer weights to avoid this.
