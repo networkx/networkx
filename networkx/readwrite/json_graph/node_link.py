@@ -115,15 +115,7 @@ def node_link_data(
         link = attrs["link"]
     # -------------------------------------------------- #
     multigraph = G.is_multigraph()
-    # Allow 'attrs' to keep default values.
-    if attrs is None:
-        attrs = _attrs
-    else:
-        attrs.update({k: v for (k, v) in _attrs.items() if k not in attrs})
-    name = attrs["name"]
-    source = attrs["source"]
-    target = attrs["target"]
-    links = attrs["link"]
+
     # Allow 'key' to be omitted from attrs if the graph is not a multigraph.
     key = None if not multigraph else attrs["key"]
     if len({source, target, key}) < 3:
