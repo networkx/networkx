@@ -2,6 +2,8 @@
 
 """
 
+import itertools
+
 import pytest
 
 import networkx as nx
@@ -428,6 +430,53 @@ class TestColoring:
             V_minus=0, V_plus=num_colors - 1, **params
         )
         check_state(**params)
+
+    def test_strategy_saturation_largest_first(self):
+        def color_remaining_nodes(G, colored_vertices):
+            color_assignments = []
+            aux_colored_vertices = colored_vertices.copy()
+
+            scratch_iterator = nx.algorithms.coloring.greedy_coloring.strategy_saturation_largest_first(
+                G, aux_colored_vertices
+            )
+
+            for u in scratch_iterator:
+                # Set to keep track of colors of neighbours
+                neighbour_colors = {
+                    aux_colored_vertices[v] for v in G[u] if v in aux_colored_vertices
+                }
+                # Find the first unused color.
+                for color in itertools.count():
+                    if color not in neighbour_colors:
+                        break
+                # Assign the new color to the current node.
+                aux_colored_vertices[u] = color
+                color_assignments.append((u, color))
+
+            return color_assignments, aux_colored_vertices
+
+        for G, _, _ in SPECIAL_TEST_CASES["saturation_largest_first"]:
+
+            G = G()
+
+            # Get a full color assignment, (including the order in which nodes were colored)
+            colored_vertices = {}
+            full_color_assignment, full_colored_vertices = color_remaining_nodes(
+                G, colored_vertices
+            )
+
+            # for each node in the color assignment, add it to colored_vertices and re-run the function
+            for ind, (vertex, color) in enumerate(full_color_assignment):
+                colored_vertices[vertex] = color
+
+                (
+                    partial_color_assignment,
+                    partial_colored_vertices,
+                ) = color_remaining_nodes(G, colored_vertices)
+
+                # check that the color assignment and order of remaining nodes are the same
+                assert full_color_assignment[ind + 1 :] == partial_color_assignment
+                assert full_colored_vertices == partial_colored_vertices
 
 
 #  ############################  Utility functions ############################
