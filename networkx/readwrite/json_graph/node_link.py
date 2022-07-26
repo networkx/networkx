@@ -25,7 +25,9 @@ def _to_tuple(x):
     return tuple(map(_to_tuple, x))
 
 
-def node_link_data(G, attrs=None):
+def node_link_data(
+    G, attrs=None, source="source", target="target", name="id", key="key", link="links"
+):
     """Returns data in node-link format that is suitable for JSON serialization
     and use in Javascript documents.
 
@@ -84,6 +86,34 @@ def node_link_data(G, attrs=None):
     --------
     node_link_graph, adjacency_data, tree_data
     """
+    # ------ TODO: Remove between the lines after signature change is complete ----- #
+    if attrs is not None:
+        import warnings
+
+        # TODO set the version number when feature will be removed.  3.???   (2x)
+        msg = (
+            "\nThe `attrs` keyword argument of node_link_data is deprecated\n"
+            "and will be removed in networkx 3.???.\n"
+            "It is replaced with explicit `source`, `target`, `name`, \n"
+            "`key` and `link` keyword arguments.\n"
+            "To make this warning go away and ensure usage is forward\n"
+            "compatible, replace `attrs` with `**attrs` or with\n"
+            "the explicit keywords."
+            "for example:\n\n"
+            "   >>> node_link_data(G, attrs={'target': 'foo', 'name': 'bar'})\n\n"
+            "should instead be written as\n\n"
+            "   >>> node_link_data(G, target='foo', name='bar')\n\n"
+            "in networkx 3.???.\n"
+            "The default values of the keywords does not change."
+        )
+        warnings.warn(msg, DeprecationWarning, stacklevel=2)
+
+        source = attrs["source"]
+        target = attrs["target"]
+        name = attrs["name"]
+        key = attrs["key"]
+        link = attrs["link"]
+    # -------------------------------------------------- #
     multigraph = G.is_multigraph()
     # Allow 'attrs' to keep default values.
     if attrs is None:
@@ -117,7 +147,17 @@ def node_link_data(G, attrs=None):
     return data
 
 
-def node_link_graph(data, directed=False, multigraph=True, attrs=None):
+def node_link_graph(
+    data,
+    directed=False,
+    multigraph=True,
+    attrs=None,
+    source="source",
+    target="target",
+    name="id",
+    key="key",
+    link="links",
+):
     """Returns graph from node-link data format.
 
     Parameters
