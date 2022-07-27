@@ -62,7 +62,7 @@ from collections import deque
 import networkx as nx
 from networkx.utils import UnionFind, not_implemented_for
 
-__all__ = ["d_separated", "compute_minimal_separating_set", "is_separating_set_minimal"]
+__all__ = ["d_separated", "minimal_d_separator", "is_minimal_d_separator"]
 
 
 @not_implemented_for("undirected")
@@ -143,8 +143,8 @@ def d_separated(G, x, y, z):
 
 
 @not_implemented_for("undirected")
-def compute_minimal_separating_set(G, x, y):
-    """Compute a minimal separating set between X and Y.
+def minimal_d_separator(G, x, y):
+    """Compute a minimal d-separating set between X and Y.
 
     Uses the algorithm presented in [1]_.
 
@@ -199,10 +199,10 @@ def compute_minimal_separating_set(G, x, y):
 
 
 @not_implemented_for("undirected")
-def is_separating_set_minimal(G, x, y, z):
-    """Determine if a separating set is minimal.
+def is_minimal_d_separator(G, x, y, z):
+    """Determine if a d-separating set is minimal.
 
-    Uses the algorithm 2 presented in :footcite:`Tian1998FindingMD`.
+    Uses the algorithm 2 presented in [1]_.
 
     Parameters
     ----------
@@ -220,9 +220,20 @@ def is_separating_set_minimal(G, x, y, z):
     bool
         Whether or not the `z` separating set is minimal.
 
+    Raises
+    ------
+    NetworkXError
+        The *d-separation* test is commonly used with directed
+        graphical models which are acyclic.  Accordingly, the algorithm
+        raises a :exc:`NetworkXError` if the input graph is not a DAG.
+
+    NodeNotFound
+        If any of the input nodes are not found in the graph,
+        a :exc:`NodeNotFound` exception is raised.
+
     References
     ----------
-    .. footbibliography::
+    .. [1] Tian, J., & Paz, A. (1998). Finding Minimal D-separators.
     """
     if not nx.is_directed_acyclic_graph(G):
         raise nx.NetworkXError("graph should be directed acyclic")

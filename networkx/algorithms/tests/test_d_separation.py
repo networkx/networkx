@@ -140,9 +140,9 @@ def test_undirected_graphs_are_not_supported():
     with pytest.raises(nx.NetworkXNotImplemented):
         nx.d_separated(g, {0}, {1}, {2})
     with pytest.raises(nx.NetworkXNotImplemented):
-        nx.is_separating_set_minimal(g, {0}, {1}, {2})
+        nx.is_minimal_d_separator(g, {0}, {1}, {2})
     with pytest.raises(nx.NetworkXNotImplemented):
-        nx.compute_minimal_separating_set(g, {0}, {1})
+        nx.minimal_d_separator(g, {0}, {1})
 
 
 def test_cyclic_graphs_raise_error():
@@ -155,9 +155,9 @@ def test_cyclic_graphs_raise_error():
     with pytest.raises(nx.NetworkXError):
         nx.d_separated(g, {0}, {1}, {2})
     with pytest.raises(nx.NetworkXError):
-        nx.compute_minimal_separating_set(g, {0}, {1})
+        nx.minimal_d_separator(g, {0}, {1})
     with pytest.raises(nx.NetworkXError):
-        nx.is_separating_set_minimal(g, {0}, {1}, {2})
+        nx.is_minimal_d_separator(g, {0}, {1}, {2})
 
 
 def test_invalid_nodes_raise_error(asia_graph):
@@ -167,9 +167,9 @@ def test_invalid_nodes_raise_error(asia_graph):
     with pytest.raises(nx.NodeNotFound):
         nx.d_separated(asia_graph, {0}, {1}, {2})
     with pytest.raises(nx.NodeNotFound):
-        nx.is_separating_set_minimal(asia_graph, {0}, {1}, {2})
+        nx.is_minimal_d_separator(asia_graph, {0}, {1}, {2})
     with pytest.raises(nx.NodeNotFound):
-        nx.compute_minimal_separating_set(asia_graph, {0}, {1})
+        nx.minimal_d_separator(asia_graph, {0}, {1})
 
 
 def test_minimal_sep_set():
@@ -185,10 +185,10 @@ def test_minimal_sep_set():
 
     # minimal set of the corresponding graph
     # for B and E should be (D,)
-    Zmin = nx.compute_minimal_separating_set(G, "B", "E")
+    Zmin = nx.minimal_d_separator(G, "B", "E")
 
     # the minimal separating set should pass the test for minimality
-    assert nx.is_separating_set_minimal(G, "B", "E", Zmin)
+    assert nx.is_minimal_d_separator(G, "B", "E", Zmin)
     assert Zmin == {"D"}
 
     # Case 2:
@@ -197,8 +197,8 @@ def test_minimal_sep_set():
     edge_list = [("A", "B"), ("B", "C"), ("B", "D"), ("D", "C")]
     G = DiGraph(edge_list)
     assert not nx.d_separated(G, "A", "C")
-    Zmin = nx.compute_minimal_separating_set(G, "A", "C")
+    Zmin = nx.minimal_d_separator(G, "A", "C")
 
     # the minimal separating set should pass the test for minimality
-    assert nx.is_separating_set_minimal(G, "A", "C", Zmin)
+    assert nx.is_minimal_d_separator(G, "A", "C", Zmin)
     assert Zmin == {"B"}
