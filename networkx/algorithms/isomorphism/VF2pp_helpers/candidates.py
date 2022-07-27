@@ -47,7 +47,7 @@ def find_candidates(u, graph_params, state_params):
             if node not in reverse_mapping
             and G2.degree[node] == G1.degree[u]
             and G2_labels[node] == G1_labels[u]
-            and not {nbr2 for nbr2 in G2[node] if nbr2 in reverse_mapping}
+            and all(nbr2 not in reverse_mapping for nbr2 in G2[node])
         }
 
     nbr1 = covered_neighbors[0]

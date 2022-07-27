@@ -6,14 +6,14 @@ from networkx.algorithms.isomorphism.VF2pp import (
     feasibility,
     find_candidates,
     initialize_VF2pp,
-    isomorphic_VF2pp,
+    VF2pp_solver,
     precheck,
 )
 
 
 def VF2pp(G1, G2, l1, l2):
     try:
-        m = next(isomorphic_VF2pp(G1, G2, l1, l2))
+        m = next(VF2pp_solver(G1, G2, l1, l2))
         return m
     except StopIteration:
         return None

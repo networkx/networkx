@@ -10,7 +10,15 @@ from networkx.algorithms.isomorphism.VF2pp_helpers.state import (
 )
 
 
-def isomorphic_VF2pp(G1, G2, G1_labels, G2_labels):
+def VF2pp(G1, G2, G1_labels, G2_labels):
+    try:
+        mapping = next(VF2pp_solver(G1, G2, G1_labels, G2_labels))
+        return mapping
+    except StopIteration:
+        return None
+
+
+def VF2pp_solver(G1, G2, G1_labels, G2_labels):
     """Implementation of the VF2++ algorithm.
 
     Parameters
@@ -41,27 +49,28 @@ def isomorphic_VF2pp(G1, G2, G1_labels, G2_labels):
 
         try:
             candidate = next(candidate_nodes)
-            if feasibility(current_node, candidate, graph_params, state_params):
-                if len(mapping) == G1.number_of_nodes() - 1:
-                    mapping.update({current_node: candidate})
-                    yield state_params.mapping
-
-                update_state(
-                    current_node,
-                    candidate,
-                    matching_node,
-                    node_order,
-                    stack,
-                    graph_params,
-                    state_params,
-                )
-                matching_node += 1
-
         except StopIteration:
             stack.pop()
             matching_node -= 1
             if stack:
                 restore_state(stack, graph_params, state_params)
+            continue
+
+        if feasibility(current_node, candidate, graph_params, state_params):
+            if len(mapping) == G2.number_of_nodes() - 1:
+                mapping.update({current_node: candidate})
+                yield state_params.mapping
+
+            update_state(
+                current_node,
+                candidate,
+                matching_node,
+                node_order,
+                stack,
+                graph_params,
+                state_params,
+            )
+            matching_node += 1
 
 
 def precheck(G1, G2, G1_labels, G2_labels):
@@ -88,14 +97,14 @@ def precheck(G1, G2, G1_labels, G2_labels):
     if sorted(d for n, d in G1.degree()) != sorted(d for n, d in G2.degree()):
         return False
 
-    nodes_per_label1 = {
+    G1_nodes_per_label = {
         label: len(nodes) for label, nodes in nx.utils.groups(G1_labels).items()
     }
-    nodes_per_label2 = {
-        label: len(nodes) for label, nodes in nx.utils.groups(G2_labels).items()
-    }
 
-    if nodes_per_label1 != nodes_per_label2:
+    if any(
+        label not in G1_nodes_per_label or G1_nodes_per_label[label] != len(nodes)
+        for label, nodes in nx.utils.groups(G2_labels).items()
+    ):
         return False
 
     return True
