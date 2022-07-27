@@ -81,7 +81,7 @@ def node_link_data(
     >>> G = nx.Graph([("A", "B")])
     >>> data1 = json_graph.node_link_data(G)
     >>> H = nx.gn_graph(2)
-    >>> data2 = json_graph.node_link_data(H, {link="edges", source="from", target="to"})
+    >>> data2 = json_graph.node_link_data(H, link="edges", source="from", target="to")
 
     To serialize with json
 
