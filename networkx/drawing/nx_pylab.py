@@ -316,6 +316,7 @@ def draw_networkx_nodes(
     node_shape="o",
     alpha=None,
     cmap=None,
+    norm=None,
     vmin=None,
     vmax=None,
     ax=None,
@@ -365,6 +366,9 @@ def draw_networkx_nodes(
 
     cmap : Matplotlib colormap (default=None)
         Colormap for mapping intensities of nodes
+
+    norm : Matplotlib normalization (default=None)
+        Function for normalizing values before applying colormap
 
     vmin,vmax : floats or None (default=None)
         Minimum and maximum for node colormap scaling
@@ -437,6 +441,7 @@ def draw_networkx_nodes(
         c=node_color,
         marker=node_shape,
         cmap=cmap,
+        norm=norm,
         vmin=vmin,
         vmax=vmax,
         alpha=alpha,
