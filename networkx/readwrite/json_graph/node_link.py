@@ -47,6 +47,24 @@ def node_link_data(
         If some user-defined graph data use these attribute names as data keys,
         they may be silently dropped.
 
+        .. deprecated:: 2.8.5
+
+           The `attrs` keyword argument will be replaced with `source`, `target`, `name`,
+           `key` and `link`. in networkx 3.???
+
+           The values of the keywords must be unique.
+
+    source : string
+        A string that provides the 'source' attribute name for storing NetworkX-internal graph data.
+    target : string
+        A string that provides the 'target' attribute name for storing NetworkX-internal graph data.
+    name : string
+        A string that provides the 'name' attribute name for storing NetworkX-internal graph data.
+    key : string
+        A string that provides the 'key' attribute name for storing NetworkX-internal graph data.
+    link : string
+        A string that provides the 'link' attribute name for storing NetworkX-internal graph data.
+
     Returns
     -------
     data : dict
@@ -168,6 +186,24 @@ def node_link_graph(
 
             dict(source='source', target='target', name='id',
                 key='key', link='links')
+
+        .. deprecated:: 2.8.5
+
+           The `attrs` keyword argument will be replaced with `source`, `target`, `name`,
+           `key` and `link`. in networkx 3.???
+
+           The values of the keywords must be unique.
+
+    source : string
+        A string that provides the 'source' attribute name for storing NetworkX-internal graph data.
+    target : string
+        A string that provides the 'target' attribute name for storing NetworkX-internal graph data.
+    name : string
+        A string that provides the 'name' attribute name for storing NetworkX-internal graph data.
+    key : string
+        A string that provides the 'key' attribute name for storing NetworkX-internal graph data.
+    link : string
+        A string that provides the 'link' attribute name for storing NetworkX-internal graph data.
 
     Returns
     -------
