@@ -1211,17 +1211,18 @@ def compute_v_structures(graph):
     vstructs = set()
     for node in graph.nodes:
         # get the set of parents and spouses
-        parents = set(graph.parents(node))
-        children = set(graph.children(node))
+        parents = set(graph.predecessors(node))
+        children = set(graph.successors(node))
         spouses = set()
         for child in children:
-            spouses = spouses.union(set(graph.parents(child)))
+            spouses = spouses.union(set(graph.predecessors(child)))
         spouses.discard(node)
 
         triple_candidates = parents.union(spouses)
         for p1, p2 in combinations(triple_candidates, 2):
             if (
-                not p2 in graph.adjacency(p1)  # should be unshielded triple
+                not graph.has_edge(p1, p2)
+                and not graph.has_edge(p2, p1)  # should be unshielded triple
                 and graph.has_edge(p1, node)  # must be connected to the node
                 and graph.has_edge(p2, node)  # must be connected to the node
             ):

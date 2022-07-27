@@ -175,14 +175,14 @@ def minimal_d_separator(G, x, y):
     if not nx.is_directed_acyclic_graph(G):
         raise nx.NetworkXError("graph should be directed acyclic")
 
-    union_xy = x.union(y)
+    union_xy = set(x).union(set(y))
 
     if any(n not in G.nodes for n in union_xy):
         raise nx.NodeNotFound("one or more specified nodes not found in the graph")
 
     # first construct the set of ancestors of X and Y
-    x_anc = set(G.ancestors(x))
-    y_anc = set(G.ancestors(y))
+    x_anc = nx.ancestors(G, x)
+    y_anc = nx.ancestors(G, y)
     D_anc_xy = x_anc.union(y_anc)
     D_anc_xy = D_anc_xy.union((x, y))
 
@@ -190,7 +190,7 @@ def minimal_d_separator(G, x, y):
     moral_G = nx.moralize_graph(G.subgraph(D_anc_xy))
 
     # find a separating set Z' in moral_G
-    Z_prime = set(G.parents(x)).union(set(G.parents(y)))
+    Z_prime = set(G.predecessors(x)).union(set(G.predecessors(y)))
 
     # perform BFS on the graph from 'x' to mark
     Z_dprime = _bfs_with_marks(moral_G, x, Z_prime)
@@ -238,13 +238,13 @@ def is_minimal_d_separator(G, x, y, z):
     if not nx.is_directed_acyclic_graph(G):
         raise nx.NetworkXError("graph should be directed acyclic")
 
-    union_xyz = x.union(y).union(z)
+    union_xy = set(x).union(set(y)).union(z)
 
-    if any(n not in G.nodes for n in union_xyz):
+    if any(n not in G.nodes for n in union_xy):
         raise nx.NodeNotFound("one or more specified nodes not found in the graph")
 
-    x_anc = G.ancestors(x)
-    y_anc = G.ancestors(y)
+    x_anc = nx.ancestors(G, x)
+    y_anc = nx.ancestors(G, y)
     xy_anc = x_anc.union(y_anc)
 
     # if Z contains any node which is not in ancestors of X or Y
