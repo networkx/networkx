@@ -1,4 +1,3 @@
-import collections
 import random
 import time
 
@@ -48,12 +47,3 @@ print(f"VF2 elapsed time: {time.time() - t0}")
 # for node in G1.nodes():
 #     G1.nodes[node]["label"] = "blue"
 #     G2.nodes[node]["label"] = "blue"
-#
-# G1_labels = nx.get_node_attributes(G1, "label")
-# G2_labels = nx.get_node_attributes(G2, "label")
-#
-# t0 = time.time()
-# m = VF2pp(G1, G2, G1_labels, G2_labels)
-# print(f"VF2 elapsed time: {time.time() - t0}")
-
-assert m

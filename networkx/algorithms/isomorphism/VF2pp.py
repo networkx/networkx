@@ -12,13 +12,13 @@ from networkx.algorithms.isomorphism.VF2pp_helpers.state import (
 
 def VF2pp(G1, G2, G1_labels, G2_labels):
     try:
-        m = next(isomorphic_VF2pp(G1, G2, G1_labels, G2_labels))
-        return m
+        mapping = next(VF2pp_solver(G1, G2, G1_labels, G2_labels))
+        return mapping
     except StopIteration:
         return None
 
 
-def isomorphic_VF2pp(G1, G2, G1_labels, G2_labels):
+def VF2pp_solver(G1, G2, G1_labels, G2_labels):
     """Implementation of the VF2++ algorithm.
 
     Parameters
@@ -49,27 +49,28 @@ def isomorphic_VF2pp(G1, G2, G1_labels, G2_labels):
 
         try:
             candidate = next(candidate_nodes)
-            if feasibility(current_node, candidate, graph_params, state_params):
-                if len(mapping) == G1.number_of_nodes() - 1:
-                    mapping.update({current_node: candidate})
-                    yield state_params.mapping
-
-                update_state(
-                    current_node,
-                    candidate,
-                    matching_node,
-                    node_order,
-                    stack,
-                    graph_params,
-                    state_params,
-                )
-                matching_node += 1
-
         except StopIteration:
             stack.pop()
             matching_node -= 1
             if stack:
                 restore_state(stack, graph_params, state_params)
+            continue
+
+        if feasibility(current_node, candidate, graph_params, state_params):
+            if len(mapping) == G2.number_of_nodes() - 1:
+                mapping.update({current_node: candidate})
+                yield state_params.mapping
+
+            update_state(
+                current_node,
+                candidate,
+                matching_node,
+                node_order,
+                stack,
+                graph_params,
+                state_params,
+            )
+            matching_node += 1
 
 
 def precheck(G1, G2, G1_labels, G2_labels):
@@ -144,22 +145,37 @@ def initialize_VF2pp(G1, G2, G1_labels, G2_labels):
         T1_out, T2_out: set
             Ti_out contains all the nodes from Gi, that are neither in the mapping nor in Ti
     """
-    mapping, reverse_mapping = dict(), dict()
-    T1, T2 = set(), set()
-    T1_out, T2_out = set(G1.nodes()), set(G2.nodes())
-
     GraphParameters = collections.namedtuple(
-        "GraphParameters", ["G1", "G2", "G1_labels", "G2_labels"]
+        "GraphParameters",
+        [
+            "G1",
+            "G2",
+            "G1_labels",
+            "G2_labels",
+            "nodes_of_G1Labels",
+            "nodes_of_G2Labels",
+            "G2_nodes_of_degree",
+        ],
     )
     StateParameters = collections.namedtuple(
         "StateParameters",
         ["mapping", "reverse_mapping", "T1", "T1_out", "T2", "T2_out"],
     )
 
-    graph_params = GraphParameters(G1, G2, G1_labels, G2_labels)
-    state_params = StateParameters(mapping, reverse_mapping, T1, T1_out, T2, T2_out)
+    graph_params = GraphParameters(
+        G1,
+        G2,
+        G1_labels,
+        G2_labels,
+        nx.utils.groups(G1_labels),
+        nx.utils.groups(G2_labels),
+        nx.utils.groups({node: degree for node, degree in G2.degree()}),
+    )
+    state_params = StateParameters(
+        dict(), dict(), set(), set(G1.nodes()), set(), set(G2.nodes())
+    )
 
-    node_order = matching_order(G1, G2, G1_labels, G2_labels)
+    node_order = matching_order(graph_params)
 
     starting_node = node_order[0]
     candidates = find_candidates(starting_node, graph_params, state_params)

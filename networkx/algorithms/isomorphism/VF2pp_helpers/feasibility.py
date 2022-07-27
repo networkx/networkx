@@ -94,7 +94,7 @@ def cut_PT(u, v, graph_params, state_params):
     -------
     True if we should prune this branch, i.e. the node pair failed the cutting checks. False otherwise.
     """
-    G1, G2, G1_labels, G2_labels = graph_params
+    G1, G2, G1_labels, G2_labels, nodes_of_G1Labels, nodes_of_G2Labels, _ = graph_params
     _, _, T1, T1_out, T2, T2_out = state_params
 
     u_labels_neighbors = nx.utils.groups({n1: G1_labels[n1] for n1 in G1[u]})

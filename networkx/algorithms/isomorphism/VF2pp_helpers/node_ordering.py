@@ -1,7 +1,7 @@
 import networkx as nx
 
 
-def matching_order(G1, G2, G1_labels, G2_labels):
+def matching_order(graph_params):
     """The node ordering as introduced in VF2++.
 
     Notes
@@ -13,23 +13,25 @@ def matching_order(G1, G2, G1_labels, G2_labels):
 
     Parameters
     ----------
-    G1,G2: NetworkX Graph or MultiGraph instances.
-        The two graphs to check for isomorphism or monomorphism.
+    graph_params: namedtuple
+        Contains:
 
-    G1_labels,G2_labels: dict
-        The label of every node in G1 and G2 respectively.
+            G1,G2: NetworkX Graph or MultiGraph instances.
+                The two graphs to check for isomorphism or monomorphism.
+
+            G1_labels,G2_labels: dict
+                The label of every node in G1 and G2 respectively.
 
     Returns
     -------
     node_order: list
         The ordering of the nodes.
     """
+    G1, G2, G1_labels, _, _, nodes_of_G2Labels, _ = graph_params
     if not G1 and not G2:
         return {}
 
-    (nodes_of_G1Labels, nodes_of_G2Labels, V1_unordered) = initialize_preprocess(
-        G1, G1_labels, G2_labels
-    )
+    V1_unordered = set(G1.nodes())
     label_rarity = {label: len(nodes) for label, nodes in nodes_of_G2Labels.items()}
     used_degrees = {node: 0 for node in G1}
     node_order = []
@@ -172,24 +174,6 @@ def process_level(
         dlevel_nodes.remove(next_node)
         label_rarity[G1_labels[next_node]] -= 1
         V1_unordered.discard(next_node)
-
-
-def initialize_preprocess(G1, G1_labels, G2_labels):
-    """Initializes basic information, needed for the ordering
-
-    Parameters
-    ----------
-    G1: NetworkX Graph or MultiGraph instances.
-        The graph on which the BFS is performed.
-
-    G1_labels,G2_labels: dict
-        The label of every node in G1 and G2 respectively.
-    """
-    nodes_of_G1Labels = nx.utils.groups(G1_labels)
-    nodes_of_G2Labels = nx.utils.groups(G2_labels)
-
-    V1_unordered = set(G1)
-    return nodes_of_G1Labels, nodes_of_G2Labels, V1_unordered
 
 
 def rarest_nodes(V1_unordered, G1_labels, label_rarity):

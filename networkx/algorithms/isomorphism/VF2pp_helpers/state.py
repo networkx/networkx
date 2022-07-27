@@ -41,7 +41,7 @@ def update_Tinout(new_node1, new_node2, graph_params, state_params):
         T1_out, T2_out: set
             Ti_out contains all the nodes from Gi, that are neither in the mapping nor in Ti
     """
-    G1, G2, _, _ = graph_params
+    G1, G2, _, _, _, _, _ = graph_params
     mapping, reverse_mapping, T1, T1_out, T2, T2_out = state_params
 
     uncovered_neighbors_G1 = {nbr for nbr in G1[new_node1] if nbr not in mapping}
@@ -95,7 +95,7 @@ def restore_Tinout(popped_node1, popped_node2, graph_params, state_params):
             Ti_out contains all the nodes from Gi, that are neither in the mapping nor in Ti
     """
     # If the node we want to remove from the mapping, has at least one covered neighbor, add it to T1.
-    G1, G2, _, _ = graph_params
+    G1, G2, _, _, _, _, _ = graph_params
     mapping, reverse_mapping, T1, T1_out, T2, T2_out = state_params
 
     is_added = False
@@ -109,7 +109,7 @@ def restore_Tinout(popped_node1, popped_node2, graph_params, state_params):
             if any(nbr2 in mapping for nbr2 in G1[nbr]):
                 continue
             T1.discard(nbr)
-            T1_out.add(nbr)  # todo: maybe split into two loops
+            T1_out.add(nbr)
 
     # Case where the node is not present in neither the mapping nor T1. By deffinition it should belong to T1_out
     if not is_added:

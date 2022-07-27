@@ -1,10 +1,10 @@
 import networkx as nx
-from networkx.algorithms.isomorphism.VF2pp import isomorphic_VF2pp
+from networkx.algorithms.isomorphism.VF2pp import VF2pp_solver
 
 
 def VF2pp(G1, G2, l1, l2):
     try:
-        m = next(isomorphic_VF2pp(G1, G2, l1, l2))
+        m = next(VF2pp_solver(G1, G2, l1, l2))
         return m
     except StopIteration:
         return None
