@@ -94,7 +94,7 @@ def precheck(G1, G2, G1_labels, G2_labels):
     """
     if G1.order() != G2.order():
         return False
-    if sorted({d for n, d in G1.degree()}) != sorted({d for n, d in G2.degree()}):
+    if sorted(d for n, d in G1.degree()) != sorted(d for n, d in G2.degree()):
         return False
 
     G1_nodes_per_label = {
