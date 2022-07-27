@@ -133,11 +133,16 @@ def test_undirected_graphs_are_not_supported():
     """
     Test that undirected graphs are not supported.
 
-    d-separation does not apply in the case of undirected graphs.
+    d-separation and its related algorithms does not apply in
+    the case of undirected graphs.
     """
+    g = nx.path_graph(3, nx.Graph)
     with pytest.raises(nx.NetworkXNotImplemented):
-        g = nx.path_graph(3, nx.Graph)
         nx.d_separated(g, {0}, {1}, {2})
+    with pytest.raises(nx.NetworkXNotImplemented):
+        nx.is_separating_set_minimal(g, {0}, {1}, {2})
+    with pytest.raises(nx.NetworkXNotImplemented):
+        nx.compute_minimal_separating_set(g, {0}, {1})
 
 
 def test_cyclic_graphs_raise_error():
@@ -146,9 +151,13 @@ def test_cyclic_graphs_raise_error():
 
     This is because PGMs assume a directed acyclic graph.
     """
+    g = nx.cycle_graph(3, nx.DiGraph)
     with pytest.raises(nx.NetworkXError):
-        g = nx.cycle_graph(3, nx.DiGraph)
         nx.d_separated(g, {0}, {1}, {2})
+    with pytest.raises(nx.NetworkXError):
+        nx.compute_minimal_separating_set(g, {0}, {1})
+    with pytest.raises(nx.NetworkXError):
+        nx.is_separating_set_minimal(g, {0}, {1}, {2})
 
 
 def test_invalid_nodes_raise_error(asia_graph):
@@ -157,9 +166,13 @@ def test_invalid_nodes_raise_error(asia_graph):
     """
     with pytest.raises(nx.NodeNotFound):
         nx.d_separated(asia_graph, {0}, {1}, {2})
+    with pytest.raises(nx.NodeNotFound):
+        nx.is_separating_set_minimal(asia_graph, {0}, {1}, {2})
+    with pytest.raises(nx.NodeNotFound):
+        nx.compute_minimal_separating_set(asia_graph, {0}, {1})
 
 
-def test_minimal_sep_set_parents():
+def test_minimal_sep_set():
     # Case 1:
     # create a graph A -> B <- C
     # B -> D -> E;

@@ -710,6 +710,11 @@ def test_ancestors_descendants_undirected():
     nx.ancestors(G, 2) == nx.descendants(G, 2) == {0, 1, 3, 4}
 
 
+def test_compute_v_structures_raise():
+    G = nx.Graph()
+    pytest.raises(nx.NetworkXError, nx.compute_v_structures, G)
+
+
 def test_compute_v_structures():
     edges = [(0, 1), (0, 2), (3, 2)]
     G = nx.DiGraph(edges)

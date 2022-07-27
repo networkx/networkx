@@ -198,6 +198,7 @@ def compute_minimal_separating_set(G, x, y):
     return Z
 
 
+@not_implemented_for("undirected")
 def is_separating_set_minimal(G, x, y, z):
     """Determine if a separating set is minimal.
 
@@ -223,6 +224,14 @@ def is_separating_set_minimal(G, x, y, z):
     ----------
     .. footbibliography::
     """
+    if not nx.is_directed_acyclic_graph(G):
+        raise nx.NetworkXError("graph should be directed acyclic")
+
+    union_xyz = x.union(y).union(z)
+
+    if any(n not in G.nodes for n in union_xyz):
+        raise nx.NodeNotFound("one or more specified nodes not found in the graph")
+
     x_anc = G.ancestors(x)
     y_anc = G.ancestors(y)
     xy_anc = x_anc.union(y_anc)
