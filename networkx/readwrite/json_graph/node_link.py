@@ -191,6 +191,34 @@ def node_link_graph(
     --------
     node_link_data, adjacency_data, tree_data
     """
+    # ------ TODO: Remove between the lines after signature change is complete ----- #
+    if attrs is not None:
+        import warnings
+
+        # TODO set the version number when feature will be removed.  3.???   (2x)
+        msg = (
+            "\nThe `attrs` keyword argument of node_link_graph is deprecated\n"
+            "and will be removed in networkx 3.???.\n"
+            "It is replaced with explicit `source`, `target`, `name`, \n"
+            "`key` and `link` keyword arguments.\n"
+            "To make this warning go away and ensure usage is forward\n"
+            "compatible, replace `attrs` with `**attrs` or with\n"
+            "the explicit keywords."
+            "for example:\n\n"
+            "   >>> node_link_graph(G, attrs={'target': 'foo', 'name': 'bar'})\n\n"
+            "should instead be written as\n\n"
+            "   >>> node_link_graph(G, target='foo', name='bar')\n\n"
+            "in networkx 3.???.\n"
+            "The default values of the keywords does not change."
+        )
+        warnings.warn(msg, DeprecationWarning, stacklevel=2)
+
+        source = attrs["source"]
+        target = attrs["target"]
+        name = attrs["name"]
+        key = attrs["key"]
+        link = attrs["link"]
+    # -------------------------------------------------- #
     # Allow 'attrs' to keep default values.
     if attrs is None:
         attrs = _attrs
