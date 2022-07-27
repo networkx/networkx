@@ -145,10 +145,6 @@ def initialize_VF2pp(G1, G2, G1_labels, G2_labels):
         T1_out, T2_out: set
             Ti_out contains all the nodes from Gi, that are neither in the mapping nor in Ti
     """
-    mapping, reverse_mapping = dict(), dict()
-    T1, T2 = set(), set()
-    T1_out, T2_out = set(G1.nodes()), set(G2.nodes())
-
     GraphParameters = collections.namedtuple(
         "GraphParameters", ["G1", "G2", "G1_labels", "G2_labels"]
     )
@@ -158,7 +154,9 @@ def initialize_VF2pp(G1, G2, G1_labels, G2_labels):
     )
 
     graph_params = GraphParameters(G1, G2, G1_labels, G2_labels)
-    state_params = StateParameters(mapping, reverse_mapping, T1, T1_out, T2, T2_out)
+    state_params = StateParameters(
+        dict(), dict(), set(), set(G1.nodes()), set(), set(G2.nodes())
+    )
 
     node_order = matching_order(G1, G2, G1_labels, G2_labels)
 

@@ -60,6 +60,6 @@ def find_candidates(u, graph_params, state_params):
         node
         for node in common_nodes
         if node not in reverse_mapping
-        and G1_labels[u] == G2_labels[node]
-        and G1.degree[u] == G2.degree[node]
+        and G2_labels[node] == G1_labels[u]
+        and G2.degree[node] == G1.degree[u]
     }
