@@ -146,19 +146,36 @@ def initialize_VF2pp(G1, G2, G1_labels, G2_labels):
             Ti_out contains all the nodes from Gi, that are neither in the mapping nor in Ti
     """
     GraphParameters = collections.namedtuple(
-        "GraphParameters", ["G1", "G2", "G1_labels", "G2_labels"]
+        "GraphParameters",
+        [
+            "G1",
+            "G2",
+            "G1_labels",
+            "G2_labels",
+            "nodes_of_G1Labels",
+            "nodes_of_G2Labels",
+            "G2_nodes_of_degree",
+        ],
     )
     StateParameters = collections.namedtuple(
         "StateParameters",
         ["mapping", "reverse_mapping", "T1", "T1_out", "T2", "T2_out"],
     )
 
-    graph_params = GraphParameters(G1, G2, G1_labels, G2_labels)
+    graph_params = GraphParameters(
+        G1,
+        G2,
+        G1_labels,
+        G2_labels,
+        nx.utils.groups(G1_labels),
+        nx.utils.groups(G2_labels),
+        nx.utils.groups({node: degree for node, degree in G2.degree()}),
+    )
     state_params = StateParameters(
         dict(), dict(), set(), set(G1.nodes()), set(), set(G2.nodes())
     )
 
-    node_order = matching_order(G1, G2, G1_labels, G2_labels)
+    node_order = matching_order(graph_params)
 
     starting_node = node_order[0]
     candidates = find_candidates(starting_node, graph_params, state_params)
