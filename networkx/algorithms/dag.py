@@ -8,7 +8,7 @@ to the user to check for that.
 import heapq
 from collections import deque
 from functools import partial
-from itertools import chain, product, starmap
+from itertools import chain, combinations, product, starmap
 from math import gcd
 
 import networkx as nx
@@ -30,6 +30,8 @@ __all__ = [
     "dag_longest_path",
     "dag_longest_path_length",
     "dag_to_branching",
+    "compute_v_structures",
+    "moralize_graph",
 ]
 
 chaini = chain.from_iterable
@@ -1144,3 +1146,85 @@ def dag_to_branching(G):
     B.remove_node(0)
     B.remove_node(-1)
     return B
+
+
+@not_implemented_for("undirected")
+@not_implemented_for("multigraph")
+def moralize_graph(G, inplace=False):
+    """Moralize a graph.
+
+    The moralization of a graph adds an edge between the parents
+    of common children (unshielded colliders, or v-structures)
+    in a DAG and then converts the graph to an undirected graph.
+
+    Parameters
+    ----------
+    G : graph
+        A networkx DAG.
+    inplace : bool
+        Whether to modify the existing DAG in place.
+
+    Returns
+    -------
+    moral_G : nx.Graph
+        An undirected graph of the moralization of ``G``.
+    """
+    if not is_directed_acyclic_graph(G):
+        raise nx.NetworkXError("graph should be directed acyclic")
+
+    if inplace:
+        moral_G = G
+    else:
+        moral_G = G.copy()
+
+    # find all v-structures
+    v_structs = compute_v_structures(moral_G)
+
+    # add an edge between all parents of common children
+    for p1, _, p2 in v_structs:
+        moral_G.add_edge(p1, p2)
+
+    # convert graph to undirected graph
+    moral_G = moral_G.to_undirected()
+    return moral_G
+
+
+@not_implemented_for("undirected")
+def compute_v_structures(graph):
+    """Iterate through the graph to compute all v-structures.
+
+    V-structures, or colliders are triples in the directed graph where
+    two parent nodes point to the same child and the two parent nodes
+    are not adjacent.
+
+    Parameters
+    ----------
+    graph : graph
+        A directed graph.
+
+    Returns
+    -------
+    vstructs : Set[Tuple]
+        The v structures within the graph. Each set has a 3-tuple with the
+        parent, collider, and other parent.
+    """
+    vstructs = set()
+    for node in graph.nodes:
+        # get the set of parents and spouses
+        parents = set(graph.parents(node))
+        children = set(graph.children(node))
+        spouses = set()
+        for child in children:
+            spouses = spouses.union(set(graph.parents(child)))
+        spouses.discard(node)
+
+        triple_candidates = parents.union(spouses)
+        for p1, p2 in combinations(triple_candidates, 2):
+            if (
+                not p2 in graph.adjacency(p1)  # should be unshielded triple
+                and graph.has_edge(p1, node)  # must be connected to the node
+                and graph.has_edge(p2, node)  # must be connected to the node
+            ):
+                p1_, p2_ = sorted((p1, p2))
+                vstructs.add((p1_, node, p2_))
+    return vstructs

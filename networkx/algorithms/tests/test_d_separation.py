@@ -3,6 +3,7 @@ from itertools import combinations
 import pytest
 
 import networkx as nx
+from networkx.classes.digraph import DiGraph
 
 
 def path_graph():
@@ -156,3 +157,35 @@ def test_invalid_nodes_raise_error(asia_graph):
     """
     with pytest.raises(nx.NodeNotFound):
         nx.d_separated(asia_graph, {0}, {1}, {2})
+
+
+def test_minimal_sep_set_parents():
+    # Case 1:
+    # create a graph A -> B <- C
+    # B -> D -> E;
+    # B -> F;
+    # G -> E;
+    edge_list = [("A", "B"), ("C", "B"), ("B", "D"), ("D", "E"), ("B", "F"), ("G", "E")]
+    G = DiGraph(edge_list)
+
+    assert not nx.d_separated(G, "B", "E")
+
+    # minimal set of the corresponding graph
+    # for B and E should be (D,)
+    Zmin = nx.compute_minimal_separating_set(G, "B", "E")
+
+    # the minimal separating set should pass the test for minimality
+    assert nx.is_separating_set_minimal(G, "B", "E", Zmin)
+    assert Zmin == {"D"}
+
+    # Case 2:
+    # create a graph A -> B -> C
+    # B -> D -> C;
+    edge_list = [("A", "B"), ("B", "C"), ("B", "D"), ("D", "C")]
+    G = DiGraph(edge_list)
+    assert not nx.d_separated(G, "A", "C")
+    Zmin = nx.compute_minimal_separating_set(G, "A", "C")
+
+    # the minimal separating set should pass the test for minimality
+    assert nx.is_separating_set_minimal(G, "A", "C", Zmin)
+    assert Zmin == {"B"}
