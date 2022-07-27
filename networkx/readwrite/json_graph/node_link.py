@@ -243,11 +243,11 @@ def node_link_graph(
         )
         warnings.warn(msg, DeprecationWarning, stacklevel=2)
 
-        source = attrs["source"]
-        target = attrs["target"]
-        name = attrs["name"]
-        key = attrs["key"]
-        link = attrs["link"]
+        source = attrs.get("source", "source")
+        target = attrs.get("target", "target")
+        name = attrs.get("name", "name")
+        key = attrs.get("key", "key")
+        link = attrs.get("link", "links")
     # -------------------------------------------------- #
     multigraph = data.get("multigraph", multigraph)
     directed = data.get("directed", directed)
