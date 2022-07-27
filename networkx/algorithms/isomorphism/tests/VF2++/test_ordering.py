@@ -1,4 +1,4 @@
-import random
+import collections
 
 import networkx as nx
 from networkx.algorithms.isomorphism.VF2pp_helpers.node_ordering import (
@@ -36,6 +36,19 @@ def get_labes(G1, G2):
 
 
 class TestNodeOrdering:
+    GraphParameters = collections.namedtuple(
+        "GraphParameters",
+        [
+            "G1",
+            "G2",
+            "G1_labels",
+            "G2_labels",
+            "nodes_of_G1Labels",
+            "nodes_of_G2Labels",
+            "G2_nodes_of_degree",
+        ],
+    )
+
     def test_rare_nodes_custom_graph(self):
         G = nx.Graph()
         V = G.nodes()
@@ -86,7 +99,8 @@ class TestNodeOrdering:
     def test_empty_graph(self):
         G1 = nx.Graph()
         G2 = nx.Graph()
-        assert len(set(matching_order(G1, G2, None, None))) == 0
+        gparams = self.GraphParameters(G1, G2, None, None, None, None, None)
+        assert len(set(matching_order(gparams))) == 0
 
     def test_disconnected_graph(self):
         G1 = nx.Graph()
@@ -97,7 +111,16 @@ class TestNodeOrdering:
         G1, G2 = assign_labels(G1, G2)
         l1, l2 = get_labes(G1, G2)
 
-        size = len(set(matching_order(G1, G2, l1, l2)))
+        gparams = self.GraphParameters(
+            G1,
+            G2,
+            l1,
+            l2,
+            nx.utils.groups(l1),
+            nx.utils.groups(l2),
+            nx.utils.groups({node: degree for node, degree in G2.degree()}),
+        )
+        size = len(set(matching_order(gparams)))
         assert size == 1
 
         for i in range(50, 300):
@@ -105,7 +128,16 @@ class TestNodeOrdering:
             G2.add_node(i)
             G1, G2 = assign_labels(G1, G2)
             l1, l2 = get_labes(G1, G2)
-            assert len(set(matching_order(G1, G2, l1, l2))) == size + 1
+            gparams = self.GraphParameters(
+                G1,
+                G2,
+                l1,
+                l2,
+                nx.utils.groups(l1),
+                nx.utils.groups(l2),
+                nx.utils.groups({node: degree for node, degree in G2.degree()}),
+            )
+            assert len(set(matching_order(gparams))) == size + 1
             size += 1
 
     def test_gnp_graph(self):
@@ -119,7 +151,16 @@ class TestNodeOrdering:
 
                 G1, G2 = assign_labels(G1, G2)
                 l1, l2 = get_labes(G1, G2)
-                assert len(set(matching_order(G1, G2, l1, l2))) == Vi
+                gparams = self.GraphParameters(
+                    G1,
+                    G2,
+                    l1,
+                    l2,
+                    nx.utils.groups(l1),
+                    nx.utils.groups(l2),
+                    nx.utils.groups({node: degree for node, degree in G2.degree()}),
+                )
+                assert len(set(matching_order(gparams))) == Vi
 
     def test_barbel_graph(self):
         G1 = nx.barbell_graph(100, 250)
@@ -127,4 +168,13 @@ class TestNodeOrdering:
 
         G1, G2 = assign_labels(G1, G2)
         l1, l2 = get_labes(G1, G2)
-        assert len(set(matching_order(G1, G2, l1, l2))) == 100 + 250 + 100
+        gparams = self.GraphParameters(
+            G1,
+            G2,
+            l1,
+            l2,
+            nx.utils.groups(l1),
+            nx.utils.groups(l2),
+            nx.utils.groups({node: degree for node, degree in G2.degree()}),
+        )
+        assert len(set(matching_order(gparams))) == 100 + 250 + 100
