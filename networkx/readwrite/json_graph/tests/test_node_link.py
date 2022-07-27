@@ -51,6 +51,21 @@ class TestNodeLink:
         assert H.nodes[1]["color"] == "red"
         assert H[1][2]["width"] == 7
 
+        # provide only a partial dictionary of keywords.
+        # This is similar to an example in the doc string
+        attrs = dict(
+            link="c_links",
+            source="c_source",
+            target="c_target",
+        )
+        H = node_link_graph(
+            node_link_data(G, attrs=attrs), multigraph=False, attrs=attrs
+        )
+        assert nx.is_isomorphic(G, H)
+        assert H.graph["foo"] == "bar"
+        assert H.nodes[1]["color"] == "red"
+        assert H[1][2]["width"] == 7
+
     # TODO: To be removed when signature change complete
     def test_exception(self):
         with pytest.raises(nx.NetworkXError):

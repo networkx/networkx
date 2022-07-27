@@ -81,9 +81,7 @@ def node_link_data(
     >>> G = nx.Graph([("A", "B")])
     >>> data1 = json_graph.node_link_data(G)
     >>> H = nx.gn_graph(2)
-    >>> data2 = json_graph.node_link_data(
-    ...     H, {"link": "edges", "source": "from", "target": "to"}
-    ... )
+    >>> data2 = json_graph.node_link_data(H, link="edges", source="from", target="to"})
 
     To serialize with json
 
@@ -124,11 +122,11 @@ def node_link_data(
         )
         warnings.warn(msg, DeprecationWarning, stacklevel=2)
 
-        source = attrs["source"]
-        target = attrs["target"]
-        name = attrs["name"]
-        key = attrs["key"]
-        link = attrs["link"]
+        source = attrs.get("source", "source")
+        target = attrs.get("target", "target")
+        name = attrs.get("name", "name")
+        key = attrs.get("key", "key")
+        link = attrs.get("link", "links")
     # -------------------------------------------------- #
     multigraph = G.is_multigraph()
 
