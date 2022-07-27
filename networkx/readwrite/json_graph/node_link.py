@@ -219,11 +219,6 @@ def node_link_graph(
         key = attrs["key"]
         link = attrs["link"]
     # -------------------------------------------------- #
-    # Allow 'attrs' to keep default values.
-    if attrs is None:
-        attrs = _attrs
-    else:
-        attrs.update({k: v for k, v in _attrs.items() if k not in attrs})
     multigraph = data.get("multigraph", multigraph)
     directed = data.get("directed", directed)
     if multigraph:
@@ -232,19 +227,16 @@ def node_link_graph(
         graph = nx.Graph()
     if directed:
         graph = graph.to_directed()
-    name = attrs["name"]
-    source = attrs["source"]
-    target = attrs["target"]
-    links = attrs["link"]
+
     # Allow 'key' to be omitted from attrs if the graph is not a multigraph.
-    key = None if not multigraph else attrs["key"]
+    key = None if not multigraph else key
     graph.graph = data.get("graph", {})
     c = count()
     for d in data["nodes"]:
         node = _to_tuple(d.get(name, next(c)))
         nodedata = {str(k): v for k, v in d.items() if k != name}
         graph.add_node(node, **nodedata)
-    for d in data[links]:
+    for d in data[link]:
         src = tuple(d[source]) if isinstance(d[source], list) else d[source]
         tgt = tuple(d[target]) if isinstance(d[target], list) else d[target]
         if not multigraph:
