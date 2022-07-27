@@ -67,7 +67,7 @@ class TestNodeLink:
         assert H[1][2]["width"] == 7
 
     # TODO: To be removed when signature change complete
-    def test_exception(self):
+    def test_exception_dep(self):
         with pytest.raises(nx.NetworkXError):
             G = nx.MultiDiGraph()
             attrs = dict(name="node", source="node", target="node", key="node")
