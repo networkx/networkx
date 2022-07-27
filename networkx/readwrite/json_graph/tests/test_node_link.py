@@ -17,10 +17,12 @@ def test_attrs_deprecation(recwarn):
 
     # Future warning raised with `attrs` kwarg
     attrs = dict(source="source", target="target", name="id", key="key", link="links")
-    with pytest.warns(DeprecationWarning):
-        data = node_link_data(G, attrs)
-    with pytest.warns(DeprecationWarning):
-        H = node_link_graph(data, attrs)
+    data = node_link_data(G, attrs=attrs)
+    assert len(recwarn) == 1
+
+    recwarn.clear()
+    H = node_link_graph(data, attrs=attrs)
+    assert len(recwarn) == 1
 
 
 class TestNodeLink:
