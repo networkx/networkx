@@ -712,7 +712,7 @@ def test_ancestors_descendants_undirected():
 
 def test_compute_v_structures_raise():
     G = nx.Graph()
-    pytest.raises(nx.NetworkXError, nx.compute_v_structures, G)
+    pytest.raises(nx.NetworkXNotImplemented, nx.compute_v_structures, G)
 
 
 def test_compute_v_structures():

@@ -1200,7 +1200,7 @@ def compute_v_structures(graph):
     Parameters
     ----------
     graph : graph
-        A directed graph.
+        A networkx DiGraph.
 
     Returns
     -------
@@ -1220,9 +1220,10 @@ def compute_v_structures(graph):
 
         triple_candidates = parents.union(spouses)
         for p1, p2 in combinations(triple_candidates, 2):
+            # check if there are any adjacencies
+            is_adj = p1 in graph.successors(p2) or p1 in graph.predecessors(p2)
             if (
-                not graph.has_edge(p1, p2)
-                and not graph.has_edge(p2, p1)  # should be unshielded triple
+                not is_adj  # should be unshielded triple
                 and graph.has_edge(p1, node)  # must be connected to the node
                 and graph.has_edge(p2, node)  # must be connected to the node
             ):

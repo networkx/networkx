@@ -146,16 +146,19 @@ def d_separated(G, x, y, z):
 def minimal_d_separator(G, x, y):
     """Compute a minimal d-separating set between X and Y.
 
-    Uses the algorithm presented in [1]_.
+    Uses the algorithm presented in [1]_. The complexity of the algorithm
+    is :math:`O(|E_{An}^m|)`, where :math:`E_{An}^m` stands for the
+    number of edges in the moralized graph of the sub-graph consisting
+    of only the ancestors of X and Y. For full details, see [1]_.
 
     Parameters
     ----------
     G : graph
         A networkx DAG.
     x : node
-        Node X in the graph, G.
+        A node in the graph, G.
     y : node
-        Node Y in the graph, G.
+        A node in the graph, G.
 
     Raises
     ------
@@ -171,6 +174,16 @@ def minimal_d_separator(G, x, y):
     References
     ----------
     .. [1] Tian, J., & Paz, A. (1998). Finding Minimal D-separators.
+
+    Notes
+    -----
+    This function only finds ``a`` minimal d-separator. It does not guarantee
+    uniqueness, since in a DAG there may be more than one minimal d-separator
+    between two nodes.
+
+    Moreover, this only checks for minimal separators between two nodes, not
+    two sets. Finding minimal d-separators between two sets of nodes is not
+    supported.
     """
     if not nx.is_directed_acyclic_graph(G):
         raise nx.NetworkXError("graph should be directed acyclic")
@@ -202,7 +215,10 @@ def minimal_d_separator(G, x, y):
 def is_minimal_d_separator(G, x, y, z):
     """Determine if a d-separating set is minimal.
 
-    Uses the algorithm 2 presented in [1]_.
+    Uses the algorithm 2 presented in [1]_. The complexity of the algorithm
+    is :math:`O(|E_{An}^m|)`, where :math:`E_{An}^m` stands for the
+    number of edges in the moralized graph of the sub-graph consisting
+    of only the ancestors of X and Y. For full details, see [1]_.
 
     Parameters
     ----------
@@ -234,6 +250,12 @@ def is_minimal_d_separator(G, x, y, z):
     References
     ----------
     .. [1] Tian, J., & Paz, A. (1998). Finding Minimal D-separators.
+
+    Notes
+    -----
+    This function only works on verifying a d-separating set is minimal
+    between two nodes. To verify that a d-separating set is minimal between
+    two sets of nodes is not supported.
     """
     if not nx.is_directed_acyclic_graph(G):
         raise nx.NetworkXError("graph should be directed acyclic")

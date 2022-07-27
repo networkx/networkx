@@ -43,6 +43,10 @@ Improvements
 ------------
 - [`#5663 <https://github.com/networkx/networkx/pull/5663>`_]
   Implements edge swapping for directed graphs.
+- [`#5898 <https://github.com/networkx/networkx/pull/5898>`_]
+  Implements computing and checking for minimal d-separators between two nodes.
+  Also adds functionality to DAGs for moralizing a graph and computing
+  v-structures.
 
 API Changes
 -----------
