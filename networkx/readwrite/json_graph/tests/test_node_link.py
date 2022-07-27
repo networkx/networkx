@@ -6,25 +6,24 @@ import networkx as nx
 from networkx.readwrite.json_graph import node_link_data, node_link_graph
 
 
+# TODO: To be removed when signature change complete
+def test_attrs_deprecation(recwarn):
+    G = nx.path_graph(3)
+
+    # No warnings when `attrs` kwarg not used
+    data = node_link_data(G)
+    H = node_link_graph(data)
+    assert len(recwarn) == 0
+
+    # Future warning raised with `attrs` kwarg
+    attrs = dict(source="source", target="target", name="id", key="key", link="links")
+    with pytest.warns(DeprecationWarning):
+        data = node_link_data(G, attrs)
+    with pytest.warns(DeprecationWarning):
+        H = node_link_graph(data, attrs)
+
+
 class TestNodeLink:
-
-    # TODO: To be removed when signature change complete
-    def test_attrs_deprecation(recwarn):
-        G = nx.path_graph(3)
-
-        # No warnings when `attrs` kwarg not used
-        data = node_link_data(G)
-        H = node_link_graph(data)
-        assert len(recwarn) == 0
-
-        # Future warning raised with `attrs` kwarg
-        attrs = dict(
-            source="source", target="target", name="id", key="key", link="links"
-        )
-        with pytest.warns(DeprecationWarning):
-            data = node_link_data(G, attrs)
-        with pytest.warns(DeprecationWarning):
-            H = node_link_graph(data, attrs)
 
     # TODO: To be removed when signature change complete
     def test_custom_attrs_dep(self):
