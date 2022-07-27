@@ -5,8 +5,8 @@ import networkx as nx
 from networkx.algorithms.isomorphism.VF2pp import VF2pp
 
 # Graph initialization
-G1 = nx.gnp_random_graph(350, 0.7, 42)
-G2 = nx.gnp_random_graph(350, 0.7, 42)
+G1 = nx.gnp_random_graph(1000, 0.5, 42)
+G2 = nx.gnp_random_graph(1000, 0.5, 42)
 
 colors = [
     "white",
@@ -23,9 +23,9 @@ colors = [
 
 # VF2++ initialization
 for node in G1.nodes():
-    color = colors[random.randrange(0, len(colors))]
-    G1.nodes[node]["label"] = color
-    G2.nodes[node]["label"] = color
+    # color = colors[random.randrange(0, len(colors))]
+    G1.nodes[node]["label"] = "blue"
+    G2.nodes[node]["label"] = "blue"
 
 G1_labels = nx.get_node_attributes(G1, "label")
 G2_labels = nx.get_node_attributes(G2, "label")
