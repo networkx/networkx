@@ -22,7 +22,16 @@ class TestTinoutUpdating:
     T2_out = set(G.nodes())
 
     GraphParameters = collections.namedtuple(
-        "GraphParameters", ["G1", "G2", "G1_labels", "G2_labels"]
+        "GraphParameters",
+        [
+            "G1",
+            "G2",
+            "G1_labels",
+            "G2_labels",
+            "nodes_of_G1Labels",
+            "nodes_of_G2Labels",
+            "G2_nodes_of_degree",
+        ],
     )
     StateParameters = collections.namedtuple(
         "StateParameters",
@@ -57,7 +66,9 @@ class TestTinoutUpdating:
         assert correct_T1_out == self.T1_out
         assert correct_T2_out == self.T2_out
 
-        graph_params = self.GraphParameters(self.G, self.G, None, None)
+        graph_params = self.GraphParameters(
+            self.G, self.G, None, None, None, None, None
+        )
         state_params = self.StateParameters(
             self.mapping,
             self.reverse_mapping,
@@ -89,7 +100,9 @@ class TestTinoutUpdating:
         # Initialize Ti/Ti_out
         self.T1, self.T2, self.T1_out, self.T2_out = self.compute_Ti(self.G, self.G)
 
-        graph_params = self.GraphParameters(self.G, self.G, None, None)
+        graph_params = self.GraphParameters(
+            self.G, self.G, None, None, None, None, None
+        )
         state_params = self.StateParameters(
             self.mapping,
             self.reverse_mapping,
