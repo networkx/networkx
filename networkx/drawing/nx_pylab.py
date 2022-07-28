@@ -639,6 +639,87 @@ def draw_networkx_edges(
     draw_networkx_edge_labels
 
     """
+
+    if arrowstyle == None:
+        if G.is_directed():
+            arrowstyle = "-|>"
+        else:
+            arrowstyle = "-"
+
+    if type(G) == nx.classes.multigraph.MultiGraph == False:
+        _draw_networkx_edges(
+            G,
+            pos,
+            edgelist=edgelist,
+            width=width,
+            width=width,
+            style=style,
+            alpha=alpha,
+            arrowstyle=arrowstyle,
+            arrowsize=arrowsize,
+            edge_cmap=edge_cmap,
+            edge_vmin=edge_vmin,
+            edge_vmax=edge_vmax,
+            ax=ax,
+            arrows=arrows,
+            label=label,
+            node_size=node_size,
+            nodelist=nodelist,
+            node_shape=node_shape,
+            connectionstyle=connectionstyle,
+            min_source_margin=min_source_margin,
+            min_target_margin=min_target_margin,
+        )
+    else:
+        _draw_networkx_multigraph_edges(
+            G,
+            pos,
+            edgelist=edgelist,
+            width=width,
+            width=width,
+            style=style,
+            alpha=alpha,
+            arrowstyle=arrowstyle,
+            arrowsize=arrowsize,
+            edge_cmap=edge_cmap,
+            edge_vmin=edge_vmin,
+            edge_vmax=edge_vmax,
+            ax=ax,
+            arrows=arrows,
+            label=label,
+            node_size=node_size,
+            nodelist=nodelist,
+            node_shape=node_shape,
+            connectionstyle=connectionstyle,
+            min_source_margin=min_source_margin,
+            min_target_margin=min_target_margin,
+        )
+
+
+def _draw_networkx_edges(
+    G,
+    pos,
+    edgelist=None,
+    width=1.0,
+    edge_color="k",
+    style="solid",
+    alpha=None,
+    arrowstyle=None,
+    arrowsize=10,
+    edge_cmap=None,
+    edge_vmin=None,
+    edge_vmax=None,
+    ax=None,
+    arrows=None,
+    label=None,
+    node_size=300,
+    nodelist=None,
+    node_shape="o",
+    connectionstyle="arc3",
+    min_source_margin=0,
+    min_target_margin=0,
+):
+
     import matplotlib as mpl
     import matplotlib.collections  # call as mpl.collections
     import matplotlib.colors  # call as mpl.colors
@@ -652,279 +733,237 @@ def draw_networkx_edges(
     # for directed graphs.
     # The `arrows` keyword can be used to override the default behavior
 
-    if arrowstyle == None:
-        if G.is_directed():
-            arrowstyle = "-|>"
+    use_linecollection = not G.is_directed()
+    if arrows in (True, False):
+        use_linecollection = not arrows
+
+    if ax is None:
+        ax = plt.gca()
+
+    if edgelist is None:
+        edgelist = list(G.edges())
+
+    if len(edgelist) == 0:  # no edges!
+        return []
+
+    if nodelist is None:
+        nodelist = list(G.nodes())
+
+    # FancyArrowPatch handles color=None different from LineCollection
+    if edge_color is None:
+        edge_color = "k"
+    edgelist_tuple = list(map(tuple, edgelist))
+
+    # set edge positions
+    edge_pos = np.asarray([(pos[e[0]], pos[e[1]]) for e in edgelist])
+
+    # Check if edge_color is an array of floats and map to edge_cmap.
+    # This is the only case handled differently from matplotlib
+    if (
+        np.iterable(edge_color)
+        and (len(edge_color) == len(edge_pos))
+        and np.alltrue([isinstance(c, Number) for c in edge_color])
+    ):
+        if edge_cmap is not None:
+            assert isinstance(edge_cmap, mpl.colors.Colormap)
         else:
-            arrowstyle = "-"
+            edge_cmap = plt.get_cmap()
+        if edge_vmin is None:
+            edge_vmin = min(edge_color)
+        if edge_vmax is None:
+            edge_vmax = max(edge_color)
+        color_normal = mpl.colors.Normalize(vmin=edge_vmin, vmax=edge_vmax)
+        edge_color = [edge_cmap(color_normal(e)) for e in edge_color]
 
-    if type(G) == nx.classes.multigraph.MultiGraph == False:
+    def _draw_networkx_edges_line_collection():
+        edge_collection = mpl.collections.LineCollection(
+            edge_pos,
+            colors=edge_color,
+            linewidths=width,
+            antialiaseds=(1,),
+            linestyle=style,
+            alpha=alpha,
+        )
+        edge_collection.set_cmap(edge_cmap)
+        edge_collection.set_clim(edge_vmin, edge_vmax)
+        edge_collection.set_zorder(1)  # edges go behind nodes
+        edge_collection.set_label(label)
+        ax.add_collection(edge_collection)
 
-        use_linecollection = not G.is_directed()
-        if arrows in (True, False):
-            use_linecollection = not arrows
+        return edge_collection
 
-        if ax is None:
-            ax = plt.gca()
+    def _draw_networkx_edges_fancy_arrow_patch():
+        # Note: Waiting for someone to implement arrow to intersection with
+        # marker.  Meanwhile, this works well for polygons with more than 4
+        # sides and circle.
 
-        if edgelist is None:
-            edgelist = list(G.edges())
-
-        if len(edgelist) == 0:  # no edges!
-            return []
-
-        if nodelist is None:
-            nodelist = list(G.nodes())
-
-        # FancyArrowPatch handles color=None different from LineCollection
-        if edge_color is None:
-            edge_color = "k"
-        edgelist_tuple = list(map(tuple, edgelist))
-
-        # set edge positions
-        edge_pos = np.asarray([(pos[e[0]], pos[e[1]]) for e in edgelist])
-
-        # Check if edge_color is an array of floats and map to edge_cmap.
-        # This is the only case handled differently from matplotlib
-        if (
-            np.iterable(edge_color)
-            and (len(edge_color) == len(edge_pos))
-            and np.alltrue([isinstance(c, Number) for c in edge_color])
-        ):
-            if edge_cmap is not None:
-                assert isinstance(edge_cmap, mpl.colors.Colormap)
+        def to_marker_edge(marker_size, marker):
+            if marker in "s^>v<d":  # `large` markers need extra space
+                return np.sqrt(2 * marker_size) / 2
             else:
-                edge_cmap = plt.get_cmap()
-            if edge_vmin is None:
-                edge_vmin = min(edge_color)
-            if edge_vmax is None:
-                edge_vmax = max(edge_color)
-            color_normal = mpl.colors.Normalize(vmin=edge_vmin, vmax=edge_vmax)
-            edge_color = [edge_cmap(color_normal(e)) for e in edge_color]
+                return np.sqrt(marker_size) / 2
 
-        def _draw_networkx_edges_line_collection():
-            edge_collection = mpl.collections.LineCollection(
-                edge_pos,
-                colors=edge_color,
-                linewidths=width,
-                antialiaseds=(1,),
-                linestyle=style,
-                alpha=alpha,
-            )
-            edge_collection.set_cmap(edge_cmap)
-            edge_collection.set_clim(edge_vmin, edge_vmax)
-            edge_collection.set_zorder(1)  # edges go behind nodes
-            edge_collection.set_label(label)
-            ax.add_collection(edge_collection)
+        # Draw arrows with `matplotlib.patches.FancyarrowPatch`
+        arrow_collection = []
 
-            return edge_collection
+        if isinstance(arrowsize, list):
+            if len(arrowsize) != len(edge_pos):
+                raise ValueError("arrowsize should have the same length as edgelist")
+        else:
+            mutation_scale = arrowsize  # scale factor of arrow head
 
-        def _draw_networkx_edges_fancy_arrow_patch():
-            # Note: Waiting for someone to implement arrow to intersection with
-            # marker.  Meanwhile, this works well for polygons with more than 4
-            # sides and circle.
+        base_connection_style = mpl.patches.ConnectionStyle(connectionstyle)
 
-            def to_marker_edge(marker_size, marker):
-                if marker in "s^>v<d":  # `large` markers need extra space
-                    return np.sqrt(2 * marker_size) / 2
-                else:
-                    return np.sqrt(marker_size) / 2
+        # Fallback for self-loop scale. Left outside of _connectionstyle so it is
+        # only computed once
+        max_nodesize = np.array(node_size).max()
 
-            # Draw arrows with `matplotlib.patches.FancyarrowPatch`
-            arrow_collection = []
+        def _connectionstyle(posA, posB, *args, **kwargs):
+            # check if we need to do a self-loop
+            if np.all(posA == posB):
+                # Self-loops are scaled by view extent, except in cases the extent
+                # is 0, e.g. for a single node. In this case, fall back to scaling
+                # by the maximum node size
+                selfloop_ht = 0.005 * max_nodesize if h == 0 else h
+                # this is called with _screen space_ values so covert back
+                # to data space
+                data_loc = ax.transData.inverted().transform(posA)
+                v_shift = 0.1 * selfloop_ht
+                h_shift = v_shift * 0.5
+                # put the top of the loop first so arrow is not hidden by node
+                path = [
+                    # 1
+                    data_loc + np.asarray([0, v_shift]),
+                    # 4 4 4
+                    data_loc + np.asarray([h_shift, v_shift]),
+                    data_loc + np.asarray([h_shift, 0]),
+                    data_loc,
+                    # 4 4 4
+                    data_loc + np.asarray([-h_shift, 0]),
+                    data_loc + np.asarray([-h_shift, v_shift]),
+                    data_loc + np.asarray([0, v_shift]),
+                ]
+
+                ret = mpl.path.Path(ax.transData.transform(path), [1, 4, 4, 4, 4, 4, 4])
+            # if not, fall back to the user specified behavior
+            else:
+                ret = base_connection_style(posA, posB, *args, **kwargs)
+
+            return ret
+
+        # FancyArrowPatch doesn't handle color strings
+        arrow_colors = mpl.colors.colorConverter.to_rgba_array(edge_color, alpha)
+        for i, (src, dst) in zip(fancy_edges_indices, edge_pos):
+            x1, y1 = src
+            x2, y2 = dst
+            shrink_source = 0  # space from source to tail
+            shrink_target = 0  # space from  head to target
 
             if isinstance(arrowsize, list):
-                if len(arrowsize) != len(edge_pos):
-                    raise ValueError(
-                        "arrowsize should have the same length as edgelist"
-                    )
+                # Scale each factor of each arrow based on arrowsize list
+                mutation_scale = arrowsize[i]
+
+            if np.iterable(node_size):  # many node sizes
+                source, target = edgelist[i][:2]
+                source_node_size = node_size[nodelist.index(source)]
+                target_node_size = node_size[nodelist.index(target)]
+                shrink_source = to_marker_edge(source_node_size, node_shape)
+                shrink_target = to_marker_edge(target_node_size, node_shape)
             else:
-                mutation_scale = arrowsize  # scale factor of arrow head
+                shrink_source = shrink_target = to_marker_edge(node_size, node_shape)
 
-            base_connection_style = mpl.patches.ConnectionStyle(connectionstyle)
+            if shrink_source < min_source_margin:
+                shrink_source = min_source_margin
 
-            # Fallback for self-loop scale. Left outside of _connectionstyle so it is
-            # only computed once
-            max_nodesize = np.array(node_size).max()
+            if shrink_target < min_target_margin:
+                shrink_target = min_target_margin
 
-            def _connectionstyle(posA, posB, *args, **kwargs):
-                # check if we need to do a self-loop
-                if np.all(posA == posB):
-                    # Self-loops are scaled by view extent, except in cases the extent
-                    # is 0, e.g. for a single node. In this case, fall back to scaling
-                    # by the maximum node size
-                    selfloop_ht = 0.005 * max_nodesize if h == 0 else h
-                    # this is called with _screen space_ values so covert back
-                    # to data space
-                    data_loc = ax.transData.inverted().transform(posA)
-                    v_shift = 0.1 * selfloop_ht
-                    h_shift = v_shift * 0.5
-                    # put the top of the loop first so arrow is not hidden by node
-                    path = [
-                        # 1
-                        data_loc + np.asarray([0, v_shift]),
-                        # 4 4 4
-                        data_loc + np.asarray([h_shift, v_shift]),
-                        data_loc + np.asarray([h_shift, 0]),
-                        data_loc,
-                        # 4 4 4
-                        data_loc + np.asarray([-h_shift, 0]),
-                        data_loc + np.asarray([-h_shift, v_shift]),
-                        data_loc + np.asarray([0, v_shift]),
-                    ]
+            if len(arrow_colors) > i:
+                arrow_color = arrow_colors[i]
+            elif len(arrow_colors) == 1:
+                arrow_color = arrow_colors[0]
+            else:  # Cycle through colors
+                arrow_color = arrow_colors[i % len(arrow_colors)]
 
-                    ret = mpl.path.Path(
-                        ax.transData.transform(path), [1, 4, 4, 4, 4, 4, 4]
-                    )
-                # if not, fall back to the user specified behavior
+            if np.iterable(width):
+                if len(width) > i:
+                    line_width = width[i]
                 else:
-                    ret = base_connection_style(posA, posB, *args, **kwargs)
+                    line_width = width[i % len(width)]
+            else:
+                line_width = width
 
-                return ret
+            if (
+                np.iterable(style)
+                and not isinstance(style, str)
+                and not isinstance(style, tuple)
+            ):
+                if len(style) > i:
+                    linestyle = style[i]
+                else:  # Cycle through styles
+                    linestyle = style[i % len(style)]
+            else:
+                linestyle = style
 
-            # FancyArrowPatch doesn't handle color strings
-            arrow_colors = mpl.colors.colorConverter.to_rgba_array(edge_color, alpha)
-            for i, (src, dst) in zip(fancy_edges_indices, edge_pos):
-                x1, y1 = src
-                x2, y2 = dst
-                shrink_source = 0  # space from source to tail
-                shrink_target = 0  # space from  head to target
+            arrow = mpl.patches.FancyArrowPatch(
+                (x1, y1),
+                (x2, y2),
+                arrowstyle=arrowstyle,
+                shrinkA=shrink_source,
+                shrinkB=shrink_target,
+                mutation_scale=mutation_scale,
+                color=arrow_color,
+                linewidth=line_width,
+                connectionstyle=_connectionstyle,
+                linestyle=linestyle,
+                zorder=1,
+            )  # arrows go behind nodes
 
-                if isinstance(arrowsize, list):
-                    # Scale each factor of each arrow based on arrowsize list
-                    mutation_scale = arrowsize[i]
+            arrow_collection.append(arrow)
+            ax.add_patch(arrow)
 
-                if np.iterable(node_size):  # many node sizes
-                    source, target = edgelist[i][:2]
-                    source_node_size = node_size[nodelist.index(source)]
-                    target_node_size = node_size[nodelist.index(target)]
-                    shrink_source = to_marker_edge(source_node_size, node_shape)
-                    shrink_target = to_marker_edge(target_node_size, node_shape)
-                else:
-                    shrink_source = shrink_target = to_marker_edge(
-                        node_size, node_shape
-                    )
+        return arrow_collection
 
-                if shrink_source < min_source_margin:
-                    shrink_source = min_source_margin
+    # compute initial view
+    minx = np.amin(np.ravel(edge_pos[:, :, 0]))
+    maxx = np.amax(np.ravel(edge_pos[:, :, 0]))
+    miny = np.amin(np.ravel(edge_pos[:, :, 1]))
+    maxy = np.amax(np.ravel(edge_pos[:, :, 1]))
+    w = maxx - minx
+    h = maxy - miny
 
-                if shrink_target < min_target_margin:
-                    shrink_target = min_target_margin
-
-                if len(arrow_colors) > i:
-                    arrow_color = arrow_colors[i]
-                elif len(arrow_colors) == 1:
-                    arrow_color = arrow_colors[0]
-                else:  # Cycle through colors
-                    arrow_color = arrow_colors[i % len(arrow_colors)]
-
-                if np.iterable(width):
-                    if len(width) > i:
-                        line_width = width[i]
-                    else:
-                        line_width = width[i % len(width)]
-                else:
-                    line_width = width
-
-                if (
-                    np.iterable(style)
-                    and not isinstance(style, str)
-                    and not isinstance(style, tuple)
-                ):
-                    if len(style) > i:
-                        linestyle = style[i]
-                    else:  # Cycle through styles
-                        linestyle = style[i % len(style)]
-                else:
-                    linestyle = style
-
-                arrow = mpl.patches.FancyArrowPatch(
-                    (x1, y1),
-                    (x2, y2),
-                    arrowstyle=arrowstyle,
-                    shrinkA=shrink_source,
-                    shrinkB=shrink_target,
-                    mutation_scale=mutation_scale,
-                    color=arrow_color,
-                    linewidth=line_width,
-                    connectionstyle=_connectionstyle,
-                    linestyle=linestyle,
-                    zorder=1,
-                )  # arrows go behind nodes
-
-                arrow_collection.append(arrow)
-                ax.add_patch(arrow)
-
-            return arrow_collection
-
-        # compute initial view
-        minx = np.amin(np.ravel(edge_pos[:, :, 0]))
-        maxx = np.amax(np.ravel(edge_pos[:, :, 0]))
-        miny = np.amin(np.ravel(edge_pos[:, :, 1]))
-        maxy = np.amax(np.ravel(edge_pos[:, :, 1]))
-        w = maxx - minx
-        h = maxy - miny
-
-        # Draw the edges
-        if use_linecollection:
-            edge_viz_obj = _draw_networkx_edges_line_collection()
-            # Make sure selfloop edges are also drawn
-            selfloops_to_draw = [
-                loop for loop in nx.selfloop_edges(G) if loop in edgelist
+    # Draw the edges
+    if use_linecollection:
+        edge_viz_obj = _draw_networkx_edges_line_collection()
+        # Make sure selfloop edges are also drawn
+        selfloops_to_draw = [loop for loop in nx.selfloop_edges(G) if loop in edgelist]
+        if selfloops_to_draw:
+            fancy_edges_indices = [
+                edgelist_tuple.index(loop) for loop in selfloops_to_draw
             ]
-            if selfloops_to_draw:
-                fancy_edges_indices = [
-                    edgelist_tuple.index(loop) for loop in selfloops_to_draw
-                ]
-                edge_pos = np.asarray(
-                    [(pos[e[0]], pos[e[1]]) for e in selfloops_to_draw]
-                )
-                arrowstyle = "-"
-                _draw_networkx_edges_fancy_arrow_patch()
-        else:
-            fancy_edges_indices = range(len(edgelist))
-            edge_viz_obj = _draw_networkx_edges_fancy_arrow_patch()
-
-        # update view after drawing
-        padx, pady = 0.05 * w, 0.05 * h
-        corners = (minx - padx, miny - pady), (maxx + padx, maxy + pady)
-        ax.update_datalim(corners)
-        ax.autoscale_view()
-
-        ax.tick_params(
-            axis="both",
-            which="both",
-            bottom=False,
-            left=False,
-            labelbottom=False,
-            labelleft=False,
-        )
-
-        return edge_viz_obj
-
+            edge_pos = np.asarray([(pos[e[0]], pos[e[1]]) for e in selfloops_to_draw])
+            arrowstyle = "-"
+            _draw_networkx_edges_fancy_arrow_patch()
     else:
-        _draw_networkx_multigraph_edges(
-            G,
-            pos,
-            width=width,
-            edge_color=edge_color,
-            style=style,
-            alpha=alpha,
-            arrowstyle=arrowstyle,
-            arrowsize=arrowsize,
-            edge_cmap=edge_cmap,
-            edge_vmin=edge_vmin,
-            edge_vmax=edge_vmax,
-            ax=ax,
-            arrows=True,
-            label=label,
-            node_size=node_size,
-            nodelist=nodelist,
-            node_shape=node_shape,
-            connectionstyle=connectionstyle,
-            min_source_margin=min_source_margin,
-            min_target_margin=min_target_margin,
-        )
+        fancy_edges_indices = range(len(edgelist))
+        edge_viz_obj = _draw_networkx_edges_fancy_arrow_patch()
+
+    # update view after drawing
+    padx, pady = 0.05 * w, 0.05 * h
+    corners = (minx - padx, miny - pady), (maxx + padx, maxy + pady)
+    ax.update_datalim(corners)
+    ax.autoscale_view()
+
+    ax.tick_params(
+        axis="both",
+        which="both",
+        bottom=False,
+        left=False,
+        labelbottom=False,
+        labelleft=False,
+    )
+
+    return edge_viz_obj
 
 
 def _draw_networkx_multigraph_edges(
@@ -950,12 +989,6 @@ def _draw_networkx_multigraph_edges(
     min_target_margin=0,
 ):
 
-    if arrowstyle == None:
-        if G.is_directed():
-            arrowstyle = "-|>"
-        else:
-            arrowstyle = "-"
-
     if edgelist == None:
         edgelist = G.edges()
 
@@ -974,7 +1007,7 @@ def _draw_networkx_multigraph_edges(
             bend = 0.5 / multiEdgeDict[edge]
             rad = bend
             for i in range(multiEdgeDict[edge]):
-                draw_networkx_edges(
+                _draw_networkx_edges(
                     G,
                     pos,
                     edgelist=[edge],
@@ -1000,7 +1033,7 @@ def _draw_networkx_multigraph_edges(
                 rad += bend
 
     if len(lineCollectionEdgeList) > 0:
-        draw_networkx_edges(
+        _draw_networkx_edges(
             G,
             pos,
             edgelist=lineCollectionEdgeList,
