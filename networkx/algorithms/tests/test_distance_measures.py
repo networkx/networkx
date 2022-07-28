@@ -98,8 +98,6 @@ class TestDistance:
 
 
 class TestWeightedDistance:
-    """Each method, other than setup, has three"""
-
     def setup_method(self):
         G = nx.Graph()
         G.add_edge(0, 1, weight=0.6, cost=0.6, high_cost=6)
