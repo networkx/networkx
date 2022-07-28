@@ -1,6 +1,7 @@
 import time
 
 import matplotlib.pyplot as plt
+
 import networkx as nx
 from networkx.algorithms.isomorphism.VF2pp import VF2pp
 
