@@ -112,7 +112,7 @@ def _extrema_bounding(G, compute="diameter", weight=None):
         high = not high
 
         # get distances from/to current node and derive eccentricity
-        dist = nx.shortest_path_length(G=G, source=current, weight=weight)
+        dist = nx.shortest_path_length(G, source=current, weight=weight)
 
         if len(dist) != N:
             msg = "Cannot compute metric because graph is not connected."
@@ -297,7 +297,7 @@ def eccentricity(G, v=None, sp=None, weight=None):
     e = {}
     for n in G.nbunch_iter(v):
         if sp is None:
-            length = nx.shortest_path_length(G=G, source=n, weight=weight)
+            length = nx.shortest_path_length(G, source=n, weight=weight)
 
             L = len(length)
         else:
@@ -372,7 +372,7 @@ def diameter(G, e=None, usebounds=False, weight=None):
     eccentricity
     """
     if usebounds is True and e is None and not G.is_directed():
-        return _extrema_bounding(G=G, compute="diameter", weight=weight)
+        return _extrema_bounding(G, compute="diameter", weight=weight)
     if e is None:
         e = eccentricity(G, weight=weight)
     return max(e.values())
@@ -428,7 +428,7 @@ def periphery(G, e=None, usebounds=False, weight=None):
     center
     """
     if usebounds is True and e is None and not G.is_directed():
-        return _extrema_bounding(G=G, compute="periphery", weight=weight)
+        return _extrema_bounding(G, compute="periphery", weight=weight)
     if e is None:
         e = eccentricity(G, weight=weight)
     diameter = max(e.values())
@@ -482,7 +482,7 @@ def radius(G, e=None, usebounds=False, weight=None):
 
     """
     if usebounds is True and e is None and not G.is_directed():
-        return _extrema_bounding(G=G, compute="radius", weight=weight)
+        return _extrema_bounding(G, compute="radius", weight=weight)
     if e is None:
         e = eccentricity(G, weight=weight)
     return min(e.values())
@@ -538,7 +538,7 @@ def center(G, e=None, usebounds=False, weight=None):
     periphery
     """
     if usebounds is True and e is None and not G.is_directed():
-        return _extrema_bounding(G=G, compute="center", weight=weight)
+        return _extrema_bounding(G, compute="center", weight=weight)
     if e is None:
         e = eccentricity(G, weight=weight)
     radius = min(e.values())
