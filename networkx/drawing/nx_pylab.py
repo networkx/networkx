@@ -683,7 +683,6 @@ def draw_networkx_edges(
             edge_vmin=edge_vmin,
             edge_vmax=edge_vmax,
             ax=ax,
-            arrows=arrows,
             label=label,
             node_size=node_size,
             nodelist=nodelist,
