@@ -3,47 +3,7 @@ from itertools import chain
 import networkx as nx
 from networkx.utils import not_implemented_for, pairwise
 
-__all__ = ["metric_closure", "steiner_tree"]
-
-
-@not_implemented_for("directed")
-def metric_closure(G, weight="weight"):
-    """Return the metric closure of a graph.
-
-    The metric closure of a graph *G* is the complete graph in which each edge
-    is weighted by the shortest path distance between the nodes in *G* .
-
-    Parameters
-    ----------
-    G : NetworkX graph
-
-    Returns
-    -------
-    NetworkX graph
-        Metric closure of the graph `G`.
-
-    """
-    M = nx.Graph()
-
-    Gnodes = set(G)
-
-    # check for connected graph while processing first node
-    all_paths_iter = nx.all_pairs_dijkstra(G, weight=weight)
-    u, (distance, path) = next(all_paths_iter)
-    if Gnodes - set(distance):
-        msg = "G is not a connected graph. metric_closure is not defined."
-        raise nx.NetworkXError(msg)
-    Gnodes.remove(u)
-    for v in Gnodes:
-        M.add_edge(u, v, distance=distance[v], path=path[v])
-
-    # first node done -- now process the rest
-    for u, (distance, path) in all_paths_iter:
-        Gnodes.remove(u)
-        for v in Gnodes:
-            M.add_edge(u, v, distance=distance[v], path=path[v])
-
-    return M
+__all__ = ["steiner_tree"]
 
 
 @not_implemented_for("directed")
@@ -54,11 +14,6 @@ def steiner_tree(G, terminal_nodes, weight="weight"):
     is a tree within `G` that spans those nodes and has minimum size
     (sum of edge weights) among all such trees.
 
-    The minimum Steiner tree can be approximated by computing the minimum
-    spanning tree of the subgraph of the metric closure of *G* induced by the
-    terminal nodes, where the metric closure of *G* is the complete graph in
-    which each edge is weighted by the shortest path distance between the
-    nodes in *G* .
     This algorithm produces a tree whose weight is within a (2 - (2 / t))
     factor of the weight of the optimal Steiner tree where *t* is number of
     terminal nodes.
@@ -70,6 +25,12 @@ def steiner_tree(G, terminal_nodes, weight="weight"):
     terminal_nodes : list
          A list of terminal nodes for which minimum steiner tree is
          to be found.
+
+    weight : If None, every edge has weight/distance/cost 1. If a string, use this edge attribute as the edge weight.
+        Any edge attribute not present defaults to 1.
+        If this is a function, the weight of an edge is the value returned by the function.
+        The function must accept exactly three positional arguments: the two endpoints of an edge and
+        the dictionary of edge attributes for that edge. The function must return a number.
 
     Returns
     -------
@@ -88,11 +49,22 @@ def steiner_tree(G, terminal_nodes, weight="weight"):
     .. [1] Steiner_tree_problem on Wikipedia.
        https://en.wikipedia.org/wiki/Steiner_tree_problem
     """
-    # H is the subgraph induced by terminal_nodes in the metric closure M of G.
-    M = metric_closure(G, weight=weight)
-    H = M.subgraph(terminal_nodes)
+    # M is the subgraph induced by terminal_nodes with shortest corresponding pairwise paths in G.
+
+    M = nx.Graph()
+    # Create a set to check which pair of terminal nodes have been processed yet
+    search_nodes = set(terminal_nodes)
+    for u in terminal_nodes:
+        terminal_nodes.remove(u)
+        for v in terminal_nodes:
+            if v in search_nodes:
+                search_nodes.remove(v)
+                dist_u_v = nx.shortest_path_length(G=G, source=u, target=v, weight=weight)
+                path_u_v = nx.shortest_path(G=G, source=u, target=v, weight=weight)
+                M.add_edge(u, v, distance=dist_u_v, path=path_u_v)
+
     # Use the 'distance' attribute of each edge provided by M.
-    mst_edges = nx.minimum_spanning_edges(H, weight="distance", data=True)
+    mst_edges = nx.minimum_spanning_edges(M, weight="distance", data=True)
     # Create an iterator over each edge in each shortest path; repeats are okay
     edges = chain.from_iterable(pairwise(d["path"]) for u, v, d in mst_edges)
     # For multigraph we should add the minimal weight edge keys
@@ -102,3 +74,5 @@ def steiner_tree(G, terminal_nodes, weight="weight"):
         )
     T = G.edge_subgraph(edges)
     return T
+
+
