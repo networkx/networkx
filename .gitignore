@@ -55,4 +55,4 @@ networkx.egg-info/
 .pytest_cache
 
 # Virtual environment directory
-./envs
+networkx-dev/
