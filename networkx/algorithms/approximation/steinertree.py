@@ -52,8 +52,6 @@ def steiner_tree(G, terminal_nodes, weight="weight"):
     # M is the subgraph induced by terminal_nodes with shortest corresponding pairwise paths in G.
 
     M = nx.Graph()
-    # Create a set to check which pair of terminal nodes have been processed yet
-    search_nodes = set(terminal_nodes)
     for u_index in range(len(terminal_nodes)):
         u = terminal_nodes[u_index]
 
