@@ -200,16 +200,23 @@ def minimal_d_separator(G, u, v):
     -----
     This function only finds ``a`` minimal d-separator. It does not guarantee
     uniqueness, since in a DAG there may be more than one minimal d-separator
-    between two nodes.
-
-    Moreover, this only checks for minimal separators between two nodes, not
-    two sets. Finding minimal d-separators between two sets of nodes is not
-    supported.
+    between two nodes. Moreover, this only checks for minimal separators
+    between two nodes, not two sets. Finding minimal d-separators between
+    two sets of nodes is not supported.
 
     Uses the algorithm presented in [1]_. The complexity of the algorithm
     is :math:`O(|E_{An}^m|)`, where :math:`E_{An}^m` stands for the
     number of edges in the moralized graph of the sub-graph consisting
     of only the ancestors of X and Y. For full details, see [1]_.
+
+    The algorithm works by constructing the moral graph consisting of just
+    the ancestors of ``u`` and ``v``. Then it constructs a candidate for
+    a separating set from the predecessors of ``u`` and ``v``. Starting
+    from this set, ``Z'``, BFS is ran starting from ``u`` and marking nodes
+    it finds in ``Z'``. The resulting nodes marked, ``Z''``, are returned.
+    Then BFS is ran again starting from ``v`` and marking nodes if they are
+    present in ``Z''``. The returned set of marked nodes is a minimal
+    d-separating set.
 
     https://en.wikipedia.org/wiki/Bayesian_network#d-separation
     """
