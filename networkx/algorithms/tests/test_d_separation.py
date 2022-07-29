@@ -172,7 +172,7 @@ def test_invalid_nodes_raise_error(asia_graph):
         nx.minimal_d_separator(asia_graph, {0}, {1})
 
 
-def test_minimal_sep_set():
+def test_minimal_d_separator():
     # Case 1:
     # create a graph A -> B <- C
     # B -> D -> E;
