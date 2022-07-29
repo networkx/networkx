@@ -75,22 +75,5 @@ def steiner_tree(G, terminal_nodes, weight="weight"):
     T = G.edge_subgraph(edges)
     return T
 
-if __name__ == '__main__':
-    G = nx.Graph()
-    G.add_edge(1, 2, weight=10)
-    G.add_edge(2, 3, weight=10)
-    G.add_edge(3, 4, weight=10)
-    G.add_edge(4, 5, weight=10)
-    G.add_edge(5, 6, weight=10)
-    G.add_edge(2, 7, weight=1)
-    G.add_edge(7, 5, weight=1)
-    term_nodes = [1, 2, 3, 4, 5]
-
-    t = steiner_tree(G, term_nodes)
-    print(t.get_edge_data(1,2))
-    print(t.get_edge_data(2,3))
-    print(t.get_edge_data(2,7))
-    print(t.get_edge_data(3,4))
-    print(t.get_edge_data(5,7))
 
 
