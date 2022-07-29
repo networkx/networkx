@@ -647,7 +647,7 @@ def draw_networkx_edges(
             arrowstyle = "-"
 
     if type(G) == nx.classes.multigraph.MultiGraph == False:
-        _draw_networkx_edges(
+        return _draw_networkx_edges(
             G,
             pos,
             edgelist=edgelist,
@@ -671,7 +671,7 @@ def draw_networkx_edges(
             min_target_margin=min_target_margin,
         )
     else:
-        _draw_networkx_multigraph_edges(
+        return _draw_networkx_multigraph_edges(
             G,
             pos,
             edgelist=edgelist,
