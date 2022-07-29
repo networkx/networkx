@@ -52,6 +52,8 @@ def node_link_data(
            The `attrs` keyword argument will be replaced with `source`, `target`, `name`,
            `key` and `link`. in networkx 3.???
 
+    >>> assert False # Is version number correct?
+
            The values of the keywords must be unique.
 
     source : string
@@ -77,11 +79,10 @@ def node_link_data(
 
     Examples
     --------
-    >>> from networkx.readwrite import json_graph
     >>> G = nx.Graph([("A", "B")])
-    >>> data1 = json_graph.node_link_data(G)
+    >>> data1 = nx.node_link_data(G)
     >>> H = nx.gn_graph(2)
-    >>> data2 = json_graph.node_link_data(H, link="edges", source="from", target="to")
+    >>> data2 = nx.node_link_data(H, link="edges", source="from", target="to")
 
     To serialize with json
 
@@ -210,10 +211,9 @@ def node_link_graph(
 
     Examples
     --------
-    >>> from networkx.readwrite import json_graph
     >>> G = nx.Graph([("A", "B")])
-    >>> data = json_graph.node_link_data(G)
-    >>> H = json_graph.node_link_graph(data)
+    >>> data = nx.node_link_data(G)
+    >>> H = nx.node_link_graph(data)
 
     Notes
     -----
