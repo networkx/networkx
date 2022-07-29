@@ -17,7 +17,6 @@ class TestSteinerTree:
         cls.G = G
         cls.term_nodes = [1, 2, 3, 4, 5]
 
-
     def test_steiner_tree(self):
         S = steiner_tree(self.G, self.term_nodes)
         expected_steiner_tree = [

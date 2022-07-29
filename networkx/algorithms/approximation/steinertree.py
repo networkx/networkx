@@ -55,7 +55,7 @@ def steiner_tree(G, terminal_nodes, weight="weight"):
     for u_index in range(len(terminal_nodes)):
         u = terminal_nodes[u_index]
 
-        for v_index in range(u_index+1, len(terminal_nodes)):
+        for v_index in range(u_index + 1, len(terminal_nodes)):
             v = terminal_nodes[v_index]
             dist_u_v = nx.shortest_path_length(G=G, source=u, target=v, weight=weight)
             path_u_v = nx.shortest_path(G=G, source=u, target=v, weight=weight)
@@ -72,6 +72,3 @@ def steiner_tree(G, terminal_nodes, weight="weight"):
         )
     T = G.edge_subgraph(edges)
     return T
-
-
-
