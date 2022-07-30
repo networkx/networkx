@@ -52,8 +52,6 @@ def node_link_data(
            The `attrs` keyword argument will be replaced with `source`, `target`, `name`,
            `key` and `link`. in networkx 3.???
 
-    >>> assert False # Is version number correct?
-
            The values of the keywords must be unique.
 
     source : string
@@ -81,16 +79,28 @@ def node_link_data(
     --------
     >>> G = nx.Graph([("A", "B")])
     >>> data1 = nx.node_link_data(G)
-    >>> H = nx.gn_graph(2)
-    >>> data2 = nx.node_link_data(H, link="edges", source="from", target="to")
+    >>> data1
+    {'directed': False, 'multigraph': False, 'graph': {}, 'nodes': [{'id': 'A'}, {'id': 'B'}], 'links': [{'source': 'A', 'target': 'B'}]}
 
     To serialize with json
 
     >>> import json
     >>> s1 = json.dumps(data1)
-    >>> s2 = json.dumps(
-    ...     data2, default={"link": "edges", "source": "from", "target": "to"}
-    ... )
+    >>> s1
+    '{"directed": false, "multigraph": false, "graph": {}, "nodes": [{"id": "A"}, {"id": "B"}], "links": [{"source": "A", "target": "B"}]}'
+
+    Or, pass the graph and encoder function together in a single step, like this,
+
+    >>> s1 = json.dumps(G, default=nx.node_link_data)
+    >>> s1
+    '{"directed": false, "multigraph": false, "graph": {}, "nodes": [{"id": "A"}, {"id": "B"}], "links": [{"source": "A", "target": "B"}]}'
+
+    The attribute names for storing NetworkX-internal graph data can be specified as keyword options.
+
+    >>> H = nx.gn_graph(2)
+    >>> data2 = nx.node_link_data(H, link="edges", source="from", target="to")
+    >>> data2
+    {'directed': True, 'multigraph': False, 'graph': {}, 'nodes': [{'id': 0}, {'id': 1}], 'edges': [{'from': 1, 'to': 0}]}
 
     Notes
     -----
@@ -188,7 +198,7 @@ def node_link_graph(
 
         .. deprecated:: 2.8.5
 
-           The `attrs` keyword argument will be replaced with `source`, `target`, `name`,
+           The `attrs` keyword argument will be replaced with the individual keywords: `source`, `target`, `name`,
            `key` and `link`. in networkx 3.???
 
            The values of the keywords must be unique.
@@ -211,9 +221,23 @@ def node_link_graph(
 
     Examples
     --------
-    >>> G = nx.Graph([("A", "B")])
+    >>> G = nx.Graph([('A', 'B')])
     >>> data = nx.node_link_data(G)
+    >>> data
+    {'directed': False, 'multigraph': False, 'graph': {}, 'nodes': [{'id': 'A'}, {'id': 'B'}], 'links': [{'source': 'A', 'target': 'B'}]}
+
     >>> H = nx.node_link_graph(data)
+    >>> print(H.edges)
+    [('A', 'B')]
+
+    To serialize and deserialize a graph with json,
+
+    >>> import json
+    >>> d = json.dumps(node_link_data(G))
+    >>> H = node_link_graph(json.loads(d))
+    >>> print(G.edges, H.edges)
+    [('A', 'B')] [('A', 'B')]
+
 
     Notes
     -----
