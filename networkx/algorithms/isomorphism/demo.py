@@ -5,8 +5,8 @@ import networkx as nx
 from networkx.algorithms.isomorphism.VF2pp import VF2pp
 
 # Graph initialization
-G1 = nx.gnp_random_graph(1000, 0.5, 42)
-G2 = nx.gnp_random_graph(1000, 0.5, 42)
+G1 = nx.gnp_random_graph(500, 0.5, 42)
+G2 = nx.gnp_random_graph(500, 0.5, 42)
 
 colors = [
     "white",
@@ -37,9 +37,9 @@ print(f"VF2++ elapsed time: {time.time() - t0}")
 
 assert m
 
-t0 = time.time()
-nx.is_isomorphic(G1, G2)
-print(f"VF2 elapsed time: {time.time() - t0}")
+# t0 = time.time()
+# nx.is_isomorphic(G1, G2)
+# print(f"VF2 elapsed time: {time.time() - t0}")
 
 # G1 = nx.MultiGraph([(i, j) for i in range(250) for j in range(65)] * 10)
 # G2 = nx.MultiGraph([(i, j) for i in range(250) for j in range(65)] * 10)

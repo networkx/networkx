@@ -1,17 +1,15 @@
 import time
 
 import matplotlib.pyplot as plt
-
 import networkx as nx
 from networkx.algorithms.isomorphism.VF2pp import VF2pp
 
 
 class PerformanceComparison:
-    vf2_times = []
-    vf2pp_times = []
-
     def __init__(self, number_of_nodes):
         self.number_of_nodes = number_of_nodes
+        self.vf2_times = []
+        self.vf2pp_times = []
 
     def reset(self):
         self.vf2pp_times.clear()
