@@ -89,13 +89,15 @@ def node_link_data(
     >>> s1
     '{"directed": false, "multigraph": false, "graph": {}, "nodes": [{"id": "A"}, {"id": "B"}], "links": [{"source": "A", "target": "B"}]}'
 
-    Or, pass the graph and encoder function together in a single step, like this,
+    Or, pass the graph and encoder function together in a single step,
+    like this,
 
     >>> s1 = json.dumps(G, default=nx.node_link_data)
     >>> s1
     '{"directed": false, "multigraph": false, "graph": {}, "nodes": [{"id": "A"}, {"id": "B"}], "links": [{"source": "A", "target": "B"}]}'
 
-    The attribute names for storing NetworkX-internal graph data can be specified as keyword options.
+    The attribute names for storing NetworkX-internal graph data can
+    be specified as keyword options.
 
     >>> H = nx.gn_graph(2)
     >>> data2 = nx.node_link_data(H, link="edges", source="from", target="to")
@@ -108,6 +110,9 @@ def node_link_data(
     attribute keys will be converted to strings in order to comply with JSON.
 
     Attribute 'key' is only used for multigraphs.
+
+    To use `node_link_data` in conjunction with `node_link_graph`,
+    the same keyword names for the attributes must be used in both.
 
     See Also
     --------
@@ -176,6 +181,7 @@ def node_link_graph(
     link="links",
 ):
     """Returns graph from node-link data format.
+    Useful for de-serialization from JSON.
 
     Parameters
     ----------
@@ -230,7 +236,7 @@ def node_link_graph(
     >>> print(H.edges)
     [('A', 'B')]
 
-    To serialize and deserialize a graph with json,
+    To serialize and deserialize a graph with JSON,
 
     >>> import json
     >>> d = json.dumps(node_link_data(G))
@@ -242,6 +248,9 @@ def node_link_graph(
     Notes
     -----
     Attribute 'key' is only used for multigraphs.
+
+    To use `node_link_graph` in conjunction with `node_link_data`,
+    the same keyword names for the attributes must be used in both.
 
     See Also
     --------
