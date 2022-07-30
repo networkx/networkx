@@ -73,7 +73,7 @@ def node_link_data(
     Raises
     ------
     NetworkXError
-        If values in attrs are not unique.
+        If the values of 'source', 'target' and 'key' are not unique.
 
     Examples
     --------
@@ -82,15 +82,14 @@ def node_link_data(
     >>> data1
     {'directed': False, 'multigraph': False, 'graph': {}, 'nodes': [{'id': 'A'}, {'id': 'B'}], 'links': [{'source': 'A', 'target': 'B'}]}
 
-    To serialize with json
+    To serialize with JSON
 
     >>> import json
     >>> s1 = json.dumps(data1)
     >>> s1
     '{"directed": false, "multigraph": false, "graph": {}, "nodes": [{"id": "A"}, {"id": "B"}], "links": [{"source": "A", "target": "B"}]}'
 
-    Or, pass the graph and encoder function together in a single step,
-    like this,
+    A graph can also be serialized by passing `node_link_data` as an encoder function. The two methods are equivalent.
 
     >>> s1 = json.dumps(G, default=nx.node_link_data)
     >>> s1
@@ -112,7 +111,7 @@ def node_link_data(
     Attribute 'key' is only used for multigraphs.
 
     To use `node_link_data` in conjunction with `node_link_graph`,
-    the same keyword names for the attributes must be used in both.
+    the keyword names for the attributes must match.
 
     See Also
     --------
@@ -227,10 +226,15 @@ def node_link_graph(
 
     Examples
     --------
+
+    Create data in node-link format by converting a graph.
+
     >>> G = nx.Graph([('A', 'B')])
     >>> data = nx.node_link_data(G)
     >>> data
     {'directed': False, 'multigraph': False, 'graph': {}, 'nodes': [{'id': 'A'}, {'id': 'B'}], 'links': [{'source': 'A', 'target': 'B'}]}
+
+    Revert data in node-link format to a graph.
 
     >>> H = nx.node_link_graph(data)
     >>> print(H.edges)
@@ -249,8 +253,8 @@ def node_link_graph(
     -----
     Attribute 'key' is only used for multigraphs.
 
-    To use `node_link_graph` in conjunction with `node_link_data`,
-    the same keyword names for the attributes must be used in both.
+    To use `node_link_data` in conjunction with `node_link_graph`,
+    the keyword names for the attributes must match.
 
     See Also
     --------
