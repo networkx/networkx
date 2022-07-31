@@ -295,3 +295,33 @@ def test_decay_centrality_Gb():
     }
     for n in sorted(Gb):
         assert c[n] == pytest.approx(d[n], abs=1e-3)
+
+
+def test_decay_centrality_empty():
+    G = nx.Graph()
+    c = nx.decay_centrality(G)
+    assert c == {}
+
+    c = nx.decay_centrality(G, delta=0.1)
+    assert c == {}
+
+
+def test_decay_centrality_single_node():
+    G = nx.Graph()
+    G.add_node(1)
+    c = nx.decay_centrality(G)
+    d = {1: 0}
+
+    for n in sorted(G):
+        assert c[n] == pytest.approx(d[n], abs=1e-3)
+
+
+def test_decay_centrality_subset_nodes():
+    G = nx.Graph()
+    G.add_nodes_from([1, 2, 3])
+    G.add_edges_from([(1, 2), (1, 3), [1, 4]])
+    c = nx.decay_centrality(G, u=[1, 3])
+    d = {1: 1.5, 3: 1.0}
+    assert sorted(c.keys()) == sorted(d.keys())
+    for n in sorted(d):
+        assert c[n] == pytest.approx(d[n], abs=1e-3)
