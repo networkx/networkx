@@ -90,12 +90,12 @@ def decay_centrality(G, u=None, delta=0.5, mode="all", weight=None):
     if u is None:
         nodes = G.nodes
     else:
-      if type(u) is list:
-        nodes = u
-      elif u in G:
-        nodes = [u]
-      else:
-        raise nx.NetworkXError("u is not a node in the graph")
+        if type(u) is list:
+            nodes = u
+        elif u in G:
+            nodes = [u]
+        else:
+            raise nx.NetworkXError("u is not a node in the graph")
 
     for n in nodes:
 
@@ -109,7 +109,7 @@ def decay_centrality(G, u=None, delta=0.5, mode="all", weight=None):
             decay_centrality[n] += delta ** (geodisc_distance_for_n[v])
 
     if u is not None:
-      decay_centrality = {u: decay_centrality[u] for u in nodes}
-      return decay_centrality
+        decay_centrality = {u: decay_centrality[u] for u in nodes}
+        return decay_centrality
 
     return decay_centrality
