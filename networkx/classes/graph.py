@@ -19,6 +19,50 @@ from networkx.exception import NetworkXError
 __all__ = ["Graph"]
 
 
+class _CachedPropertyResetterAdj:
+    """Data Descriptor class for _adj that resets ``adj`` cached_property when needed
+
+    This assumes that the ``cached_property`` ``G.adj`` should be reset whenever
+    ``G._adj`` is set to a new value.
+
+    This object sits on a class and ensures that any instance of that
+    class clears its cached property "adj" whenever the underlying
+    instance attribute "_adj" is set to a new object. It only affects
+    the set process of the obj._adj attribute. All get/del operations
+    act as they normally would.
+
+    For info on Data Descriptors see: https://docs.python.org/3/howto/descriptor.html
+    """
+
+    def __set__(self, obj, value):
+        od = obj.__dict__
+        od["_adj"] = value
+        if "adj" in od:
+            del od["adj"]
+
+
+class _CachedPropertyResetterNode:
+    """Data Descriptor class for _node that resets ``nodes`` cached_property when needed
+
+    This assumes that the ``cached_property`` ``G.node`` should be reset whenever
+    ``G._node`` is set to a new value.
+
+    This object sits on a class and ensures that any instance of that
+    class clears its cached property "nodes" whenever the underlying
+    instance attribute "_node" is set to a new object. It only affects
+    the set process of the obj._adj attribute. All get/del operations
+    act as they normally would.
+
+    For info on Data Descriptors see: https://docs.python.org/3/howto/descriptor.html
+    """
+
+    def __set__(self, obj, value):
+        od = obj.__dict__
+        od["_node"] = value
+        if "nodes" in od:
+            del od["nodes"]
+
+
 class Graph:
     """
     Base class for undirected graphs.
@@ -259,6 +303,9 @@ class Graph:
     True
     """
 
+    _adj = _CachedPropertyResetterAdj()
+    _node = _CachedPropertyResetterNode()
+
     node_dict_factory = dict
     node_attr_dict_factory = dict
     adjlist_outer_dict_factory = dict
@@ -315,19 +362,9 @@ class Graph:
         {'day': 'Friday'}
 
         """
-        self.graph_attr_dict_factory = self.graph_attr_dict_factory
-        self.node_dict_factory = self.node_dict_factory
-        self.node_attr_dict_factory = self.node_attr_dict_factory
-        self.adjlist_outer_dict_factory = self.adjlist_outer_dict_factory
-        self.adjlist_inner_dict_factory = self.adjlist_inner_dict_factory
-        self.edge_attr_dict_factory = self.edge_attr_dict_factory
-
         self.graph = self.graph_attr_dict_factory()  # dictionary for graph attributes
         self._node = self.node_dict_factory()  # empty node attribute dict
         self._adj = self.adjlist_outer_dict_factory()  # empty adjacency dict
-        # clear cached adjacency properties
-        if hasattr(self, "adj"):
-            delattr(self, "adj")
         # attempt to load graph with data
         if incoming_graph_data is not None:
             convert.to_networkx_graph(incoming_graph_data, create_using=self)

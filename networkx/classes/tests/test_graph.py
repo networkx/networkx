@@ -171,6 +171,18 @@ class BaseGraphTester:
         G.add_edge(1, 1)
         G.remove_nodes_from([0, 1])
 
+    def test_cache_reset(self):
+        G = self.K3.copy()
+        old_adj = G.adj
+        assert id(G.adj) == id(old_adj)
+        G._adj = {}
+        assert id(G.adj) != id(old_adj)
+
+        old_nodes = G.nodes
+        assert id(G.nodes) == id(old_nodes)
+        G._node = {}
+        assert id(G.nodes) != id(old_nodes)
+
     def test_attributes_cached(self):
         G = self.K3.copy()
         assert id(G.nodes) == id(G.nodes)

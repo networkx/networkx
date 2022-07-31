@@ -12,7 +12,7 @@ __version__ = "3.0b1.dev0"
 
 
 # These are imported in order as listed
-from networkx.lazy_imports import lazy_import
+from networkx.lazy_imports import _lazy_import
 
 from networkx.exception import *
 

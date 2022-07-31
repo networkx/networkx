@@ -141,6 +141,10 @@ def chain_decomposition(G, root=None):
             u, v = v, G.nodes[v]["parent"]
         yield u, v
 
+    # Check if the root is in the graph G. If not, raise NodeNotFound
+    if root is not None and root not in G:
+        raise nx.NodeNotFound(f"Root node {root} is not in graph")
+
     # Create a directed version of H that has the DFS edges directed
     # toward the root and the nontree edges directed away from the root
     # (in each connected component).

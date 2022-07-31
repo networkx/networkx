@@ -53,11 +53,12 @@ class UnionFind:
             return object
 
         # find path of objects leading to the root
-        path = [object]
+        path = []
         root = self.parents[object]
-        while root != path[-1]:
-            path.append(root)
-            root = self.parents[root]
+        while root != object:
+            path.append(object)
+            object = root
+            root = self.parents[object]
 
         # compress the path and return
         for ancestor in path:
