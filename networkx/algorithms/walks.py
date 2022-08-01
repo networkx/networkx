@@ -105,8 +105,8 @@ def number_of_walks(G, walk_length, source=None, target=None):
         # Temporarily reverse the edges of the graph *in-place*, then
         # compute the number of walks from target to the various
         # sources.
-        with nx.utils.reversed(G):
-            return single_source(G, walk_length, target)
+        G = G.reverse(copy=False)
+        return single_source(G, walk_length, target)
     return single_source(G, walk_length, source, target=target)
 
 
