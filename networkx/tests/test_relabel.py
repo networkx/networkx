@@ -106,6 +106,12 @@ class TestRelabel:
         H = nx.relabel_nodes(G, mapping)
         assert nodes_equal(H.nodes(), [65, 66, 67, 68])
 
+    def test_relabel_nodes_classes(self):
+        G = nx.empty_graph()
+        G.add_edges_from([(0, 1), (0, 2), (1, 2), (2, 3)])
+        H = nx.relabel_nodes(G, str)
+        assert nodes_equal(H.nodes, ["0", "1", "2", "3"])
+
     def test_relabel_nodes_graph(self):
         G = nx.Graph([("A", "B"), ("A", "C"), ("B", "C"), ("C", "D")])
         mapping = {"A": "aardvark", "B": "bear", "C": "cat", "D": "dog"}
