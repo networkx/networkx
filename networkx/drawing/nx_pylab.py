@@ -987,25 +987,21 @@ def _draw_networkx_multigraph_edges(
     min_source_margin=0,
     min_target_margin=0,
 ):
+    from collections import Counter
 
     if edgelist == None:
-        edgelist = G.edges()
+        edgelist = list(G.edges())
 
-    multiEdgeDict = {}
-    for edge in edgelist:
-        if edge not in multiEdgeDict:
-            multiEdgeDict[edge] = 1
-        else:
-            multiEdgeDict[edge] += 1
+    edge_counts = Counter(edgelist)
 
     lineCollectionEdgeList = []
-    for edge in multiEdgeDict:
-        if multiEdgeDict[edge] == 1 and list(G.edges()).count((edge[1], edge[0])) == 0:
+    for edge, cnt in edge_counts.items():
+        if cnt == 1 and list(G.edges()).count((edge[1], edge[0])) == 0:
             lineCollectionEdgeList.append(edge)
         else:
-            bend = 0.5 / multiEdgeDict[edge]
+            bend = 0.5 / cnt
             rad = bend
-            for i in range(multiEdgeDict[edge]):
+            for i in range(cnt):
                 _draw_networkx_edges(
                     G,
                     pos,
