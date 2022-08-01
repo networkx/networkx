@@ -54,6 +54,7 @@ from networkx.algorithms.traversal import *
 from networkx.algorithms.triads import *
 from networkx.algorithms.vitality import *
 from networkx.algorithms.voronoi import *
+from networkx.algorithms.walks import *
 from networkx.algorithms.wiener import *
 from networkx.algorithms.polynomials import *
 
