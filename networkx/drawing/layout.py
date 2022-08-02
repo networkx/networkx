@@ -1115,8 +1115,14 @@ def arf_layout(g, pos = None, b = 1,  alpha = 1.1, etol = 1e-6, dt = 1e-3,
         max_iter = 1000, seed = None):
     """Arf layout for networkx
 
-    The  arf   (attractive  and  repulsive   forces)  layout
-    improves the spring layout in several ways.
+    The  attractive   and  repulsive  forces   (arf)  layout (Geipel 2006)
+    improves  the spring  layout  in three  ways. First,  it
+    prevents  congestion of  highly connected  nodes due  to
+    strong forcing  between nodes.  Second, it  utilizes the
+    layout space  more effectively by preventing  large gaps
+    that  spring layout  tends  to create.  Lastly, the  arf
+    layout represents symmmetries in  the layout better than
+    the default spring layout.
 
     Parameters
     ----------
@@ -1144,6 +1150,9 @@ def arf_layout(g, pos = None, b = 1,  alpha = 1.1, etol = 1e-6, dt = 1e-3,
         if None, the random number generator is the RandomState instance used
         by numpy.random.
 
+    References
+    - https://www.worldscientific.com/doi/abs/10.1142/S0129183107011558
+
     Returns
     -------
     pos : dict
@@ -1153,6 +1162,7 @@ def arf_layout(g, pos = None, b = 1,  alpha = 1.1, etol = 1e-6, dt = 1e-3,
     --------
     >>> G = nx.grid_graph((5, 5))
     >>> pos = nx.arf_layout(G)
+
     """
     import numpy as np
 
