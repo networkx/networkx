@@ -1,4 +1,4 @@
-from collections.abc import Mapping
+from collections.abc import Callable
 
 import networkx as nx
 
@@ -118,7 +118,7 @@ def relabel_nodes(G, mapping, copy=True):
     """
     # you can pass any callable e.g. f(old_label) -> new_label or
     # e.g. str(old_label) -> new_label, but we'll just make a dictionary here regardless
-    if not isinstance(mapping, Mapping):
+    if isinstance(mapping, Callable):
         m = {n: mapping(n) for n in G}
     else:
         m = mapping

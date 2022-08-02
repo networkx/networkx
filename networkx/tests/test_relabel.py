@@ -117,7 +117,7 @@ class TestRelabel:
         """If `mapping` is neither a Callable or a Mapping, an exception
         should be raised."""
         G = nx.path_graph(4)
-        with pytest.raises(TypeError):
+        with pytest.raises(AttributeError):
             nx.relabel_nodes(G, non_mc)
 
     def test_relabel_nodes_graph(self):
