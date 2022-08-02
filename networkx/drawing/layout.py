@@ -32,6 +32,7 @@ __all__ = [
     "fruchterman_reingold_layout",
     "spiral_layout",
     "multipartite_layout",
+    "arf_layout",
 ]
 
 
@@ -1110,6 +1111,97 @@ def multipartite_layout(G, subset_key="subset", align="vertical", scale=1, cente
     return pos
 
 
+def arf_layout(g, pos = None, b = 1,  alpha = 1.1, etol = 1e-6, dt = 1e-3,
+        max_iter = 1000, seed = None):
+    """Arf layout for networkx
+
+    The  arf   (attractive  and  repulsive   forces)  layout
+    improves the spring layout in several ways.
+
+    Parameters
+    ----------
+    g : nx.Graph or nx.DiGraph
+        Networkx graph.
+    pos : dict
+        Initial  position of  the nodes.  If set  to None  a
+        random layout will be used using seed as input.
+    b : float
+        Controls the radius of  the circular space the graph
+        layout will be plotted in.
+    alpha : float
+        Attraction scalar between edges. Should be larger than 1.
+    etol : float
+        Termination tolerance
+    dt : float
+        Integration factor
+    max_iter : int
+        Max iterations before termination of the algorithm.
+    seed : int, RandomState instance or None  optional (default=None)
+        Set the random state for deterministic node layouts.
+        If int, `seed` is the seed used by the random number generator,
+        if numpy.random.RandomState instance, `seed` is the random
+        number generator,
+        if None, the random number generator is the RandomState instance used
+        by numpy.random.
+
+    Returns
+    -------
+    pos : dict
+        A dictionary of positions keyed by node.
+
+    Examples
+    --------
+    >>> G = nx.grid_graph((5, 5))
+    >>> pos = nx.arf_layout(G)
+    """
+    import numpy as np
+
+    assert alpha > 1, "Alpha should be larger than 1"
+    pos_tmp = nx.random_layout(g, seed = seed)
+    if pos is None:
+        pos = pos_tmp.copy()
+    else:
+        for node in g.nodes():
+            if node not in pos:
+                pos[node] = pos_tmp[node].copy()
+
+    # Initialize spring constant matrix
+    N = len(g)
+    # No nodes no computation
+    if N == 0:
+        return pos
+    K = np.zeros((N, N))
+    for idx, x in enumerate(g.nodes()):
+        for jdx, y in enumerate(g.nodes()):
+            if idx == jdx:
+                K[idx, jdx] = 0
+            elif g.has_edge(x, y) or g.has_edge(y, x):
+                K[idx, jdx] = alpha
+            else:
+                K[idx, jdx] = 1
+    # vectorize values
+    p = np.asarray(list(pos.values()))
+    bV = np.sqrt(N) * b # scaling constant for circular space
+
+    # looping variables
+    error = etol + 1
+    n_iter = 0
+    while error > etol:
+        diff = p[:, None] - p[None]
+        A = np.linalg.norm(diff, axis = -1)[..., None]
+        # attraction_force - repulsions force
+        change = K[..., None] * diff - bV / A * diff
+        change = np.nansum(change, axis = 0)
+        p += change * dt
+
+        error = np.linalg.norm(change, axis = -1).sum()
+        # error = abs(change).sum()
+        if n_iter > max_iter:
+            break
+        n_iter += 1
+    return {node: pi for node, pi in zip(g.nodes(), p)}
+
+
 def rescale_layout(pos, scale=1):
     """Returns scaled position array to (-scale, scale) in all axes.
 
@@ -1149,6 +1241,7 @@ def rescale_layout(pos, scale=1):
         for i in range(pos.shape[1]):
             pos[:, i] *= scale / lim
     return pos
+
 
 
 def rescale_layout_dict(pos, scale=1):
