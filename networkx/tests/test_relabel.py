@@ -107,8 +107,7 @@ class TestRelabel:
         assert nodes_equal(H.nodes(), [65, 66, 67, 68])
 
     def test_relabel_nodes_callable_type(self):
-        G = nx.empty_graph()
-        G.add_edges_from([(0, 1), (0, 2), (1, 2), (2, 3)])
+        G = nx.path_graph(4)
         H = nx.relabel_nodes(G, str)
         assert nodes_equal(H.nodes, ["0", "1", "2", "3"])
 
