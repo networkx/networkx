@@ -39,7 +39,7 @@ def union(G, H, rename=(None, None)):
     See Also
     --------
     compose
-    Graph.update
+    :func:`~networkx.Graph.update`
     disjoint_union
 
     Notes
@@ -87,7 +87,7 @@ def disjoint_union(G, H):
     --------
     union
     compose
-    Graph.update
+    :func:`~networkx.Graph.update`
 
     Notes
     -----
@@ -301,7 +301,7 @@ def compose(G, H):
 
     See Also
     --------
-    Graph.update
+    :func:`~networkx.Graph.update`
     union
     disjoint_union
 
