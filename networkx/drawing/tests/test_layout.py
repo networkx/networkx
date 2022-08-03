@@ -411,8 +411,6 @@ class TestLayout:
         for k, v in expectation.items():
             assert (s_vpos[k] == v).all()
         s_vpos = nx.rescale_layout_dict(vpos, scale=2)
-<<<<<<< HEAD
-
         expectation = {
             0: np.array((-2, -2)),
             1: np.array((2, 2)),
