@@ -4,14 +4,14 @@ import time
 import matplotlib.pyplot as plt
 
 import networkx as nx
-from networkx.algorithms.isomorphism.VF2pp import (
+from networkx.algorithms.isomorphism.vf2pp import (
     VF2pp,
     feasibility,
     matching_order,
     precheck,
     restore_state,
 )
-from networkx.algorithms.isomorphism.VF2pp_helpers.state import update_Tinout
+from networkx.algorithms.isomorphism.vf2pp_helpers.state import update_Tinout
 
 
 class PerformanceComparison:
@@ -68,7 +68,7 @@ class PerformanceComparison:
             )
 
             t0 = time.time()
-            _ = VF2pp(G1, G2, l1, l2)
+            _ = VF2pp(G1, G2, node_labels="label")
             dur1 = time.time() - t0
 
             t0 = time.time()
@@ -190,7 +190,7 @@ def update_state_default_candidates(
 
 
 if __name__ == "__main__":
-    nodes = range(100, 500, 100)
+    nodes = range(100, 300, 100)
     benchmark = PerformanceComparison(nodes)
 
     benchmark.compare_in_random_graphs(0.6)

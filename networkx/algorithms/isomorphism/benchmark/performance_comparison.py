@@ -1,8 +1,9 @@
 import time
 
 import matplotlib.pyplot as plt
+
 import networkx as nx
-from networkx.algorithms.isomorphism.VF2pp import VF2pp
+from networkx.algorithms.isomorphism.vf2pp import VF2pp
 
 
 class PerformanceComparison:
@@ -40,12 +41,8 @@ class PerformanceComparison:
                 G1.nodes[n]["label"] = "blue"
                 G2.nodes[n]["label"] = "blue"
 
-            l1, l2 = nx.get_node_attributes(G1, "label"), nx.get_node_attributes(
-                G2, "label"
-            )
-
             t0 = time.time()
-            _ = VF2pp(G1, G2, l1, l2)
+            _ = VF2pp(G1, G2, node_labels="label")
             dur1 = time.time() - t0
 
             t0 = time.time()
@@ -66,12 +63,8 @@ class PerformanceComparison:
                 G1.nodes[n]["label"] = "blue"
                 G2.nodes[n]["label"] = "blue"
 
-            l1, l2 = nx.get_node_attributes(G1, "label"), nx.get_node_attributes(
-                G2, "label"
-            )
-
             t0 = time.time()
-            _ = VF2pp(G1, G2, l1, l2)
+            _ = VF2pp(G1, G2, node_labels="label")
             dur1 = time.time() - t0
 
             t0 = time.time()
@@ -90,12 +83,8 @@ class PerformanceComparison:
                 G1.nodes[n]["label"] = "blue"
                 G2.nodes[n]["label"] = "blue"
 
-            l1, l2 = nx.get_node_attributes(G1, "label"), nx.get_node_attributes(
-                G2, "label"
-            )
-
             t0 = time.time()
-            _ = VF2pp(G1, G2, l1, l2)
+            _ = VF2pp(G1, G2, node_labels="label")
             dur1 = time.time() - t0
 
             t0 = time.time()
@@ -107,7 +96,7 @@ class PerformanceComparison:
 
 
 if __name__ == "__main__":
-    nodes = range(100, 1000, 100)
+    nodes = range(100, 500, 100)
     benchmark = PerformanceComparison(nodes)
 
     benchmark.compare_in_random_graphs(0.6)

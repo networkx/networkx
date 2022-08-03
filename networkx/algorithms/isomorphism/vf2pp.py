@@ -10,15 +10,15 @@ from networkx.algorithms.isomorphism.vf2pp_helpers.state import (
 )
 
 
-def VF2pp(G1, G2, G1_labels, G2_labels):
+def VF2pp(G1, G2, node_labels=None):
     try:
-        mapping = next(VF2pp_solver(G1, G2, G1_labels, G2_labels))
+        mapping = next(VF2pp_solver(G1, G2, node_labels))
         return mapping
     except StopIteration:
         return None
 
 
-def VF2pp_solver(G1, G2, G1_labels, G2_labels):
+def VF2pp_solver(G1, G2, node_labels=None):
     """Implementation of the VF2++ algorithm.
 
     Parameters
@@ -26,16 +26,17 @@ def VF2pp_solver(G1, G2, G1_labels, G2_labels):
     G1,G2: NetworkX Graph or MultiGraph instances.
         The two graphs to check for isomorphism or monomorphism.
 
-    G1_labels,G2_labels: dict
-        The label of every node in G1 and G2 respectively.
+    node_labels: Label name
+        The label name of all nodes
 
     Returns
     -------
     Node mapping, if the two graphs are isomorphic. None otherwise.
     """
+    G1_labels, G2_labels = dict(), dict()
     if not G1 and not G2:
         return False
-    if not precheck(G1, G2, G1_labels, G2_labels):
+    if not precheck(G1, G2, G1_labels, G2_labels, node_labels):
         return False
 
     graph_params, state_params, node_order, stack = initialize_VF2pp(
@@ -73,7 +74,7 @@ def VF2pp_solver(G1, G2, G1_labels, G2_labels):
             matching_node += 1
 
 
-def precheck(G1, G2, G1_labels, G2_labels):
+def precheck(G1, G2, G1_labels, G2_labels, node_labels):
     """Checks if all the pre-requisites are satisfied before calling the isomorphism solver.
 
     Notes
@@ -96,6 +97,13 @@ def precheck(G1, G2, G1_labels, G2_labels):
         return False
     if sorted(d for n, d in G1.degree()) != sorted(d for n, d in G2.degree()):
         return False
+
+    if not node_labels:
+        G1_labels.update({node: "green" for node in G1.nodes()})
+        G2_labels.update({node: "green" for node in G2.nodes()})
+    else:
+        G1_labels.update(G1.nodes(data=node_labels))
+        G2_labels.update(G2.nodes(data=node_labels))
 
     G1_nodes_per_label = {
         label: len(nodes) for label, nodes in nx.utils.groups(G1_labels).items()
