@@ -458,7 +458,7 @@ def _bfs_with_marks(G, start_node, check_set):
                 # memoize where we visited so far
                 visited[neighbr] = None
 
-                # mark the node in Z' and do not continue
+                # mark the node in 'check_set' and do not continue
                 # along that path
                 if neighbr in check_set:
                     marked.add(neighbr)
