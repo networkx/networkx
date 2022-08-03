@@ -52,6 +52,9 @@ def node_link_data(
            The `attrs` keyword argument will be replaced with `source`, `target`, `name`,
            `key` and `link`. in networkx 3.1
 
+           If the `attrs` keyword and the new keywords are both used in a single function call (not recommended)
+           the `attrs` keyword argument will take precedence.
+
            The values of the keywords must be unique.
 
     source : string
@@ -112,6 +115,7 @@ def node_link_data(
 
     To use `node_link_data` in conjunction with `node_link_graph`,
     the keyword names for the attributes must match.
+
 
     See Also
     --------
@@ -204,6 +208,9 @@ def node_link_graph(
 
            The `attrs` keyword argument will be replaced with the individual keywords: `source`, `target`, `name`,
            `key` and `link`. in networkx 3.1.
+
+           If the `attrs` keyword and the new keywords are both used in a single function call (not recommended)
+           the `attrs` keyword argument will take precedence.
 
            The values of the keywords must be unique.
 
