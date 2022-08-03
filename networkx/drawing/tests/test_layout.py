@@ -181,7 +181,6 @@ class TestLayout:
         pos = nx.circular_layout(self.Gi)
         npos = nx.arf_layout(self.Gi, pos=pos)
 
-
     def test_fixed_node_fruchterman_reingold(self):
         # Dense version (numpy based)
         pos = nx.circular_layout(self.Gi)
