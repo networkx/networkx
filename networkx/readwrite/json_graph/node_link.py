@@ -47,10 +47,10 @@ def node_link_data(
         If some user-defined graph data use these attribute names as data keys,
         they may be silently dropped.
 
-        .. deprecated:: 2.8.5
+        .. deprecated:: 2.8.6
 
            The `attrs` keyword argument will be replaced with `source`, `target`, `name`,
-           `key` and `link`. in networkx 3.???
+           `key` and `link`. in networkx 3.1
 
            The values of the keywords must be unique.
 
@@ -121,10 +121,9 @@ def node_link_data(
     if attrs is not None:
         import warnings
 
-        # TODO set the version number when feature will be removed.  3.???   (2x)
         msg = (
             "\n\nThe `attrs` keyword argument of node_link_data is deprecated\n"
-            "and will be removed in networkx 3.???. It is replaced with explicit\n"
+            "and will be removed in networkx 3.1. It is replaced with explicit\n"
             "keyword arguments: `source`, `target`, `name`, `key` and `link`.\n"
             "To make this warning go away, and ensure usage is forward\n"
             "compatible, replace `attrs` with the keywords. "
@@ -132,7 +131,7 @@ def node_link_data(
             "   >>> node_link_data(G, attrs={'target': 'foo', 'name': 'bar'})\n\n"
             "should instead be written as\n\n"
             "   >>> node_link_data(G, target='foo', name='bar')\n\n"
-            "in networkx 3.???.\n"
+            "in networkx 3.1.\n"
             "The default values of the keywords will not change.\n"
         )
         warnings.warn(msg, DeprecationWarning, stacklevel=2)
@@ -201,10 +200,10 @@ def node_link_graph(
             dict(source='source', target='target', name='id',
                 key='key', link='links')
 
-        .. deprecated:: 2.8.5
+        .. deprecated:: 2.8.6
 
            The `attrs` keyword argument will be replaced with the individual keywords: `source`, `target`, `name`,
-           `key` and `link`. in networkx 3.???
+           `key` and `link`. in networkx 3.1.
 
            The values of the keywords must be unique.
 
@@ -264,10 +263,9 @@ def node_link_graph(
     if attrs is not None:
         import warnings
 
-        # TODO set the version number when feature will be removed.  3.???   (2x)
         msg = (
             "\n\nThe `attrs` keyword argument of node_link_graph is deprecated\n"
-            "and will be removed in networkx 3.???. It is replaced with explicit\n"
+            "and will be removed in networkx 3.1. It is replaced with explicit\n"
             "keyword arguments: `source`, `target`, `name`, `key` and `link`.\n"
             "To make this warning go away, and ensure usage is forward\n"
             "compatible, replace `attrs` with the keywords. "
@@ -275,7 +273,7 @@ def node_link_graph(
             "   >>> node_link_graph(data, attrs={'target': 'foo', 'name': 'bar'})\n\n"
             "should instead be written as\n\n"
             "   >>> node_link_graph(data, target='foo', name='bar')\n\n"
-            "in networkx 3.???.\n"
+            "in networkx 3.1.\n"
             "The default values of the keywords will not change.\n"
         )
         warnings.warn(msg, DeprecationWarning, stacklevel=2)
