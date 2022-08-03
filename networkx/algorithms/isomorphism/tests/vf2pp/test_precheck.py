@@ -1,5 +1,5 @@
 import networkx as nx
-from networkx.algorithms.isomorphism.VF2pp import precheck
+from networkx.algorithms.isomorphism.vf2pp import precheck
 
 
 class TestPreCheck:

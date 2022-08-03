@@ -1,7 +1,7 @@
 import collections
 
 import networkx as nx
-from networkx.algorithms.isomorphism.VF2pp_helpers.candidates import find_candidates
+from networkx.algorithms.isomorphism.vf2pp_helpers.candidates import find_candidates
 
 
 class TestCandidateSelection:

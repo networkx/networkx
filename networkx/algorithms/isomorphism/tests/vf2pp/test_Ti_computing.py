@@ -1,7 +1,7 @@
 import collections
 
 import networkx as nx
-from networkx.algorithms.isomorphism.VF2pp_helpers.state import (
+from networkx.algorithms.isomorphism.vf2pp_helpers.state import (
     restore_Tinout,
     update_Tinout,
 )

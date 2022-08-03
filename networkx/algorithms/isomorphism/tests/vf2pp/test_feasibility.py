@@ -1,8 +1,8 @@
 import collections
 
 import networkx as nx
-from networkx.algorithms.isomorphism.VF2pp import feasibility
-from networkx.algorithms.isomorphism.VF2pp_helpers.feasibility import (
+from networkx.algorithms.isomorphism.vf2pp import feasibility
+from networkx.algorithms.isomorphism.vf2pp_helpers.feasibility import (
     consistent_PT,
     cut_PT,
 )

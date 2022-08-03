@@ -1,10 +1,10 @@
 import collections
 
 import networkx as nx
-from networkx.algorithms.isomorphism.VF2pp_helpers.candidates import find_candidates
-from networkx.algorithms.isomorphism.VF2pp_helpers.feasibility import feasibility
-from networkx.algorithms.isomorphism.VF2pp_helpers.node_ordering import matching_order
-from networkx.algorithms.isomorphism.VF2pp_helpers.state import (
+from networkx.algorithms.isomorphism.vf2pp_helpers.candidates import find_candidates
+from networkx.algorithms.isomorphism.vf2pp_helpers.feasibility import feasibility
+from networkx.algorithms.isomorphism.vf2pp_helpers.node_ordering import matching_order
+from networkx.algorithms.isomorphism.vf2pp_helpers.state import (
     restore_state,
     update_state,
 )

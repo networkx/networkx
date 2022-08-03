@@ -1,4 +1,4 @@
-from networkx.algorithms.isomorphism.VF2pp_helpers.candidates import find_candidates
+from networkx.algorithms.isomorphism.vf2pp_helpers.candidates import find_candidates
 
 
 def update_Tinout(new_node1, new_node2, graph_params, state_params):

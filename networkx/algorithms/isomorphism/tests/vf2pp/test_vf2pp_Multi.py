@@ -1,5 +1,5 @@
 import networkx as nx
-from networkx.algorithms.isomorphism.VF2pp import VF2pp_solver
+from networkx.algorithms.isomorphism.vf2pp import VF2pp_solver
 
 
 def VF2pp(G1, G2, l1, l2):

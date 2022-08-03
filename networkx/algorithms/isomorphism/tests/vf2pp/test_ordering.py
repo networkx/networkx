@@ -1,7 +1,7 @@
 import collections
 
 import networkx as nx
-from networkx.algorithms.isomorphism.VF2pp_helpers.node_ordering import (
+from networkx.algorithms.isomorphism.vf2pp_helpers.node_ordering import (
     matching_order,
     rarest_nodes,
 )
