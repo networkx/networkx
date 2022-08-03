@@ -4,6 +4,7 @@ from .multigraph import MultiGraph
 from .multidigraph import MultiDiGraph
 
 from .function import *
+from .backends import *
 
 from networkx.classes import filters
 

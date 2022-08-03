@@ -6,6 +6,7 @@ import networkx as nx
 __all__ = ["pagerank", "google_matrix"]
 
 
+@nx.dispatch("pagerank")
 def pagerank(
     G,
     alpha=0.85,
