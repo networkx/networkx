@@ -1,6 +1,11 @@
 """Unit tests for the :mod:`networkx.algorithms.walks` module."""
 
+import pytest
+
 import networkx as nx
+
+pytest.importorskip("numpy")
+pytest.importorskip("scipy")
 
 
 class TestNumberOfWalks:
