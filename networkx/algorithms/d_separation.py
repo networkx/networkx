@@ -7,23 +7,63 @@ graphical test that uses the underlying graph and makes no reference
 to the actual distribution parameters.  See [1]_ for a formal
 definition.
 
-To understand d-separation intuitively, consider the following example:
-
-For a pair of two nodes, u and v, all paths are considered open initially, unless
-they contain a collider along the path. d-separation is concerned with blocking all
-paths between these u and v. A path is considered blocked by the
-separating set if all open paths contain some variable in the d-separating
-set that is not a collider, or the descendant of a collider.
-
-A collider is a triplet of variables along a path that is like the following:
-``... u -> c <- v ...``), where 'c' is a common child of 'u' and 'v'. If the
-d-separating set contains a collider, or a descendant of a collider, then the
-path through the collider is opened. 
-
 The implementation is based on the conceptually simple linear time
 algorithm presented in [2]_.  Refer to [3]_, [4]_ for a couple of
 alternative algorithms.
 
+Here, we provide a brief overview of d-separation and related concepts that
+are relevant for understanding it:
+
+Blocking paths
+--------------
+
+Before we overview, we introduce the following terminology to describe paths:
+
+- "open" path: A path between two nodes that can be traversed
+- "blocked" path: A path between two nodes that cannot be traversed
+
+A **collider** is a triplet of nodes along a path that is like the following:
+``... u -> c <- v ...``), where 'c' is a common successor of 'u' and 'v'. A path
+through a collider is considered "blocked". When
+a node that is a collider, or a descendant of a collider is included in
+the d-separating set, then the path through that collider node is "open". If the
+path through the collider node is open, then we will call this node an open collider.
+
+If a path between 'u' and 'v' contains a non-collider node that is included in the
+d-separation set, then that path is "blocked". In other words, the d-separation set
+blocks the path between 'u' and 'v'. If you include colliders, or their descendant
+nodes in the d-separation set, then those colliders will open up, enabling a path
+to be traversed if it is not blocked some other way.
+
+Illustration of D-separation
+----------------------------
+
+For a pair of two nodes, 'u' and 'v', all paths are considered open if
+there is a path between 'u' and 'v' that is not blocked. That means, there is an open
+path between 'u' and 'v' that does not encounter a collider, or a variable in the
+d-separating set.
+
+For example, if the d-separating set is the empty set, then the following paths are
+unblocked between 'u' and 'v':
+
+- u <- z -> v
+- u -> w -> ... -> z -> v
+
+If for example, 'z' is in the d-separating set, then 'z' blocks those paths
+between 'u' and 'v'.
+
+Colliders block a path by default if they and their descendants are not included
+in the d-separating set. An example of a path that is blocked when the d-separating
+set is empty is:
+
+- u -> w -> ... -> z <- v
+
+because 'z' is a collider in this path and 'z' is not in the d-separating set. However,
+if 'z' or a descendant of 'z' is included in the d-separating set, then the path through
+the collider at 'z' (... -> z <- ...) is now "open". 
+
+D-separation is concerned with blocking all paths between u and v. Therefore, a
+d-separating set between 'u' and 'v' is one where all paths are blocked.
 
 Examples
 --------
@@ -73,7 +113,6 @@ References
 from collections import deque
 
 import networkx as nx
-from networkx.algorithms.traversal.breadth_first_search import _bfs_with_marks
 from networkx.utils import UnionFind, not_implemented_for
 
 __all__ = ["d_separated", "minimal_d_separator", "is_minimal_d_separator"]
@@ -164,12 +203,12 @@ def d_separated(G, x, y, z):
 
 @not_implemented_for("undirected")
 def minimal_d_separator(G, u, v):
-    """Compute a minimal d-separating set between X and Y.
+    """Compute a minimal d-separating set between 'u' and 'v'.
 
-    A d-separating set in a DAG is a set that when conditioned on
-    blocks all paths between the two sets of variables. This function
-    constructs a set that is "minimal", meaning it is the smallest
-    d-separating set between the two variables. This is not necessarily
+    A d-separating set in a DAG is a set of nodes that blocks all paths
+    between the two nodes, 'u' and 'v'. This function
+    constructs a d-separating set that is "minimal", meaning it is the smallest
+    d-separating set for 'u' and 'v'. This is not necessarily
     unique. For more details, see Notes.
 
     Parameters
@@ -184,9 +223,7 @@ def minimal_d_separator(G, u, v):
     Raises
     ------
     NetworkXError
-        The *d-separation* test is commonly used with directed
-        graphical models which are acyclic.  Accordingly, the algorithm
-        raises a :exc:`NetworkXError` if the input graph is not a DAG.
+        Raises a :exc:`NetworkXError` if the input graph is not a DAG.
 
     NodeNotFound
         If any of the input nodes are not found in the graph,
@@ -207,14 +244,14 @@ def minimal_d_separator(G, u, v):
     Uses the algorithm presented in [1]_. The complexity of the algorithm
     is :math:`O(|E_{An}^m|)`, where :math:`E_{An}^m` stands for the
     number of edges in the moralized graph of the sub-graph consisting
-    of only the ancestors of X and Y. For full details, see [1]_.
+    of only the ancestors of 'u' and 'v'. For full details, see [1]_.
 
     The algorithm works by constructing the moral graph consisting of just
-    the ancestors of ``u`` and ``v``. Then it constructs a candidate for
-    a separating set from the predecessors of ``u`` and ``v``. Starting
-    from this set, ``Z'``, BFS is ran starting from ``u`` and marking nodes
+    the ancestors of ``'u'`` and ``'v'``. Then it constructs a candidate for
+    a separating set from the predecessors of ``'u'`` and ``'v'``. Starting
+    from this set, ``Z'``, BFS is ran starting from ``'u'`` and marking nodes
     it finds in ``Z'``. The resulting nodes marked, ``Z''``, are returned.
-    Then BFS is ran again starting from ``v`` and marking nodes if they are
+    Then BFS is ran again starting from ``'v'`` and marking nodes if they are
     present in ``Z''``. The returned set of marked nodes is a minimal
     d-separating set.
 
@@ -223,7 +260,7 @@ def minimal_d_separator(G, u, v):
     if not nx.is_directed_acyclic_graph(G):
         raise nx.NetworkXError("graph should be directed acyclic")
 
-    union_xy = set(u).union(set(v))
+    union_xy = {u, v}
 
     if any(n not in G.nodes for n in union_xy):
         raise nx.NodeNotFound("one or more specified nodes not found in the graph")
@@ -232,7 +269,7 @@ def minimal_d_separator(G, u, v):
     x_anc = nx.ancestors(G, u)
     y_anc = nx.ancestors(G, v)
     D_anc_xy = x_anc.union(y_anc)
-    D_anc_xy = D_anc_xy.union((u, v))
+    D_anc_xy.update((u, v))
 
     # second, construct the moralization of the subgraph of Anc(X,Y)
     moral_G = nx.moral_graph(G.subgraph(D_anc_xy))
@@ -250,21 +287,21 @@ def minimal_d_separator(G, u, v):
 def is_minimal_d_separator(G, u, v, z):
     """Determine if a d-separating set is minimal.
 
-    A d-separating set in a DAG is a set that when conditioned on
-    blocks all paths between the two sets of variables. This function
-    verifies that a set is "minimal", meaning there is no possibly
-    d-separating set with fewer variables between the two nodes.
+    A d-separating set, 'z', in a DAG is a set of nodes that blocks
+    all paths between the two nodes, 'u' and 'v'. This function
+    verifies that a set is "minimal", meaning there is no smaller
+    d-separating set between the two nodes.
 
     Parameters
     ----------
     G : nx.DiGraph
         The graph.
     u : node
-        X node.
+        A node in the graph.
     v : node
-        Y node.
+        A node in the graph.
     z : Set
-        The separating set to check is minimal.
+        The set of nodes to check if it is a minimal d-separating set.
 
     Returns
     -------
@@ -274,9 +311,7 @@ def is_minimal_d_separator(G, u, v, z):
     Raises
     ------
     NetworkXError
-        The *d-separation* test is commonly used with directed
-        graphical models which are acyclic.  Accordingly, the algorithm
-        raises a :exc:`NetworkXError` if the input graph is not a DAG.
+        Raises a :exc:`NetworkXError` if the input graph is not a DAG.
 
     NodeNotFound
         If any of the input nodes are not found in the graph,
@@ -292,19 +327,19 @@ def is_minimal_d_separator(G, u, v, z):
     between two nodes. To verify that a d-separating set is minimal between
     two sets of nodes is not supported.
 
-    Uses the algorithm 2 presented in [1]_. The complexity of the algorithm
+    Uses algorithm 2 presented in [1]_. The complexity of the algorithm
     is :math:`O(|E_{An}^m|)`, where :math:`E_{An}^m` stands for the
     number of edges in the moralized graph of the sub-graph consisting
     of only the ancestors of ``u`` and ``v``.
 
     The algorithm works by constructing the moral graph consisting of just
-    the ancestors of ``u`` and ``v``. First, it performs BFS on the moral graph
-    starting from ``u`` and marking any nodes it encounters that is part of
-    the separating set, ``z``. If a node is marked, then it does not continue
+    the ancestors of ``'u'`` and ``'v'``. First, it performs BFS on the moral graph
+    starting from ``'u'`` and marking any nodes it encounters that is part of
+    the separating set, ``'z'``. If a node is marked, then it does not continue
     along that path. Then it performs BFS with markings is repeated on the
-    moral graph starting from ``v``. If at any stage, any node in ``z`` is
-    not marked, then ``z`` is considered not minimal. If the end of the algorithm
-    is reached, then ``z`` is minimal.
+    moral graph starting from ``'v'``. If at any stage, any node in ``'z'`` is
+    not marked, then ``'z'`` is considered not minimal. If the end of the algorithm
+    is reached, then ``'z'`` is minimal.
 
     For full details, see [1]_.
 
@@ -313,7 +348,7 @@ def is_minimal_d_separator(G, u, v, z):
     if not nx.is_directed_acyclic_graph(G):
         raise nx.NetworkXError("graph should be directed acyclic")
 
-    union_xy = set(u).union(set(v)).union(z)
+    union_xy = {u, v, z}
 
     if any(n not in G.nodes for n in union_xy):
         raise nx.NodeNotFound("one or more specified nodes not found in the graph")
@@ -328,7 +363,7 @@ def is_minimal_d_separator(G, u, v, z):
         return False
 
     D_anc_xy = x_anc.union(y_anc)
-    D_anc_xy = D_anc_xy.union((u, v))
+    D_anc_xy.update((u, v))
 
     # second, construct the moralization of the subgraph
     moral_G = nx.moral_graph(G.subgraph(D_anc_xy))
@@ -347,3 +382,49 @@ def is_minimal_d_separator(G, u, v, z):
         return False
 
     return True
+
+
+@not_implemented_for("directed")
+def _bfs_with_marks(G, start_node, check_set):
+    """Breadth-first-search with markings.
+
+    Performs BFS starting from ``start_node`` and whenever a node
+    inside ``check_set`` is met, it is "marked". Once a node is marked,
+    BFS does not continue along that path. The resulting marked nodes
+    are returned.
+
+    Parameters
+    ----------
+    G : nx.Graph
+        An undirected graph.
+    start_node : node
+        The start of the BFS.
+    check_set : set
+        The set of nodes to check against.
+
+    Returns
+    -------
+    marked : set
+        A set of nodes that were marked.
+    """
+    visited = dict()
+    marked = set()
+    queue = []
+
+    visited[start_node] = None
+    queue.append(start_node)
+    while queue:
+        m = queue.pop(0)
+
+        for nbr in G.neighbors(m):
+            if nbr not in visited:
+                # memoize where we visited so far
+                visited[nbr] = None
+
+                # mark the node in Z' and do not continue
+                # along that path
+                if nbr in check_set:
+                    marked.add(nbr)
+                else:
+                    queue.append(nbr)
+    return marked
