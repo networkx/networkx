@@ -24,12 +24,14 @@ colors = [
 # VF2++ initialization
 for node in G1.nodes():
     # color = colors[random.randrange(0, len(colors))]
-    G1.nodes[node]["label"] = "blue"
-    G2.nodes[node]["label"] = "blue"
+    G1.nodes[node]["label"] = -1
+    G1.nodes[node]["color"] = "blue"
+    G2.nodes[node]["label"] = -1
+    G2.nodes[node]["color"] = "blue"
 
 # VF2++
 t0 = time.time()
-m = VF2pp(G1, G2)
+m = VF2pp(G1, G2, node_labels=("label", "color"))
 print(f"VF2++ elapsed time: {time.time() - t0}")
 
 assert m

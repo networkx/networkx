@@ -65,7 +65,7 @@ class TestGraphISOVF2pp:
         G2 = nx.relabel_nodes(G1, mapped)
 
         assign_labels(G1, G2, mapped, same=True)
-        m = VF2pp(G1, G2, node_labels="label")
+        m = VF2pp(G1, G2, node_labels=("label"))
         assert m
 
         # Add edge making G1 symmetrical

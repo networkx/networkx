@@ -99,11 +99,19 @@ def precheck(G1, G2, G1_labels, G2_labels, node_labels):
         return False
 
     if not node_labels:
-        G1_labels.update({node: "green" for node in G1.nodes()})
-        G2_labels.update({node: "green" for node in G2.nodes()})
+        G1_labels.update({node: 0 for node in G1.nodes()})
+        G2_labels.update({node: 0 for node in G2.nodes()})
     else:
-        G1_labels.update(G1.nodes(data=node_labels))
-        G2_labels.update(G2.nodes(data=node_labels))
+        if isinstance(node_labels, tuple):
+            G1_labels.update(
+                {n: tuple((x, G1.nodes[n][x]) for x in node_labels) for n in G1.nodes()}
+            )
+            G2_labels.update(
+                {n: tuple((x, G2.nodes[n][x]) for x in node_labels) for n in G2.nodes()}
+            )
+        else:
+            G1_labels.update(G1.nodes(data=node_labels))
+            G2_labels.update(G2.nodes(data=node_labels))
 
     G1_nodes_per_label = {
         label: len(nodes) for label, nodes in nx.utils.groups(G1_labels).items()
@@ -179,6 +187,7 @@ def initialize_VF2pp(G1, G2, G1_labels, G2_labels):
         nx.utils.groups(G2_labels),
         nx.utils.groups({node: degree for node, degree in G2.degree()}),
     )
+
     state_params = StateParameters(
         dict(), dict(), set(), set(G1.nodes()), set(), set(G2.nodes())
     )
