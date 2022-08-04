@@ -167,9 +167,9 @@ def test_invalid_nodes_raise_error(asia_graph):
     with pytest.raises(nx.NodeNotFound):
         nx.d_separated(asia_graph, {0}, {1}, {2})
     with pytest.raises(nx.NodeNotFound):
-        nx.is_minimal_d_separator(asia_graph, {0}, {1}, {2})
+        nx.is_minimal_d_separator(asia_graph, 0, 1, {2})
     with pytest.raises(nx.NodeNotFound):
-        nx.minimal_d_separator(asia_graph, {0}, {1})
+        nx.minimal_d_separator(asia_graph, 0, 1)
 
 
 def test_minimal_d_separator():
