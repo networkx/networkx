@@ -109,6 +109,19 @@ def precheck(G1, G2, G1_labels, G2_labels, node_labels):
             G2_labels.update(
                 {n: tuple((x, G2.nodes[n][x]) for x in node_labels) for n in G2.nodes()}
             )
+        elif node_labels == "all":
+            G1_labels.update(
+                {
+                    n: tuple((l, G1.nodes[n][l]) for l in labels)
+                    for n, labels in dict(G1.nodes()).items()
+                }
+            )
+            G2_labels.update(
+                {
+                    n: tuple((l, G2.nodes[n][l]) for l in labels)
+                    for n, labels in dict(G2.nodes()).items()
+                }
+            )
         else:
             G1_labels.update(G1.nodes(data=node_labels))
             G2_labels.update(G2.nodes(data=node_labels))

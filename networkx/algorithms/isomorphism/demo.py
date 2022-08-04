@@ -22,19 +22,22 @@ colors = [
 ]
 
 # VF2++ initialization
+c = 0
 for node in G1.nodes():
-    # color = colors[random.randrange(0, len(colors))]
-    G1.nodes[node]["label"] = -1
+    if c == 40:
+        break
+    if c % 3 == 0:
+        G1.nodes[node]["label"] = -1
+        G2.nodes[node]["label"] = -1
     G1.nodes[node]["color"] = "blue"
-    G2.nodes[node]["label"] = -1
     G2.nodes[node]["color"] = "blue"
+    c += 1
 
-print(G1.nodes(data=("label", "color")))
 
 # VF2++
-# t0 = time.time()
-# m = VF2pp(G1, G2, node_labels=("label", "color"))
-# print(f"VF2++ elapsed time: {time.time() - t0}")
+t0 = time.time()
+m = VF2pp(G1, G2, node_labels="all")
+print(f"VF2++ elapsed time: {time.time() - t0}")
 
 # assert m
 
