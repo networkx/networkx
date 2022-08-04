@@ -29,12 +29,14 @@ for node in G1.nodes():
     G2.nodes[node]["label"] = -1
     G2.nodes[node]["color"] = "blue"
 
-# VF2++
-t0 = time.time()
-m = VF2pp(G1, G2, node_labels=("label", "color"))
-print(f"VF2++ elapsed time: {time.time() - t0}")
+print(G1.nodes(data=("label", "color")))
 
-assert m
+# VF2++
+# t0 = time.time()
+# m = VF2pp(G1, G2, node_labels=("label", "color"))
+# print(f"VF2++ elapsed time: {time.time() - t0}")
+
+# assert m
 
 # t0 = time.time()
 # nx.is_isomorphic(G1, G2)
