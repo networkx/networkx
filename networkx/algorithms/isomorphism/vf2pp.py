@@ -10,15 +10,19 @@ from networkx.algorithms.isomorphism.vf2pp_helpers.state import (
 )
 
 
-def VF2pp(G1, G2, node_labels=None, default_label=None):
+def vf2pp_mapping(G1, G2, node_labels=None, default_label=None):
     try:
-        mapping = next(VF2pp_solver(G1, G2, node_labels, default_label))
+        mapping = next(vf2pp_all_mappings(G1, G2, node_labels, default_label))
         return mapping
     except StopIteration:
         return None
 
 
-def VF2pp_solver(G1, G2, node_labels=None, default_label=None):
+def vf2pp_is_isomorphic(G1, G2, node_labels=None, default_label=None):
+    return True and not (not vf2pp_mapping(G1, G2, node_labels, default_label))
+
+
+def vf2pp_all_mappings(G1, G2, node_labels=None, default_label=None):
     """Implementation of the VF2++ algorithm.
 
     Parameters
@@ -60,7 +64,9 @@ def VF2pp_solver(G1, G2, node_labels=None, default_label=None):
         if feasibility(current_node, candidate, graph_params, state_params):
             if len(mapping) == G2.number_of_nodes() - 1:
                 mapping.update({current_node: candidate})
-                yield state_params.mapping
+                yield mapping
+                mapping.pop(current_node)
+                continue
 
             update_state(
                 current_node,
@@ -187,35 +193,3 @@ def initialize_VF2pp(G1, G2, G1_labels, G2_labels):
     stack = [(starting_node, iter(candidates))]
 
     return graph_params, state_params, node_order, stack
-
-
-def prepare_next(stack, node_order, state_params):
-    """Sets VF2++ after yielding the first mapping, so it can continue producing different mappings.
-    stack: list
-        Stack of the DFS, containing a node and its candidates
-
-    node_order: list
-        Contains the ordered nodes of G1, as obtained by the preprocessing
-
-    state_params: namedtuple
-        Contains all the State-related parameters:
-
-        mapping: dict
-            The mapping as extended so far. Maps nodes of G1 to nodes of G2
-
-        reverse_mapping: dict
-            The reverse mapping as extended so far. Maps nodes from G2 to nodes of G1. It's basically "mapping" reversed
-
-        T1, T2: set
-            Ti contains uncovered neighbors of covered nodes from Gi, i.e. nodes that are not in the mapping, but are
-            neighbors of nodes that are.
-
-        T1_out, T2_out: set
-            Ti_out contains all the nodes from Gi, that are neither in the mapping nor in Ti
-    """
-    entering_node, _ = stack.pop()
-    node_order.appendleft(entering_node)
-    popped_node1, _ = stack[-1]
-    popped_node2 = state_params.mapping[popped_node1]
-    state_params.mapping.pop(popped_node1)
-    state_params.reverse_mapping.pop(popped_node2)

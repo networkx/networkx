@@ -1,5 +1,5 @@
 import networkx as nx
-from networkx.algorithms.isomorphism.vf2pp import VF2pp
+from networkx.algorithms.isomorphism.vf2pp import vf2pp_mapping
 
 
 def assign_labels(G1, G2, mapped_nodes=None, same=False):
@@ -40,19 +40,19 @@ class TestGraphISOVF2pp:
         G = nx.Graph()
         H = nx.Graph()
 
-        m = VF2pp(G, H, None)
+        m = vf2pp_mapping(G, H, None)
         assert not m
 
     def test_first_graph_empty(self):
         G = nx.Graph()
         H = nx.Graph([(0, 1)])
-        m = VF2pp(G, H, None)
+        m = vf2pp_mapping(G, H, None)
         assert not m
 
     def test_second_graph_empty(self):
         G = nx.Graph([(0, 1)])
         H = nx.Graph()
-        m = VF2pp(G, H, None)
+        m = vf2pp_mapping(G, H, None)
         assert not m
 
     def test_custom_graph1_same_labels(self):
@@ -65,26 +65,26 @@ class TestGraphISOVF2pp:
         G2 = nx.relabel_nodes(G1, mapped)
 
         assign_labels(G1, G2, mapped, same=True)
-        m = VF2pp(G1, G2, node_labels="label")
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
 
         # Add edge making G1 symmetrical
         G1.add_edge(3, 7)
         G1.nodes[7]["label"] = "blue"
-        m = VF2pp(G1, G2, node_labels="label")
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert not m
 
         # Make G2 isomorphic to G1
         G2.add_edges_from([(mapped[3], "X"), (mapped[6], mapped[5])])
         G1.add_edge(4, 7)
         G2.nodes["X"]["label"] = "blue"
-        m = VF2pp(G1, G2, node_labels="label")
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
 
         # Re-structure maintaining isomorphism
         G1.remove_edges_from([(1, 4), (1, 3)])
         G2.remove_edges_from([(mapped[1], mapped[5]), (mapped[1], mapped[2])])
-        m = VF2pp(G1, G2, node_labels="label")
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
 
     def test_custom_graph1_different_labels(self):
@@ -98,7 +98,7 @@ class TestGraphISOVF2pp:
 
         assign_labels(G1, G2, mapped)
 
-        m = VF2pp(G1, G2, node_labels="label")
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
         assert m == mapped
 
@@ -112,7 +112,7 @@ class TestGraphISOVF2pp:
         G2 = nx.relabel_nodes(G1, mapped)
 
         assign_labels(G1, G2, mapped, same=True)
-        m = VF2pp(G1, G2, node_labels="label")
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
 
         # Obtain two isomorphic subgraphs from the graph
@@ -121,13 +121,13 @@ class TestGraphISOVF2pp:
         H1 = nx.Graph(G1.subgraph([2, 3, 4, 7]))
         H2 = nx.Graph(G2.subgraph([mapped[1], mapped[4], mapped[5], mapped[6]]))
 
-        m = VF2pp(H1, H2, node_labels="label")
+        m = vf2pp_mapping(H1, H2, node_labels="label")
         assert m
 
         # Add edges maintaining isomorphism
         H1.add_edges_from([(3, 7), (4, 7)])
         H2.add_edges_from([(mapped[1], mapped[6]), (mapped[4], mapped[6])])
-        m = VF2pp(H1, H2, node_labels="label")
+        m = vf2pp_mapping(H1, H2, node_labels="label")
         assert m
 
     def test_custom_graph2_different_labels(self):
@@ -148,13 +148,13 @@ class TestGraphISOVF2pp:
         G2.nodes["Z"]["label"] = G1.nodes[1]["label"]
         mapped.update({0: "Z"})
 
-        m = VF2pp(G1, G2, node_labels="label")
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
         assert m == mapped
 
         # Change the color of one of the nodes
         G2.nodes["Z"]["label"] = G1.nodes[2]["label"]
-        m = VF2pp(G1, G2, node_labels="label")
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert not m
 
         # Add an extra edge
@@ -162,12 +162,12 @@ class TestGraphISOVF2pp:
         G2.nodes["Z"]["label"] = "blue"
         G1.add_edge(0, 1)
 
-        m = VF2pp(G1, G2, node_labels="label")
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert not m
 
         # Add extra edge to both
         G2.add_edge("Z", "A")
-        m = VF2pp(G1, G2, node_labels="label")
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
         assert m == mapped
 
@@ -193,19 +193,19 @@ class TestGraphISOVF2pp:
         G2 = nx.relabel_nodes(G1, mapped)
 
         assign_labels(G1, G2, mapped, same=True)
-        m = VF2pp(G1, G2, node_labels="label")
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
 
         # Connect nodes maintaining symmetry
         G1.add_edges_from([(6, 9), (7, 8)])
         G2.add_edges_from([(mapped[6], mapped[8]), (mapped[7], mapped[9])])
-        m = VF2pp(G1, G2, node_labels="label")
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert not m
 
         # Make isomorphic
         G1.add_edges_from([(6, 8), (7, 9)])
         G2.add_edges_from([(mapped[6], mapped[9]), (mapped[7], mapped[8])])
-        m = VF2pp(G1, G2, node_labels="label")
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
 
         # Connect more nodes
@@ -216,13 +216,13 @@ class TestGraphISOVF2pp:
         G1.nodes[10]["label"] = "blue"
         G2.nodes["Z"]["label"] = "blue"
 
-        m = VF2pp(G1, G2, node_labels="label")
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
 
         # Connect the newly added node, to opposite sides of the graph
         G1.add_edges_from([(10, 1), (10, 5), (10, 8)])
         G2.add_edges_from([("Z", mapped[1]), ("Z", mapped[4]), ("Z", mapped[9])])
-        m = VF2pp(G1, G2, node_labels="label")
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
 
         # Get two subgraphs that are not isomorphic but are easy to make
@@ -232,7 +232,7 @@ class TestGraphISOVF2pp:
                 [mapped[4], mapped[5], mapped[6], mapped[7], mapped[8], mapped[9], "Z"]
             )
         )
-        m = VF2pp(H1, H2, node_labels="label")
+        m = vf2pp_mapping(H1, H2, node_labels="label")
         assert not m
 
         # Restructure both to make them isomorphic
@@ -240,13 +240,13 @@ class TestGraphISOVF2pp:
         H2.add_edges_from(
             [("Z", mapped[7]), (mapped[6], mapped[9]), (mapped[7], mapped[8])]
         )
-        m = VF2pp(H1, H2, node_labels="label")
+        m = vf2pp_mapping(H1, H2, node_labels="label")
         assert m
 
         # Add edges with opposite direction in each Graph
         H1.add_edge(3, 5)
         H2.add_edge(mapped[5], mapped[7])
-        m = VF2pp(H1, H2, node_labels="label")
+        m = vf2pp_mapping(H1, H2, node_labels="label")
         assert not m
 
     def test_custom_graph3_different_labels(self):
@@ -271,18 +271,18 @@ class TestGraphISOVF2pp:
         G2 = nx.relabel_nodes(G1, mapped)
 
         assign_labels(G1, G2, mapped)
-        m = VF2pp(G1, G2, node_labels="label")
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
         assert m == mapped
 
         # Add extra edge to G1
         G1.add_edge(1, 7)
-        m = VF2pp(G1, G2, node_labels="label")
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert not m
 
         # Compensate in G2
         G2.add_edge(9, 1)
-        m = VF2pp(G1, G2, node_labels="label")
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
         assert m == mapped
 
@@ -293,14 +293,14 @@ class TestGraphISOVF2pp:
         G2.nodes["K"]["label"] = "green"
         mapped.update({"A": "K"})
 
-        m = VF2pp(G1, G2, node_labels="label")
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
         assert m == mapped
 
         # Connect A to one side of G1 and K to the opposite
         G1.add_edge("A", 6)
         G2.add_edge("K", 5)
-        m = VF2pp(G1, G2, node_labels="label")
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert not m
 
         # Make the graphs symmetrical
@@ -308,7 +308,7 @@ class TestGraphISOVF2pp:
         G1.add_edge(2, 9)
         G2.add_edge(9, 3)
         G2.add_edge(8, 4)
-        m = VF2pp(G1, G2, node_labels="label")
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert not m
 
         # Assign same colors so the two opposite sides are identical
@@ -317,7 +317,7 @@ class TestGraphISOVF2pp:
             G1.nodes[node]["label"] = color
             G2.nodes[mapped[node]]["label"] = color
 
-        m = VF2pp(G1, G2, node_labels="label")
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
 
     def test_custom_graph4_different_labels(self):
@@ -359,7 +359,7 @@ class TestGraphISOVF2pp:
         G2 = nx.relabel_nodes(G1, mapped)
 
         assign_labels(G1, G2, mapped)
-        m = VF2pp(G1, G2, node_labels="label")
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m == mapped
 
     def test_custom_graph4_same_labels(self):
@@ -405,7 +405,7 @@ class TestGraphISOVF2pp:
             G1.nodes[node]["label"] = color
             G2.nodes[mapped[node]]["label"] = color
 
-        m = VF2pp(G1, G2, node_labels="label")
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
 
         # Add nodes of different label
@@ -414,12 +414,12 @@ class TestGraphISOVF2pp:
         G1.nodes[0]["label"] = "green"
         G2.nodes["z"]["label"] = "blue"
 
-        m = VF2pp(G1, G2, node_labels="label")
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert not m
 
         # Make the labels identical
         G2.nodes["z"]["label"] = "green"
-        m = VF2pp(G1, G2, node_labels="label")
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
 
         # Change the structure of the graphs, keeping them isomorphic
@@ -428,21 +428,21 @@ class TestGraphISOVF2pp:
         G2.add_edge("g", "l")
         G2.add_edge("m", "f")
 
-        m = VF2pp(G1, G2, node_labels="label")
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
 
         # Change the structure of the disconnected sub-graph, keeping it isomorphic
         G1.remove_node(13)
         G2.remove_node("d")
 
-        m = VF2pp(G1, G2, node_labels="label")
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
 
         # Connect the newly added node to the disconnected graph, which now is just a path of size 3
         G1.add_edge(0, 10)
         G2.add_edge("e", "z")
 
-        m = VF2pp(G1, G2, node_labels="label")
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
 
         # Connect the two disconnected sub-graphs, forming a single graph
@@ -451,7 +451,7 @@ class TestGraphISOVF2pp:
         G2.add_edge("a", "l")
         G2.add_edge("z", "j")
 
-        m = VF2pp(G1, G2, node_labels="label")
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
 
     def test_custom_graph5_same_labels(self):
@@ -476,7 +476,7 @@ class TestGraphISOVF2pp:
         G2 = nx.relabel_nodes(G1, mapped)
 
         assign_labels(G1, G2, mapped, same=True)
-        m = VF2pp(G1, G2, node_labels="label")
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
 
         # Add different edges in each graph, maintaining symmetry
@@ -491,7 +491,7 @@ class TestGraphISOVF2pp:
                 (mapped[2], mapped[4]),
             ]
         )
-        m = VF2pp(G1, G2, node_labels="label")
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
 
         # Obtain two different but isomorphic subgraphs from G1 and G2
@@ -501,19 +501,19 @@ class TestGraphISOVF2pp:
                 [mapped[1], mapped[4], mapped[8], mapped[7], mapped[3], mapped[5]]
             )
         )
-        m = VF2pp(H1, H2, node_labels="label")
+        m = vf2pp_mapping(H1, H2, node_labels="label")
         assert m
 
         # Delete corresponding node from the two graphs
         H1.remove_node(8)
         H2.remove_node(mapped[7])
-        m = VF2pp(H1, H2, node_labels="label")
+        m = vf2pp_mapping(H1, H2, node_labels="label")
         assert m
 
         # Re-orient, maintaining isomorphism
         H1.add_edge(1, 6)
         H1.remove_edge(3, 6)
-        m = VF2pp(H1, H2, node_labels="label")
+        m = vf2pp_mapping(H1, H2, node_labels="label")
         assert m
 
     def test_custom_graph5_different_labels(self):
@@ -541,7 +541,7 @@ class TestGraphISOVF2pp:
 
         assign_labels(G1, G2, mapped)
 
-        m = VF2pp(G1, G2, node_labels="label")
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
         assert m == mapped
 
@@ -554,7 +554,7 @@ class TestGraphISOVF2pp:
             G2.nodes[mapped[node]]["label"] = color2
             c += 1
 
-        m = VF2pp(G1, G2, node_labels="label")
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert not m
 
         # Get symmetrical sub-graphs of G1,G2 and compare them
@@ -566,7 +566,7 @@ class TestGraphISOVF2pp:
             H2.nodes[node2]["label"] = "red"
             c += 1
 
-        m = VF2pp(H1, H2, node_labels="label")
+        m = vf2pp_mapping(H1, H2, node_labels="label")
         assert m
 
     def test_disconnected_graph_all_same_labels(self):
@@ -577,7 +577,7 @@ class TestGraphISOVF2pp:
         G2 = nx.relabel_nodes(G1, mapped)
 
         assign_labels(G1, G2, same=True)
-        m = VF2pp(G1, G2, node_labels="label")
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
 
     def test_disconnected_graph_all_different_labels(self):
@@ -588,7 +588,7 @@ class TestGraphISOVF2pp:
         G2 = nx.relabel_nodes(G1, mapped)
 
         assign_labels(G1, G2, mapped)
-        m = VF2pp(G1, G2, node_labels="label")
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
         assert m == mapped
 
@@ -617,5 +617,5 @@ class TestGraphISOVF2pp:
             G1.nodes[n]["label"] = color
             G2.nodes[mapped[n]]["label"] = color
 
-        m = VF2pp(G1, G2, node_labels="label")
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m

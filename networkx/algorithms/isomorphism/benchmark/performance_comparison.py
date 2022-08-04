@@ -3,7 +3,7 @@ import time
 import matplotlib.pyplot as plt
 
 import networkx as nx
-from networkx.algorithms.isomorphism.vf2pp import VF2pp
+from networkx.algorithms.isomorphism.vf2pp import vf2pp_is_isomorphic
 
 
 class PerformanceComparison:
@@ -42,7 +42,7 @@ class PerformanceComparison:
                 G2.nodes[n]["label"] = "blue"
 
             t0 = time.time()
-            _ = VF2pp(G1, G2, node_labels="label")
+            _ = vf2pp_is_isomorphic(G1, G2, node_labels="label")
             dur1 = time.time() - t0
 
             t0 = time.time()
@@ -64,7 +64,7 @@ class PerformanceComparison:
                 G2.nodes[n]["label"] = "blue"
 
             t0 = time.time()
-            _ = VF2pp(G1, G2, node_labels="label")
+            _ = vf2pp_is_isomorphic(G1, G2, node_labels="label")
             dur1 = time.time() - t0
 
             t0 = time.time()
@@ -84,7 +84,7 @@ class PerformanceComparison:
                 G2.nodes[n]["label"] = "blue"
 
             t0 = time.time()
-            _ = VF2pp(G1, G2, node_labels="label")
+            _ = vf2pp_is_isomorphic(G1, G2, node_labels="label")
             dur1 = time.time() - t0
 
             t0 = time.time()

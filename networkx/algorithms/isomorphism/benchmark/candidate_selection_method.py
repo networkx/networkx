@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 import networkx as nx
 from networkx.algorithms.isomorphism.vf2pp import (
-    VF2pp,
+    vf2pp_is_isomorphic,
     feasibility,
     matching_order,
     precheck,
@@ -68,7 +68,7 @@ class PerformanceComparison:
             )
 
             t0 = time.time()
-            _ = VF2pp(G1, G2, node_labels="label")
+            _ = vf2pp_is_isomorphic(G1, G2, node_labels="label")
             dur1 = time.time() - t0
 
             t0 = time.time()
