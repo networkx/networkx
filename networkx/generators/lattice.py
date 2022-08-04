@@ -295,7 +295,7 @@ def hexagonal_lattice_graph(
 
     periodic : bool
         Whether to make a periodic grid by joining the boundary vertices.
-        For this to work `n` must be odd and both `n > 1` and `m > 1`.
+        For this to work `n` must be even and both `n > 1` and `m > 1`.
         The periodic connections create another row and column of hexagons
         so these graphs have fewer nodes as boundary nodes are identified.
 
