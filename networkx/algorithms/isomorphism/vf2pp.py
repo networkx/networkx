@@ -10,15 +10,15 @@ from networkx.algorithms.isomorphism.vf2pp_helpers.state import (
 )
 
 
-def VF2pp(G1, G2, node_labels=None):
+def VF2pp(G1, G2, node_labels=None, default_label=None):
     try:
-        mapping = next(VF2pp_solver(G1, G2, node_labels))
+        mapping = next(VF2pp_solver(G1, G2, node_labels, default_label))
         return mapping
     except StopIteration:
         return None
 
 
-def VF2pp_solver(G1, G2, node_labels=None):
+def VF2pp_solver(G1, G2, node_labels=None, default_label=None):
     """Implementation of the VF2++ algorithm.
 
     Parameters
@@ -36,7 +36,7 @@ def VF2pp_solver(G1, G2, node_labels=None):
     G1_labels, G2_labels = dict(), dict()
     if not G1 and not G2:
         return False
-    if not precheck(G1, G2, G1_labels, G2_labels, node_labels):
+    if not precheck(G1, G2, G1_labels, G2_labels, node_labels, default_label):
         return False
 
     graph_params, state_params, node_order, stack = initialize_VF2pp(
@@ -74,7 +74,7 @@ def VF2pp_solver(G1, G2, node_labels=None):
             matching_node += 1
 
 
-def precheck(G1, G2, G1_labels, G2_labels, node_labels):
+def precheck(G1, G2, G1_labels, G2_labels, node_labels, default_label):
     """Checks if all the pre-requisites are satisfied before calling the isomorphism solver.
 
     Notes
@@ -98,33 +98,8 @@ def precheck(G1, G2, G1_labels, G2_labels, node_labels):
     if sorted(d for n, d in G1.degree()) != sorted(d for n, d in G2.degree()):
         return False
 
-    if not node_labels:
-        G1_labels.update({node: 0 for node in G1.nodes()})
-        G2_labels.update({node: 0 for node in G2.nodes()})
-    else:
-        if isinstance(node_labels, tuple):
-            G1_labels.update(
-                {n: tuple((x, G1.nodes[n][x]) for x in node_labels) for n in G1.nodes()}
-            )
-            G2_labels.update(
-                {n: tuple((x, G2.nodes[n][x]) for x in node_labels) for n in G2.nodes()}
-            )
-        elif node_labels == "all":
-            G1_labels.update(
-                {
-                    n: tuple((l, G1.nodes[n][l]) for l in labels)
-                    for n, labels in dict(G1.nodes()).items()
-                }
-            )
-            G2_labels.update(
-                {
-                    n: tuple((l, G2.nodes[n][l]) for l in labels)
-                    for n, labels in dict(G2.nodes()).items()
-                }
-            )
-        else:
-            G1_labels.update(G1.nodes(data=node_labels))
-            G2_labels.update(G2.nodes(data=node_labels))
+    G1_labels.update(G1.nodes(data=node_labels, default=default_label))
+    G2_labels.update(G2.nodes(data=node_labels, default=default_label))
 
     G1_nodes_per_label = {
         label: len(nodes) for label, nodes in nx.utils.groups(G1_labels).items()
