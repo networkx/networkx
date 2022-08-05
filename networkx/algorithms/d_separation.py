@@ -242,17 +242,17 @@ def minimal_d_separator(G, u, v):
     two sets of nodes is not supported.
 
     Uses the algorithm presented in [1]_. The complexity of the algorithm
-    is :math:`O(|E_{An}^m|)`, where :math:`E_{An}^m` stands for the
+    is :math:`O(|E_{An}^m|)`, where :math:`|E_{An}^m|` stands for the
     number of edges in the moralized graph of the sub-graph consisting
     of only the ancestors of 'u' and 'v'. For full details, see [1]_.
 
     The algorithm works by constructing the moral graph consisting of just
-    the ancestors of ``'u'`` and ``'v'``. Then it constructs a candidate for
-    a separating set from the predecessors of ``'u'`` and ``'v'``. Starting
-    from this set, ``Z'``, BFS is ran starting from ``'u'`` and marking nodes
-    it finds in ``Z'``. The resulting nodes marked, ``Z''``, are returned.
-    Then BFS is ran again starting from ``'v'`` and marking nodes if they are
-    present in ``Z''``. The returned set of marked nodes is a minimal
+    the ancestors of `u` and `v`. Then it constructs a candidate for
+    a separating set  ``Z'`` from the predecessors of `u` and `v`.
+    Then BFS is run starting from `u` and marking nodes
+    found from ``Z'`` and calling those nodes ``Z''``.
+    Then BFS is run again starting from `v` and marking nodes if they are
+    present in ``Z''``. Those marked nodes are the returned minimal
     d-separating set.
 
     https://en.wikipedia.org/wiki/Bayesian_network#d-separation
@@ -287,8 +287,8 @@ def minimal_d_separator(G, u, v):
 def is_minimal_d_separator(G, u, v, z):
     """Determine if a d-separating set is minimal.
 
-    A d-separating set, 'z', in a DAG is a set of nodes that blocks
-    all paths between the two nodes, 'u' and 'v'. This function
+    A d-separating set, `z`, in a DAG is a set of nodes that blocks
+    all paths between the two nodes, `u` and `v`. This function
     verifies that a set is "minimal", meaning there is no smaller
     d-separating set between the two nodes.
 
@@ -300,7 +300,7 @@ def is_minimal_d_separator(G, u, v, z):
         A node in the graph.
     v : node
         A node in the graph.
-    z : Set
+    z : Set of nodes
         The set of nodes to check if it is a minimal d-separating set.
 
     Returns
@@ -328,18 +328,18 @@ def is_minimal_d_separator(G, u, v, z):
     two sets of nodes is not supported.
 
     Uses algorithm 2 presented in [1]_. The complexity of the algorithm
-    is :math:`O(|E_{An}^m|)`, where :math:`E_{An}^m` stands for the
+    is :math:`O(|E_{An}^m|)`, where :math:`|E_{An}^m|` stands for the
     number of edges in the moralized graph of the sub-graph consisting
     of only the ancestors of ``u`` and ``v``.
 
     The algorithm works by constructing the moral graph consisting of just
-    the ancestors of ``'u'`` and ``'v'``. First, it performs BFS on the moral graph
-    starting from ``'u'`` and marking any nodes it encounters that is part of
-    the separating set, ``'z'``. If a node is marked, then it does not continue
-    along that path. Then it performs BFS with markings is repeated on the
-    moral graph starting from ``'v'``. If at any stage, any node in ``'z'`` is
-    not marked, then ``'z'`` is considered not minimal. If the end of the algorithm
-    is reached, then ``'z'`` is minimal.
+    the ancestors of `u` and `v`. First, it performs BFS on the moral graph
+    starting from `u` and marking any nodes it encounters that are part of
+    the separating set, `z`. If a node is marked, then it does not continue
+    along that path. In the second stage, BFS with markings is repeated on the
+    moral graph starting from `v`. If at any stage, any node in `z` is
+    not marked, then `z` is considered not minimal. If the end of the algorithm
+    is reached, then `z` is minimal.
 
     For full details, see [1]_.
 
@@ -422,8 +422,7 @@ def _bfs_with_marks(G, start_node, check_set):
                 # memoize where we visited so far
                 visited[nbr] = None
 
-                # mark the node in Z' and do not continue
-                # along that path
+                # mark the node in Z' and do not continue along that path
                 if nbr in check_set:
                     marked.add(nbr)
                 else:
