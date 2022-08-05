@@ -9,6 +9,8 @@ from networkx.algorithms.isomorphism.vf2pp_helpers.state import (
     update_state,
 )
 
+__all__ = ["vf2pp_mapping", "vf2pp_is_isomorphic"]
+
 
 def vf2pp_mapping(G1, G2, node_labels=None, default_label=None):
     try:
