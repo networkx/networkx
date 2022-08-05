@@ -1151,6 +1151,10 @@ def dag_to_branching(G):
 def compute_v_structures(G):
     """Iterate through the graph to compute all v-structures.
 
+    V-structures are triples in the directed graph where
+    two parent nodes point to the same child and the two parent nodes
+    are not adjacent.
+
     Parameters
     ----------
     G : graph
@@ -1164,10 +1168,6 @@ def compute_v_structures(G):
 
     Notes
     -----
-    V-structures, or colliders are triples in the directed graph where
-    two parent nodes point to the same child and the two parent nodes
-    are not adjacent.
-
     https://en.wikipedia.org/wiki/Collider_(statistics)
     """
     for collider, preds in G.pred.items():

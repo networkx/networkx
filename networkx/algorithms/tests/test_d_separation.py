@@ -3,7 +3,6 @@ from itertools import combinations
 import pytest
 
 import networkx as nx
-from networkx.classes.digraph import DiGraph
 
 
 def path_graph():
@@ -179,7 +178,7 @@ def test_minimal_d_separator():
     # B -> F;
     # G -> E;
     edge_list = [("A", "B"), ("C", "B"), ("B", "D"), ("D", "E"), ("B", "F"), ("G", "E")]
-    G = DiGraph(edge_list)
+    G = nx.DiGraph(edge_list)
     assert not nx.d_separated(G, {"B"}, {"E"}, set())
 
     # minimal set of the corresponding graph
@@ -194,7 +193,7 @@ def test_minimal_d_separator():
     # create a graph A -> B -> C
     # B -> D -> C;
     edge_list = [("A", "B"), ("B", "C"), ("B", "D"), ("D", "C")]
-    G = DiGraph(edge_list)
+    G = nx.DiGraph(edge_list)
     assert not nx.d_separated(G, {"A"}, {"C"}, set())
     Zmin = nx.minimal_d_separator(G, "A", "C")
 

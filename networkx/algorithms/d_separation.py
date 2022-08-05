@@ -23,34 +23,34 @@ Before we overview, we introduce the following terminology to describe paths:
 - "blocked" path: A path between two nodes that cannot be traversed
 
 A **collider** is a triplet of nodes along a path that is like the following:
-``... u -> c <- v ...``), where 'c' is a common successor of 'u' and 'v'. A path
+``... u -> c <- v ...``), where 'c' is a common successor of ``u`` and ``v``. A path
 through a collider is considered "blocked". When
 a node that is a collider, or a descendant of a collider is included in
 the d-separating set, then the path through that collider node is "open". If the
 path through the collider node is open, then we will call this node an open collider.
 
-If a path between 'u' and 'v' contains a non-collider node that is included in the
+If a path between ``u`` and ``v`` contains a non-collider node that is included in the
 d-separation set, then that path is "blocked". In other words, the d-separation set
-blocks the path between 'u' and 'v'. If you include colliders, or their descendant
+blocks the path between ``u`` and ``v``. If you include colliders, or their descendant
 nodes in the d-separation set, then those colliders will open up, enabling a path
 to be traversed if it is not blocked some other way.
 
 Illustration of D-separation
 ----------------------------
 
-For a pair of two nodes, 'u' and 'v', all paths are considered open if
-there is a path between 'u' and 'v' that is not blocked. That means, there is an open
-path between 'u' and 'v' that does not encounter a collider, or a variable in the
+For a pair of two nodes, ``u`` and ``v``, all paths are considered open if
+there is a path between ``u`` and ``v`` that is not blocked. That means, there is an open
+path between ``u`` and ``v`` that does not encounter a collider, or a variable in the
 d-separating set.
 
 For example, if the d-separating set is the empty set, then the following paths are
-unblocked between 'u' and 'v':
+unblocked between ``u`` and ``v``:
 
 - u <- z -> v
 - u -> w -> ... -> z -> v
 
 If for example, 'z' is in the d-separating set, then 'z' blocks those paths
-between 'u' and 'v'.
+between ``u`` and ``v``.
 
 Colliders block a path by default if they and their descendants are not included
 in the d-separating set. An example of a path that is blocked when the d-separating
@@ -63,7 +63,7 @@ if 'z' or a descendant of 'z' is included in the d-separating set, then the path
 the collider at 'z' (... -> z <- ...) is now "open". 
 
 D-separation is concerned with blocking all paths between u and v. Therefore, a
-d-separating set between 'u' and 'v' is one where all paths are blocked.
+d-separating set between ``u`` and ``v`` is one where all paths are blocked.
 
 Examples
 --------
@@ -155,8 +155,11 @@ def d_separated(G, x, y, z):
 
     Notes
     -----
-    A d-separating set in a DAG is a set that when conditioned on
-    blocks all paths between the two sets of variables.
+    A d-separating set in a DAG is a set of nodes that
+    blocks all paths between the two sets. Nodes in `z`
+    block a path if they are part of the path and are not a collider,
+    or a descendant of a collider. A collider structure along a path
+    is ``... -> c <- ...`` where ``c`` is the collider node.
 
     https://en.wikipedia.org/wiki/Bayesian_network#d-separation
     """
@@ -260,9 +263,9 @@ def minimal_d_separator(G, u, v):
     if not nx.is_directed_acyclic_graph(G):
         raise nx.NetworkXError("graph should be directed acyclic")
 
-    union_xy = {u, v}
+    union_uv = {u, v}
 
-    if any(n not in G.nodes for n in union_xy):
+    if any(n not in G.nodes for n in union_uv):
         raise nx.NodeNotFound("one or more specified nodes not found in the graph")
 
     # first construct the set of ancestors of X and Y
@@ -348,10 +351,10 @@ def is_minimal_d_separator(G, u, v, z):
     if not nx.is_directed_acyclic_graph(G):
         raise nx.NetworkXError("graph should be directed acyclic")
 
-    union_xy = {u, v}
-    union_xy.update(z)
+    union_uv = {u, v}
+    union_uv.update(z)
 
-    if any(n not in G.nodes for n in union_xy):
+    if any(n not in G.nodes for n in union_uv):
         raise nx.NodeNotFound("one or more specified nodes not found in the graph")
 
     x_anc = nx.ancestors(G, u)
