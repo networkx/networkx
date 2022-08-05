@@ -1171,9 +1171,7 @@ def compute_v_structures(G):
     https://en.wikipedia.org/wiki/Collider_(statistics)
     """
     for collider, preds in G.pred.items():
-        predecessors_combinations = combinations(preds, r=2)
-
-        for common_parents in predecessors_combinations:
+        for common_parents in combinations(preds, r=2):
             # ensure that the colliders are the same
             common_parents = sorted(common_parents)
             yield (common_parents[0], collider, common_parents[1])
