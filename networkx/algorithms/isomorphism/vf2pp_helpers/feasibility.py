@@ -51,7 +51,7 @@ def _feasibility(node1, node2, graph_params, state_params):
         return False
 
     if isinstance(G1, nx.MultiGraph):
-        if not consistent_PT(node1, node2, graph_params, state_params):
+        if not _consistent_PT(node1, node2, graph_params, state_params):
             return False
 
     return True
@@ -125,7 +125,7 @@ def _cut_PT(u, v, graph_params, state_params):
     return False
 
 
-def consistent_PT(u, v, graph_params, state_params):
+def _consistent_PT(u, v, graph_params, state_params):
     """Checks the consistency of extending the mapping using the current node pair.
 
     Parameters

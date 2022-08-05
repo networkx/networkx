@@ -73,7 +73,7 @@ def vf2pp_all_mappings(G1, G2, node_labels=None, default_label=None):
     -------
     Node mapping, if the two graphs are isomorphic. None otherwise.
     """
-    G1_labels, G2_labels = dict(), dict()
+    G1_labels, G2_labels = {}, {}
     if not G1 and not G2:
         return False
     if not _precheck(G1, G2, G1_labels, G2_labels, node_labels, default_label):

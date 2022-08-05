@@ -3,7 +3,7 @@ import collections
 import networkx as nx
 from networkx.algorithms.isomorphism.vf2pp import _feasibility
 from networkx.algorithms.isomorphism.vf2pp_helpers.feasibility import (
-    consistent_PT,
+    _consistent_PT,
     _cut_PT,
 )
 
@@ -55,7 +55,7 @@ class TestGraphISOFeasibility:
             {0: "a", 1: "b", 2: "c"}, {"a": 0, "b": 1, "c": 2}, None, None, None, None
         )
         u, v = 3, "k"
-        assert consistent_PT(u, v, gparams, sparams)
+        assert _consistent_PT(u, v, gparams, sparams)
 
     def test_const_no_covered_neighbors(self):
         G1 = nx.Graph([(0, 1), (1, 2), (3, 4), (3, 5)])
@@ -65,7 +65,7 @@ class TestGraphISOFeasibility:
             {0: "a", 1: "b", 2: "c"}, {"a": 0, "b": 1, "c": 2}, None, None, None, None
         )
         u, v = 3, "k"
-        assert consistent_PT(u, v, gparams, sparams)
+        assert _consistent_PT(u, v, gparams, sparams)
 
     def test_const_mixed_covered_uncovered_neighbors(self):
         G1 = nx.Graph([(0, 1), (1, 2), (3, 0), (3, 2), (3, 4), (3, 5)])
@@ -77,7 +77,7 @@ class TestGraphISOFeasibility:
             {0: "a", 1: "b", 2: "c"}, {"a": 0, "b": 1, "c": 2}, None, None, None, None
         )
         u, v = 3, "k"
-        assert consistent_PT(u, v, gparams, sparams)
+        assert _consistent_PT(u, v, gparams, sparams)
 
     def test_const_fail_cases(self):
         G1 = nx.Graph(
@@ -116,7 +116,7 @@ class TestGraphISOFeasibility:
             None,
         )
         u, v = 10, "k"
-        assert consistent_PT(u, v, gparams, sparams)
+        assert _consistent_PT(u, v, gparams, sparams)
 
         """
         Delete one uncovered neighbor of u. Notice how it still passes the test. Two reasons for this:
@@ -127,26 +127,26 @@ class TestGraphISOFeasibility:
            of the candidates with T1, T2 (in which belongs the node we just deleted). 
         """
         G1.remove_node(6)
-        assert consistent_PT(u, v, gparams, sparams)
+        assert _consistent_PT(u, v, gparams, sparams)
 
         # Add one more covered neighbor of u in G1
         G1.add_edge(u, 2)
-        assert not consistent_PT(u, v, gparams, sparams)
+        assert not _consistent_PT(u, v, gparams, sparams)
 
         # Compensate in G2
         G2.add_edge(v, "c")
-        assert consistent_PT(u, v, gparams, sparams)
+        assert _consistent_PT(u, v, gparams, sparams)
 
         # Add one more covered neighbor of v in G2
         G2.add_edge(v, "x")
         G1.add_node(7)
         sparams.mapping.update({7: "x"})
         sparams.reverse_mapping.update({"x": 7})
-        assert not consistent_PT(u, v, gparams, sparams)
+        assert not _consistent_PT(u, v, gparams, sparams)
 
         # Compendate in G1
         G1.add_edge(u, 7)
-        assert consistent_PT(u, v, gparams, sparams)
+        assert _consistent_PT(u, v, gparams, sparams)
 
     def test_cut_inconsistent_labels(self):
         G1 = nx.Graph(
@@ -542,18 +542,18 @@ class TestGraphISOFeasibility:
 
         # Consistency check fails, while the cutting rules are satisfied!
         assert not _cut_PT(u, v, gparams, sparams)
-        assert not consistent_PT(u, v, gparams, sparams)
+        assert not _consistent_PT(u, v, gparams, sparams)
 
         # Compensate in G1 and make it consistent
         G1.remove_edge(20, 2)
         G1.add_edge(20, 3)
         assert not _cut_PT(u, v, gparams, sparams)
-        assert consistent_PT(u, v, gparams, sparams)
+        assert _consistent_PT(u, v, gparams, sparams)
 
         # ONLY fail the cutting check
         G2.add_edge(v, mapped[10])
         assert _cut_PT(u, v, gparams, sparams)
-        assert consistent_PT(u, v, gparams, sparams)
+        assert _consistent_PT(u, v, gparams, sparams)
 
     def test_feasibility_different_labels(self):
         G1 = nx.Graph(
@@ -641,19 +641,19 @@ class TestGraphISOFeasibility:
 
         # Consistency check fails, while the cutting rules are satisfied!
         assert not _cut_PT(u, v, gparams, sparams)
-        assert not consistent_PT(u, v, gparams, sparams)
+        assert not _consistent_PT(u, v, gparams, sparams)
 
         # Compensate in G1 and make it consistent
         G1.remove_edge(20, 2)
         G1.add_edge(20, 3)
         l1.update({3: "green"})
         assert not _cut_PT(u, v, gparams, sparams)
-        assert consistent_PT(u, v, gparams, sparams)
+        assert _consistent_PT(u, v, gparams, sparams)
 
         # ONLY fail the cutting check
         l1.update({5: "red"})
         assert _cut_PT(u, v, gparams, sparams)
-        assert consistent_PT(u, v, gparams, sparams)
+        assert _consistent_PT(u, v, gparams, sparams)
 
 
 class TestMultiGraphISOFeasibility:
@@ -702,7 +702,7 @@ class TestMultiGraphISOFeasibility:
             {0: "a", 1: "b", 2: "c"}, {"a": 0, "b": 1, "c": 2}, None, None, None, None
         )
         u, v = 3, "k"
-        assert consistent_PT(u, v, gparams, sparams)
+        assert _consistent_PT(u, v, gparams, sparams)
 
     def test_const_no_covered_neighbors(self):
         G1 = nx.MultiGraph([(0, 1), (0, 1), (1, 2), (3, 4), (3, 4), (3, 5)])
@@ -712,7 +712,7 @@ class TestMultiGraphISOFeasibility:
             {0: "a", 1: "b", 2: "c"}, {"a": 0, "b": 1, "c": 2}, None, None, None, None
         )
         u, v = 3, "k"
-        assert consistent_PT(u, v, gparams, sparams)
+        assert _consistent_PT(u, v, gparams, sparams)
 
     def test_const_mixed_covered_uncovered_neighbors(self):
         G1 = nx.MultiGraph(
@@ -736,7 +736,7 @@ class TestMultiGraphISOFeasibility:
             {0: "a", 1: "b", 2: "c"}, {"a": 0, "b": 1, "c": 2}, None, None, None, None
         )
         u, v = 3, "k"
-        assert consistent_PT(u, v, gparams, sparams)
+        assert _consistent_PT(u, v, gparams, sparams)
 
     def test_const_fail_cases(self):
         G1 = nx.MultiGraph(
@@ -769,7 +769,7 @@ class TestMultiGraphISOFeasibility:
             None,
         )
         u, v = 10, "k"
-        assert consistent_PT(u, v, gparams, sparams)
+        assert _consistent_PT(u, v, gparams, sparams)
 
         """
         Delete one uncovered neighbor of u. Notice how it still passes the test. Two reasons for this:
@@ -780,42 +780,42 @@ class TestMultiGraphISOFeasibility:
            of the candidates with T1, T2 (in which belongs the node we just deleted). 
         """
         G1.remove_node(6)
-        assert consistent_PT(u, v, gparams, sparams)
+        assert _consistent_PT(u, v, gparams, sparams)
 
         # Add one more covered neighbor of u in G1
         G1.add_edge(u, 2)
-        assert not consistent_PT(u, v, gparams, sparams)
+        assert not _consistent_PT(u, v, gparams, sparams)
 
         # Compensate in G2
         G2.add_edge(v, "c")
-        assert consistent_PT(u, v, gparams, sparams)
+        assert _consistent_PT(u, v, gparams, sparams)
 
         # Add one more covered neighbor of v in G2
         G2.add_edge(v, "x")
         G1.add_node(7)
         sparams.mapping.update({7: "x"})
         sparams.reverse_mapping.update({"x": 7})
-        assert not consistent_PT(u, v, gparams, sparams)
+        assert not _consistent_PT(u, v, gparams, sparams)
 
         # Compendate in G1
         G1.add_edge(u, 7)
-        assert consistent_PT(u, v, gparams, sparams)
+        assert _consistent_PT(u, v, gparams, sparams)
 
         # Delete an edge between u and a covered neighbor
         G1.remove_edges_from([(u, 0), (u, 0)])
-        assert not consistent_PT(u, v, gparams, sparams)
+        assert not _consistent_PT(u, v, gparams, sparams)
 
         # Compensate in G2
         G2.remove_edges_from([(v, mapped[0]), (v, mapped[0])])
-        assert consistent_PT(u, v, gparams, sparams)
+        assert _consistent_PT(u, v, gparams, sparams)
 
         # Remove an edge between v and a covered neighbor
         G2.remove_edge(v, mapped[3])
-        assert not consistent_PT(u, v, gparams, sparams)
+        assert not _consistent_PT(u, v, gparams, sparams)
 
         # Compensate in G1
         G1.remove_edge(u, 3)
-        assert consistent_PT(u, v, gparams, sparams)
+        assert _consistent_PT(u, v, gparams, sparams)
 
     def test_cut_same_labels(self):
         G1 = nx.MultiGraph(
@@ -1170,23 +1170,23 @@ class TestMultiGraphISOFeasibility:
 
         # Consistency check fails, while the cutting rules are satisfied!
         assert not _cut_PT(u, v, gparams, sparams)
-        assert not consistent_PT(u, v, gparams, sparams)
+        assert not _consistent_PT(u, v, gparams, sparams)
 
         # Compensate in G1 and make it consistent
         G1.remove_edges_from([(20, 3), (20, 3)])
         G1.add_edges_from([(20, 2), (20, 2)])
         assert not _cut_PT(u, v, gparams, sparams)
-        assert consistent_PT(u, v, gparams, sparams)
+        assert _consistent_PT(u, v, gparams, sparams)
 
         # ONLY fail the cutting check
         G2.add_edges_from([(v, mapped[10])] * 5)
         assert _cut_PT(u, v, gparams, sparams)
-        assert consistent_PT(u, v, gparams, sparams)
+        assert _consistent_PT(u, v, gparams, sparams)
 
         # Pass all tests
         G1.add_edges_from([(u, 10)] * 5)
         assert not _cut_PT(u, v, gparams, sparams)
-        assert consistent_PT(u, v, gparams, sparams)
+        assert _consistent_PT(u, v, gparams, sparams)
 
     def test_feasibility_different_labels(self):
         G1 = nx.MultiGraph(
@@ -1286,16 +1286,16 @@ class TestMultiGraphISOFeasibility:
 
         # Consistency check fails, while the cutting rules are satisfied!
         assert not _cut_PT(u, v, gparams, sparams)
-        assert not consistent_PT(u, v, gparams, sparams)
+        assert not _consistent_PT(u, v, gparams, sparams)
 
         # Compensate in G1 and make it consistent
         G1.remove_edges_from([(20, 2), (20, 2)])
         G1.add_edges_from([(20, 3), (20, 3)])
         l1.update({3: "green"})
         assert not _cut_PT(u, v, gparams, sparams)
-        assert consistent_PT(u, v, gparams, sparams)
+        assert _consistent_PT(u, v, gparams, sparams)
 
         # ONLY fail the cutting check
         l1.update({5: "red"})
         assert _cut_PT(u, v, gparams, sparams)
-        assert consistent_PT(u, v, gparams, sparams)
+        assert _consistent_PT(u, v, gparams, sparams)
