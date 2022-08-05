@@ -3,8 +3,8 @@ import time
 import networkx as nx
 
 # Graph initialization
-G1 = nx.gnp_random_graph(50, 0.6, 42)
-G2 = nx.gnp_random_graph(50, 0.6, 42)
+G1 = nx.gnp_random_graph(50, 0.6, seed=42)
+G2 = nx.gnp_random_graph(50, 0.6, seed=42)
 
 colors = [
     "white",
