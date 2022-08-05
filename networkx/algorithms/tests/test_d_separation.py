@@ -133,7 +133,7 @@ def test_undirected_graphs_are_not_supported():
     """
     Test that undirected graphs are not supported.
 
-    d-separation and its related algorithms does not apply in
+    d-separation and its related algorithms do not apply in
     the case of undirected graphs.
     """
     g = nx.path_graph(3, nx.Graph)
