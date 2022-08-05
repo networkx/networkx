@@ -1159,7 +1159,7 @@ def compute_v_structures(G):
     Returns
     -------
     vstructs : iterator of tuples
-        The v structures within the graph. Each set has a 3-tuple with the
+        The v structures within the graph. Each v structure is a 3-tuple with the
         parent, collider, and other parent.
 
     Notes
