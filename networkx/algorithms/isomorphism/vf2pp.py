@@ -18,13 +18,14 @@ def vf2pp_mapping(G1, G2, node_labels=None, default_label=None):
     Parameters
     ----------
     G1,G2: NetworkX Graph or MultiGraph instances.
-        The two graphs to check for isomorphism or monomorphism.
+        The two graphs to check for isomorphism.
 
-    node_labels: Label name
-        The label name of all nodes
+    node_labels: string or None
+        The node attribute name within G that indicates node labels.
+        If None, then no node labels are used to compute isomorphisms.
 
-    default_label: Label name
-        Let the user pick a default label value
+    default_label: string
+        The default label for nodes that have no label attribute value.
     """
     try:
         mapping = next(vf2pp_all_mappings(G1, G2, node_labels, default_label))
