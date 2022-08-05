@@ -1,7 +1,7 @@
-from networkx.algorithms.isomorphism.vf2pp_helpers.candidates import find_candidates
+from networkx.algorithms.isomorphism.vf2pp_helpers.candidates import _find_candidates
 
 
-def update_Tinout(new_node1, new_node2, graph_params, state_params):
+def _update_Tinout(new_node1, new_node2, graph_params, state_params):
     """Updates the Ti/Ti_out (i=1,2) when a new node pair u-v is added to the mapping.
 
     Notes
@@ -61,7 +61,7 @@ def update_Tinout(new_node1, new_node2, graph_params, state_params):
     T2_out.difference_update(uncovered_neighbors_G2)
 
 
-def restore_Tinout(popped_node1, popped_node2, graph_params, state_params):
+def _restore_Tinout(popped_node1, popped_node2, graph_params, state_params):
     """Restores the previous version of Ti/Ti_out when a node pair is deleted from the mapping.
 
     Parameters
@@ -130,7 +130,7 @@ def restore_Tinout(popped_node1, popped_node2, graph_params, state_params):
         T2_out.add(popped_node2)
 
 
-def update_state(
+def _update_state(
     node, candidate, matching_node, order, stack, graph_params, state_params
 ):
     """Updates all the necessary parameters of VF2++, after a successful node matching
@@ -176,14 +176,14 @@ def update_state(
     """
     state_params.mapping.update({node: candidate})
     state_params.reverse_mapping.update({candidate: node})
-    update_Tinout(node, candidate, graph_params, state_params)
+    _update_Tinout(node, candidate, graph_params, state_params)
 
     next_node = order[matching_node]
-    candidates = find_candidates(next_node, graph_params, state_params)
+    candidates = _find_candidates(next_node, graph_params, state_params)
     stack.append((next_node, iter(candidates)))
 
 
-def restore_state(stack, graph_params, state_params):
+def _restore_state(stack, graph_params, state_params):
     """Restores the previous DFS state, when a node pair is popped from the mapping, in case of exhaustion of the
     candidates for a specific node
 
@@ -222,4 +222,4 @@ def restore_state(stack, graph_params, state_params):
     state_params.mapping.pop(popped_node1)
     state_params.reverse_mapping.pop(popped_node2)
 
-    restore_Tinout(popped_node1, popped_node2, graph_params, state_params)
+    _restore_Tinout(popped_node1, popped_node2, graph_params, state_params)

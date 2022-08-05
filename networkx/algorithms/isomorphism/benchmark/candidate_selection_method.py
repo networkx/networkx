@@ -6,12 +6,12 @@ import matplotlib.pyplot as plt
 import networkx as nx
 from networkx.algorithms.isomorphism.vf2pp import (
     vf2pp_is_isomorphic,
-    feasibility,
-    matching_order,
-    precheck,
-    restore_state,
+    _feasibility,
+    _matching_order,
+    _precheck,
+    _restore_state,
 )
-from networkx.algorithms.isomorphism.vf2pp_helpers.state import update_Tinout
+from networkx.algorithms.isomorphism.vf2pp_helpers.state import _update_Tinout
 
 
 class PerformanceComparison:
@@ -90,7 +90,7 @@ def VF2pp_default_candidates(G1, G2, G1_labels, G2_labels):
 def VF2pp_solver_default_candidates(G1, G2, G1_labels, G2_labels):
     if not G1 and not G2:
         return False
-    if not precheck(G1, G2, G1_labels, G2_labels):
+    if not _precheck(G1, G2, G1_labels, G2_labels):
         return False
 
     graph_params, state_params, node_order, stack = initialize_VF2pp_default_candidates(
@@ -108,10 +108,10 @@ def VF2pp_solver_default_candidates(G1, G2, G1_labels, G2_labels):
             stack.pop()
             matching_node -= 1
             if stack:
-                restore_state(stack, graph_params, state_params)
+                _restore_state(stack, graph_params, state_params)
             continue
 
-        if feasibility(current_node, candidate, graph_params, state_params):
+        if _feasibility(current_node, candidate, graph_params, state_params):
             if len(mapping) == G2.number_of_nodes() - 1:
                 mapping.update({current_node: candidate})
                 yield state_params.mapping
@@ -168,7 +168,7 @@ def initialize_VF2pp_default_candidates(G1, G2, G1_labels, G2_labels):
         dict(), dict(), set(), set(G1.nodes()), set(), set(G2.nodes())
     )
 
-    node_order = matching_order(graph_params)
+    node_order = _matching_order(graph_params)
 
     starting_node = node_order[0]
     candidates = find_default_candidates(graph_params, state_params)
@@ -182,7 +182,7 @@ def update_state_default_candidates(
 ):
     state_params.mapping.update({node: candidate})
     state_params.reverse_mapping.update({candidate: node})
-    update_Tinout(node, candidate, graph_params, state_params)
+    _update_Tinout(node, candidate, graph_params, state_params)
 
     next_node = order[matching_node]
     candidates = find_default_candidates(graph_params, state_params)

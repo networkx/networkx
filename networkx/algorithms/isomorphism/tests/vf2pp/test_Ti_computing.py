@@ -2,8 +2,8 @@ import collections
 
 import networkx as nx
 from networkx.algorithms.isomorphism.vf2pp_helpers.state import (
-    restore_Tinout,
-    update_Tinout,
+    _restore_Tinout,
+    _update_Tinout,
 )
 
 
@@ -86,7 +86,7 @@ class TestTinoutUpdating:
             correct_T1, correct_T2, correct_T1_out, correct_T2_out = self.compute_Ti(
                 self.G, self.G
             )
-            update_Tinout(node, node, graph_params, state_params)
+            _update_Tinout(node, node, graph_params, state_params)
             assert correct_T1 == self.T1
             assert correct_T2 == self.T2
             assert correct_T1_out == self.T1_out
@@ -118,7 +118,7 @@ class TestTinoutUpdating:
             self.reverse_mapping.pop(node)
 
             T1, T2, T1_out, T2_out = self.compute_Ti(self.G, self.G)
-            restore_Tinout(node, node, graph_params, state_params)
+            _restore_Tinout(node, node, graph_params, state_params)
             assert self.T1 == T1
             assert self.T2 == T2
             assert self.T1_out == T1_out
