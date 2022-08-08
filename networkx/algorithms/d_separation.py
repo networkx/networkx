@@ -29,14 +29,12 @@ a node that is a collider, or a descendant of a collider is included in
 the d-separating set, then the path through that collider node is "open". If the
 path through the collider node is open, then we will call this node an open collider.
 
-If a path between ``u`` and ``v`` contains a non-collider node that is included in the
-d-separation set, then that path is "blocked". In other words, the d-separation set
-blocks the path between ``u`` and ``v``. If you include colliders, or their descendant
-nodes in the d-separation set, then those colliders will open up, enabling a path
-to be traversed if it is not blocked some other way.
+The d-separation set blocks the paths between ``u`` and ``v``. If you include colliders,
+or their descendant nodes in the d-separation set, then those colliders will open up,
+enabling a path to be traversed if it is not blocked some other way.
 
-Illustration of D-separation
-----------------------------
+Illustration of D-separation with examples
+------------------------------------------
 
 For a pair of two nodes, ``u`` and ``v``, all paths are considered open if
 there is a path between ``u`` and ``v`` that is not blocked. That means, there is an open
