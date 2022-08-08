@@ -6,7 +6,7 @@ and has been developed with the help of many others. Thanks to everyone who has
 improved NetworkX by contributing code, bug reports (and fixes), documentation,
 and input on design, features, and the future of NetworkX.
 
-.. include:: team.rst 
+.. include:: team.rst
 
 Contributors
 ------------
@@ -84,17 +84,17 @@ to add your name to the bottom of the list.
 - Robert Gmyr, Github: `gmyr <https://github.com/gmyr>`_
 - Mike Trenfield
 - Jon Crall, Github: `Erotemic <https://github.com/Erotemic>`_
-- Issa Moradnejad, Github `<https://github.com/Moradnejad>`_, LinkedIn `<https://linkedin.com/in/moradnejad/>`_
+- Issa Moradnejad, Github: `Moradnejad <https://github.com/Moradnejad>`_, LinkedIn: `Issa Moradnejad <https://linkedin.com/in/moradnejad/>`_
 - Brian Kiefer, Github: `bkief <https://github.com/bkief>`_
 - Julien Klaus
 - Peter C. Kroon, Github: `pckroon <https://github.com/pckroon>`_
 - Weisheng Si, Github: `ws4u <https://github.com/ws4u>`_
 - Haakon H. Rød, Gitlab: `haakonhr <https://gitlab.com/haakonhr>`_, `<https://haakonhr.gitlab.io>`_
-- Efraim Rodrigues, GitHub `<https://github.com/efraimrodrigues>`_, LinkedIn `<https://linkedin.com/in/efraim-rodrigues/>`_
+- Efraim Rodrigues, GitHub: `efraimrodrigues <https://github.com/efraimrodrigues>`_, LinkedIn: `efraim-rodrigues <https://linkedin.com/in/efraim-rodrigues/>`_
 - Erwan Le Merrer
 - Søren Fuglede Jørgensen, GitHub: `fuglede <https://github.com/fuglede>`_
-- Salim BELHADDAD, LinkedIn `<https://www.linkedin.com/in/salymdotme/>`_
-- Jangwon Yie, GitHub `<https://github.com/jangwon-yie>`_, LinkedIn `<https://www.linkedin.com/in/jangwon-yie-a7960065/>`_
+- Salim BELHADDAD, LinkedIn: `salymdotme <https://www.linkedin.com/in/salymdotme/>`_
+- Jangwon Yie, GitHub: `jangwon-yie <https://github.com/jangwon-yie>`_, LinkedIn: `jangwon-yie-a7960065 <https://www.linkedin.com/in/jangwon-yie-a7960065/>`_
 - ysitu
 - Tomas Gavenciak
 - Luca Baldesi
@@ -134,16 +134,17 @@ to add your name to the bottom of the list.
 - Alessandro Luongo
 - Huston Hedinger
 - Oleguer Sagarra
-- Kazimierz Wojciechowski, GitHub `<https://github.com/kazimierz-256>`_, LinkedIn `<https://linkedin.com/in/wojciechowski-kazimierz/>`_
-- Gaetano Pietro Paolo Carpinato, Github `<https://github.com/Carghaez>`_, LinkedIn `<https://linkedin.com/in/gaetanocarpinato/>`_
-- Arun Nampally, GitHub `<https://github.com/arunwise>`_, LinkedIn `<https://www.linkedin.com/in/arun-nampally-b57845b7/>`_
+- Kazimierz Wojciechowski, Github: `kazimierz-256 <https://github.com/kazimierz-256>`_, LinkedIn: `wojciechowski-kazimierz <https://linkedin.com/in/wojciechowski-kazimierz/>`_
+- Gaetano Pietro Paolo Carpinato, Github: `Carghaez <https://github.com/Carghaez>`_, LinkedIn: `gaetanocarpinato <https://linkedin.com/in/gaetanocarpinato/>`_
+- Arun Nampally, Github: `arunwise <https://github.com/arunwise>`_, LinkedIn: `arun-nampally-b57845b7 <https://www.linkedin.com/in/arun-nampally-b57845b7/>`_
 - Ryan Duve
-- Shashi Prakash Tripathi, Github `<https://github.com/itsshavar>`_,LinkedIn `<https://www.linkedin.com/in/itsshashitripathi/>`_
+- Shashi Prakash Tripathi, Github: `itsshavar <https://github.com/itsshavar>`_, LinkedIn: `itsshashitripathi <https://www.linkedin.com/in/itsshashitripathi/>`_
 - Danny Niquette
 - James Trimble, Github: `jamestrimble <https://github.com/jamestrimble>`_
-- Matthias Bruhns, Github `<https://github.com/mbruhns>`_ 
+- Matthias Bruhns, Github: `mbruhns <https://github.com/mbruhns>`_
 - Philip Boalch
 - Matt Schwennesen, Github: `mjschwenne <https://github.com/mjschwenne>`_
+- Andrew Knyazev, Github: `lobpcg <https://github.com/lobpcg>`_, LinkedIn: `andrew-knyazev <https://www.linkedin.com/in/andrew-knyazev>`_
 
 A supplementary (but still incomplete) list of contributors is given by the
 list of names that have commits in ``networkx``'s
