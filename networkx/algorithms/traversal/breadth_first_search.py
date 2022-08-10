@@ -1,6 +1,7 @@
 """Basic algorithms for breadth-first searching the nodes of a graph."""
 import math
 from collections import deque
+from cProfile import label
 
 import networkx as nx
 
@@ -34,17 +35,13 @@ def generic_bfs_edges(G, source, neighbors=None, depth_limit=None, sort_neighbor
     neighbors : function
         A function that takes a newly visited node of the graph as input
         and returns an *iterator* (not just a list) of nodes that are
-        neighbors of that node. If not specified, this is just the
-        ``G.neighbors`` method, but in general it can be any function
+        neighbors of that node with custom ordering. If not specified, this is
+        just the``G.neighbors`` method, but in general it can be any function
         that returns an iterator over some or all of the neighbors of a
         given node, in any order.
 
     depth_limit : int, optional(default=len(G))
         Specify the maximum search depth.
-
-    sort_neighbors : function
-        A function that takes the list of neighbors of given node as input, and
-        returns an *iterator* over these neighbors but with custom ordering.
 
     Yields
     ------
@@ -72,6 +69,16 @@ def generic_bfs_edges(G, source, neighbors=None, depth_limit=None, sort_neighbor
     if neighbors is None:
         neighbors = G.neighbors
     if sort_neighbors is not None:
+        import warnings
+
+        warnings.warn(
+            (
+                "sort_neighbors parameter is deprecated and will be removed "
+                "in NetworkX 3.0, use neighbors parameter instead."
+            ),
+            DeprecationWarning,
+            stacklevel=2,
+        )
         _neighbors = neighbors
         neighbors = lambda node: iter(sort_neighbors(_neighbors(node)))
     if depth_limit is None:
@@ -174,7 +181,13 @@ def bfs_edges(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
         successors = G.predecessors
     else:
         successors = G.neighbors
-    yield from generic_bfs_edges(G, source, successors, depth_limit, sort_neighbors)
+    if callable(sort_neighbors):
+        neighbors = sort_neighbors
+    else:
+        neighbors = lambda x: x
+    yield from generic_bfs_edges(
+        G, source, lambda node: iter(neighbors(successors(node))), depth_limit
+    )
 
 
 def bfs_tree(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
