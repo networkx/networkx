@@ -18,22 +18,6 @@ __all__ = [
 ]
 
 
-def _verify_node_labels(G):
-    """Checks whether the nodes in the graph are the first *n*
-    nonnegative integers.
-
-    If they are not all integers, this raises a :exc:`TypeError`. If
-    they are not the correct integers, this raises a :exc:`ValueError`.
-
-    """
-    if not all(isinstance(v, int) for v in G):
-        raise TypeError("Nodes must be integers")
-    if not all(starmap(eq, enumerate(G))):
-        raise ValueError(
-            "G.nodes() must iterate over" " the integers 0, ..., n - 1 in order"
-        )
-
-
 def number_of_walks(G, walk_length, source=None, target=None):
     """Computes the number of walks of a particular length in the graph
     `G`.
@@ -157,8 +141,6 @@ def single_source_number_of_walks(G, walk_length, source, target=None):
         integers.
 
     """
-    _verify_node_labels(G)
-    # Pre-condition: we assume that ``list(G.nodes()) == list(range(len(G)))``.
     A = nx.adjacency_matrix(G, nodelist=list(G))
     power = A**walk_length
     if target is not None:
@@ -206,8 +188,6 @@ def all_pairs_number_of_walks(G, walk_length):
         integers.
 
     """
-    # Pre-condition: we assume that ``list(G.nodes()) == list(range(len(G)))``.
-    _verify_node_labels(G)
     A = nx.adjacency_matrix(G)
     power = A**walk_length
     result = {u: {v: 0 for v in G} for u in G}
