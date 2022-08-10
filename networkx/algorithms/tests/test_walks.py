@@ -58,6 +58,14 @@ class TestSingleSourceNumberOfWalksTestBase:
         num_walks = nx.single_source_number_of_walks(G, k, source=source, target=target)
         assert num_walks == 4
 
+    def test_source_and_target2(self):
+        G = nx.DiGraph([("A", "B"), ("A", "C"), ("A", "D"), ("B", "D"), ("C", "D")])
+        source = "A"
+        target = "D"
+        k = 2
+        num_walks = nx.single_source_number_of_walks(G, k, source=source, target=target)
+        assert num_walks == 2
+
 
 class TestAllPairsNumberOfWalksTestBase:
     """Unit tests for the
