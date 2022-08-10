@@ -124,12 +124,12 @@ def single_source_number_of_walks(G, walk_length, source, target=None):
     """
     A = nx.adjacency_matrix(G, nodelist=list(G))
     power = A**walk_length
-    if target is not None:
-        return power[source, target]
     result = {
         u: {v: power[u_idx, v_idx] for v_idx, v in enumerate(G)}
         for u_idx, u in enumerate(G)
     }
+    if target is not None:
+        return result[source][target]
     return result[source]
 
 
