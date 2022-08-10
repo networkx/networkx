@@ -32,9 +32,6 @@ def number_of_walks(G, walk_length, source=None, target=None):
     Parameters
     ----------
     G : NetworkX graph
-        The node labels for a graph on *n* nodes
-        must be the integers {0, …, *n* - 1}. If not, a :exc:`TypeError`
-        or :exc:`ValueError` is raised.
 
     walk_length: int
         A nonnegative integer representing the length of a walk.
@@ -72,14 +69,7 @@ def number_of_walks(G, walk_length, source=None, target=None):
     Raises
     ------
     ValueError
-        If `walk_length` is negative,  or if the node labels
-        of the graph are integers but not the integers between 0 and *n*
-        - 1, inclusive.
-
-    TypeError
-        If the node labels of the graph are not
-        integers.
-
+        If `walk_length` is negative.
     """
     if source is None and target is None:
         return all_pairs_number_of_walks(G, walk_length)
@@ -104,9 +94,6 @@ def single_source_number_of_walks(G, walk_length, source, target=None):
     Parameters
     ----------
     G : NetworkX graph
-        The node labels for a graph on *n* nodes
-        must be the integers {0, …, *n* - 1}. If not, a :exc:`TypeError`
-        or :exc:`ValueError` is raised.
 
     walk_length: int
         A nonnegative integer representing the length of a walk.
@@ -132,13 +119,7 @@ def single_source_number_of_walks(G, walk_length, source, target=None):
     Raises
     ------
     ValueError
-        If `walk_length` is negative, or if the node labels
-        of the graph are integers but not the integers between 0 and *n*
-        - 1, inclusive.
-
-    TypeError
-        If the node labels of the graph are not
-        integers.
+        If `walk_length` is negative.
 
     """
     A = nx.adjacency_matrix(G, nodelist=list(G))
@@ -162,9 +143,6 @@ def all_pairs_number_of_walks(G, walk_length):
     Parameters
     ----------
     G : NetworkX graph
-        The node labels for a graph on *n* nodes
-        must be the integers {0, …, *n* - 1}. If not, a :exc:`TypeError`
-        or :exc:`ValueError` is raised.
 
     walk_length : int
         A nonnegative integer representing the length of a walk.
@@ -179,14 +157,7 @@ def all_pairs_number_of_walks(G, walk_length):
     Raises
     ------
     ValueError
-        If `walk_length` is negative, or if  the node labels
-        of the graph are integers but not the integers between 0 and *n*
-        - 1, inclusive.
-
-    TypeError
-        If the node labels of the graph are not
-        integers.
-
+        If `walk_length` is negative
     """
     A = nx.adjacency_matrix(G)
     power = A**walk_length
