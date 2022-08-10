@@ -2,23 +2,29 @@
 # pre-commit install
 
 repos:
--   repo: https://github.com/psf/black
+  - repo: https://github.com/psf/black
     rev: 22.6.0
     hooks:
-    - id: black
--   repo: https://github.com/asottile/pyupgrade
-    rev: v2.34.0
+      - id: black
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v2.37.3
     hooks:
-    -   id: pyupgrade
+      - id: pyupgrade
         args: [--py38-plus]
--   repo: https://github.com/asottile/blacken-docs
+  - repo: https://github.com/asottile/blacken-docs
     rev: v1.12.1
     hooks:
-    -   id: blacken-docs
--   repo: https://github.com/pycqa/isort
+      - id: blacken-docs
+  - repo: https://github.com/pycqa/isort
     rev: 5.10.1
     hooks:
-    -   id: isort
+      - id: isort
         name: isort (python)
         args: ["--profile", "black", "--filter-files", "--skip", "__init__.py"]
         files: ^networkx/
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v2.7.1
+    hooks:
+      - id: prettier
+        files: \.(html|md|yml|yaml)
+        args: [--prose-wrap=preserve]

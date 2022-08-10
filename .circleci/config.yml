@@ -2,7 +2,6 @@
 
 version: 2.1
 jobs:
-
   documentation:
     docker:
       - image: cimg/python:3.9
@@ -29,7 +28,7 @@ jobs:
           name: Install pysal dependencies
           command: |
             sudo apt-get install libspatialindex-dev
-      
+
       - restore_cache:
           keys:
             - pip-cache-v1
@@ -101,7 +100,6 @@ jobs:
 
       - store_artifacts:
           path: results
-
 
 workflows:
   documentation_and_image_comparison:
