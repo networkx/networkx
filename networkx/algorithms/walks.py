@@ -126,11 +126,11 @@ def single_source_number_of_walks(G, walk_length, source, target=None):
     power = A**walk_length
     if target is not None:
         return power[source, target]
-    entries = _matrix_entries(power, row=source)
-    result = {v: 0 for v in G}
-    for v, d in entries:
-        result[v] = d
-    return result
+    result = {
+        u: {v: power[u_idx, v_idx] for v_idx, v in enumerate(G)}
+        for u_idx, u in enumerate(G)
+    }
+    return result[source]
 
 
 def all_pairs_number_of_walks(G, walk_length):
@@ -161,102 +161,10 @@ def all_pairs_number_of_walks(G, walk_length):
     """
     A = nx.adjacency_matrix(G)
     power = A**walk_length
-    result = {u: {v: 0 for v in G} for u in G}
     # `u` is the source node, `v` is the target node, and `d` is the
     # number of walks with initial node `u` and terminal node `v`.
-    for u, v, d in _matrix_entries(power):
-        result[u][v] = d
+    result = {
+        u: {v: power[u_idx, v_idx] for v_idx, v in enumerate(G)}
+        for u_idx, u in enumerate(G)
+    }
     return result
-
-
-def _csr_matrix_entries(A, row=None):
-    """Iterator over the nonzero entries of the matrix `A`.
-    `A` is a SciPy sparse matrix in Compressed Sparse Row ('csr')
-    format.
-    If `row` is specified, this function iterates over pairs of the form
-    ``(j, A[row, j])``. Otherwise, this function iterates over triples
-    of the form ``(i, j, A[i, j])``.
-    """
-    data, indices, indptr = A.data, A.indices, A.indptr
-    if row is None:
-        nrows = A.shape[0]
-        for i in range(nrows):
-            for j in range(indptr[i], indptr[i + 1]):
-                yield i, indices[j], data[j]
-    else:
-        i = row
-        for j in range(indptr[i], indptr[i + 1]):
-            yield indices[j], data[j]
-
-
-def _csc_matrix_entries(A, row=None):
-    """Iterator over the nonzero entries of the matrix `A`.
-    `A` is a SciPy sparse matrix in Compressed Sparse Column ('csc')
-    format.
-    If `row` is specified, this function iterates over pairs of the form
-    ``(j, A[row, j])``. Otherwise, this function iterates over triples
-    of the form ``(i, j, A[i, j])``.
-    """
-    ncols = A.shape[1]
-    if row is None:
-        data, indices, indptr = A.data, A.indices, A.indptr
-        for i in range(ncols):
-            for j in range(indptr[i], indptr[i + 1]):
-                yield indices[j], i, data[j]
-    else:
-        # Calling the `getrow()` method on a 'csc' sparse matrix returns
-        # a 'csr' sparse matrix representing just that row.
-        for i, j, x in _csr_matrix_entries(A.getrow(row)):
-            yield j, x
-
-
-def _coo_matrix_entries(A, row=None):
-    """Iterator over the nonzero entries of the matrix `A`.
-    `A` is a SciPy sparse matrix in COOrdinate ('coo') format.
-    If `row` is specified, this function iterates over pairs of the form
-    ``(j, A[row, j])``. Otherwise, this function iterates over triples
-    of the form ``(i, j, A[i, j])``.
-    """
-    if row is None:
-        row, col, data = A.row, A.col, A.data
-        # TODO In Python 3.3+, this should be `yield from ...`.
-        for i, j, x in zip(row, col, data):
-            yield i, j, x
-    else:
-        # Calling the `getrow()` method on a 'coo' sparse matrix returns
-        # a 'csr' sparse matrix representing just that row.
-        for i, j, x in _csr_matrix_entries(A.getrow(row)):
-            yield j, x
-
-
-def _dok_matrix_entries(A, row=None):
-    """Iterator over the nonzero entries of the matrix `A`.
-    `A` is a SciPy sparse matrix in Dictionary Of Keys ('dok') format.
-    If `row` is specified, this function iterates over pairs of the form
-    ``(j, A[row, j])``. Otherwise, this function iterates over triples
-    of the form ``(i, j, A[i, j])``.
-    """
-    if row is None:
-        for (r, c), v in A.items():
-            yield r, c, v
-    else:
-        # We are guaranteed that each `r` equals `row`.
-        for (r, c), v in A[row].items():
-            yield c, v
-
-
-def _matrix_entries(A, row=None):
-    """Iterator over the nonzero entries of the matrix `A`.
-    `A` is a SciPy sparse matrix in any format.
-    If `row` is specified, this function iterates over pairs of the form
-    ``(j, A[row, j])``. Otherwise, this function iterates over triples
-    of the form ``(i, j, A[i, j])``.
-    """
-    if A.format == "csr":
-        return _csr_matrix_entries(A, row=row)
-    if A.format == "csc":
-        return _csc_matrix_entries(A, row=row)
-    if A.format == "dok":
-        return _dok_matrix_entries(A, row=row)
-    # If A is in any other format (including COO), convert it to COO format.
-    return _coo_matrix_entries(A.tocoo(), row=row)
