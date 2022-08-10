@@ -994,15 +994,39 @@ def _draw_networkx_multigraph_edges(
 
     edge_counts = Counter(edgelist)
 
-    lineCollectionEdgeList = []
+    drawnList = []
+
     for edge, cnt in edge_counts.items():
         if cnt == 1 and list(G.edges()).count((edge[1], edge[0])) == 0:
-            lineCollectionEdgeList.append(edge)
+            drawnEdge = _draw_networkx_edges(
+                G,
+                pos,
+                edgelist=[edge],
+                width=width,
+                edge_color=edge_color,
+                style=style,
+                alpha=alpha,
+                arrowstyle=arrowstyle,
+                arrowsize=arrowsize,
+                edge_cmap=edge_cmap,
+                edge_vmin=edge_vmin,
+                edge_vmax=edge_vmax,
+                ax=ax,
+                arrows=True,
+                label=label,
+                node_size=node_size,
+                nodelist=nodelist,
+                node_shape=node_shape,
+                connectionstyle="arc3,rad=0",
+                min_source_margin=min_source_margin,
+                min_target_margin=min_target_margin,
+            )
+            drawnList.append(drawnEdge)
         else:
             bend = 0.5 / cnt
             rad = bend
             for i in range(cnt):
-                _draw_networkx_edges(
+                drawnEdge = _draw_networkx_edges(
                     G,
                     pos,
                     edgelist=[edge],
@@ -1026,31 +1050,8 @@ def _draw_networkx_multigraph_edges(
                     min_target_margin=min_target_margin,
                 )
                 rad += bend
-
-    if len(lineCollectionEdgeList) > 0:
-        _draw_networkx_edges(
-            G,
-            pos,
-            edgelist=lineCollectionEdgeList,
-            width=width,
-            edge_color=edge_color,
-            style=style,
-            alpha=alpha,
-            arrowstyle=arrowstyle,
-            arrowsize=arrowsize,
-            edge_cmap=edge_cmap,
-            edge_vmin=edge_vmin,
-            edge_vmax=edge_vmax,
-            ax=ax,
-            arrows=True,
-            label=label,
-            node_size=node_size,
-            nodelist=nodelist,
-            node_shape=node_shape,
-            connectionstyle=connectionstyle,
-            min_source_margin=min_source_margin,
-            min_target_margin=min_target_margin,
-        )
+                drawnList.append(drawnEdge)
+    return drawnList
 
 
 def draw_networkx_labels(
