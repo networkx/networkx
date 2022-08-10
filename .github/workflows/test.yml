@@ -3,135 +3,134 @@ name: test
 on: [push, pull_request]
 
 jobs:
-
   base:
     runs-on: ${{ matrix.os }}-latest
     strategy:
       matrix:
         os: [ubuntu, macos, windows]
-        python-version: ['pypy-3.8', '3.11-dev']
+        python-version: ["pypy-3.8", "3.11-dev"]
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
-      with:
-        python-version: ${{ matrix.python-version }}
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
 
-    - name: Install packages
-      run: |
-        python -m pip install --upgrade pip wheel setuptools
-        python -m pip install -r requirements/test.txt
-        python -m pip install .
-        python -m pip list
+      - name: Install packages
+        run: |
+          python -m pip install --upgrade pip wheel setuptools
+          python -m pip install -r requirements/test.txt
+          python -m pip install .
+          python -m pip list
 
-    - name: Test NetworkX
-      run: |
-        pytest --durations=10 --pyargs networkx
+      - name: Test NetworkX
+        run: |
+          pytest --durations=10 --pyargs networkx
 
   default:
     runs-on: ${{ matrix.os }}-latest
     strategy:
       matrix:
         os: [ubuntu, macos, windows]
-        python-version: ['3.8', '3.9', '3.10']
+        python-version: ["3.8", "3.9", "3.10"]
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
-      with:
-        python-version: ${{ matrix.python-version }}
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
 
-    - name: Install packages
-      run: |
-        python -m pip install --upgrade pip wheel setuptools
-        python -m pip install -r requirements/default.txt -r requirements/test.txt
-        python -m pip install .
-        python -m pip list
+      - name: Install packages
+        run: |
+          python -m pip install --upgrade pip wheel setuptools
+          python -m pip install -r requirements/default.txt -r requirements/test.txt
+          python -m pip install .
+          python -m pip list
 
-    - name: Test NetworkX
-      run: |
-        pytest --doctest-modules --durations=10 --pyargs networkx
+      - name: Test NetworkX
+        run: |
+          pytest --doctest-modules --durations=10 --pyargs networkx
 
   extra:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-22.04, macos-latest, windows-latest]
-        python-version: ['3.8', '3.9', '3.10']
+        python-version: ["3.8", "3.9", "3.10"]
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
-      with:
-        python-version: ${{ matrix.python-version }}
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
 
-    - name: Before install (Linux)
-      if: runner.os == 'Linux'
-      run: sudo apt-get update && sudo apt-get install graphviz graphviz-dev
+      - name: Before install (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install graphviz graphviz-dev
 
-    - name: Before install (macOS)
-      if: runner.os == 'macOS'
-      run: brew install graphviz
+      - name: Before install (macOS)
+        if: runner.os == 'macOS'
+        run: brew install graphviz
 
-    - name: Before install (Windows)
-      if: runner.os == 'Windows'
-      run: choco install graphviz
+      - name: Before install (Windows)
+        if: runner.os == 'Windows'
+        run: choco install graphviz
 
-    - name: Install packages (Linux)
-      if: runner.os == 'Linux'
-      run: |
-        pip install --upgrade pip wheel setuptools
-        pip install -r requirements/default.txt -r requirements/test.txt
-        pip install -r requirements/extra.txt
-        pip install .
-        pip list
-    - name: Install packages (macOS)
-      if: runner.os == 'macOS'
-      run: |
-        pip install --upgrade pip wheel setuptools
-        pip install -r requirements/default.txt -r requirements/test.txt
-        pip install --global-option=build_ext --global-option="-I/usr/local/include/" --global-option="-L/usr/local/lib/" pygraphviz
-        pip install -r requirements/extra.txt
-        pip install .
-        pip list
-    - name: Install packages (windows)
-      if: runner.os == 'Windows'
-      run: |
-        echo "C:\Program Files\Graphviz\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-        python -m pip install --upgrade pip wheel setuptools
-        python -m pip install -r requirements/default.txt -r requirements/test.txt
-        python -m pip install --global-option=build_ext `
-                              --global-option="-IC:\Program Files\Graphviz\include" `
-                              --global-option="-LC:\Program Files\Graphviz\lib" `
-                              pygraphviz
-        python -m pip install -r requirements/extra.txt
-        python -m pip install .
-        python -m pip list
+      - name: Install packages (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          pip install --upgrade pip wheel setuptools
+          pip install -r requirements/default.txt -r requirements/test.txt
+          pip install -r requirements/extra.txt
+          pip install .
+          pip list
+      - name: Install packages (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          pip install --upgrade pip wheel setuptools
+          pip install -r requirements/default.txt -r requirements/test.txt
+          pip install --global-option=build_ext --global-option="-I/usr/local/include/" --global-option="-L/usr/local/lib/" pygraphviz
+          pip install -r requirements/extra.txt
+          pip install .
+          pip list
+      - name: Install packages (windows)
+        if: runner.os == 'Windows'
+        run: |
+          echo "C:\Program Files\Graphviz\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          python -m pip install --upgrade pip wheel setuptools
+          python -m pip install -r requirements/default.txt -r requirements/test.txt
+          python -m pip install --global-option=build_ext `
+                                --global-option="-IC:\Program Files\Graphviz\include" `
+                                --global-option="-LC:\Program Files\Graphviz\lib" `
+                                pygraphviz
+          python -m pip install -r requirements/extra.txt
+          python -m pip install .
+          python -m pip list
 
-    - name: Test NetworkX
-      run: |
-        pytest --doctest-modules --durations=10 --pyargs networkx
+      - name: Test NetworkX
+        run: |
+          pytest --doctest-modules --durations=10 --pyargs networkx
 
   prerelease:
     runs-on: ${{ matrix.os }}-latest
     strategy:
       matrix:
         os: [ubuntu, macos]
-        python-version: ['3.8', '3.9', '3.10']
+        python-version: ["3.8", "3.9", "3.10"]
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
-      with:
-        python-version: ${{ matrix.python-version }}
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
 
-    - name: Install packages
-      run: |
-        pip install --upgrade pip wheel setuptools
-        pip install --pre -r requirements/default.txt -r requirements/test.txt
-        pip install .
-        pip list
+      - name: Install packages
+        run: |
+          pip install --upgrade pip wheel setuptools
+          pip install --pre -r requirements/default.txt -r requirements/test.txt
+          pip install .
+          pip list
 
-    - name: Test NetworkX
-      run: |
-        pytest --doctest-modules --durations=10 --pyargs networkx
+      - name: Test NetworkX
+        run: |
+          pytest --doctest-modules --durations=10 --pyargs networkx
