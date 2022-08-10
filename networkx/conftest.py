@@ -264,7 +264,3 @@ if not has_pydot:
     collect_ignore += needs_pydot
 if not has_sympy:
     collect_ignore += needs_sympy
-
-# FIXME:  This is to avoid errors on AppVeyor
-if sys.platform.startswith("win"):
-    collect_ignore += ["readwrite/graph6.py", "readwrite/sparse6.py"]
