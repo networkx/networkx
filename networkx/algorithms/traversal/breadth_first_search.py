@@ -1,7 +1,6 @@
 """Basic algorithms for breadth-first searching the nodes of a graph."""
 import math
 from collections import deque
-from cProfile import label
 
 import networkx as nx
 
