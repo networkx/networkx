@@ -646,7 +646,7 @@ def draw_networkx_edges(
         else:
             arrowstyle = "-"
 
-    if type(G) == nx.classes.multigraph.MultiGraph == False:
+    if G.is_multigraph() == False:
         return _draw_networkx_edges(
             G,
             pos,
@@ -1021,7 +1021,7 @@ def _draw_networkx_multigraph_edges(
                 min_source_margin=min_source_margin,
                 min_target_margin=min_target_margin,
             )
-            drawnList.append(drawnEdge)
+            drawnList.extend(drawnEdge)
         else:
             bend = 0.5 / cnt
             rad = bend
@@ -1050,7 +1050,7 @@ def _draw_networkx_multigraph_edges(
                     min_target_margin=min_target_margin,
                 )
                 rad += bend
-                drawnList.append(drawnEdge)
+                drawnList.extend(drawnEdge)
     return drawnList
 
 
