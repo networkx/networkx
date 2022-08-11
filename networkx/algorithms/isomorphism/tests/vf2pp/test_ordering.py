@@ -1,9 +1,9 @@
 import collections
 
 import networkx as nx
-from networkx.algorithms.isomorphism.VF2pp_helpers.node_ordering import (
-    matching_order,
-    rarest_nodes,
+from networkx.algorithms.isomorphism.vf2pp_helpers.node_ordering import (
+    _matching_order,
+    _rarest_nodes,
 )
 
 
@@ -78,7 +78,7 @@ class TestNodeOrdering:
         rarest_node = min(V, key=lambda x: rarity[l1[x]])
         rare_nodes = [n for n in V if rarity[l1[n]] == rarity[l1[rarest_node]]]
         # todo: how am i gonna know the order of nodes in G.nodes() so i can test the explicit result?
-        assert set(rarest_nodes(V, l1, rarity)) == set(rare_nodes)
+        assert set(_rarest_nodes(V, l1, rarity)) == set(rare_nodes)
 
     def test_rare_nodes_exhaustive(self):
         for p in [0.04, 0.1, 0.25, 0.4, 0.65, 0.87, 1]:
@@ -94,13 +94,13 @@ class TestNodeOrdering:
                 n for n in G1.nodes() if rarity[l1[n]] == rarity[l1[rarest_node]]
             ]
 
-            assert set(rarest_nodes(G1.nodes(), l1, rarity)) == set(rare_nodes)
+            assert set(_rarest_nodes(G1.nodes(), l1, rarity)) == set(rare_nodes)
 
     def test_empty_graph(self):
         G1 = nx.Graph()
         G2 = nx.Graph()
         gparams = self.GraphParameters(G1, G2, None, None, None, None, None)
-        assert len(set(matching_order(gparams))) == 0
+        assert len(set(_matching_order(gparams))) == 0
 
     def test_disconnected_graph(self):
         G1 = nx.Graph()
@@ -120,7 +120,7 @@ class TestNodeOrdering:
             nx.utils.groups(l2),
             nx.utils.groups({node: degree for node, degree in G2.degree()}),
         )
-        size = len(set(matching_order(gparams)))
+        size = len(set(_matching_order(gparams)))
         assert size == 1
 
         for i in range(50, 300):
@@ -137,7 +137,7 @@ class TestNodeOrdering:
                 nx.utils.groups(l2),
                 nx.utils.groups({node: degree for node, degree in G2.degree()}),
             )
-            assert len(set(matching_order(gparams))) == size + 1
+            assert len(set(_matching_order(gparams))) == size + 1
             size += 1
 
     def test_gnp_graph(self):
@@ -160,7 +160,7 @@ class TestNodeOrdering:
                     nx.utils.groups(l2),
                     nx.utils.groups({node: degree for node, degree in G2.degree()}),
                 )
-                assert len(set(matching_order(gparams))) == Vi
+                assert len(set(_matching_order(gparams))) == Vi
 
     def test_barbel_graph(self):
         G1 = nx.barbell_graph(100, 250)
@@ -177,4 +177,4 @@ class TestNodeOrdering:
             nx.utils.groups(l2),
             nx.utils.groups({node: degree for node, degree in G2.degree()}),
         )
-        assert len(set(matching_order(gparams))) == 100 + 250 + 100
+        assert len(set(_matching_order(gparams))) == 100 + 250 + 100

@@ -1,4 +1,4 @@
-def find_candidates(u, graph_params, state_params):
+def _find_candidates(u, graph_params, state_params):
     """Given node u of G1, finds the candidates of u from G2.
 
     Parameters

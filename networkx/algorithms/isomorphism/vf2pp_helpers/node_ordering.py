@@ -1,7 +1,7 @@
 import networkx as nx
 
 
-def matching_order(graph_params):
+def _matching_order(graph_params):
     """The node ordering as introduced in VF2++.
 
     Notes
@@ -38,10 +38,10 @@ def matching_order(graph_params):
 
     while V1_unordered:
         max_node = max(
-            rarest_nodes(V1_unordered, G1_labels, label_rarity), key=G1.degree
+            _rarest_nodes(V1_unordered, G1_labels, label_rarity), key=G1.degree
         )
 
-        BFS_levels(
+        _bfs_levels(
             max_node,
             G1,
             G1_labels,
@@ -58,7 +58,7 @@ def matching_order(graph_params):
     return node_order
 
 
-def BFS_levels(
+def _bfs_levels(
     source_node, G1, G1_labels, V1_unordered, label_rarity, used_degree, node_order
 ):
     """Performs a BFS search, storing and processing each level of the BFS, separately.
@@ -94,7 +94,7 @@ def BFS_levels(
             dlevel_nodes.add(nbr)
             continue
 
-        process_level(
+        _process_level(
             V1_unordered,
             G1,
             G1_labels,
@@ -108,12 +108,12 @@ def BFS_levels(
         V1_unordered.difference_update(dlevel_nodes)
         dlevel_nodes = {nbr}
     # Process the last level
-    process_level(
+    _process_level(
         V1_unordered, G1, G1_labels, node_order, dlevel_nodes, label_rarity, used_degree
     )
 
 
-def process_level(
+def _process_level(
     V1_unordered, G1, G1_labels, order, dlevel_nodes, label_rarity, used_degree
 ):
     """Processes the nodes of a BFS level.
@@ -176,7 +176,7 @@ def process_level(
         V1_unordered.discard(next_node)
 
 
-def rarest_nodes(V1_unordered, G1_labels, label_rarity):
+def _rarest_nodes(V1_unordered, G1_labels, label_rarity):
     rare = []
     rarest = float("inf")
     for n in V1_unordered:

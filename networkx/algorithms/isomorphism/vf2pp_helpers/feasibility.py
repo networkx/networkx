@@ -1,7 +1,7 @@
 import networkx as nx
 
 
-def feasibility(node1, node2, graph_params, state_params):
+def _feasibility(node1, node2, graph_params, state_params):
     """Given a candidate pair of nodes u and v from G1 and G2 respectively, checks if it's feasible to extend the
     mapping, i.e. if u and v can be matched.
 
@@ -47,17 +47,17 @@ def feasibility(node1, node2, graph_params, state_params):
     if G1.number_of_edges(node1, node1) != G2.number_of_edges(node2, node2):
         return False
 
-    if cut_PT(node1, node2, graph_params, state_params):
+    if _cut_PT(node1, node2, graph_params, state_params):
         return False
 
     if isinstance(G1, nx.MultiGraph):
-        if not consistent_PT(node1, node2, graph_params, state_params):
+        if not _consistent_PT(node1, node2, graph_params, state_params):
             return False
 
     return True
 
 
-def cut_PT(u, v, graph_params, state_params):
+def _cut_PT(u, v, graph_params, state_params):
     """Implements the cutting rules for the ISO problem.
 
     Parameters
@@ -125,7 +125,7 @@ def cut_PT(u, v, graph_params, state_params):
     return False
 
 
-def consistent_PT(u, v, graph_params, state_params):
+def _consistent_PT(u, v, graph_params, state_params):
     """Checks the consistency of extending the mapping using the current node pair.
 
     Parameters

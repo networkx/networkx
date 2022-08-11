@@ -1,7 +1,7 @@
 import collections
 
 import networkx as nx
-from networkx.algorithms.isomorphism.VF2pp_helpers.candidates import find_candidates
+from networkx.algorithms.isomorphism.vf2pp_helpers.candidates import _find_candidates
 
 
 class TestCandidateSelection:
@@ -85,7 +85,7 @@ class TestCandidateSelection:
         state_params = self.StateParameters(dict(), dict(), None, None, None, None)
 
         for node in self.G1.nodes():
-            assert self.mapped_nodes[node] in find_candidates(
+            assert self.mapped_nodes[node] in _find_candidates(
                 node, graph_params, state_params
             )
 
@@ -120,6 +120,6 @@ class TestCandidateSelection:
         state_params = self.StateParameters(dict(), dict(), None, None, None, None)
 
         for node in self.G1.nodes():
-            candidates = find_candidates(node, graph_params, state_params)
+            candidates = _find_candidates(node, graph_params, state_params)
             assert len(candidates) == 1
             assert self.mapped_nodes[node] in candidates

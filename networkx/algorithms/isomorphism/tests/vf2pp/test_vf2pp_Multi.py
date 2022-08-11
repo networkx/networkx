@@ -1,13 +1,5 @@
 import networkx as nx
-from networkx.algorithms.isomorphism.VF2pp import VF2pp_solver
-
-
-def VF2pp(G1, G2, l1, l2):
-    try:
-        m = next(VF2pp_solver(G1, G2, l1, l2))
-        return m
-    except StopIteration:
-        return None
+from networkx.algorithms.isomorphism.vf2pp import vf2pp_mapping
 
 
 def assign_labels(G1, G2, mapped_nodes=None, same=False):
@@ -52,19 +44,19 @@ class TestMultiGraphISOVF2pp:
         G = nx.MultiGraph()
         H = nx.MultiGraph()
 
-        m = VF2pp(G, H, {}, {})
+        m = vf2pp_mapping(G, H, None)
         assert not m
 
     def test_first_graph_empty(self):
         G = nx.MultiGraph()
         H = nx.MultiGraph([(0, 1)])
-        m = VF2pp(G, H, {}, {})
+        m = vf2pp_mapping(G, H, None)
         assert not m
 
     def test_second_graph_empty(self):
         G = nx.MultiGraph([(0, 1)])
         H = nx.MultiGraph()
-        m = VF2pp(G, H, {}, {})
+        m = vf2pp_mapping(G, H, None)
         assert not m
 
     def test_custom_multigraph1_same_labels(self):
@@ -92,33 +84,31 @@ class TestMultiGraphISOVF2pp:
         G2 = nx.relabel_nodes(G1, mapped)
 
         assign_labels(G1, G2, mapped, same=True)
-        l1, l2 = get_labels(G1, G2)
-
-        m = VF2pp(G1, G2, l1, l2)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
 
         # Transfer the 2-clique to the right side of G1
         G1.remove_edges_from([(2, 6), (2, 6)])
         G1.add_edges_from([(3, 6), (3, 6)])
-        m = VF2pp(G1, G2, l1, l2)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert not m
 
         # Delete an edges, making them symmetrical, so the position of the 2-clique doesn't matter
         G2.remove_edge(mapped[1], mapped[4])
         G1.remove_edge(1, 4)
-        m = VF2pp(G1, G2, l1, l2)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
 
         # Add self-loops
         G1.add_edges_from([(5, 5), (5, 5), (1, 1)])
-        m = VF2pp(G1, G2, l1, l2)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert not m
 
         # Compensate in G2
         G2.add_edges_from(
             [(mapped[1], mapped[1]), (mapped[4], mapped[4]), (mapped[4], mapped[4])]
         )
-        m = VF2pp(G1, G2, l1, l2)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
 
     def test_custom_multigraph1_different_labels(self):
@@ -146,37 +136,31 @@ class TestMultiGraphISOVF2pp:
         G2 = nx.relabel_nodes(G1, mapped)
 
         assign_labels(G1, G2, mapped)
-        l1, l2 = get_labels(G1, G2)
-
-        m = VF2pp(G1, G2, l1, l2)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
         assert m == mapped
 
         # Re-structure G1, maintaining the degree sequence
         G1.remove_edge(1, 4)
         G1.add_edge(1, 5)
-
-        m = VF2pp(G1, G2, l1, l2)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert not m
 
         # Restructure G2, making it isomorphic to G1
         G2.remove_edge("A", "D")
         G2.add_edge("A", "Z")
-
-        m = VF2pp(G1, G2, l1, l2)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
         assert m == mapped
 
         # Add edge from node to itself
         G1.add_edges_from([(6, 6), (6, 6), (6, 6)])
-
-        m = VF2pp(G1, G2, l1, l2)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert not m
 
         # Same for G2
         G2.add_edges_from([("E", "E"), ("E", "E"), ("E", "E")])
-
-        m = VF2pp(G1, G2, l1, l2)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
         assert m == mapped
 
@@ -208,9 +192,7 @@ class TestMultiGraphISOVF2pp:
         G2 = nx.relabel_nodes(G1, mapped)
 
         assign_labels(G1, G2, mapped, same=True)
-        l1, l2 = get_labels(G1, G2)
-
-        m = VF2pp(G1, G2, l1, l2)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
 
         # Obtain two non-somorphic subgraphs from the graph
@@ -219,33 +201,32 @@ class TestMultiGraphISOVF2pp:
         H1 = nx.MultiGraph(G1.subgraph([2, 3, 4, 7]))
         H2 = nx.MultiGraph(G2.subgraph([mapped[1], mapped[4], mapped[5], mapped[6]]))
 
-        l1, l2 = get_labels(H1, H2)
-        m = VF2pp(H1, H2, l1, l2)
+        m = vf2pp_mapping(H1, H2, node_labels="label")
         assert not m
 
         # Make them isomorphic
         H1.remove_edge(3, 4)
         H1.add_edges_from([(2, 3), (2, 4), (2, 4)])
         H2.add_edges_from([(mapped[5], mapped[6]), (mapped[5], mapped[6])])
-        m = VF2pp(H1, H2, l1, l2)
+        m = vf2pp_mapping(H1, H2, node_labels="label")
         assert m
 
         # Remove triangle edge
         H1.remove_edges_from([(2, 3), (2, 3), (2, 3)])
         H2.remove_edges_from([(mapped[5], mapped[4])] * 3)
-        m = VF2pp(H1, H2, l1, l2)
+        m = vf2pp_mapping(H1, H2, node_labels="label")
         assert m
 
         # Change the edge orientation such that H1 is rotated H2
         H1.remove_edges_from([(2, 7), (2, 7)])
         H1.add_edges_from([(3, 4), (3, 4)])
-        m = VF2pp(H1, H2, l1, l2)
+        m = vf2pp_mapping(H1, H2, node_labels="label")
         assert m
 
         # Add extra edges maintaining degree sequence, but in a non-symmetrical manner
         H2.add_edge(mapped[5], mapped[1])
         H1.add_edge(3, 4)
-        m = VF2pp(H1, H2, l1, l2)
+        m = vf2pp_mapping(H1, H2, node_labels="label")
         assert not m
 
     def test_custom_multigraph2_different_labels(self):
@@ -276,9 +257,7 @@ class TestMultiGraphISOVF2pp:
         G2 = nx.relabel_nodes(G1, mapped)
 
         assign_labels(G1, G2, mapped)
-        l1, l2 = get_labels(G1, G2)
-
-        m = VF2pp(G1, G2, l1, l2)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
         assert m == mapped
 
@@ -286,29 +265,27 @@ class TestMultiGraphISOVF2pp:
         G1.remove_edge(2, 7)
         G1.add_edge(5, 6)
 
-        m = VF2pp(G1, G2, l1, l2)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert not m
 
         # Same for G2
         G2.remove_edge("B", "C")
         G2.add_edge("G", "F")
 
-        m = VF2pp(G1, G2, l1, l2)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
         assert m == mapped
 
         # Delete node from G1 and G2, keeping them isomorphic
         G1.remove_node(3)
         G2.remove_node("D")
-
-        m = VF2pp(G1, G2, l1, l2)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
 
         # Change G1 edges
         G1.remove_edge(1, 2)
         G1.remove_edge(2, 7)
-
-        m = VF2pp(G1, G2, l1, l2)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert not m
 
         # Make G2 identical to G1, but with different edge orientation and different labels
@@ -317,7 +294,7 @@ class TestMultiGraphISOVF2pp:
             [("A", "G"), ("A", "G"), ("F", "G"), ("E", "G"), ("E", "G")]
         )
 
-        m = VF2pp(G1, G2, l1, l2)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert not m
 
         # Make all labels the same, so G1 and G2 are also isomorphic
@@ -325,8 +302,7 @@ class TestMultiGraphISOVF2pp:
             G1.nodes[n1]["label"] = "blue"
             G2.nodes[n2]["label"] = "blue"
 
-        l1, l2 = get_labels(G1, G2)
-        m = VF2pp(G1, G2, l1, l2)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
 
     def test_custom_multigraph3_same_labels(self):
@@ -359,8 +335,7 @@ class TestMultiGraphISOVF2pp:
         G2 = nx.relabel_nodes(G1, mapped)
 
         assign_labels(G1, G2, mapped, same=True)
-        l1, l2 = get_labels(G1, G2)
-        m = VF2pp(G1, G2, l1, l2)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
 
         # Connect nodes maintaining symmetry
@@ -374,7 +349,7 @@ class TestMultiGraphISOVF2pp:
                 (mapped[4], mapped[9]),
             ]
         )
-        m = VF2pp(G1, G2, l1, l2)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert not m
 
         # Make isomorphic
@@ -388,7 +363,7 @@ class TestMultiGraphISOVF2pp:
                 (mapped[7], mapped[9]),
             ]
         )
-        m = VF2pp(G1, G2, l1, l2)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
 
         # Connect more nodes
@@ -405,10 +380,8 @@ class TestMultiGraphISOVF2pp:
         G2.add_node("Z")
         G1.nodes[10]["label"] = "blue"
         G2.nodes["Z"]["label"] = "blue"
-        l1.update({10: "blue"})
-        l2.update({"Z": "blue"})
 
-        m = VF2pp(G1, G2, l1, l2)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
 
         # Connect the newly added node, to opposite sides of the graph
@@ -422,7 +395,7 @@ class TestMultiGraphISOVF2pp:
                 ("Z", "Z"),
             ]
         )
-        m = VF2pp(G1, G2, l1, l2)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert not m
 
         # We connected the new node to opposite sides, so G1 must be symmetrical to G2. Re-structure them to be so
@@ -435,7 +408,7 @@ class TestMultiGraphISOVF2pp:
                 (mapped[7], mapped[9]),
             ]
         )
-        m = VF2pp(G1, G2, l1, l2)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
 
         # Get two subgraphs that are not isomorphic but are easy to make
@@ -445,8 +418,8 @@ class TestMultiGraphISOVF2pp:
                 [mapped[4], mapped[5], mapped[6], mapped[7], mapped[8], mapped[9], "Z"]
             )
         )
-        l1, l2 = get_labels(H1, H2)
-        m = VF2pp(H1, H2, l1, l2)
+
+        m = vf2pp_mapping(H1, H2, node_labels="label")
         assert not m
 
         # Restructure both to make them isomorphic
@@ -454,17 +427,17 @@ class TestMultiGraphISOVF2pp:
         H2.add_edges_from(
             [("Z", mapped[7]), (mapped[6], mapped[9]), (mapped[7], mapped[8])]
         )
-        m = VF2pp(H1, H2, l1, l2)
+        m = vf2pp_mapping(H1, H2, node_labels="label")
         assert m
 
         # Remove one self-loop in H2
         H2.remove_edge("Z", "Z")
-        m = VF2pp(H1, H2, l1, l2)
+        m = vf2pp_mapping(H1, H2, node_labels="label")
         assert not m
 
         # Compensate in H1
         H1.remove_edge(10, 10)
-        m = VF2pp(H1, H2, l1, l2)
+        m = vf2pp_mapping(H1, H2, node_labels="label")
         assert m
 
     def test_custom_multigraph3_different_labels(self):
@@ -498,9 +471,8 @@ class TestMultiGraphISOVF2pp:
         G2 = nx.relabel_nodes(G1, mapped)
 
         assign_labels(G1, G2, mapped)
-        l1, l2 = get_labels(G1, G2)
 
-        m = VF2pp(G1, G2, l1, l2)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
         assert m == mapped
 
@@ -508,7 +480,7 @@ class TestMultiGraphISOVF2pp:
         G1.remove_edge(4, 9)
         G2.remove_edge(4, 6)
 
-        m = VF2pp(G1, G2, l1, l2)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
         assert m == mapped
 
@@ -518,7 +490,7 @@ class TestMultiGraphISOVF2pp:
         G2.add_edges_from([(3, 5), (7, 9)])
         G2.remove_edge(8, 9)
 
-        m = VF2pp(G1, G2, l1, l2)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert not m
 
         # Make all labels the same, so G1 and G2 are also isomorphic
@@ -526,8 +498,7 @@ class TestMultiGraphISOVF2pp:
             G1.nodes[n1]["label"] = "blue"
             G2.nodes[n2]["label"] = "blue"
 
-        l1, l2 = get_labels(G1, G2)
-        m = VF2pp(G1, G2, l1, l2)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
 
         G1.add_node(10)
@@ -539,20 +510,19 @@ class TestMultiGraphISOVF2pp:
         G1.add_edges_from([(10, 10), (10, 10)])
         G2.add_edges_from([("Z", "Z")])
 
-        l1, l2 = get_labels(G1, G2)
-        m = VF2pp(G1, G2, l1, l2)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert not m
 
         # Make the number of self-edges equal
         G1.remove_edge(10, 10)
-        m = VF2pp(G1, G2, l1, l2)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
 
         # Connect the new node to the graph
         G1.add_edges_from([(10, 3), (10, 4)])
         G2.add_edges_from([("Z", 8), ("Z", 3)])
 
-        m = VF2pp(G1, G2, l1, l2)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
 
         # Remove central node
@@ -561,7 +531,7 @@ class TestMultiGraphISOVF2pp:
         G1.add_edges_from([(5, 6), (5, 6), (5, 7)])
         G2.add_edges_from([(1, 6), (1, 6), (6, 2)])
 
-        m = VF2pp(G1, G2, l1, l2)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
 
     def test_custom_multigraph4_same_labels(self):
@@ -617,14 +587,14 @@ class TestMultiGraphISOVF2pp:
         G2 = nx.relabel_nodes(G1, mapped)
 
         assign_labels(G1, G2, mapped, same=True)
-        l1, l2 = get_labels(G1, G2)
-        m = VF2pp(G1, G2, l1, l2)
+
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
 
         # Add extra but corresponding edges to both graphs
         G1.add_edges_from([(2, 2), (2, 3), (2, 8), (3, 4)])
         G2.add_edges_from([("m", "m"), ("m", "l"), ("m", "h"), ("l", "j")])
-        m = VF2pp(G1, G2, l1, l2)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
 
         # Obtain subgraphs
@@ -644,8 +614,7 @@ class TestMultiGraphISOVF2pp:
             )
         )
 
-        l1, l2 = get_labels(H1, H2)
-        m = VF2pp(H1, H2, l1, l2)
+        m = vf2pp_mapping(H1, H2, node_labels="label")
         assert not m
 
         # Make them isomorphic
@@ -653,7 +622,7 @@ class TestMultiGraphISOVF2pp:
             [(mapped[3], mapped[2]), (mapped[9], mapped[8]), (mapped[2], mapped[2])]
         )
         H2.add_edges_from([(mapped[9], mapped[9]), (mapped[2], mapped[8])])
-        m = VF2pp(H1, H2, l1, l2)
+        m = vf2pp_mapping(H1, H2, node_labels="label")
         assert m
 
         # Re-structure the disconnected sub-graph
@@ -665,13 +634,13 @@ class TestMultiGraphISOVF2pp:
         # Connect the two disconnected components, forming a single graph
         H1.add_edges_from([(3, 13), (6, 11)])
         H2.add_edges_from([(mapped[8], mapped[10]), (mapped[2], mapped[11])])
-        m = VF2pp(H1, H2, l1, l2)
+        m = vf2pp_mapping(H1, H2, node_labels="label")
         assert m
 
         # Change orientation of self-loops in one graph, maintaining the degree sequence
         H1.remove_edges_from([(2, 2), (3, 6)])
         H1.add_edges_from([(6, 6), (2, 3)])
-        m = VF2pp(H1, H2, l1, l2)
+        m = vf2pp_mapping(H1, H2, node_labels="label")
         assert not m
 
     def test_custom_multigraph4_different_labels(self):
@@ -724,22 +693,21 @@ class TestMultiGraphISOVF2pp:
         G2 = nx.relabel_nodes(G1, mapped)
 
         assign_labels(G1, G2, mapped)
-        l1, l2 = get_labels(G1, G2)
 
-        m = VF2pp(G1, G2, l1, l2)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m == mapped
 
         # Add extra but corresponding edges to both graphs
         G1.add_edges_from([(2, 2), (2, 3), (2, 8), (3, 4)])
         G2.add_edges_from([("m", "m"), ("m", "l"), ("m", "h"), ("l", "j")])
-        m = VF2pp(G1, G2, l1, l2)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m == mapped
 
         # Obtain isomorphic subgraphs
         H1 = nx.MultiGraph(G1.subgraph([2, 3, 4, 6]))
         H2 = nx.MultiGraph(G2.subgraph(["m", "l", "j", "i"]))
-        l1, l2 = get_labels(H1, H2)
-        m = VF2pp(H1, H2, l1, l2)
+
+        m = vf2pp_mapping(H1, H2, node_labels="label")
         assert m
 
         # Delete the 3-clique, keeping only the path-graph. Also, H1 mirrors H2
@@ -748,7 +716,7 @@ class TestMultiGraphISOVF2pp:
         H1.remove_edges_from([(2, 2), (2, 3), (6, 6)])
         H2.remove_edges_from([("l", "i"), ("m", "m"), ("m", "m")])
 
-        m = VF2pp(H1, H2, l1, l2)
+        m = vf2pp_mapping(H1, H2, node_labels="label")
         assert not m
 
         # Assign the same labels so that mirroring means isomorphic
@@ -756,37 +724,36 @@ class TestMultiGraphISOVF2pp:
             H1.nodes[n1]["label"] = "red"
             H2.nodes[n2]["label"] = "red"
 
-        l1, l2 = get_labels(H1, H2)
-        m = VF2pp(H1, H2, l1, l2)
+        m = vf2pp_mapping(H1, H2, node_labels="label")
         assert m
 
         # Leave only one node with self-loop
         H1.remove_nodes_from([3, 6])
         H2.remove_nodes_from(["m", "l"])
-        m = VF2pp(H1, H2, l1, l2)
+        m = vf2pp_mapping(H1, H2, node_labels="label")
         assert m
 
         # Remove one self-loop from H1
         H1.remove_edge(2, 2)
-        m = VF2pp(H1, H2, l1, l2)
+        m = vf2pp_mapping(H1, H2, node_labels="label")
         assert not m
 
         # Same for H2
         H2.remove_edge("i", "i")
-        m = VF2pp(H1, H2, l1, l2)
+        m = vf2pp_mapping(H1, H2, node_labels="label")
         assert m
 
         # Compose H1 with the disconnected sub-graph of G1. Same for H2
         S1 = nx.compose(H1, nx.MultiGraph(G1.subgraph([10, 11, 12, 13])))
         S2 = nx.compose(H2, nx.MultiGraph(G2.subgraph(["a", "b", "d", "e"])))
-        l1, l2 = get_labels(S1, S2)
-        m = VF2pp(H1, H2, l1, l2)
+
+        m = vf2pp_mapping(H1, H2, node_labels="label")
         assert m
 
         # Connect the two components
         S1.add_edges_from([(13, 13), (13, 13), (2, 13)])
         S2.add_edges_from([("a", "a"), ("a", "a"), ("i", "e")])
-        m = VF2pp(H1, H2, l1, l2)
+        m = vf2pp_mapping(H1, H2, node_labels="label")
         assert m
 
     def test_custom_multigraph5_same_labels(self):
@@ -811,9 +778,8 @@ class TestMultiGraphISOVF2pp:
         G1.add_edges_from(edges1)
         G2 = nx.relabel_nodes(G1, mapped)
         assign_labels(G1, G2, mapped, same=True)
-        l1, l2 = get_labels(G1, G2)
 
-        m = VF2pp(G1, G2, l1, l2)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
 
         # Add multiple edges and self-loops, maintaining isomorphism
@@ -833,7 +799,7 @@ class TestMultiGraphISOVF2pp:
             ]
         )
 
-        m = VF2pp(G1, G2, l1, l2)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
 
         # Make G2 to be the rotated G1
@@ -862,7 +828,7 @@ class TestMultiGraphISOVF2pp:
             ]
         )
 
-        m = VF2pp(G1, G2, l1, l2)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
 
     def test_disconnected_multigraph_all_same_labels(self):
@@ -877,29 +843,27 @@ class TestMultiGraphISOVF2pp:
             G1.nodes[n]["label"] = "blue"
             G2.nodes[n]["label"] = "blue"
 
-        l1, l2 = get_labels(G1, G2)
-
-        m = VF2pp(G1, G2, l1, l2)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
 
         # Add self-loops to non-mapped nodes. Should be the same, as the graph is disconnected.
         G1.add_edges_from([(i, i) for i in range(5, 8)] * 3)
-        m = VF2pp(G1, G2, l1, l2)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert not m
 
         # Compensate in G2
         G2.add_edges_from([(i, i) for i in range(0, 3)] * 3)
-        m = VF2pp(G1, G2, l1, l2)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
 
         # Add one more self-loop in G2
         G2.add_edges_from([(0, 0), (1, 1), (1, 1)])
-        m = VF2pp(G1, G2, l1, l2)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert not m
 
         # Compensate in G1
         G1.add_edges_from([(5, 5), (7, 7), (7, 7)])
-        m = VF2pp(G1, G2, l1, l2)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
 
     def test_disconnected_multigraph_all_different_labels(self):
@@ -911,28 +875,27 @@ class TestMultiGraphISOVF2pp:
         G2 = nx.relabel_nodes(G1, mapped)
 
         assign_labels(G1, G2, mapped)
-        l1, l2 = get_labels(G1, G2)
 
-        m = VF2pp(G1, G2, l1, l2)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
         assert m == mapped
 
         # Add self-loops to non-mapped nodes. Now it is not the same, as there are different labels
         G1.add_edges_from([(i, i) for i in range(5, 8)] * 3)
-        m = VF2pp(G1, G2, l1, l2)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert not m
 
         # Add self-loops to non mapped nodes in G2 as well
         G2.add_edges_from([(mapped[i], mapped[i]) for i in range(0, 3)] * 7)
-        m = VF2pp(G1, G2, l1, l2)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert not m
 
         # Add self-loops to mapped nodes in G2
         G2.add_edges_from([(mapped[i], mapped[i]) for i in range(5, 8)] * 3)
-        m = VF2pp(G1, G2, l1, l2)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert not m
 
         # Add self-loops to G1 so that they are even in both graphs
         G1.add_edges_from([(i, i) for i in range(0, 3)] * 7)
-        m = VF2pp(G1, G2, l1, l2)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
