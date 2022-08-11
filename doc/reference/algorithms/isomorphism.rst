@@ -13,6 +13,15 @@ Isomorphism
    fast_could_be_isomorphic
    faster_could_be_isomorphic
 
+VF2++
+-----
+.. automodule:: networkx.algorithms.isomorphism.vf2pp
+.. autosummary::
+   :toctree: generated/
+
+   vf2pp_is_isomorphic
+   vf2pp_all_mappings
+   vf2pp_mapping
 
 Tree Isomorphism
 -----------------
