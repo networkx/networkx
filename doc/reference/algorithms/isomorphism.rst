@@ -4,9 +4,6 @@
 Isomorphism
 ***********
 
-.. toctree::
-   :maxdepth: 2
-
 .. automodule:: networkx.algorithms.isomorphism
 .. autosummary::
    :toctree: generated/
