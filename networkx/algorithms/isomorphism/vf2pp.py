@@ -6,8 +6,9 @@ VF2++ Algorithm
 An implementation of the VF2++ algorithm for Graph Isomorphism testing.
 
 The simplest interface to use this module is to call:
-networkx.vf2pp_is_isomorphic: to check whether two graphs are isomorphic.
-networkx.vf2pp_mapping: to obtain the node mapping between two graphs, in case they are isomorphic.
+`vf2pp_is_isomorphic`: to check whether two graphs are isomorphic.
+`vf2pp_mapping`: to obtain the node mapping between two graphs, in case they are isomorphic.
+`vf2pp_all_mappings`: to generate all possible mappings between two graphs, if isomorphic.
 
 """
 
