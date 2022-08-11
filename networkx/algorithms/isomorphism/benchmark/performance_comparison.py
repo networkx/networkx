@@ -5,11 +5,11 @@ import matplotlib.pyplot as plt
 
 import networkx as nx
 from networkx.algorithms.isomorphism.vf2pp import (
-    vf2pp_is_isomorphic,
     _feasibility,
     _matching_order,
     _precheck,
     _restore_state,
+    vf2pp_is_isomorphic,
 )
 from networkx.algorithms.isomorphism.vf2pp_helpers.state import _update_Tinout
 
