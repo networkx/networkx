@@ -1,6 +1,7 @@
 """Operations on many graphs.
 """
 from itertools import zip_longest
+
 import networkx as nx
 
 __all__ = ["union_all", "compose_all", "disjoint_union_all", "intersection_all"]

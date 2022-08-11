@@ -44,6 +44,17 @@ def test_modularity_communities_categorical_labels(func):
     assert set(func(G)) == expected
 
 
+def test_greedy_modularity_communities_components():
+    # Test for gh-5530
+    G = nx.Graph([(0, 1), (2, 3), (4, 5), (5, 6)])
+    # usual case with 3 components
+    assert greedy_modularity_communities(G) == [{4, 5, 6}, {0, 1}, {2, 3}]
+    # best_n can make the algorithm continue even when modularity goes down
+    assert greedy_modularity_communities(G, best_n=3) == [{4, 5, 6}, {0, 1}, {2, 3}]
+    assert greedy_modularity_communities(G, best_n=2) == [{0, 1, 4, 5, 6}, {2, 3}]
+    assert greedy_modularity_communities(G, best_n=1) == [{0, 1, 2, 3, 4, 5, 6}]
+
+
 def test_greedy_modularity_communities_relabeled():
     # Test for gh-4966
     G = nx.balanced_tree(2, 2)
@@ -306,7 +317,7 @@ def test_cutoff_parameter():
 def test_best_n():
     G = nx.barbell_graph(5, 3)
 
-    # Same result as without enforcing n_communities:
+    # Same result as without enforcing cutoff:
     best_n = 3
     expected = [frozenset(range(5)), frozenset(range(8, 13)), frozenset(range(5, 8))]
     assert greedy_modularity_communities(G, best_n=best_n) == expected

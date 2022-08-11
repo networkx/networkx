@@ -5,9 +5,8 @@ from collections import Counter
 from itertools import chain
 
 import networkx as nx
-from networkx.utils import pairwise, not_implemented_for
-from networkx.classes.graphviews import subgraph_view, reverse_view
-
+from networkx.classes.graphviews import reverse_view, subgraph_view
+from networkx.utils import not_implemented_for, pairwise
 
 __all__ = [
     "nodes",
@@ -19,7 +18,6 @@ __all__ = [
     "number_of_edges",
     "density",
     "is_directed",
-    "info",
     "freeze",
     "is_frozen",
     "subgraph",
@@ -385,9 +383,11 @@ def induced_subgraph(G, nbunch):
     Examples
     --------
     >>> G = nx.path_graph(4)  # or DiGraph, MultiGraph, MultiDiGraph, etc
-    >>> H = G.subgraph([0, 1, 2])
+    >>> H = nx.induced_subgraph(G, [0, 1, 3])
     >>> list(H.edges)
-    [(0, 1), (1, 2)]
+    [(0, 1)]
+    >>> list(H.nodes)
+    [0, 1, 3]
     """
     induced_nodes = nx.filters.show_nodes(G.nbunch_iter(nbunch))
     return nx.graphviews.subgraph_view(G, induced_nodes)
@@ -549,51 +549,6 @@ def create_empty_copy(G, with_data=True):
     if with_data:
         H.graph.update(G.graph)
     return H
-
-
-def info(G, n=None):
-    """Return a summary of information for the graph G or a single node n.
-
-    The summary includes the number of nodes and edges, or neighbours for a single
-    node.
-
-    Parameters
-    ----------
-    G : Networkx graph
-       A graph
-    n : node (any hashable)
-       A node in the graph G
-
-    Returns
-    -------
-    info : str
-        A string containing the short summary
-
-    Raises
-    ------
-    NetworkXError
-        If n is not in the graph G
-
-    .. deprecated:: 2.7
-       ``info`` is deprecated and will be removed in NetworkX 3.0.
-    """
-    import warnings
-
-    warnings.warn(
-        ("info is deprecated and will be removed in version 3.0.\n"),
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    if n is None:
-        return str(G)
-    if n not in G:
-        raise nx.NetworkXError(f"node {n} not in graph")
-    info = ""  # append this all to a string
-    info += f"Node {n} has the following properties:\n"
-    info += f"Degree: {G.degree(n)}\n"
-    info += "Neighbors: "
-    info += " ".join(str(nbr) for nbr in G.neighbors(n))
-    return info
 
 
 def set_node_attributes(G, values, name=None):

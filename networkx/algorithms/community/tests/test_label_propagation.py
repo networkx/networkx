@@ -1,11 +1,12 @@
-from itertools import chain
-from itertools import combinations
+from itertools import chain, combinations
 
 import pytest
 
 import networkx as nx
-from networkx.algorithms.community import label_propagation_communities
-from networkx.algorithms.community import asyn_lpa_communities
+from networkx.algorithms.community import (
+    asyn_lpa_communities,
+    label_propagation_communities,
+)
 
 
 def test_directed_not_supported():

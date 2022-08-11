@@ -1,7 +1,7 @@
 import pytest
+
 import networkx as nx
-from networkx.algorithms.approximation.steinertree import metric_closure
-from networkx.algorithms.approximation.steinertree import steiner_tree
+from networkx.algorithms.approximation.steinertree import metric_closure, steiner_tree
 from networkx.utils import edges_equal
 
 

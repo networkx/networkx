@@ -1,7 +1,7 @@
 import pytest
 
 import networkx as nx
-from networkx.utils import nodes_equal, edges_equal
+from networkx.utils import edges_equal, nodes_equal
 
 # Note: SubGraph views are not tested here. They have their own testing file
 
@@ -255,7 +255,7 @@ class TestChainsOfViews:
 
     def test_subgraph_copy(self):
         for origG in self.graphs:
-            G = nx.OrderedGraph(origG)
+            G = nx.Graph(origG)
             SG = G.subgraph([4, 5, 6])
             H = SG.copy()
             assert type(G) == type(H)
@@ -330,10 +330,10 @@ class TestChainsOfViews:
         assert not hasattr(DCSG, "_graph")  # not a view
 
     def test_copy_of_view(self):
-        G = nx.OrderedMultiGraph(self.MGv)
-        assert G.__class__.__name__ == "OrderedMultiGraph"
+        G = nx.MultiGraph(self.MGv)
+        assert G.__class__.__name__ == "MultiGraph"
         G = G.copy(as_view=True)
-        assert G.__class__.__name__ == "OrderedMultiGraph"
+        assert G.__class__.__name__ == "MultiGraph"
 
     def test_subclass(self):
         class MyGraph(nx.DiGraph):

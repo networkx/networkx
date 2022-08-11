@@ -332,7 +332,7 @@ A total of 166 changes have been committed.
 - Refactor `to_numpy_array` with advanced indexing (#5250)
 - Fix: Update louvain_partitions for threshold (update mod to new_mod in each level) (#5284)
 - Add exception for unconnected graph (#5287)
-- Fixing Tarjan's strongly connected components algorithm implementation to have O(|E|+|V|) time complexity instead of O(|V|^3). (#5288)
+- Fixing Tarjan's strongly connected components algorithm implementation to have `O(|E|+|V|)` time complexity instead of `O(|V|^3)`. (#5288)
 - Add weights to karate club graph (#5285)
 - Fix functions appearing in variables `__all__` but not in docs for NX2.7 (#5289)
 - Update to stable version of black (#5296)

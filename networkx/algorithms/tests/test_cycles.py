@@ -1,9 +1,8 @@
 import pytest
+
 import networkx
 import networkx as nx
-
-from networkx.algorithms import find_cycle
-from networkx.algorithms import minimum_cycle_basis
+from networkx.algorithms import find_cycle, minimum_cycle_basis
 from networkx.algorithms.traversal.edgedfs import FORWARD, REVERSE
 
 

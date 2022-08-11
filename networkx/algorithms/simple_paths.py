@@ -1,10 +1,9 @@
-from heapq import heappush, heappop
+from heapq import heappop, heappush
 from itertools import count
 
 import networkx as nx
-from networkx.utils import not_implemented_for
-from networkx.utils import pairwise
 from networkx.algorithms.shortest_paths.weighted import _weight_function
+from networkx.utils import not_implemented_for, pairwise
 
 __all__ = [
     "all_simple_paths",

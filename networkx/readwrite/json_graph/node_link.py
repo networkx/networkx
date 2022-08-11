@@ -1,4 +1,5 @@
 from itertools import chain, count
+
 import networkx as nx
 
 __all__ = ["node_link_data", "node_link_graph"]

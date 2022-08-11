@@ -1,9 +1,9 @@
-Next Release
-============
+NetworkX 3.0 (unreleased)
+=========================
 
 Release date: TBD
 
-Supports Python 3.8, 3.9, and 3.10
+Supports Python ...
 
 NetworkX is a Python package for the creation, manipulation, and study of the
 structure, dynamics, and functions of complex networks.
@@ -19,52 +19,37 @@ Highlights
 This release is the result of X of work with over X pull requests by
 X contributors. Highlights include:
 
+- Better syncing between G._succ and G._adj for directed G.
+  And slightly better speed from all the core adjacency data structures.
+  G.adj is now a cached_property while still having the cache reset when
+  G._adj is set to a new dict (which doesn't happen very often).
+  Note: We have always assumed that G._succ and G._adj point to the same
+  object. But we did not enforce it well. If you have somehow worked
+  around our attempts and are relying on these private attributes being
+  allowed to be different from each other due to loopholes in our previous
+  code, you will have to look for other loopholes in our new code
+  (or subclass DiGraph to explicitly allow this).
+- If your code sets G._succ or G._adj to new dictionary-like objects, you no longer
+  have to set them both. Setting either will ensure the other is set as well.
+  And the cached_properties G.adj and G.succ will be rest accordingly too.
+- If you use the presence of the attribute `_adj` as a criteria for the object
+  being a Graph instance, that code may need updating. The graph classes
+  themselves now have an attribute `_adj`. So, it is possible that whatever you
+  are checking might be a class rather than an instance. We suggest you check
+  for attribute `_adj` to verify it is like a NetworkX graph object or type and
+  then `type(obj) is type` to check if it is a class.
 
 Improvements
 ------------
-
-- Correction to the treatment of directed graphs for `average_neighbor_degree`
-  which used to sum the degrees of outgoing neighbors only but then divide by
-  the number of "in" or "out" or "in+out" neighbors. So it wasn't even an average.
-  The correction makes it an average degree of whatever population of neighbors
-  is specified by `source` = "in" or "out" or "in+out".
-  For example:
-
-      >>> G = nx.path_graph(3, create_using=nx.DiGraph)
-      >>> print(nx.average_neighbor_degree(G, source="in", target="in"))
-      {0: 0.0, 1: 1.0, 2: 1.0}
-
-  This used to produce `{0: 0.0, 1: 1.0, 2: 0.0}`
-  Note: node 0 and 2 were treated nonsensically.
-  Node 0 had calculated value 1/0 which was converted to 0.
-  (numerator looking at successors while denominator counting predecessors)
-  Node 2 had caluated value 0/1 = 0.0 (again succs on top, but preds in bottom)
-
-  Now node 0 has calculated value 0.0/0 which we treat as 0.0. And node 2 has
-  calculated value 1/1 = 1.0. Both handle the same nbrhood on top and bottom.
+- [`#5663 <https://github.com/networkx/networkx/pull/5663>`_]
+  Implements edge swapping for directed graphs.
 
 API Changes
 -----------
 
-- [`#5394 <https://github.com/networkx/networkx/pull/5394>`_]
-  The function ``min_weight_matching`` no longer acts upon the parameter ``maxcardinality``
-  because setting it to False would result in the min_weight_matching being no edges
-  at all. The only reasonable option is True. The parameter will be removed completely in v3.0.
 
 Deprecations
 ------------
-
-- [`#5227 <https://github.com/networkx/networkx/pull/5227>`_]
-  Deprecate the ``n_communities`` parameter name in ``greedy_modularity_communities``
-  in favor of ``cutoff``.
-- [`#5422 <https://github.com/networkx/networkx/pull/5422>`_]
-  Deprecate ``extrema_bounding``. Use the related distance measures with
-  ``usebounds=True`` instead.
-- [`#5427 <https://github.com/networkx/networkx/pull/5427>`_]
-  Deprecate ``dict_to_numpy_array1`` and ``dict_to_numpy_array2`` in favor of
-  ``dict_to_numpy_array``, which handles both.
-- [`#5428 <https://github.com/networkx/networkx/pull/5428>`_]
-  Deprecate ``utils.misc.to_tuple``.
 
 
 Merged PRs
