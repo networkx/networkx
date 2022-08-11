@@ -11,6 +11,7 @@ Isomorphism
 .. autosummary::
    :toctree: generated/
 
+   vf2pp_is_isomorphic
    is_isomorphic
    could_be_isomorphic
    fast_could_be_isomorphic
@@ -30,8 +31,9 @@ Tree Isomorphism
 Advanced Interfaces
 -------------------
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
    isomorphism.vf2
+   isomorphism.vf2pp
    isomorphism.ismags
 
