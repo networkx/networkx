@@ -11,7 +11,6 @@ The simplest interface to use this module is to call:
 `vf2pp_all_mappings`: to generate all possible mappings between two graphs, if isomorphic.
 
 """
-
 import collections
 
 import networkx as nx
