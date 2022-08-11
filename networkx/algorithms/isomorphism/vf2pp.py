@@ -27,19 +27,22 @@ __all__ = ["vf2pp_mapping", "vf2pp_is_isomorphic"]
 
 
 def vf2pp_mapping(G1, G2, node_labels=None, default_label=None):
-    """Yields all the possible mappings between G1 and G2.
+    """Return an isomorphic mapping between `G1` and `G2` if it exists.
 
     Parameters
     ----------
     G1,G2: NetworkX Graph or MultiGraph instances.
-        The two graphs to check for isomorphism.
+        The two graphs to check for isomorphism or monomorphism.
 
-    node_labels: string or None
-        The node attribute name within G that indicates node labels.
-        If None, then no node labels are used to compute isomorphisms.
+    node_labels: Label name
+        The label name of all nodes
 
-    default_label: string
-        The default label for nodes that have no label attribute value.
+    default_label: Label name
+        Let the user pick a default label value
+
+    Returns
+    -------
+    Node mapping, if the two graphs are isomorphic. None otherwise.
     """
     try:
         mapping = next(vf2pp_all_mappings(G1, G2, node_labels, default_label))
@@ -70,22 +73,19 @@ def vf2pp_is_isomorphic(G1, G2, node_labels=None, default_label=None):
 
 
 def vf2pp_all_mappings(G1, G2, node_labels=None, default_label=None):
-    """Implementation of the VF2++ algorithm.
+    """Yields all the possible mappings between G1 and G2.
 
     Parameters
     ----------
     G1,G2: NetworkX Graph or MultiGraph instances.
-        The two graphs to check for isomorphism or monomorphism.
+        The two graphs to check for isomorphism.
 
-    node_labels: Label name
-        The label name of all nodes
+    node_labels: string or None
+        The node attribute name within G that indicates node labels.
+        If None, then no node labels are used to compute isomorphisms.
 
-    default_label: Label name
-        Let the user pick a default label value
-
-    Returns
-    -------
-    Node mapping, if the two graphs are isomorphic. None otherwise.
+    default_label: string
+        The default label for nodes that have no label attribute value.
     """
     G1_labels, G2_labels = {}, {}
     if not G1 and not G2:
