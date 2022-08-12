@@ -243,6 +243,11 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=PendingDeprecationWarning, message="nx.nx_pydot"
     )
+    warnings.filterwarnings(
+        "ignore",
+        category=DeprecationWarning,
+        message="signature change for node_link functions",
+    )
 
 
 @pytest.fixture(autouse=True)

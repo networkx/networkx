@@ -117,6 +117,11 @@ Version 3.0
 * In ``algorithms/matching.py``, remove parameter ``maxcardinality`` from ``min_weight_matching``.
 * In ``drawing/nx_pydot.py``, change PendingDeprecationWarning to DeprecationWarning.
 
+Version 3.1
+~~~~~~~~~~~
+* In ``readwrite/json_graph/node_link.py`` remove the ``attrs` keyword code 
+  and docstring in ``node_link_data`` and ``node_link_graph``. Also the associated tests.
+
 Version 3.2
 ~~~~~~~~~~~
 * In ``generators/directed.py`` remove the ``create_using`` keyword argument
