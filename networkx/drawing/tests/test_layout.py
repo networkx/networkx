@@ -418,6 +418,24 @@ class TestLayout:
         for k, v in expectation.items():
             assert (s_vpos[k] == v).all()
 
+    def test_arf_layout_partial_input_test(self):
+        """
+        Checks whether partial pos input still returns a proper position.
+        """
+        G = self.Gs
+        node = nx.utils.arbitrary_element(G)
+        pos = nx.circular_layout(G)
+        del pos[node]
+        pos = nx.arf_layout(G, pos=pos)
+        assert len(pos) == len(G)
+
+    def test_arf_layout_negative_a_check(self):
+        """
+        Checks input parameters correctly raises errors. For example,  `a` should be larger than 1
+        """
+        G = self.Gs
+        pytest.raises(ValueError, nx.arf_layout, G=G, a=-1)
+
 
 def test_multipartite_layout_nonnumeric_partition_labels():
     """See gh-5123."""
@@ -450,12 +468,3 @@ def test_multipartite_layout_layer_order():
     G.nodes["a"]["subset"] = "layer_0"  # Can't sort mixed strs/ints
     pos_nosort = nx.multipartite_layout(G)  # smoke test: this should not raise
     assert pos_nosort.keys() == pos.keys()
-
-    def test_arf_layout(self):
-        # check whether partial pos input still returns a proper position
-        G = self.Gs
-        node = nx.utils.arbitrary_element(G)
-        pos = nx.circular_layout(G)
-        del pos[node]
-        pos = nx.arf_layout(G, pos=pos)
-        assert len(pos) == len(G)
