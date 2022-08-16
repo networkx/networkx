@@ -1165,52 +1165,60 @@ def arf_layout(
     >>> pos = nx.arf_layout(G)
 
     """
-    import numpy as np
+    import numpy as np, warnings
 
-    assert alpha > 1, "Alpha should be larger than 1"
-    pos_tmp = nx.random_layout(g, seed=seed)
+    if a <= 1:
+        msg = "The parameter a should be larger than 1"
+        raise ValueError(msg)
+
+    pos_tmp = nx.random_layout(G)
     if pos is None:
-        pos = pos_tmp.copy()
+        pos = pos_tmp
     else:
-        for node in g.nodes():
+        for node in G.nodes():
             if node not in pos:
                 pos[node] = pos_tmp[node].copy()
 
     # Initialize spring constant matrix
-    N = len(g)
+    N = len(G)
     # No nodes no computation
     if N == 0:
         return pos
-    K = np.zeros((N, N))
-    for idx, x in enumerate(g.nodes()):
-        for jdx, y in enumerate(g.nodes()):
-            if idx == jdx:
-                K[idx, jdx] = 0
-            elif g.has_edge(x, y) or g.has_edge(y, x):
-                K[idx, jdx] = alpha
-            else:
-                K[idx, jdx] = 1
+
+    # init force of springs
+    K = np.ones((N, N)) - np.eye(N)
+    node_order = {node: i for i, node in enumerate(G)}
+    for x, y in G.edges():
+        if x != y:
+            idx, jdx = [node_order[i] for i in (x, y)]
+            K[idx, jdx] = a
+
     # vectorize values
     p = np.asarray(list(pos.values()))
-    bV = np.sqrt(N) * b  # scaling constant for circular space
+
+    # equation 10 in [1]
+    rho = scaling * np.sqrt(N)
 
     # looping variables
     error = etol + 1
     n_iter = 0
     while error > etol:
-        diff = p[:, None] - p[None]
-        A = np.linalg.norm(diff, axis=-1)[..., None]
+        diff = p[:, np.newaxis] - p[np.newaxis]
+        A = np.linalg.norm(diff, axis=-1)[..., np.newaxis]
         # attraction_force - repulsions force
-        change = K[..., None] * diff - bV / A * diff
+        # suppress nans due to division; caused by diagonal set to zero.
+        # Does not affect the computation due to nansum
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            change = K[..., np.newaxis] * diff - rho / A * diff
         change = np.nansum(change, axis=0)
         p += change * dt
 
         error = np.linalg.norm(change, axis=-1).sum()
-        # error = abs(change).sum()
         if n_iter > max_iter:
             break
         n_iter += 1
-    return {node: pi for node, pi in zip(g.nodes(), p)}
+    return {node: pi for node, pi in zip(G.nodes(), p)}
 
 
 def rescale_layout(pos, scale=1):
