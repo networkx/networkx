@@ -376,9 +376,8 @@ def lexicographical_topological_sort(G, key=None):
     TypeError: '<' not supported between instances of 'str' and 'int'
     ...
 
-    The solution is to provide a function that returns keys that do compare.
-
-    There are many ways to write a `key` function. This one returns a tuple where the first
+    Incomparable nodes can be resolved using a `key` function. This example function 
+    allows comparison of integers and strings by returning a tuple where the first
     element is True for `str`, False otherwise. The second element is the node name.
     This groups the strings and integers separately so they can be compared only among themselves.
 
