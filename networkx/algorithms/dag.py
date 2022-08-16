@@ -333,7 +333,7 @@ def lexicographical_topological_sort(G, key=None):
 
     key : function, optional
         A function of one argument that converts a node name to a comparison key.
-        Use to resolve ambiguities in the sort order.  Defaults to the identity function.
+        It defines and resolves ambiguities in the sort order.  Defaults to the identity function.
 
     Yields
     ------
