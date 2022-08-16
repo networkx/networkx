@@ -1,18 +1,9 @@
 from itertools import chain
 
 import networkx as nx
-from networkx.utils import pairwise, not_implemented_for
+from networkx.utils import not_implemented_for, pairwise
 
 __all__ = ["metric_closure", "steiner_tree"]
-
-
-class HeapEntry:
-    def __init__(self, comparator, data):
-        self.comparator = comparator
-        self.data = data
-
-    def __lt__(self, other):
-        return self.comparator < other.comparator
 
 
 @not_implemented_for("directed")
