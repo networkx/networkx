@@ -366,7 +366,7 @@ def lexicographical_topological_sort(G, key=None):
     >>> list(nx.lexicographical_topological_sort(DG, key=lambda x: -x))
     [2, 5, 1, 4, 3]
 
-    The sort will fail for this graph because the comparison of integers to strings
+    The sort will fail for any graph with integer and string nodes. Comparison of integer to strings
     is not defined in python.  Is 3 greater or less than 'red'?
 
     >>> DG = nx.DiGraph([(1, 'red'), (3, 'red'), (1, 'green'), (2, 'blue')])
