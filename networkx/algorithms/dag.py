@@ -304,7 +304,9 @@ def topological_sort(G):
 
 
 def lexicographical_topological_sort(G, key=None):
-    """Generates a unique ordering of nodes by first sorting topologically (for which there are often
+    """Generate the nodes in the unique lexicographical topological sort order.
+    
+    Generates a unique ordering of nodes by first sorting topologically (for which there are often
     multiple valid orderings) and then additionally by sorting lexicographically.
 
     A topological sort arranges the nodes of a directed graph so that the
