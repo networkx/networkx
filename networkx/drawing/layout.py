@@ -1112,47 +1112,47 @@ def multipartite_layout(G, subset_key="subset", align="vertical", scale=1, cente
 
 
 def arf_layout(
-    g, pos=None, b=1, alpha=1.1, etol=1e-6, dt=1e-3, max_iter=1000, seed=None
+    G,
+    pos=None,
+    scaling=1,
+    a=1.1,
+    etol=1e-6,
+    dt=1e-3,
+    max_iter=1000,
 ):
     """Arf layout for networkx
 
-    The  attractive   and  repulsive  forces   (arf)  layout (Geipel 2006)
-    improves  the spring  layout  in three  ways. First,  it
-    prevents  congestion of  highly connected  nodes due  to
-    strong forcing  between nodes.  Second, it  utilizes the
-    layout space  more effectively by preventing  large gaps
-    that  spring layout  tends  to create.  Lastly, the  arf
-    layout represents symmmetries in  the layout better than
+    The attractive and repulsive forces (arf) layout [1]
+    improves the spring layout in three ways. First, it
+    prevents congestion of highly connected nodes due to
+    strong forcing between nodes. Second, it utilizes the
+    layout space more effectively by preventing large gaps
+    that spring layout tends to create. Lastly, the arf
+    layout represents symmmetries in the layout better than
     the default spring layout.
 
     Parameters
     ----------
-    g : nx.Graph or nx.DiGraph
+    G : nx.Graph or nx.DiGraph
         Networkx graph.
     pos : dict
         Initial  position of  the nodes.  If set  to None  a
-        random layout will be used using seed as input.
-    b : float
-        Controls the radius of  the circular space the graph
-        layout will be plotted in.
-    alpha : float
-        Attraction scalar between edges. Should be larger than 1.
+        random layout will be used.
+    scaling : float
+        Scales the radius of the circular layout space.
+    a : float
+        Strength of springs between connected nodes. Should be larger than 1. The greater a, the clearer the separation ofunconnected sub clusters.
     etol : float
-        Termination tolerance
+        Graduent sum of spring forces must be larger than `etol` before succesful termination.
     dt : float
-        Integration factor
+        Time step for force differential equation simulations.
     max_iter : int
         Max iterations before termination of the algorithm.
-    seed : int, RandomState instance or None  optional (default=None)
-        Set the random state for deterministic node layouts.
-        If int, `seed` is the seed used by the random number generator,
-        if numpy.random.RandomState instance, `seed` is the random
-        number generator,
-        if None, the random number generator is the RandomState instance used
-        by numpy.random.
 
     References
-    - https://www.worldscientific.com/doi/abs/10.1142/S0129183107011558
+    .. [1] "Self-Organization Applied to Dynamic Network Layout", M. Geipel,
+            International Jounral of Modern Physics C, 2007, Vol 18, No 10, pp. 1537-1549.
+            https://doi.org/10.1142/S0129183107011558 https://arxiv.org/abs/0704.1748
 
     Returns
     -------
