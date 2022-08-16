@@ -1190,7 +1190,7 @@ def arf_layout(
     node_order = {node: i for i, node in enumerate(G)}
     for x, y in G.edges():
         if x != y:
-            idx, jdx = [node_order[i] for i in (x, y)]
+            idx, jdx = (node_order[i] for i in (x, y))
             K[idx, jdx] = a
 
     # vectorize values
