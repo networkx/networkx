@@ -436,7 +436,7 @@ class TestColoring:
             G,
             colored_vertices,
             full_color_assignment=None,
-            vertices_to_add_between_calls=1
+            vertices_to_add_between_calls=1,
         ):
             
             color_assignments = []
