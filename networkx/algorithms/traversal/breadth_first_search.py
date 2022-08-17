@@ -383,7 +383,7 @@ def bfs_layers(G, sources):
         Specify starting nodes for single source or multiple sources breadth-first search
 
     Yields
-    -------
+    ------
     layer: list of nodes
         Yields list of nodes at the same distance from sources
 
