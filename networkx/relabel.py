@@ -1,5 +1,3 @@
-from collections.abc import Callable
-
 import networkx as nx
 
 __all__ = ["convert_node_labels_to_integers", "relabel_nodes"]
@@ -118,10 +116,8 @@ def relabel_nodes(G, mapping, copy=True):
     """
     # you can pass any callable e.g. f(old_label) -> new_label or
     # e.g. str(old_label) -> new_label, but we'll just make a dictionary here regardless
-    if isinstance(mapping, Callable):
-        m = {n: mapping(n) for n in G}
-    else:
-        m = mapping
+    m = {n: mapping(n) for n in G} if callable(mapping) else mapping
+
     if copy:
         return _relabel_copy(G, m)
     else:
