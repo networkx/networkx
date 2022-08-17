@@ -106,11 +106,18 @@ class TestRelabel:
         H = nx.relabel_nodes(G, mapping)
         assert nodes_equal(H.nodes(), [65, 66, 67, 68])
 
-    def test_relabel_nodes_classes(self):
-        G = nx.empty_graph()
-        G.add_edges_from([(0, 1), (0, 2), (1, 2), (2, 3)])
+    def test_relabel_nodes_callable_type(self):
+        G = nx.path_graph(4)
         H = nx.relabel_nodes(G, str)
         assert nodes_equal(H.nodes, ["0", "1", "2", "3"])
+
+    @pytest.mark.parametrize("non_mc", ("0123", ["0", "1", "2", "3"]))
+    def test_relabel_nodes_non_mapping_or_callable(self, non_mc):
+        """If `mapping` is neither a Callable or a Mapping, an exception
+        should be raised."""
+        G = nx.path_graph(4)
+        with pytest.raises(AttributeError):
+            nx.relabel_nodes(G, non_mc)
 
     def test_relabel_nodes_graph(self):
         G = nx.Graph([("A", "B"), ("A", "C"), ("B", "C"), ("C", "D")])
