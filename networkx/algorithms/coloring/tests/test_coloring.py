@@ -433,7 +433,7 @@ class TestColoring:
 
     def test_strategy_saturation_largest_first(self):
         def color_remaining_nodes(
-            G,
+            G,  
             colored_vertices,
             full_color_assignment=None,
             vertices_to_add_between_calls=1,
@@ -442,11 +442,11 @@ class TestColoring:
             color_assignments = []
             aux_colored_vertices = colored_vertices.copy()
 
-            scratch_iterator = nx.algorithms.coloring.greedy_coloring.strategy_saturation_largest_first(
+            node_iterator = nx.algorithms.coloring.greedy_coloring.strategy_saturation_largest_first(
                 G, aux_colored_vertices
             )
 
-            for u in scratch_iterator:
+            for u in node_iterator:
                 # Set to keep track of colors of neighbours
                 neighbour_colors = {
                     aux_colored_vertices[v] for v in G[u] if v in aux_colored_vertices
