@@ -431,7 +431,7 @@ class TestColoring:
         )
         check_state(**params)
 
-    def test_strategy_saturation_largest_first():
+    def test_strategy_saturation_largest_first(self):
         def color_remaining_nodes(G, colored_vertices, full_color_assignment=None, vertices_to_add_between_calls=1):
             
             color_assignments = []
