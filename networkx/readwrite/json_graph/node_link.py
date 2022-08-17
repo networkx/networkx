@@ -50,7 +50,7 @@ def node_link_data(
         .. deprecated:: 2.8.6
 
            The `attrs` keyword argument will be replaced with `source`, `target`, `name`,
-           `key` and `link`. in networkx 3.1
+           `key` and `link`. in networkx 3.2
 
            If the `attrs` keyword and the new keywords are both used in a single function call (not recommended)
            the `attrs` keyword argument will take precedence.
@@ -127,7 +127,7 @@ def node_link_data(
 
         msg = (
             "\n\nThe `attrs` keyword argument of node_link_data is deprecated\n"
-            "and will be removed in networkx 3.1. It is replaced with explicit\n"
+            "and will be removed in networkx 3.2. It is replaced with explicit\n"
             "keyword arguments: `source`, `target`, `name`, `key` and `link`.\n"
             "To make this warning go away, and ensure usage is forward\n"
             "compatible, replace `attrs` with the keywords. "
@@ -135,7 +135,7 @@ def node_link_data(
             "   >>> node_link_data(G, attrs={'target': 'foo', 'name': 'bar'})\n\n"
             "should instead be written as\n\n"
             "   >>> node_link_data(G, target='foo', name='bar')\n\n"
-            "in networkx 3.1.\n"
+            "in networkx 3.2.\n"
             "The default values of the keywords will not change.\n"
         )
         warnings.warn(msg, DeprecationWarning, stacklevel=2)
@@ -207,7 +207,7 @@ def node_link_graph(
         .. deprecated:: 2.8.6
 
            The `attrs` keyword argument will be replaced with the individual keywords: `source`, `target`, `name`,
-           `key` and `link`. in networkx 3.1.
+           `key` and `link`. in networkx 3.2.
 
            If the `attrs` keyword and the new keywords are both used in a single function call (not recommended)
            the `attrs` keyword argument will take precedence.
@@ -272,7 +272,7 @@ def node_link_graph(
 
         msg = (
             "\n\nThe `attrs` keyword argument of node_link_graph is deprecated\n"
-            "and will be removed in networkx 3.1. It is replaced with explicit\n"
+            "and will be removed in networkx 3.2. It is replaced with explicit\n"
             "keyword arguments: `source`, `target`, `name`, `key` and `link`.\n"
             "To make this warning go away, and ensure usage is forward\n"
             "compatible, replace `attrs` with the keywords. "
@@ -280,7 +280,7 @@ def node_link_graph(
             "   >>> node_link_graph(data, attrs={'target': 'foo', 'name': 'bar'})\n\n"
             "should instead be written as\n\n"
             "   >>> node_link_graph(data, target='foo', name='bar')\n\n"
-            "in networkx 3.1.\n"
+            "in networkx 3.2.\n"
             "The default values of the keywords will not change.\n"
         )
         warnings.warn(msg, DeprecationWarning, stacklevel=2)
