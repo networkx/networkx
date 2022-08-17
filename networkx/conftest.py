@@ -145,7 +145,7 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore",
         category=DeprecationWarning,
-        message="signature change for node_link functions",
+        message="\n\nThe `attrs` keyword argument of node_link",
     )
 
 
