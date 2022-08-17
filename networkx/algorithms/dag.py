@@ -305,7 +305,7 @@ def topological_sort(G):
 
 def lexicographical_topological_sort(G, key=None):
     """Generate the nodes in the unique lexicographical topological sort order.
-    
+
     Generates a unique ordering of nodes by first sorting topologically (for which there are often
     multiple valid orderings) and then additionally by sorting lexicographically.
 
@@ -376,7 +376,7 @@ def lexicographical_topological_sort(G, key=None):
     TypeError: '<' not supported between instances of 'str' and 'int'
     ...
 
-    Incomparable nodes can be resolved using a `key` function. This example function 
+    Incomparable nodes can be resolved using a `key` function. This example function
     allows comparison of integers and strings by returning a tuple where the first
     element is True for `str`, False otherwise. The second element is the node name.
     This groups the strings and integers separately so they can be compared only among themselves.
