@@ -234,7 +234,12 @@ def strategy_saturation_largest_first(G, colors):
         for v in G[node]:
             distinct_colors[v].add(0)
 
-    for i in range(len(G) - len(colors)):
+    while not len(G)==len(colors):
+        # Update the distinct color sets for the neighbors.
+        for vertex, color in colors.items():
+            for neighbor in G[vertex]:
+                distinct_colors[neighbor].add(color)
+
         # Compute the maximum saturation and the set of nodes that
         # achieve that saturation.
         saturation = {v: len(c) for v, c in distinct_colors.items() if v not in colors}
@@ -242,11 +247,6 @@ def strategy_saturation_largest_first(G, colors):
         # degree.
         node = max(saturation, key=lambda v: (saturation[v], G.degree(v)))
         yield node
-
-        # Update the distinct color sets for the neighbors.
-        color = colors[node]
-        for v in G[node]:
-            distinct_colors[v].add(color)
 
 
 #: Dictionary mapping name of a strategy as a string to the strategy function.
