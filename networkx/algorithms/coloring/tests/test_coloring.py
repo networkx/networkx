@@ -460,7 +460,7 @@ class TestColoring:
                 
                 # Color vertices between iterations
                 for i in range(vertices_to_add_between_calls - 1):
-                    if not len(color_assignments)+len(colored_vertices) >= len(
+                    if not len(color_assignments) + len(colored_vertices) >= len(
                         full_color_assignment
                     ):
                         full_color_assignment_vertex, color = full_color_assignment[
@@ -496,7 +496,7 @@ class TestColoring:
                         G,
                         colored_vertices,
                         full_color_assignment=full_color_assignment,
-                        vertices_to_add_between_calls=vertices_to_add_between_calls
+                        vertices_to_add_between_calls=vertices_to_add_between_calls,
                     )
 
                     # Check that the color assignment and order of remaining nodes are the same
