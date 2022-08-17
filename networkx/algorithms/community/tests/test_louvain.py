@@ -2,6 +2,7 @@ import networkx as nx
 from networkx.algorithms.community import (
     is_partition,
     louvain_communities,
+    louvain_partitions,
     modularity,
     partition_quality,
 )
@@ -30,7 +31,7 @@ def test_valid_partition():
     assert is_partition(H, partition2)
 
 
-def test_partition():
+def test_karate_club_partition():
     G = nx.karate_club_graph()
     part = [
         {0, 1, 2, 3, 7, 9, 11, 12, 13, 17, 19, 21},
@@ -41,6 +42,18 @@ def test_partition():
     partition = louvain_communities(G, seed=2, weight=None)
 
     assert part == partition
+
+
+def test_partition_iterator():
+    G = nx.path_graph(15)
+    parts_iter = louvain_partitions(G, seed=42)
+    first_part = next(parts_iter)
+    first_copy = [s.copy() for s in first_part]
+
+    # gh-5901 reports sets changing after next partition is yielded
+    assert first_copy[0] == first_part[0]
+    second_part = next(parts_iter)
+    assert first_copy[0] == first_part[0]
 
 
 def test_directed_partition():
