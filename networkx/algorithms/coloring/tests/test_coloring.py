@@ -432,7 +432,12 @@ class TestColoring:
         check_state(**params)
 
     def test_strategy_saturation_largest_first(self):
-        def color_remaining_nodes(G, colored_vertices, full_color_assignment=None, vertices_to_add_between_calls=1):
+        def color_remaining_nodes(
+            G,
+            colored_vertices,
+            full_color_assignment=None,
+            vertices_to_add_between_calls=1
+        ):
             
             color_assignments = []
             aux_colored_vertices = colored_vertices.copy()
@@ -454,9 +459,13 @@ class TestColoring:
                 color_assignments.append((u, color))
                 
                 # Color vertices between iterations
-                for i in range(vertices_to_add_between_calls-1):
-                    if not len(color_assignments)+len(colored_vertices) >= len(full_color_assignment):
-                        full_color_assignment_vertex, color = full_color_assignment[len(color_assignments)+len(colored_vertices)]
+                for i in range(vertices_to_add_between_calls - 1):
+                    if not len(color_assignments)+len(colored_vertices) >= len(
+                        full_color_assignment
+                    ):
+                        full_color_assignment_vertex, color = full_color_assignment[
+                            len(color_assignments) + len(colored_vertices)
+                        ]
                         
                         # Assign the new color to the current node.
                         aux_colored_vertices[full_color_assignment_vertex] = color
@@ -469,7 +478,7 @@ class TestColoring:
             G = G()
 
             # Check that function still works when vertices are colored between iterations
-            for vertices_to_add_between_calls in range(1,5):
+            for vertices_to_add_between_calls in range(1, 5):
                 # Get a full color assignment, (including the order in which nodes were colored)
                 colored_vertices = {}
                 full_color_assignment, full_colored_vertices = color_remaining_nodes(
@@ -483,7 +492,12 @@ class TestColoring:
                     (
                         partial_color_assignment,
                         partial_colored_vertices,
-                    ) = color_remaining_nodes(G, colored_vertices, full_color_assignment=full_color_assignment, vertices_to_add_between_calls=vertices_to_add_between_calls)
+                    ) = color_remaining_nodes(
+                        G,
+                        colored_vertices,
+                        full_color_assignment=full_color_assignment,
+                        vertices_to_add_between_calls=vertices_to_add_between_calls
+                    )
 
                     # Check that the color assignment and order of remaining nodes are the same
                     assert full_color_assignment[ind + 1 :] == partial_color_assignment
