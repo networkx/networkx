@@ -433,7 +433,7 @@ class TestColoring:
 
     def test_strategy_saturation_largest_first(self):
         def color_remaining_nodes(
-            G,  
+            G,
             colored_vertices,
             full_color_assignment=None,
             vertices_to_add_between_calls=1,
