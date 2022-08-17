@@ -438,7 +438,7 @@ class TestColoring:
             full_color_assignment=None,
             vertices_to_add_between_calls=1,
         ):
-            
+
             color_assignments = []
             aux_colored_vertices = colored_vertices.copy()
 
@@ -457,7 +457,7 @@ class TestColoring:
                         break
                 aux_colored_vertices[u] = color
                 color_assignments.append((u, color))
-                
+
                 # Color vertices between iterations
                 for i in range(vertices_to_add_between_calls - 1):
                     if not len(color_assignments) + len(colored_vertices) >= len(
@@ -466,7 +466,7 @@ class TestColoring:
                         full_color_assignment_vertex, color = full_color_assignment[
                             len(color_assignments) + len(colored_vertices)
                         ]
-                        
+
                         # Assign the new color to the current node.
                         aux_colored_vertices[full_color_assignment_vertex] = color
                         color_assignments.append((full_color_assignment_vertex, color))
