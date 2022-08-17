@@ -98,22 +98,23 @@ class MinDegreeHeuristic:
         # nodes that have to be updated in the heap before each iteration
         self._update_nodes = []
 
-        self._degreeq = []  # a heapq with 2-tuples (degree,node)
+        self._degreeq = []  # a heapq with 3-tuples (degree,unique_id,node)
+        self.count = itertools.count()
 
         # build heap with initial degrees
         for n in graph:
-            self._degreeq.append((len(graph[n]), n))
+            self._degreeq.append((len(graph[n]), next(self.count), n))
         heapify(self._degreeq)
 
     def best_node(self, graph):
         # update nodes in self._update_nodes
         for n in self._update_nodes:
             # insert changed degrees into degreeq
-            heappush(self._degreeq, (len(graph[n]), n))
+            heappush(self._degreeq, (len(graph[n]), next(self.count), n))
 
         # get the next valid (minimum degree) node
         while self._degreeq:
-            (min_degree, elim_node) = heappop(self._degreeq)
+            (min_degree, _, elim_node) = heappop(self._degreeq)
             if elim_node not in graph or len(graph[elim_node]) != min_degree:
                 # outdated entry in degreeq
                 continue
@@ -145,16 +146,15 @@ def min_fill_in_heuristic(graph):
 
     min_fill_in = sys.maxsize
 
-    # create sorted list of (degree, node)
-    degree_list = [(len(graph[node]), node) for node in graph]
-    degree_list.sort()
+    # sort nodes by degree
+    nodes_by_degree = sorted(graph, key=lambda x: len(graph[x]))
+    min_degree = len(graph[nodes_by_degree[0]])
 
-    # abort condition
-    min_degree = degree_list[0][0]
+    # abort condition (handle complete graph)
     if min_degree == len(graph) - 1:
         return None
 
-    for (_, node) in degree_list:
+    for node in nodes_by_degree:
         num_fill_in = 0
         nbrs = graph[node]
         for nbr in nbrs:
