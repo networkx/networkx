@@ -12,7 +12,7 @@ __all__ = ["louvain_communities", "louvain_partitions"]
 
 @py_random_state("seed")
 def louvain_communities(
-    G, weight="weight", resolution=1, threshold=0.0000001, seed=None
+    G, weight="weight", resolution=1, threshold=0.0000001, seed=None, iteration_limit=10000,
 ):
     r"""Find the best partition of a graph using the Louvain Community Detection
     Algorithm.
@@ -107,14 +107,14 @@ def louvain_communities(
     louvain_partitions
     """
 
-    d = louvain_partitions(G, weight, resolution, threshold, seed)
+    d = louvain_partitions(G, weight, resolution, threshold, seed, iteration_limit)
     q = deque(d, maxlen=1)
     return q.pop()
 
 
 @py_random_state("seed")
 def louvain_partitions(
-    G, weight="weight", resolution=1, threshold=0.0000001, seed=None
+    G, weight="weight", resolution=1, threshold=0.0000001, seed=None, iteration_limit=10000,
 ):
     """Yields partitions for each level of the Louvain Community Detection Algorithm
 
@@ -178,8 +178,10 @@ def louvain_partitions(
         graph, m, partition, resolution, is_directed, seed
     )
     improvement = True
-    while improvement:
+    _iteration_count = 0
+    while improvement and _iteration_count < iteration_limit:
         yield partition
+        _iteration_count += 1
         new_mod = modularity(
             graph, inner_partition, resolution=resolution, weight="weight"
         )
