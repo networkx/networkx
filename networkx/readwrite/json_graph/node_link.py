@@ -26,7 +26,14 @@ def _to_tuple(x):
 
 
 def node_link_data(
-    G, attrs=None, source="source", target="target", name="id", key="key", link="links"
+    G,
+    attrs=None,
+    *,
+    source="source",
+    target="target",
+    name="id",
+    key="key",
+    link="links",
 ):
     """Returns data in node-link format that is suitable for JSON serialization
     and use in Javascript documents.
@@ -176,6 +183,7 @@ def node_link_graph(
     directed=False,
     multigraph=True,
     attrs=None,
+    *,
     source="source",
     target="target",
     name="id",
