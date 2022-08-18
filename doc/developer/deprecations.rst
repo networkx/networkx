@@ -88,13 +88,11 @@ Version 3.0
 * In ``utils/misc.py`` remove ``to_tuple``.
 * In ``algorithms/matching.py``, remove parameter ``maxcardinality`` from ``min_weight_matching``.
 
-Version 3.1
-~~~~~~~~~~~
-* In ``readwrite/json_graph/node_link.py`` remove the ``attrs` keyword code 
-  and docstring in ``node_link_data`` and ``node_link_graph``. Also the associated tests.
 
 Version 3.2
 ~~~~~~~~~~~
 * In ``generators/directed.py`` remove the ``create_using`` keyword argument
   for the ``scale_free_graph`` function.
 * Remove pydot functionality ``drawing/nx_pydot.py``, if pydot is still not being maintained. See #5723
+* In ``readwrite/json_graph/node_link.py`` remove the ``attrs` keyword code 
+  and docstring in ``node_link_data`` and ``node_link_graph``. Also the associated tests.

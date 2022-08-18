@@ -43,10 +43,17 @@ Improvements
 ------------
 - [`#5663 <https://github.com/networkx/networkx/pull/5663>`_]
   Implements edge swapping for directed graphs.
-- [`#5663 <https://github.com/networkx/networkx/pull/5883>`_]
+- [`#5883 <https://github.com/networkx/networkx/pull/5883>`_]
   Replace the implementation of ``lowest_common_ancestor`` and
   ``all_pairs_lowest_common_ancestor`` with a "naive" algorithm to fix
   several bugs and improve performance.
+- [`#5912 <https://github.com/networkx/networkx/pull/5912>`_]
+  The ``mapping`` argument of the ``relabel_nodes`` function can be either a
+  mapping or a function that creates a mapping. ``relabel_nodes`` first checks
+  whether the ``mapping`` is callable - if so, then it is used as a function.
+  This fixes a bug related for ``mapping=str`` and may change the behavior for
+  other ``mapping`` arguments that implement both ``__getitem__`` and
+  ``__call__``.
 
 API Changes
 -----------
