@@ -275,8 +275,8 @@ def has_eulerian_path(G, source=None):
     -------
     Bool : True if G has an Eulerian path.
 
-    Example
-    -------
+    Examples
+    --------
     If you prefer to allow graphs with isolated vertices to have Eulerian path,
     you can first remove such vertices and then call `has_eulerian_path` as below example shows.
 
