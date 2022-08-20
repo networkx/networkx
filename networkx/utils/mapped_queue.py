@@ -43,7 +43,13 @@ class _HeapElement:
             return self.priority < other
         # assume comparing to another _HeapElement
         if self.priority == other_priority:
-            return self.element < other.element
+            try:
+                return self.element < other.element
+            except TypeError as err:
+                raise TypeError(
+                    f"{err}\nConsider using a tuple for the priority to avoid such comparisons: "
+                    f"{{k: (v, i) for i, (k,v) in enumerate(data.items())}}"
+                )
         return self.priority < other_priority
 
     def __gt__(self, other):
@@ -53,7 +59,13 @@ class _HeapElement:
             return self.priority > other
         # assume comparing to another _HeapElement
         if self.priority == other_priority:
-            return self.element > other.element
+            try:
+                return self.element > other.element
+            except TypeError as err:
+                raise TypeError(
+                    f"{err}\nConsider using a tuple for the priority to avoid such comparisons: "
+                    f"{{k: (v, i) for i, (k,v) in enumerate(data.items())}}"
+                )
         return self.priority > other_priority
 
     def __eq__(self, other):
