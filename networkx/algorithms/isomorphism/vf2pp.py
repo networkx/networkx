@@ -22,7 +22,7 @@ from networkx.algorithms.isomorphism.vf2pp_helpers.state import (
     _update_state,
 )
 
-__all__ = ["vf2pp_mapping", "vf2pp_is_isomorphic"]
+__all__ = ["vf2pp_mapping", "vf2pp_is_isomorphic", "vf2pp_all_mappings"]
 
 
 def vf2pp_mapping(G1, G2, node_labels=None, default_label=None):
@@ -68,7 +68,9 @@ def vf2pp_is_isomorphic(G1, G2, node_labels=None, default_label=None):
     -------
     True if the two graphs are isomorphic. False otherwise.
     """
-    return True and not (not vf2pp_mapping(G1, G2, node_labels, default_label))
+    if vf2pp_mapping(G1, G2, node_labels, default_label) is not None:
+        return True
+    return False
 
 
 def vf2pp_all_mappings(G1, G2, node_labels=None, default_label=None):
@@ -87,8 +89,9 @@ def vf2pp_all_mappings(G1, G2, node_labels=None, default_label=None):
         The default label for nodes that have no label attribute value.
     """
     G1_labels, G2_labels = {}, {}
-    if not G1 and not G2:
+    if G1.number_of_nodes() == 0 or G2.number_of_nodes() == 0:
         return False
+
     if not _precheck(G1, G2, G1_labels, G2_labels, node_labels, default_label):
         return False
 
