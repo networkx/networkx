@@ -53,7 +53,7 @@ class _HeapElement:
             return self.priority > other
         # assume comparing to another _HeapElement
         if self.priority == other_priority:
-            return self.element < other.element
+            return self.element > other.element
         return self.priority > other_priority
 
     def __eq__(self, other):
