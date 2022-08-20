@@ -1,6 +1,7 @@
 """Function for detecting communities based on Louvain Community Detection
 Algorithm"""
-
+import datetime
+import logging
 from collections import defaultdict, deque
 
 import networkx as nx
@@ -8,11 +9,16 @@ from networkx.algorithms.community import modularity
 from networkx.utils import py_random_state
 
 __all__ = ["louvain_communities", "louvain_partitions"]
+logger = logging.getLogger(__name__)
+
+
+class ConvergenceError(RuntimeError):
+    pass
 
 
 @py_random_state("seed")
 def louvain_communities(
-    G, weight="weight", resolution=1, threshold=0.0000001, seed=None, iteration_limit=10000,
+    G, weight="weight", resolution=1, threshold=0.0000001, seed=None, iteration_limit=10,
 ):
     r"""Find the best partition of a graph using the Louvain Community Detection
     Algorithm.
@@ -114,7 +120,7 @@ def louvain_communities(
 
 @py_random_state("seed")
 def louvain_partitions(
-    G, weight="weight", resolution=1, threshold=0.0000001, seed=None, iteration_limit=10000,
+    G, weight="weight", resolution=1, threshold=0.0000001, seed=None, iteration_limit=10,
 ):
     """Yields partitions for each level of the Louvain Community Detection Algorithm
 
@@ -185,6 +191,8 @@ def louvain_partitions(
         new_mod = modularity(
             graph, inner_partition, resolution=resolution, weight="weight"
         )
+        if _iteration_count % 1000 == 0:
+            logger.warning(f"\t\titeration: {_iteration_count} @ {new_mod - mod} improvement")
         if new_mod - mod <= threshold:
             return
         mod = new_mod
@@ -192,6 +200,9 @@ def louvain_partitions(
         partition, inner_partition, improvement = _one_level(
             graph, m, partition, resolution, is_directed, seed
         )
+
+    logger.warning(f"Exiting after {_iteration_count} iterations")
+    return None
 
 
 def _one_level(G, m, partition, resolution=1, is_directed=False, seed=None):
@@ -237,6 +248,8 @@ def _one_level(G, m, partition, resolution=1, is_directed=False, seed=None):
     seed.shuffle(rand_nodes)
     nb_moves = 1
     improvement = False
+    _cumulative_moves = 0
+    _cumulative_moves_limit = len(rand_nodes) ** 1.2
     while nb_moves > 0:
         nb_moves = 0
         for u in rand_nodes:
@@ -294,6 +307,9 @@ def _one_level(G, m, partition, resolution=1, is_directed=False, seed=None):
                 inner_partition[best_com].add(u)
                 improvement = True
                 nb_moves += 1
+                _cumulative_moves += 1
+                if _cumulative_moves > _cumulative_moves_limit:
+                    raise ConvergenceError()
                 node2com[u] = best_com
     partition = list(filter(len, partition))
     inner_partition = list(filter(len, inner_partition))
