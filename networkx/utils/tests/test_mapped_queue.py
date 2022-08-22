@@ -218,6 +218,16 @@ class TestMappedDict(TestMappedQueue):
         q = MappedQueue(d)
         assert q.position == {elt: pos for pos, elt in enumerate(q.heap)}
 
+    def test_pop(self):
+        d = {5: 0, 4: 1, 3: 2, 2: 3, 1: 4}
+        q = MappedQueue(d)
+        assert q.pop() == _HeapElement(0, 5)
+        assert q.position == {elt: pos for pos, elt in enumerate(q.heap)}
+
+    def test_empty_pop(self):
+        q = MappedQueue()
+        pytest.raises(IndexError, q.pop)
+
     def test_incomparable_ties(self):
         d = {5: 0, 4: 0, "a": 0, 2: 0, 1: 0}
         pytest.raises(TypeError, MappedQueue, d)
