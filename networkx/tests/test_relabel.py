@@ -1,7 +1,8 @@
 import pytest
+
 import networkx as nx
 from networkx.generators.classic import empty_graph
-from networkx.utils import nodes_equal, edges_equal
+from networkx.utils import edges_equal, nodes_equal
 
 
 class TestRelabel:
@@ -105,6 +106,12 @@ class TestRelabel:
         H = nx.relabel_nodes(G, mapping)
         assert nodes_equal(H.nodes(), [65, 66, 67, 68])
 
+    def test_relabel_nodes_classes(self):
+        G = nx.empty_graph()
+        G.add_edges_from([(0, 1), (0, 2), (1, 2), (2, 3)])
+        H = nx.relabel_nodes(G, str)
+        assert nodes_equal(H.nodes, ["0", "1", "2", "3"])
+
     def test_relabel_nodes_graph(self):
         G = nx.Graph([("A", "B"), ("A", "C"), ("B", "C"), ("C", "D")])
         mapping = {"A": "aardvark", "B": "bear", "C": "cat", "D": "dog"}
@@ -112,7 +119,7 @@ class TestRelabel:
         assert nodes_equal(H.nodes(), ["aardvark", "bear", "cat", "dog"])
 
     def test_relabel_nodes_orderedgraph(self):
-        G = nx.OrderedGraph()
+        G = nx.Graph()
         G.add_nodes_from([1, 2, 3])
         G.add_edges_from([(1, 3), (2, 3)])
         mapping = {1: "a", 2: "b", 3: "c"}
@@ -299,3 +306,35 @@ class TestRelabel:
         H = nx.relabel_nodes(G, mapping, copy=True)
         with pytest.raises(nx.NetworkXUnfeasible):
             H = nx.relabel_nodes(G, mapping, copy=False)
+
+    def test_relabel_preserve_node_order_full_mapping_with_copy_true(self):
+        G = nx.path_graph(3)
+        original_order = list(G.nodes())
+        mapping = {2: "a", 1: "b", 0: "c"}  # dictionary keys out of order on purpose
+        H = nx.relabel_nodes(G, mapping, copy=True)
+        new_order = list(H.nodes())
+        assert [mapping.get(i, i) for i in original_order] == new_order
+
+    def test_relabel_preserve_node_order_full_mapping_with_copy_false(self):
+        G = nx.path_graph(3)
+        original_order = list(G)
+        mapping = {2: "a", 1: "b", 0: "c"}  # dictionary keys out of order on purpose
+        H = nx.relabel_nodes(G, mapping, copy=False)
+        new_order = list(H)
+        assert [mapping.get(i, i) for i in original_order] == new_order
+
+    def test_relabel_preserve_node_order_partial_mapping_with_copy_true(self):
+        G = nx.path_graph(3)
+        original_order = list(G)
+        mapping = {1: "a", 0: "b"}  # partial mapping and keys out of order on purpose
+        H = nx.relabel_nodes(G, mapping, copy=True)
+        new_order = list(H)
+        assert [mapping.get(i, i) for i in original_order] == new_order
+
+    def test_relabel_preserve_node_order_partial_mapping_with_copy_false(self):
+        G = nx.path_graph(3)
+        original_order = list(G)
+        mapping = {1: "a", 0: "b"}  # partial mapping and keys out of order on purpose
+        H = nx.relabel_nodes(G, mapping, copy=False)
+        new_order = list(H)
+        assert [mapping.get(i, i) for i in original_order] != new_order

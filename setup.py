@@ -67,7 +67,6 @@ packages = [
     "networkx.algorithms",
     "networkx.algorithms.assortativity",
     "networkx.algorithms.bipartite",
-    "networkx.algorithms.node_classification",
     "networkx.algorithms.centrality",
     "networkx.algorithms.community",
     "networkx.algorithms.components",
@@ -89,7 +88,6 @@ packages = [
     "networkx.readwrite",
     "networkx.readwrite.json_graph",
     "networkx.tests",
-    "networkx.testing",
     "networkx.utils",
 ]
 
@@ -129,7 +127,6 @@ package_data = {
     "networkx.algorithms": ["tests/*.py"],
     "networkx.algorithms.assortativity": ["tests/*.py"],
     "networkx.algorithms.bipartite": ["tests/*.py"],
-    "networkx.algorithms.node_classification": ["tests/*.py"],
     "networkx.algorithms.centrality": ["tests/*.py"],
     "networkx.algorithms.community": ["tests/*.py"],
     "networkx.algorithms.components": ["tests/*.py"],
@@ -150,7 +147,6 @@ package_data = {
     "networkx.linalg": ["tests/*.py"],
     "networkx.readwrite": ["tests/*.py"],
     "networkx.readwrite.json_graph": ["tests/*.py"],
-    "networkx.testing": ["tests/*.py"],
     "networkx.utils": ["tests/*.py"],
 }
 

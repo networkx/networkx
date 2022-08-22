@@ -285,7 +285,7 @@ def _numeric_ac(M, mapping):
     import numpy as np
 
     if M.sum() != 1.0:
-        M = M / float(M.sum())
+        M = M / M.sum()
     x = np.array(list(mapping.keys()))
     y = x  # x and y have the same support
     idx = list(mapping.values())

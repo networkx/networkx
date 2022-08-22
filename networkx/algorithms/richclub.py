@@ -1,7 +1,8 @@
 """Functions for computing rich-club coefficients."""
 
-import networkx as nx
 from itertools import accumulate
+
+import networkx as nx
 from networkx.utils import not_implemented_for
 
 __all__ = ["rich_club_coefficient"]

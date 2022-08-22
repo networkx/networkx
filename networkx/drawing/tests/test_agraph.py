@@ -1,14 +1,14 @@
 """Unit tests for PyGraphviz interface."""
 import os
 import tempfile
+
 import pytest
 
 pygraphviz = pytest.importorskip("pygraphviz")
 
 
-from networkx.utils import nodes_equal, edges_equal, graphs_equal
-
 import networkx as nx
+from networkx.utils import edges_equal, graphs_equal, nodes_equal
 
 
 class TestAGraph:

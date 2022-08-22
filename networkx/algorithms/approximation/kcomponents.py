@@ -3,13 +3,12 @@
 import itertools
 from collections import defaultdict
 from collections.abc import Mapping
+from functools import cached_property
 
 import networkx as nx
+from networkx.algorithms.approximation import local_node_connectivity
 from networkx.exception import NetworkXError
 from networkx.utils import not_implemented_for
-
-from networkx.algorithms.approximation import local_node_connectivity
-
 
 __all__ = ["k_components"]
 
@@ -281,7 +280,7 @@ class _AntiGraph(nx.Graph):
                 raise KeyError(node)
             return self._graph.AntiAtlasView(self._graph, node)
 
-    @property
+    @cached_property
     def adj(self):
         return self.AntiAdjacencyView(self)
 
@@ -312,7 +311,7 @@ class _AntiGraph(nx.Graph):
             # AntiGraph is a ThinGraph so all edges have weight 1
             return len(nbrs) + (n in nbrs)
 
-    @property
+    @cached_property
     def degree(self):
         """Returns an iterator for (node, degree) and degree for single node.
 

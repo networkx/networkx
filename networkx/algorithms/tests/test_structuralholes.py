@@ -1,6 +1,8 @@
 """Unit tests for the :mod:`networkx.algorithms.structuralholes` module."""
 import math
+
 import pytest
+
 import networkx as nx
 
 

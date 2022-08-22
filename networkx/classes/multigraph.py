@@ -1,12 +1,13 @@
 """Base class for MultiGraph."""
 from copy import deepcopy
+from functools import cached_property
 
 import networkx as nx
-from networkx.classes.graph import Graph
-from networkx.classes.coreviews import MultiAdjacencyView
-from networkx.classes.reportviews import MultiEdgeView, MultiDegreeView
-from networkx import NetworkXError
 import networkx.convert as convert
+from networkx import NetworkXError
+from networkx.classes.coreviews import MultiAdjacencyView
+from networkx.classes.graph import Graph
+from networkx.classes.reportviews import MultiDegreeView, MultiEdgeView
 
 __all__ = ["MultiGraph"]
 
@@ -58,7 +59,6 @@ class MultiGraph(Graph):
     Graph
     DiGraph
     MultiDiGraph
-    OrderedMultiGraph
 
     Examples
     --------
@@ -262,10 +262,6 @@ class MultiGraph(Graph):
     to_undirected_class : callable, (default: Graph or MultiGraph)
         Class to create a new graph structure in the `to_undirected` method.
         If `None`, a NetworkX class (Graph or MultiGraph) is used.
-
-    Please see :mod:`~networkx.classes.ordered` for examples of
-    creating graph subclasses by overwriting the base class `dict` with
-    a dictionary-like object.
     """
 
     # node_dict_factory = dict    # already assigned in Graph
@@ -336,7 +332,6 @@ class MultiGraph(Graph):
         {'day': 'Friday'}
 
         """
-        self.edge_key_dict_factory = self.edge_key_dict_factory
         # multigraph_input can be None/True/False. So check "is not False"
         if isinstance(incoming_graph_data, dict) and multigraph_input is not False:
             Graph.__init__(self)
@@ -354,7 +349,7 @@ class MultiGraph(Graph):
         else:
             Graph.__init__(self, incoming_graph_data, **attr)
 
-    @property
+    @cached_property
     def adj(self):
         """Graph adjacency object holding the neighbors of each node.
 
@@ -595,7 +590,9 @@ class MultiGraph(Graph):
             Remove an edge between nodes u and v.
         key : hashable identifier, optional (default=None)
             Used to distinguish multiple edges between a pair of nodes.
-            If None remove a single (arbitrary) edge between u and v.
+            If None, remove a single edge between u and v. If there are
+            multiple edges, removes the last edge added in terms of
+            insertion order.
 
         Raises
         ------
@@ -620,17 +617,27 @@ class MultiGraph(Graph):
         >>> G = nx.MultiGraph()  # or MultiDiGraph, etc
         >>> G.add_edges_from([(1, 2), (1, 2), (1, 2)])  # key_list returned
         [0, 1, 2]
-        >>> G.remove_edge(1, 2)  # remove a single (arbitrary) edge
+
+        When ``key=None`` (the default), edges are removed in the opposite
+        order that they were added:
+
+        >>> G.remove_edge(1, 2)
+        >>> G.edges(keys=True)
+        MultiEdgeView([(1, 2, 0), (1, 2, 1)])
         >>> G.remove_edge(2, 1)  # edges are not directed
+        >>> G.edges(keys=True)
+        MultiEdgeView([(1, 2, 0)])
 
         For edges with keys
 
-        >>> G = nx.MultiGraph()  # or MultiDiGraph, etc
+        >>> G = nx.MultiGraph()
         >>> G.add_edge(1, 2, key="first")
         'first'
         >>> G.add_edge(1, 2, key="second")
         'second'
-        >>> G.remove_edge(1, 2, key="second")
+        >>> G.remove_edge(1, 2, key="first")
+        >>> G.edges(keys=True)
+        MultiEdgeView([(1, 2, 'second')])
 
         """
         try:
@@ -661,7 +668,7 @@ class MultiGraph(Graph):
             Each edge given in the list or container will be removed
             from the graph. The edges can be:
 
-                - 2-tuples (u, v) All edges between u and v are removed.
+                - 2-tuples (u, v) A single edge between u and v is removed.
                 - 3-tuples (u, v, key) The edge identified by key is removed.
                 - 4-tuples (u, v, key, data) where data is ignored.
 
@@ -689,6 +696,20 @@ class MultiGraph(Graph):
         >>> G.remove_edges_from([(1, 2), (1, 2)])  # silently ignore extra copy
         >>> list(G.edges)  # now empty graph
         []
+
+        When the edge is a 2-tuple ``(u, v)`` but there are multiple edges between
+        u and v in the graph, the most recent edge (in terms of insertion
+        order) is removed.
+
+        >>> G = nx.MultiGraph()
+        >>> for key in ("x", "y", "a"):
+        ...     k = G.add_edge(0, 1, key=key)
+        >>> G.edges(keys=True)
+        MultiEdgeView([(0, 1, 'x'), (0, 1, 'y'), (0, 1, 'a')])
+        >>> G.remove_edges_from([(0, 1)])
+        >>> G.edges(keys=True)
+        MultiEdgeView([(0, 1, 'x'), (0, 1, 'y')])
+
         """
         for e in ebunch:
             try:
@@ -756,23 +777,27 @@ class MultiGraph(Graph):
         except KeyError:
             return False
 
-    @property
+    @cached_property
     def edges(self):
         """Returns an iterator over the edges.
 
         edges(self, nbunch=None, data=False, keys=False, default=None)
 
-        The EdgeView provides set-like operations on the edge-tuples
+        The MultiEdgeView provides set-like operations on the edge-tuples
         as well as edge attribute lookup. When called, it also provides
         an EdgeDataView object which allows control of access to edge
         attributes (but does not provide set-like operations).
-        Hence, `G.edges[u, v, k]['color']` provides the value of the color
-        attribute for edge `(u, v, k)` while
-        `for (u, v, c) in G.edges(data='color', default='red'):`
-        iterates through all the edges yielding the color attribute.
+        Hence, ``G.edges[u, v, k]['color']`` provides the value of the color
+        attribute for the edge from ``u`` to ``v`` with key ``k`` while
+        ``for (u, v, k, c) in G.edges(data='color', keys=True, default="red"):``
+        iterates through all the edges yielding the color attribute with
+        default `'red'` if no color attribute exists.
 
         Edges are returned as tuples with optional data and keys
-        in the order (node, neighbor, key, data).
+        in the order (node, neighbor, key, data). If ``keys=True`` is not
+        provided, the tuples will just be (node, neighbor, data), but
+        multiple tuples with the same node and neighbor will be generated
+        when multiple edges exist between two nodes.
 
         Parameters
         ----------
@@ -794,7 +819,7 @@ class MultiGraph(Graph):
         edges : MultiEdgeView
             A view of edge attributes, usually it iterates over (u, v)
             (u, v, k) or (u, v, k, d) tuples of edges, but can also be
-            used for attribute lookup as `edges[u, v, k]['foo']`.
+            used for attribute lookup as ``edges[u, v, k]['foo']``.
 
         Notes
         -----
@@ -803,7 +828,7 @@ class MultiGraph(Graph):
 
         Examples
         --------
-        >>> G = nx.MultiGraph()  # or MultiDiGraph
+        >>> G = nx.MultiGraph()
         >>> nx.add_path(G, [0, 1, 2])
         >>> key = G.add_edge(2, 3, weight=5)
         >>> key2 = G.add_edge(2, 1, weight=2)  # multi-edge
@@ -905,7 +930,7 @@ class MultiGraph(Graph):
         except KeyError:
             return default
 
-    @property
+    @cached_property
     def degree(self):
         """A DegreeView for the Graph as G.degree or G.degree().
 
@@ -928,13 +953,10 @@ class MultiGraph(Graph):
 
         Returns
         -------
-        If a single node is requested
-        deg : int
-            Degree of the node, if a single node is passed as argument.
-
-        OR if multiple nodes are requested
-        nd_iter : iterator
-            The iterator returns two-tuples of (node, degree).
+        MultiDegreeView or int
+            If multiple nodes are requested (the default), returns a `MultiDegreeView`
+            mapping nodes to their degree.
+            If a single node is requested, returns the degree of the node as an integer.
 
         Examples
         --------

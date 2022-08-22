@@ -4,9 +4,7 @@ Label propagation community detection algorithms.
 from collections import Counter, defaultdict
 
 import networkx as nx
-from networkx.utils import groups
-from networkx.utils import not_implemented_for
-from networkx.utils import py_random_state
+from networkx.utils import groups, not_implemented_for, py_random_state
 
 __all__ = ["label_propagation_communities", "asyn_lpa_communities"]
 
@@ -112,7 +110,7 @@ def label_propagation_communities(G):
     """Generates community sets determined by label propagation
 
     Finds communities in `G` using a semi-synchronous label propagation
-    method[1]_. This method combines the advantages of both the synchronous
+    method [1]_. This method combines the advantages of both the synchronous
     and asynchronous models. Not implemented for directed graphs.
 
     Parameters

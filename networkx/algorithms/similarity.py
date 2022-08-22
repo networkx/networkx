@@ -13,12 +13,13 @@ At the same time, I encourage capable people to investigate
 alternative GED algorithms, in order to improve the choices available.
 """
 
-from functools import reduce
-from itertools import product
 import math
-from operator import mul
 import time
 import warnings
+from functools import reduce
+from itertools import product
+from operator import mul
+
 import networkx as nx
 
 __all__ = [
@@ -27,7 +28,6 @@ __all__ = [
     "optimize_graph_edit_distance",
     "optimize_edit_paths",
     "simrank_similarity",
-    "simrank_similarity_numpy",
     "panther_similarity",
     "generate_random_paths",
 ]
@@ -745,18 +745,30 @@ def optimize_edit_paths(
         N = len(pending_h)
         # assert Ce.C.shape == (M + N, M + N)
 
-        g_ind = [
-            i
-            for i in range(M)
-            if pending_g[i][:2] == (u, u)
-            or any(pending_g[i][:2] in ((p, u), (u, p)) for p, q in matched_uv)
-        ]
-        h_ind = [
-            j
-            for j in range(N)
-            if pending_h[j][:2] == (v, v)
-            or any(pending_h[j][:2] in ((q, v), (v, q)) for p, q in matched_uv)
-        ]
+        # only attempt to match edges after one node match has been made
+        # this will stop self-edges on the first node being automatically deleted
+        # even when a substitution is the better option
+        if matched_uv:
+            g_ind = [
+                i
+                for i in range(M)
+                if pending_g[i][:2] == (u, u)
+                or any(
+                    pending_g[i][:2] in ((p, u), (u, p), (p, p)) for p, q in matched_uv
+                )
+            ]
+            h_ind = [
+                j
+                for j in range(N)
+                if pending_h[j][:2] == (v, v)
+                or any(
+                    pending_h[j][:2] in ((q, v), (v, q), (q, q)) for p, q in matched_uv
+                )
+            ]
+        else:
+            g_ind = []
+            h_ind = []
+
         m = len(g_ind)
         n = len(h_ind)
 
@@ -782,9 +794,9 @@ def optimize_edit_paths(
                             for p, q in matched_uv
                         ):
                             continue
-                    if g == (u, u):
+                    if g == (u, u) or any(g == (p, p) for p, q in matched_uv):
                         continue
-                    if h == (v, v):
+                    if h == (v, v) or any(h == (q, q) for p, q in matched_uv):
                         continue
                     C[k, l] = inf
 
@@ -1485,34 +1497,6 @@ def _simrank_similarity_numpy(
     if source is not None:
         return newsim[source]
     return newsim
-
-
-def simrank_similarity_numpy(
-    G,
-    source=None,
-    target=None,
-    importance_factor=0.9,
-    max_iterations=100,
-    tolerance=1e-4,
-):
-    """Calculate SimRank of nodes in ``G`` using matrices with ``numpy``.
-
-    .. deprecated:: 2.6
-        simrank_similarity_numpy is deprecated and will be removed in networkx 3.0.
-        Use simrank_similarity
-
-    """
-    warnings.warn(
-        (
-            "networkx.simrank_similarity_numpy is deprecated and will be removed"
-            "in NetworkX 3.0, use networkx.simrank_similarity instead."
-        ),
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    return _simrank_similarity_numpy(
-        G, source, target, importance_factor, max_iterations, tolerance
-    )
 
 
 def panther_similarity(G, source, k=5, path_length=5, c=0.5, delta=0.1, eps=None):

@@ -1,6 +1,6 @@
 """Unit tests for matplotlib drawing functions."""
-import os
 import itertools
+import os
 
 import pytest
 
@@ -641,8 +641,8 @@ def test_draw_edges_toggling_with_arrows_kwarg():
       - ``arrows=True`` -> FancyArrowPatches
       - ``arrows=False`` -> LineCollection
     """
-    import matplotlib.patches
     import matplotlib.collections
+    import matplotlib.patches
 
     UG = nx.path_graph(3)
     DG = nx.path_graph(3, create_using=nx.DiGraph)

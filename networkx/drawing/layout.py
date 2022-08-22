@@ -337,7 +337,7 @@ def bipartite_layout(
     pos = np.concatenate([top_pos, bottom_pos])
     pos = rescale_layout(pos, scale=scale) + center
     if align == "horizontal":
-        pos = np.flip(pos, 1)
+        pos = pos[:, ::-1]  # swap x and y coords
     pos = dict(zip(nodes, pos))
     return pos
 
@@ -530,7 +530,7 @@ def _fruchterman_reingold(
     t = max(max(pos.T[0]) - min(pos.T[0]), max(pos.T[1]) - min(pos.T[1])) * 0.1
     # simple cooling scheme.
     # linearly step down by dt on each iteration so last iteration is size dt.
-    dt = t / float(iterations + 1)
+    dt = t / (iterations + 1)
     delta = np.zeros((pos.shape[0], pos.shape[0], pos.shape[1]), dtype=A.dtype)
     # the inscrutable (but fast) version
     # this is still O(V^2)
@@ -602,7 +602,7 @@ def _sparse_fruchterman_reingold(
     t = max(max(pos.T[0]) - min(pos.T[0]), max(pos.T[1]) - min(pos.T[1])) * 0.1
     # simple cooling scheme.
     # linearly step down by dt on each iteration so last iteration is size dt.
-    dt = t / float(iterations + 1)
+    dt = t / (iterations + 1)
 
     displacement = np.zeros((dim, nnodes))
     for iteration in range(iterations):
@@ -983,6 +983,7 @@ def spiral_layout(G, scale=1, center=None, dim=2, resolution=0.35, equidistant=F
     --------
     >>> G = nx.path_graph(4)
     >>> pos = nx.spiral_layout(G)
+    >>> nx.draw(G, pos=pos)
 
     Notes
     -----
@@ -1082,11 +1083,16 @@ def multipartite_layout(G, subset_key="subset", align="vertical", scale=1, cente
             raise ValueError(msg)
         layers[layer] = [v] + layers.get(layer, [])
 
+    # Sort by layer, if possible
+    try:
+        layers = sorted(layers.items())
+    except TypeError:
+        layers = list(layers.items())
+
     pos = None
     nodes = []
-
     width = len(layers)
-    for i, layer in enumerate(layers.values()):
+    for i, (_, layer) in enumerate(layers):
         height = len(layer)
         xs = np.repeat(i, height)
         ys = np.arange(0, height, dtype=float)
@@ -1099,7 +1105,7 @@ def multipartite_layout(G, subset_key="subset", align="vertical", scale=1, cente
         nodes.extend(layer)
     pos = rescale_layout(pos, scale=scale) + center
     if align == "horizontal":
-        pos = np.flip(pos, 1)
+        pos = pos[:, ::-1]  # swap x and y coords
     pos = dict(zip(nodes, pos))
     return pos
 

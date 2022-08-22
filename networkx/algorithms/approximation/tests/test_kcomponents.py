@@ -1,5 +1,6 @@
 # Test for approximation to k-components algorithm
 import pytest
+
 import networkx as nx
 from networkx.algorithms.approximation import k_components
 from networkx.algorithms.approximation.kcomponents import _AntiGraph, _same
