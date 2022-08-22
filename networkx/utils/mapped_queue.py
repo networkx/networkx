@@ -116,8 +116,8 @@ class MappedQueue:
     Examples
     --------
 
-    A `MappedQueue` can be created empty or optionally given dictionary 
-    of initial elements and priorities.  The methods `push`, `pop`, 
+    A `MappedQueue` can be created empty or optionally given dictionary
+    of initial elements and priorities.  The methods `push`, `pop`,
     `remove`, and `update` operate on the queue.
 
     >>> colors_nm = {'red':665, 'blue': 470, 'green': 550}
@@ -157,9 +157,11 @@ class MappedQueue:
        Pearson Education.
     """
 
-    def __init__(self, data=[]):
+    def __init__(self, data=None):
         """Priority queue class with updatable priorities."""
-        if isinstance(data, dict):
+        if data is None:
+            self.heap = list()
+        elif isinstance(data, dict):
             self.heap = [_HeapElement(v, k) for k, v in data.items()]
         else:
             self.heap = list(data)
