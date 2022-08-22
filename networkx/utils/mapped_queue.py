@@ -105,6 +105,25 @@ class MappedQueue:
     library. While MappedQueue is designed for maximum compatibility with
     heapq, it adds element removal, lookup, and priority update.
 
+    Unsortable elements should be mapped to a priority via a dict.
+    Otherwise a TypeError will occur when the comparisons are made.
+
+    Attributes
+    ----------
+    data : dict or iterator
+        The dict is defined with elements as keys, priorities as values. {element: priority}
+
+    Methods
+    -------
+    push(element, priority=None)
+        Add an element to the queue.
+    pop()
+        Remove and return the smallest element in the queue.
+    update(element, new_element, priority=None)
+        Replace an element in the queue with a new one.
+    remove(element)
+        Remove an element from the queue.
+
     Examples
     --------
 
