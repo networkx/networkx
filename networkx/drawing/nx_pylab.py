@@ -17,15 +17,16 @@ pygraphviz:     http://pygraphviz.github.io/
 from numbers import Number
 import networkx as nx
 from networkx.drawing.layout import (
-    shell_layout,
     circular_layout,
+    forceatlas2_layout,
     kamada_kawai_layout,
+    planar_layout,
+    random_layout,
+    shell_layout,
     spectral_layout,
     spring_layout,
-    random_layout,
-    planar_layout,
-    forceatlas2_layout,
 )
+
 import warnings
 
 __all__ = [
