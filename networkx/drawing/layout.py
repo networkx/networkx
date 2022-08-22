@@ -21,6 +21,7 @@ from networkx.utils import random_state
 __all__ = [
     "bipartite_layout",
     "circular_layout",
+    "forceatlas2_layout",
     "kamada_kawai_layout",
     "random_layout",
     "rescale_layout",
@@ -32,7 +33,6 @@ __all__ = [
     "fruchterman_reingold_layout",
     "spiral_layout",
     "multipartite_layout",
-    "forceatlas2_layout",
 ]
 
 
@@ -1242,7 +1242,7 @@ def forceatlas2_layout(
     # check if we have a valid pos else just return (empty graph)
     if pos:
         max_dim = np.array([max(i) for i in pos.values()]).max()
-        min_dim = np.array(([min(i) for i in pos.values()])).min()
+        min_dim = np.array([min(i) for i in pos.values()]).min()
     else:
         return pos
 
