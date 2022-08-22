@@ -126,6 +126,28 @@ class MappedQueue:
     >>> [q.pop() for i in range(len(q.heap))]
     [50, 916, 1117, 4609]
 
+    An exception is raised if the elements are not sortable.
+
+    >>> q = MappedQueue([100, 'a'])
+    Traceback (most recent call last):
+    ...
+    TypeError: '<' not supported between instances of 'int' and 'str'
+
+    To avoid the exception, use a dictionary to assign priorities to the elements.
+
+    >>> q = MappedQueue({100: 0, 'a': 1 })
+
+    The dictionary input is also useful for assigning names to values, where the values are the priorities.
+
+    >>> colors_nm = {'red':665, 'blue': 470, 'green': 550}
+    >>> q = MappedQueue(colors_nm)
+    >>> q.remove('red')
+    >>> q.update('green', 'violet', 400)
+    >>> q.push('indigo', 425)
+    True
+    >>> [q.pop().element for i in range(len(q.heap))]
+    ['violet', 'indigo', 'blue']
+
     References
     ----------
     .. [1] Cormen, T. H., Leiserson, C. E., Rivest, R. L., & Stein, C. (2001).
