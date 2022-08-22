@@ -108,55 +108,17 @@ class MappedQueue:
     Unsortable elements should be mapped to a priority via a dict.
     Otherwise a TypeError will occur when the comparisons are made.
 
-    Attributes
+    Parameters
     ----------
     data : dict or iterator
         The dict is defined with elements as keys, priorities as values. {element: priority}
 
-    Methods
-    -------
-    push(element, priority=None)
-        Add an element to the queue.
-    pop()
-        Remove and return the smallest element in the queue.
-    update(element, new_element, priority=None)
-        Replace an element in the queue with a new one.
-    remove(element)
-        Remove an element from the queue.
-
     Examples
     --------
 
-    A `MappedQueue` can be created empty or optionally given an array of
-    initial elements. Calling `push()` will add an element and calling `pop()`
-    will remove and return the smallest element.
-
-    >>> q = MappedQueue([916, 50, 4609, 493, 237])
-    >>> q.push(1310)
-    True
-    >>> [q.pop() for i in range(len(q.heap))]
-    [50, 237, 493, 916, 1310, 4609]
-
-    Elements can also be updated or removed from anywhere in the queue.
-
-    >>> q = MappedQueue([916, 50, 4609, 493, 237])
-    >>> q.remove(493)
-    >>> q.update(237, 1117)
-    >>> [q.pop() for i in range(len(q.heap))]
-    [50, 916, 1117, 4609]
-
-    An exception is raised if the elements are not sortable.
-
-    >>> q = MappedQueue([100, 'a'])
-    Traceback (most recent call last):
-    ...
-    TypeError: '<' not supported between instances of 'int' and 'str'
-
-    To avoid the exception, use a dictionary to assign priorities to the elements.
-
-    >>> q = MappedQueue({100: 0, 'a': 1 })
-
-    The dictionary input is also useful for assigning names to values, where the values are the priorities.
+    A `MappedQueue` can be created empty or optionally given dictionary 
+    of initial elements and priorities.  The methods `push`, `pop`, 
+    `remove`, and `update` operate on the queue.
 
     >>> colors_nm = {'red':665, 'blue': 470, 'green': 550}
     >>> q = MappedQueue(colors_nm)
@@ -166,6 +128,26 @@ class MappedQueue:
     True
     >>> [q.pop().element for i in range(len(q.heap))]
     ['violet', 'indigo', 'blue']
+
+    A `MappedQueue` can also be initialized with a list or other iterator. The priority is assumed
+    to be the sort order of the items in the list.
+
+    >>> q = MappedQueue([916, 50, 4609, 493, 237])
+    >>> q.remove(493)
+    >>> q.update(237, 1117)
+    >>> [q.pop() for i in range(len(q.heap))]
+    [50, 916, 1117, 4609]
+
+    An exception is raised if the elements are not comparable.
+
+    >>> q = MappedQueue([100, 'a'])
+    Traceback (most recent call last):
+    ...
+    TypeError: '<' not supported between instances of 'int' and 'str'
+
+    To avoid the exception, use a dictionary to assign priorities to the elements.
+
+    >>> q = MappedQueue({100: 0, 'a': 1 })
 
     References
     ----------
