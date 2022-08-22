@@ -111,7 +111,6 @@ class MappedQueue:
     Parameters
     ----------
     data : dict or iterator
-        The dict is defined with elements as keys, priorities as values. {element: priority}
 
     Examples
     --------
