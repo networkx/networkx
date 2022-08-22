@@ -4,10 +4,8 @@
 
 import pytest
 
-from networkx import cycle_graph
-from networkx import NetworkXError
-from networkx.algorithms.bipartite import complete_bipartite_graph
-from networkx.algorithms.bipartite import node_redundancy
+from networkx import NetworkXError, cycle_graph
+from networkx.algorithms.bipartite import complete_bipartite_graph, node_redundancy
 
 
 def test_no_redundant_nodes():

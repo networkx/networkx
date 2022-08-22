@@ -7,12 +7,13 @@ from itertools import combinations
 from operator import itemgetter
 
 import networkx as nx
-from .utils import build_auxiliary_node_connectivity
 from networkx.algorithms.flow import (
     build_residual_network,
     edmonds_karp,
     shortest_augmenting_path,
 )
+
+from .utils import build_auxiliary_node_connectivity
 
 default_flow_func = edmonds_karp
 

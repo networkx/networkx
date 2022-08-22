@@ -58,16 +58,15 @@ References
 """
 
 from collections import deque
-from typing import AbstractSet
 
 import networkx as nx
-from networkx.utils import not_implemented_for, UnionFind
+from networkx.utils import UnionFind, not_implemented_for
 
 __all__ = ["d_separated"]
 
 
 @not_implemented_for("undirected")
-def d_separated(G: nx.DiGraph, x: AbstractSet, y: AbstractSet, z: AbstractSet) -> bool:
+def d_separated(G, x, y, z):
     """
     Return whether node sets ``x`` and ``y`` are d-separated by ``z``.
 

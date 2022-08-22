@@ -13,9 +13,8 @@ def flow_matrix_row(G, weight=None, dtype=float, solver="lu"):
         "cg": CGInverseLaplacian,
     }
     n = G.number_of_nodes()
-    L = laplacian_sparse_matrix(
-        G, nodelist=range(n), weight=weight, dtype=dtype, format="csc"
-    )
+    L = nx.laplacian_matrix(G, nodelist=range(n), weight=weight).asformat("csc")
+    L = L.astype(dtype)
     C = solvername[solver](L, dtype=dtype)  # initialize solver
     w = C.w  # w is the Laplacian matrix width
     # row-by-row flow matrix
@@ -130,18 +129,3 @@ class CGInverseLaplacian(InverseLaplacian):
         rhs = np.zeros(self.n, self.dtype)
         rhs[r] = 1
         return sp.sparse.linalg.cg(self.L1, rhs[1:], M=self.M, atol=0)[0]
-
-
-# graph laplacian, sparse version, will move to linalg/laplacianmatrix.py
-def laplacian_sparse_matrix(G, nodelist=None, weight=None, dtype=None, format="csr"):
-    import numpy as np
-    import scipy as sp
-    import scipy.sparse  # call as sp.sparse
-
-    A = nx.to_scipy_sparse_matrix(
-        G, nodelist=nodelist, weight=weight, dtype=dtype, format=format
-    )
-    (n, n) = A.shape
-    data = np.asarray(A.sum(axis=1).T)
-    D = sp.sparse.spdiags(data, 0, n, n, format=format)
-    return D - A

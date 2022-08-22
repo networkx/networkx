@@ -1,9 +1,10 @@
 # Test for Moody and White k-components algorithm
 import pytest
+
 import networkx as nx
 from networkx.algorithms.connectivity.kcomponents import (
-    build_k_number_dict,
     _consolidate,
+    build_k_number_dict,
 )
 
 ##

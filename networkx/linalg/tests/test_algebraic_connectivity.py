@@ -6,7 +6,6 @@ np = pytest.importorskip("numpy")
 
 
 import networkx as nx
-from networkx.testing import almost_equal
 
 methods = ("tracemin_pcg", "tracemin_lu", "lanczos", "lobpcg")
 
@@ -50,13 +49,13 @@ def test_fiedler_vector_tracemin_unknown():
 def check_eigenvector(A, l, x):
     nx = np.linalg.norm(x)
     # Check zeroness.
-    assert not almost_equal(nx, 0)
-    y = A * x
+    assert not nx == pytest.approx(0, abs=1e-7)
+    y = A @ x
     ny = np.linalg.norm(y)
     # Check collinearity.
-    assert almost_equal(x @ y, nx * ny)
+    assert x @ y == pytest.approx(nx * ny, abs=1e-7)
     # Check eigenvalue.
-    assert almost_equal(ny, l * nx)
+    assert ny == pytest.approx(l * nx, abs=1e-7)
 
 
 class TestAlgebraicConnectivity:
@@ -99,7 +98,9 @@ class TestAlgebraicConnectivity:
         G = nx.Graph()
         G.add_edge(0, 1, weight=1)
         A = nx.laplacian_matrix(G)
-        assert almost_equal(nx.algebraic_connectivity(G, tol=1e-12, method=method), 2)
+        assert nx.algebraic_connectivity(G, tol=1e-12, method=method) == pytest.approx(
+            2, abs=1e-7
+        )
         x = nx.fiedler_vector(G, tol=1e-12, method=method)
         check_eigenvector(A, 2, x)
 
@@ -111,9 +112,9 @@ class TestAlgebraicConnectivity:
         G.add_edge(0, 1, spam=1)
         G.add_edge(0, 1, spam=-2)
         A = -3 * nx.laplacian_matrix(G, weight="spam")
-        assert almost_equal(
-            nx.algebraic_connectivity(G, weight="spam", tol=1e-12, method=method), 6
-        )
+        assert nx.algebraic_connectivity(
+            G, weight="spam", tol=1e-12, method=method
+        ) == pytest.approx(6, abs=1e-7)
         x = nx.fiedler_vector(G, weight="spam", tol=1e-12, method=method)
         check_eigenvector(A, 6, x)
 
@@ -123,7 +124,7 @@ class TestAlgebraicConnectivity:
         A = nx.laplacian_matrix(G)
         sigma = 2 - sqrt(2 + sqrt(2))
         ac = nx.algebraic_connectivity(G, tol=1e-12, method="tracemin")
-        assert almost_equal(ac, sigma)
+        assert ac == pytest.approx(sigma, abs=1e-7)
         x = nx.fiedler_vector(G, tol=1e-12, method="tracemin")
         check_eigenvector(A, sigma, x)
 
@@ -134,7 +135,7 @@ class TestAlgebraicConnectivity:
         A = nx.laplacian_matrix(G)
         sigma = 2 - sqrt(2 + sqrt(2))
         ac = nx.algebraic_connectivity(G, tol=1e-12, method=method)
-        assert almost_equal(ac, sigma)
+        assert ac == pytest.approx(sigma, abs=1e-7)
         x = nx.fiedler_vector(G, tol=1e-12, method=method)
         check_eigenvector(A, sigma, x)
 
@@ -146,7 +147,7 @@ class TestAlgebraicConnectivity:
         A = nx.laplacian_matrix(G)
         sigma = 0.438447187191
         ac = nx.algebraic_connectivity(G, tol=1e-12, method=method)
-        assert almost_equal(ac, sigma)
+        assert ac == pytest.approx(sigma, abs=1e-7)
         x = nx.fiedler_vector(G, tol=1e-12, method=method)
         check_eigenvector(A, sigma, x)
 
@@ -157,7 +158,7 @@ class TestAlgebraicConnectivity:
         A = nx.laplacian_matrix(G)
         sigma = 2 - sqrt(2)
         ac = nx.algebraic_connectivity(G, tol=1e-12, method=method)
-        assert almost_equal(ac, sigma)
+        assert ac == pytest.approx(sigma, abs=1e-7)
         x = nx.fiedler_vector(G, tol=1e-12, method=method)
         check_eigenvector(A, sigma, x)
 
@@ -168,7 +169,7 @@ class TestAlgebraicConnectivity:
         A = nx.laplacian_matrix(G)
         sigma = 2 - sqrt(2)
         ac = nx.algebraic_connectivity(G, tol=1e-12, method=method, seed=1)
-        assert almost_equal(ac, sigma)
+        assert ac == pytest.approx(sigma, abs=1e-7)
         x = nx.fiedler_vector(G, tol=1e-12, method=method, seed=1)
         check_eigenvector(A, sigma, x)
 
@@ -278,16 +279,13 @@ class TestAlgebraicConnectivity:
         )
         A = laplacian_fn(G)
         try:
-            assert almost_equal(
-                nx.algebraic_connectivity(
-                    G, normalized=normalized, tol=1e-12, method=method
-                ),
-                sigma,
-            )
+            assert nx.algebraic_connectivity(
+                G, normalized=normalized, tol=1e-12, method=method
+            ) == pytest.approx(sigma, abs=1e-7)
             x = nx.fiedler_vector(G, normalized=normalized, tol=1e-12, method=method)
             check_eigenvector(A, sigma, x)
-        except nx.NetworkXError as e:
-            if e.args not in (
+        except nx.NetworkXError as err:
+            if err.args not in (
                 ("Cholesky solver unavailable.",),
                 ("LU solver unavailable.",),
             ):
@@ -385,13 +383,5 @@ class TestSpectralOrdering:
         nx.add_path(G, path, weight=5)
         G.add_edge(path[-1], path[0], weight=1)
         A = nx.laplacian_matrix(G).todense()
-        try:
-            order = nx.spectral_ordering(G, normalized=normalized, method=method)
-        except nx.NetworkXError as e:
-            if e.args not in (
-                ("Cholesky solver unavailable.",),
-                ("LU solver unavailable.",),
-            ):
-                raise
-        else:
-            assert order in expected_order
+        order = nx.spectral_ordering(G, normalized=normalized, method=method)
+        assert order in expected_order

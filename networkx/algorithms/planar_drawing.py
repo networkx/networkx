@@ -1,6 +1,6 @@
-import networkx as nx
 from collections import defaultdict
 
+import networkx as nx
 
 __all__ = ["combinatorial_embedding_to_pos"]
 

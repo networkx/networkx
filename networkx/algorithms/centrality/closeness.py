@@ -2,6 +2,7 @@
 Closeness centrality measures.
 """
 import functools
+
 import networkx as nx
 from networkx.exception import NetworkXError
 from networkx.utils.decorators import not_implemented_for
@@ -20,7 +21,7 @@ def closeness_centrality(G, u=None, distance=None, wf_improved=True):
         C(u) = \frac{n - 1}{\sum_{v=1}^{n-1} d(v, u)},
 
     where `d(v, u)` is the shortest-path distance between `v` and `u`,
-    and `n` is the number of nodes that can reach `u`. Notice that the
+    and `n-1` is the number of nodes reachable from `u`. Notice that the
     closeness distance function computes the incoming distance to `u`
     for directed graphs. To use outward distance, act on `G.reverse()`.
 
@@ -48,7 +49,9 @@ def closeness_centrality(G, u=None, distance=None, wf_improved=True):
 
     distance : edge attribute key, optional (default=None)
       Use the specified edge attribute as the edge distance in shortest
-      path calculations
+      path calculations.  If `None` (the default) all edges have a distance of 1.
+      Absent edge attributes are assigned a distance of 1. Note that no check
+      is performed to ensure that edges have the provided attribute.
 
     wf_improved : bool, optional (default=True)
       If True, scale by the fraction of nodes reachable. This gives the
@@ -59,6 +62,12 @@ def closeness_centrality(G, u=None, distance=None, wf_improved=True):
     -------
     nodes : dictionary
       Dictionary of nodes with closeness centrality as the value.
+
+    Examples
+    --------
+    >>> G = nx.Graph([(0, 1), (0, 2), (0, 3), (1, 2), (1, 3)])
+    >>> nx.closeness_centrality(G)
+    {0: 1.0, 1: 1.0, 2: 0.75, 3: 0.75}
 
     See Also
     --------
@@ -88,7 +97,7 @@ def closeness_centrality(G, u=None, distance=None, wf_improved=True):
     ----------
     .. [1] Linton C. Freeman: Centrality in networks: I.
        Conceptual clarification. Social Networks 1:215-239, 1979.
-       http://leonidzhukov.ru/hse/2013/socialnetworks/papers/freeman79-centrality.pdf
+       https://doi.org/10.1016/0378-8733(78)90021-7
     .. [2] pg. 201 of Wasserman, S. and Faust, K.,
        Social Network Analysis: Methods and Applications, 1994,
        Cambridge University Press.
@@ -108,7 +117,7 @@ def closeness_centrality(G, u=None, distance=None, wf_improved=True):
         nodes = G.nodes
     else:
         nodes = [u]
-    closeness_centrality = {}
+    closeness_dict = {}
     for n in nodes:
         sp = path_length(G, n)
         totsp = sum(sp.values())
@@ -120,11 +129,10 @@ def closeness_centrality(G, u=None, distance=None, wf_improved=True):
             if wf_improved:
                 s = (len(sp) - 1.0) / (len_G - 1)
                 _closeness_centrality *= s
-        closeness_centrality[n] = _closeness_centrality
+        closeness_dict[n] = _closeness_centrality
     if u is not None:
-        return closeness_centrality[u]
-    else:
-        return closeness_centrality
+        return closeness_dict[u]
+    return closeness_dict
 
 
 @not_implemented_for("directed")
@@ -216,7 +224,7 @@ def incremental_closeness_centrality(
     ----------
     .. [1] Freeman, L.C., 1979. Centrality in networks: I.
        Conceptual clarification.  Social Networks 1, 215--239.
-       http://www.soc.ucsb.edu/faculty/friedkin/Syllabi/Soc146/Freeman78.PDF
+       https://doi.org/10.1016/0378-8733(78)90021-7
     .. [2] Sariyuce, A.E. ; Kaya, K. ; Saule, E. ; Catalyiirek, U.V. Incremental
        Algorithms for Closeness Centrality. 2013 IEEE International Conference on Big Data
        http://sariyuce.com/papers/bigdata13.pdf
@@ -245,10 +253,10 @@ def incremental_closeness_centrality(
         return nx.closeness_centrality(G)
 
     nodes = G.nodes()
-    closeness_centrality = {}
+    closeness_dict = {}
     for n in nodes:
         if n in du and n in dv and abs(du[n] - dv[n]) <= 1:
-            closeness_centrality[n] = prev_cc[n]
+            closeness_dict[n] = prev_cc[n]
         else:
             sp = path_length(G, n)
             totsp = sum(sp.values())
@@ -260,7 +268,7 @@ def incremental_closeness_centrality(
                 if wf_improved:
                     s = (len(sp) - 1.0) / (len_G - 1)
                     _closeness_centrality *= s
-            closeness_centrality[n] = _closeness_centrality
+            closeness_dict[n] = _closeness_centrality
 
     # Leave the graph as we found it
     if insertion:
@@ -268,4 +276,4 @@ def incremental_closeness_centrality(
     else:
         G.add_edge(u, v)
 
-    return closeness_centrality
+    return closeness_dict

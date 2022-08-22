@@ -1,16 +1,18 @@
-import random
-import networkx as nx
 import itertools as it
-from networkx.utils import pairwise
+import random
+
 import pytest
+
+import networkx as nx
 from networkx.algorithms.connectivity import k_edge_augmentation
 from networkx.algorithms.connectivity.edge_augmentation import (
+    _unpack_available_edges,
     collapse,
     complement_edges,
-    is_locally_k_edge_connected,
     is_k_edge_connected,
-    _unpack_available_edges,
+    is_locally_k_edge_connected,
 )
+from networkx.utils import pairwise
 
 # This should be set to the largest k for which an efficient algorithm is
 # explicitly defined.
@@ -249,7 +251,7 @@ def test_gnp_augmentation():
 
 
 def _assert_solution_properties(G, aug_edges, avail_dict=None):
-    """ Checks that aug_edges are consistently formatted """
+    """Checks that aug_edges are consistently formatted"""
     if avail_dict is not None:
         assert all(
             e in avail_dict for e in aug_edges
@@ -351,7 +353,7 @@ def _augment_and_check(
         # Find the weight of the augmentation
         num_edges = len(aug_edges)
         if avail is not None:
-            total_weight = sum([avail_dict[e] for e in aug_edges])
+            total_weight = sum(avail_dict[e] for e in aug_edges)
         else:
             total_weight = num_edges
 
@@ -392,7 +394,7 @@ def _augment_and_check(
 
 
 def _check_augmentations(G, avail=None, max_k=None, weight=None, verbose=False):
-    """ Helper to check weighted/unweighted cases with multiple values of k """
+    """Helper to check weighted/unweighted cases with multiple values of k"""
     # Using all available edges, find the maximum edge-connectivity
     try:
         orig_k = nx.edge_connectivity(G)
@@ -488,7 +490,7 @@ def _check_unconstrained_bridge_property(G, info1):
     p = len([n for n, d in C.degree() if d == 1])  # leafs
     q = len([n for n, d in C.degree() if d == 0])  # isolated
     if p + q > 1:
-        size_target = int(math.ceil(p / 2.0)) + q
+        size_target = math.ceil(p / 2) + q
         size_aug = info1["num_edges"]
         assert (
             size_aug == size_target

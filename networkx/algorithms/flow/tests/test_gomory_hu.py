@@ -1,12 +1,15 @@
 from itertools import combinations
+
 import pytest
 
 import networkx as nx
-from networkx.algorithms.flow import boykov_kolmogorov
-from networkx.algorithms.flow import edmonds_karp
-from networkx.algorithms.flow import preflow_push
-from networkx.algorithms.flow import shortest_augmenting_path
-from networkx.algorithms.flow import dinitz
+from networkx.algorithms.flow import (
+    boykov_kolmogorov,
+    dinitz,
+    edmonds_karp,
+    preflow_push,
+    shortest_augmenting_path,
+)
 
 flow_funcs = [
     boykov_kolmogorov,

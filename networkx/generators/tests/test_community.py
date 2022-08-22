@@ -1,5 +1,6 @@
-import networkx as nx
 import pytest
+
+import networkx as nx
 
 
 def test_random_partition_graph():

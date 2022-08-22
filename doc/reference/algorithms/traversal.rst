@@ -29,6 +29,7 @@ Breadth First Search
    :toctree: generated/
 
    bfs_edges
+   bfs_layers
    bfs_tree
    bfs_predecessors
    bfs_successors

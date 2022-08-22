@@ -21,7 +21,7 @@ To build the HTML documentation, enter::
 
     make html
 
-in the ``doc/`` directory.  This will generate a ``build/html`` subdirectory
+in the `doc/` directory. This will generate a `build/html` subdirectory
 containing the built documentation.
 
 To build the PDF documentation, enter::

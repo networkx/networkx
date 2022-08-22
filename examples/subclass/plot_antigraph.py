@@ -65,8 +65,8 @@ class AntiGraph(Graph):
         """
         try:
             return iter(set(self.adj) - set(self.adj[n]) - {n})
-        except KeyError as e:
-            raise nx.NetworkXError(f"The node {n} is not in the graph.") from e
+        except KeyError as err:
+            raise nx.NetworkXError(f"The node {n} is not in the graph.") from err
 
     def degree(self, nbunch=None, weight=None):
         """Return an iterator for (node, degree) in the dense graph.
@@ -96,8 +96,8 @@ class AntiGraph(Graph):
         Examples
         --------
         >>> G = nx.path_graph(4)  # or DiGraph, MultiGraph, MultiDiGraph, etc
-        >>> list(G.degree(0))  # node 0 with degree 1
-        [(0, 1)]
+        >>> G.degree(0)  # node 0 with degree 1
+        1
         >>> list(G.degree([0, 1]))
         [(0, 1), (1, 2)]
 

@@ -7,3 +7,4 @@ Summarization
    :toctree: generated/
 
    dedensify
+   snap_aggregation

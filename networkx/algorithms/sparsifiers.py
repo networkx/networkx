@@ -1,5 +1,6 @@
 """Functions for computing sparsifiers of graphs."""
 import math
+
 import networkx as nx
 from networkx.utils import not_implemented_for, py_random_state
 

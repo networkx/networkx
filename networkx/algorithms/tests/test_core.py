@@ -1,5 +1,5 @@
 import networkx as nx
-from networkx.testing.utils import assert_nodes_equal
+from networkx.utils import nodes_equal
 
 
 class TestCore:
@@ -50,32 +50,24 @@ class TestCore:
     def test_trivial(self):
         """Empty graph"""
         G = nx.Graph()
-        assert nx.find_cores(G) == {}
-
-    def test_find_cores(self):
-        core = nx.find_cores(self.G)
-        nodes_by_core = [
-            sorted([n for n in core if core[n] == val]) for val in range(4)
-        ]
-        assert_nodes_equal(nodes_by_core[0], [21])
-        assert_nodes_equal(nodes_by_core[1], [17, 18, 19, 20])
-        assert_nodes_equal(nodes_by_core[2], [9, 10, 11, 12, 13, 14, 15, 16])
-        assert_nodes_equal(nodes_by_core[3], [1, 2, 3, 4, 5, 6, 7, 8])
+        assert nx.core_number(G) == {}
 
     def test_core_number(self):
-        # smoke test real name
-        cores = nx.core_number(self.G)
+        core = nx.core_number(self.G)
+        nodes_by_core = [sorted(n for n in core if core[n] == val) for val in range(4)]
+        assert nodes_equal(nodes_by_core[0], [21])
+        assert nodes_equal(nodes_by_core[1], [17, 18, 19, 20])
+        assert nodes_equal(nodes_by_core[2], [9, 10, 11, 12, 13, 14, 15, 16])
+        assert nodes_equal(nodes_by_core[3], [1, 2, 3, 4, 5, 6, 7, 8])
 
-    def test_find_cores2(self):
-        core = nx.find_cores(self.H)
-        nodes_by_core = [
-            sorted([n for n in core if core[n] == val]) for val in range(3)
-        ]
-        assert_nodes_equal(nodes_by_core[0], [0])
-        assert_nodes_equal(nodes_by_core[1], [1, 3])
-        assert_nodes_equal(nodes_by_core[2], [2, 4, 5, 6])
+    def test_core_number2(self):
+        core = nx.core_number(self.H)
+        nodes_by_core = [sorted(n for n in core if core[n] == val) for val in range(3)]
+        assert nodes_equal(nodes_by_core[0], [0])
+        assert nodes_equal(nodes_by_core[1], [1, 3])
+        assert nodes_equal(nodes_by_core[2], [2, 4, 5, 6])
 
-    def test_directed_find_cores(self):
+    def test_directed_core_number(self):
         """core number had a bug for directed graphs found in issue #1959"""
         # small example where too timid edge removal can make cn[2] = 3
         G = nx.DiGraph()
@@ -169,11 +161,11 @@ class TestCore:
     def test_onion_layers(self):
         layers = nx.onion_layers(self.G)
         nodes_by_layer = [
-            sorted([n for n in layers if layers[n] == val]) for val in range(1, 7)
+            sorted(n for n in layers if layers[n] == val) for val in range(1, 7)
         ]
-        assert_nodes_equal(nodes_by_layer[0], [21])
-        assert_nodes_equal(nodes_by_layer[1], [17, 18, 19, 20])
-        assert_nodes_equal(nodes_by_layer[2], [10, 12, 13, 14, 15, 16])
-        assert_nodes_equal(nodes_by_layer[3], [9, 11])
-        assert_nodes_equal(nodes_by_layer[4], [1, 2, 4, 5, 6, 8])
-        assert_nodes_equal(nodes_by_layer[5], [3, 7])
+        assert nodes_equal(nodes_by_layer[0], [21])
+        assert nodes_equal(nodes_by_layer[1], [17, 18, 19, 20])
+        assert nodes_equal(nodes_by_layer[2], [10, 12, 13, 14, 15, 16])
+        assert nodes_equal(nodes_by_layer[3], [9, 11])
+        assert nodes_equal(nodes_by_layer[4], [1, 2, 4, 5, 6, 8])
+        assert nodes_equal(nodes_by_layer[5], [3, 7])

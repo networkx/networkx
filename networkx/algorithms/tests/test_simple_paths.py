@@ -4,10 +4,11 @@ import pytest
 
 import networkx as nx
 from networkx import convert_node_labels_to_integers as cnlti
-from networkx.algorithms.simple_paths import _bidirectional_dijkstra
-from networkx.algorithms.simple_paths import _bidirectional_shortest_path
-from networkx.utils import arbitrary_element
-from networkx.utils import pairwise
+from networkx.algorithms.simple_paths import (
+    _bidirectional_dijkstra,
+    _bidirectional_shortest_path,
+)
+from networkx.utils import arbitrary_element, pairwise
 
 
 class TestIsSimplePath:
@@ -148,7 +149,7 @@ def test_all_simple_paths_cutoff():
 
 
 def test_all_simple_paths_on_non_trivial_graph():
-    """ you may need to draw this graph to make sure it is reasonable """
+    """you may need to draw this graph to make sure it is reasonable"""
     G = nx.path_graph(5, create_using=nx.DiGraph())
     G.add_edges_from([(0, 5), (1, 5), (1, 3), (5, 4), (4, 2), (4, 3)])
     paths = nx.all_simple_paths(G, 1, [2, 3])
@@ -334,7 +335,7 @@ def test_all_simple_edge_paths_cutoff():
 
 
 def test_all_simple_edge_paths_on_non_trivial_graph():
-    """ you may need to draw this graph to make sure it is reasonable """
+    """you may need to draw this graph to make sure it is reasonable"""
     G = nx.path_graph(5, create_using=nx.DiGraph())
     G.add_edges_from([(0, 5), (1, 5), (1, 3), (5, 4), (4, 2), (4, 3)])
     paths = nx.all_simple_edge_paths(G, 1, [2, 3])
@@ -449,7 +450,7 @@ def test_shortest_simple_paths():
     assert next(paths) == [1, 2, 3, 4, 8, 12]
     assert next(paths) == [1, 5, 6, 7, 8, 12]
     assert [len(path) for path in nx.shortest_simple_paths(G, 1, 12)] == sorted(
-        [len(path) for path in nx.all_simple_paths(G, 1, 12)]
+        len(path) for path in nx.all_simple_paths(G, 1, 12)
     )
 
 
@@ -469,7 +470,7 @@ def test_shortest_simple_paths_directed_with_weight_fucntion():
     assert next(paths) == [1, 5, 6, 7, 8, 12]
     assert [
         len(path) for path in nx.shortest_simple_paths(G, 1, 12, weight=cost)
-    ] == sorted([len(path) for path in nx.all_simple_paths(G, 1, 12)])
+    ] == sorted(len(path) for path in nx.all_simple_paths(G, 1, 12))
 
 
 def test_shortest_simple_paths_with_weight_fucntion():

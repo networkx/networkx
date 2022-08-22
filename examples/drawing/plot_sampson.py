@@ -9,7 +9,7 @@ Shows how to read data from a zip file and plot multiple frames.
 
 The data file can be found at:
 
-- https://github.com/networkx/networkx/blob/master/examples/drawing/sampson_data.zip
+- https://github.com/networkx/networkx/blob/main/examples/drawing/sampson_data.zip
 """
 
 import zipfile

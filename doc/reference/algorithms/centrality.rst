@@ -45,7 +45,6 @@ Current Flow Closeness
    :toctree: generated/
 
    betweenness_centrality
-   betweenness_centrality_source
    betweenness_centrality_subset
    edge_betweenness_centrality
    edge_betweenness_centrality_subset
@@ -79,6 +78,7 @@ Group Centrality
    group_degree_centrality
    group_in_degree_centrality
    group_out_degree_centrality
+   prominent_group
 
 Load
 ----

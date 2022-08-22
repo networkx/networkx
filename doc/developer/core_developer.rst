@@ -72,7 +72,7 @@ or using GitHub’s `suggestion
 whether to accept the changes.)
 
 Our default merge policy is to squash all PR commits into a single
-commit. Users who wish to bring the latest changes from ``master``
+commit. Users who wish to bring the latest changes from ``main``
 into their branch should be advised to merge, not to rebase.  Even
 when merge conflicts arise, don’t ask for a rebase unless you know
 that a contributor is experienced with git. Instead, rebase the branch

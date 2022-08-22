@@ -1,10 +1,11 @@
 """Unit tests for the :mod:`networkx.generators.lattice` module."""
 
+from itertools import product
+
 import pytest
 
 import networkx as nx
-from networkx.testing import assert_edges_equal
-from itertools import product
+from networkx.utils import edges_equal
 
 
 class TestGrid2DGraph:
@@ -68,6 +69,12 @@ class TestGrid2DGraph:
         H = nx.grid_2d_graph(4, 2, periodic=True, create_using=nx.MultiGraph())
         assert list(G.edges()) == list(H.edges())
 
+    def test_exceptions(self):
+        pytest.raises(nx.NetworkXError, nx.grid_2d_graph, -3, 2)
+        pytest.raises(nx.NetworkXError, nx.grid_2d_graph, 3, -2)
+        pytest.raises(TypeError, nx.grid_2d_graph, 3.3, 2)
+        pytest.raises(TypeError, nx.grid_2d_graph, 3, 2.2)
+
     def test_node_input(self):
         G = nx.grid_2d_graph(4, 2, periodic=True)
         H = nx.grid_2d_graph(range(4), range(2), periodic=True)
@@ -76,7 +83,7 @@ class TestGrid2DGraph:
         assert nx.is_isomorphic(H, G)
         G = nx.grid_2d_graph(5, 6)
         H = nx.grid_2d_graph(range(5), range(6))
-        assert_edges_equal(H, G)
+        assert edges_equal(H, G)
 
 
 class TestGridGraph:
@@ -139,7 +146,7 @@ class TestHypercubeGraph:
     def test_degree_distribution(self):
         for n in range(1, 10):
             G = nx.hypercube_graph(n)
-            expected_histogram = [0] * n + [2 ** n]
+            expected_histogram = [0] * n + [2**n]
             assert nx.degree_histogram(G) == expected_histogram
 
 

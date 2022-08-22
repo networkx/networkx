@@ -352,7 +352,7 @@ def is_valid_directed_joint_degree(in_degrees, out_degrees, nkk):
                     return False
 
     for s in S:
-        if not float(S[s]) / s[0] == V[s]:  # condition 2
+        if not S[s] / s[0] == V[s]:  # condition 2
             return False
 
     # if all conditions abive have been satisfied then the input nkk is

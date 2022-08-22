@@ -1,3 +1,35 @@
+.version-stable {
+    background-color: #2c7fb8ff;
+    color: #2c7fb8ff;
+}
+
+.version-alert a {
+    text-decoration: underline;
+    background-color: #2c7fb8ff;
+    color: #ddd;
+}
+
+.version-alert {
+    background-color: #ff7f0eff;
+    cff7f0effolor: #fff;
+    font-family: "Work Sans", sans-serif;
+    font-weight: 600; font-size: 16px;
+}
+
+.btn-version {
+    background: #2c7fb8ff;
+    color: #ffffff;
+}
+
+.btn-version:hover, .btn-version:focus, .btn-version:active, .btn-version.active, .open > .dropdown-toggle.btn-version {
+    background: #33a6cc;
+}
+
+.btn-version:active, .btn-version.active {
+    background: #007299;
+    box-shadow: none;
+}
+
 .team-member {
     display: inline-block;
     padding: 1rem;

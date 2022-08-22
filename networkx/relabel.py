@@ -6,6 +6,9 @@ __all__ = ["convert_node_labels_to_integers", "relabel_nodes"]
 def relabel_nodes(G, mapping, copy=True):
     """Relabel the nodes of the graph G according to a given mapping.
 
+    The original node ordering may not be preserved if `copy` is `False` and the
+    mapping includes overlap between old and new labels.
+
     Parameters
     ----------
     G : graph
@@ -111,12 +114,10 @@ def relabel_nodes(G, mapping, copy=True):
     --------
     convert_node_labels_to_integers
     """
-    # you can pass a function f(old_label)->new_label
-    # but we'll just make a dictionary here regardless
-    if not hasattr(mapping, "__getitem__"):
-        m = {n: mapping(n) for n in G}
-    else:
-        m = mapping
+    # you can pass any callable e.g. f(old_label) -> new_label or
+    # e.g. str(old_label) -> new_label, but we'll just make a dictionary here regardless
+    m = {n: mapping(n) for n in G} if callable(mapping) else mapping
+
     if copy:
         return _relabel_copy(G, m)
     else:
@@ -124,23 +125,21 @@ def relabel_nodes(G, mapping, copy=True):
 
 
 def _relabel_inplace(G, mapping):
-    old_labels = set(mapping.keys())
-    new_labels = set(mapping.values())
-    if len(old_labels & new_labels) > 0:
+    if len(mapping.keys() & mapping.values()) > 0:
         # labels sets overlap
         # can we topological sort and still do the relabeling?
         D = nx.DiGraph(list(mapping.items()))
         D.remove_edges_from(nx.selfloop_edges(D))
         try:
             nodes = reversed(list(nx.topological_sort(D)))
-        except nx.NetworkXUnfeasible as e:
+        except nx.NetworkXUnfeasible as err:
             raise nx.NetworkXUnfeasible(
                 "The node label sets are overlapping and no ordering can "
                 "resolve the mapping. Use copy=True."
-            ) from e
+            ) from err
     else:
-        # non-overlapping label sets
-        nodes = old_labels
+        # non-overlapping label sets, sort them in the order of G nodes
+        nodes = [n for n in G if n in mapping]
 
     multigraph = G.is_multigraph()
     directed = G.is_directed()

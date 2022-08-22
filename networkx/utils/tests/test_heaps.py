@@ -1,4 +1,5 @@
 import pytest
+
 import networkx as nx
 from networkx.utils import BinaryHeap, PairingHeap
 
@@ -48,9 +49,9 @@ data = [  # min should not invent an element.
     # int and float values should interop.
     ("min", (1, -2.0)),
     # pop removes minimum-valued element.
-    ("insert", 3, -(10 ** 100), True),
+    ("insert", 3, -(10**100), True),
     ("insert", 4, 5, True),
-    ("pop", (3, -(10 ** 100))),
+    ("pop", (3, -(10**100))),
     ("pop", (1, -2.0)),
     # Decrease-insert should succeed.
     ("insert", 4, -50, True),

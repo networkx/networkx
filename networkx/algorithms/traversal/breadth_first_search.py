@@ -1,6 +1,7 @@
 """Basic algorithms for breadth-first searching the nodes of a graph."""
-import networkx as nx
 from collections import deque
+
+import networkx as nx
 
 __all__ = [
     "bfs_edges",
@@ -8,6 +9,7 @@ __all__ = [
     "bfs_predecessors",
     "bfs_successors",
     "descendants_at_distance",
+    "bfs_layers",
 ]
 
 
@@ -108,10 +110,10 @@ def bfs_edges(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
         A function that takes the list of neighbors of given node as input, and
         returns an *iterator* over these neighbors but with custom ordering.
 
-    Returns
-    -------
-    edges: generator
-       A generator of edges in the breadth-first-search.
+    Yields
+    ------
+    edge: 2-tuple of nodes
+       Yields edges resulting from the breadth-first search.
 
     Examples
     --------
@@ -134,27 +136,30 @@ def bfs_edges(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
 
     Notes
     -----
-    The naming of this function is very similar to edge_bfs. The difference
-    is that 'edge_bfs' yields edges even if they extend back to an already
-    explored node while 'bfs_edges' yields the edges of the tree that results
+    The naming of this function is very similar to
+    :func:`~networkx.algorithms.traversal.edgebfs.edge_bfs`. The difference
+    is that ``edge_bfs`` yields edges even if they extend back to an already
+    explored node while this generator yields the edges of the tree that results
     from a breadth-first-search (BFS) so no edges are reported if they extend
-    to already explored nodes. That means 'edge_bfs' reports all edges while
-    'bfs_edges' only reports those traversed by a node-based BFS. Yet another
-    description is that 'bfs_edges' reports the edges traversed during BFS
-    while 'edge_bfs' reports all edges in the order they are explored.
+    to already explored nodes. That means ``edge_bfs`` reports all edges while
+    ``bfs_edges`` only reports those traversed by a node-based BFS. Yet another
+    description is that ``bfs_edges`` reports the edges traversed during BFS
+    while ``edge_bfs`` reports all edges in the order they are explored.
 
-    Based on http://www.ics.uci.edu/~eppstein/PADS/BFS.py.
-    by D. Eppstein, July 2004. The modifications
-    to allow depth limits based on the Wikipedia article
-    "`Depth-limited-search`_".
+    Based on the breadth-first search implementation in PADS [1]_
+    by D. Eppstein, July 2004; with modifications to allow depth limits
+    as described in [2]_.
 
-    .. _Depth-limited-search: https://en.wikipedia.org/wiki/Depth-limited_search
+    References
+    ----------
+    .. [1] http://www.ics.uci.edu/~eppstein/PADS/BFS.py.
+    .. [2] https://en.wikipedia.org/wiki/Depth-limited_search
 
     See Also
     --------
     bfs_tree
-    dfs_edges
-    edge_bfs
+    :func:`~networkx.algorithms.traversal.depth_first_search.dfs_edges`
+    :func:`~networkx.algorithms.traversal.edgebfs.edge_bfs`
 
     """
     if reverse and G.is_directed():
@@ -366,13 +371,64 @@ def bfs_successors(G, source, depth_limit=None, sort_neighbors=None):
     yield (parent, children)
 
 
+def bfs_layers(G, sources):
+    """Returns an iterator of all the layers in breadth-first search traversal.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        A graph over which to find the layers using breadth-first search.
+
+    sources : node in `G` or list of nodes in `G`
+        Specify starting nodes for single source or multiple sources breadth-first search
+
+    Yields
+    ------
+    layer: list of nodes
+        Yields list of nodes at the same distance from sources
+
+    Examples
+    --------
+    >>> G = nx.path_graph(5)
+    >>> dict(enumerate(nx.bfs_layers(G, [0, 4])))
+    {0: [0, 4], 1: [1, 3], 2: [2]}
+    >>> H = nx.Graph()
+    >>> H.add_edges_from([(0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6)])
+    >>> dict(enumerate(nx.bfs_layers(H, [1])))
+    {0: [1], 1: [0, 3, 4], 2: [2], 3: [5, 6]}
+    >>> dict(enumerate(nx.bfs_layers(H, [1, 6])))
+    {0: [1, 6], 1: [0, 3, 4, 2], 2: [5]}
+    """
+    if sources in G:
+        sources = [sources]
+
+    current_layer = list(sources)
+    visited = set(sources)
+
+    for source in current_layer:
+        if source not in G:
+            raise nx.NetworkXError(f"The node {source} is not in the graph.")
+
+    # this is basically BFS, except that the current layer only stores the nodes at
+    # same distance from sources at each iteration
+    while current_layer:
+        yield current_layer
+        next_layer = list()
+        for node in current_layer:
+            for child in G[node]:
+                if child not in visited:
+                    visited.add(child)
+                    next_layer.append(child)
+        current_layer = next_layer
+
+
 def descendants_at_distance(G, source, distance):
     """Returns all nodes at a fixed `distance` from `source` in `G`.
 
     Parameters
     ----------
-    G : NetworkX DiGraph
-        A directed graph
+    G : NetworkX graph
+        A graph
     source : node in `G`
     distance : the distance of the wanted nodes from `source`
 
@@ -380,28 +436,26 @@ def descendants_at_distance(G, source, distance):
     -------
     set()
         The descendants of `source` in `G` at the given `distance` from `source`
+
+    Examples
+    --------
+    >>> G = nx.path_graph(5)
+    >>> nx.descendants_at_distance(G, 2, 2)
+    {0, 4}
+    >>> H = nx.DiGraph()
+    >>> H.add_edges_from([(0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6)])
+    >>> nx.descendants_at_distance(H, 0, 2)
+    {3, 4, 5, 6}
+    >>> nx.descendants_at_distance(H, 5, 0)
+    {5}
+    >>> nx.descendants_at_distance(H, 5, 1)
+    set()
     """
-    if not G.has_node(source):
+    if source not in G:
         raise nx.NetworkXError(f"The node {source} is not in the graph.")
-    current_distance = 0
-    queue = {source}
-    visited = {source}
 
-    # this is basically BFS, except that the queue only stores the nodes at
-    # current_distance from source at each iteration
-    while queue:
-        if current_distance == distance:
-            return queue
-
-        current_distance += 1
-
-        next_vertices = set()
-        for vertex in queue:
-            for child in G[vertex]:
-                if child not in visited:
-                    visited.add(child)
-                    next_vertices.add(child)
-
-        queue = next_vertices
-
+    bfs_generator = nx.bfs_layers(G, source)
+    for i, layer in enumerate(bfs_generator):
+        if i == distance:
+            return set(layer)
     return set()

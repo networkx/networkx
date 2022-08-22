@@ -20,7 +20,7 @@ class TestMWVC:
         G.add_edges_from((0, v) for v in range(1, 26))
         G.add_edges_from((v, 0) for v in range(26, 51))
         cover = min_weighted_vertex_cover(G)
-        assert 2 == len(cover)
+        assert 1 == len(cover)
         assert is_cover(G, cover)
 
     def test_unweighted_undirected(self):
@@ -28,7 +28,7 @@ class TestMWVC:
         size = 50
         sg = nx.star_graph(size)
         cover = min_weighted_vertex_cover(sg)
-        assert 2 == len(cover)
+        assert 1 == len(cover)
         assert is_cover(sg, cover)
 
     def test_weighted(self):
@@ -53,3 +53,16 @@ class TestMWVC:
         csum = sum(wg.nodes[node]["weight"] for node in cover)
         assert 4 == csum
         assert is_cover(wg, cover)
+
+    def test_unweighted_self_loop(self):
+        slg = nx.Graph()
+        slg.add_node(0)
+        slg.add_node(1)
+        slg.add_node(2)
+
+        slg.add_edge(0, 1)
+        slg.add_edge(2, 2)
+
+        cover = min_weighted_vertex_cover(slg)
+        assert 2 == len(cover)
+        assert is_cover(slg, cover)

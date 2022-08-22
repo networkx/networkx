@@ -186,12 +186,12 @@ class DiGraphMatcher(vf2.DiGraphMatcher):
 
 
 class MultiGraphMatcher(GraphMatcher):
-    """VF2 isomorphism checker for undirected multigraphs. """
+    """VF2 isomorphism checker for undirected multigraphs."""
 
     pass
 
 
 class MultiDiGraphMatcher(DiGraphMatcher):
-    """VF2 isomorphism checker for directed multigraphs. """
+    """VF2 isomorphism checker for directed multigraphs."""
 
     pass

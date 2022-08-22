@@ -1,5 +1,6 @@
-import pytest
 from itertools import chain, combinations, product
+
+import pytest
 
 import networkx as nx
 
@@ -123,14 +124,9 @@ class TestTreeLCA:
         """Test that pairs not in the graph raises error."""
         lca = tree_all_pairs_lca(self.DG, 0, [(-1, -1)])
         pytest.raises(nx.NodeNotFound, list, lca)
-
-    def test_tree_all_pairs_lowest_common_ancestor11(self):
-        """Test that None as a node in the graph raises an error."""
-        G = nx.DiGraph([(None, 3)])
-        pytest.raises(nx.NetworkXError, list, tree_all_pairs_lca(G))
-        pytest.raises(
-            nx.NodeNotFound, list, tree_all_pairs_lca(self.DG, pairs=G.edges())
-        )
+        # check if node is None
+        lca = tree_all_pairs_lca(self.DG, None, [(-1, -1)])
+        pytest.raises(nx.NodeNotFound, list, lca)
 
     def test_tree_all_pairs_lowest_common_ancestor12(self):
         """Test that tree routine bails on DAGs."""
@@ -140,16 +136,22 @@ class TestTreeLCA:
     def test_not_implemented_for(self):
         NNI = nx.NetworkXNotImplemented
         G = nx.Graph([(0, 1)])
-        pytest.raises(NNI, tree_all_pairs_lca, G)
-        pytest.raises(NNI, all_pairs_lca, G)
+        with pytest.raises(NNI):
+            next(tree_all_pairs_lca(G))
+        with pytest.raises(NNI):
+            next(all_pairs_lca(G))
         pytest.raises(NNI, nx.lowest_common_ancestor, G, 0, 1)
         G = nx.MultiGraph([(0, 1)])
-        pytest.raises(NNI, tree_all_pairs_lca, G)
-        pytest.raises(NNI, all_pairs_lca, G)
+        with pytest.raises(NNI):
+            next(tree_all_pairs_lca(G))
+        with pytest.raises(NNI):
+            next(all_pairs_lca(G))
         pytest.raises(NNI, nx.lowest_common_ancestor, G, 0, 1)
         G = nx.MultiDiGraph([(0, 1)])
-        pytest.raises(NNI, tree_all_pairs_lca, G)
-        pytest.raises(NNI, all_pairs_lca, G)
+        with pytest.raises(NNI):
+            next(tree_all_pairs_lca(G))
+        with pytest.raises(NNI):
+            next(all_pairs_lca(G))
         pytest.raises(NNI, nx.lowest_common_ancestor, G, 0, 1)
 
     def test_tree_all_pairs_lowest_common_ancestor13(self):
@@ -189,7 +191,7 @@ class TestDAGLCA:
             (2, 6): 6,
             (2, 7): 7,
             (2, 8): 7,
-            (3, 3): 8,
+            (3, 3): 3,
             (3, 4): 4,
             (3, 5): 5,
             (3, 6): 6,
@@ -293,10 +295,10 @@ class TestDAGLCA:
         assert ans == [((3, 3), 3)]
 
     def test_all_pairs_lowest_common_ancestor10(self):
-        """Test that it bails on None as a node."""
-        G = nx.DiGraph([(None, 3)])
-        pytest.raises(nx.NetworkXError, all_pairs_lca, G)
-        pytest.raises(nx.NodeNotFound, all_pairs_lca, self.DG, pairs=G.edges())
+        """Test that it works on a small graph that previously revealed a bug gh-4942"""
+        G = nx.DiGraph([(0, 2), (1, 2), (2, 3)])
+        ans = list(all_pairs_lca(G))
+        assert len(ans) == 9
 
     def test_lowest_common_ancestor1(self):
         """Test that the one-pair function works on default."""
@@ -309,3 +311,41 @@ class TestDAGLCA:
         G = nx.DiGraph()
         G.add_node(3)
         assert nx.lowest_common_ancestor(G, 3, 3) == 3
+
+    def test_naive_lowest_common_ancestor1(self):
+        """Test that the one-pair function works for issue #4574."""
+        G = nx.DiGraph()
+        G.add_nodes_from(range(17))
+        G.add_edges_from(
+            [
+                (2, 0),
+                (1, 2),
+                (3, 2),
+                (5, 2),
+                (8, 2),
+                (11, 2),
+                (4, 5),
+                (6, 5),
+                (7, 8),
+                (10, 8),
+                (13, 11),
+                (14, 11),
+                (15, 11),
+                (9, 10),
+                (12, 13),
+                (16, 15),
+            ]
+        )
+
+        assert nx.lowest_common_ancestor(G, 7, 9) == None
+
+    def test_naive_lowest_common_ancestor2(self):
+        """Test that the one-pair function works for issue #4942."""
+        G = nx.DiGraph()
+        G.add_edge(0, 1)
+        G.add_edge(2, 0)
+        G.add_edge(2, 3)
+        G.add_edge(4, 0)
+        G.add_edge(5, 2)
+
+        assert nx.lowest_common_ancestor(G, 1, 3) == 2

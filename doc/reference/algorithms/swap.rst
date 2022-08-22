@@ -7,5 +7,6 @@ Swap
    :toctree: generated/
 
    double_edge_swap
+   directed_edge_swap
    connected_double_edge_swap
 

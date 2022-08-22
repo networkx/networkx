@@ -73,10 +73,7 @@ class TestVolume:
 
 
 class TestNormalizedCutSize:
-    """Unit tests for the :func:`~networkx.normalized_cut_size`
-    function.
-
-    """
+    """Unit tests for the :func:`~networkx.normalized_cut_size` function."""
 
     def test_graph(self):
         G = nx.path_graph(4)

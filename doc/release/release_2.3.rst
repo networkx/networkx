@@ -1,5 +1,10 @@
-Announcement: NetworkX 2.3
-==========================
+NetworkX 2.3
+============
+
+Release date: 11 April 2019
+
+Supports Python 3.5, 3.6 and 3.7.
+This is our first Python 3 only release.
 
 We're happy to announce the release of NetworkX 2.3!
 NetworkX is a Python package for the creation, manipulation, and study of the
@@ -53,8 +58,8 @@ Deprecations
 - The Graph.fresh_copy() method should now use Graph.__class__()
 - ReverseView class removed in favor of reverse_view() function.
 
-Contributors to this release
-----------------------------
+Contributors
+------------
 
 - Mike Babst
 - Jonathan Barnoud

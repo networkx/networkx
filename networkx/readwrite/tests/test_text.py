@@ -1,6 +1,8 @@
-import pytest
-import networkx as nx
 from textwrap import dedent
+
+import pytest
+
+import networkx as nx
 
 
 def test_directed_tree_str():

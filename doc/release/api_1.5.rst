@@ -1,11 +1,35 @@
-*********************************
-Version 1.5 notes and API changes
-*********************************
+NetworkX 1.5
+============
 
-This page reflects API changes from networkx-1.4 to networkx-1.5.
+Release date:  4 June 2011
 
-Please send comments and questions to the networkx-discuss mailing list:
-http://groups.google.com/group/networkx-discuss .
+Highlights
+~~~~~~~~~~
+
+New features
+~~~~~~~~~~~~
+ - Algorithms for :mod:`generating <networkx.generators.bipartite>`
+   and :mod:`analyzing <networkx.algorithms.bipartite>` bipartite graphs
+ - :mod:`Maximal independent set <networkx.algorithms.mis>` algorithm
+ - :mod:`Erdős-Gallai graphical degree sequence test <networkx.generators.degree_seq>`
+ - :mod:`Negative edge cycle test <networkx.algorithms.shortest_paths.weighted>`
+ - More memory efficient :mod:`Dijkstra path length <networkx.algorithms.shortest_paths.weighted>` with cutoff parameter
+ - :mod:`Weighted clustering coefficient <networkx.algorithms.cluster>`
+ - Read and write version 1.2 of :mod:`GEXF reader <networkx.readwrite.gexf>` format
+ - :mod:`Neighbor degree correlation <networkx.algorithms.neighbor_degree>`
+   that handle subsets of nodes
+ - :mod:`In-place node relabeling <networkx.relabel>`
+ - Many 'weighted' graph algorithms now take optional parameter to use
+   specified edge attribute (default='weight')
+   (ticket https://networkx.lanl.gov/trac/ticket/509)
+
+ - Test for :mod:`distance regular <networkx.algorithms.distance_regular>` graphs
+ - Fast :mod:`directed Erdős-Renyi graph  <networkx.generators.random_graphs>` generator
+ - Fast :mod:`expected degree graph  <networkx.generators.degree_seq>` generator
+ - :mod:`Navigable small world  <networkx.generators.geometric>` generator
+ - :mod:`Waxman model <networkx.generators.geometric>` generator
+ - :mod:`Geographical threshold graph <networkx.generators.geometric>` generator
+ - :mod:`Karate Club, Florentine Families, and Davis' Women's Club <networkx.generators.social>` graphs
 
 Weighted graph algorithms
 -------------------------
@@ -45,3 +69,33 @@ The random geometric graph generator has been simplified.
 It no longer supports the create_using, repel, or verbose parameters.
 An optional pos keyword was added to allow specification of node positions.
 
+Bug fixes
+~~~~~~~~~
+ - Fix edge handling for multigraphs in networkx/graphviz interface
+   (ticket https://networkx.lanl.gov/trac/ticket/507)
+ - Update networkx/pydot interface for new versions of pydot
+   (ticket https://networkx.lanl.gov/trac/ticket/506)
+   (ticket https://networkx.lanl.gov/trac/ticket/535)
+ - Fix negative cycle handling in Bellman-Ford
+   (ticket https://networkx.lanl.gov/trac/ticket/502)
+ - Write more attributes with GraphML and GML formats
+   (ticket https://networkx.lanl.gov/trac/ticket/480)
+ - Handle white space better in read_edgelist
+   (ticket https://networkx.lanl.gov/trac/ticket/513)
+ - Better parsing of Pajek format files
+   (ticket https://networkx.lanl.gov/trac/ticket/524)
+   (ticket https://networkx.lanl.gov/trac/ticket/542)
+ - Isolates functions work with directed graphs
+   (ticket https://networkx.lanl.gov/trac/ticket/526)
+ - Faster conversion to numpy matrices
+   (ticket https://networkx.lanl.gov/trac/ticket/529)
+ - Add graph['name'] and use properties to access Graph.name
+   (ticket https://networkx.lanl.gov/trac/ticket/544)
+ - Topological sort confused None and 0
+   (ticket https://networkx.lanl.gov/trac/ticket/546)
+ - GEXF writer mishandled weight=0
+   (ticket https://networkx.lanl.gov/trac/ticket/550)
+ - Speedup in SciPy version of PageRank
+   (ticket https://networkx.lanl.gov/trac/ticket/554)
+ - Numpy PageRank node order incorrect + speedups
+   (ticket https://networkx.lanl.gov/trac/ticket/555)

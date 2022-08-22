@@ -2,6 +2,8 @@
 Text-based visual representations of graphs
 """
 
+__all__ = ["forest_str"]
+
 
 def forest_str(graph, with_labels=True, sources=None, write=None, ascii_only=False):
     """

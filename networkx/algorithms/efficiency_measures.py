@@ -2,6 +2,7 @@
 
 import networkx as nx
 from networkx.exception import NetworkXNoPath
+
 from ..utils import not_implemented_for
 
 __all__ = ["efficiency", "local_efficiency", "global_efficiency"]
@@ -26,6 +27,12 @@ def efficiency(G, u, v):
     -------
     float
         Multiplicative inverse of the shortest path distance between the nodes.
+
+    Examples
+    --------
+    >>> G = nx.Graph([(0, 1), (0, 2), (0, 3), (1, 2), (1, 3)])
+    >>> nx.efficiency(G, 2, 3)  # this gives efficiency for node 2 and 3
+    0.5
 
     Notes
     -----
@@ -69,6 +76,12 @@ def global_efficiency(G):
     -------
     float
         The average global efficiency of the graph.
+
+    Examples
+    --------
+    >>> G = nx.Graph([(0, 1), (0, 2), (0, 3), (1, 2), (1, 3)])
+    >>> round(nx.global_efficiency(G), 12)
+    0.916666666667
 
     Notes
     -----
@@ -124,6 +137,12 @@ def local_efficiency(G):
     -------
     float
         The average local efficiency of the graph.
+
+    Examples
+    --------
+    >>> G = nx.Graph([(0, 1), (0, 2), (0, 3), (1, 2), (1, 3)])
+    >>> nx.local_efficiency(G)
+    0.9166666666666667
 
     Notes
     -----

@@ -3,8 +3,7 @@
 """
 
 import networkx as nx
-from networkx.testing import assert_nodes_equal
-from networkx.testing import assert_edges_equal
+from networkx.utils import edges_equal, nodes_equal
 
 
 class TestJoin:
@@ -27,12 +26,12 @@ class TestJoin:
         T = nx.empty_graph(1)
         actual = nx.join([(T, 0)])
         expected = nx.path_graph(2)
-        assert_nodes_equal(list(expected), list(actual))
-        assert_edges_equal(list(expected.edges()), list(actual.edges()))
+        assert nodes_equal(list(expected), list(actual))
+        assert edges_equal(list(expected.edges()), list(actual.edges()))
 
     def test_basic(self):
         """Tests for joining multiple subtrees at a root node."""
-        trees = [(nx.full_rary_tree(2, 2 ** 2 - 1), 0) for i in range(2)]
+        trees = [(nx.full_rary_tree(2, 2**2 - 1), 0) for i in range(2)]
         actual = nx.join(trees)
-        expected = nx.full_rary_tree(2, 2 ** 3 - 1)
+        expected = nx.full_rary_tree(2, 2**3 - 1)
         assert nx.is_isomorphic(actual, expected)

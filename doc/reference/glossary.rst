@@ -8,7 +8,7 @@ Glossary
    dictionary
       A Python dictionary maps keys to values. Also known as "hashes",
       or "associative arrays" in other programming languages.
-      See https://docs.python.org/2/tutorial/datastructures.html#dictionaries
+      See :ref:`the Python tutorial on dictionaries <tut-dictionaries>`.
 
    edge
       Edges are either two-tuples of nodes `(u, v)` or three tuples of nodes

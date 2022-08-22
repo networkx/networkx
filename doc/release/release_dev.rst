@@ -1,13 +1,15 @@
-Announcement: NetworkX 2.6
-==========================
+NetworkX 3.0 (unreleased)
+=========================
 
-We're happy to announce the release of NetworkX 2.6!
+Release date: TBD
+
+Supports Python ...
+
 NetworkX is a Python package for the creation, manipulation, and study of the
 structure, dynamics, and functions of complex networks.
 
 For more information, please visit our `website <https://networkx.org/>`_
-and our `gallery of examples
-<https://networkx.org/documentation/latest/auto_examples/index.html>`_.
+and our :ref:`gallery of examples <examples_gallery>`.
 Please send comments and questions to the `networkx-discuss mailing list
 <http://groups.google.com/group/networkx-discuss>`_.
 
@@ -17,78 +19,57 @@ Highlights
 This release is the result of X of work with over X pull requests by
 X contributors. Highlights include:
 
-- Dropped support for Python 3.6.
-- NumPy, SciPy, Matplotlib, and pandas are now default requirements.
+- Better syncing between G._succ and G._adj for directed G.
+  And slightly better speed from all the core adjacency data structures.
+  G.adj is now a cached_property while still having the cache reset when
+  G._adj is set to a new dict (which doesn't happen very often).
+  Note: We have always assumed that G._succ and G._adj point to the same
+  object. But we did not enforce it well. If you have somehow worked
+  around our attempts and are relying on these private attributes being
+  allowed to be different from each other due to loopholes in our previous
+  code, you will have to look for other loopholes in our new code
+  (or subclass DiGraph to explicitly allow this).
+- If your code sets G._succ or G._adj to new dictionary-like objects, you no longer
+  have to set them both. Setting either will ensure the other is set as well.
+  And the cached_properties G.adj and G.succ will be rest accordingly too.
+- If you use the presence of the attribute `_adj` as a criteria for the object
+  being a Graph instance, that code may need updating. The graph classes
+  themselves now have an attribute `_adj`. So, it is possible that whatever you
+  are checking might be a class rather than an instance. We suggest you check
+  for attribute `_adj` to verify it is like a NetworkX graph object or type and
+  then `type(obj) is type` to check if it is a class.
 
 Improvements
 ------------
-
-- [`#4319 <https://github.com/networkx/networkx/pull/4319>`_]
-  pagerank uses scipy by default now.
-- [`#4317 <https://github.com/networkx/networkx/pull/4317>`_]
-  New ``source`` argument to ``has_eulerian_path`` to look for path starting at
-  source.
+- [`#5663 <https://github.com/networkx/networkx/pull/5663>`_]
+  Implements edge swapping for directed graphs.
+- [`#5883 <https://github.com/networkx/networkx/pull/5883>`_]
+  Replace the implementation of ``lowest_common_ancestor`` and
+  ``all_pairs_lowest_common_ancestor`` with a "naive" algorithm to fix
+  several bugs and improve performance.
+- [`#5912 <https://github.com/networkx/networkx/pull/5912>`_]
+  The ``mapping`` argument of the ``relabel_nodes`` function can be either a
+  mapping or a function that creates a mapping. ``relabel_nodes`` first checks
+  whether the ``mapping`` is callable - if so, then it is used as a function.
+  This fixes a bug related for ``mapping=str`` and may change the behavior for
+  other ``mapping`` arguments that implement both ``__getitem__`` and
+  ``__call__``.
 
 API Changes
 -----------
 
-- [`#4190 <https://github.com/networkx/networkx/pull/4190>`_]
-  Removed ``tracemin_chol``.  Use ``tracemin_lu`` instead.
-- [`#4216 <https://github.com/networkx/networkx/pull/4216>`_]
-  In `to_*_array/matrix`, nodes in nodelist but not in G now raise an exception.
-  Use G.add_nodes_from(nodelist) to add them to G before converting.
-- [`#4360  <https://github.com/networkx/networkx/pull/4360>`_]
-  Internally `.nx_pylab.draw_networkx_edges` now always generates a
-  list of `matplotlib.patches.FancyArrowPatch` rather than using
-  a `matplotlib.collections.LineCollection` for un-directed graphs.  This
-  unifies interface for all types of graphs.  In
-  addition to the API change this may cause a performance regression for
-  large graphs.
-- [`#4384 <https://github.com/networkx/networkx/pull/4384>`_]
-  Added edge_key parameter for MultiGraphs in to_pandas_edgelist
-
-- [`#4466 <https://github.com/networkx/networkx/pull/4466>`_]
-  `relabel_nodes` used to raise a KeyError for a key in `mapping` that is not
-  a node in the graph, but it only did this when `copy` was `False`. Now
-  any keys in `mapping` which are not in the graph are ignored.
 
 Deprecations
 ------------
 
-- [`#4238 <https://github.com/networkx/networkx/pull/4238>`_]
-  Deprecate ``to_numpy_matrix`` and ``from_numpy_matrix``.
-- [`#4279 <https://github.com/networkx/networkx/pull/4279>`_]
-  Deprecate ``networkx.utils.misc.is_iterator``.
-  Use ``isinstance(obj, collections.abc.Iterator)`` instead.
-- [`#4280 <https://github.com/networkx/networkx/pull/4280>`_]
-  Deprecate ``networkx.utils.misc.is_list_of_ints`` as it is no longer used.
-  See ``networkx.utils.misc.make_list_of_ints`` for related functionality.
-- [`#4281 <https://github.com/networkx/networkx/pull/4281>`_]
-  Deprecate ``read_yaml`` and ``write_yaml``.
-- [`#4282 <https://github.com/networkx/networkx/pull/4282>`_]
-  Deprecate ``read_gpickle`` and ``write_gpickle``.
-- [`#4298 <https://github.com/networkx/networkx/pull/4298>`_]
-  Deprecate ``read_shp``, ``edges_from_line``, and ``write_shp``.
-- [`#4319 <https://github.com/networkx/networkx/pull/4319>`_]
-  Deprecate ``pagerank_numpy``, ``pagerank_scipy``.
-- [`#4355 <https://github.com/networkx/networkx/pull/4355>`_]
-  Deprecate ``copy`` method in the coreview Filtered-related classes.
-- [`#4384 <https://github.com/networkx/networkx/pull/4384>`_]
-  Deprecate unused ``order`` parameter in to_pandas_edgelist.
-- [`#4428 <https://github.com/networkx/networkx/pull/4428>`_]
-  Deprecate ``jit_data`` and ``jit_graph``.
-- [`#4449 <https://github.com/networkx/networkx/pull/4449>`_]
-  Deprecate ``consume``.
-- [`#4448 <https://github.com/networkx/networkx/pull/4448>`_]
-  Deprecate ``iterable``.
 
-Contributors to this release
-----------------------------
+Merged PRs
+----------
 
 <output of contribs.py>
 
 
-Pull requests merged in this release
-------------------------------------
+Contributors
+------------
 
 <output of contribs.py>

@@ -3,9 +3,13 @@
 Atlas
 =====
 
-Atlas of all graphs of 6 nodes or less.
+Atlas of all connected graphs with up to 6 nodes.
 
-This example needs Graphviz and PyGraphviz.
+This example uses Graphviz via PyGraphviz.
+
+The image should show 142 graphs.
+We don't plot the empty graph nor the single node graph.
+(142 is the sum of values 2 to n=6 in sequence oeis.org/A001349).
 """
 
 import random
@@ -14,40 +18,21 @@ import matplotlib.pyplot as plt
 import networkx as nx
 
 
-def atlas6():
-    """Return the atlas of all connected graphs of 6 nodes or less.
-    Attempt to check for isomorphisms and remove.
-    """
+GraphMatcher = nx.isomorphism.vf2userfunc.GraphMatcher
 
-    Atlas = nx.graph_atlas_g()[0:208]  # 208
-    # remove isolated nodes, only connected graphs are left
+
+def atlas6():
+    """Return the atlas of all connected graphs with at most 6 nodes"""
+
+    Atlas = nx.graph_atlas_g()[3:209]  # 0, 1, 2 => no edges. 208 is last 6 node graph
     U = nx.Graph()  # graph for union of all graphs in atlas
     for G in Atlas:
-        zerodegree = [n for n in G if G.degree(n) == 0]
-        for n in zerodegree:
-            G.remove_node(n)
-        U = nx.disjoint_union(U, G)
-
-    # iterator of graphs of all connected components
-    C = (U.subgraph(c) for c in nx.connected_components(U))
-
-    UU = nx.Graph()
-    # do quick isomorphic-like check, not a true isomorphism checker
-    nlist = []  # list of nonisomorphic graphs
-    for G in C:
-        # check against all nonisomorphic graphs so far
-        if not iso(G, nlist):
-            nlist.append(G)
-            UU = nx.disjoint_union(UU, G)  # union the nonisomorphic graphs
-    return UU
-
-
-def iso(G1, glist):
-    """Quick and dirty nonisomorphism checker used to check isomorphisms."""
-    for G2 in glist:
-        if nx.isomorphism.isomorph.graph_could_be_isomorphic(G1, G2):
-            return True
-    return False
+        # check if connected
+        if nx.number_connected_components(G) == 1:
+            # check if isomorphic to a previous graph
+            if not GraphMatcher(U, G).subgraph_is_isomorphic():
+                U = nx.disjoint_union(U, G)
+    return U
 
 
 G = atlas6()

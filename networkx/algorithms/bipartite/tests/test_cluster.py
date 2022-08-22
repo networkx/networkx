@@ -1,7 +1,8 @@
-import networkx as nx
 import pytest
-from networkx.algorithms.bipartite.cluster import cc_dot, cc_min, cc_max
+
+import networkx as nx
 import networkx.algorithms.bipartite as bipartite
+from networkx.algorithms.bipartite.cluster import cc_dot, cc_max, cc_min
 
 
 def test_pairwise_bipartite_cc_functions():

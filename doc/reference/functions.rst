@@ -12,7 +12,6 @@ Graph
    degree
    degree_histogram
    density
-   info
    create_empty_copy
    is_directed
    to_directed

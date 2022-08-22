@@ -1,9 +1,10 @@
 """
     Tests for the temporal aspect of the Temporal VF2 isomorphism algorithm.
 """
+from datetime import date, datetime, timedelta
+
 import networkx as nx
 from networkx.algorithms import isomorphism as iso
-from datetime import date, datetime, timedelta
 
 
 def provide_g1_edgelist():

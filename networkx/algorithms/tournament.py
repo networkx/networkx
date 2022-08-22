@@ -22,9 +22,7 @@ from itertools import combinations
 
 import networkx as nx
 from networkx.algorithms.simple_paths import is_simple_path as is_path
-from networkx.utils import arbitrary_element
-from networkx.utils import not_implemented_for
-from networkx.utils import py_random_state
+from networkx.utils import arbitrary_element, not_implemented_for, py_random_state
 
 __all__ = [
     "hamiltonian_path",
@@ -59,8 +57,8 @@ def index_satisfying(iterable, condition):
     # exception.
     try:
         return i + 1
-    except NameError as e:
-        raise ValueError("iterable must be non-empty") from e
+    except NameError as err:
+        raise ValueError("iterable must be non-empty") from err
 
 
 @not_implemented_for("undirected")
@@ -81,6 +79,13 @@ def is_tournament(G):
     -------
     bool
         Whether the given graph is a tournament graph.
+
+    Examples
+    --------
+    >>> from networkx.algorithms import tournament
+    >>> G = nx.DiGraph([(0, 1), (1, 2), (2, 0)])
+    >>> tournament.is_tournament(G)
+    True
 
     Notes
     -----
@@ -113,6 +118,13 @@ def hamiltonian_path(G):
     -------
     path : list
         A list of nodes which form a Hamiltonian path in `G`.
+
+    Examples
+    --------
+    >>> from networkx.algorithms import tournament
+    >>> G = nx.DiGraph([(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 3)])
+    >>> tournament.hamiltonian_path(G)
+    [0, 1, 2, 3]
 
     Notes
     -----
@@ -184,6 +196,13 @@ def score_sequence(G):
     -------
     list
         A sorted list of the out-degrees of the nodes of `G`.
+
+    Examples
+    --------
+    >>> from networkx.algorithms import tournament
+    >>> G = nx.DiGraph([(1, 0), (1, 3), (0, 2), (0, 3), (2, 1), (3, 2)])
+    >>> tournament.score_sequence(G)
+    [1, 1, 2, 2]
 
     """
     return sorted(d for v, d in G.out_degree())
@@ -260,6 +279,15 @@ def is_reachable(G, s, t):
     bool
         Whether there is a path from `s` to `t` in `G`.
 
+    Examples
+    --------
+    >>> from networkx.algorithms import tournament
+    >>> G = nx.DiGraph([(1, 0), (1, 3), (1, 2), (2, 3), (2, 0), (3, 0)])
+    >>> tournament.is_reachable(G, 1, 3)
+    True
+    >>> tournament.is_reachable(G, 3, 2)
+    False
+
     Notes
     -----
     Although this function is more theoretically efficient than the
@@ -276,7 +304,6 @@ def is_reachable(G, s, t):
            tournaments."
            *Electronic Colloquium on Computational Complexity*. 2001.
            <http://eccc.hpi-web.de/report/2001/092/>
-
     """
 
     def two_neighborhood(G, v):
@@ -331,6 +358,16 @@ def is_strongly_connected(G):
     -------
     bool
         Whether the tournament is strongly connected.
+
+    Examples
+    --------
+    >>> from networkx.algorithms import tournament
+    >>> G = nx.DiGraph([(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 3), (3, 0)])
+    >>> tournament.is_strongly_connected(G)
+    True
+    >>> G.remove_edge(1, 3)
+    >>> tournament.is_strongly_connected(G)
+    False
 
     Notes
     -----

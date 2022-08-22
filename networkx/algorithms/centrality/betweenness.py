@@ -1,16 +1,17 @@
 """Betweenness centrality measures."""
-from heapq import heappush, heappop
-from itertools import count
 import warnings
+from collections import deque
+from heapq import heappop, heappush
+from itertools import count
 
+from networkx.algorithms.shortest_paths.weighted import _weight_function
 from networkx.utils import py_random_state
 from networkx.utils.decorators import not_implemented_for
 
-__all__ = ["betweenness_centrality", "edge_betweenness_centrality", "edge_betweenness"]
+__all__ = ["betweenness_centrality", "edge_betweenness_centrality"]
 
 
 @py_random_state(5)
-@not_implemented_for("multigraph")
 def betweenness_centrality(
     G, k=None, normalized=True, weight=None, endpoints=False, seed=None
 ):
@@ -47,6 +48,8 @@ def betweenness_centrality(
     weight : None or string, optional (default=None)
       If None, all edge weights are considered equal.
       Otherwise holds the name of the edge attribute used as weight.
+      Weights are used to calculate weighted shortest paths, so they are
+      interpreted as distances.
 
     endpoints : bool, optional
       If True include the endpoints in the shortest path counts.
@@ -120,18 +123,18 @@ def betweenness_centrality(
     if k is None:
         nodes = G
     else:
-        nodes = seed.sample(G.nodes(), k)
+        nodes = seed.sample(list(G.nodes()), k)
     for s in nodes:
         # single source shortest paths
         if weight is None:  # use BFS
-            S, P, sigma = _single_source_shortest_path_basic(G, s)
+            S, P, sigma, _ = _single_source_shortest_path_basic(G, s)
         else:  # use Dijkstra's algorithm
-            S, P, sigma = _single_source_dijkstra_path_basic(G, s, weight)
+            S, P, sigma, _ = _single_source_dijkstra_path_basic(G, s, weight)
         # accumulation
         if endpoints:
-            betweenness = _accumulate_endpoints(betweenness, S, P, sigma, s)
+            betweenness, _ = _accumulate_endpoints(betweenness, S, P, sigma, s)
         else:
-            betweenness = _accumulate_basic(betweenness, S, P, sigma, s)
+            betweenness, _ = _accumulate_basic(betweenness, S, P, sigma, s)
     # rescaling
     betweenness = _rescale(
         betweenness,
@@ -177,6 +180,8 @@ def edge_betweenness_centrality(G, k=None, normalized=True, weight=None, seed=No
     weight : None or string, optional (default=None)
       If None, all edge weights are considered equal.
       Otherwise holds the name of the edge attribute used as weight.
+      Weights are used to calculate weighted shortest paths, so they are
+      interpreted as distances.
 
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
@@ -205,11 +210,11 @@ def edge_betweenness_centrality(G, k=None, normalized=True, weight=None, seed=No
     ----------
     .. [1]  A Faster Algorithm for Betweenness Centrality. Ulrik Brandes,
        Journal of Mathematical Sociology 25(2):163-177, 2001.
-       http://www.inf.uni-konstanz.de/algo/publications/b-fabc-01.pdf
+       https://doi.org/10.1080/0022250X.2001.9990249
     .. [2] Ulrik Brandes: On Variants of Shortest-Path Betweenness
        Centrality and their Generic Computation.
        Social Networks 30(2):136-145, 2008.
-       http://www.inf.uni-konstanz.de/algo/publications/b-vspbc-08.pdf
+       https://doi.org/10.1016/j.socnet.2007.11.001
     """
     betweenness = dict.fromkeys(G, 0.0)  # b[v]=0 for v in G
     # b[e]=0 for e in G.edges()
@@ -221,9 +226,9 @@ def edge_betweenness_centrality(G, k=None, normalized=True, weight=None, seed=No
     for s in nodes:
         # single source shortest paths
         if weight is None:  # use BFS
-            S, P, sigma = _single_source_shortest_path_basic(G, s)
+            S, P, sigma, _ = _single_source_shortest_path_basic(G, s)
         else:  # use Dijkstra's algorithm
-            S, P, sigma = _single_source_dijkstra_path_basic(G, s, weight)
+            S, P, sigma, _ = _single_source_dijkstra_path_basic(G, s, weight)
         # accumulation
         betweenness = _accumulate_edges(betweenness, S, P, sigma, s)
     # rescaling
@@ -232,15 +237,9 @@ def edge_betweenness_centrality(G, k=None, normalized=True, weight=None, seed=No
     betweenness = _rescale_e(
         betweenness, len(G), normalized=normalized, directed=G.is_directed()
     )
+    if G.is_multigraph():
+        betweenness = _add_edge_keys(G, betweenness, weight=weight)
     return betweenness
-
-
-# obsolete name
-def edge_betweenness(G, k=None, normalized=True, weight=None, seed=None):
-    warnings.warn(
-        "edge_betweeness is replaced by edge_betweenness_centrality", DeprecationWarning
-    )
-    return edge_betweenness_centrality(G, k, normalized, weight, seed)
 
 
 # helpers for betweenness centrality
@@ -255,9 +254,9 @@ def _single_source_shortest_path_basic(G, s):
     D = {}
     sigma[s] = 1.0
     D[s] = 0
-    Q = [s]
+    Q = deque([s])
     while Q:  # use BFS to find shortest paths
-        v = Q.pop(0)
+        v = Q.popleft()
         S.append(v)
         Dv = D[v]
         sigmav = sigma[v]
@@ -268,10 +267,11 @@ def _single_source_shortest_path_basic(G, s):
             if D[w] == Dv + 1:  # this is a shortest path, count paths
                 sigma[w] += sigmav
                 P[w].append(v)  # predecessors
-    return S, P, sigma
+    return S, P, sigma, D
 
 
 def _single_source_dijkstra_path_basic(G, s, weight):
+    weight = _weight_function(G, weight)
     # modified from Eppstein
     S = []
     P = {}
@@ -294,7 +294,7 @@ def _single_source_dijkstra_path_basic(G, s, weight):
         S.append(v)
         D[v] = dist
         for w, edgedata in G[v].items():
-            vw_dist = dist + edgedata.get(weight, 1)
+            vw_dist = dist + weight(v, w, edgedata)
             if w not in D and (w not in seen or vw_dist < seen[w]):
                 seen[w] = vw_dist
                 push(Q, (vw_dist, next(c), v, w))
@@ -303,7 +303,7 @@ def _single_source_dijkstra_path_basic(G, s, weight):
             elif vw_dist == seen[w]:  # handle equal paths
                 sigma[w] += sigma[v]
                 P[w].append(v)
-    return S, P, sigma
+    return S, P, sigma, D
 
 
 def _accumulate_basic(betweenness, S, P, sigma, s):
@@ -315,7 +315,7 @@ def _accumulate_basic(betweenness, S, P, sigma, s):
             delta[v] += sigma[v] * coeff
         if w != s:
             betweenness[w] += delta[w]
-    return betweenness
+    return betweenness, delta
 
 
 def _accumulate_endpoints(betweenness, S, P, sigma, s):
@@ -328,7 +328,7 @@ def _accumulate_endpoints(betweenness, S, P, sigma, s):
             delta[v] += sigma[v] * coeff
         if w != s:
             betweenness[w] += delta[w] + 1
-    return betweenness
+    return betweenness, delta
 
 
 def _accumulate_edges(betweenness, S, P, sigma, s):
@@ -390,3 +390,39 @@ def _rescale_e(betweenness, n, normalized, directed=False, k=None):
         for v in betweenness:
             betweenness[v] *= scale
     return betweenness
+
+
+@not_implemented_for("graph")
+def _add_edge_keys(G, betweenness, weight=None):
+    r"""Adds the corrected betweenness centrality (BC) values for multigraphs.
+
+    Parameters
+    ----------
+    G : NetworkX graph.
+
+    betweenness : dictionary
+        Dictionary mapping adjacent node tuples to betweenness centrality values.
+
+    weight : string or function
+        See `_weight_function` for details. Defaults to `None`.
+
+    Returns
+    -------
+    edges : dictionary
+        The parameter `betweenness` including edges with keys and their
+        betweenness centrality values.
+
+    The BC value is divided among edges of equal weight.
+    """
+    _weight = _weight_function(G, weight)
+
+    edge_bc = dict.fromkeys(G.edges, 0.0)
+    for u, v in betweenness:
+        d = G[u][v]
+        wt = _weight(u, v, d)
+        keys = [k for k in d if _weight(u, v, {k: d[k]}) == wt]
+        bc = betweenness[(u, v)] / len(keys)
+        for k in keys:
+            edge_bc[(u, v, k)] = bc
+
+    return edge_bc

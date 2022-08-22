@@ -15,7 +15,7 @@ Installation
 ------------
 
 We aim to make NetworkX as easy to install as possible.
-Some of our dependencies (e.g., graphviz and gdal) can be tricky to install.
+Some of our dependencies (e.g., graphviz) can be tricky to install.
 Other of our dependencies are easy to install on the CPython platform, but
 may be more involved on other platforms such as PyPy.
 Addressing these installation issues may involve working with the external projects.
