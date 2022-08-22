@@ -110,10 +110,10 @@ def draw(G, pos=None, ax=None, **kwds):
         cf = ax.get_figure()
     cf.set_facecolor("w")
     if ax is None:
-        if cf._axstack() is None:
-            ax = cf.add_axes((0, 0, 1, 1))
-        else:
+        if cf.axes:
             ax = cf.gca()
+        else:
+            ax = cf.add_axes((0, 0, 1, 1))
 
     if "with_labels" not in kwds:
         kwds["with_labels"] = "labels" in kwds
