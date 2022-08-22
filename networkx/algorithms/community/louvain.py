@@ -18,7 +18,7 @@ class ConvergenceError(RuntimeError):
 
 @py_random_state("seed")
 def louvain_communities(
-    G, weight="weight", resolution=1, threshold=0.0000001, seed=None, iteration_limit=10,
+    G, weight="weight", resolution=1, threshold=0.0000001, seed=None
 ):
     r"""Find the best partition of a graph using the Louvain Community Detection
     Algorithm.
@@ -113,14 +113,14 @@ def louvain_communities(
     louvain_partitions
     """
 
-    d = louvain_partitions(G, weight, resolution, threshold, seed, iteration_limit)
+    d = louvain_partitions(G, weight, resolution, threshold, seed)
     q = deque(d, maxlen=1)
     return q.pop()
 
 
 @py_random_state("seed")
 def louvain_partitions(
-    G, weight="weight", resolution=1, threshold=0.0000001, seed=None, iteration_limit=10,
+    G, weight="weight", resolution=1, threshold=0.0000001, seed=None
 ):
     """Yields partitions for each level of the Louvain Community Detection Algorithm
 
@@ -184,15 +184,11 @@ def louvain_partitions(
         graph, m, partition, resolution, is_directed, seed
     )
     improvement = True
-    _iteration_count = 0
-    while improvement and _iteration_count < iteration_limit:
+    while improvement:
         yield partition
-        _iteration_count += 1
         new_mod = modularity(
             graph, inner_partition, resolution=resolution, weight="weight"
         )
-        if _iteration_count % 1000 == 0:
-            logger.warning(f"\t\titeration: {_iteration_count} @ {new_mod - mod} improvement")
         if new_mod - mod <= threshold:
             return
         mod = new_mod
@@ -200,9 +196,6 @@ def louvain_partitions(
         partition, inner_partition, improvement = _one_level(
             graph, m, partition, resolution, is_directed, seed
         )
-
-    logger.warning(f"Exiting after {_iteration_count} iterations")
-    return None
 
 
 def _one_level(G, m, partition, resolution=1, is_directed=False, seed=None):
