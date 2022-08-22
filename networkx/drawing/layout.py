@@ -1184,7 +1184,7 @@ def forceatlas2_layout(
     dissuade_hubs=False,
     edge_weight_influence=False,
     linlog=False,
-    dim = 2,
+    dim=2,
 ):
     """Forceatlas2 layout for networkx
 
@@ -1231,7 +1231,7 @@ def forceatlas2_layout(
 
     # parse optional pos positions
     if pos is None:
-        pos = nx.random_layout(G, dim = dim)
+        pos = nx.random_layout(G, dim=dim)
     else:
         dim = len(next(iter(pos.values())))
 
@@ -1305,8 +1305,12 @@ def forceatlas2_layout(
 
         # gravity
         gravities = (
-            -gravity * mass[:, None] * pos_arr / np.linalg.norm(pos_arr, axis=-1)[:, None]
+            -gravity
+            * mass[:, None]
+            * pos_arr
+            / np.linalg.norm(pos_arr, axis=-1)[:, None]
         )
+
         if strong_gravity:
             gravities *= np.linalg.norm(pos_arr, axis=-1)[:, None]
         # total forces
