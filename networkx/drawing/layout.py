@@ -1165,8 +1165,9 @@ def arf_layout(
     >>> pos = nx.arf_layout(G)
 
     """
-    import numpy as np
     import warnings
+
+    import numpy as np
 
     if a <= 1:
         msg = "The parameter a should be larger than 1"
