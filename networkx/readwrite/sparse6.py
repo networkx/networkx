@@ -272,7 +272,7 @@ def read_sparse6(path):
     You can read a sparse6 file by giving the path to the file::
 
         >>> import tempfile
-        >>> with tempfile.NamedTemporaryFile() as f:
+        >>> with tempfile.NamedTemporaryFile(delete=False) as f:
         ...     _ = f.write(b">>sparse6<<:An\\n")
         ...     _ = f.seek(0)
         ...     G = nx.read_sparse6(f.name)
@@ -340,7 +340,7 @@ def write_sparse6(G, path, nodes=None, header=True):
     You can write a sparse6 file by giving the path to the file::
 
         >>> import tempfile
-        >>> with tempfile.NamedTemporaryFile() as f:
+        >>> with tempfile.NamedTemporaryFile(delete=False) as f:
         ...     nx.write_sparse6(nx.path_graph(2), f.name)
         ...     print(f.read())
         b'>>sparse6<<:An\\n'

@@ -132,12 +132,15 @@ class TestTreewidthMinDegree:
         _, _ = treewidth_min_degree(G)
 
     def test_two_component_graph(self):
-        """Test empty graph"""
         G = nx.Graph()
         G.add_node(1)
         G.add_node(2)
         treewidth, _ = treewidth_min_degree(G)
         assert treewidth == 0
+
+    def test_not_sortable_nodes(self):
+        G = nx.Graph([(0, "a")])
+        treewidth_min_degree(G)
 
     def test_heuristic_first_steps(self):
         """Test first steps of min_degree heuristic"""
@@ -237,12 +240,15 @@ class TestTreewidthMinFillIn:
         _, _ = treewidth_min_fill_in(G)
 
     def test_two_component_graph(self):
-        """Test empty graph"""
         G = nx.Graph()
         G.add_node(1)
         G.add_node(2)
         treewidth, _ = treewidth_min_fill_in(G)
         assert treewidth == 0
+
+    def test_not_sortable_nodes(self):
+        G = nx.Graph([(0, "a")])
+        treewidth_min_fill_in(G)
 
     def test_heuristic_first_steps(self):
         """Test first steps of min_fill_in heuristic"""
