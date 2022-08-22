@@ -5,7 +5,6 @@ import networkx as nx
 __all__ = ["hits"]
 
 
-@nx.dispatch("hits")
 def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
     """Returns HITS hubs and authorities values for nodes.
 

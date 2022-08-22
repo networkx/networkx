@@ -3,6 +3,7 @@
 from collections import Counter
 from itertools import chain, combinations
 
+import networkx as nx
 from networkx.utils import not_implemented_for
 
 __all__ = [
@@ -218,6 +219,7 @@ def _directed_weighted_triangles_and_degree_iter(G, nodes=None, weight="weight")
         yield (i, dtotal, dbidirectional, directed_triangles)
 
 
+@nx.dispatch("average_clustering")
 def average_clustering(G, nodes=None, weight=None, count_zeros=True):
     r"""Compute the average clustering coefficient for the graph G.
 
@@ -277,6 +279,7 @@ def average_clustering(G, nodes=None, weight=None, count_zeros=True):
     return sum(c) / len(c)
 
 
+@nx.dispatch("clustering")
 def clustering(G, nodes=None, weight=None):
     r"""Compute the clustering coefficient for nodes.
 
@@ -390,6 +393,7 @@ def clustering(G, nodes=None, weight=None):
     return clusterc
 
 
+@nx.dispatch("transitivity")
 def transitivity(G):
     r"""Compute graph transitivity, the fraction of all possible triangles
     present in G.
@@ -428,6 +432,7 @@ def transitivity(G):
     return 0 if triangles == 0 else triangles / contri
 
 
+@nx.dispatch("square_clustering")
 def square_clustering(G, nodes=None):
     r"""Compute the squares clustering coefficient for nodes.
 
@@ -505,6 +510,7 @@ def square_clustering(G, nodes=None):
     return clustering
 
 
+@nx.dispatch("generalized_degree")
 @not_implemented_for("directed")
 def generalized_degree(G, nodes=None):
     r"""Compute the generalized degree for nodes.
