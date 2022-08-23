@@ -1164,9 +1164,10 @@ def forceatlas2_layout(
 ):
     """Forceatlas2 layout for networkx
 
-    See [1] for more info on the parameters
+    See [1]_ for more info on the parameters
 
-    [1]: https://journals.plos.org/plosone/article/file?id=10.1371/journal.pone.0098679&type=printable
+    .. [1] https://journals.plos.org/plosone/article/file?id=10.1371/journal.pone.0098679&type=printable
+
     Parameters
     ----------
     G : nx.Graph
