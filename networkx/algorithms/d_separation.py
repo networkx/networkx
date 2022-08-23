@@ -63,6 +63,14 @@ the collider at 'z' (... -> z <- ...) is now "open".
 D-separation is concerned with blocking all paths between u and v. Therefore, a
 d-separating set between ``u`` and ``v`` is one where all paths are blocked.
 
+D-separation and its applications in probability
+------------------------------------------------
+
+D-separation is commonly used in probabilistic graphical models. D-separation
+connects the idea of probabilistic "dependence" with separation in a graph. If
+one assumes the causal Markov condition [5]_, then d-separation implies conditional
+independence in probability distributions.
+
 Examples
 --------
 
@@ -105,6 +113,8 @@ References
 
 .. [4] Koller, D., & Friedman, N. (2009).
    Probabilistic graphical models: principles and techniques. The MIT Press.
+
+.. [5] https://en.wikipedia.org/wiki/Causal_Markov_condition
 
 """
 
