@@ -386,6 +386,29 @@ def condensation(G, scc=None):
     NetworkXNotImplemented
         If G is undirected.
 
+    Examples
+    --------
+    Contracting two sets of strongly connected nodes into two distinct SCC
+    using the barbell graph.
+
+    >>> G = nx.barbell_graph(4, 0)
+    >>> G.remove_edge(3, 4)
+    >>> G = nx.DiGraph(G)
+    >>> H = nx.condensation(G)
+    >>> H.nodes.data()
+    NodeDataView({0: {'members': {0, 1, 2, 3}}, 1: {'members': {4, 5, 6, 7}}})
+    >>> H.graph['mapping']
+    {0: 0, 1: 0, 2: 0, 3: 0, 4: 1, 5: 1, 6: 1, 7: 1}
+
+    Contracting a complete graph into one single SCC.
+
+    >>> G = nx.complete_graph(7, create_using=nx.DiGraph)
+    >>> H = nx.condensation(G)
+    >>> H.nodes
+    NodeView((0,))
+    >>> H.nodes.data()
+    NodeDataView({0: {'members': {0, 1, 2, 3, 4, 5, 6}}})
+
     Notes
     -----
     After contracting all strongly connected components to a single node,

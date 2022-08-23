@@ -249,11 +249,11 @@ class TestConvert:
 
     def test_attribute_dict_integrity(self):
         # we must not replace dict-like graph data structures with dicts
-        G = nx.OrderedGraph()
+        G = nx.Graph()
         G.add_nodes_from("abc")
-        H = to_networkx_graph(G, create_using=nx.OrderedGraph)
+        H = to_networkx_graph(G, create_using=nx.Graph)
         assert list(H.nodes) == list(G.nodes)
-        H = nx.OrderedDiGraph(G)
+        H = nx.DiGraph(G)
         assert list(H.nodes) == list(G.nodes)
 
     def test_to_edgelist(self):

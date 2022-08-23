@@ -1,5 +1,3 @@
-from collections import OrderedDict
-
 import networkx as nx
 
 from .test_digraph import BaseDiGraphTester
@@ -58,19 +56,6 @@ class TestSpecialGraph(_TestGraph):
         self.Graph = nx.Graph
 
 
-class TestOrderedGraph(_TestGraph):
-    def setup_method(self):
-        _TestGraph.setup_method(self)
-
-        class MyGraph(nx.Graph):
-            node_dict_factory = OrderedDict
-            adjlist_outer_dict_factory = OrderedDict
-            adjlist_inner_dict_factory = OrderedDict
-            edge_attr_dict_factory = OrderedDict
-
-        self.Graph = MyGraph
-
-
 class TestThinGraph(BaseGraphTester):
     def setup_method(self):
         all_edge_dict = {"weight": 1}
@@ -97,19 +82,6 @@ class TestSpecialDiGraph(_TestDiGraph):
     def setup_method(self):
         _TestDiGraph.setup_method(self)
         self.Graph = nx.DiGraph
-
-
-class TestOrderedDiGraph(_TestDiGraph):
-    def setup_method(self):
-        _TestDiGraph.setup_method(self)
-
-        class MyGraph(nx.DiGraph):
-            node_dict_factory = OrderedDict
-            adjlist_outer_dict_factory = OrderedDict
-            adjlist_inner_dict_factory = OrderedDict
-            edge_attr_dict_factory = OrderedDict
-
-        self.Graph = MyGraph
 
 
 class TestThinDiGraph(BaseDiGraphTester):
@@ -153,35 +125,7 @@ class TestSpecialMultiGraph(_TestMultiGraph):
         self.Graph = nx.MultiGraph
 
 
-class TestOrderedMultiGraph(_TestMultiGraph):
-    def setup_method(self):
-        _TestMultiGraph.setup_method(self)
-
-        class MyGraph(nx.MultiGraph):
-            node_dict_factory = OrderedDict
-            adjlist_outer_dict_factory = OrderedDict
-            adjlist_inner_dict_factory = OrderedDict
-            edge_key_dict_factory = OrderedDict
-            edge_attr_dict_factory = OrderedDict
-
-        self.Graph = MyGraph
-
-
 class TestSpecialMultiDiGraph(_TestMultiDiGraph):
     def setup_method(self):
         _TestMultiDiGraph.setup_method(self)
         self.Graph = nx.MultiDiGraph
-
-
-class TestOrderedMultiDiGraph(_TestMultiDiGraph):
-    def setup_method(self):
-        _TestMultiDiGraph.setup_method(self)
-
-        class MyGraph(nx.MultiDiGraph):
-            node_dict_factory = OrderedDict
-            adjlist_outer_dict_factory = OrderedDict
-            adjlist_inner_dict_factory = OrderedDict
-            edge_key_dict_factory = OrderedDict
-            edge_attr_dict_factory = OrderedDict
-
-        self.Graph = MyGraph

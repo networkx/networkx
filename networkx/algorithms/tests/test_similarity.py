@@ -523,7 +523,10 @@ class TestSimilarity:
         assert graph_edit_distance(G1, G2, node_match=nmatch, edge_match=ematch) == 1
 
     # note: nx.simrank_similarity_numpy not included because returns np.array
-    simrank_algs = [nx.simrank_similarity, nx.similarity._simrank_similarity_python]
+    simrank_algs = [
+        nx.simrank_similarity,
+        nx.algorithms.similarity._simrank_similarity_python,
+    ]
 
     @pytest.mark.parametrize("simrank_similarity", simrank_algs)
     def test_simrank_no_source_no_target(self, simrank_similarity):

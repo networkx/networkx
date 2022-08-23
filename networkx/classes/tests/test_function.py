@@ -260,38 +260,6 @@ class TestFunction:
         assert G.frozen == nx.is_frozen(self.G)
         assert G.frozen
 
-    def test_info(self):
-        G = nx.path_graph(5)
-        G.name = "path_graph(5)"
-        info = nx.info(G)
-        expected_graph_info = "Graph named 'path_graph(5)' with 5 nodes and 4 edges"
-        assert info == expected_graph_info
-
-        info = nx.info(G, n=1)
-        assert type(info) == str
-        expected_node_info = "\n".join(
-            ["Node 1 has the following properties:", "Degree: 2", "Neighbors: 0 2"]
-        )
-        assert info == expected_node_info
-
-        # must raise an error for a non-existent node
-        pytest.raises(nx.NetworkXError, nx.info, G, 1248)
-
-    def test_info_digraph(self):
-        G = nx.DiGraph(name="path_graph(5)")
-        nx.add_path(G, [0, 1, 2, 3, 4])
-        info = nx.info(G)
-        expected_graph_info = "DiGraph named 'path_graph(5)' with 5 nodes and 4 edges"
-        assert info == expected_graph_info
-
-        info = nx.info(G, n=1)
-        expected_node_info = "\n".join(
-            ["Node 1 has the following properties:", "Degree: 2", "Neighbors: 2"]
-        )
-        assert info == expected_node_info
-
-        pytest.raises(nx.NetworkXError, nx.info, G, n=-1)
-
     def test_neighbors_complete_graph(self):
         graph = nx.complete_graph(100)
         pop = random.sample(list(graph), 1)

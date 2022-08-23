@@ -63,7 +63,6 @@ class MultiDiGraph(MultiGraph, DiGraph):
     Graph
     DiGraph
     MultiGraph
-    OrderedMultiDiGraph
 
     Examples
     --------
@@ -270,10 +269,6 @@ class MultiDiGraph(MultiGraph, DiGraph):
     to_undirected_class : callable, (default: Graph or MultiGraph)
         Class to create a new graph structure in the `to_undirected` method.
         If `None`, a NetworkX class (Graph or MultiGraph) is used.
-
-    Please see :mod:`~networkx.classes.ordered` for examples of
-    creating graph subclasses by overwriting the base class `dict` with
-    a dictionary-like object.
     """
 
     # node_dict_factory = dict    # already assigned in Graph

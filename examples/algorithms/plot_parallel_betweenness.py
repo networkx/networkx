@@ -65,7 +65,7 @@ G_ws = nx.connected_watts_strogatz_graph(1000, 4, 0.1)
 for G in [G_ba, G_er, G_ws]:
     print("")
     print("Computing betweenness centrality for:")
-    print(nx.info(G))
+    print(G)
     print("\tParallel version")
     start = time.time()
     bt = betweenness_centrality_parallel(G)

@@ -10,7 +10,6 @@ from networkx.utils.mapped_queue import MappedQueue
 __all__ = [
     "greedy_modularity_communities",
     "naive_greedy_modularity_communities",
-    "_naive_greedy_modularity_communities",
 ]
 
 
@@ -225,7 +224,11 @@ def _greedy_modularity_communities_generator(G, weight=None, resolution=1):
 
 
 def greedy_modularity_communities(
-    G, weight=None, resolution=1, cutoff=1, best_n=None, n_communities=None
+    G,
+    weight=None,
+    resolution=1,
+    cutoff=1,
+    best_n=None,
 ):
     r"""Find communities in G using greedy modularity maximization.
 
@@ -271,23 +274,10 @@ def greedy_modularity_communities(
         starts to decrease until `best_n` communities remain.
         If ``None``, don't force it to continue beyond a maximum.
 
-    n_communities : int or None, optional (default=None)
-
-        .. deprecated:: 3.0
-           The `n_communities` parameter is deprecated - use `cutoff` and/or
-           `best_n` to set bounds on the desired number of communities instead.
-
-        A minimum number of communities below which the merging process stops.
-        The process stops at this number of communities even if modularity
-        is not maximized. The goal is to let the user stop the process early.
-        The process stops before the cutoff if it finds a maximum of modularity.
-
     Raises
     ------
     ValueError : If the `cutoff` or `best_n`  value is not in the range
         ``[1, G.number_of_nodes()]``, or if `best_n` < `cutoff`.
-        Also raised if `cutoff` is used with the deprecated `n_communities`
-        parameter.
 
     Returns
     -------
@@ -330,18 +320,6 @@ def greedy_modularity_communities(
             return [set(G)]
     else:
         best_n = G.number_of_nodes()
-    if n_communities is not None:
-        import warnings
-
-        warnings.warn(
-            "kwarg ``n_communities`` in greedy_modularity_communities is deprecated"
-            "and will be removed in version 3.0.   Use ``cutoff`` instead.",
-            DeprecationWarning,
-        )
-        if cutoff == 1:
-            cutoff = n_communities
-        else:
-            raise ValueError(f"Can not set both n_communities and cutoff.")
 
     # retrieve generator object to construct output
     community_gen = _greedy_modularity_communities_generator(
@@ -468,7 +446,3 @@ def naive_greedy_modularity_communities(G, resolution=1, weight=None):
             communities[i] = frozenset([])
     # Remove empty communities and sort
     return sorted((c for c in communities if len(c) > 0), key=len, reverse=True)
-
-
-# old name
-_naive_greedy_modularity_communities = naive_greedy_modularity_communities
