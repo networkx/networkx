@@ -1,3 +1,5 @@
+import pathlib
+
 import networkx as nx
 from networkx.algorithms.community import (
     is_partition,
@@ -179,3 +181,10 @@ def test_threshold():
     mod2 = modularity(G, partition2)
 
     assert mod1 < mod2
+
+
+def test_non_converging():
+    # in 2.8.5 this input causes
+    G = nx.read_edgelist(pathlib.Path(__file__).parent / "edges_nonconverging_louvain.txt")
+    communities = louvain_communities(G)
+    assert len(communities)
