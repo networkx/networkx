@@ -185,6 +185,8 @@ def test_threshold():
 
 def test_non_converging():
     # in 2.8.5 this input causes
-    G = nx.read_edgelist(pathlib.Path(__file__).parent / "edges_nonconverging_louvain.txt")
+    G = nx.read_edgelist(
+        pathlib.Path(__file__).parent / "edges_nonconverging_louvain.txt"
+    )
     communities = louvain_communities(G)
     assert len(communities)
