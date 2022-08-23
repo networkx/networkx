@@ -2,6 +2,7 @@
 Algorithm"""
 
 import logging
+import math
 from collections import defaultdict, deque
 
 import networkx as nx
@@ -240,7 +241,7 @@ def _one_level(G, m, partition, resolution=1, is_directed=False, seed=None):
     nb_moves = 1
     improvement = False
     _cumulative_moves = 0
-    _cumulative_moves_limit = len(rand_nodes) ** 1.2
+    _cumulative_moves_limit = math.ceil(len(rand_nodes) ** 1.2) + 1
     logger.debug(f"\t\tAt this level limiting to {_cumulative_moves_limit}")
     while nb_moves > 0:
         nb_moves = 0
