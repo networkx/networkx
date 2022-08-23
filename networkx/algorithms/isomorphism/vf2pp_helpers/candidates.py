@@ -41,14 +41,11 @@ def _find_candidates(u, graph_params, state_params):
 
     covered_neighbors = [nbr for nbr in G1[u] if nbr in mapping]
     if not covered_neighbors:
-        return {
-            node
-            for node in nodes_of_G2Labels[G1_labels[u]].intersection(
-                G2_nodes_of_degree[G1.degree[u]]
-            )
-            if node not in reverse_mapping
-            if node in T2_out
-        }
+        candidates = set(nodes_of_G2Labels[G1_labels[u]])
+        candidates.intersection_update(G2_nodes_of_degree[G1.degree[u]])
+        candidates.intersection_update(T2_out)
+        candidates.difference_update(reverse_mapping)
+        return candidates
 
     nbr1 = covered_neighbors[0]
     common_nodes = set(G2[mapping[nbr1]])
@@ -56,10 +53,7 @@ def _find_candidates(u, graph_params, state_params):
     for nbr1 in covered_neighbors[1:]:
         common_nodes.intersection_update(G2[mapping[nbr1]])
 
-    return {
-        node
-        for node in common_nodes.intersection(
-            *[nodes_of_G2Labels[G1_labels[u]], G2_nodes_of_degree[G1.degree[u]]]
-        )
-        if node not in reverse_mapping
-    }
+    common_nodes.difference_update(reverse_mapping)
+    common_nodes.intersection_update(G2_nodes_of_degree[G1.degree[u]])
+    common_nodes.intersection_update(nodes_of_G2Labels[G1_labels[u]])
+    return common_nodes
