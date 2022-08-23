@@ -37,35 +37,22 @@ def _matching_order(graph_params):
     node_order = []
 
     while V1_unordered:
-        max_node = max(
-            _rarest_nodes(V1_unordered, G1_labels, label_rarity), key=G1.degree
+        rarest_nodes = _all_argmax(
+            V1_unordered, key_function=lambda x: -label_rarity[G1_labels[x]]
         )
+        max_node = max(rarest_nodes, key=G1.degree)
 
         for dlevel_nodes in nx.bfs_layers(G1, max_node):
-            max_deg_nodes = []
-            max_degree = 0
             while dlevel_nodes:
-                # Get the nodes with the max used_degree
-                max_used_deg = -1
-                for node in dlevel_nodes:
-                    deg = used_degrees[node]
-                    if deg >= max_used_deg:  # most common case: deg < max_deg
-                        if deg > max_used_deg:
-                            max_used_deg = deg
-                            max_degree = G1.degree[node]
-                            max_deg_nodes = [node]
-                        else:  # deg == max_deg
-                            deg = G1.degree[node]
-                            if deg > max_degree:
-                                max_degree = deg
-                                max_deg_nodes = [node]
-                            elif deg == max_degree:
-                                max_deg_nodes.append(node)
-
-                # Get the max_used_degree node with the rarest label
+                max_used_deg_nodes = _all_argmax(
+                    dlevel_nodes, key_function=lambda x: used_degrees[x]
+                )
+                max_deg_nodes = _all_argmax(
+                    max_used_deg_nodes, key_function=lambda x: G1.degree[x]
+                )
                 next_node = min(max_deg_nodes, key=lambda x: label_rarity[G1_labels[x]])
-                node_order.append(next_node)
 
+                node_order.append(next_node)
                 for node in G1.neighbors(next_node):
                     used_degrees[node] += 1
 
@@ -76,15 +63,15 @@ def _matching_order(graph_params):
     return node_order
 
 
-def _rarest_nodes(V1_unordered, G1_labels, label_rarity):
-    rare = []
-    rarest = float("inf")
-    for n in V1_unordered:
-        if label_rarity[G1_labels[n]] < rarest:
-            rarest = label_rarity[G1_labels[n]]
-            rare = [n]
+def _all_argmax(nodes, key_function):
+    best_nodes = []
+    best = -float("inf")
+    for n in nodes:
+        if key_function(n) > best:
+            best = key_function(n)
+            best_nodes = [n]
             continue
-        if label_rarity[G1_labels[n]] == rarest:
-            rare.append(n)
+        if key_function(n) == best:
+            best_nodes.append(n)
 
-    return rare
+    return best_nodes

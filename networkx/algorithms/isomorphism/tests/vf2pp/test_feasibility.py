@@ -40,13 +40,6 @@ class TestGraphISOFeasibility:
         ["mapping", "reverse_mapping", "T1", "T1_out", "T2", "T2_out"],
     )
 
-    def test_different_number_of_selfloops(self):
-        G1 = nx.Graph([(0, 0)])
-        G2 = nx.Graph([(1, 2), (2, 3)])
-        gparams = self.GraphParameters(G1, G2, None, None, None, None, None)
-        u, v = 0, 1
-        assert not _feasibility(u, v, gparams, None)
-
     def test_const_covered_neighbors(self):
         G1 = nx.Graph([(0, 1), (1, 2), (3, 0), (3, 2)])
         G2 = nx.Graph([("a", "b"), ("b", "c"), ("k", "a"), ("k", "c")])
@@ -673,13 +666,6 @@ class TestMultiGraphISOFeasibility:
         "StateParameters",
         ["mapping", "reverse_mapping", "T1", "T1_out", "T2", "T2_out"],
     )
-
-    def test_different_number_of_selfloops(self):
-        G1 = nx.MultiGraph([(0, 0), (0, 0), (0, 0)])
-        G2 = nx.MultiGraph([(1, 2), (1, 1), (1, 1), (2, 3)])
-        gparams = self.GraphParameters(G1, G2, None, None, None, None, None)
-        u, v = 0, 1
-        assert not _feasibility(u, v, gparams, None)
 
     def test_const_covered_neighbors(self):
         G1 = nx.MultiGraph(
