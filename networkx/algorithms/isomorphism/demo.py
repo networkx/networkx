@@ -36,6 +36,7 @@ t0 = time.time()
 m = nx.vf2pp_is_isomorphic(G1, G2, node_labels=None)
 print(f"VF2++ elapsed time: {time.time() - t0}")
 
+print(nx.get_node_attributes(G1, "label"))
 print(m)
 
 # G1 = nx.MultiGraph([(0, 0), (0, 1), (0, 2)])
