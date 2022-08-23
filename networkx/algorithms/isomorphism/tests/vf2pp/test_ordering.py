@@ -2,8 +2,8 @@ import collections
 
 import networkx as nx
 from networkx.algorithms.isomorphism.vf2pp_helpers.node_ordering import (
+    _all_argmax,
     _matching_order,
-    _rarest_nodes,
 )
 
 
@@ -78,7 +78,9 @@ class TestNodeOrdering:
         rarest_node = min(V, key=lambda x: rarity[l1[x]])
         rare_nodes = [n for n in V if rarity[l1[n]] == rarity[l1[rarest_node]]]
         # todo: how am i gonna know the order of nodes in G.nodes() so i can test the explicit result?
-        assert set(_rarest_nodes(V, l1, rarity)) == set(rare_nodes)
+        assert set(_all_argmax(V, key_function=lambda x: -rarity[l1[x]])) == set(
+            rare_nodes
+        )
 
     def test_rare_nodes_exhaustive(self):
         for p in [0.04, 0.1, 0.25, 0.4, 0.65, 0.87, 1]:
@@ -94,7 +96,9 @@ class TestNodeOrdering:
                 n for n in G1.nodes() if rarity[l1[n]] == rarity[l1[rarest_node]]
             ]
 
-            assert set(_rarest_nodes(G1.nodes(), l1, rarity)) == set(rare_nodes)
+            assert set(
+                _all_argmax(G1.nodes(), key_function=lambda x: -rarity[l1[x]])
+            ) == set(rare_nodes)
 
     def test_empty_graph(self):
         G1 = nx.Graph()

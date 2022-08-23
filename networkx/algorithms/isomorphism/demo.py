@@ -3,38 +3,40 @@ import time
 import networkx as nx
 
 # Graph initialization
-G1 = nx.gnp_random_graph(50, 0.6, seed=42)
-G2 = nx.gnp_random_graph(50, 0.6, seed=42)
+G1 = nx.gnp_random_graph(500, 0.6, seed=42)
+G2 = nx.gnp_random_graph(500, 0.6, seed=42)
 
-colors = [
-    "white",
-    "black",
-    "green",
-    "purple",
-    "orange",
-    "red",
-    "blue",
-    "pink",
-    "yellow",
-    "none",
-]
+# colors = [
+#     "white",
+#     "black",
+#     "green",
+#     "purple",
+#     "orange",
+#     "red",
+#     "blue",
+#     "pink",
+#     "yellow",
+#     "none",
+# ]
 
 # VF2++ initialization
-c = 0
-for node in G1.nodes():
-    # if c == 400:
-    #     break
-    # if c % 3 == 0:
-    #     G1.nodes[node]["label"] = -1
-    #     G2.nodes[node]["label"] = -1
-    G1.nodes[node]["color"] = "blue"
-    G2.nodes[node]["color"] = "blue"
-    c += 1
+# c = 0
+# for node in G1.nodes():
+#     # if c == 400:
+#     #     break
+#     # if c % 3 == 0:
+#     #     G1.nodes[node]["label"] = -1
+#     #     G2.nodes[node]["label"] = -1
+#     G1.nodes[node]["color"] = "blue"
+#     G2.nodes[node]["color"] = "blue"
+#     c += 1
 
 # VF2++
 t0 = time.time()
-m = nx.vf2pp_is_isomorphic(G1, G2, node_labels="color", default_label=-1)
+m = nx.vf2pp_is_isomorphic(G1, G2, node_labels=None)
 print(f"VF2++ elapsed time: {time.time() - t0}")
+
+print(m)
 
 # assert m
 
