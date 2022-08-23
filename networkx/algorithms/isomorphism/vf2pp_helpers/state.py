@@ -50,15 +50,15 @@ def _update_Tinout(new_node1, new_node2, graph_params, state_params):
     }
 
     # Add the uncovered neighbors of node1 and node2 in T1 and T2 respectively
-    T1.discard(new_node1)
-    T2.discard(new_node2)
     T1.update(uncovered_neighbors_G1)
     T2.update(uncovered_neighbors_G2)
+    T1.discard(new_node1)
+    T2.discard(new_node2)
 
-    T1_out.discard(new_node1)
-    T2_out.discard(new_node2)
     T1_out.difference_update(uncovered_neighbors_G1)
     T2_out.difference_update(uncovered_neighbors_G2)
+    T1_out.discard(new_node1)
+    T2_out.discard(new_node2)
 
 
 def _restore_Tinout(popped_node1, popped_node2, graph_params, state_params):

@@ -38,15 +38,11 @@ print(f"VF2++ elapsed time: {time.time() - t0}")
 
 print(m)
 
-# assert m
-
-# t0 = time.time()
-# nx.is_isomorphic(G1, G2)
-# print(f"VF2 elapsed time: {time.time() - t0}")
-
-# G1 = nx.MultiGraph([(i, j) for i in range(250) for j in range(65)] * 10)
-# G2 = nx.MultiGraph([(i, j) for i in range(250) for j in range(65)] * 10)
+# G1 = nx.MultiGraph([(0, 0), (0, 1), (0, 2)])
+# uncovered_neighbors_G1 = {nbr for nbr in G1[0]}
 #
-# for node in G1.nodes():
-#     G1.nodes[node]["label"] = "blue"
-#     G2.nodes[node]["label"] = "blue"
+# T1 = {0}
+#
+# T1.update(uncovered_neighbors_G1)
+# T1.discard(0)
+# print(T1)

@@ -45,6 +45,13 @@ def _find_candidates(u, graph_params, state_params):
         candidates.intersection_update(G2_nodes_of_degree[G1.degree[u]])
         candidates.intersection_update(T2_out)
         candidates.difference_update(reverse_mapping)
+        candidates.difference_update(
+            {
+                node
+                for node in candidates
+                if G1.number_of_edges(u, u) != G2.number_of_edges(node, node)
+            }
+        )
         return candidates
 
     nbr1 = covered_neighbors[0]
@@ -56,4 +63,11 @@ def _find_candidates(u, graph_params, state_params):
     common_nodes.difference_update(reverse_mapping)
     common_nodes.intersection_update(G2_nodes_of_degree[G1.degree[u]])
     common_nodes.intersection_update(nodes_of_G2Labels[G1_labels[u]])
+    common_nodes.difference_update(
+        {
+            node
+            for node in common_nodes
+            if G1.number_of_edges(u, u) != G2.number_of_edges(node, node)
+        }
+    )
     return common_nodes
