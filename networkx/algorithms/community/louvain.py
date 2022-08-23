@@ -1,6 +1,6 @@
 """Function for detecting communities based on Louvain Community Detection
 Algorithm"""
-import datetime
+
 import logging
 from collections import defaultdict, deque
 
@@ -10,10 +10,6 @@ from networkx.utils import py_random_state
 
 __all__ = ["louvain_communities", "louvain_partitions"]
 logger = logging.getLogger(__name__)
-
-
-class ConvergenceError(RuntimeError):
-    pass
 
 
 @py_random_state("seed")
@@ -186,6 +182,7 @@ def louvain_partitions(
     improvement = True
     while improvement:
         yield partition
+        logger.debug("\tNew level...")
         new_mod = modularity(
             graph, inner_partition, resolution=resolution, weight="weight"
         )
@@ -243,6 +240,7 @@ def _one_level(G, m, partition, resolution=1, is_directed=False, seed=None):
     improvement = False
     _cumulative_moves = 0
     _cumulative_moves_limit = len(rand_nodes) ** 1.2
+    logger.debug(f"\t\tAt this level limiting to {_cumulative_moves_limit}")
     while nb_moves > 0:
         nb_moves = 0
         for u in rand_nodes:
@@ -298,12 +296,14 @@ def _one_level(G, m, partition, resolution=1, is_directed=False, seed=None):
                 inner_partition[node2com[u]].remove(u)
                 partition[best_com].update(com)
                 inner_partition[best_com].add(u)
+                logger.debug(f"Moving {u} from {node2com[u]} to {best_com}")
                 improvement = True
                 nb_moves += 1
                 _cumulative_moves += 1
-                if _cumulative_moves > _cumulative_moves_limit:
-                    raise ConvergenceError()
                 node2com[u] = best_com
+                if _cumulative_moves > _cumulative_moves_limit:
+                    logger.warning(f"Exceeded moves limit of {_cumulative_moves}")
+                    nb_moves = 0
     partition = list(filter(len, partition))
     inner_partition = list(filter(len, inner_partition))
     return partition, inner_partition, improvement
