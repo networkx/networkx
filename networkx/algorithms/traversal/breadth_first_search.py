@@ -9,6 +9,7 @@ __all__ = [
     "bfs_predecessors",
     "bfs_successors",
     "descendants_at_distance",
+    "bfs_layers",
 ]
 
 
@@ -370,6 +371,57 @@ def bfs_successors(G, source, depth_limit=None, sort_neighbors=None):
     yield (parent, children)
 
 
+def bfs_layers(G, sources):
+    """Returns an iterator of all the layers in breadth-first search traversal.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        A graph over which to find the layers using breadth-first search.
+
+    sources : node in `G` or list of nodes in `G`
+        Specify starting nodes for single source or multiple sources breadth-first search
+
+    Yields
+    ------
+    layer: list of nodes
+        Yields list of nodes at the same distance from sources
+
+    Examples
+    --------
+    >>> G = nx.path_graph(5)
+    >>> dict(enumerate(nx.bfs_layers(G, [0, 4])))
+    {0: [0, 4], 1: [1, 3], 2: [2]}
+    >>> H = nx.Graph()
+    >>> H.add_edges_from([(0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6)])
+    >>> dict(enumerate(nx.bfs_layers(H, [1])))
+    {0: [1], 1: [0, 3, 4], 2: [2], 3: [5, 6]}
+    >>> dict(enumerate(nx.bfs_layers(H, [1, 6])))
+    {0: [1, 6], 1: [0, 3, 4, 2], 2: [5]}
+    """
+    if sources in G:
+        sources = [sources]
+
+    current_layer = list(sources)
+    visited = set(sources)
+
+    for source in current_layer:
+        if source not in G:
+            raise nx.NetworkXError(f"The node {source} is not in the graph.")
+
+    # this is basically BFS, except that the current layer only stores the nodes at
+    # same distance from sources at each iteration
+    while current_layer:
+        yield current_layer
+        next_layer = list()
+        for node in current_layer:
+            for child in G[node]:
+                if child not in visited:
+                    visited.add(child)
+                    next_layer.append(child)
+        current_layer = next_layer
+
+
 def descendants_at_distance(G, source, distance):
     """Returns all nodes at a fixed `distance` from `source` in `G`.
 
@@ -399,22 +451,11 @@ def descendants_at_distance(G, source, distance):
     >>> nx.descendants_at_distance(H, 5, 1)
     set()
     """
-    if not G.has_node(source):
+    if source not in G:
         raise nx.NetworkXError(f"The node {source} is not in the graph.")
-    current_distance = 0
-    current_layer = {source}
-    visited = {source}
 
-    # this is basically BFS, except that the current layer only stores the nodes at
-    # current_distance from source at each iteration
-    while current_distance < distance:
-        next_layer = set()
-        for node in current_layer:
-            for child in G[node]:
-                if child not in visited:
-                    visited.add(child)
-                    next_layer.add(child)
-        current_layer = next_layer
-        current_distance += 1
-
-    return current_layer
+    bfs_generator = nx.bfs_layers(G, source)
+    for i, layer in enumerate(bfs_generator):
+        if i == distance:
+            return set(layer)
+    return set()
