@@ -25,7 +25,7 @@ from networkx.algorithms.isomorphism.vf2pp_helpers.state import (
 __all__ = ["vf2pp_mapping", "vf2pp_is_isomorphic", "vf2pp_all_mappings"]
 
 _GraphParameters = collections.namedtuple(
-    "GraphParameters",
+    "_GraphParameters",
     [
         "G1",
         "G2",
@@ -37,7 +37,7 @@ _GraphParameters = collections.namedtuple(
     ],
 )
 _StateParameters = collections.namedtuple(
-    "StateParameters",
+    "_StateParameters",
     ["mapping", "reverse_mapping", "T1", "T1_out", "T2", "T2_out"],
 )
 
