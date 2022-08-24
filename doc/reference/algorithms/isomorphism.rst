@@ -36,7 +36,7 @@ Tree Isomorphism
 Advanced Interfaces
 -------------------
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 2
 
    isomorphism.vf2
    isomorphism.ismags
