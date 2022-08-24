@@ -1,5 +1,3 @@
-import collections
-
 import networkx as nx
 from networkx.algorithms.isomorphism.vf2pp import (
     _feasibility,
@@ -10,20 +8,6 @@ from networkx.algorithms.isomorphism.vf2pp_helpers.feasibility import (
     _consistent_PT,
     _cut_PT,
 )
-
-
-def compute_Ti(G1, G2, mapping, reverse_mapping):
-    T1 = {nbr for node in mapping for nbr in G1[node] if nbr not in mapping}
-    T2 = {
-        nbr
-        for node in reverse_mapping
-        for nbr in G2[node]
-        if nbr not in reverse_mapping
-    }
-
-    T1_out = {n1 for n1 in G1.nodes() if n1 not in mapping and n1 not in T1}
-    T2_out = {n2 for n2 in G2.nodes() if n2 not in reverse_mapping and n2 not in T2}
-    return T1, T2, T1_out, T2_out
 
 
 class TestGraphISOFeasibility:

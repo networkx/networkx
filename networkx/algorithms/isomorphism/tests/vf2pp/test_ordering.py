@@ -1,4 +1,4 @@
-import collections
+import utils
 
 import networkx as nx
 from networkx.algorithms.isomorphism.vf2pp import _GraphParameters
@@ -6,34 +6,6 @@ from networkx.algorithms.isomorphism.vf2pp_helpers.node_ordering import (
     _all_argmax,
     _matching_order,
 )
-
-
-def assign_labels(G1, G2):
-    colors = [
-        "white",
-        "black",
-        "green",
-        "purple",
-        "orange",
-        "red",
-        "blue",
-        "pink",
-        "yellow",
-        "none",
-    ]
-
-    c = 0
-    for node in G1.nodes():
-        color = colors[c % len(colors)]
-        G1.nodes[node]["label"] = color
-        G2.nodes[node]["label"] = color
-        c += 1
-
-    return G1, G2
-
-
-def get_labes(G1, G2):
-    return nx.get_node_attributes(G1, "label"), nx.get_node_attributes(G2, "label")
 
 
 class TestNodeOrdering:
@@ -60,7 +32,7 @@ class TestNodeOrdering:
         for n in V:
             G.nodes[n]["label"] = colors.pop()
 
-        l1, l2 = get_labes(G, G)
+        l1, l2 = utils.get_labels(G, G, has_labels=True)
         rarity = {label: len(nodes) for label, nodes in nx.utils.groups(l2).items()}
 
         rarest_node = min(V, key=lambda x: rarity[l1[x]])
@@ -75,8 +47,8 @@ class TestNodeOrdering:
             G1 = nx.gnp_random_graph(500, p, seed=12)
             G2 = nx.gnp_random_graph(500, p, seed=12)
 
-            G1, G2 = assign_labels(G1, G2)
-            l1, l2 = get_labes(G1, G2)
+            utils.assign_labels(G1, G2)
+            l1, l2 = utils.get_labels(G1, G2, has_labels=True)
             rarity = {label: len(nodes) for label, nodes in nx.utils.groups(l2).items()}
 
             rarest_node = min(G1.nodes(), key=lambda x: rarity[l1[x]])
@@ -100,8 +72,8 @@ class TestNodeOrdering:
         G1.add_node(1)
         G2.add_node(1)
 
-        G1, G2 = assign_labels(G1, G2)
-        l1, l2 = get_labes(G1, G2)
+        utils.assign_labels(G1, G2)
+        l1, l2 = utils.get_labels(G1, G2, has_labels=True)
 
         gparams = _GraphParameters(
             G1,
@@ -118,8 +90,8 @@ class TestNodeOrdering:
         for i in range(50, 300):
             G1.add_node(i)
             G2.add_node(i)
-            G1, G2 = assign_labels(G1, G2)
-            l1, l2 = get_labes(G1, G2)
+            utils.assign_labels(G1, G2)
+            l1, l2 = utils.get_labels(G1, G2, has_labels=True)
             gparams = _GraphParameters(
                 G1,
                 G2,
@@ -141,8 +113,8 @@ class TestNodeOrdering:
                 G1 = nx.gnp_random_graph(Vi, p, seed=12)
                 G2 = nx.gnp_random_graph(Vi, p, seed=12)
 
-                G1, G2 = assign_labels(G1, G2)
-                l1, l2 = get_labes(G1, G2)
+                utils.assign_labels(G1, G2)
+                l1, l2 = utils.get_labels(G1, G2, has_labels=True)
                 gparams = _GraphParameters(
                     G1,
                     G2,
@@ -158,8 +130,8 @@ class TestNodeOrdering:
         G1 = nx.barbell_graph(100, 250)
         G2 = nx.barbell_graph(100, 250)
 
-        G1, G2 = assign_labels(G1, G2)
-        l1, l2 = get_labes(G1, G2)
+        utils.assign_labels(G1, G2)
+        l1, l2 = utils.get_labels(G1, G2, has_labels=True)
         gparams = _GraphParameters(
             G1,
             G2,

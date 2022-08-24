@@ -1,38 +1,7 @@
+import utils
+
 import networkx as nx
 from networkx.algorithms.isomorphism.vf2pp import vf2pp_mapping
-
-
-def assign_labels(G1, G2, mapped_nodes=None, same=False):
-    colors = [
-        "white",
-        "black",
-        "green",
-        "purple",
-        "orange",
-        "red",
-        "blue",
-        "pink",
-        "yellow",
-        "none",
-        "ocean",
-        "brown",
-        "solarized",
-    ]
-
-    if same:
-        for n1, n2 in zip(G1.nodes(), G2.nodes()):
-            G1.nodes[n1]["label"] = "blue"
-            G2.nodes[n2]["label"] = "blue"
-        return
-
-    c = 0
-    for node in G1.nodes():
-        color = colors[c % len(colors)]
-        G1.nodes[node]["label"] = color
-        if mapped_nodes:
-            node = mapped_nodes[node]
-        G2.nodes[node]["label"] = color
-        c += 1
 
 
 class TestGraphISOVF2pp:
@@ -73,9 +42,8 @@ class TestGraphISOVF2pp:
 
         G1.add_edges_from(edges1)
         G2 = nx.relabel_nodes(G1, mapped)
-
-        assign_labels(G1, G2, mapped, same=True)
-        m = vf2pp_mapping(G1, G2, node_labels="label")
+        utils.assign_labels(G1, G2, mapped=mapped, same=True)
+        m = vf2pp_mapping(G1, G2, node_labels=None)
         assert m
 
         # Add edge making G1 symmetrical
@@ -97,7 +65,7 @@ class TestGraphISOVF2pp:
         m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
 
-    def test_custom_graph1_different_labels(self):
+    def test_custom_graph1_with_labels(self):
         G1 = nx.Graph()
 
         mapped = {1: "A", 2: "B", 3: "C", 4: "D", 5: "Z", 6: "E"}
@@ -105,14 +73,12 @@ class TestGraphISOVF2pp:
 
         G1.add_edges_from(edges1)
         G2 = nx.relabel_nodes(G1, mapped)
-
-        assign_labels(G1, G2, mapped)
+        utils.assign_labels(G1, G2, mapped=mapped)
 
         m = vf2pp_mapping(G1, G2, node_labels="label")
-        assert m
         assert m == mapped
 
-    def test_custom_graph2_same_labels(self):
+    def test_custom_graph2_no_labels(self):
         G1 = nx.Graph()
 
         mapped = {1: "A", 2: "C", 3: "D", 4: "E", 5: "G", 7: "B", 6: "F"}
@@ -120,8 +86,7 @@ class TestGraphISOVF2pp:
 
         G1.add_edges_from(edges1)
         G2 = nx.relabel_nodes(G1, mapped)
-
-        assign_labels(G1, G2, mapped, same=True)
+        utils.assign_labels(G1, G2, mapped=mapped, same=True)
         m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
 
@@ -149,7 +114,7 @@ class TestGraphISOVF2pp:
         G1.add_edges_from(edges1)
         G2 = nx.relabel_nodes(G1, mapped)
 
-        assign_labels(G1, G2, mapped)
+        utils.assign_labels(G1, G2, mapped=mapped)
 
         # Adding new nodes
         G1.add_node(0)
@@ -201,8 +166,7 @@ class TestGraphISOVF2pp:
         ]
         G1.add_edges_from(edges1)
         G2 = nx.relabel_nodes(G1, mapped)
-
-        assign_labels(G1, G2, mapped, same=True)
+        utils.assign_labels(G1, G2, mapped=mapped, same=True)
         m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
 
@@ -280,7 +244,7 @@ class TestGraphISOVF2pp:
         G1.add_edges_from(edges1)
         G2 = nx.relabel_nodes(G1, mapped)
 
-        assign_labels(G1, G2, mapped)
+        utils.assign_labels(G1, G2, mapped=mapped)
         m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
         assert m == mapped
@@ -368,7 +332,7 @@ class TestGraphISOVF2pp:
         G1.add_edges_from(edges1)
         G2 = nx.relabel_nodes(G1, mapped)
 
-        assign_labels(G1, G2, mapped)
+        utils.assign_labels(G1, G2, mapped=mapped)
         m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m == mapped
 
@@ -485,7 +449,7 @@ class TestGraphISOVF2pp:
         G1.add_edges_from(edges1)
         G2 = nx.relabel_nodes(G1, mapped)
 
-        assign_labels(G1, G2, mapped, same=True)
+        utils.assign_labels(G1, G2, mapped=mapped, same=True)
         m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
 
@@ -549,7 +513,7 @@ class TestGraphISOVF2pp:
 
         colors = ["red", "blue", "grey", "none", "brown", "solarized", "yellow", "pink"]
 
-        assign_labels(G1, G2, mapped)
+        utils.assign_labels(G1, G2, mapped=mapped)
 
         m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
@@ -585,8 +549,7 @@ class TestGraphISOVF2pp:
 
         mapped = {0: 9, 1: 8, 2: 7, 3: 6, 4: 5, 5: 4, 6: 3, 7: 2, 8: 1, 9: 0}
         G2 = nx.relabel_nodes(G1, mapped)
-
-        assign_labels(G1, G2, same=True)
+        utils.assign_labels(G1, G2, mapped=mapped, same=True)
         m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
 
@@ -597,7 +560,7 @@ class TestGraphISOVF2pp:
         mapped = {0: 9, 1: 8, 2: 7, 3: 6, 4: 5, 5: 4, 6: 3, 7: 2, 8: 1, 9: 0}
         G2 = nx.relabel_nodes(G1, mapped)
 
-        assign_labels(G1, G2, mapped)
+        utils.assign_labels(G1, G2, mapped=mapped)
         m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
         assert m == mapped

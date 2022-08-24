@@ -1,4 +1,4 @@
-import collections
+import utils
 
 import networkx as nx
 from networkx.algorithms.isomorphism.vf2pp import _GraphParameters, _StateParameters
@@ -22,27 +22,10 @@ class TestTinoutUpdating:
     T1_out = set(G.nodes())
     T2_out = set(G.nodes())
 
-    def compute_Ti(self, G1, G2):
-        T1 = {
-            nbr for node in self.mapping for nbr in G1[node] if nbr not in self.mapping
-        }
-        T2 = {
-            nbr
-            for node in self.reverse_mapping
-            for nbr in G2[node]
-            if nbr not in self.reverse_mapping
-        }
-        T1_out = {n1 for n1 in G1.nodes() if n1 not in self.mapping and n1 not in T1}
-        T2_out = {
-            n2 for n2 in G2.nodes() if n2 not in self.reverse_mapping and n2 not in T2
-        }
-
-        return T1, T2, T1_out, T2_out
-
     def test_incremental_updating(self):
         # Check initialial conditions
-        correct_T1, correct_T2, correct_T1_out, correct_T2_out = self.compute_Ti(
-            self.G, self.G
+        correct_T1, correct_T2, correct_T1_out, correct_T2_out = utils.compute_Ti(
+            self.G, self.G, self.mapping, self.reverse_mapping
         )
 
         assert correct_T1 == self.T1
@@ -65,8 +48,8 @@ class TestTinoutUpdating:
             self.mapping.update({node: node})
             self.reverse_mapping.update({node: node})
 
-            correct_T1, correct_T2, correct_T1_out, correct_T2_out = self.compute_Ti(
-                self.G, self.G
+            correct_T1, correct_T2, correct_T1_out, correct_T2_out = utils.compute_Ti(
+                self.G, self.G, self.mapping, self.reverse_mapping
             )
             _update_Tinout(node, node, graph_params, state_params)
             assert correct_T1 == self.T1
@@ -80,7 +63,9 @@ class TestTinoutUpdating:
         self.reverse_mapping = {node: node for node in self.G.nodes()}
 
         # Initialize Ti/Ti_out
-        self.T1, self.T2, self.T1_out, self.T2_out = self.compute_Ti(self.G, self.G)
+        self.T1, self.T2, self.T1_out, self.T2_out = utils.compute_Ti(
+            self.G, self.G, self.mapping, self.reverse_mapping
+        )
 
         graph_params = _GraphParameters(self.G, self.G, None, None, None, None, None)
         state_params = _StateParameters(
@@ -97,7 +82,9 @@ class TestTinoutUpdating:
             self.mapping.pop(node)
             self.reverse_mapping.pop(node)
 
-            T1, T2, T1_out, T2_out = self.compute_Ti(self.G, self.G)
+            T1, T2, T1_out, T2_out = utils.compute_Ti(
+                self.G, self.G, self.mapping, self.reverse_mapping
+            )
             _restore_Tinout(node, node, graph_params, state_params)
             assert self.T1 == T1
             assert self.T2 == T2
