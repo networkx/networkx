@@ -13,7 +13,7 @@ def _update_Tinout(new_node1, new_node2, graph_params, state_params):
 
     Parameters
     ----------
-    new_node1, new_node2: int
+    new_node1, new_node2: Graph node
         The two new nodes, added to the mapping.
 
     graph_params: namedtuple
@@ -66,7 +66,7 @@ def _restore_Tinout(popped_node1, popped_node2, graph_params, state_params):
 
     Parameters
     ----------
-    popped_node1, popped_node2: int
+    popped_node1, popped_node2: Graph node
         The two nodes deleted from the mapping.
 
     graph_params: namedtuple
