@@ -1250,6 +1250,8 @@ def is_path(G, path):
 
     """
     for node, nbr in nx.utils.pairwise(path):
+        if not G.has_node(node):
+            return False
         if nbr not in G[node]:
             return False
     return True
