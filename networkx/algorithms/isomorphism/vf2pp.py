@@ -24,6 +24,23 @@ from networkx.algorithms.isomorphism.vf2pp_helpers.state import (
 
 __all__ = ["vf2pp_mapping", "vf2pp_is_isomorphic", "vf2pp_all_mappings"]
 
+_GraphParameters = collections.namedtuple(
+    "GraphParameters",
+    [
+        "G1",
+        "G2",
+        "G1_labels",
+        "G2_labels",
+        "nodes_of_G1Labels",
+        "nodes_of_G2Labels",
+        "G2_nodes_of_degree",
+    ],
+)
+_StateParameters = collections.namedtuple(
+    "StateParameters",
+    ["mapping", "reverse_mapping", "T1", "T1_out", "T2", "T2_out"],
+)
+
 
 def vf2pp_mapping(G1, G2, node_labels=None, default_label=None):
     """Return an isomorphic mapping between `G1` and `G2` if it exists.
@@ -213,24 +230,7 @@ def _initialize_VF2pp(G1, G2, G1_labels, G2_labels):
         T1_out, T2_out: set
             Ti_out contains all the nodes from Gi, that are neither in the mapping nor in Ti
     """
-    GraphParameters = collections.namedtuple(
-        "GraphParameters",
-        [
-            "G1",
-            "G2",
-            "G1_labels",
-            "G2_labels",
-            "nodes_of_G1Labels",
-            "nodes_of_G2Labels",
-            "G2_nodes_of_degree",
-        ],
-    )
-    StateParameters = collections.namedtuple(
-        "StateParameters",
-        ["mapping", "reverse_mapping", "T1", "T1_out", "T2", "T2_out"],
-    )
-
-    graph_params = GraphParameters(
+    graph_params = _GraphParameters(
         G1,
         G2,
         G1_labels,
@@ -240,7 +240,7 @@ def _initialize_VF2pp(G1, G2, G1_labels, G2_labels):
         nx.utils.groups({node: degree for node, degree in G2.degree()}),
     )
 
-    state_params = StateParameters(
+    state_params = _StateParameters(
         dict(), dict(), set(), set(G1.nodes()), set(), set(G2.nodes())
     )
 

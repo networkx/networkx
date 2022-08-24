@@ -1,6 +1,7 @@
 import collections
 
 import networkx as nx
+from networkx.algorithms.isomorphism.vf2pp import _GraphParameters
 from networkx.algorithms.isomorphism.vf2pp_helpers.node_ordering import (
     _all_argmax,
     _matching_order,
@@ -36,19 +37,6 @@ def get_labes(G1, G2):
 
 
 class TestNodeOrdering:
-    GraphParameters = collections.namedtuple(
-        "GraphParameters",
-        [
-            "G1",
-            "G2",
-            "G1_labels",
-            "G2_labels",
-            "nodes_of_G1Labels",
-            "nodes_of_G2Labels",
-            "G2_nodes_of_degree",
-        ],
-    )
-
     def test_rare_nodes_custom_graph(self):
         G = nx.Graph()
         V = G.nodes()
@@ -103,7 +91,7 @@ class TestNodeOrdering:
     def test_empty_graph(self):
         G1 = nx.Graph()
         G2 = nx.Graph()
-        gparams = self.GraphParameters(G1, G2, None, None, None, None, None)
+        gparams = _GraphParameters(G1, G2, None, None, None, None, None)
         assert len(set(_matching_order(gparams))) == 0
 
     def test_disconnected_graph(self):
@@ -115,7 +103,7 @@ class TestNodeOrdering:
         G1, G2 = assign_labels(G1, G2)
         l1, l2 = get_labes(G1, G2)
 
-        gparams = self.GraphParameters(
+        gparams = _GraphParameters(
             G1,
             G2,
             l1,
@@ -132,7 +120,7 @@ class TestNodeOrdering:
             G2.add_node(i)
             G1, G2 = assign_labels(G1, G2)
             l1, l2 = get_labes(G1, G2)
-            gparams = self.GraphParameters(
+            gparams = _GraphParameters(
                 G1,
                 G2,
                 l1,
@@ -155,7 +143,7 @@ class TestNodeOrdering:
 
                 G1, G2 = assign_labels(G1, G2)
                 l1, l2 = get_labes(G1, G2)
-                gparams = self.GraphParameters(
+                gparams = _GraphParameters(
                     G1,
                     G2,
                     l1,
@@ -172,7 +160,7 @@ class TestNodeOrdering:
 
         G1, G2 = assign_labels(G1, G2)
         l1, l2 = get_labes(G1, G2)
-        gparams = self.GraphParameters(
+        gparams = _GraphParameters(
             G1,
             G2,
             l1,

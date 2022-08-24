@@ -1,6 +1,7 @@
 import collections
 
 import networkx as nx
+from networkx.algorithms.isomorphism.vf2pp import _GraphParameters, _StateParameters
 from networkx.algorithms.isomorphism.vf2pp_helpers.state import (
     _restore_Tinout,
     _update_Tinout,
@@ -20,23 +21,6 @@ class TestTinoutUpdating:
     T2 = set()
     T1_out = set(G.nodes())
     T2_out = set(G.nodes())
-
-    GraphParameters = collections.namedtuple(
-        "GraphParameters",
-        [
-            "G1",
-            "G2",
-            "G1_labels",
-            "G2_labels",
-            "nodes_of_G1Labels",
-            "nodes_of_G2Labels",
-            "G2_nodes_of_degree",
-        ],
-    )
-    StateParameters = collections.namedtuple(
-        "StateParameters",
-        ["mapping", "reverse_mapping", "T1", "T1_out", "T2", "T2_out"],
-    )
 
     def compute_Ti(self, G1, G2):
         T1 = {
@@ -66,10 +50,8 @@ class TestTinoutUpdating:
         assert correct_T1_out == self.T1_out
         assert correct_T2_out == self.T2_out
 
-        graph_params = self.GraphParameters(
-            self.G, self.G, None, None, None, None, None
-        )
-        state_params = self.StateParameters(
+        graph_params = _GraphParameters(self.G, self.G, None, None, None, None, None)
+        state_params = _StateParameters(
             self.mapping,
             self.reverse_mapping,
             self.T1,
@@ -100,10 +82,8 @@ class TestTinoutUpdating:
         # Initialize Ti/Ti_out
         self.T1, self.T2, self.T1_out, self.T2_out = self.compute_Ti(self.G, self.G)
 
-        graph_params = self.GraphParameters(
-            self.G, self.G, None, None, None, None, None
-        )
-        state_params = self.StateParameters(
+        graph_params = _GraphParameters(self.G, self.G, None, None, None, None, None)
+        state_params = _StateParameters(
             self.mapping,
             self.reverse_mapping,
             self.T1,

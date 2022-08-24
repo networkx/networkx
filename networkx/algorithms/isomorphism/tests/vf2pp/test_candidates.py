@@ -1,6 +1,7 @@
 import collections
 
 import networkx as nx
+from networkx.algorithms.isomorphism.vf2pp import _GraphParameters, _StateParameters
 from networkx.algorithms.isomorphism.vf2pp_helpers.candidates import _find_candidates
 
 
@@ -57,23 +58,6 @@ class TestCandidateSelection:
     G1.add_node(0)
     G2 = nx.relabel_nodes(G1, mapped)
 
-    GraphParameters = collections.namedtuple(
-        "GraphParameters",
-        [
-            "G1",
-            "G2",
-            "G1_labels",
-            "G2_labels",
-            "nodes_of_G1Labels",
-            "nodes_of_G2Labels",
-            "G2_nodes_of_degree",
-        ],
-    )
-    StateParameters = collections.namedtuple(
-        "StateParameters",
-        ["mapping", "reverse_mapping", "T1", "T1_out", "T2", "T2_out"],
-    )
-
     def assign_labels(self):
         for i, n in enumerate(self.G1.nodes()):
             self.G1.nodes[n]["label"] = self.labels[i]
@@ -93,7 +77,7 @@ class TestCandidateSelection:
 
     def test_no_covered_neighbors_no_labels(self):
         l1, l2 = self.get_labels()
-        gparams = self.GraphParameters(
+        gparams = _GraphParameters(
             self.G1,
             self.G2,
             l1,
@@ -107,7 +91,7 @@ class TestCandidateSelection:
         m_rev = {self.mapped[9]: 9, self.mapped[1]: 1}
         T1, T2, T1_out, T2_out = compute_T(self.G1, self.G2, m, m_rev)
 
-        sparams = self.StateParameters(m, m_rev, T1, T1_out, T2, T2_out)
+        sparams = _StateParameters(m, m_rev, T1, T1_out, T2, T2_out)
 
         u = 3
         candidates = _find_candidates(u, gparams, sparams)
@@ -121,7 +105,7 @@ class TestCandidateSelection:
         m_rev.pop(self.mapped[9])
         T1, T2, T1_out, T2_out = compute_T(self.G1, self.G2, m, m_rev)
 
-        sparams = self.StateParameters(m, m_rev, T1, T1_out, T2, T2_out)
+        sparams = _StateParameters(m, m_rev, T1, T1_out, T2, T2_out)
 
         u = 7
         candidates = _find_candidates(u, gparams, sparams)
@@ -135,7 +119,7 @@ class TestCandidateSelection:
     def test_no_covered_neighbors_with_labels(self):
         self.assign_labels()
         l1, l2 = self.get_labels(has_labels=True)
-        gparams = self.GraphParameters(
+        gparams = _GraphParameters(
             self.G1,
             self.G2,
             l1,
@@ -149,7 +133,7 @@ class TestCandidateSelection:
         m_rev = {self.mapped[9]: 9, self.mapped[1]: 1}
         T1, T2, T1_out, T2_out = compute_T(self.G1, self.G2, m, m_rev)
 
-        sparams = self.StateParameters(m, m_rev, T1, T1_out, T2, T2_out)
+        sparams = _StateParameters(m, m_rev, T1, T1_out, T2, T2_out)
 
         u = 3
         candidates = _find_candidates(u, gparams, sparams)
@@ -162,7 +146,7 @@ class TestCandidateSelection:
         # Change label of disconnected node
         self.G1.nodes[u]["label"] = "blue"
         l1, l2 = self.get_labels(has_labels=True)
-        gparams = self.GraphParameters(
+        gparams = _GraphParameters(
             self.G1,
             self.G2,
             l1,
@@ -180,7 +164,7 @@ class TestCandidateSelection:
         m_rev.pop(self.mapped[9])
         T1, T2, T1_out, T2_out = compute_T(self.G1, self.G2, m, m_rev)
 
-        sparams = self.StateParameters(m, m_rev, T1, T1_out, T2, T2_out)
+        sparams = _StateParameters(m, m_rev, T1, T1_out, T2, T2_out)
 
         u = 7
         candidates = _find_candidates(u, gparams, sparams)
@@ -189,7 +173,7 @@ class TestCandidateSelection:
         self.G1.nodes[8]["label"] = self.G1.nodes[7]["label"]
         self.G2.nodes[self.mapped[8]]["label"] = self.G1.nodes[7]["label"]
         l1, l2 = self.get_labels(has_labels=True)
-        gparams = self.GraphParameters(
+        gparams = _GraphParameters(
             self.G1,
             self.G2,
             l1,
@@ -204,7 +188,7 @@ class TestCandidateSelection:
 
     def test_covered_neighbors_no_labels(self):
         l1, l2 = self.get_labels()
-        gparams = self.GraphParameters(
+        gparams = _GraphParameters(
             self.G1,
             self.G2,
             l1,
@@ -218,7 +202,7 @@ class TestCandidateSelection:
         m_rev = {self.mapped[9]: 9, self.mapped[1]: 1}
         T1, T2, T1_out, T2_out = compute_T(self.G1, self.G2, m, m_rev)
 
-        sparams = self.StateParameters(m, m_rev, T1, T1_out, T2, T2_out)
+        sparams = _StateParameters(m, m_rev, T1, T1_out, T2, T2_out)
 
         u = 5
         candidates = _find_candidates(u, gparams, sparams)
@@ -231,7 +215,7 @@ class TestCandidateSelection:
     def test_covered_neighbors_with_labels(self):
         self.assign_labels()
         l1, l2 = self.get_labels(has_labels=True)
-        gparams = self.GraphParameters(
+        gparams = _GraphParameters(
             self.G1,
             self.G2,
             l1,
@@ -245,7 +229,7 @@ class TestCandidateSelection:
         m_rev = {self.mapped[9]: 9, self.mapped[1]: 1}
         T1, T2, T1_out, T2_out = compute_T(self.G1, self.G2, m, m_rev)
 
-        sparams = self.StateParameters(m, m_rev, T1, T1_out, T2, T2_out)
+        sparams = _StateParameters(m, m_rev, T1, T1_out, T2, T2_out)
 
         u = 5
         candidates = _find_candidates(u, gparams, sparams)
@@ -259,7 +243,7 @@ class TestCandidateSelection:
         self.G1.nodes[2]["label"] = self.G1.nodes[u]["label"]
         self.G2.nodes[self.mapped[2]]["label"] = self.G1.nodes[u]["label"]
         l1, l2 = self.get_labels(has_labels=True)
-        gparams = self.GraphParameters(
+        gparams = _GraphParameters(
             self.G1,
             self.G2,
             l1,
