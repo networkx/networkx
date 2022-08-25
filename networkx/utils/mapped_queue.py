@@ -47,7 +47,7 @@ class _HeapElement:
                 return self.element < other.element
             except TypeError as err:
                 raise TypeError(
-                    f"{err}\nConsider using a tuple for the priority to avoid such comparisons: "
+                    f"Consider using a tuple for the priority to avoid such comparisons: "
                     f"{{k: (v, i) for i, (k,v) in enumerate(data.items())}}"
                 )
         return self.priority < other_priority
@@ -63,7 +63,7 @@ class _HeapElement:
                 return self.element > other.element
             except TypeError as err:
                 raise TypeError(
-                    f"{err}\nConsider using a tuple for the priority to avoid such comparisons: "
+                    f"Consider using a tuple for the priority to avoid such comparisons: "
                     f"{{k: (v, i) for i, (k,v) in enumerate(data.items())}}"
                 )
         return self.priority > other_priority
@@ -105,12 +105,9 @@ class MappedQueue:
     library. While MappedQueue is designed for maximum compatibility with
     heapq, it adds element removal, lookup, and priority update.
 
-    Unsortable elements should be mapped to a priority via a dict.
-    Otherwise a TypeError will occur when the comparisons are made.
-
     Parameters
     ----------
-    data : dict or iterator
+    data : dict or iterable
 
     Examples
     --------
@@ -128,7 +125,7 @@ class MappedQueue:
     >>> [q.pop().element for i in range(len(q.heap))]
     ['violet', 'indigo', 'blue']
 
-    A `MappedQueue` can also be initialized with a list or other iterator. The priority is assumed
+    A `MappedQueue` can also be initialized with a list or other iterable. The priority is assumed
     to be the sort order of the items in the list.
 
     >>> q = MappedQueue([916, 50, 4609, 493, 237])
