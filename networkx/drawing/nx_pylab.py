@@ -1448,6 +1448,9 @@ def draw_planar(G, **kwargs):
 
 def draw_forceatlas2(G, **kwargs):
     """Draw a networkx graph with forceatlas2 layout.
+    This is a convenience function equivalent to::
+
+        nx.draw(G, pos=nx.forceatlas2_layout(G), **kwargs)
 
     Parameters
     ----------
