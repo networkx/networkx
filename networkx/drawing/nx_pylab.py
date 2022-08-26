@@ -16,7 +16,6 @@ See Also
  - :func:`matplotlib.pyplot.scatter`
  - :obj:`matplotlib.patches.FancyArrowPatch`
 """
-
 import warnings
 from numbers import Number
 
@@ -31,6 +30,7 @@ from networkx.drawing.layout import (
     spectral_layout,
     spring_layout,
 )
+
 
 __all__ = [
     "draw",
