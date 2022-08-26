@@ -1112,7 +1112,6 @@ def multipartite_layout(G, subset_key="subset", align="vertical", scale=1, cente
     return pos
 
 
-
 def estimate_factor(n, swing, traction, speed, speed_efficiency, jitter_tolerance):
     """
     ForceAtlas2 helper function
@@ -1325,6 +1324,7 @@ def forceatlas2_layout(
 
     return {node: pos_arr[idx] for idx, node in enumerate(G.nodes())}
 
+
 def arf_layout(
     G,
     pos=None,
@@ -1435,6 +1435,7 @@ def arf_layout(
             break
         n_iter += 1
     return {node: pi for node, pi in zip(G.nodes(), p)}
+
 
 def rescale_layout(pos, scale=1):
     """Returns scaled position array to (-scale, scale) in all axes.
