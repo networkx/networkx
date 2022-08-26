@@ -212,18 +212,16 @@ def strategy_saturation_largest_first(G, colors):
 
     # Add the node color assignments given in colors to the
     # distinct colors set for each neighbor of that node
-    for vertex, color in colors.items():
-        for neighbor in G[vertex]:
+    for node, color in colors.items():
+        for neighbor in G[node]:
             distinct_colors[neighbor].add(color)
 
     # Check that the color assignments in colors are valid
     # i.e. no neighboring nodes have the same color
     if len(colors) >= 2:
-        for vertex, color in colors.items():
-            if color in distinct_colors[vertex]:
-                raise nx.NetworkXError(
-                    "Neighboring vertices must have different colors"
-                )
+        for node, color in colors.items():
+            if color in distinct_colors[node]:
+                raise nx.NetworkXError("Neighboring nodes must have different colors")
 
     # If 0 nodes have been colored, simply choose the node of highest degree.
     if not colors:
@@ -234,7 +232,12 @@ def strategy_saturation_largest_first(G, colors):
         for v in G[node]:
             distinct_colors[v].add(0)
 
-    for i in range(len(G) - len(colors)):
+    while not len(G) == len(colors):
+        # Update the distinct color sets for the neighbors.
+        for node, color in colors.items():
+            for neighbor in G[node]:
+                distinct_colors[neighbor].add(color)
+
         # Compute the maximum saturation and the set of nodes that
         # achieve that saturation.
         saturation = {v: len(c) for v, c in distinct_colors.items() if v not in colors}
@@ -242,11 +245,6 @@ def strategy_saturation_largest_first(G, colors):
         # degree.
         node = max(saturation, key=lambda v: (saturation[v], G.degree(v)))
         yield node
-
-        # Update the distinct color sets for the neighbors.
-        color = colors[node]
-        for v in G[node]:
-            distinct_colors[v].add(color)
 
 
 #: Dictionary mapping name of a strategy as a string to the strategy function.
