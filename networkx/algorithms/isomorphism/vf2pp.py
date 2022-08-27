@@ -150,11 +150,12 @@ def vf2pp_all_mappings(G1, G2, node_labels=None, default_label=None):
     if not _precheck(G1, G2, G1_labels, G2_labels, node_labels, default_label):
         return False
 
-    graph_params, state_params, node_order, stack = _initialize_VF2pp(
-        G1, G2, G1_labels, G2_labels
-    )
-    matching_node = 1
+    graph_params, state_params = _initialize_parameters(G1, G2, G1_labels, G2_labels)
+    node_order = _matching_order(graph_params)
+    stack = _initialize_stack(node_order, graph_params, state_params)
+
     mapping = state_params.mapping
+    matching_node = 1
 
     while stack:
         current_node, candidate_nodes = stack[-1]
@@ -233,7 +234,7 @@ def _precheck(G1, G2, G1_labels, G2_labels, node_labels=None, default_label=-1):
     return True
 
 
-def _initialize_VF2pp(G1, G2, G1_labels, G2_labels):
+def _initialize_parameters(G1, G2, G1_labels, G2_labels):
     """Initializes all the necessary parameters for VF2++
 
     Parameters
@@ -282,10 +283,11 @@ def _initialize_VF2pp(G1, G2, G1_labels, G2_labels):
         dict(), dict(), set(), set(G1.nodes()), set(), set(G2.nodes())
     )
 
-    node_order = _matching_order(graph_params)
+    return graph_params, state_params
 
+
+def _initialize_stack(node_order, graph_params, state_params):
     starting_node = node_order[0]
     candidates = _find_candidates(starting_node, graph_params, state_params)
     stack = [(starting_node, iter(candidates))]
-
-    return graph_params, state_params, node_order, stack
+    return stack
