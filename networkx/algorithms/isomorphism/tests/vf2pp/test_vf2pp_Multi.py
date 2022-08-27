@@ -1,3 +1,5 @@
+import itertools
+
 import utils
 
 import networkx as nx
@@ -48,7 +50,12 @@ class TestMultiGraphISOVF2pp:
         G1.add_edges_from(edges1)
         G2 = nx.relabel_nodes(G1, mapped)
 
-        utils.assign_labels(G1, G2, mapped, same=True)
+        nx.set_node_attributes(
+            G1, dict(zip(G1, itertools.cycle(utils.labels_same))), "label"
+        )
+        nx.set_node_attributes(
+            G2, dict(zip(G2, itertools.cycle(utils.labels_same))), "label"
+        )
         m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
 
@@ -100,7 +107,14 @@ class TestMultiGraphISOVF2pp:
         G1.add_edges_from(edges1)
         G2 = nx.relabel_nodes(G1, mapped)
 
-        utils.assign_labels(G1, G2, mapped)
+        nx.set_node_attributes(
+            G1, dict(zip(G1, itertools.cycle(utils.labels_different))), "label"
+        )
+        nx.set_node_attributes(
+            G2,
+            dict(zip([mapped[n] for n in G1], itertools.cycle(utils.labels_different))),
+            "label",
+        )
         m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
         assert m == mapped
@@ -156,7 +170,12 @@ class TestMultiGraphISOVF2pp:
         G1.add_edges_from(edges1)
         G2 = nx.relabel_nodes(G1, mapped)
 
-        utils.assign_labels(G1, G2, mapped, same=True)
+        nx.set_node_attributes(
+            G1, dict(zip(G1, itertools.cycle(utils.labels_same))), "label"
+        )
+        nx.set_node_attributes(
+            G2, dict(zip(G2, itertools.cycle(utils.labels_same))), "label"
+        )
         m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
 
@@ -221,7 +240,14 @@ class TestMultiGraphISOVF2pp:
         G1.add_edges_from(edges1)
         G2 = nx.relabel_nodes(G1, mapped)
 
-        utils.assign_labels(G1, G2, mapped)
+        nx.set_node_attributes(
+            G1, dict(zip(G1, itertools.cycle(utils.labels_different))), "label"
+        )
+        nx.set_node_attributes(
+            G2,
+            dict(zip([mapped[n] for n in G1], itertools.cycle(utils.labels_different))),
+            "label",
+        )
         m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
         assert m == mapped
@@ -299,7 +325,12 @@ class TestMultiGraphISOVF2pp:
         G1.add_edges_from(edges1)
         G2 = nx.relabel_nodes(G1, mapped)
 
-        utils.assign_labels(G1, G2, mapped, same=True)
+        nx.set_node_attributes(
+            G1, dict(zip(G1, itertools.cycle(utils.labels_same))), "label"
+        )
+        nx.set_node_attributes(
+            G2, dict(zip(G2, itertools.cycle(utils.labels_same))), "label"
+        )
         m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
 
@@ -435,8 +466,14 @@ class TestMultiGraphISOVF2pp:
         G1.add_edges_from(edges1)
         G2 = nx.relabel_nodes(G1, mapped)
 
-        utils.assign_labels(G1, G2, mapped)
-
+        nx.set_node_attributes(
+            G1, dict(zip(G1, itertools.cycle(utils.labels_different))), "label"
+        )
+        nx.set_node_attributes(
+            G2,
+            dict(zip([mapped[n] for n in G1], itertools.cycle(utils.labels_different))),
+            "label",
+        )
         m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
         assert m == mapped
@@ -551,8 +588,12 @@ class TestMultiGraphISOVF2pp:
         G1.add_edges_from(edges1)
         G2 = nx.relabel_nodes(G1, mapped)
 
-        utils.assign_labels(G1, G2, mapped, same=True)
-
+        nx.set_node_attributes(
+            G1, dict(zip(G1, itertools.cycle(utils.labels_same))), "label"
+        )
+        nx.set_node_attributes(
+            G2, dict(zip(G2, itertools.cycle(utils.labels_same))), "label"
+        )
         m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
 
@@ -657,8 +698,14 @@ class TestMultiGraphISOVF2pp:
         G1.add_edges_from(edges1)
         G2 = nx.relabel_nodes(G1, mapped)
 
-        utils.assign_labels(G1, G2, mapped)
-
+        nx.set_node_attributes(
+            G1, dict(zip(G1, itertools.cycle(utils.labels_different))), "label"
+        )
+        nx.set_node_attributes(
+            G2,
+            dict(zip([mapped[n] for n in G1], itertools.cycle(utils.labels_different))),
+            "label",
+        )
         m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m == mapped
 
@@ -742,7 +789,12 @@ class TestMultiGraphISOVF2pp:
 
         G1.add_edges_from(edges1)
         G2 = nx.relabel_nodes(G1, mapped)
-        utils.assign_labels(G1, G2, mapped, same=True)
+        nx.set_node_attributes(
+            G1, dict(zip(G1, itertools.cycle(utils.labels_same))), "label"
+        )
+        nx.set_node_attributes(
+            G2, dict(zip(G2, itertools.cycle(utils.labels_same))), "label"
+        )
 
         m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
@@ -804,9 +856,12 @@ class TestMultiGraphISOVF2pp:
         mapped = {0: 9, 1: 8, 2: 7, 3: 6, 4: 5, 5: 4, 6: 3, 7: 2, 8: 1, 9: 0}
         G2 = nx.relabel_nodes(G1, mapped)
 
-        for n in G1.nodes():
-            G1.nodes[n]["label"] = "blue"
-            G2.nodes[n]["label"] = "blue"
+        nx.set_node_attributes(
+            G1, dict(zip(G1, itertools.cycle(utils.labels_same))), "label"
+        )
+        nx.set_node_attributes(
+            G2, dict(zip(G2, itertools.cycle(utils.labels_same))), "label"
+        )
 
         m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
@@ -839,8 +894,14 @@ class TestMultiGraphISOVF2pp:
         mapped = {0: 9, 1: 8, 2: 7, 3: 6, 4: 5, 5: 4, 6: 3, 7: 2, 8: 1, 9: 0}
         G2 = nx.relabel_nodes(G1, mapped)
 
-        utils.assign_labels(G1, G2, mapped)
-
+        nx.set_node_attributes(
+            G1, dict(zip(G1, itertools.cycle(utils.labels_different))), "label"
+        )
+        nx.set_node_attributes(
+            G2,
+            dict(zip([mapped[n] for n in G1], itertools.cycle(utils.labels_different))),
+            "label",
+        )
         m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
         assert m == mapped
