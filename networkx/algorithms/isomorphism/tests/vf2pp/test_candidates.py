@@ -1,3 +1,5 @@
+import itertools
+
 import utils
 
 import networkx as nx
@@ -55,7 +57,11 @@ class TestCandidateSelection:
 
         m = {9: self.mapped[9], 1: self.mapped[1]}
         m_rev = {self.mapped[9]: 9, self.mapped[1]: 1}
-        T1, T2, T1_out, T2_out = utils.compute_Ti(self.G1, self.G2, m, m_rev)
+
+        T1 = {7, 8, 2, 4, 5}
+        T1_out = {0, 3, 6}
+        T2 = {"g", "h", "b", "d", "e"}
+        T2_out = {"x", "c", "f"}
 
         sparams = _StateParameters(m, m_rev, T1, T1_out, T2, T2_out)
 
@@ -69,7 +75,11 @@ class TestCandidateSelection:
 
         m.pop(9)
         m_rev.pop(self.mapped[9])
-        T1, T2, T1_out, T2_out = utils.compute_Ti(self.G1, self.G2, m, m_rev)
+
+        T1 = {2, 4, 5, 6}
+        T1_out = {0, 3, 7, 8, 9}
+        T2 = {"g", "h", "b", "d", "e", "f"}
+        T2_out = {"x", "c", "g", "h", "i"}
 
         sparams = _StateParameters(m, m_rev, T1, T1_out, T2, T2_out)
 
@@ -83,7 +93,21 @@ class TestCandidateSelection:
         }
 
     def test_no_covered_neighbors_with_labels(self):
-        utils.assign_labels(self.G1, self.G2, mapped=self.mapped)
+        nx.set_node_attributes(
+            self.G1,
+            dict(zip(self.G1, itertools.cycle(utils.labels_different))),
+            "label",
+        )
+        nx.set_node_attributes(
+            self.G2,
+            dict(
+                zip(
+                    [self.mapped[n] for n in self.G1],
+                    itertools.cycle(utils.labels_different),
+                )
+            ),
+            "label",
+        )
         l1, l2 = utils.get_labels(self.G1, self.G2, has_labels=True)
         gparams = _GraphParameters(
             self.G1,
@@ -97,7 +121,11 @@ class TestCandidateSelection:
 
         m = {9: self.mapped[9], 1: self.mapped[1]}
         m_rev = {self.mapped[9]: 9, self.mapped[1]: 1}
-        T1, T2, T1_out, T2_out = utils.compute_Ti(self.G1, self.G2, m, m_rev)
+
+        T1 = {7, 8, 2, 4, 5, 6}
+        T1_out = {0, 3}
+        T2 = {"g", "h", "b", "d", "e", "f"}
+        T2_out = {"x", "c"}
 
         sparams = _StateParameters(m, m_rev, T1, T1_out, T2, T2_out)
 
@@ -128,7 +156,11 @@ class TestCandidateSelection:
 
         m.pop(9)
         m_rev.pop(self.mapped[9])
-        T1, T2, T1_out, T2_out = utils.compute_Ti(self.G1, self.G2, m, m_rev)
+
+        T1 = {2, 4, 5, 6}
+        T1_out = {0, 3, 7, 8, 9}
+        T2 = {"b", "d", "e", "f"}
+        T2_out = {"x", "c", "g", "h", "i"}
 
         sparams = _StateParameters(m, m_rev, T1, T1_out, T2, T2_out)
 
@@ -169,7 +201,11 @@ class TestCandidateSelection:
 
         m = {9: self.mapped[9], 1: self.mapped[1]}
         m_rev = {self.mapped[9]: 9, self.mapped[1]: 1}
-        T1, T2, T1_out, T2_out = utils.compute_Ti(self.G1, self.G2, m, m_rev)
+
+        T1 = {7, 8, 2, 4, 5, 6}
+        T1_out = {0, 3}
+        T2 = {"g", "h", "b", "d", "e", "f"}
+        T2_out = {"x", "c"}
 
         sparams = _StateParameters(m, m_rev, T1, T1_out, T2, T2_out)
 
@@ -182,7 +218,21 @@ class TestCandidateSelection:
         assert candidates == {self.mapped[u], self.mapped[2]}
 
     def test_covered_neighbors_with_labels(self):
-        utils.assign_labels(self.G1, self.G2, mapped=self.mapped)
+        nx.set_node_attributes(
+            self.G1,
+            dict(zip(self.G1, itertools.cycle(utils.labels_different))),
+            "label",
+        )
+        nx.set_node_attributes(
+            self.G2,
+            dict(
+                zip(
+                    [self.mapped[n] for n in self.G1],
+                    itertools.cycle(utils.labels_different),
+                )
+            ),
+            "label",
+        )
         l1, l2 = utils.get_labels(self.G1, self.G2, has_labels=True)
         gparams = _GraphParameters(
             self.G1,
@@ -196,7 +246,11 @@ class TestCandidateSelection:
 
         m = {9: self.mapped[9], 1: self.mapped[1]}
         m_rev = {self.mapped[9]: 9, self.mapped[1]: 1}
-        T1, T2, T1_out, T2_out = utils.compute_Ti(self.G1, self.G2, m, m_rev)
+
+        T1 = {7, 8, 2, 4, 5, 6}
+        T1_out = {0, 3}
+        T2 = {"g", "h", "b", "d", "e", "f"}
+        T2_out = {"x", "c"}
 
         sparams = _StateParameters(m, m_rev, T1, T1_out, T2, T2_out)
 
