@@ -35,6 +35,10 @@ Improvements
   The shortest path function `goldberg_radzik` handles a zero-weight-cycle
   correctly instead of raising an exception as a negative weight cycle.
 
+- [`#5947 <https://github.com/networkx/networkx/pull/5947>`_]
+  Implements the ``MixedEdgeGraph`` object, which is an experimental feature
+  for enabling support of graphs with mixed edges.
+
 API Changes
 -----------
 - [`#6651 <https://github.com/networkx/networkx/pull/6651>`_]
