@@ -132,9 +132,9 @@ def vf2pp_all_mappings(G1, G2, node_labels=None, default_label=None):
 
         if _feasibility(current_node, candidate, graph_params, state_params):
             if len(mapping) == G2.number_of_nodes() - 1:
-                mapping.update({current_node: candidate})
-                yield mapping
-                mapping.pop(current_node)
+                cp_mapping = mapping.copy()
+                cp_mapping[current_node] = candidate
+                yield cp_mapping
                 continue
 
             _update_state(

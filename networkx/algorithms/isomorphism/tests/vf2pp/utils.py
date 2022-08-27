@@ -1,5 +1,23 @@
 import networkx as nx
 
+labels_same = ["blue"]
+
+labels_different = [
+    "white",
+    "red",
+    "blue",
+    "green",
+    "orange",
+    "black",
+    "purple",
+    "yellow",
+    "brown",
+    "cyan",
+    "solarized",
+    "pink",
+    "none",
+]
+
 
 def compute_Ti(G1, G2, mapping, reverse_mapping):
     T1 = {nbr for node in mapping for nbr in G1[node] if nbr not in mapping}
