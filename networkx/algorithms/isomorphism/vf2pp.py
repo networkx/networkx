@@ -10,6 +10,44 @@ The simplest interface to use this module is to call:
 `vf2pp_mapping`: to obtain the node mapping between two graphs, in case they are isomorphic.
 `vf2pp_all_mappings`: to generate all possible mappings between two graphs, if isomorphic.
 
+Introduction
+------------
+The VF2++ algorithm, follows a similar logic to that of VF2, while also introducing new easy-to-check cutting rules and
+determining the optimal access order of nodes. It is also implemented in a non-recursive manner, which saves both time
+and space, when compared to its previous counterpart.
+
+The optimal node ordering is obtained after taking into consideration both the degree but also the label rarity of each
+node. This way we place the nodes that are more likely to match, first in the order, thus examining the most promising
+branches in the beginning. The rules also consider node labels, making it easier to prune unfruitful branches early in
+the process.
+
+Examples
+--------
+
+Suppose G1 and G2 are Isomorphic Graphs. Verification is as follows:
+
+Without node labels:
+
+>>> import networkx as nx
+>>> G1 = nx.path_graph(4)
+>>> G2 = nx.path_graph(4)
+>>> nx.vf2pp_is_isomorphic(G1, G2, node_labels=None)
+True
+>>> nx.vf2pp_mapping(G1, G2, node_labels=None)
+{1: 1, 2: 2, 0: 0, 3: 3}
+
+With node labels:
+
+>>> G1 = nx.path_graph(4)
+>>> G2 = nx.path_graph(4)
+>>> mapped = {1: 1, 2: 2, 3: 3, 0: 0}
+>>> nx.set_node_attributes(G1, dict(zip(G1, ["blue", "red", "green", "yellow"])), "label")
+>>> nx.set_node_attributes(G2, dict(zip([mapped[u] for u in G1], ["blue", "red", "green", "yellow"])), "label")
+>>> nx.vf2pp_is_isomorphic(G1, G2, node_labels="label")
+True
+>>> nx.vf2pp_mapping(G1, G2, node_labels="label")
+{1: 1, 2: 2, 0: 0, 3: 3}
+
 """
 import collections
 
