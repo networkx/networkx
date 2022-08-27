@@ -1,3 +1,5 @@
+import itertools
+
 import utils
 
 import networkx as nx
@@ -32,7 +34,7 @@ class TestNodeOrdering:
         for n in V:
             G.nodes[n]["label"] = colors.pop()
 
-        l1, l2 = utils.get_labels(G, G, has_labels=True)
+        l1, l2 = nx.get_node_attributes(G, "label"), nx.get_node_attributes(G, "label")
         rarity = {label: len(nodes) for label, nodes in nx.utils.groups(l2).items()}
 
         rarest_node = min(V, key=lambda x: rarity[l1[x]])
@@ -47,8 +49,17 @@ class TestNodeOrdering:
             G1 = nx.gnp_random_graph(500, p, seed=12)
             G2 = nx.gnp_random_graph(500, p, seed=12)
 
-            utils.assign_labels(G1, G2)
-            l1, l2 = utils.get_labels(G1, G2, has_labels=True)
+            nx.set_node_attributes(
+                G1, dict(zip(G1, itertools.cycle(utils.labels_different))), "label"
+            )
+            nx.set_node_attributes(
+                G2,
+                dict(zip(G2, itertools.cycle(utils.labels_different))),
+                "label",
+            )
+            l1, l2 = nx.get_node_attributes(G1, "label"), nx.get_node_attributes(
+                G2, "label"
+            )
             rarity = {label: len(nodes) for label, nodes in nx.utils.groups(l2).items()}
 
             rarest_node = min(G1.nodes(), key=lambda x: rarity[l1[x]])
@@ -72,8 +83,17 @@ class TestNodeOrdering:
         G1.add_node(1)
         G2.add_node(1)
 
-        utils.assign_labels(G1, G2)
-        l1, l2 = utils.get_labels(G1, G2, has_labels=True)
+        nx.set_node_attributes(
+            G1, dict(zip(G1, itertools.cycle(utils.labels_different))), "label"
+        )
+        nx.set_node_attributes(
+            G2,
+            dict(zip(G2, itertools.cycle(utils.labels_different))),
+            "label",
+        )
+        l1, l2 = nx.get_node_attributes(G1, "label"), nx.get_node_attributes(
+            G2, "label"
+        )
 
         gparams = _GraphParameters(
             G1,
@@ -90,8 +110,17 @@ class TestNodeOrdering:
         for i in range(50, 300):
             G1.add_node(i)
             G2.add_node(i)
-            utils.assign_labels(G1, G2)
-            l1, l2 = utils.get_labels(G1, G2, has_labels=True)
+            nx.set_node_attributes(
+                G1, dict(zip(G1, itertools.cycle(utils.labels_different))), "label"
+            )
+            nx.set_node_attributes(
+                G2,
+                dict(zip(G2, itertools.cycle(utils.labels_different))),
+                "label",
+            )
+            l1, l2 = nx.get_node_attributes(G1, "label"), nx.get_node_attributes(
+                G2, "label"
+            )
             gparams = _GraphParameters(
                 G1,
                 G2,
@@ -113,8 +142,17 @@ class TestNodeOrdering:
                 G1 = nx.gnp_random_graph(Vi, p, seed=12)
                 G2 = nx.gnp_random_graph(Vi, p, seed=12)
 
-                utils.assign_labels(G1, G2)
-                l1, l2 = utils.get_labels(G1, G2, has_labels=True)
+                nx.set_node_attributes(
+                    G1, dict(zip(G1, itertools.cycle(utils.labels_different))), "label"
+                )
+                nx.set_node_attributes(
+                    G2,
+                    dict(zip(G2, itertools.cycle(utils.labels_different))),
+                    "label",
+                )
+                l1, l2 = nx.get_node_attributes(G1, "label"), nx.get_node_attributes(
+                    G2, "label"
+                )
                 gparams = _GraphParameters(
                     G1,
                     G2,
@@ -130,8 +168,17 @@ class TestNodeOrdering:
         G1 = nx.barbell_graph(100, 250)
         G2 = nx.barbell_graph(100, 250)
 
-        utils.assign_labels(G1, G2)
-        l1, l2 = utils.get_labels(G1, G2, has_labels=True)
+        nx.set_node_attributes(
+            G1, dict(zip(G1, itertools.cycle(utils.labels_different))), "label"
+        )
+        nx.set_node_attributes(
+            G2,
+            dict(zip(G2, itertools.cycle(utils.labels_different))),
+            "label",
+        )
+        l1, l2 = nx.get_node_attributes(G1, "label"), nx.get_node_attributes(
+            G2, "label"
+        )
         gparams = _GraphParameters(
             G1,
             G2,
