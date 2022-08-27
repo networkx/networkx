@@ -1,7 +1,6 @@
 from copy import deepcopy
 from functools import cached_property
 from itertools import chain
-from typing import Dict, List, Union
 
 import networkx as nx
 from networkx.classes.reportviews import NodeView
@@ -20,6 +19,9 @@ class MixedEdgeGraph:
 
     Edges are represented as links between nodes with optional
     key/value attributes.
+
+    .. warning:: MixedEdgeGraph is an experimental feature included
+        in networkx recently. Please use with caution.
 
     Parameters
     ----------
@@ -74,7 +76,7 @@ class MixedEdgeGraph:
     node_dict_factory = dict
     node_attr_dict_factory = dict
 
-    def __init__(self, graphs: List = None, edge_types: List = None, **attr):
+    def __init__(self, graphs=None, edge_types=None, **attr):
         if any(x is not None for x in [graphs, edge_types]):
             if not all(x is not None for x in [graphs, edge_types]):
                 raise RuntimeError(
@@ -110,7 +112,6 @@ class MixedEdgeGraph:
         self.add_nodes_from(nodes)
 
         # dictionary for graph attributes
-        # TODO: do we need the factory?
         self.graph_attr_dict_factory = self.graph_attr_dict_factory
         self.graph = self.graph_attr_dict_factory()
         # load graph attributes (must be after convert)
@@ -162,7 +163,7 @@ class MixedEdgeGraph:
     def edge_types(self):
         return list(self._edge_graphs.keys())
 
-    def get_graphs(self, edge_type="all") -> Union[nx.Graph, Dict[str, nx.Graph]]:
+    def get_graphs(self, edge_type="all"):
         """Get graphs representing the mixed-edges.
 
         Parameters
