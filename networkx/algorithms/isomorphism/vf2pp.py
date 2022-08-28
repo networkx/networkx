@@ -143,16 +143,23 @@ def vf2pp_all_mappings(G1, G2, node_labels=None, default_label=None):
     default_label: string
         The default label for nodes that have no label attribute value.
     """
-    G1_labels, G2_labels = {}, {}
     if G1.number_of_nodes() == 0 or G2.number_of_nodes() == 0:
         return False
 
-    # Check that all preconditions are satisfied before checking for isomorphism
-    if not _precheck(G1, G2, G1_labels, G2_labels, node_labels, default_label):
+    # Check that both graphs have the same number of nodes and degree sequence
+    if not _fast_precheck(G1, G2):
         return False
 
     # Initialize parameters and cache necessary information about degree and labels
+    G1_labels = dict(G1.nodes(data=node_labels, default=default_label))
+    G2_labels = dict(G2.nodes(data=node_labels, default=default_label))
     graph_params, state_params = _initialize_parameters(G1, G2, G1_labels, G2_labels)
+
+    # Check if G1 and G2 have the same labels, and that number of nodes per label is equal between the two graphs
+    if not _precheck_label_properties(graph_params):
+        return False
+
+    # Calculate the optimal node ordering
     node_order = _matching_order(graph_params)
 
     # Initialize the stack
@@ -193,8 +200,8 @@ def vf2pp_all_mappings(G1, G2, node_labels=None, default_label=None):
                 continue
 
             # Feasibility rules pass, so extend the mapping and update the parameters
-            mapping.update({current_node: candidate})
-            reverse_mapping.update({candidate: current_node})
+            mapping[current_node] = candidate
+            reverse_mapping[candidate] = current_node
             _update_Tinout(current_node, candidate, graph_params, state_params)
             # Append the next node and its candidates to the stack
             candidates = iter(
@@ -204,7 +211,7 @@ def vf2pp_all_mappings(G1, G2, node_labels=None, default_label=None):
             matching_node += 1
 
 
-def _precheck(G1, G2, G1_labels, G2_labels, node_labels=None, default_label=-1):
+def _fast_precheck(G1, G2):
     """Checks if all the pre-requisites are satisfied before calling the isomorphism solver.
 
     Notes
@@ -234,19 +241,16 @@ def _precheck(G1, G2, G1_labels, G2_labels, node_labels=None, default_label=-1):
     if sorted(d for n, d in G1.degree()) != sorted(d for n, d in G2.degree()):
         return False
 
-    G1_labels.update(G1.nodes(data=node_labels, default=default_label))
-    G2_labels.update(G2.nodes(data=node_labels, default=default_label))
+    return True
 
-    G1_nodes_per_label = {
-        label: len(nodes) for label, nodes in nx.utils.groups(G1_labels).items()
-    }
 
+def _precheck_label_properties(graph_params):
+    G1, G2, G1_labels, G2_labels, nodes_of_G1Labels, nodes_of_G2Labels, _ = graph_params
     if any(
-        label not in G1_nodes_per_label or G1_nodes_per_label[label] != len(nodes)
-        for label, nodes in nx.utils.groups(G2_labels).items()
+        label not in nodes_of_G1Labels or len(nodes_of_G1Labels[label]) != len(nodes)
+        for label, nodes in nodes_of_G2Labels.items()
     ):
         return False
-
     return True
 
 
