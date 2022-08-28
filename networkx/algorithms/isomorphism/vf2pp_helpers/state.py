@@ -128,8 +128,3 @@ def _restore_Tinout(popped_node1, popped_node2, graph_params, state_params):
 
     if not is_added:
         T2_out.add(popped_node2)
-
-
-def _push_to_stack(node, stack, graph_params, state_params):
-    candidates = _find_candidates(node, graph_params, state_params)
-    stack.append((node, iter(candidates)))

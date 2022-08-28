@@ -52,10 +52,10 @@ True
 import collections
 
 import networkx as nx
+from networkx.algorithms.isomorphism.vf2pp_helpers.candidates import _find_candidates
 from networkx.algorithms.isomorphism.vf2pp_helpers.feasibility import _feasibility
 from networkx.algorithms.isomorphism.vf2pp_helpers.node_ordering import _matching_order
 from networkx.algorithms.isomorphism.vf2pp_helpers.state import (
-    _push_to_stack,
     _restore_Tinout,
     _update_Tinout,
 )
@@ -157,7 +157,8 @@ def vf2pp_all_mappings(G1, G2, node_labels=None, default_label=None):
 
     # Initialize the stack
     stack = []
-    _push_to_stack(node_order[0], stack, graph_params, state_params)
+    candidates = iter(_find_candidates(node_order[0], graph_params, state_params))
+    stack.append((node_order[0], candidates))
 
     mapping = state_params.mapping
     reverse_mapping = state_params.reverse_mapping
@@ -194,7 +195,11 @@ def vf2pp_all_mappings(G1, G2, node_labels=None, default_label=None):
             mapping.update({current_node: candidate})
             reverse_mapping.update({candidate: current_node})
             _update_Tinout(current_node, candidate, graph_params, state_params)
-            _push_to_stack(node_order[matching_node], stack, graph_params, state_params)
+            # Append the next node and its candidates to the stack
+            candidates = iter(
+                _find_candidates(node_order[matching_node], graph_params, state_params)
+            )
+            stack.append((node_order[matching_node], candidates))
             matching_node += 1
 
 
