@@ -52,12 +52,12 @@ True
 import collections
 
 import networkx as nx
-from networkx.algorithms.isomorphism.vf2pp_helpers.candidates import _find_candidates
 from networkx.algorithms.isomorphism.vf2pp_helpers.feasibility import _feasibility
 from networkx.algorithms.isomorphism.vf2pp_helpers.node_ordering import _matching_order
 from networkx.algorithms.isomorphism.vf2pp_helpers.state import (
-    _restore_state,
-    _update_state,
+    _push_to_stack,
+    _restore_Tinout,
+    _update_Tinout,
 )
 
 __all__ = ["vf2pp_mapping", "vf2pp_is_isomorphic", "vf2pp_all_mappings"]
@@ -147,14 +147,22 @@ def vf2pp_all_mappings(G1, G2, node_labels=None, default_label=None):
     if G1.number_of_nodes() == 0 or G2.number_of_nodes() == 0:
         return False
 
+    # Check that all preconditions are satisfied before checking for isomorphism
     if not _precheck(G1, G2, G1_labels, G2_labels, node_labels, default_label):
         return False
 
+    # Initialize parameters and cache necessary information about degree and labels
     graph_params, state_params = _initialize_parameters(G1, G2, G1_labels, G2_labels)
     node_order = _matching_order(graph_params)
-    stack = _initialize_stack(node_order, graph_params, state_params)
+
+    # Initialize the stack
+    stack = []
+    _push_to_stack(node_order[0], stack, graph_params, state_params)
 
     mapping = state_params.mapping
+    reverse_mapping = state_params.reverse_mapping
+
+    # Index of the node from the order, currently being examined
     matching_node = 1
 
     while stack:
@@ -163,28 +171,30 @@ def vf2pp_all_mappings(G1, G2, node_labels=None, default_label=None):
         try:
             candidate = next(candidate_nodes)
         except StopIteration:
+            # If no remaining candidates, return to a previous state, and follow another branch
             stack.pop()
             matching_node -= 1
             if stack:
-                _restore_state(stack, graph_params, state_params)
+                popped_node1, _ = stack[-1]
+                popped_node2 = mapping[popped_node1]
+                mapping.pop(popped_node1)
+                reverse_mapping.pop(popped_node2)
+                _restore_Tinout(popped_node1, popped_node2, graph_params, state_params)
             continue
 
         if _feasibility(current_node, candidate, graph_params, state_params):
+            # Terminate if mapping is extended to its full
             if len(mapping) == G2.number_of_nodes() - 1:
                 cp_mapping = mapping.copy()
                 cp_mapping[current_node] = candidate
                 yield cp_mapping
                 continue
 
-            _update_state(
-                current_node,
-                candidate,
-                matching_node,
-                node_order,
-                stack,
-                graph_params,
-                state_params,
-            )
+            # Feasibility rules pass, so extend the mapping and update the parameters
+            mapping.update({current_node: candidate})
+            reverse_mapping.update({candidate: current_node})
+            _update_Tinout(current_node, candidate, graph_params, state_params)
+            _push_to_stack(node_order[matching_node], stack, graph_params, state_params)
             matching_node += 1
 
 
@@ -284,10 +294,3 @@ def _initialize_parameters(G1, G2, G1_labels, G2_labels):
     )
 
     return graph_params, state_params
-
-
-def _initialize_stack(node_order, graph_params, state_params):
-    starting_node = node_order[0]
-    candidates = _find_candidates(starting_node, graph_params, state_params)
-    stack = [(starting_node, iter(candidates))]
-    return stack
