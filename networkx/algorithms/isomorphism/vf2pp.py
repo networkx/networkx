@@ -176,6 +176,7 @@ def vf2pp_all_mappings(G1, G2, node_labels=None, default_label=None):
             stack.pop()
             matching_node -= 1
             if stack:
+                # Pop the previously added u-v pair, and look for a different candidate _v for u
                 popped_node1, _ = stack[-1]
                 popped_node2 = mapping[popped_node1]
                 mapping.pop(popped_node1)
