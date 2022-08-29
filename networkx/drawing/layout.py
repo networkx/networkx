@@ -349,7 +349,7 @@ def spring_layout(
     k=None,
     pos=None,
     fixed=None,
-    iterations=50,
+    max_iter=50,
     threshold=1e-4,
     weight="weight",
     scale=1,
@@ -394,7 +394,7 @@ def spring_layout(
         Nodes not in ``G.nodes`` are ignored.
         ValueError raised if `fixed` specified and `pos` not.
 
-    iterations : int  optional (default=50)
+    max_iter : int  optional (default=50)
         Maximum number of iterations taken
 
     threshold: float optional (default = 1e-4)
@@ -480,7 +480,7 @@ def spring_layout(
             nnodes, _ = A.shape
             k = dom_size / np.sqrt(nnodes)
         pos = _sparse_fruchterman_reingold(
-            A, k, pos_arr, fixed, iterations, threshold, dim, seed
+            A, k, pos_arr, fixed, max_iter, threshold, dim, seed
         )
     except ValueError:
         A = nx.to_numpy_array(G, weight=weight)
@@ -489,7 +489,7 @@ def spring_layout(
             nnodes, _ = A.shape
             k = dom_size / np.sqrt(nnodes)
         pos = _fruchterman_reingold(
-            A, k, pos_arr, fixed, iterations, threshold, dim, seed
+            A, k, pos_arr, fixed, max_iter, threshold, dim, seed
         )
     if fixed is None and scale is not None:
         pos = rescale_layout(pos, scale=scale) + center
@@ -502,7 +502,7 @@ fruchterman_reingold_layout = spring_layout
 
 @np_random_state(7)
 def _fruchterman_reingold(
-    A, k=None, pos=None, fixed=None, iterations=50, threshold=1e-4, dim=2, seed=None
+    A, k=None, pos=None, fixed=None, max_iter=50, threshold=1e-4, dim=2, seed=None
 ):
     # Position nodes in adjacency matrix A using Fruchterman-Reingold
     # Entry point for NetworkX graph is fruchterman_reingold_layout()
@@ -531,12 +531,12 @@ def _fruchterman_reingold(
     t = max(max(pos.T[0]) - min(pos.T[0]), max(pos.T[1]) - min(pos.T[1])) * 0.1
     # simple cooling scheme.
     # linearly step down by dt on each iteration so last iteration is size dt.
-    dt = t / (iterations + 1)
+    dt = t / (max_iter + 1)
     delta = np.zeros((pos.shape[0], pos.shape[0], pos.shape[1]), dtype=A.dtype)
     # the inscrutable (but fast) version
     # this is still O(V^2)
     # could use multilevel methods to speed this up significantly
-    for iteration in range(iterations):
+    for iteration in range(max_iter):
         # matrix of difference between points
         delta = pos[:, np.newaxis, :] - pos[np.newaxis, :, :]
         # distance between points
@@ -564,7 +564,7 @@ def _fruchterman_reingold(
 
 @np_random_state(7)
 def _sparse_fruchterman_reingold(
-    A, k=None, pos=None, fixed=None, iterations=50, threshold=1e-4, dim=2, seed=None
+    A, k=None, pos=None, fixed=None, max_iter=50, threshold=1e-4, dim=2, seed=None
 ):
     # Position nodes in adjacency matrix A using Fruchterman-Reingold
     # Entry point for NetworkX graph is fruchterman_reingold_layout()
@@ -603,10 +603,10 @@ def _sparse_fruchterman_reingold(
     t = max(max(pos.T[0]) - min(pos.T[0]), max(pos.T[1]) - min(pos.T[1])) * 0.1
     # simple cooling scheme.
     # linearly step down by dt on each iteration so last iteration is size dt.
-    dt = t / (iterations + 1)
+    dt = t / (max_iter + 1)
 
     displacement = np.zeros((dim, nnodes))
-    for iteration in range(iterations):
+    for iteration in range(max_iter):
         displacement *= 0
         # loop over rows
         for i in range(A.shape[0]):
