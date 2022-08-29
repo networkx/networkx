@@ -1,7 +1,5 @@
 import networkx as nx
 
-from .convert import bidirected_to_unobserved_confounder
-
 __all__ = ["m_separated"]
 
 
@@ -70,7 +68,7 @@ def m_separated(
 
     # get the full graph by converting bidirected edges into latent confounders
     # and keeping the directed edges
-    explicit_G = bidirected_to_unobserved_confounder(
+    explicit_G = nx.bidirected_to_unobserved_confounder(
         G, bidirected_edge_name=bidirected_edge_name
     )
 
