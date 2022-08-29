@@ -2,7 +2,7 @@
 import typing
 
 import pytest
-import networkx as nx
+import networkx as nx, numpy as np
 
 np = pytest.importorskip("numpy")
 pytest.importorskip("scipy")
@@ -546,7 +546,9 @@ class TestForceLayouts:
             self.compare_force_with_random_layout(graph, force_layout, seed=seed)
 
     @classmethod
-    def check_edge_crossing(cls, G: nx.Graph, pos: dict) -> list:
+    def check_edge_crossing(
+        cls, G: nx.Graph, pos: dict[object, np.typing.NDArray[np.double]]
+    ) -> list[tuple[object, object]]:
         """Computes  edges that  cross each  other. List  of
         edges that  cross. Has  the format $((v1,  v2), (v3,
         v4))$ with $v_i \in V$ and $v_i$ being unique.
@@ -576,7 +578,9 @@ class TestForceLayouts:
 
         """
 
-        def get_coefficients(x1: tuple, x2: tuple) -> tuple:
+        def get_coefficients(
+            x1: np.typing.NDArray[np.double], x2: np.typing.NDArray[np.double]
+        ) -> tuple[float, float]:
             """Compute first order polynomial
 
             Estimates  linear  line   between  vertices  and
@@ -612,7 +616,10 @@ class TestForceLayouts:
             return slope, offset
 
         def already_seen(
-            edge1: tuple, edge2: tuple, G: nx.Graph, crossing: list
+            edge1: tuple[(object, object)],
+            edge2: tuple[(object, object)],
+            G: nx.Graph,
+            crossing: list[tuple[object, object]],
         ) -> bool:
             """
             Check if pair(edge1, edge2) is already visited
@@ -658,7 +665,9 @@ class TestForceLayouts:
 
         # define target linear function
         f = lambda x, slope, offset: abs(slope * x + offset)
-        crossing = []  # keep track of which nodes are crossing
+        crossing: list[
+            tuple[object, object]
+        ] = []  # keep track of which nodes are crossing
         # check all edges
         for edgei in G.edges():
             for edgej in G.edges():
