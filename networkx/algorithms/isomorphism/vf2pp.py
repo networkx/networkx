@@ -147,7 +147,7 @@ def vf2pp_all_mappings(G1, G2, node_labels=None, default_label=None):
         return False
 
     # Check that both graphs have the same number of nodes and degree sequence
-    if not _fast_precheck(G1, G2):
+    if not nx.faster_could_be_isomorphic(G1, G2):
         return False
 
     # Initialize parameters and cache necessary information about degree and labels
@@ -209,39 +209,6 @@ def vf2pp_all_mappings(G1, G2, node_labels=None, default_label=None):
             )
             stack.append((node_order[matching_node], candidates))
             matching_node += 1
-
-
-def _fast_precheck(G1, G2):
-    """Checks if all the pre-requisites are satisfied before calling the isomorphism solver.
-
-    Notes
-    -----
-    Before trying to create the mapping between the nodes of the two graphs, we must check if:
-    1. The two graphs have equal number of nodes
-    2. The degree sequences in the two graphs are identical
-    3. The two graphs have the same label distribution. For example, if G1 has orange nodes but G2 doesn't, there's no
-    point in proceeding to create a mapping.
-
-    Parameters
-    ----------
-    G1,G2: NetworkX Graph or MultiGraph instances.
-        The two graphs to check for isomorphism or monomorphism.
-
-    G1_labels,G2_labels: dict
-        The label of every node in G1 and G2 respectively.
-
-        node_labels: Label name
-        The label name of all nodes
-
-    default_label: Label name
-        Let the user pick a default label value
-    """
-    if G1.order() != G2.order():
-        return False
-    if sorted(d for n, d in G1.degree()) != sorted(d for n, d in G2.degree()):
-        return False
-
-    return True
 
 
 def _precheck_label_properties(graph_params):
