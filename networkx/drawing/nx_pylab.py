@@ -20,17 +20,10 @@ import warnings
 from numbers import Number
 
 import networkx as nx
-from networkx.drawing.layout import (
-    circular_layout,
-    forceatlas2_layout,
-    kamada_kawai_layout,
-    planar_layout,
-    random_layout,
-    shell_layout,
-    spectral_layout,
-    spring_layout,
-)
-
+from networkx.drawing.layout import (circular_layout, forceatlas2_layout,
+                                     kamada_kawai_layout, planar_layout,
+                                     random_layout, shell_layout,
+                                     spectral_layout, spring_layout)
 
 __all__ = [
     "draw",
