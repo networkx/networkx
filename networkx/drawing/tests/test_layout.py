@@ -468,3 +468,205 @@ def test_multipartite_layout_layer_order():
     G.nodes["a"]["subset"] = "layer_0"  # Can't sort mixed strs/ints
     pos_nosort = nx.multipartite_layout(G)  # smoke test: this should not raise
     assert pos_nosort.keys() == pos.keys()
+
+
+class TestForceLayouts:
+    """
+    Combined class for testing force simulated layouts
+
+    There are  no agreed upon  tests for testing  force directed
+    layouts. Here, we attempt to provide some heuristics
+    to  test for  some  base properties  of the  system.
+    Force  layouts  have  at   their  core  two  forces.
+    Attraction forces pull  together connected vertices,
+    whereas repulsion  forces are exerted  between nodes
+    independent of an edge existing.
+
+    These simulations  result in  a balance  whereby the
+    edge crossings are minimized.
+
+    """
+
+    # NOTE: perhaps make this into partials for checking certain parameters
+
+    _layouts = [
+        nx.spring_layout,
+        # nx.arf_layout,
+        # nx.forceatlas2_layout,
+    ]
+
+    _test_graphs = [
+        nx.wheel_graph(10),
+        nx.path_graph(3),
+    ]
+
+    @classmethod
+    def compare_force_with_random_layout(
+        cls, G, force_layout: typing.Callable, seed=0, **kwargs
+    ):
+        # check crossing layout for random
+        pos_random = nx.random_layout(G, seed=seed)
+        n_cross_random = len(TestForceLayouts.check_edge_crossing(G, pos_random))
+
+        # get force layout
+        pos_force = force_layout(G, pos=pos_random, **kwargs)
+        n_cross_force = len(TestForceLayouts.check_edge_crossing(G, pos_force))
+        # e.g. for path graph
+        msg = f"{force_layout} did not produce better results than random layout {n_cross_force=}\t {n_cross_random=}"
+        if n_cross_force == n_cross_random and n_cross_force != 0:
+            raise ValueError(msg)
+        # all other cases force simulations should optimize edge crossing
+        elif n_cross_force > n_cross_random:
+            raise ValueError(msg)
+
+    def test_failure_layout(self):
+        # make test for which the layout algorithm should fail
+        # asumption: don't simulate any forces, layout should fail on average (depends on seed)
+
+        G = nx.wheel_graph(10)
+        for force_layout in self._layouts:
+            pytest.raises(
+                ValueError,
+                self.compare_force_with_random_layout,
+                G=G,
+                force_layout=force_layout,
+                iterations=0,
+                seed=0,
+            )
+
+    def test_toy_graphs(self, seed=0):
+        """
+        Test various toy for convergence. As a proxy we take edge crossings
+        """
+
+        from itertools import product
+
+        for graph, force_layout in product(self._test_graphs, self._layouts):
+            self.compare_force_with_random_layout(graph, force_layout, seed=seed)
+
+    @classmethod
+    def check_edge_crossing(cls, G: nx.Graph, pos: dict) -> list:
+        """Computes  edges that  cross each  other. List  of
+        edges that  cross. Has  the format $((v1,  v2), (v3,
+        v4))$ with $v_i \in V$ and $v_i$ being unique.
+
+
+        Edge  crossing  can  be  used as  an  indicator  for
+        convergence in force directed layouts
+
+        Parameters
+        ----------
+        cls : object
+            TesSpringLayout instance or static call
+        G : nx.Graph
+            nx.Graph or nx.DiGraph
+        pos : dict
+            dictionary where the keys indicate nodes and the
+            values indicate the positions
+
+        Returns
+        -------
+        list
+
+
+        Examples
+        --------
+        FIXME: Add docs. (not needed)
+
+        """
+
+        def get_coefficients(x1: tuple, x2: tuple) -> tuple:
+            """Compute first order polynomial
+
+            Estimates  linear  line   between  vertices  and
+            returns the offset and slope of this line.
+
+            Parameters
+            ----------
+            x1 : tuple
+                position of edge 1
+            x2 : tuple
+                position of edge 2
+
+            Returns
+            -------
+            tuple
+                contains  slope and  offset of  intersection
+                line
+
+            Examples
+            --------
+            FIXME: Add docs. (not needed)
+
+
+            """
+            # swap values to order
+            if x1[0] > x2[0]:
+                tmp = x1.copy()
+                x1 = x2.copy()
+                x2 = tmp.copy()
+
+            slope = (x2[1] - x1[1]) / (x2[0] - x1[0])
+            offset = x1[1] - slope * x1[0]
+            return slope, offset
+
+        def already_seen(
+            edge1: tuple, edge2: tuple, G: nx.Graph, crossing: list
+        ) -> bool:
+            """
+            Check if pair(edge1, edge2) is already visited
+            """
+            if (edge1, edge2) in crossing:
+                return True
+            if not G.is_directed() and (edge2, edge1) in crossing:
+                return True
+            return False
+
+        def is_crossing(edgei: tuple, edgej: tuple) -> bool:
+
+            from scipy import optimize
+
+            # check that no pair is shared
+            nodes = set(edgei).union(set(edgej))
+            # some nodes are shared
+            if len(nodes) != 4:
+                return False
+
+            check = [*edgei, *edgej]
+            check = [i.lower() if type(i) is str else i for i in check]
+            # we have two  sets of unique pairs
+            # check if the crossing is within the domain
+            x1, x2, y1, y2 = [pos[node] for node in [*edgei, *edgej]]
+            # create two linear lines and check intersection
+            slope1, offset1 = get_coefficients(x1, x2)
+            slope2, offset2 = get_coefficients(y1, y2)
+
+            func_args = ((slope1 - slope2), (offset1 - offset2))
+            middle = (x1[0] + x2[0]) / 2
+            res = optimize.minimize(f, x0=middle, args=func_args)
+            # print(res)
+            cross = False
+            x_range = sorted((x1[0], x2[0]))
+            y_range = sorted((y1[0], y2[0]))
+            if x_range[0] <= res.x <= x_range[1] and y_range[0] <= res.x <= y_range[1]:
+                cross = True
+            return cross
+
+        # NOTE: this is not the most efficient implementation. Loop below can be parallized or vectorized.
+        # I believe the current approach is more readily understood naively.
+
+        # define target linear function
+        f = lambda x, slope, offset: abs(slope * x + offset)
+        crossing = []  # keep track of which nodes are crossing
+        # check all edges
+        for edgei in G.edges():
+            for edgej in G.edges():
+                # don't consider self-edges
+                if edgei == edgej:
+                    continue
+                # check if edge is already seen
+                if not already_seen(edgei, edgej, G, crossing):
+                    if is_crossing(edgei, edgej):
+                        crossing.append((edgei, edgej))
+
+        return crossing
