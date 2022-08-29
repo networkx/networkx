@@ -1,6 +1,7 @@
 """Unit tests for layout functions."""
-import pytest
+import typing
 
+import pytest
 import networkx as nx
 
 np = pytest.importorskip("numpy")
@@ -530,7 +531,7 @@ class TestForceLayouts:
                 self.compare_force_with_random_layout,
                 G=G,
                 force_layout=force_layout,
-                iterations=0,
+                max_iter=0,
                 seed=0,
             )
 
