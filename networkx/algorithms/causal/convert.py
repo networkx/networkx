@@ -2,6 +2,8 @@ from copy import deepcopy
 
 import networkx as nx
 
+__all__ = ["bidirected_to_unobserved_confounder"]
+
 
 def bidirected_to_unobserved_confounder(
     G,
