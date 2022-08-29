@@ -1112,42 +1112,6 @@ def multipartite_layout(G, subset_key="subset", align="vertical", scale=1, cente
     return pos
 
 
-def estimate_factor(n, swing, traction, speed, speed_efficiency, jitter_tolerance):
-    """
-    ForceAtlas2 helper function
-    Computes scaling factor for force
-    """
-    import numpy as np
-
-    # estimate jitter
-    opt_jitter = 0.05 * np.sqrt(n)
-    min_jitter = np.sqrt(opt_jitter)
-    max_jitter = 10
-    min_speed_efficiency = 0.05
-
-    other = min(max_jitter, opt_jitter * traction / n**2)
-    jitter = jitter_tolerance * max(min_jitter, other)
-
-    if swing / traction > 2.0:
-        if speed_efficiency > min_speed_efficiency:
-            speed_efficiency *= 0.5
-        jitter = max(jitter, jitter_tolerance)
-    if swing == 0:
-        target_speed = np.inf
-    else:
-        target_speed = jitter * speed_efficiency * traction / swing
-
-    if swing > jitter * traction:
-        if speed_efficiency > min_speed_efficiency:
-            speed_efficiency *= 0.7
-    elif speed < 1000:
-        speed_efficiency *= 1.3
-
-    max_rise = 0.5
-    speed = speed + min(target_speed - speed, max_rise * speed)
-    return speed, speed_efficiency
-
-
 def forceatlas2_layout(
     G,
     pos=None,
@@ -1206,6 +1170,41 @@ def forceatlas2_layout(
     >>> nx.draw(G, pos = nx.forceatlas2_layout(G))
     """
     import numpy as np
+
+    def estimate_factor(n, swing, traction, speed, speed_efficiency, jitter_tolerance):
+        """
+        ForceAtlas2 helper function
+        Computes scaling factor for force
+        """
+        import numpy as np
+
+        # estimate jitter
+        opt_jitter = 0.05 * np.sqrt(n)
+        min_jitter = np.sqrt(opt_jitter)
+        max_jitter = 10
+        min_speed_efficiency = 0.05
+
+        other = min(max_jitter, opt_jitter * traction / n**2)
+        jitter = jitter_tolerance * max(min_jitter, other)
+
+        if swing / traction > 2.0:
+            if speed_efficiency > min_speed_efficiency:
+                speed_efficiency *= 0.5
+            jitter = max(jitter, jitter_tolerance)
+        if swing == 0:
+            target_speed = np.inf
+        else:
+            target_speed = jitter * speed_efficiency * traction / swing
+
+        if swing > jitter * traction:
+            if speed_efficiency > min_speed_efficiency:
+                speed_efficiency *= 0.7
+        elif speed < 1000:
+            speed_efficiency *= 1.3
+
+        max_rise = 0.5
+        speed = speed + min(target_speed - speed, max_rise * speed)
+        return speed, speed_efficiency
 
     # parse optional pos positions
     if pos is None:
