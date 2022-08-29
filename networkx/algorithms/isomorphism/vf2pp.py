@@ -151,9 +151,9 @@ def vf2pp_all_mappings(G1, G2, node_labels=None, default_label=None):
         return False
 
     # Initialize parameters and cache necessary information about degree and labels
-    G1_labels = dict(G1.nodes(data=node_labels, default=default_label))
-    G2_labels = dict(G2.nodes(data=node_labels, default=default_label))
-    graph_params, state_params = _initialize_parameters(G1, G2, G1_labels, G2_labels)
+    graph_params, state_params = _initialize_parameters(
+        G1, G2, node_labels, default_label
+    )
 
     # Check if G1 and G2 have the same labels, and that number of nodes per label is equal between the two graphs
     if not _precheck_label_properties(graph_params):
@@ -221,7 +221,7 @@ def _precheck_label_properties(graph_params):
     return True
 
 
-def _initialize_parameters(G1, G2, G1_labels, G2_labels):
+def _initialize_parameters(G1, G2, node_labels, default_label):
     """Initializes all the necessary parameters for VF2++
 
     Parameters
@@ -256,6 +256,9 @@ def _initialize_parameters(G1, G2, G1_labels, G2_labels):
         T1_out, T2_out: set
             Ti_out contains all the nodes from Gi, that are neither in the mapping nor in Ti
     """
+    G1_labels = dict(G1.nodes(data=node_labels, default=default_label))
+    G2_labels = dict(G2.nodes(data=node_labels, default=default_label))
+
     graph_params = _GraphParameters(
         G1,
         G2,
