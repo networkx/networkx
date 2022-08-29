@@ -560,11 +560,11 @@ class MixedEdgeGraph:
             if u not in self._node:
                 if u is None:
                     raise ValueError("None cannot be a node")
-                self._node[u] = self.node_attr_dict_factory()
+                self.add_node(u)
             if v not in self._node:
                 if v is None:
                     raise ValueError("None cannot be a node")
-                self._node[v] = self.node_attr_dict_factory()
+                self.add_node(v)
         self._get_internal_graph(edge_type).add_edges_from(ebunch_to_add, **attr)
 
     def remove_edge(self, u, v, edge_type):
@@ -718,8 +718,9 @@ class MixedEdgeGraph:
 
     def is_directed(self):
         """Returns True if graph is directed, False otherwise."""
-        # TODO: need to double check that any directed graph algos. work as exp.
-        return any([isinstance(graph, nx.DiGraph) for graph in self.get_graphs()])
+        return False
+        # # TODO: need to double check that any directed graph algos. work as exp.
+        # return any([isinstance(graph, nx.DiGraph) for graph in self.get_graphs()])
 
     def is_mixed(self):
         return True

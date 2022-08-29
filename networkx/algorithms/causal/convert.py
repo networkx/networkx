@@ -57,7 +57,4 @@ def bidirected_to_unobserved_confounder(
         G_copy.add_edge(f"U{idx}", latent_edge[0])
         G_copy.add_edge(f"U{idx}", latent_edge[1])
 
-        # remove the actual bidirected edge
-        # G_copy.remove_edge(*latent_edge)
-
     return G_copy

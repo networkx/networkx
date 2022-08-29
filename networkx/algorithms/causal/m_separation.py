@@ -59,6 +59,14 @@ def m_separated(
             f"the function is expecting directed edges named {directed_edge_name} and "
             f"bidirected edges named {bidirected_edge_name}."
         )
+    if any(
+        edge_type not in [bidirected_edge_name, directed_edge_name]
+        for edge_type in G.edge_types
+    ):
+        raise RuntimeError(
+            f"m-separation should only be run on mixed-edge graphs with directed edges "
+            f"named {directed_edge_name} and bidirected edges named {bidirected_edge_name}."
+        )
 
     # get the full graph by converting bidirected edges into latent confounders
     # and keeping the directed edges
