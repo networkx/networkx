@@ -131,13 +131,14 @@ class MixedEdgeGraph:
         >>> G = nx.MixedEdgeGraph(name="foo")
         >>> str(G)
         "MixedEdgeGraph named 'foo' with 0 nodes and 0 edges and 0 edge types"
+
         """
         return "".join(
             [
                 type(self).__name__,
                 f" named {self.name!r}" if self.name else "",
                 f" with {self.number_of_nodes()} nodes and {self.number_of_edges()} edges",
-                f" and {self.number_of_edge_types()} edge types.",
+                f" and {self.number_of_edge_types()} edge types",
             ]
         )
 
