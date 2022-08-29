@@ -137,7 +137,7 @@ class MixedEdgeGraph:
                 type(self).__name__,
                 f" named {self.name!r}" if self.name else "",
                 f" with {self.number_of_nodes()} nodes and {self.number_of_edges()} edges",
-                f" with {self.number_of_edge_types()} edge types.",
+                f" and {self.number_of_edge_types()} edge types.",
             ]
         )
 
