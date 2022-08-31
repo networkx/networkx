@@ -200,10 +200,10 @@ def all_simple_paths(G, source, target, cutoff=None):
         ...     all_paths.extend(paths)
         >>> all_paths
         [[0, 1, 3], [0, 1, 4], [2, 1, 3], [2, 1, 4]]
-        
+
     If parallel edges offer multiple ways to traverse a given sequence of
     nodes, this sequence of nodes will be returned multiple times:
-    
+
         >>> G = nx.MultiDiGraph([(0, 1), (0, 1), (1, 2)])
         >>> list(nx.all_simple_paths(G, 0, 2))
         [[0, 1, 2], [0, 1, 2]]
