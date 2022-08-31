@@ -1233,10 +1233,7 @@ def number_of_selfloops(G):
 
 
 def is_path(G, path):
-    """Returns whether or not the specified path exists.
-    
-    For it to return True, every node on the path must exist and
-    each consecutive pair must be connected via one or more edges.
+    """Returns whether or not the specified path exists
 
     Parameters
     ----------
