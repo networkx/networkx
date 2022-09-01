@@ -618,10 +618,7 @@ def all_pairs_all_shortest_paths(G, weight=None, method="dijkstra"):
     >>> G = nx.Graph()
     >>> nx.add_path(G, [0, 1, 2, 3, 0])
     >>> print(dict(nx.all_pairs_all_shortest_paths(G)))
-    {0: {0: [[0]], 1: [[0, 1]], 2: [[0, 1, 2], [0, 3, 2]], 3: [[0, 3]]},
-     1: {0: [[1, 0]], 1: [[1]], 2: [[1, 2]], 3: [[1, 0, 3], [1, 2, 3]]},
-     2: {0: [[2, 1, 0], [2, 3, 0]], 1: [[2, 1]], 2: [[2]], 3: [[2, 3]]},
-     3: {0: [[3, 0]], 1: [[3, 2, 1], [3, 0, 1]], 2: [[3, 2]], 3: [[3]]}}
+    {0: {0: [[0]], 1: [[0, 1]], 2: [[0, 1, 2], [0, 3, 2]], 3: [[0, 3]]}, 1: {0: [[1, 0]], 1: [[1]], 2: [[1, 2]], 3: [[1, 0, 3], [1, 2, 3]]}, 2: {0: [[2, 1, 0], [2, 3, 0]], 1: [[2, 1]], 2: [[2]], 3: [[2, 3]]}, 3: {0: [[3, 0]], 1: [[3, 2, 1], [3, 0, 1]], 2: [[3, 2]], 3: [[3]]}}
 
     See Also
     --------
@@ -629,7 +626,9 @@ def all_pairs_all_shortest_paths(G, weight=None, method="dijkstra"):
     single_source_all_shortest_paths
     """
     for n in G:
-        yield n, dict(single_source_all_shortest_paths(G, n, weight=weight, method=method))
+        yield n, dict(
+            single_source_all_shortest_paths(G, n, weight=weight, method=method)
+        )
 
 def _build_paths_from_predecessors(sources, target, pred):
     """Compute all simple paths to target, given the predecessors found in
