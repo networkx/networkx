@@ -502,6 +502,7 @@ def all_shortest_paths(G, source, target, weight=None, method="dijkstra"):
 
     return _build_paths_from_predecessors({source}, target, pred)
 
+
 def single_source_all_shortest_paths(G, source, weight=None, method="dijkstra"):
     """Compute all shortest simple paths from the given source in the graph.
 
@@ -576,6 +577,7 @@ def single_source_all_shortest_paths(G, source, weight=None, method="dijkstra"):
     for n in G:
         yield n, list(_build_paths_from_predecessors({source}, n, pred))
 
+
 def all_pairs_all_shortest_paths(G, weight=None, method="dijkstra"):
     """Compute all shortest paths between all nodes.
 
@@ -629,6 +631,7 @@ def all_pairs_all_shortest_paths(G, weight=None, method="dijkstra"):
         yield n, dict(
             single_source_all_shortest_paths(G, n, weight=weight, method=method)
         )
+
 
 def _build_paths_from_predecessors(sources, target, pred):
     """Compute all simple paths to target, given the predecessors found in
