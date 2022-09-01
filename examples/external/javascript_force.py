@@ -13,6 +13,7 @@ You will need to download the following directory:
 import json
 
 import flask
+from flask_wtf.csrf import CSRFProtect
 import networkx as nx
 
 G = nx.barbell_graph(6, 3)
@@ -27,8 +28,11 @@ json.dump(d, open("force/force.json", "w"))
 print("Wrote node-link JSON data to force/force.json")
 
 # Serve the file over http to allow for cross origin requests
-app = flask.Flask(__name__, static_folder="force")
 
+# OpenRefactory Warning: The 'flask.Flask' method creates a Flask app
+# without Cross-Site Request Forgery (CSRF) protection.
+app = flask.Flask(__name__, static_folder="force")
+CSRFProtect(app)
 
 @app.route("/")
 def static_proxy():
