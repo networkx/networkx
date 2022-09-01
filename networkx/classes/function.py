@@ -1233,8 +1233,25 @@ def number_of_selfloops(G):
 
 
 def is_path(G, path):
-    """Returns whether or not the specified path exists
+    """Returns whether or not the specified path exists.
 
+    For it to return True, every node on the path must exist and
+    each consecutive pair must be connected via one or more edges.
+
+    Parameters
+    ----------
+    G : graph
+        A NetworkX graph.
+
+    path: list
+        A list of node labels which defines the path to traverse
+
+    Returns
+    -------
+    isPath: bool
+        A boolean representing whether or not the path exists
+
+    """
     Parameters
     ----------
     G : graph
