@@ -302,7 +302,6 @@ def _initialize_parameters(G1, G2, node_labels, default_label):
         nx.utils.groups(G2_labels),
         G2_nodes_of_degree,
     )
-    # "T1", "T1_in", "T1_tilde", "T1_tilde_in", "T2", "T2_in", "T2_tilde", "T2_tilde_in"],
 
     T1, T1_in = set(), set()
     T2, T2_in = set(), set()

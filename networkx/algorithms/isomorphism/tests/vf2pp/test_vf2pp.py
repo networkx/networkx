@@ -659,3 +659,207 @@ class TestGraphISOVF2pp:
 
         m = vf2pp_mapping(G1, G2, node_labels="label")
         assert m
+
+
+class TestDiGraphISOVF2pp:
+    def test_both_graphs_empty(self):
+        G = nx.DiGraph()
+        H = nx.DiGraph()
+
+        m = vf2pp_mapping(G, H, None)
+        assert m is None
+
+    def test_first_graph_empty(self):
+        G = nx.DiGraph()
+        H = nx.DiGraph([(0, 1)])
+        m = vf2pp_mapping(G, H, None)
+        assert m is None
+
+    def test_second_graph_empty(self):
+        G = nx.DiGraph([(0, 1)])
+        H = nx.DiGraph()
+        m = vf2pp_mapping(G, H, None)
+        assert m is None
+
+    def test_wiki_graph_no_labels(self):
+        G1 = nx.DiGraph(
+            [
+                [1, 2],
+                [2, 3],
+                [3, 4],
+                [4, 1],
+                [5, 6],
+                [6, 7],
+                [7, 8],
+                [8, 5],
+                [1, 5],
+                [2, 6],
+                [3, 7],
+                [4, 8],
+            ]
+        )
+        G2 = nx.DiGraph(
+            [
+                ["a", "g"],
+                ["a", "h"],
+                ["i", "a"],
+                ["g", "b"],
+                ["h", "b"],
+                ["b", "j"],
+                ["c", "g"],
+                ["i", "c"],
+                ["j", "c"],
+                ["h", "d"],
+                ["d", "i"],
+                ["d", "j"],
+            ]
+        )
+
+        m = vf2pp_mapping(G1, G2, node_labels=None)
+        assert m
+
+        # Change the direction of an edge in one graph
+        G1.remove_edge(5, 6)
+        G1.add_edge(6, 5)
+        m = vf2pp_mapping(G1, G2, node_labels=None)
+        assert m is None
+
+        # Do the same in G2 but in different edge
+        G2.remove_edge("g", "b")
+        G2.add_edge("b", "g")
+        m = vf2pp_mapping(G1, G2, node_labels=None)
+        assert m
+
+        # Add new node in both graphs but connect with different direction
+        G1.add_node(100)
+        G2.add_node("X")
+        G1.add_edge(100, 1)
+        G2.add_edge("a", "X")
+
+        m = vf2pp_mapping(G1, G2, node_labels=None)
+        assert m is None
+
+        # Fix all directions
+        G1.remove_edge(100, 1)
+        G1.add_edge(1, 100)
+        m = vf2pp_mapping(G1, G2, node_labels=None)
+        assert m
+
+    def test_wiki_graph_with_labels(self):
+        G1 = nx.DiGraph(
+            [
+                [1, 2],
+                [2, 3],
+                [3, 4],
+                [4, 1],
+                [5, 6],
+                [6, 7],
+                [7, 8],
+                [8, 5],
+                [1, 5],
+                [2, 6],
+                [3, 7],
+                [4, 8],
+            ]
+        )
+        G2 = nx.DiGraph(
+            [
+                ["a", "g"],
+                ["a", "h"],
+                ["i", "a"],
+                ["g", "b"],
+                ["h", "b"],
+                ["b", "j"],
+                ["c", "g"],
+                ["i", "c"],
+                ["j", "c"],
+                ["h", "d"],
+                ["d", "i"],
+                ["d", "j"],
+            ]
+        )
+        mapped = {1: "a", 2: "h", 3: "d", 4: "i", 5: "g", 6: "b", 7: "j", 8: "c"}
+
+        nx.set_node_attributes(
+            G1, dict(zip(G1, itertools.cycle(utils.labels_different))), "label"
+        )
+        nx.set_node_attributes(
+            G2,
+            dict(zip([mapped[n] for n in G1], itertools.cycle(utils.labels_different))),
+            "label",
+        )
+
+        m = vf2pp_mapping(G1, G2, node_labels="label")
+        assert m == mapped
+
+        # Change the direction of an edge in one graph
+        G1.remove_edge(3, 7)
+        G1.add_edge(7, 3)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
+        assert m is None
+
+        # Undo
+        G1.remove_edge(7, 3)
+        G1.add_edge(3, 7)
+
+        # Change label of one node
+        temp = G1.nodes[7]["label"]
+        G1.nodes[7]["label"] = "some color"
+        m = vf2pp_mapping(G1, G2, node_labels="label")
+        assert m is None
+
+        # Undo
+        G1.nodes[7]["label"] = temp
+        m = vf2pp_mapping(G1, G2, node_labels="label")
+        assert m == mapped
+
+        # Connect two far nodes, with different direction for each graph
+        G1.add_edge(1, 3)
+        G2.add_edge(mapped[3], mapped[1])
+        m = vf2pp_mapping(G1, G2, node_labels="label")
+        assert m is None
+
+    def test_same_degree_sequence_no_labels(self):
+        G1 = nx.DiGraph([(1, 2), (1, 3), (3, 2), (4, 5)])
+        G2 = nx.DiGraph([(2, 1), (2, 3), (4, 3), (5, 4)])
+
+        # Two different, non-isomorphic graphs with same degree sequences
+        m = vf2pp_mapping(G1, G2, node_labels=None)
+        assert m is None
+
+        # Delete edge and add edge with different direction in each graph
+        G2.remove_edge(2, 3)
+        G2.add_edge(3, 5)
+        m = vf2pp_mapping(G1, G2, node_labels=None)
+        assert m is None
+
+        # Fix wrong direction
+        G2.remove_edge(3, 5)
+        G2.add_edge(5, 3)
+        m = vf2pp_mapping(G1, G2, node_labels=None)
+        assert m
+
+    def test_same_degree_sequence_with_labels(self):
+        G1 = nx.DiGraph([(1, 2), (1, 3), (3, 2), (4, 5)])
+        G2 = nx.DiGraph([(2, 1), (2, 3), (4, 3), (5, 4)])
+
+        mapped = {1: 5, 3: 4, 2: 3, 4: 2, 5: 1}
+
+        nx.set_node_attributes(
+            G1, dict(zip(G1, itertools.cycle(utils.labels_different))), "label"
+        )
+        nx.set_node_attributes(
+            G2,
+            dict(zip([mapped[n] for n in G1], itertools.cycle(utils.labels_different))),
+            "label",
+        )
+
+        # Two different, non-isomorphic graphs with same degree sequences
+        m = vf2pp_mapping(G1, G2, node_labels="label")
+        assert m is None
+
+        # Remove edge and make them isomorphic
+        G2.remove_edge(2, 3)
+        G2.add_edge(5, 3)
+        m = vf2pp_mapping(G1, G2, node_labels="label")
+        assert m == mapped

@@ -99,11 +99,11 @@ def _cut_PT(u, v, graph_params, state_params):
         T1,
         T1_in,
         T1_tilde,
-        T1_tilde_in,
+        _,
         T2,
         T2_in,
         T2_tilde,
-        T2_tilde_in,
+        _,
     ) = state_params
 
     u_labels_predecessors, v_labels_predecessors = {}, {}
@@ -118,7 +118,7 @@ def _cut_PT(u, v, graph_params, state_params):
         if set(u_labels_predecessors.keys()) != set(v_labels_predecessors.keys()):
             return True
 
-    u_labels_neighbors = nx.utils.groups(
+    u_labels_successors = nx.utils.groups(
         {n1: G1_labels[n1] for n1 in nx.all_neighbors(G1, u)}
     )
     v_labels_neighbors = nx.utils.groups(
@@ -126,10 +126,10 @@ def _cut_PT(u, v, graph_params, state_params):
     )
 
     # if the neighbors of u, do not have the same labels as those of v, NOT feasible.
-    if set(u_labels_neighbors.keys()) != set(v_labels_neighbors.keys()):
+    if set(u_labels_successors.keys()) != set(v_labels_neighbors.keys()):
         return True
 
-    for label, G1_nbh in u_labels_neighbors.items():
+    for label, G1_nbh in u_labels_successors.items():
         G2_nbh = v_labels_neighbors[label]
 
         if G1.is_multigraph():
@@ -142,9 +142,13 @@ def _cut_PT(u, v, graph_params, state_params):
             ):
                 return True
 
-        if len(T1.intersection(G1_nbh)) != len(T2.intersection(G2_nbh)) or len(
-            T1_tilde.intersection(G1_nbh)
-        ) != len(T2_tilde.intersection(G2_nbh)):
+        if len(T1.intersection(G1_nbh)) != len(T2.intersection(G2_nbh)):
+            return True
+        if len(T1_tilde.intersection(G1_nbh)) != len(T2_tilde.intersection(G2_nbh)):
+            return True
+        if G1.is_directed() and len(T1_in.intersection(G1_nbh)) != len(
+            T2_in.intersection(G2_nbh)
+        ):
             return True
 
     if not G1.is_directed():
@@ -163,9 +167,11 @@ def _cut_PT(u, v, graph_params, state_params):
             ):
                 return True
 
-        if len(T1.intersection(G1_pred)) != len(T2.intersection(G2_pred)) or len(
-            T1_tilde.intersection(G1_pred)
-        ) != len(T2_tilde.intersection(G2_pred)):
+        if len(T1.intersection(G1_pred)) != len(T2.intersection(G2_pred)):
+            return True
+        if len(T1_tilde.intersection(G1_pred)) != len(T2_tilde.intersection(G2_pred)):
+            return True
+        if len(T1_in.intersection(G1_pred)) != len(T2_in.intersection(G2_pred)):
             return True
 
     return False
@@ -211,14 +217,14 @@ def _consistent_PT(u, v, graph_params, state_params):
     G1, G2 = graph_params.G1, graph_params.G2
     mapping, reverse_mapping = state_params.mapping, state_params.reverse_mapping
 
-    for neighbor in nx.all_neighbors(G1, u):
+    for neighbor in G1[u]:
         if neighbor in mapping:
             if G1.number_of_edges(u, neighbor) != G2.number_of_edges(
                 v, mapping[neighbor]
             ):
                 return False
 
-    for neighbor in nx.all_neighbors(G2, v):
+    for neighbor in G2[v]:
         if neighbor in reverse_mapping:
             if G1.number_of_edges(u, reverse_mapping[neighbor]) != G2.number_of_edges(
                 v, neighbor
