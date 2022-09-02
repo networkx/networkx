@@ -118,19 +118,15 @@ def _cut_PT(u, v, graph_params, state_params):
         if set(u_labels_predecessors.keys()) != set(v_labels_predecessors.keys()):
             return True
 
-    u_labels_successors = nx.utils.groups(
-        {n1: G1_labels[n1] for n1 in nx.all_neighbors(G1, u)}
-    )
-    v_labels_neighbors = nx.utils.groups(
-        {n2: G2_labels[n2] for n2 in nx.all_neighbors(G2, v)}
-    )
+    u_labels_successors = nx.utils.groups({n1: G1_labels[n1] for n1 in G1[u]})
+    v_labels_successors = nx.utils.groups({n2: G2_labels[n2] for n2 in G2[v]})
 
     # if the neighbors of u, do not have the same labels as those of v, NOT feasible.
-    if set(u_labels_successors.keys()) != set(v_labels_neighbors.keys()):
+    if set(u_labels_successors.keys()) != set(v_labels_successors.keys()):
         return True
 
     for label, G1_nbh in u_labels_successors.items():
-        G2_nbh = v_labels_neighbors[label]
+        G2_nbh = v_labels_successors[label]
 
         if G1.is_multigraph():
             # Check for every neighbor in the neighborhood, if u-nbr1 has same edges as v-nbr2
