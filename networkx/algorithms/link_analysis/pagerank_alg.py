@@ -3,7 +3,7 @@ from warnings import warn
 
 import networkx as nx
 
-__all__ = ["pagerank", "pagerank_numpy", "pagerank_scipy", "google_matrix"]
+__all__ = ["pagerank", "google_matrix"]
 
 
 def pagerank(
@@ -86,7 +86,7 @@ def pagerank(
 
     See Also
     --------
-    pagerank_numpy, pagerank_scipy, google_matrix
+    google_matrix
 
     Raises
     ------
@@ -105,7 +105,7 @@ def pagerank(
        http://dbpubs.stanford.edu:8090/pub/showDoc.Fulltext?lang=en&doc=1999-66&format=pdf
 
     """
-    return pagerank_scipy(
+    return _pagerank_scipy(
         G, alpha, personalization, max_iter, tol, nstart, weight, dangling
     )
 
@@ -134,21 +134,21 @@ def _pagerank_python(
         x = dict.fromkeys(W, 1.0 / N)
     else:
         # Normalized nstart vector
-        s = float(sum(nstart.values()))
+        s = sum(nstart.values())
         x = {k: v / s for k, v in nstart.items()}
 
     if personalization is None:
         # Assign uniform personalization vector if not given
         p = dict.fromkeys(W, 1.0 / N)
     else:
-        s = float(sum(personalization.values()))
+        s = sum(personalization.values())
         p = {k: v / s for k, v in personalization.items()}
 
     if dangling is None:
         # Use personalization vector if dangling vector not specified
         dangling_weights = p
     else:
-        s = float(sum(dangling.values()))
+        s = sum(dangling.values())
         dangling_weights = {k: v / s for k, v in dangling.items()}
     dangling_nodes = [n for n in W if W.out_degree(n, weight=weight) == 0.0]
 
@@ -209,12 +209,12 @@ def google_matrix(
 
     Returns
     -------
-    A : NumPy matrix
+    A : 2D NumPy ndarray
        Google matrix of the graph
 
     Notes
     -----
-    The matrix returned represents the transition matrix that describes the
+    The array returned represents the transition matrix that describes the
     Markov chain used in PageRank. For PageRank to converge to a unique
     solution (i.e., a unique stationary distribution in a Markov chain), the
     transition matrix must be irreducible. In other words, it must be that
@@ -227,19 +227,9 @@ def google_matrix(
 
     See Also
     --------
-    pagerank, pagerank_numpy, pagerank_scipy
+    pagerank
     """
-    # TODO: Remove this warning in version 3.0
-    import warnings
-
     import numpy as np
-
-    warnings.warn(
-        "google_matrix will return an np.ndarray instead of a np.matrix in\n"
-        "NetworkX version 3.0.",
-        FutureWarning,
-        stacklevel=2,
-    )
 
     if nodelist is None:
         nodelist = list(G)
@@ -247,8 +237,7 @@ def google_matrix(
     A = nx.to_numpy_array(G, nodelist=nodelist, weight=weight)
     N = len(G)
     if N == 0:
-        # TODO: Remove np.asmatrix wrapper in version 3.0
-        return np.asmatrix(A)
+        return A
 
     # Personalization vector
     if personalization is None:
@@ -273,11 +262,12 @@ def google_matrix(
 
     A /= A.sum(axis=1)[:, np.newaxis]  # Normalize rows to sum to 1
 
-    # TODO: Remove np.asmatrix wrapper in version 3.0
-    return np.asmatrix(alpha * A + (1 - alpha) * p)
+    return alpha * A + (1 - alpha) * p
 
 
-def pagerank_numpy(G, alpha=0.85, personalization=None, weight="weight", dangling=None):
+def _pagerank_numpy(
+    G, alpha=0.85, personalization=None, weight="weight", dangling=None
+):
     """Returns the PageRank of the nodes in the graph.
 
     PageRank computes a ranking of the nodes in the graph G based on
@@ -319,8 +309,9 @@ def pagerank_numpy(G, alpha=0.85, personalization=None, weight="weight", danglin
 
     Examples
     --------
+    >>> from networkx.algorithms.link_analysis.pagerank_alg import _pagerank_numpy
     >>> G = nx.DiGraph(nx.path_graph(4))
-    >>> pr = nx.pagerank_numpy(G, alpha=0.9)
+    >>> pr = _pagerank_numpy(G, alpha=0.9)
 
     Notes
     -----
@@ -334,7 +325,7 @@ def pagerank_numpy(G, alpha=0.85, personalization=None, weight="weight", danglin
 
     See Also
     --------
-    pagerank, pagerank_scipy, google_matrix
+    pagerank, google_matrix
 
     References
     ----------
@@ -345,8 +336,6 @@ def pagerank_numpy(G, alpha=0.85, personalization=None, weight="weight", danglin
        The PageRank citation ranking: Bringing order to the Web. 1999
        http://dbpubs.stanford.edu:8090/pub/showDoc.Fulltext?lang=en&doc=1999-66&format=pdf
     """
-    msg = "networkx.pagerank_numpy is deprecated and will be removed in NetworkX 3.0, use networkx.pagerank instead."
-    warn(msg, DeprecationWarning, stacklevel=2)
     import numpy as np
 
     if len(G) == 0:
@@ -359,11 +348,11 @@ def pagerank_numpy(G, alpha=0.85, personalization=None, weight="weight", danglin
     ind = np.argmax(eigenvalues)
     # eigenvector of largest eigenvalue is at ind, normalized
     largest = np.array(eigenvectors[:, ind]).flatten().real
-    norm = float(largest.sum())
+    norm = largest.sum()
     return dict(zip(G, map(float, largest / norm)))
 
 
-def pagerank_scipy(
+def _pagerank_scipy(
     G,
     alpha=0.85,
     personalization=None,
@@ -423,8 +412,9 @@ def pagerank_scipy(
 
     Examples
     --------
+    >>> from networkx.algorithms.link_analysis.pagerank_alg import _pagerank_scipy
     >>> G = nx.DiGraph(nx.path_graph(4))
-    >>> pr = nx.pagerank_scipy(G, alpha=0.9)
+    >>> pr = _pagerank_scipy(G, alpha=0.9)
 
     Notes
     -----
@@ -437,7 +427,7 @@ def pagerank_scipy(
 
     See Also
     --------
-    pagerank, pagerank_numpy, google_matrix
+    pagerank
 
     Raises
     ------
@@ -455,8 +445,6 @@ def pagerank_scipy(
        The PageRank citation ranking: Bringing order to the Web. 1999
        http://dbpubs.stanford.edu:8090/pub/showDoc.Fulltext?lang=en&doc=1999-66&format=pdf
     """
-    msg = "networkx.pagerank_scipy is deprecated and will be removed in NetworkX 3.0, use networkx.pagerank instead."
-    warn(msg, DeprecationWarning, stacklevel=2)
     import numpy as np
     import scipy as sp
     import scipy.sparse  # call as sp.sparse

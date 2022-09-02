@@ -4,6 +4,7 @@ Min-heaps.
 
 from heapq import heappop, heappush
 from itertools import count
+
 import networkx as nx
 
 __all__ = ["MinHeap", "PairingHeap", "BinaryHeap"]

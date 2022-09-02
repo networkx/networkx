@@ -3,8 +3,7 @@ Algorithm to find a maximal (not maximum) independent set.
 
 """
 import networkx as nx
-from networkx.utils import not_implemented_for
-from networkx.utils import py_random_state
+from networkx.utils import not_implemented_for, py_random_state
 
 __all__ = ["maximal_independent_set"]
 

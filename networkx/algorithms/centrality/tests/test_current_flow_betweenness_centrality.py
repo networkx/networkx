@@ -1,9 +1,8 @@
 import pytest
 
 import networkx as nx
-from networkx import edge_current_flow_betweenness_centrality as edge_current_flow
 from networkx import approximate_current_flow_betweenness_centrality as approximate_cfbc
-
+from networkx import edge_current_flow_betweenness_centrality as edge_current_flow
 
 np = pytest.importorskip("numpy")
 pytest.importorskip("scipy")

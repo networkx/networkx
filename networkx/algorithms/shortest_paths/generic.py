@@ -542,9 +542,7 @@ def _build_paths_from_predecessors(sources, target, pred):
     bellman_ford_path
     """
     if target not in pred:
-        raise nx.NetworkXNoPath(
-            f"Target {target} cannot be reached" f"from given sources"
-        )
+        raise nx.NetworkXNoPath(f"Target {target} cannot be reached from given sources")
 
     seen = {target}
     stack = [[target, 0]]

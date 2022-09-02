@@ -1,10 +1,11 @@
-from io import BytesIO
 import tempfile
+from io import BytesIO
+
 import pytest
 
 import networkx as nx
 import networkx.readwrite.graph6 as g6
-from networkx.utils import nodes_equal, edges_equal
+from networkx.utils import edges_equal, nodes_equal
 
 
 class TestGraph6Utils:

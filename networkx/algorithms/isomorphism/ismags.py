@@ -109,9 +109,9 @@ References
 
 __all__ = ["ISMAGS"]
 
-from collections import defaultdict, Counter
-from functools import reduce, wraps
 import itertools
+from collections import Counter, defaultdict
+from functools import reduce, wraps
 
 
 def are_all_equal(iterable):
@@ -579,17 +579,34 @@ class ISMAGS:
     def analyze_symmetry(self, graph, node_partitions, edge_colors):
         """
         Find a minimal set of permutations and corresponding co-sets that
-        describe the symmetry of :attr:`subgraph`.
+        describe the symmetry of `graph`, given the node and edge equalities
+        given by `node_partitions` and `edge_colors`, respectively.
+
+        Parameters
+        ----------
+        graph : networkx.Graph
+            The graph whose symmetry should be analyzed.
+        node_partitions : list of sets
+            A list of sets containining node keys. Node keys in the same set
+            are considered equivalent. Every node key in `graph` should be in
+            exactly one of the sets. If all nodes are equivalent, this should
+            be ``[set(graph.nodes)]``.
+        edge_colors : dict mapping edges to their colors
+            A dict mapping every edge in `graph` to its corresponding color.
+            Edges with the same color are considered equivalent. If all edges
+            are equivalent, this should be ``{e: 0 for e in graph.edges}``.
+
 
         Returns
         -------
         set[frozenset]
-            The found permutations. This is a set of frozenset of pairs of node
+            The found permutations. This is a set of frozensets of pairs of node
             keys which can be exchanged without changing :attr:`subgraph`.
         dict[collections.abc.Hashable, set[collections.abc.Hashable]]
-            The found co-sets. The co-sets is a dictionary of {node key:
-            set of node keys}. Every key-value pair describes which `values`
-            can be interchanged without changing nodes less than `key`.
+            The found co-sets. The co-sets is a dictionary of
+            ``{node key: set of node keys}``.
+            Every key-value pair describes which ``values`` can be interchanged
+            without changing nodes less than ``key``.
         """
         if self._symmetry_cache is not None:
             key = hash(

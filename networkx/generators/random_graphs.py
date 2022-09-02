@@ -1210,12 +1210,12 @@ def random_powerlaw_tree_sequence(n, gamma=3, seed=None, tries=100):
     # get trial sequence
     z = nx.utils.powerlaw_sequence(n, exponent=gamma, seed=seed)
     # round to integer values in the range [0,n]
-    zseq = [min(n, max(int(round(s)), 0)) for s in z]
+    zseq = [min(n, max(round(s), 0)) for s in z]
 
     # another sequence to swap values from
     z = nx.utils.powerlaw_sequence(tries, exponent=gamma, seed=seed)
     # round to integer values in the range [0,n]
-    swap = [min(n, max(int(round(s)), 0)) for s in z]
+    swap = [min(n, max(round(s), 0)) for s in z]
 
     for deg in swap:
         # If this degree sequence can be the degree sequence of a tree, return
@@ -1311,6 +1311,6 @@ def random_kernel_graph(n, kernel_integral, kernel_root=None, seed=None):
         if kernel_integral(i / n, j / n, 1) <= r:
             i, j = i + 1, i + 1
         else:
-            j = int(math.ceil(n * kernel_root(i / n, j / n, r)))
+            j = math.ceil(n * kernel_root(i / n, j / n, r))
             graph.add_edge(i - 1, j - 1)
     return graph

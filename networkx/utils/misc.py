@@ -11,36 +11,22 @@ can be accessed, for example, as
 1
 """
 
-from collections import defaultdict, deque
-from collections.abc import Iterable, Iterator, Sized
-import warnings
 import sys
 import uuid
-from itertools import tee, chain
+import warnings
+from collections import defaultdict, deque
+from collections.abc import Iterable, Iterator, Sized
+from itertools import chain, tee
 
 import networkx as nx
 
-np = nx.lazy_import("numpy")
-
 __all__ = [
-    "is_string_like",
-    "iterable",
-    "empty_generator",
     "flatten",
     "make_list_of_ints",
-    "is_list_of_ints",
-    "make_str",
-    "generate_unique_node",
-    "default_opener",
     "dict_to_numpy_array",
-    "dict_to_numpy_array1",
-    "dict_to_numpy_array2",
-    "is_iterator",
     "arbitrary_element",
-    "consume",
     "pairwise",
     "groups",
-    "to_tuple",
     "create_random_state",
     "create_py_random_state",
     "PythonRandomInterface",
@@ -53,51 +39,6 @@ __all__ = [
 # some cookbook stuff
 # used in deciding whether something is a bunch of nodes, edges, etc.
 # see G.add_nodes and others in Graph Class in networkx/base.py
-
-
-def is_string_like(obj):  # from John Hunter, types-free version
-    """Check if obj is string.
-
-    .. deprecated:: 2.6
-        This is deprecated and will be removed in NetworkX v3.0.
-    """
-    msg = (
-        "is_string_like is deprecated and will be removed in 3.0."
-        "Use isinstance(obj, str) instead."
-    )
-    warnings.warn(msg, DeprecationWarning)
-    return isinstance(obj, str)
-
-
-def iterable(obj):
-    """Return True if obj is iterable with a well-defined len().
-
-    .. deprecated:: 2.6
-        This is deprecated and will be removed in NetworkX v3.0.
-    """
-    msg = (
-        "iterable is deprecated and will be removed in 3.0."
-        "Use isinstance(obj, (collections.abc.Iterable, collections.abc.Sized)) instead."
-    )
-    warnings.warn(msg, DeprecationWarning)
-    if hasattr(obj, "__iter__"):
-        return True
-    try:
-        len(obj)
-    except:
-        return False
-    return True
-
-
-def empty_generator():
-    """Return a generator with no members.
-
-    .. deprecated:: 2.6
-    """
-    warnings.warn(
-        "empty_generator is deprecated and will be removed in v3.0.", DeprecationWarning
-    )
-    return (i for i in ())
 
 
 def flatten(obj, result=None):
@@ -150,79 +91,6 @@ def make_list_of_ints(sequence):
     return sequence
 
 
-def is_list_of_ints(intlist):
-    """Return True if list is a list of ints.
-
-    .. deprecated:: 2.6
-        This is deprecated and will be removed in NetworkX v3.0.
-    """
-    msg = (
-        "is_list_of_ints is deprecated and will be removed in 3.0."
-        "See also: ``networkx.utils.make_list_of_ints.``"
-    )
-    warnings.warn(msg, DeprecationWarning, stacklevel=2)
-    if not isinstance(intlist, list):
-        return False
-    for i in intlist:
-        if not isinstance(i, int):
-            return False
-    return True
-
-
-def make_str(x):
-    """Returns the string representation of t.
-
-    .. deprecated:: 2.6
-        This is deprecated and will be removed in NetworkX v3.0.
-    """
-    msg = "make_str is deprecated and will be removed in 3.0. Use str instead."
-    warnings.warn(msg, DeprecationWarning)
-    return str(x)
-
-
-def generate_unique_node():
-    """Generate a unique node label.
-
-    .. deprecated:: 2.6
-        This is deprecated and will be removed in NetworkX v3.0.
-    """
-    msg = "generate_unique_node is deprecated and will be removed in 3.0. Use uuid.uuid4 instead."
-    warnings.warn(msg, DeprecationWarning)
-    return str(uuid.uuid4())
-
-
-def default_opener(filename):
-    """Opens `filename` using system's default program.
-
-    .. deprecated:: 2.6
-       default_opener is deprecated and will be removed in version 3.0.
-       Consider an image processing library to open images, such as Pillow::
-
-           from PIL import Image
-           Image.open(filename).show()
-
-    Parameters
-    ----------
-    filename : str
-        The path of the file to be opened.
-
-    """
-    warnings.warn(
-        "default_opener is deprecated and will be removed in version 3.0. ",
-        DeprecationWarning,
-    )
-    from subprocess import call
-
-    cmds = {
-        "darwin": ["open"],
-        "linux": ["xdg-open"],
-        "linux2": ["xdg-open"],
-        "win32": ["cmd.exe", "/C", "start", ""],
-    }
-    cmd = cmds[sys.platform] + [filename]
-    call(cmd)
-
-
 def dict_to_numpy_array(d, mapping=None):
     """Convert a dictionary of dictionaries to a numpy array
     with optional mapping."""
@@ -234,28 +102,13 @@ def dict_to_numpy_array(d, mapping=None):
         return _dict_to_numpy_array1(d, mapping)
 
 
-def dict_to_numpy_array2(d, mapping=None):
-    """Convert a dict of dicts to a 2d numpy array with optional mapping.
-
-    .. deprecated:: 2.8
-
-       dict_to_numpy_array2 is deprecated and will be removed in networkx 3.0.
-       Use `dict_to_numpy_array` instead.
-    """
-    msg = (
-        "dict_to_numpy_array2 is deprecated and will be removed in networkx 3.0.\n"
-        "Use dict_to_numpy_array instead."
-    )
-    warnings.warn(msg, DeprecationWarning, stacklevel=2)
-
-    return _dict_to_numpy_array2(d, mapping)
-
-
 def _dict_to_numpy_array2(d, mapping=None):
     """Convert a dictionary of dictionaries to a 2d numpy array
     with optional mapping.
 
     """
+    import numpy as np
+
     if mapping is None:
         s = set(d.keys())
         for k, v in d.items():
@@ -272,25 +125,10 @@ def _dict_to_numpy_array2(d, mapping=None):
     return a
 
 
-def dict_to_numpy_array1(d, mapping=None):
-    """Convert a dict of numbers to a 1d numpy array with optional mapping.
-
-    .. deprecated:: 2.8
-
-       dict_to_numpy_array1 is deprecated and will be removed in networkx 3.0.
-       Use dict_to_numpy_array instead.
-    """
-    msg = (
-        "dict_to_numpy_array1 is deprecated and will be removed in networkx 3.0.\n"
-        "Use dict_to_numpy_array instead."
-    )
-    warnings.warn(msg, DeprecationWarning, stacklevel=2)
-
-    return _dict_to_numpy_array1(d, mapping)
-
-
 def _dict_to_numpy_array1(d, mapping=None):
     """Convert a dictionary of numbers to a 1d numpy array with optional mapping."""
+    import numpy as np
+
     if mapping is None:
         s = set(d.keys())
         mapping = dict(zip(s, range(len(s))))
@@ -300,21 +138,6 @@ def _dict_to_numpy_array1(d, mapping=None):
         i = mapping[k1]
         a[i] = d[k1]
     return a
-
-
-def is_iterator(obj):
-    """Returns True if and only if the given object is an iterator object.
-
-    .. deprecated:: 2.6.0
-        Deprecated in favor of ``isinstance(obj, collections.abc.Iterator)``
-    """
-    msg = (
-        "is_iterator is deprecated and will be removed in version 3.0. "
-        "Use ``isinstance(obj, collections.abc.Iterator)`` instead."
-    )
-    warnings.warn(msg, DeprecationWarning, stacklevel=2)
-    has_next_attr = hasattr(obj, "__next__") or hasattr(obj, "next")
-    return iter(obj) is obj and has_next_attr
 
 
 def arbitrary_element(iterable):
@@ -387,22 +210,6 @@ def arbitrary_element(iterable):
 
 
 # Recipe from the itertools documentation.
-def consume(iterator):
-    """Consume the iterator entirely.
-
-    .. deprecated:: 2.6
-        This is deprecated and will be removed in NetworkX v3.0.
-    """
-    # Feed the entire iterator into a zero-length deque.
-    msg = (
-        "consume is deprecated and will be removed in version 3.0. "
-        "Use ``collections.deque(iterator, maxlen=0)`` instead."
-    )
-    warnings.warn(msg, DeprecationWarning, stacklevel=2)
-    deque(iterator, maxlen=0)
-
-
-# Recipe from the itertools documentation.
 def pairwise(iterable, cyclic=False):
     "s -> (s0, s1), (s1, s2), (s2, s3), ..."
     a, b = tee(iterable)
@@ -434,31 +241,6 @@ def groups(many_to_one):
     return dict(one_to_many)
 
 
-def to_tuple(x):
-    """Converts lists to tuples.
-
-    .. deprecated:: 2.8
-
-       to_tuple is deprecated and will be removed in NetworkX 3.0.
-
-    Examples
-    --------
-    >>> from networkx.utils import to_tuple
-    >>> a_list = [1, 2, [1, 4]]
-    >>> to_tuple(a_list)
-    (1, 2, (1, 4))
-    """
-    warnings.warn(
-        "to_tuple is deprecated and will be removed in NetworkX 3.0.",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-
-    if not isinstance(x, (tuple, list)):
-        return x
-    return tuple(map(to_tuple, x))
-
-
 def create_random_state(random_state=None):
     """Returns a numpy.random.RandomState or numpy.random.Generator instance
     depending on input.
@@ -472,6 +254,8 @@ def create_random_state(random_state=None):
         if None or numpy.random, return the global random number generator used
         by numpy.random.
     """
+    import numpy as np
+
     if random_state is None or random_state is np.random:
         return np.random.mtrand._rand
     if isinstance(random_state, np.random.RandomState):
@@ -507,6 +291,8 @@ class PythonRandomInterface:
         return a + (b - a) * self._rng.random()
 
     def randrange(self, a, b=None):
+        import numpy as np
+
         if isinstance(self._rng, np.random.Generator):
             return self._rng.integers(a, b)
         return self._rng.randint(a, b)
@@ -514,6 +300,8 @@ class PythonRandomInterface:
     # NOTE: the numpy implementations of `choice` don't support strings, so
     # this cannot be replaced with self._rng.choice
     def choice(self, seq):
+        import numpy as np
+
         if isinstance(self._rng, np.random.Generator):
             idx = self._rng.integers(0, len(seq))
         else:
@@ -533,6 +321,8 @@ class PythonRandomInterface:
         return self._rng.choice(list(seq), size=(k,), replace=False)
 
     def randint(self, a, b):
+        import numpy as np
+
         if isinstance(self._rng, np.random.Generator):
             return self._rng.integers(a, b + 1)
         return self._rng.randint(a, b + 1)

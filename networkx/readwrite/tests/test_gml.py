@@ -1,14 +1,16 @@
-from ast import literal_eval
 import codecs
-from contextlib import contextmanager
 import io
 import math
-import pytest
-import networkx as nx
-from networkx.readwrite.gml import literal_stringizer, literal_destringizer
 import os
 import tempfile
+from ast import literal_eval
+from contextlib import contextmanager
 from textwrap import dedent
+
+import pytest
+
+import networkx as nx
+from networkx.readwrite.gml import literal_destringizer, literal_stringizer
 
 
 class TestGraph:
@@ -213,7 +215,7 @@ graph
     def test_tuplelabels(self):
         # https://github.com/networkx/networkx/pull/1048
         # Writing tuple labels to GML failed.
-        G = nx.OrderedGraph()
+        G = nx.Graph()
         G.add_edge((0, 1), (1, 0))
         data = "\n".join(nx.generate_gml(G, stringizer=literal_stringizer))
         answer = """graph [

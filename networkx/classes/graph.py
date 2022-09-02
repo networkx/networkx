@@ -8,14 +8,59 @@ Self-loops are allowed but multiple edges are not (see MultiGraph).
 For directed graphs see DiGraph and MultiDiGraph.
 """
 from copy import deepcopy
+from functools import cached_property
 
 import networkx as nx
-from networkx.classes.coreviews import AdjacencyView
-from networkx.classes.reportviews import NodeView, EdgeView, DegreeView
-from networkx.exception import NetworkXError
 import networkx.convert as convert
+from networkx.classes.coreviews import AdjacencyView
+from networkx.classes.reportviews import DegreeView, EdgeView, NodeView
+from networkx.exception import NetworkXError
 
 __all__ = ["Graph"]
+
+
+class _CachedPropertyResetterAdj:
+    """Data Descriptor class for _adj that resets ``adj`` cached_property when needed
+
+    This assumes that the ``cached_property`` ``G.adj`` should be reset whenever
+    ``G._adj`` is set to a new value.
+
+    This object sits on a class and ensures that any instance of that
+    class clears its cached property "adj" whenever the underlying
+    instance attribute "_adj" is set to a new object. It only affects
+    the set process of the obj._adj attribute. All get/del operations
+    act as they normally would.
+
+    For info on Data Descriptors see: https://docs.python.org/3/howto/descriptor.html
+    """
+
+    def __set__(self, obj, value):
+        od = obj.__dict__
+        od["_adj"] = value
+        if "adj" in od:
+            del od["adj"]
+
+
+class _CachedPropertyResetterNode:
+    """Data Descriptor class for _node that resets ``nodes`` cached_property when needed
+
+    This assumes that the ``cached_property`` ``G.node`` should be reset whenever
+    ``G._node`` is set to a new value.
+
+    This object sits on a class and ensures that any instance of that
+    class clears its cached property "nodes" whenever the underlying
+    instance attribute "_node" is set to a new object. It only affects
+    the set process of the obj._adj attribute. All get/del operations
+    act as they normally would.
+
+    For info on Data Descriptors see: https://docs.python.org/3/howto/descriptor.html
+    """
+
+    def __set__(self, obj, value):
+        od = obj.__dict__
+        od["_node"] = value
+        if "nodes" in od:
+            del od["nodes"]
 
 
 class Graph:
@@ -50,7 +95,6 @@ class Graph:
     DiGraph
     MultiGraph
     MultiDiGraph
-    OrderedGraph
 
     Examples
     --------
@@ -257,11 +301,10 @@ class Graph:
     >>> G.add_edge(2, 2)
     >>> G[2][1] is G[2][2]
     True
-
-    Please see :mod:`~networkx.classes.ordered` for more examples of
-    creating graph subclasses by overwriting the base class `dict` with
-    a dictionary-like object.
     """
+
+    _adj = _CachedPropertyResetterAdj()
+    _node = _CachedPropertyResetterNode()
 
     node_dict_factory = dict
     node_attr_dict_factory = dict
@@ -319,13 +362,6 @@ class Graph:
         {'day': 'Friday'}
 
         """
-        self.graph_attr_dict_factory = self.graph_attr_dict_factory
-        self.node_dict_factory = self.node_dict_factory
-        self.node_attr_dict_factory = self.node_attr_dict_factory
-        self.adjlist_outer_dict_factory = self.adjlist_outer_dict_factory
-        self.adjlist_inner_dict_factory = self.adjlist_inner_dict_factory
-        self.edge_attr_dict_factory = self.edge_attr_dict_factory
-
         self.graph = self.graph_attr_dict_factory()  # dictionary for graph attributes
         self._node = self.node_dict_factory()  # empty node attribute dict
         self._adj = self.adjlist_outer_dict_factory()  # empty adjacency dict
@@ -335,7 +371,7 @@ class Graph:
         # load graph attributes (must be after convert)
         self.graph.update(attr)
 
-    @property
+    @cached_property
     def adj(self):
         """Graph adjacency object holding the neighbors of each node.
 
@@ -374,7 +410,8 @@ class Graph:
         Returns
         -------
         info : string
-            Graph information as provided by `nx.info`
+            Graph information including the graph name (if any), graph type, and the
+            number of nodes and edges.
 
         Examples
         --------
@@ -658,7 +695,7 @@ class Graph:
             except KeyError:
                 pass
 
-    @property
+    @cached_property
     def nodes(self):
         """A NodeView of the Graph as G.nodes or G.nodes().
 
@@ -749,12 +786,7 @@ class Graph:
             {0: 1, 1: 2, 2: 3}
 
         """
-        nodes = NodeView(self)
-        # Lazy View creation: overload the (class) property on the instance
-        # Then future G.nodes use the existing View
-        # setattr doesn't work because attribute already exists
-        self.__dict__["nodes"] = nodes
-        return nodes
+        return NodeView(self)
 
     def number_of_nodes(self):
         """Returns the number of nodes in the graph.
@@ -1254,7 +1286,7 @@ class Graph:
         except KeyError as err:
             raise NetworkXError(f"The node {n} is not in the graph.") from err
 
-    @property
+    @cached_property
     def edges(self):
         """An EdgeView of the Graph as G.edges or G.edges().
 
@@ -1377,7 +1409,7 @@ class Graph:
         """
         return iter(self._adj.items())
 
-    @property
+    @cached_property
     def degree(self):
         """A DegreeView for the Graph as G.degree or G.degree().
 
@@ -1400,12 +1432,10 @@ class Graph:
 
         Returns
         -------
-        If a single node is requested
-        deg : int
-            Degree of the node
-
-        OR if multiple nodes are requested
-        nd_view : A DegreeView object capable of iterating (node, degree) pairs
+        DegreeView or int
+            If multiple nodes are requested (the default), returns a `DegreeView`
+            mapping nodes to their degree.
+            If a single node is requested, returns the degree of the node as an integer.
 
         Examples
         --------

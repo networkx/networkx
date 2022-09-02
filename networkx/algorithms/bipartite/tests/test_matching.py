@@ -1,15 +1,16 @@
 """Unit tests for the :mod:`networkx.algorithms.bipartite.matching` module."""
 import itertools
 
-import networkx as nx
-
 import pytest
 
-from networkx.algorithms.bipartite.matching import eppstein_matching
-from networkx.algorithms.bipartite.matching import hopcroft_karp_matching
-from networkx.algorithms.bipartite.matching import maximum_matching
-from networkx.algorithms.bipartite.matching import minimum_weight_full_matching
-from networkx.algorithms.bipartite.matching import to_vertex_cover
+import networkx as nx
+from networkx.algorithms.bipartite.matching import (
+    eppstein_matching,
+    hopcroft_karp_matching,
+    maximum_matching,
+    minimum_weight_full_matching,
+    to_vertex_cover,
+)
 
 
 class TestMatching:

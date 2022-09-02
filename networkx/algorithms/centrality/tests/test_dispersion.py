@@ -56,7 +56,7 @@ class TestDispersion:
         disp_uv = nx.dispersion(G, "u", "h")
         assert len(disp) == len(G)
         assert len(disp_Gu) == len(G) - 1
-        assert type(disp_uv) is float
+        assert isinstance(disp_uv, float)
 
     def test_impossible_things(self):
         G = nx.karate_club_graph()

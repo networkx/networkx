@@ -19,8 +19,9 @@ Highlights
 This release is the result of over five weeks of work with 48 pull requests by
 18 contributors. This is the last release before NetworkX 3.0. For a preview of the
 upcoming 3.0 release, please see the draft of our
-`migration guide for people moving from 2.X to 3.0
-  <https://networkx.org/documentation/latest/release/migration_guide_from_2.x_to_3.0.html>`_.
+`migration guide <https://networkx.org/documentation/latest/release/migration_guide_from_2.x_to_3.0.html>`_
+for people moving from 2.X to 3.0.
+
 
 Improvements
 ------------

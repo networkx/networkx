@@ -15,8 +15,7 @@ For more information, see the Wikipedia article on small-world network [1]_.
 
 """
 import networkx as nx
-from networkx.utils import not_implemented_for
-from networkx.utils import py_random_state
+from networkx.utils import not_implemented_for, py_random_state
 
 __all__ = ["random_reference", "lattice_reference", "sigma", "omega"]
 
@@ -155,6 +154,7 @@ def lattice_reference(G, niter=5, D=None, connectivity=True, seed=None):
        Science 296.5569 (2002): 910-913.
     """
     import numpy as np
+
     from networkx.utils import cumulative_distribution, discrete_sequence
 
     local_conn = nx.connectivity.local_edge_connectivity

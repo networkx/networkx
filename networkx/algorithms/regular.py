@@ -21,6 +21,12 @@ def is_regular(G):
     bool
         Whether the given graph or digraph is regular.
 
+    Examples
+    --------
+    >>> G = nx.DiGraph([(1, 2), (2, 3), (3, 4), (4, 1)])
+    >>> nx.is_regular(G)
+    True
+
     """
     n1 = nx.utils.arbitrary_element(G)
     if not G.is_directed():
@@ -48,6 +54,12 @@ def is_k_regular(G, k):
     -------
     bool
         Whether the given graph is k-regular.
+
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (2, 3), (3, 4), (4, 1)])
+    >>> nx.is_k_regular(G, k=3)
+    False
 
     """
     return all(d == k for n, d in G.degree)
@@ -78,6 +90,13 @@ def k_factor(G, k, matching_weight="weight"):
     G2 : NetworkX graph
         A k-factor of G
 
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (2, 3), (3, 4), (4, 1)])
+    >>> G2 = nx.k_factor(G, k=1)
+    >>> G2.edges()
+    EdgeView([(1, 2), (3, 4)])
+
     References
     ----------
     .. [1] "An algorithm for computing simple k-factors.",
@@ -85,8 +104,7 @@ def k_factor(G, k, matching_weight="weight"):
        Information processing letters, 2009.
     """
 
-    from networkx.algorithms.matching import max_weight_matching
-    from networkx.algorithms.matching import is_perfect_matching
+    from networkx.algorithms.matching import is_perfect_matching, max_weight_matching
 
     class LargeKGadget:
         def __init__(self, k, degree, node, g):

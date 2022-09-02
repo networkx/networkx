@@ -9,15 +9,17 @@ import networkx as nx
 
 # Define the default maximum flow function to use in all flow based
 # connectivity algorithms.
-from networkx.algorithms.flow import boykov_kolmogorov
-from networkx.algorithms.flow import dinitz
-from networkx.algorithms.flow import edmonds_karp
-from networkx.algorithms.flow import shortest_augmenting_path
-from networkx.algorithms.flow import build_residual_network
+from networkx.algorithms.flow import (
+    boykov_kolmogorov,
+    build_residual_network,
+    dinitz,
+    edmonds_karp,
+    shortest_augmenting_path,
+)
 
 default_flow_func = edmonds_karp
 
-from .utils import build_auxiliary_node_connectivity, build_auxiliary_edge_connectivity
+from .utils import build_auxiliary_edge_connectivity, build_auxiliary_node_connectivity
 
 __all__ = [
     "average_node_connectivity",

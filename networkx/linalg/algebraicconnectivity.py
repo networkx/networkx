@@ -2,10 +2,13 @@
 Algebraic connectivity and Fiedler vectors of undirected graphs.
 """
 from functools import partial
+
 import networkx as nx
-from networkx.utils import not_implemented_for
-from networkx.utils import reverse_cuthill_mckee_ordering
-from networkx.utils import np_random_state
+from networkx.utils import (
+    not_implemented_for,
+    np_random_state,
+    reverse_cuthill_mckee_ordering,
+)
 
 __all__ = ["algebraic_connectivity", "fiedler_vector", "spectral_ordering"]
 
