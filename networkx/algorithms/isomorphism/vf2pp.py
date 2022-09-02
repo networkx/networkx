@@ -74,9 +74,21 @@ _GraphParameters = collections.namedtuple(
         "G2_nodes_of_degree",
     ],
 )
+
 _StateParameters = collections.namedtuple(
     "_StateParameters",
-    ["mapping", "reverse_mapping", "T1", "T1_out", "T2", "T2_out"],
+    [
+        "mapping",
+        "reverse_mapping",
+        "T1",
+        "T1_in",
+        "T1_tilde",
+        "T1_tilde_in",
+        "T2",
+        "T2_in",
+        "T2_tilde",
+        "T2_tilde_in",
+    ],
 )
 
 
@@ -147,8 +159,16 @@ def vf2pp_all_mappings(G1, G2, node_labels=None, default_label=None):
         return False
 
     # Check that both graphs have the same number of nodes and degree sequence
-    if not nx.faster_could_be_isomorphic(G1, G2):
-        return False
+    if G1.is_directed():
+        if sorted(d for n, d in G1.out_degree()) != sorted(
+            d for n, d in G2.out_degree()
+        ):
+            return False
+        if sorted(d for n, d in G1.in_degree()) != sorted(d for n, d in G2.in_degree()):
+            return False
+    else:
+        if not nx.faster_could_be_isomorphic(G1, G2):
+            return False
 
     # Initialize parameters and cache necessary information about degree and labels
     graph_params, state_params = _initialize_parameters(
@@ -259,6 +279,20 @@ def _initialize_parameters(G1, G2, node_labels, default_label):
     G1_labels = dict(G1.nodes(data=node_labels, default=default_label))
     G2_labels = dict(G2.nodes(data=node_labels, default=default_label))
 
+    if G1.is_directed():
+        G2_nodes_of_degree = nx.utils.groups(
+            {
+                node: (in_degree, out_degree)
+                for (node, in_degree), (_, out_degree) in zip(
+                    G2.in_degree(), G2.out_degree()
+                )
+            }
+        )
+    else:
+        G2_nodes_of_degree = nx.utils.groups(
+            {node: degree for node, degree in G2.degree()}
+        )
+
     graph_params = _GraphParameters(
         G1,
         G2,
@@ -266,11 +300,33 @@ def _initialize_parameters(G1, G2, node_labels, default_label):
         G2_labels,
         nx.utils.groups(G1_labels),
         nx.utils.groups(G2_labels),
-        nx.utils.groups({node: degree for node, degree in G2.degree()}),
+        G2_nodes_of_degree,
     )
+    # "T1", "T1_in", "T1_tilde", "T1_tilde_in", "T2", "T2_in", "T2_tilde", "T2_tilde_in"],
+
+    T1, T1_in = set(), set()
+    T2, T2_in = set(), set()
+    if G1.is_directed():
+        T1_tilde, T1_tilde_in = (
+            set(G1.nodes()),
+            set(),
+        )  # todo: do we need Ti_tilde_in? What nodes does it have?
+        T2_tilde, T2_tilde_in = set(G2.nodes()), set()
+    else:
+        T1_tilde, T1_tilde_in = set(G1.nodes()), set()
+        T2_tilde, T2_tilde_in = set(G2.nodes()), set()
 
     state_params = _StateParameters(
-        dict(), dict(), set(), set(G1.nodes()), set(), set(G2.nodes())
+        dict(),
+        dict(),
+        T1,
+        T1_in,
+        T1_tilde,
+        T1_tilde_in,
+        T2,
+        T2_in,
+        T2_tilde,
+        T2_tilde_in,
     )
 
     return graph_params, state_params

@@ -59,11 +59,13 @@ class TestCandidateSelection:
         m_rev = {self.mapped[9]: 9, self.mapped[1]: 1}
 
         T1 = {7, 8, 2, 4, 5}
-        T1_out = {0, 3, 6}
+        T1_tilde = {0, 3, 6}
         T2 = {"g", "h", "b", "d", "e"}
-        T2_out = {"x", "c", "f"}
+        T2_tilde = {"x", "c", "f"}
 
-        sparams = _StateParameters(m, m_rev, T1, T1_out, T2, T2_out)
+        sparams = _StateParameters(
+            m, m_rev, T1, None, T1_tilde, None, T2, None, T2_tilde, None
+        )
 
         u = 3
         candidates = _find_candidates(u, gparams, sparams)
@@ -77,11 +79,13 @@ class TestCandidateSelection:
         m_rev.pop(self.mapped[9])
 
         T1 = {2, 4, 5, 6}
-        T1_out = {0, 3, 7, 8, 9}
+        T1_tilde = {0, 3, 7, 8, 9}
         T2 = {"g", "h", "b", "d", "e", "f"}
-        T2_out = {"x", "c", "g", "h", "i"}
+        T2_tilde = {"x", "c", "g", "h", "i"}
 
-        sparams = _StateParameters(m, m_rev, T1, T1_out, T2, T2_out)
+        sparams = _StateParameters(
+            m, m_rev, T1, None, T1_tilde, None, T2, None, T2_tilde, None
+        )
 
         u = 7
         candidates = _find_candidates(u, gparams, sparams)
@@ -123,11 +127,13 @@ class TestCandidateSelection:
         m_rev = {self.mapped[9]: 9, self.mapped[1]: 1}
 
         T1 = {7, 8, 2, 4, 5, 6}
-        T1_out = {0, 3}
+        T1_tilde = {0, 3}
         T2 = {"g", "h", "b", "d", "e", "f"}
-        T2_out = {"x", "c"}
+        T2_tilde = {"x", "c"}
 
-        sparams = _StateParameters(m, m_rev, T1, T1_out, T2, T2_out)
+        sparams = _StateParameters(
+            m, m_rev, T1, None, T1_tilde, None, T2, None, T2_tilde, None
+        )
 
         u = 3
         candidates = _find_candidates(u, gparams, sparams)
@@ -158,11 +164,13 @@ class TestCandidateSelection:
         m_rev.pop(self.mapped[9])
 
         T1 = {2, 4, 5, 6}
-        T1_out = {0, 3, 7, 8, 9}
+        T1_tilde = {0, 3, 7, 8, 9}
         T2 = {"b", "d", "e", "f"}
-        T2_out = {"x", "c", "g", "h", "i"}
+        T2_tilde = {"x", "c", "g", "h", "i"}
 
-        sparams = _StateParameters(m, m_rev, T1, T1_out, T2, T2_out)
+        sparams = _StateParameters(
+            m, m_rev, T1, None, T1_tilde, None, T2, None, T2_tilde, None
+        )
 
         u = 7
         candidates = _find_candidates(u, gparams, sparams)
@@ -203,11 +211,13 @@ class TestCandidateSelection:
         m_rev = {self.mapped[9]: 9, self.mapped[1]: 1}
 
         T1 = {7, 8, 2, 4, 5, 6}
-        T1_out = {0, 3}
+        T1_tilde = {0, 3}
         T2 = {"g", "h", "b", "d", "e", "f"}
-        T2_out = {"x", "c"}
+        T2_tilde = {"x", "c"}
 
-        sparams = _StateParameters(m, m_rev, T1, T1_out, T2, T2_out)
+        sparams = _StateParameters(
+            m, m_rev, T1, None, T1_tilde, None, T2, None, T2_tilde, None
+        )
 
         u = 5
         candidates = _find_candidates(u, gparams, sparams)
@@ -248,11 +258,13 @@ class TestCandidateSelection:
         m_rev = {self.mapped[9]: 9, self.mapped[1]: 1}
 
         T1 = {7, 8, 2, 4, 5, 6}
-        T1_out = {0, 3}
+        T1_tilde = {0, 3}
         T2 = {"g", "h", "b", "d", "e", "f"}
-        T2_out = {"x", "c"}
+        T2_tilde = {"x", "c"}
 
-        sparams = _StateParameters(m, m_rev, T1, T1_out, T2, T2_out)
+        sparams = _StateParameters(
+            m, m_rev, T1, None, T1_tilde, None, T2, None, T2_tilde, None
+        )
 
         u = 5
         candidates = _find_candidates(u, gparams, sparams)

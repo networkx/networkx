@@ -6,7 +6,7 @@ from networkx.algorithms.isomorphism.vf2pp_helpers.state import (
 )
 
 
-class TestTinoutUpdating:
+class TestGraphTiUpdating:
     edges = [
         (1, 3),
         (2, 3),
@@ -46,7 +46,9 @@ class TestTinoutUpdating:
         T2out = set(self.G2.nodes())
 
         gparams = _GraphParameters(self.G1, self.G2, {}, {}, {}, {}, {})
-        sparams = _StateParameters(m, m_rev, T1, T1out, T2, T2out)
+        sparams = _StateParameters(
+            m, m_rev, T1, None, T1out, None, T2, None, T2out, None
+        )
 
         # Add node to the mapping
         m.update({4: self.mapped[4]})
@@ -104,11 +106,13 @@ class TestTinoutUpdating:
 
         T1 = {1, 2, 7, 9, 8}
         T2 = {"a", "b", "g", "i", "h"}
-        T1out = set()
-        T2out = set()
+        T1_tilde = set()
+        T2_tilde = set()
 
         gparams = _GraphParameters(self.G1, self.G2, {}, {}, {}, {}, {})
-        sparams = _StateParameters(m, m_rev, T1, T1out, T2, T2out)
+        sparams = _StateParameters(
+            m, m_rev, T1, None, T1_tilde, None, T2, None, T2_tilde, None
+        )
 
         # Remove a node from the mapping
         m.pop(0)
@@ -117,8 +121,8 @@ class TestTinoutUpdating:
 
         assert T1 == {1, 2, 7, 9, 8}
         assert T2 == {"a", "b", "g", "i", "h"}
-        assert T1out == {0}
-        assert T2out == {"x"}
+        assert T1_tilde == {0}
+        assert T2_tilde == {"x"}
 
         # Remove a node from the mapping
         m.pop(6)
@@ -127,8 +131,8 @@ class TestTinoutUpdating:
 
         assert T1 == {1, 2, 7, 9, 8}
         assert T2 == {"a", "b", "g", "i", "h"}
-        assert T1out == {0, 6}
-        assert T2out == {"x", "f"}
+        assert T1_tilde == {0, 6}
+        assert T2_tilde == {"x", "f"}
 
         # Remove a node from the mapping
         m.pop(3)
@@ -137,8 +141,8 @@ class TestTinoutUpdating:
 
         assert T1 == {7, 9, 8, 3}
         assert T2 == {"g", "i", "h", "c"}
-        assert T1out == {0, 6, 1, 2}
-        assert T2out == {"x", "f", "a", "b"}
+        assert T1_tilde == {0, 6, 1, 2}
+        assert T2_tilde == {"x", "f", "a", "b"}
 
         # Remove a node from the mapping
         m.pop(5)
@@ -147,8 +151,8 @@ class TestTinoutUpdating:
 
         assert T1 == {9, 3, 5}
         assert T2 == {"i", "c", "e"}
-        assert T1out == {0, 6, 1, 2, 7, 8}
-        assert T2out == {"x", "f", "a", "b", "g", "h"}
+        assert T1_tilde == {0, 6, 1, 2, 7, 8}
+        assert T2_tilde == {"x", "f", "a", "b", "g", "h"}
 
         # Remove a node from the mapping
         m.pop(4)
@@ -157,5 +161,186 @@ class TestTinoutUpdating:
 
         assert T1 == set()
         assert T2 == set()
-        assert T1out == set(self.G1.nodes())
-        assert T2out == set(self.G2.nodes())
+        assert T1_tilde == set(self.G1.nodes())
+        assert T2_tilde == set(self.G2.nodes())
+
+
+class TestDiGraphTiUpdating:
+    edges = [
+        (1, 3),
+        (2, 3),
+        (3, 4),
+        (4, 9),
+        (4, 5),
+        (3, 9),
+        (5, 8),
+        (7, 5),
+        (8, 7),
+        (6, 7),
+    ]
+    mapped = {
+        0: "x",
+        1: "a",
+        2: "b",
+        3: "c",
+        4: "d",
+        5: "e",
+        6: "f",
+        7: "g",
+        8: "h",
+        9: "i",
+    }
+    G1 = nx.DiGraph()
+    G1.add_edges_from(edges)
+    G1.add_node(0)
+    G2 = nx.relabel_nodes(G1, mapping=mapped)
+
+    def test_updating(self):
+        m = dict()
+        m_rev = dict()
+
+        T1_out, T1_in = set(), set()
+        T2_out, T2_in = set(), set()
+        T1_tilde = set(self.G1.nodes())
+        T2_tilde = set(self.G2.nodes())
+
+        gparams = _GraphParameters(self.G1, self.G2, {}, {}, {}, {}, {})
+        sparams = _StateParameters(
+            m, m_rev, T1_out, T1_in, T1_tilde, None, T2_out, T2_in, T2_tilde, None
+        )
+
+        # Add node to the mapping
+        m.update({4: self.mapped[4]})
+        m_rev.update({self.mapped[4]: 4})
+        _update_Tinout(4, self.mapped[4], gparams, sparams)
+
+        assert T1_out == {5, 9}
+        assert T1_in == {3}
+        assert T2_out == {"i", "e"}
+        assert T2_in == {"c"}
+        assert T1_tilde == {0, 1, 2, 6, 7, 8}
+        assert T2_tilde == {"x", "a", "b", "f", "g", "h"}
+
+        # Add node to the mapping
+        m.update({5: self.mapped[5]})
+        m_rev.update({self.mapped[5]: 5})
+        _update_Tinout(5, self.mapped[5], gparams, sparams)
+
+        assert T1_out == {9, 8}
+        assert T1_in == {3, 7}
+        assert T2_out == {"i", "h"}
+        assert T2_in == {"c", "g"}
+        assert T1_tilde == {0, 1, 2, 6}
+        assert T2_tilde == {"x", "a", "b", "f"}
+
+        # Add node to the mapping
+        m.update({6: self.mapped[6]})
+        m_rev.update({self.mapped[6]: 6})
+        _update_Tinout(6, self.mapped[6], gparams, sparams)
+
+        assert T1_out == {9, 8, 7}
+        assert T1_in == {3, 7}
+        assert T2_out == {"i", "h", "g"}
+        assert T2_in == {"c", "g"}
+        assert T1_tilde == {0, 1, 2}
+        assert T2_tilde == {"x", "a", "b"}
+
+        # Add node to the mapping
+        m.update({3: self.mapped[3]})
+        m_rev.update({self.mapped[3]: 3})
+        _update_Tinout(3, self.mapped[3], gparams, sparams)
+
+        assert T1_out == {9, 8, 7}
+        assert T1_in == {7, 1, 2}
+        assert T2_out == {"i", "h", "g"}
+        assert T2_in == {"g", "a", "b"}
+        assert T1_tilde == {0}
+        assert T2_tilde == {"x"}
+
+        # Add node to the mapping
+        m.update({0: self.mapped[0]})
+        m_rev.update({self.mapped[0]: 0})
+        _update_Tinout(0, self.mapped[0], gparams, sparams)
+
+        assert T1_out == {9, 8, 7}
+        assert T1_in == {7, 1, 2}
+        assert T2_out == {"i", "h", "g"}
+        assert T2_in == {"g", "a", "b"}
+        assert T1_tilde == set()
+        assert T2_tilde == set()
+
+    def test_restoring(self):
+        m = {0: "x", 3: "c", 4: "d", 5: "e", 6: "f"}
+        m_rev = {"x": 0, "c": 3, "d": 4, "e": 5, "f": 6}
+
+        T1_out = {7, 9, 8}
+        T1_in = {1, 2, 7}
+        T2_out = {"g", "i", "h"}
+        T2_in = {"a", "b", "g"}
+        T1_tilde = set()
+        T2_tilde = set()
+
+        gparams = _GraphParameters(self.G1, self.G2, {}, {}, {}, {}, {})
+        sparams = _StateParameters(
+            m, m_rev, T1_out, T1_in, T1_tilde, None, T2_out, T2_in, T2_tilde, None
+        )
+
+        # Remove a node from the mapping
+        m.pop(0)
+        m_rev.pop("x")
+        _restore_Tinout(0, self.mapped[0], gparams, sparams)
+
+        assert T1_out == {7, 9, 8}
+        assert T1_in == {1, 2, 7}
+        assert T2_out == {"g", "i", "h"}
+        assert T2_in == {"a", "b", "g"}
+        assert T1_tilde == {0}
+        assert T2_tilde == {"x"}
+
+        # Remove a node from the mapping
+        m.pop(6)
+        m_rev.pop("f")
+        _restore_Tinout(6, self.mapped[6], gparams, sparams)
+
+        assert T1_out == {9, 8}
+        assert T1_in == {1, 2, 7}
+        assert T2_out == {"i", "h"}
+        assert T2_in == {"a", "b", "g"}
+        assert T1_tilde == {0, 6}
+        assert T2_tilde == {"x", "f"}
+
+        # Remove a node from the mapping
+        m.pop(3)
+        m_rev.pop("c")
+        _restore_Tinout(3, self.mapped[3], gparams, sparams)
+
+        assert T1_out == {9, 8}
+        assert T1_in == {3, 7}
+        assert T2_out == {"i", "h"}
+        assert T2_in == {"c", "g"}
+        assert T1_tilde == {0, 6, 1, 2}
+        assert T2_tilde == {"x", "f", "a", "b"}
+
+        # Remove a node from the mapping
+        m.pop(5)
+        m_rev.pop("e")
+        _restore_Tinout(5, self.mapped[5], gparams, sparams)
+
+        assert T1_out == {9, 5}
+        assert T1_in == {3}
+        assert T2_out == {"i", "e"}
+        assert T2_in == {"c"}
+        assert T1_tilde == {0, 6, 1, 2, 7, 8}
+        assert T2_tilde == {"x", "f", "a", "b", "g", "h"}
+
+        # Remove a node from the mapping
+        m.pop(4)
+        m_rev.pop("d")
+        _restore_Tinout(4, self.mapped[4], gparams, sparams)
+
+        assert T1_out == set()
+        assert T1_in == set()
+        assert T2_out == set()
+        assert T2_in == set()
+        assert T1_tilde == set(self.G1.nodes())
+        assert T2_tilde == set(self.G2.nodes())

@@ -16,7 +16,16 @@ class TestGraphISOFeasibility:
         G2 = nx.Graph([("a", "b"), ("b", "c"), ("k", "a"), ("k", "c")])
         gparams = _GraphParameters(G1, G2, None, None, None, None, None)
         sparams = _StateParameters(
-            {0: "a", 1: "b", 2: "c"}, {"a": 0, "b": 1, "c": 2}, None, None, None, None
+            {0: "a", 1: "b", 2: "c"},
+            {"a": 0, "b": 1, "c": 2},
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
         )
         u, v = 3, "k"
         assert _consistent_PT(u, v, gparams, sparams)
@@ -26,7 +35,16 @@ class TestGraphISOFeasibility:
         G2 = nx.Graph([("a", "b"), ("b", "c"), ("k", "w"), ("k", "z")])
         gparams = _GraphParameters(G1, G2, None, None, None, None, None)
         sparams = _StateParameters(
-            {0: "a", 1: "b", 2: "c"}, {"a": 0, "b": 1, "c": 2}, None, None, None, None
+            {0: "a", 1: "b", 2: "c"},
+            {"a": 0, "b": 1, "c": 2},
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
         )
         u, v = 3, "k"
         assert _consistent_PT(u, v, gparams, sparams)
@@ -38,7 +56,16 @@ class TestGraphISOFeasibility:
         )
         gparams = _GraphParameters(G1, G2, None, None, None, None, None)
         sparams = _StateParameters(
-            {0: "a", 1: "b", 2: "c"}, {"a": 0, "b": 1, "c": 2}, None, None, None, None
+            {0: "a", 1: "b", 2: "c"},
+            {"a": 0, "b": 1, "c": 2},
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
         )
         u, v = 3, "k"
         assert _consistent_PT(u, v, gparams, sparams)
@@ -74,6 +101,10 @@ class TestGraphISOFeasibility:
         sparams = _StateParameters(
             {0: "a", 1: "b", 2: "c", 3: "d"},
             {"a": 0, "b": 1, "c": 2, "d": 3},
+            None,
+            None,
+            None,
+            None,
             None,
             None,
             None,
@@ -154,6 +185,10 @@ class TestGraphISOFeasibility:
             None,
             None,
             None,
+            None,
+            None,
+            None,
+            None,
         )
 
         u, v = 10, "k"
@@ -197,9 +232,13 @@ class TestGraphISOFeasibility:
             {0: "a", 1: "b", 2: "c", 3: "d"},
             {"a": 0, "b": 1, "c": 2, "d": 3},
             {4, 5},
+            None,
             {6},
+            None,
             {"e", "f"},
+            None,
             {"g"},
+            None,
         )
 
         u, v = 10, "k"
@@ -231,9 +270,13 @@ class TestGraphISOFeasibility:
             {0: "a", 1: "b", 2: "c", 3: "d"},
             {"a": 0, "b": 1, "c": 2, "d": 3},
             {4, 5},
+            None,
             {6},
+            None,
             {"e", "f"},
+            None,
             {"g"},
+            None,
         )
 
         u, v = 10, "k"
@@ -247,7 +290,7 @@ class TestGraphISOFeasibility:
         G2.remove_edge(v, mapped[4])
         assert not _cut_PT(u, v, gparams, sparams)
 
-        # Change intersection between G2[v] and T2_out, so it's not the same as the one between G1[u] and T1_out
+        # Change intersection between G2[v] and T2_tilde, so it's not the same as the one between G1[u] and T1_tilde
         G2.remove_edge(v, mapped[6])
         assert _cut_PT(u, v, gparams, sparams)
 
@@ -258,8 +301,8 @@ class TestGraphISOFeasibility:
         # Add disconnected nodes, which will form the new Ti_out
         G1.add_nodes_from([6, 7, 8])
         G2.add_nodes_from(["g", "y", "z"])
-        sparams.T1_out.update({6, 7, 8})
-        sparams.T2_out.update({"g", "y", "z"})
+        sparams.T1_tilde.update({6, 7, 8})
+        sparams.T2_tilde.update({"g", "y", "z"})
 
         l1 = {n: "blue" for n in G1.nodes()}
         l2 = {n: "blue" for n in G2.nodes()}
@@ -281,8 +324,8 @@ class TestGraphISOFeasibility:
         sparams.reverse_mapping.update({"j": 20, "i": 21})
         sparams.T1.update({20, 21})
         sparams.T2.update({"i", "j"})
-        sparams.T1_out.difference_update({6, 7})
-        sparams.T2_out.difference_update({"g", "y"})
+        sparams.T1_tilde.difference_update({6, 7})
+        sparams.T2_tilde.difference_update({"g", "y"})
 
         assert not _cut_PT(u, v, gparams, sparams)
 
@@ -302,7 +345,7 @@ class TestGraphISOFeasibility:
         G1.add_edge(u, 4)
         assert not _cut_PT(u, v, gparams, sparams)
 
-        # Connect u to 8 which is still in T1_out
+        # Connect u to 8 which is still in T1_tilde
         G1.add_edge(u, 8)
         assert _cut_PT(u, v, gparams, sparams)
 
@@ -381,9 +424,13 @@ class TestGraphISOFeasibility:
             {0: "a", 1: "b", 2: "c", 3: "d"},
             {"a": 0, "b": 1, "c": 2, "d": 3},
             {4, 5, 6, 7, 14},
+            None,
             {9, 10, 15, 12, 11, 13, 8},
+            None,
             {"e", "f", "g", "h", "o"},
+            None,
             {"j", "k", "l", "m", "n", "i", "p"},
+            None,
         )
 
         u, v = 20, "x"
@@ -405,11 +452,11 @@ class TestGraphISOFeasibility:
         G2.add_edge(v, mapped[4])
         assert not _cut_PT(u, v, gparams, sparams)
 
-        # Change the intersection of G2[v] and T2_out
+        # Change the intersection of G2[v] and T2_tilde
         G2.remove_edge(v, mapped[8])
         assert _cut_PT(u, v, gparams, sparams)
 
-        # Same for G1[u] and T1_out
+        # Same for G1[u] and T1_tilde
         G1.remove_edge(u, 8)
         assert not _cut_PT(u, v, gparams, sparams)
 
@@ -418,8 +465,8 @@ class TestGraphISOFeasibility:
         G2.add_edge(mapped[8], mapped[3])
         sparams.T1.add(8)
         sparams.T2.add(mapped[8])
-        sparams.T1_out.remove(8)
-        sparams.T2_out.remove(mapped[8])
+        sparams.T1_tilde.remove(8)
+        sparams.T2_tilde.remove(mapped[8])
 
         assert not _cut_PT(u, v, gparams, sparams)
 
@@ -492,9 +539,13 @@ class TestGraphISOFeasibility:
             {0: "a", 1: "b", 2: "c", 3: "d"},
             {"a": 0, "b": 1, "c": 2, "d": 3},
             {4, 5, 6, 7, 14},
+            None,
             {9, 10, 15, 12, 11, 13, 8},
+            None,
             {"e", "f", "g", "h", "o"},
+            None,
             {"j", "k", "l", "m", "n", "i", "p"},
+            None,
         )
 
         u, v = 20, "x"
@@ -590,9 +641,13 @@ class TestGraphISOFeasibility:
             {0: "a", 1: "b", 2: "c", 3: "d"},
             {"a": 0, "b": 1, "c": 2, "d": 3},
             {4, 5, 6, 7, 14},
+            None,
             {9, 10, 15, 12, 11, 13, 8},
+            None,
             {"e", "f", "g", "h", "o"},
+            None,
             {"j", "k", "l", "m", "n", "i", "p"},
+            None,
         )
 
         u, v = 20, "x"
@@ -639,7 +694,16 @@ class TestMultiGraphISOFeasibility:
         )
         gparams = _GraphParameters(G1, G2, None, None, None, None, None)
         sparams = _StateParameters(
-            {0: "a", 1: "b", 2: "c"}, {"a": 0, "b": 1, "c": 2}, None, None, None, None
+            {0: "a", 1: "b", 2: "c"},
+            {"a": 0, "b": 1, "c": 2},
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
         )
         u, v = 3, "k"
         assert _consistent_PT(u, v, gparams, sparams)
@@ -649,7 +713,16 @@ class TestMultiGraphISOFeasibility:
         G2 = nx.MultiGraph([("a", "b"), ("b", "c"), ("k", "w"), ("k", "w"), ("k", "z")])
         gparams = _GraphParameters(G1, G2, None, None, None, None, None)
         sparams = _StateParameters(
-            {0: "a", 1: "b", 2: "c"}, {"a": 0, "b": 1, "c": 2}, None, None, None, None
+            {0: "a", 1: "b", 2: "c"},
+            {"a": 0, "b": 1, "c": 2},
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
         )
         u, v = 3, "k"
         assert _consistent_PT(u, v, gparams, sparams)
@@ -673,7 +746,16 @@ class TestMultiGraphISOFeasibility:
         )
         gparams = _GraphParameters(G1, G2, None, None, None, None, None)
         sparams = _StateParameters(
-            {0: "a", 1: "b", 2: "c"}, {"a": 0, "b": 1, "c": 2}, None, None, None, None
+            {0: "a", 1: "b", 2: "c"},
+            {"a": 0, "b": 1, "c": 2},
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
         )
         u, v = 3, "k"
         assert _consistent_PT(u, v, gparams, sparams)
@@ -703,6 +785,10 @@ class TestMultiGraphISOFeasibility:
         sparams = _StateParameters(
             {0: "a", 1: "b", 2: "c", 3: "d"},
             {"a": 0, "b": 1, "c": 2, "d": 3},
+            None,
+            None,
+            None,
+            None,
             None,
             None,
             None,
@@ -791,9 +877,13 @@ class TestMultiGraphISOFeasibility:
             {0: "a", 1: "b", 2: "c", 3: "d"},
             {"a": 0, "b": 1, "c": 2, "d": 3},
             {4, 5},
+            None,
             {6},
+            None,
             {"e", "f"},
+            None,
             {"g"},
+            None,
         )
 
         u, v = 10, "k"
@@ -808,7 +898,7 @@ class TestMultiGraphISOFeasibility:
         G2.remove_edges_from([(v, mapped[4]), (v, mapped[4])])
         assert not _cut_PT(u, v, gparams, sparams)
 
-        # Change intersection between G2[v] and T2_out, so it's not the same as the one between G1[u] and T1_out
+        # Change intersection between G2[v] and T2_tilde, so it's not the same as the one between G1[u] and T1_tilde
         G2.remove_edge(v, mapped[6])
         assert _cut_PT(u, v, gparams, sparams)
 
@@ -816,7 +906,7 @@ class TestMultiGraphISOFeasibility:
         G1.remove_edge(u, 6)
         assert not _cut_PT(u, v, gparams, sparams)
 
-        # Add more edges between u and neighbor which belongs in T1_out
+        # Add more edges between u and neighbor which belongs in T1_tilde
         G1.add_edges_from([(u, 5), (u, 5), (u, 5)])
         assert _cut_PT(u, v, gparams, sparams)
 
@@ -830,8 +920,8 @@ class TestMultiGraphISOFeasibility:
         G1.add_edges_from([(u, 6), (u, 6), (u, 6), (u, 8)])
         G2.add_edges_from([(v, "g"), (v, "g"), (v, "g"), (v, "z")])
 
-        sparams.T1_out.update({6, 7, 8})
-        sparams.T2_out.update({"g", "y", "z"})
+        sparams.T1_tilde.update({6, 7, 8})
+        sparams.T2_tilde.update({"g", "y", "z"})
 
         l1 = {n: "blue" for n in G1.nodes()}
         l2 = {n: "blue" for n in G2.nodes()}
@@ -851,8 +941,8 @@ class TestMultiGraphISOFeasibility:
 
         sparams.T1.update({20, 21})
         sparams.T2.update({"i", "j"})
-        sparams.T1_out.difference_update({6, 7})
-        sparams.T2_out.difference_update({"g", "y"})
+        sparams.T1_tilde.difference_update({6, 7})
+        sparams.T2_tilde.difference_update({"g", "y"})
 
         assert not _cut_PT(u, v, gparams, sparams)
 
@@ -969,9 +1059,13 @@ class TestMultiGraphISOFeasibility:
             {0: "a", 1: "b", 2: "c", 3: "d"},
             {"a": 0, "b": 1, "c": 2, "d": 3},
             {4, 5, 6, 7, 14},
+            None,
             {9, 10, 15, 12, 11, 13, 8},
+            None,
             {"e", "f", "g", "h", "o"},
+            None,
             {"j", "k", "l", "m", "n", "i", "p"},
+            None,
         )
 
         u, v = 20, "x"
@@ -997,7 +1091,7 @@ class TestMultiGraphISOFeasibility:
         G2.remove_edge(v, mapped[8])
         assert _cut_PT(u, v, gparams, sparams)
 
-        # Same for G1[u] and T1_out
+        # Same for G1[u] and T1_tilde
         G1.remove_edge(u, 8)
         assert not _cut_PT(u, v, gparams, sparams)
 
@@ -1006,8 +1100,8 @@ class TestMultiGraphISOFeasibility:
         G2.add_edges_from([(mapped[8], mapped[3]), (mapped[8], mapped[3])])
         sparams.T1.add(8)
         sparams.T2.add(mapped[8])
-        sparams.T1_out.remove(8)
-        sparams.T2_out.remove(mapped[8])
+        sparams.T1_tilde.remove(8)
+        sparams.T2_tilde.remove(mapped[8])
 
         assert _cut_PT(u, v, gparams, sparams)
 
@@ -1096,9 +1190,13 @@ class TestMultiGraphISOFeasibility:
             {0: "a", 1: "b", 2: "c", 3: "d"},
             {"a": 0, "b": 1, "c": 2, "d": 3},
             {4, 5, 6, 7, 14},
+            None,
             {9, 10, 15, 12, 11, 13, 8},
+            None,
             {"e", "f", "g", "h", "o"},
+            None,
             {"j", "k", "l", "m", "n", "i", "p"},
+            None,
         )
 
         u, v = 20, "x"
@@ -1211,9 +1309,13 @@ class TestMultiGraphISOFeasibility:
             {0: "a", 1: "b", 2: "c", 3: "d"},
             {"a": 0, "b": 1, "c": 2, "d": 3},
             {4, 5, 6, 7, 14},
+            None,
             {9, 10, 15, 12, 11, 13, 8},
+            None,
             {"e", "f", "g", "h", "o"},
+            None,
             {"j", "k", "l", "m", "n", "i", "p"},
+            None,
         )
 
         u, v = 20, "x"
