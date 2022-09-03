@@ -1,5 +1,9 @@
 import networkx as nx
-from networkx.algorithms.isomorphism.vf2pp import _GraphParameters, _StateParameters
+from networkx.algorithms.isomorphism.vf2pp import (
+    _GraphParameters,
+    _initialize_parameters,
+    _StateParameters,
+)
 from networkx.algorithms.isomorphism.vf2pp_helpers.state import (
     _restore_Tinout,
     _update_Tinout,
@@ -37,16 +41,8 @@ class TestTinoutUpdating:
     G2 = nx.relabel_nodes(G1, mapping=mapped)
 
     def test_updating(self):
-        m = dict()
-        m_rev = dict()
-
-        T1 = set()
-        T2 = set()
-        T1out = set(self.G1.nodes())
-        T2out = set(self.G2.nodes())
-
-        gparams = _GraphParameters(self.G1, self.G2, {}, {}, {}, {}, {})
-        sparams = _StateParameters(m, m_rev, T1, T1out, T2, T2out)
+        gparams, sparams = _initialize_parameters(self.G1, self.G2)
+        m, m_rev, T1, T1_tilde, T2, T2_tilde = sparams
 
         # Add node to the mapping
         m.update({4: self.mapped[4]})
@@ -55,8 +51,8 @@ class TestTinoutUpdating:
 
         assert T1 == {3, 5, 9}
         assert T2 == {"c", "i", "e"}
-        assert T1out == {0, 1, 2, 6, 7, 8}
-        assert T2out == {"x", "a", "b", "f", "g", "h"}
+        assert T1_tilde == {0, 1, 2, 6, 7, 8}
+        assert T2_tilde == {"x", "a", "b", "f", "g", "h"}
 
         # Add node to the mapping
         m.update({5: self.mapped[5]})
@@ -65,8 +61,8 @@ class TestTinoutUpdating:
 
         assert T1 == {3, 9, 8, 7}
         assert T2 == {"c", "i", "h", "g"}
-        assert T1out == {0, 1, 2, 6}
-        assert T2out == {"x", "a", "b", "f"}
+        assert T1_tilde == {0, 1, 2, 6}
+        assert T2_tilde == {"x", "a", "b", "f"}
 
         # Add node to the mapping
         m.update({6: self.mapped[6]})
@@ -75,8 +71,8 @@ class TestTinoutUpdating:
 
         assert T1 == {3, 9, 8, 7}
         assert T2 == {"c", "i", "h", "g"}
-        assert T1out == {0, 1, 2}
-        assert T2out == {"x", "a", "b"}
+        assert T1_tilde == {0, 1, 2}
+        assert T2_tilde == {"x", "a", "b"}
 
         # Add node to the mapping
         m.update({3: self.mapped[3]})
@@ -85,8 +81,8 @@ class TestTinoutUpdating:
 
         assert T1 == {1, 2, 9, 8, 7}
         assert T2 == {"a", "b", "i", "h", "g"}
-        assert T1out == {0}
-        assert T2out == {"x"}
+        assert T1_tilde == {0}
+        assert T2_tilde == {"x"}
 
         # Add node to the mapping
         m.update({0: self.mapped[0]})
@@ -95,8 +91,8 @@ class TestTinoutUpdating:
 
         assert T1 == {1, 2, 9, 8, 7}
         assert T2 == {"a", "b", "i", "h", "g"}
-        assert T1out == set()
-        assert T2out == set()
+        assert T1_tilde == set()
+        assert T2_tilde == set()
 
     def test_restoring(self):
         m = {0: "x", 3: "c", 4: "d", 5: "e", 6: "f"}

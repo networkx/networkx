@@ -85,7 +85,7 @@ def _cut_PT(u, v, graph_params, state_params):
             Ti contains uncovered neighbors of covered nodes from Gi, i.e. nodes that are not in the mapping, but are
             neighbors of nodes that are.
 
-        T1_out, T2_out: set
+        T1_tilde, T2_tilde: set
             Ti_out contains all the nodes from Gi, that are neither in the mapping nor in Ti
 
     Returns
@@ -93,7 +93,7 @@ def _cut_PT(u, v, graph_params, state_params):
     True if we should prune this branch, i.e. the node pair failed the cutting checks. False otherwise.
     """
     G1, G2, G1_labels, G2_labels, _, _, _ = graph_params
-    _, _, T1, T1_out, T2, T2_out = state_params
+    _, _, T1, T1_tilde, T2, T2_tilde = state_params
 
     u_labels_neighbors = nx.utils.groups({n1: G1_labels[n1] for n1 in G1[u]})
     v_labels_neighbors = nx.utils.groups({n2: G2_labels[n2] for n2 in G2[v]})
@@ -117,7 +117,7 @@ def _cut_PT(u, v, graph_params, state_params):
 
         if len(T1.intersection(G1_nbh)) != len(T2.intersection(G2_nbh)):
             return True
-        if len(T1_out.intersection(G1_nbh)) != len(T2_out.intersection(G2_nbh)):
+        if len(T1_tilde.intersection(G1_nbh)) != len(T2_tilde.intersection(G2_nbh)):
             return True
 
     return False

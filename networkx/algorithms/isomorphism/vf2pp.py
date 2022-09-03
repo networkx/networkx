@@ -76,7 +76,7 @@ _GraphParameters = collections.namedtuple(
 )
 _StateParameters = collections.namedtuple(
     "_StateParameters",
-    ["mapping", "reverse_mapping", "T1", "T1_out", "T2", "T2_out"],
+    ["mapping", "reverse_mapping", "T1", "T1_tilde", "T2", "T2_tilde"],
 )
 
 
@@ -221,7 +221,7 @@ def _precheck_label_properties(graph_params):
     return True
 
 
-def _initialize_parameters(G1, G2, node_labels, default_label):
+def _initialize_parameters(G1, G2, node_labels=None, default_label=-1):
     """Initializes all the necessary parameters for VF2++
 
     Parameters

@@ -35,11 +35,11 @@ def _update_Tinout(new_node1, new_node2, graph_params, state_params):
             Ti contains uncovered neighbors of covered nodes from Gi, i.e. nodes that are not in the mapping, but are
             neighbors of nodes that are.
 
-        T1_out, T2_out: set
+        T1_tilde, T2_tilde: set
             Ti_out contains all the nodes from Gi, that are neither in the mapping nor in Ti
     """
     G1, G2, _, _, _, _, _ = graph_params
-    mapping, reverse_mapping, T1, T1_out, T2, T2_out = state_params
+    mapping, reverse_mapping, T1, T1_tilde, T2, T2_tilde = state_params
 
     uncovered_neighbors_G1 = {nbr for nbr in G1[new_node1] if nbr not in mapping}
     uncovered_neighbors_G2 = {
@@ -52,10 +52,10 @@ def _update_Tinout(new_node1, new_node2, graph_params, state_params):
     T1.discard(new_node1)
     T2.discard(new_node2)
 
-    T1_out.difference_update(uncovered_neighbors_G1)
-    T2_out.difference_update(uncovered_neighbors_G2)
-    T1_out.discard(new_node1)
-    T2_out.discard(new_node2)
+    T1_tilde.difference_update(uncovered_neighbors_G1)
+    T2_tilde.difference_update(uncovered_neighbors_G2)
+    T1_tilde.discard(new_node1)
+    T2_tilde.discard(new_node2)
 
 
 def _restore_Tinout(popped_node1, popped_node2, graph_params, state_params):
