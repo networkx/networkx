@@ -4,6 +4,7 @@ import networkx as nx
 
 __all__ = ["laplacian_centrality"]
 
+
 def laplacian_centrality(
     G, normalized=True, nbunch=None, **directed_laplacian_matrix_args
 ):
@@ -84,14 +85,13 @@ def laplacian_centrality(
         )
 
     if G.is_directed():
-        laplacian_matrix = nx.directed_laplacian_matrix(G, **directed_laplacian_matrix_args)
+        laplacian_matrix = nx.directed_laplacian_matrix(
+            G, **directed_laplacian_matrix_args
+        )
         eigh = sp.linalg.eigh(laplacian_matrix)
     else:
         laplacian_matrix = nx.laplacian_matrix(G)
-        eigh = sp.sparse.linalg.eigs(laplacian_matrix,return_eigenvectors=False)
-
-
-
+        eigh = sp.sparse.linalg.eigs(laplacian_matrix, return_eigenvectors=False)
 
     if normalized:
         sum_of_full = np.power(eigh, 2).sum()
@@ -111,7 +111,7 @@ def laplacian_centrality(
 
         A_2.setdiag(np.r_[new_diag[:i], new_diag[i + 1 :]])
 
-        sum_of_eigen_values_2 = np.power(eigh, 2 ).sum()
+        sum_of_eigen_values_2 = np.power(eigh, 2).sum()
 
         if normalized:
             l_cent = 1 - (sum_of_eigen_values_2 / sum_of_full)
