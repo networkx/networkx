@@ -91,7 +91,9 @@ def laplacian_centrality(
         eigh = sp.linalg.eigh(laplacian_matrix)
     else:
         laplacian_matrix = nx.laplacian_matrix(G)
-        eigh = sp.sparse.linalg.eigs(laplacian_matrix, return_eigenvectors=False)
+        eigh = sp.sparse.linalg.eigs(
+            laplacian_matrix.asfptype(), return_eigenvectors=False
+        )
 
     if normalized:
         sum_of_full = np.power(eigh, 2).sum()
