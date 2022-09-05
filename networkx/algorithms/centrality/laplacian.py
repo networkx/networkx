@@ -111,7 +111,7 @@ def laplacian_centrality(
 
         A_2.setdiag(np.r_[new_diag[:i], new_diag[i + 1 :]])
 
-        sum_of_eigen_values_2 = np.power(eigh, 2).sum()
+        sum_of_eigen_values_2 = np.power(sp.linalg.eigh(A_2.toarray(), eigvals_only=True), 2).sum()
 
         if normalized:
             l_cent = 1 - (sum_of_eigen_values_2 / sum_of_full)
