@@ -85,8 +85,8 @@ def vf2pp_mapping(G1, G2, node_labels=None, default_label=None):
 
     Parameters
     ----------
-    G1,G2: NetworkX Graph or MultiGraph instances.
-        The two graphs to check for isomorphism or monomorphism.
+    G1, G2 : NetworkX Graph or MultiGraph instances.
+        The two graphs to check for isomorphism.
 
     node_labels: Label name
         The label name of all nodes
