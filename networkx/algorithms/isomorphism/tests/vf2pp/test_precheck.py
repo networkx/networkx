@@ -1,3 +1,5 @@
+import itertools
+
 import networkx as nx
 from networkx.algorithms.isomorphism.vf2pp import vf2pp_is_isomorphic
 
@@ -24,8 +26,8 @@ class TestPreCheck:
         assert not vf2pp_is_isomorphic(G1, G2)
 
     def test_different_order3(self):
-        G1 = nx.complete_graph(780)
-        G2 = nx.complete_graph(779)
+        G1 = nx.complete_graph(7)
+        G2 = nx.complete_graph(8)
         assert not vf2pp_is_isomorphic(G1, G2)
 
     def test_different_degree_sequences1(self):
@@ -34,9 +36,8 @@ class TestPreCheck:
         assert not vf2pp_is_isomorphic(G1, G2)
 
         G2.remove_node(3)
-        for node1, node2 in zip(G1.nodes(), G2.nodes()):
-            G1.nodes[node1]["label"] = "a"
-            G2.nodes[node2]["label"] = "a"
+        nx.set_node_attributes(G1, dict(zip(G1, itertools.cycle(["a"]))), "label")
+        nx.set_node_attributes(G2, dict(zip(G2, itertools.cycle("a"))), "label")
 
         assert vf2pp_is_isomorphic(G1, G2)
 
@@ -61,9 +62,8 @@ class TestPreCheck:
         assert not vf2pp_is_isomorphic(G1, G2)
 
         G1.add_edge(6, 1)
-        for node1, node2 in zip(G1.nodes(), G2.nodes()):
-            G1.nodes[node1]["label"] = "a"
-            G2.nodes[node2]["label"] = "a"
+        nx.set_node_attributes(G1, dict(zip(G1, itertools.cycle(["a"]))), "label")
+        nx.set_node_attributes(G2, dict(zip(G2, itertools.cycle("a"))), "label")
 
         assert vf2pp_is_isomorphic(G1, G2)
 
@@ -75,52 +75,24 @@ class TestPreCheck:
         assert not vf2pp_is_isomorphic(G1, G2)
 
         G1.add_edge(3, 5)
-        for node1, node2 in zip(G1.nodes(), G2.nodes()):
-            G1.nodes[node1]["label"] = "a"
-            G2.nodes[node2]["label"] = "a"
+        nx.set_node_attributes(G1, dict(zip(G1, itertools.cycle(["a"]))), "label")
+        nx.set_node_attributes(G2, dict(zip(G2, itertools.cycle("a"))), "label")
 
         assert vf2pp_is_isomorphic(G1, G2)
 
-    def test_label_distribution1(self):
-        G1 = nx.path_graph(5)
-        G2 = nx.path_graph(5)
-
-        colors = ["green", "blue", "red", "yellow", "black"]
-        for n1, n2 in zip(G1.nodes, G2.nodes()):
-            color = colors.pop()
-            G1.nodes[n1]["label"] = color
-            G2.nodes[n2]["label"] = color
-
-        assert vf2pp_is_isomorphic(G1, G2, node_labels="label")
-        G1.nodes[0]["label"] = "orange"
-        assert not vf2pp_is_isomorphic(G1, G2, node_labels="label")
-
-    def test_label_distribution2(self):
-        G1 = nx.Graph([(0, 1), (0, 2), (1, 2), (1, 3), (0, 4)])
-        G2 = nx.Graph([(0, 1), (0, 2), (1, 2), (1, 3), (0, 4)])
-
-        colors = ["green", "green", "red", "red", "red"]
-        for n1, n2 in zip(G1.nodes, G2.nodes()):
-            color = colors.pop()
-            G1.nodes[n1]["label"] = color
-            G2.nodes[n2]["label"] = color
-
-        assert vf2pp_is_isomorphic(G1, G2, node_labels="label")
-        G1.nodes[0]["label"] = "green"
-        assert not vf2pp_is_isomorphic(G1, G2, node_labels="label")
-
-    def test_label_distribution3(self):
+    def test_label_distribution(self):
         G1 = nx.Graph([(0, 1), (0, 2), (1, 2), (2, 3), (2, 4), (3, 4), (2, 5), (2, 6)])
         G2 = nx.Graph([(0, 1), (0, 2), (1, 2), (2, 3), (2, 4), (3, 4), (2, 5), (2, 6)])
 
         colors1 = ["blue", "blue", "blue", "yellow", "black", "purple", "purple"]
-        colors2 = ["blue", "blue", "yellow", "yelow", "black", "purple", "purple"]
+        colors2 = ["blue", "blue", "yellow", "yellow", "black", "purple", "purple"]
 
-        for n1, n2 in zip(G1.nodes, G2.nodes()):
-            color1 = colors1.pop()
-            color2 = colors2.pop()
-            G1.nodes[n1]["label"] = color1
-            G2.nodes[n2]["label"] = color2
+        nx.set_node_attributes(
+            G1, dict(zip(G1, itertools.cycle(colors1[::-1]))), "label"
+        )
+        nx.set_node_attributes(
+            G2, dict(zip(G2, itertools.cycle(colors2[::-1]))), "label"
+        )
 
         assert not vf2pp_is_isomorphic(G1, G2, node_labels="label")
         G2.nodes[3]["label"] = "blue"
