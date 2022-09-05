@@ -46,7 +46,7 @@ class TestTinoutUpdating:
 
         # Add node to the mapping
         m[4] = self.mapped[4]
-        m_rev[self.mapped[4]] =  4
+        m_rev[self.mapped[4]] = 4
         _update_Tinout(4, self.mapped[4], gparams, sparams)
 
         assert T1 == {3, 5, 9}
@@ -55,7 +55,7 @@ class TestTinoutUpdating:
         assert T2_tilde == {"x", "a", "b", "f", "g", "h"}
 
         # Add node to the mapping
-        m.update({5: self.mapped[5]})
+        m[5] = self.mapped[5]
         m_rev.update({self.mapped[5]: 5})
         _update_Tinout(5, self.mapped[5], gparams, sparams)
 
@@ -65,7 +65,7 @@ class TestTinoutUpdating:
         assert T2_tilde == {"x", "a", "b", "f"}
 
         # Add node to the mapping
-        m.update({6: self.mapped[6]})
+        m[6] = self.mapped[6]
         m_rev.update({self.mapped[6]: 6})
         _update_Tinout(6, self.mapped[6], gparams, sparams)
 
@@ -75,7 +75,7 @@ class TestTinoutUpdating:
         assert T2_tilde == {"x", "a", "b"}
 
         # Add node to the mapping
-        m.update({3: self.mapped[3]})
+        m[3] = self.mapped[3]
         m_rev.update({self.mapped[3]: 3})
         _update_Tinout(3, self.mapped[3], gparams, sparams)
 
@@ -85,7 +85,7 @@ class TestTinoutUpdating:
         assert T2_tilde == {"x"}
 
         # Add node to the mapping
-        m.update({0: self.mapped[0]})
+        m[0] = self.mapped[0]
         m_rev.update({self.mapped[0]: 0})
         _update_Tinout(0, self.mapped[0], gparams, sparams)
 
