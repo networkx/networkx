@@ -94,8 +94,9 @@ def vf2pp_mapping(G1, G2, node_labels=None, default_label=None):
         in the comparison. Any node that doesn't not have the `node_labels`
         attribute uses `default_label` instead.
 
-    default_label: Label name
-        Let the user pick a default label value
+    default_label : scalar
+        Default value to use when a node doesn't have an attribute
+        named `node_label`. Default is `None`.
 
     Returns
     -------
