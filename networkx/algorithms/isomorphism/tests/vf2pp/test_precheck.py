@@ -56,22 +56,8 @@ class TestPreCheck:
                 (8, 3),
             ]
         )
-        G2 = nx.Graph(
-            [
-                (0, 1),
-                (1, 2),
-                (0, 2),
-                (2, 3),
-                (3, 4),
-                (4, 5),
-                (5, 6),
-                (6, 3),
-                (4, 7),
-                (7, 8),
-                (8, 3),
-                (8, 0),
-            ]
-        )
+        G2 = G1.copy()
+        G2.add_edge(8, 0)
         assert not vf2pp_is_isomorphic(G1, G2)
 
         G1.add_edge(6, 1)
