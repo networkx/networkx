@@ -43,9 +43,10 @@ def _matching_order(graph_params):
         max_node = max(rarest_nodes, key=G1.degree)
 
         for dlevel_nodes in nx.bfs_layers(G1, max_node):
-            while dlevel_nodes:
+            nodes_to_add = dlevel_nodes.copy()
+            while nodes_to_add:
                 max_used_deg_nodes = _all_argmax(
-                    dlevel_nodes, key_function=lambda x: used_degrees[x]
+                    nodes_to_add, key_function=lambda x: used_degrees[x]
                 )
                 max_deg_nodes = _all_argmax(
                     max_used_deg_nodes, key_function=lambda x: G1.degree[x]
@@ -56,7 +57,7 @@ def _matching_order(graph_params):
                 for node in G1.neighbors(next_node):
                     used_degrees[node] += 1
 
-                dlevel_nodes.remove(next_node)
+                nodes_to_add.remove(next_node)
                 label_rarity[G1_labels[next_node]] -= 1
                 V1_unordered.discard(next_node)
 
