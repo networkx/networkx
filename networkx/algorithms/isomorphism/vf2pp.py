@@ -100,7 +100,8 @@ def vf2pp_mapping(G1, G2, node_labels=None, default_label=None):
 
     Returns
     -------
-    Node mapping, if the two graphs are isomorphic. None otherwise.
+    dict or None
+        Node mapping if the two graphs are isomorphic. None otherwise.
     """
     try:
         mapping = next(vf2pp_all_mappings(G1, G2, node_labels, default_label))
