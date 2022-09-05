@@ -41,10 +41,8 @@ class TestCandidateSelection:
     G2 = nx.relabel_nodes(G1, mapped)
 
     def test_no_covered_neighbors_no_labels(self):
-        l1, l2 = utils.get_labels(
-            self.G1,
-            self.G2,
-        )
+        l1 = dict(self.G1.nodes(data="label", default=-1))
+        l2 = dict(self.G2.nodes(data="label", default=-1))
         gparams = _GraphParameters(
             self.G1,
             self.G2,
@@ -108,7 +106,8 @@ class TestCandidateSelection:
             ),
             "label",
         )
-        l1, l2 = utils.get_labels(self.G1, self.G2, has_labels=True)
+        l1 = dict(self.G1.nodes(data="label", default=-1))
+        l2 = dict(self.G2.nodes(data="label", default=-1))
         gparams = _GraphParameters(
             self.G1,
             self.G2,
@@ -139,7 +138,8 @@ class TestCandidateSelection:
 
         # Change label of disconnected node
         self.G1.nodes[u]["label"] = "blue"
-        l1, l2 = utils.get_labels(self.G1, self.G2, has_labels=True)
+        l1 = dict(self.G1.nodes(data="label", default=-1))
+        l2 = dict(self.G2.nodes(data="label", default=-1))
         gparams = _GraphParameters(
             self.G1,
             self.G2,
@@ -170,7 +170,8 @@ class TestCandidateSelection:
 
         self.G1.nodes[8]["label"] = self.G1.nodes[7]["label"]
         self.G2.nodes[self.mapped[8]]["label"] = self.G1.nodes[7]["label"]
-        l1, l2 = utils.get_labels(self.G1, self.G2, has_labels=True)
+        l1 = dict(self.G1.nodes(data="label", default=-1))
+        l2 = dict(self.G2.nodes(data="label", default=-1))
         gparams = _GraphParameters(
             self.G1,
             self.G2,
@@ -185,10 +186,8 @@ class TestCandidateSelection:
         assert candidates == {self.mapped[u], self.mapped[8]}
 
     def test_covered_neighbors_no_labels(self):
-        l1, l2 = utils.get_labels(
-            self.G1,
-            self.G2,
-        )
+        l1 = dict(self.G1.nodes(data=None, default=-1))
+        l2 = dict(self.G2.nodes(data=None, default=-1))
         gparams = _GraphParameters(
             self.G1,
             self.G2,
@@ -233,7 +232,8 @@ class TestCandidateSelection:
             ),
             "label",
         )
-        l1, l2 = utils.get_labels(self.G1, self.G2, has_labels=True)
+        l1 = dict(self.G1.nodes(data="label", default=-1))
+        l2 = dict(self.G2.nodes(data="label", default=-1))
         gparams = _GraphParameters(
             self.G1,
             self.G2,
@@ -265,7 +265,8 @@ class TestCandidateSelection:
         # Assign to 2, the same label as 6
         self.G1.nodes[2]["label"] = self.G1.nodes[u]["label"]
         self.G2.nodes[self.mapped[2]]["label"] = self.G1.nodes[u]["label"]
-        l1, l2 = utils.get_labels(self.G1, self.G2, has_labels=True)
+        l1 = dict(self.G1.nodes(data="label", default=-1))
+        l2 = dict(self.G2.nodes(data="label", default=-1))
         gparams = _GraphParameters(
             self.G1,
             self.G2,
