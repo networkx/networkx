@@ -45,8 +45,8 @@ class TestTinoutUpdating:
         m, m_rev, T1, T1_tilde, T2, T2_tilde = sparams
 
         # Add node to the mapping
-        m.update({4: self.mapped[4]})
-        m_rev.update({self.mapped[4]: 4})
+        m[4] = self.mapped[4]
+        m_rev[self.mapped[4]] =  4
         _update_Tinout(4, self.mapped[4], gparams, sparams)
 
         assert T1 == {3, 5, 9}
