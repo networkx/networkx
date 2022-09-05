@@ -88,8 +88,11 @@ def vf2pp_mapping(G1, G2, node_labels=None, default_label=None):
     G1, G2 : NetworkX Graph or MultiGraph instances.
         The two graphs to check for isomorphism.
 
-    node_labels: Label name
-        The label name of all nodes
+    node_labels : str, optional
+        The name of the node attribute to be used when comparing nodes.
+        The default is `None`, meaning node attributes are not considered
+        in the comparison. Any node that doesn't not have the `node_labels`
+        attribute uses `default_label` instead.
 
     default_label: Label name
         Let the user pick a default label value
