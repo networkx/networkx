@@ -33,7 +33,7 @@ Without node labels:
 >>> G2 = nx.path_graph(4)
 >>> nx.vf2pp_is_isomorphic(G1, G2, node_labels=None)
 True
->>> nx.vf2pp_mapping(G1, G2, node_labels=None)
+>>> nx.vf2pp_mapping(G1, G2, node_label=None)
 {1: 1, 2: 2, 0: 0, 3: 3}
 
 With node labels:
@@ -45,7 +45,7 @@ With node labels:
 >>> nx.set_node_attributes(G2, dict(zip([mapped[u] for u in G1], ["blue", "red", "green", "yellow"])), "label")
 >>> nx.vf2pp_is_isomorphic(G1, G2, node_labels="label")
 True
->>> nx.vf2pp_mapping(G1, G2, node_labels="label")
+>>> nx.vf2pp_mapping(G1, G2, node_label="label")
 {1: 1, 2: 2, 0: 0, 3: 3}
 
 """
@@ -80,7 +80,7 @@ _StateParameters = collections.namedtuple(
 )
 
 
-def vf2pp_mapping(G1, G2, node_labels=None, default_label=None):
+def vf2pp_mapping(G1, G2, node_label=None, default_label=None):
     """Return an isomorphic mapping between `G1` and `G2` if it exists.
 
     Parameters
@@ -88,7 +88,7 @@ def vf2pp_mapping(G1, G2, node_labels=None, default_label=None):
     G1, G2 : NetworkX Graph or MultiGraph instances.
         The two graphs to check for isomorphism.
 
-    node_labels: Label name
+    node_label: Label name
         The label name of all nodes
 
     default_label: Label name
@@ -99,7 +99,7 @@ def vf2pp_mapping(G1, G2, node_labels=None, default_label=None):
     Node mapping, if the two graphs are isomorphic. None otherwise.
     """
     try:
-        mapping = next(vf2pp_all_mappings(G1, G2, node_labels, default_label))
+        mapping = next(vf2pp_all_mappings(G1, G2, node_label, default_label))
         return mapping
     except StopIteration:
         return None
