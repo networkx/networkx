@@ -8,19 +8,24 @@ An implementation of the VF2++ algorithm for Graph Isomorphism testing.
 The simplest interface to use this module is to call:
 
 `vf2pp_is_isomorphic`: to check whether two graphs are isomorphic.
-`vf2pp_isomorphism`: to obtain the node mapping between two graphs, in case they are isomorphic.
-`vf2pp_all_isomorphisms`: to generate all possible mappings between two graphs, if isomorphic.
+`vf2pp_isomorphism`: to obtain the node mapping between two graphs,
+in case they are isomorphic.
+`vf2pp_all_isomorphisms`: to generate all possible mappings between two graphs,
+if isomorphic.
 
 Introduction
 ------------
-The VF2++ algorithm, follows a similar logic to that of VF2, while also introducing new easy-to-check cutting rules and
-determining the optimal access order of nodes. It is also implemented in a non-recursive manner, which saves both time
-and space, when compared to its previous counterpart.
+The VF2++ algorithm, follows a similar logic to that of VF2, while also
+introducing new easy-to-check cutting rules and determining the optimal access
+order of nodes. It is also implemented in a non-recursive manner, which saves
+both time and space, when compared to its previous counterpart.
 
-The optimal node ordering is obtained after taking into consideration both the degree but also the label rarity of each
-node. This way we place the nodes that are more likely to match, first in the order, thus examining the most promising
-branches in the beginning. The rules also consider node labels, making it easier to prune unfruitful branches early in
-the process.
+The optimal node ordering is obtained after taking into consideration both the
+degree but also the label rarity of each node.
+This way we place the nodes that are more likely to match, first in the order,
+thus examining the most promising branches in the beginning.
+The rules also consider node labels, making it easier to prune unfruitful
+branches early in the process.
 
 Examples
 --------
@@ -116,18 +121,23 @@ def vf2pp_is_isomorphic(G1, G2, node_labels=None, default_label=None):
 
     Parameters
     ----------
-    G1,G2: NetworkX Graph or MultiGraph instances.
-        The two graphs to check for isomorphism or monomorphism.
+    G1, G2 : NetworkX Graph or MultiGraph instances.
+        The two graphs to check for isomorphism.
 
-    node_labels: Label name
-        The label name of all nodes
+    node_label : str, optional
+        The name of the node attribute to be used when comparing nodes.
+        The default is `None`, meaning node attributes are not considered
+        in the comparison. Any node that doesn't have the `node_labels`
+        attribute uses `default_label` instead.
 
-    default_label: Label name
-        Let the user pick a default label value
+    default_label : scalar
+        Default value to use when a node doesn't have an attribute
+        named `node_label`. Default is `None`.
 
     Returns
     -------
-    True if the two graphs are isomorphic. False otherwise.
+    bool
+        True if the two graphs are isomorphic, False otherwise.
     """
     if vf2pp_isomorphism(G1, G2, node_labels, default_label) is not None:
         return True
@@ -139,15 +149,24 @@ def vf2pp_all_isomorphisms(G1, G2, node_labels=None, default_label=None):
 
     Parameters
     ----------
-    G1,G2: NetworkX Graph or MultiGraph instances.
+    G1, G2 : NetworkX Graph or MultiGraph instances.
         The two graphs to check for isomorphism.
 
-    node_labels: string or None
-        The node attribute name within G that indicates node labels.
-        If None, then no node labels are used to compute isomorphisms.
+    node_label : str, optional
+        The name of the node attribute to be used when comparing nodes.
+        The default is `None`, meaning node attributes are not considered
+        in the comparison. Any node that doesn't have the `node_labels`
+        attribute uses `default_label` instead.
 
-    default_label: string
-        The default label for nodes that have no label attribute value.
+    default_label : scalar
+        Default value to use when a node doesn't have an attribute
+        named `node_label`. Default is `None`.
+
+    Yields
+    ------
+    dict
+        Isomorphic mapping between the nodes in `G1` and `G2`.
+
     """
     if G1.number_of_nodes() == 0 or G2.number_of_nodes() == 0:
         return False
