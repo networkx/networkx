@@ -105,7 +105,7 @@ def _cut_PT(u, v, graph_params, state_params):
     for label, G1_nbh in u_labels_neighbors.items():
         G2_nbh = v_labels_neighbors[label]
 
-        if isinstance(G1, nx.MultiGraph):
+        if G1.is_multigraph():
             # Check for every neighbor in the neighborhood, if u-nbr1 has same edges as v-nbr2
             u_nbrs_edges = sorted(G1.number_of_edges(u, x) for x in G1_nbh)
             v_nbrs_edges = sorted(G2.number_of_edges(v, x) for x in G2_nbh)
