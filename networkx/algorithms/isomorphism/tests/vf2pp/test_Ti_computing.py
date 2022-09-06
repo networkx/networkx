@@ -100,11 +100,11 @@ class TestTinoutUpdating:
 
         T1 = {1, 2, 7, 9, 8}
         T2 = {"a", "b", "g", "i", "h"}
-        T1out = set()
-        T2out = set()
+        T1_tilde = set()
+        T2_tilde = set()
 
         gparams = _GraphParameters(self.G1, self.G2, {}, {}, {}, {}, {})
-        sparams = _StateParameters(m, m_rev, T1, T1out, T2, T2out)
+        sparams = _StateParameters(m, m_rev, T1, T1_tilde, T2, T2_tilde)
 
         # Remove a node from the mapping
         m.pop(0)
@@ -113,8 +113,8 @@ class TestTinoutUpdating:
 
         assert T1 == {1, 2, 7, 9, 8}
         assert T2 == {"a", "b", "g", "i", "h"}
-        assert T1out == {0}
-        assert T2out == {"x"}
+        assert T1_tilde == {0}
+        assert T2_tilde == {"x"}
 
         # Remove a node from the mapping
         m.pop(6)
@@ -123,8 +123,8 @@ class TestTinoutUpdating:
 
         assert T1 == {1, 2, 7, 9, 8}
         assert T2 == {"a", "b", "g", "i", "h"}
-        assert T1out == {0, 6}
-        assert T2out == {"x", "f"}
+        assert T1_tilde == {0, 6}
+        assert T2_tilde == {"x", "f"}
 
         # Remove a node from the mapping
         m.pop(3)
@@ -133,8 +133,8 @@ class TestTinoutUpdating:
 
         assert T1 == {7, 9, 8, 3}
         assert T2 == {"g", "i", "h", "c"}
-        assert T1out == {0, 6, 1, 2}
-        assert T2out == {"x", "f", "a", "b"}
+        assert T1_tilde == {0, 6, 1, 2}
+        assert T2_tilde == {"x", "f", "a", "b"}
 
         # Remove a node from the mapping
         m.pop(5)
@@ -143,8 +143,8 @@ class TestTinoutUpdating:
 
         assert T1 == {9, 3, 5}
         assert T2 == {"i", "c", "e"}
-        assert T1out == {0, 6, 1, 2, 7, 8}
-        assert T2out == {"x", "f", "a", "b", "g", "h"}
+        assert T1_tilde == {0, 6, 1, 2, 7, 8}
+        assert T2_tilde == {"x", "f", "a", "b", "g", "h"}
 
         # Remove a node from the mapping
         m.pop(4)
@@ -153,5 +153,5 @@ class TestTinoutUpdating:
 
         assert T1 == set()
         assert T2 == set()
-        assert T1out == set(self.G1.nodes())
-        assert T2out == set(self.G2.nodes())
+        assert T1_tilde == set(self.G1.nodes())
+        assert T2_tilde == set(self.G2.nodes())
