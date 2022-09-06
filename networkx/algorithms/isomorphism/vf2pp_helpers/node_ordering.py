@@ -37,21 +37,26 @@ def _matching_order(graph_params):
     node_order = []
 
     while V1_unordered:
-        rarest_nodes = _all_argmax(
-            V1_unordered, key_function=lambda x: -label_rarity[G1_labels[x]]
-        )
+        max_rarity = min(label_rarity[G1_labels[x]] for x in V1_unordered)
+        rarest_nodes = [
+            n for n in V1_unordered if label_rarity[G1_labels[n]] == max_rarity
+        ]
         max_node = max(rarest_nodes, key=G1.degree)
 
         for dlevel_nodes in nx.bfs_layers(G1, max_node):
             nodes_to_add = dlevel_nodes.copy()
             while nodes_to_add:
-                max_used_deg_nodes = _all_argmax(
-                    nodes_to_add, key_function=lambda x: used_degrees[x]
+                max_used_degree = max(used_degrees[n] for n in nodes_to_add)
+                max_used_degree_nodes = [
+                    n for n in nodes_to_add if used_degrees[n] == max_used_degree
+                ]
+                max_degree = max(G1.degree[n] for n in max_used_degree_nodes)
+                max_degree_nodes = [
+                    n for n in max_used_degree_nodes if G1.degree[n] == max_degree
+                ]
+                next_node = min(
+                    max_degree_nodes, key=lambda x: label_rarity[G1_labels[x]]
                 )
-                max_deg_nodes = _all_argmax(
-                    max_used_deg_nodes, key_function=lambda x: G1.degree[x]
-                )
-                next_node = min(max_deg_nodes, key=lambda x: label_rarity[G1_labels[x]])
 
                 node_order.append(next_node)
                 for node in G1.neighbors(next_node):
@@ -62,17 +67,3 @@ def _matching_order(graph_params):
                 V1_unordered.discard(next_node)
 
     return node_order
-
-
-def _all_argmax(nodes, key_function):
-    best_nodes = []
-    best = -float("inf")
-    for n in nodes:
-        if key_function(n) > best:
-            best = key_function(n)
-            best_nodes = [n]
-            continue
-        if key_function(n) == best:
-            best_nodes.append(n)
-
-    return best_nodes

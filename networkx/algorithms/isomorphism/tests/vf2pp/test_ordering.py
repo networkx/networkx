@@ -4,39 +4,10 @@ import utils
 
 import networkx as nx
 from networkx.algorithms.isomorphism.vf2pp import _GraphParameters
-from networkx.algorithms.isomorphism.vf2pp_helpers.node_ordering import (
-    _all_argmax,
-    _matching_order,
-)
+from networkx.algorithms.isomorphism.vf2pp_helpers.node_ordering import _matching_order
 
 
 class TestNodeOrdering:
-    def test_rare_nodes_custom_graph(self):
-        G = nx.Graph()
-        V = G.nodes()
-        edges = [
-            (1, 2),
-            (1, 5),
-            (1, 4),
-            (2, 3),
-            (2, 6),
-            (3, 4),
-            (3, 7),
-            (4, 8),
-            (5, 8),
-            (5, 6),
-            (6, 7),
-            (7, 8),
-        ]
-        colors = ["blue", "blue", "red", "red", "red", "green", "green", "green"]
-
-        G.add_edges_from(edges)
-        nx.set_node_attributes(G, dict(zip(G, itertools.cycle(colors))), "label")
-
-        l1, l2 = nx.get_node_attributes(G, "label"), nx.get_node_attributes(G, "label")
-        rarity = {label: len(nodes) for label, nodes in nx.utils.groups(l2).items()}
-        assert set(_all_argmax(V, key_function=lambda x: -rarity[l1[x]])) == {1, 2}
-
     def test_empty_graph(self):
         G1 = nx.Graph()
         G2 = nx.Graph()
