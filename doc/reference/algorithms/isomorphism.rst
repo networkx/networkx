@@ -20,8 +20,8 @@ VF2++
    :toctree: generated/
 
    vf2pp_is_isomorphic
-   vf2pp_all_mappings
-   vf2pp_mapping
+   vf2pp_all_isomorphisms
+   vf2pp_isomorphism
 
 Tree Isomorphism
 -----------------
