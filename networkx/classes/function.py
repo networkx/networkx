@@ -1244,7 +1244,7 @@ def is_path(G, path):
         A NetworkX graph.
 
     path : list
-        A list of node which defines the path to traverse
+        A list of nodes which defines the path to traverse
 
     Returns
     -------
