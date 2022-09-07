@@ -1,3 +1,5 @@
+import pytest
+
 import networkx as nx
 from networkx.algorithms.isomorphism.vf2pp import (
     _feasibility,
@@ -143,8 +145,9 @@ class TestGraphISOFeasibility:
         G1.add_edge(u, 7)
         assert _consistent_PT(u, v, gparams, sparams)
 
-    def test_cut_inconsistent_labels(self):
-        G1 = nx.Graph(
+    @pytest.mark.parametrize("graph_type", (nx.Graph, nx.DiGraph))
+    def test_cut_inconsistent_labels(self, graph_type):
+        G1 = graph_type(
             [
                 (0, 1),
                 (1, 2),
@@ -157,7 +160,7 @@ class TestGraphISOFeasibility:
                 (5, 3),
             ]
         )
-        G2 = nx.Graph(
+        G2 = graph_type(
             [
                 ("a", "b"),
                 ("b", "c"),
@@ -1790,7 +1793,7 @@ class TestDiGraphISOFeasibility:
         sparams.T2.remove(mapped[5])
         assert not _cut_PT(u, v, gparams, sparams)
 
-    def test_test(self):
+    def test_predecessor_T1_in_fail(self):
         G1 = nx.DiGraph(
             [(0, 1), (0, 3), (4, 0), (1, 5), (5, 2), (3, 6), (4, 6), (6, 5)]
         )
