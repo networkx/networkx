@@ -31,6 +31,10 @@ def _matching_order(graph_params):
     if not G1 and not G2:
         return {}
 
+    if G1.is_directed():  # todo: figure out
+        G1 = nx.Graph(G1)
+        G2 = nx.Graph(G2)
+
     V1_unordered = set(G1.nodes())
     label_rarity = {label: len(nodes) for label, nodes in nodes_of_G2Labels.items()}
     used_degrees = {node: 0 for node in G1}
