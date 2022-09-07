@@ -7,8 +7,8 @@ An implementation of the VF2++ algorithm for Graph Isomorphism testing.
 
 The simplest interface to use this module is to call:
 `vf2pp_is_isomorphic`: to check whether two graphs are isomorphic.
-`vf2pp_mapping`: to obtain the node mapping between two graphs, in case they are isomorphic.
-`vf2pp_all_mappings`: to generate all possible mappings between two graphs, if isomorphic.
+`vf2pp_isomorphism`: to obtain the node mapping between two graphs, in case they are isomorphic.
+`vf2pp_all_isomorphisms`: to generate all possible mappings between two graphs, if isomorphic.
 
 Introduction
 ------------
@@ -31,9 +31,9 @@ Without node labels:
 >>> import networkx as nx
 >>> G1 = nx.path_graph(4)
 >>> G2 = nx.path_graph(4)
->>> nx.vf2pp_is_isomorphic(G1, G2, node_labels=None)
+>>> nx.vf2pp_is_isomorphic(G1, G2, node_label=None)
 True
->>> nx.vf2pp_mapping(G1, G2, node_labels=None)
+>>> nx.vf2pp_isomorphism(G1, G2, node_label=None)
 {1: 1, 2: 2, 0: 0, 3: 3}
 
 With node labels:
@@ -43,9 +43,9 @@ With node labels:
 >>> mapped = {1: 1, 2: 2, 3: 3, 0: 0}
 >>> nx.set_node_attributes(G1, dict(zip(G1, ["blue", "red", "green", "yellow"])), "label")
 >>> nx.set_node_attributes(G2, dict(zip([mapped[u] for u in G1], ["blue", "red", "green", "yellow"])), "label")
->>> nx.vf2pp_is_isomorphic(G1, G2, node_labels="label")
+>>> nx.vf2pp_is_isomorphic(G1, G2, node_label="label")
 True
->>> nx.vf2pp_mapping(G1, G2, node_labels="label")
+>>> nx.vf2pp_isomorphism(G1, G2, node_label="label")
 {1: 1, 2: 2, 0: 0, 3: 3}
 
 """
@@ -60,7 +60,7 @@ from networkx.algorithms.isomorphism.vf2pp_helpers.state import (
     _update_Tinout,
 )
 
-__all__ = ["vf2pp_mapping", "vf2pp_is_isomorphic", "vf2pp_all_mappings"]
+__all__ = ["vf2pp_isomorphism", "vf2pp_is_isomorphic", "vf2pp_all_isomorphisms"]
 
 _GraphParameters = collections.namedtuple(
     "_GraphParameters",
@@ -92,7 +92,7 @@ _StateParameters = collections.namedtuple(
 )
 
 
-def vf2pp_mapping(G1, G2, node_labels=None, default_label=None):
+def vf2pp_isomorphism(G1, G2, node_label=None, default_label=None):
     """Return an isomorphic mapping between `G1` and `G2` if it exists.
 
     Parameters
@@ -100,7 +100,7 @@ def vf2pp_mapping(G1, G2, node_labels=None, default_label=None):
     G1,G2: NetworkX Graph or MultiGraph instances.
         The two graphs to check for isomorphism or monomorphism.
 
-    node_labels: Label name
+    node_label: Label name
         The label name of all nodes
 
     default_label: Label name
@@ -111,13 +111,13 @@ def vf2pp_mapping(G1, G2, node_labels=None, default_label=None):
     Node mapping, if the two graphs are isomorphic. None otherwise.
     """
     try:
-        mapping = next(vf2pp_all_mappings(G1, G2, node_labels, default_label))
+        mapping = next(vf2pp_all_isomorphisms(G1, G2, node_label, default_label))
         return mapping
     except StopIteration:
         return None
 
 
-def vf2pp_is_isomorphic(G1, G2, node_labels=None, default_label=None):
+def vf2pp_is_isomorphic(G1, G2, node_label=None, default_label=None):
     """Examines whether G1 and G2 are isomorphic.
 
     Parameters
@@ -125,7 +125,7 @@ def vf2pp_is_isomorphic(G1, G2, node_labels=None, default_label=None):
     G1,G2: NetworkX Graph or MultiGraph instances.
         The two graphs to check for isomorphism or monomorphism.
 
-    node_labels: Label name
+    node_label: Label name
         The label name of all nodes
 
     default_label: Label name
@@ -135,12 +135,12 @@ def vf2pp_is_isomorphic(G1, G2, node_labels=None, default_label=None):
     -------
     True if the two graphs are isomorphic. False otherwise.
     """
-    if vf2pp_mapping(G1, G2, node_labels, default_label) is not None:
+    if vf2pp_isomorphism(G1, G2, node_label, default_label) is not None:
         return True
     return False
 
 
-def vf2pp_all_mappings(G1, G2, node_labels=None, default_label=None):
+def vf2pp_all_isomorphisms(G1, G2, node_label=None, default_label=None):
     """Yields all the possible mappings between G1 and G2.
 
     Parameters
@@ -148,7 +148,7 @@ def vf2pp_all_mappings(G1, G2, node_labels=None, default_label=None):
     G1,G2: NetworkX Graph or MultiGraph instances.
         The two graphs to check for isomorphism.
 
-    node_labels: string or None
+    node_label: string or None
         The node attribute name within G that indicates node labels.
         If None, then no node labels are used to compute isomorphisms.
 
@@ -172,7 +172,7 @@ def vf2pp_all_mappings(G1, G2, node_labels=None, default_label=None):
 
     # Initialize parameters and cache necessary information about degree and labels
     graph_params, state_params = _initialize_parameters(
-        G1, G2, node_labels, default_label
+        G1, G2, node_label, default_label
     )
 
     # Check if G1 and G2 have the same labels, and that number of nodes per label is equal between the two graphs
@@ -241,7 +241,7 @@ def _precheck_label_properties(graph_params):
     return True
 
 
-def _initialize_parameters(G1, G2, node_labels, default_label):
+def _initialize_parameters(G1, G2, node_labels=None, default_label=-1):
     """Initializes all the necessary parameters for VF2++
 
     Parameters

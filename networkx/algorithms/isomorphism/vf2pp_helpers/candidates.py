@@ -53,17 +53,18 @@ def _find_candidates(u, graph_params, state_params):
             candidates.intersection_update(G2_nodes_of_degree[G1.degree[u]])
         candidates.intersection_update(T2_tilde)
         candidates.difference_update(reverse_mapping)
-        candidates.difference_update(
-            {
-                node
-                for node in candidates
-                if G1.number_of_edges(u, u) != G2.number_of_edges(node, node)
-            }
-        )
+        if G1.is_multigraph():
+            candidates.difference_update(
+                {
+                    node
+                    for node in candidates
+                    if G1.number_of_edges(u, u) != G2.number_of_edges(node, node)
+                }
+            )
         return candidates
 
     nbr1 = covered_neighbors[0]
-    common_nodes = set(G2[mapping[nbr1]])
+    common_nodes = set(nx.all_neighbors(G2, mapping[nbr1]))
 
     for nbr1 in covered_neighbors[1:]:
         common_nodes.intersection_update(nx.all_neighbors(G2, mapping[nbr1]))
@@ -76,11 +77,12 @@ def _find_candidates(u, graph_params, state_params):
     else:
         common_nodes.intersection_update(G2_nodes_of_degree[G1.degree[u]])
     common_nodes.intersection_update(nodes_of_G2Labels[G1_labels[u]])
-    common_nodes.difference_update(
-        {
-            node
-            for node in common_nodes
-            if G1.number_of_edges(u, u) != G2.number_of_edges(node, node)
-        }
-    )
+    if G1.is_multigraph():
+        common_nodes.difference_update(
+            {
+                node
+                for node in common_nodes
+                if G1.number_of_edges(u, u) != G2.number_of_edges(node, node)
+            }
+        )
     return common_nodes
