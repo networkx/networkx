@@ -740,6 +740,11 @@ def set_edge_attributes(G, values, name=None):
         >>> G[1][2]["attr2"]
         3
 
+    The attributes of one Graph can be used to set those of another.
+
+        >>> H = nx.path_graph(3)
+        >>> nx.set_edge_attributes(H, G.edges)
+
     Note that if the dict contains edges that are not in `G`, they are
     silently ignored::
 
@@ -747,6 +752,29 @@ def set_edge_attributes(G, values, name=None):
         >>> nx.set_edge_attributes(G, {(1, 2): {"weight": 2.0}})
         >>> (1, 2) in G.edges()
         False
+
+    For multigraphs, the `values` dict is expected to be keyed by 3-tuples
+    including the edge key::
+
+        >>> MG = nx.MultiGraph()
+        >>> edges = [(0, 1), (0, 1)]
+        >>> MG.add_edges_from(edges)  # Returns list of edge keys
+        [0, 1]
+        >>> attributes = {(0, 1, 0): {"cost": 21}, (0, 1, 1): {"cost": 7}}
+        >>> nx.set_edge_attributes(MG, attributes)
+        >>> MG[0][1][0]["cost"]
+        21
+        >>> MG[0][1][1]["cost"]
+        7
+
+    If MultiGraph attributes are desired for a Graph, you must convert the 3-tuple
+    multiedge to a 2-tuple edge and the last multiedge's attribute value will
+    overwrite the previous values. Continuing from the previous case we get::
+
+        >>> H = nx.path_graph([0, 1, 2])
+        >>> nx.set_edge_attributes(H, {(u, v): ed for u, v, ed in MG.edges.data()})
+        >>> nx.get_edge_attributes(H, "cost")
+        {(0, 1): 7}
 
     """
     if name is not None:
@@ -1205,7 +1233,10 @@ def number_of_selfloops(G):
 
 
 def is_path(G, path):
-    """Returns whether or not the specified path exists
+    """Returns whether or not the specified path exists.
+
+    For it to return True, every node on the path must exist and
+    each consecutive pair must be connected via one or more edges.
 
     Parameters
     ----------
@@ -1222,6 +1253,8 @@ def is_path(G, path):
 
     """
     for node, nbr in nx.utils.pairwise(path):
+        if node not in G:
+            return False
         if nbr not in G[node]:
             return False
     return True
