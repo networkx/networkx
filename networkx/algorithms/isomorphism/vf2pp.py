@@ -151,7 +151,7 @@ def vf2pp_is_isomorphic(G1, G2, node_label=None, default_label=None):
     bool
         True if the two graphs are isomorphic, False otherwise.
     """
-    if vf2pp_isomorphism(G1, G2, node_labels, default_label) is not None:
+    if vf2pp_isomorphism(G1, G2, node_label, default_label) is not None:
         return True
     return False
 
