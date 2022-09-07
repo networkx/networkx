@@ -54,6 +54,9 @@ Improvements
   This fixes a bug related for ``mapping=str`` and may change the behavior for
   other ``mapping`` arguments that implement both ``__getitem__`` and
   ``__call__``.
+- [`#5898 <https://github.com/networkx/networkx/pull/5898>`_]
+  Implements computing and checking for minimal d-separators between two nodes.
+  Also adds functionality to DAGs for computing v-structures.
 
 API Changes
 -----------
