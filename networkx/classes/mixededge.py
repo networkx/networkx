@@ -92,10 +92,6 @@ class MixedEdgeGraph:
                     "All graph object inputs must be one of Networkx Graph or DiGraph."
                 )
             nodes = set(graphs[0].nodes)
-            if not all(set(graph.nodes) == nodes for graph in graphs):
-                raise RuntimeError(
-                    "All input networkx graphs must have the same nodes."
-                )
 
             # dictionary of internal graphs
             self._edge_graphs = {

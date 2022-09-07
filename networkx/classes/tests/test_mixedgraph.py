@@ -203,6 +203,29 @@ class TestMixedEdgeGraph(BaseMixedEdgeGraphTester):
         self.K3.add_edge_type(nx.Graph(), self.K3_edge_type)
         self.K3.add_edges_from(self.k3edges, edge_type=self.K3_edge_type)
 
+    def test_init(self):
+        directed_edges = nx.DiGraph(
+            [
+                ("x8", "x2"),
+                ("x9", "x2"),
+                ("x10", "x1"),
+                ("x2", "x4"),
+                ("x4", "x6"),  # start of cycle
+                ("x6", "x5"),
+                ("x5", "x3"),
+                ("x3", "x4"),  # end of cycle
+                ("x6", "x7"),
+            ]
+        )
+        bidirected_edges = nx.Graph([("x1", "x3")])
+        G = nx.MixedEdgeGraph(
+            [directed_edges, bidirected_edges], ["directed", "bidirected"]
+        )
+
+        # all nodes should match after adding them to the mixed-edge-graph
+        for _, graph in G.get_graphs().items():
+            assert set(G.nodes) == set(graph.nodes)
+
     def test_add_edge(self):
         edge_type = "bidirected"
         G = self.Graph()
