@@ -1,6 +1,3 @@
-import networkx as nx
-
-
 def _update_Tinout(new_node1, new_node2, graph_params, state_params):
     """Updates the Ti/Ti_out (i=1,2) when a new node pair u-v is added to the mapping.
 
