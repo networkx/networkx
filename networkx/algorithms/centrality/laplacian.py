@@ -80,7 +80,7 @@ def laplacian_centrality(
     import scipy.sparse  # call as sp.sparse
 
     def eigh_f(A):
-        return sp.linalg.eig(A.to_array(), eigvals_only=True)
+        return sp.linalg.eigh(A.toarray(), eigvals_only=True)
 
     if len(G) == 0:
         raise nx.NetworkXPointlessConcept(
