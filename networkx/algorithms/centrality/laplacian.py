@@ -88,17 +88,25 @@ def laplacian_centrality(
         )
 
     if G.is_directed():
+<<<<<<< HEAD
         lap_matrix = nx.directed_laplacian_matrix(G, **directed_laplacian_matrix_args)
         eigh = sp.linalg.eigh(lap_matrix, eigvals_only=True)
 
     else:
         lap_matrix = nx.laplacian_matrix(G)
         eigh = eigh_f(lap_matrix)
+=======
+        laplacian_matrix = nx.directed_laplacian_matrix(
+            G, **directed_laplacian_matrix_args
+        )
+        eigh = sp.linalg.eigh(laplacian_matrix)
+    else:
+        laplacian_matrix = nx.laplacian_matrix(G)
+        eigh = sp.linalg.eigh(laplacian_matrix.toarray())
+>>>>>>> ee9f27591379763d7f59df16bfeecaf0533c3dcb
 
     if normalized:
-        sum_of_full = np.power(
-            sp.linalg.eigh(lap_matrix.toarray(), eigvals_only=True), 2
-        ).sum()
+        sum_of_full = np.power(eigh, 2).sum()
     else:
         sum_of_full = 1
 
