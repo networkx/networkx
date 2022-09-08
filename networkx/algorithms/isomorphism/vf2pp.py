@@ -199,12 +199,15 @@ def vf2pp_all_isomorphisms(G1, G2, node_label=None, default_label=-1):
         G1_degree = dict(G1.degree)
         G2_degree = dict(G2.degree)
 
+    if not G1.is_directed():
+        find_candidates = _find_candidates
+    else:
+        find_candidates = _find_candidates_Di
+
     # Check that both graphs have the same number of nodes and degree sequence
     if G1.order() != G2.order():
         return False
-    if sorted(d for _, d in G1_degree.items()) != sorted(
-        d for _, d in G2_degree.items()
-    ):
+    if sorted(G1_degree.values()) != sorted(G2_degree.values()):
         return False
 
     # Initialize parameters and cache necessary information about degree and labels
@@ -221,14 +224,9 @@ def vf2pp_all_isomorphisms(G1, G2, node_label=None, default_label=-1):
 
     # Initialize the stack
     stack = []
-    if not G1.is_directed():
-        candidates = iter(
-            _find_candidates(node_order[0], graph_params, state_params, G1_degree)
-        )
-    else:
-        candidates = iter(
-            _find_candidates_Di(node_order[0], graph_params, state_params, G1_degree)
-        )
+    candidates = iter(
+        find_candidates(node_order[0], graph_params, state_params, G1_degree)
+    )
     stack.append((node_order[0], candidates))
 
     mapping = state_params.mapping
@@ -268,18 +266,11 @@ def vf2pp_all_isomorphisms(G1, G2, node_label=None, default_label=-1):
             reverse_mapping[candidate] = current_node
             _update_Tinout(current_node, candidate, graph_params, state_params)
             # Append the next node and its candidates to the stack
-            if not G1.is_directed():
-                candidates = iter(
-                    _find_candidates(
-                        node_order[matching_node], graph_params, state_params, G1_degree
-                    )
+            candidates = iter(
+                find_candidates(
+                    node_order[matching_node], graph_params, state_params, G1_degree
                 )
-            else:
-                candidates = iter(
-                    _find_candidates_Di(
-                        node_order[matching_node], graph_params, state_params, G1_degree
-                    )
-                )
+            )
             stack.append((node_order[matching_node], candidates))
             matching_node += 1
 

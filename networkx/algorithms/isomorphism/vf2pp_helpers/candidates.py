@@ -1,4 +1,6 @@
-def _find_candidates(u, graph_params, state_params, G1_degree):
+def _find_candidates(
+    u, graph_params, state_params, G1_degree
+):  # todo: make the 4th argument the degree of u
     """Given node u of G1, finds the candidates of u from G2.
 
     Parameters
@@ -104,12 +106,11 @@ def _find_candidates_Di(u, graph_params, state_params, G1_degree):
         for succ1 in covered_successors[1:]:
             common_nodes.intersection_update(G2.pred[mapping[succ1]])
     else:
-        pred1 = covered_predecessors[0]
+        pred1 = covered_predecessors.pop()
         common_nodes = set(G2[mapping[pred1]])
 
-    if covered_predecessors:
-        for pred1 in covered_predecessors:
-            common_nodes.intersection_update(G2[mapping[pred1]])
+    for pred1 in covered_predecessors:
+        common_nodes.intersection_update(G2[mapping[pred1]])
 
     common_nodes.difference_update(reverse_mapping)
     common_nodes.intersection_update(G2_nodes_of_degree[G1_degree[u]])
