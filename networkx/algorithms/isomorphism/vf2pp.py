@@ -58,7 +58,10 @@ True
 import collections
 
 import networkx as nx
-from networkx.algorithms.isomorphism.vf2pp_helpers.candidates import _find_candidates
+from networkx.algorithms.isomorphism.vf2pp_helpers.candidates import (
+    _find_candidates,
+    _find_candidates_Di,
+)
 from networkx.algorithms.isomorphism.vf2pp_helpers.feasibility import _feasibility
 from networkx.algorithms.isomorphism.vf2pp_helpers.node_ordering import _matching_order
 from networkx.algorithms.isomorphism.vf2pp_helpers.state import (
@@ -182,21 +185,31 @@ def vf2pp_all_isomorphisms(G1, G2, node_label=None, default_label=-1):
     if G1.number_of_nodes() == 0 or G2.number_of_nodes() == 0:
         return False
 
-    # Check that both graphs have the same number of nodes and degree sequence
+    # Create the degree dicts based on graph type
     if G1.is_directed():
-        if sorted(d for n, d in G1.out_degree()) != sorted(
-            d for n, d in G2.out_degree()
-        ):
-            return False
-        if sorted(d for n, d in G1.in_degree()) != sorted(d for n, d in G2.in_degree()):
-            return False
+        G1_degree = {
+            n: (in_degree, out_degree)
+            for (n, in_degree), (_, out_degree) in zip(G1.in_degree, G1.out_degree)
+        }
+        G2_degree = {
+            n: (in_degree, out_degree)
+            for (n, in_degree), (_, out_degree) in zip(G2.in_degree, G2.out_degree)
+        }
     else:
-        if not nx.faster_could_be_isomorphic(G1, G2):
-            return False
+        G1_degree = dict(G1.degree)
+        G2_degree = dict(G2.degree)
+
+    # Check that both graphs have the same number of nodes and degree sequence
+    if G1.order() != G2.order():
+        return False
+    if sorted(d for _, d in G1_degree.items()) != sorted(
+        d for _, d in G2_degree.items()
+    ):
+        return False
 
     # Initialize parameters and cache necessary information about degree and labels
     graph_params, state_params = _initialize_parameters(
-        G1, G2, node_label, default_label
+        G1, G2, G2_degree, node_label, default_label
     )
 
     # Check if G1 and G2 have the same labels, and that number of nodes per label is equal between the two graphs
@@ -208,7 +221,14 @@ def vf2pp_all_isomorphisms(G1, G2, node_label=None, default_label=-1):
 
     # Initialize the stack
     stack = []
-    candidates = iter(_find_candidates(node_order[0], graph_params, state_params))
+    if not G1.is_directed():
+        candidates = iter(
+            _find_candidates(node_order[0], graph_params, state_params, G1_degree)
+        )
+    else:
+        candidates = iter(
+            _find_candidates_Di(node_order[0], graph_params, state_params, G1_degree)
+        )
     stack.append((node_order[0], candidates))
 
     mapping = state_params.mapping
@@ -248,9 +268,18 @@ def vf2pp_all_isomorphisms(G1, G2, node_label=None, default_label=-1):
             reverse_mapping[candidate] = current_node
             _update_Tinout(current_node, candidate, graph_params, state_params)
             # Append the next node and its candidates to the stack
-            candidates = iter(
-                _find_candidates(node_order[matching_node], graph_params, state_params)
-            )
+            if not G1.is_directed():
+                candidates = iter(
+                    _find_candidates(
+                        node_order[matching_node], graph_params, state_params, G1_degree
+                    )
+                )
+            else:
+                candidates = iter(
+                    _find_candidates_Di(
+                        node_order[matching_node], graph_params, state_params, G1_degree
+                    )
+                )
             stack.append((node_order[matching_node], candidates))
             matching_node += 1
 
@@ -265,7 +294,7 @@ def _precheck_label_properties(graph_params):
     return True
 
 
-def _initialize_parameters(G1, G2, node_labels=None, default_label=-1):
+def _initialize_parameters(G1, G2, G2_degree, node_labels=None, default_label=-1):
     """Initializes all the necessary parameters for VF2++
 
     Parameters
@@ -303,20 +332,6 @@ def _initialize_parameters(G1, G2, node_labels=None, default_label=-1):
     G1_labels = dict(G1.nodes(data=node_labels, default=default_label))
     G2_labels = dict(G2.nodes(data=node_labels, default=default_label))
 
-    if G1.is_directed():
-        G2_nodes_of_degree = nx.utils.groups(
-            {
-                node: (in_degree, out_degree)
-                for (node, in_degree), (_, out_degree) in zip(
-                    G2.in_degree(), G2.out_degree()
-                )
-            }
-        )
-    else:
-        G2_nodes_of_degree = nx.utils.groups(
-            {node: degree for node, degree in G2.degree()}
-        )
-
     graph_params = _GraphParameters(
         G1,
         G2,
@@ -324,7 +339,7 @@ def _initialize_parameters(G1, G2, node_labels=None, default_label=-1):
         G2_labels,
         nx.utils.groups(G1_labels),
         nx.utils.groups(G2_labels),
-        G2_nodes_of_degree,
+        nx.utils.groups(G2_degree),
     )
 
     T1, T1_in = set(), set()

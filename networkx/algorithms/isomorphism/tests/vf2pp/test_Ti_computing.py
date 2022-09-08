@@ -41,7 +41,8 @@ class TestGraphTinoutUpdating:
     G2 = nx.relabel_nodes(G1, mapping=mapped)
 
     def test_updating(self):
-        gparams, sparams = _initialize_parameters(self.G1, self.G2)
+        G2_degree = dict(self.G2.degree)
+        gparams, sparams = _initialize_parameters(self.G1, self.G2, G2_degree)
         m, m_rev, T1, _, T1_tilde, _, T2, _, T2_tilde, _ = sparams
 
         # Add node to the mapping
@@ -189,7 +190,13 @@ class TestDiGraphTinoutUpdating:
     G2 = nx.relabel_nodes(G1, mapping=mapped)
 
     def test_updating(self):
-        gparams, sparams = _initialize_parameters(self.G1, self.G2)
+        G2_degree = {
+            n: (in_degree, out_degree)
+            for (n, in_degree), (_, out_degree) in zip(
+                self.G2.in_degree, self.G2.out_degree
+            )
+        }
+        gparams, sparams = _initialize_parameters(self.G1, self.G2, G2_degree)
         m, m_rev, T1_out, T1_in, T1_tilde, _, T2_out, T2_in, T2_tilde, _ = sparams
 
         # Add node to the mapping
