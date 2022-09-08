@@ -202,9 +202,7 @@ def vf2pp_all_isomorphisms(G1, G2, node_label=None, default_label=-1):
     # Check that both graphs have the same number of nodes and degree sequence
     if G1.order() != G2.order():
         return False
-    if sorted(d for _, d in G1_degree.items()) != sorted(
-        d for _, d in G2_degree.items()
-    ):
+    if sorted(G1_degree.values()) != sorted(G2_degree.values()):
         return False
 
     # Initialize parameters and cache necessary information about degree and labels
