@@ -37,7 +37,7 @@ Without node labels:
 >>> import networkx as nx
 >>> G1 = nx.path_graph(4)
 >>> G2 = nx.path_graph(4)
->>> nx.vf2pp_is_isomorphic(G1, G2, node_labels=None)
+>>> nx.vf2pp_is_isomorphic(G1, G2, node_label=None)
 True
 >>> nx.vf2pp_isomorphism(G1, G2, node_label=None)
 {1: 1, 2: 2, 0: 0, 3: 3}
@@ -49,7 +49,7 @@ With node labels:
 >>> mapped = {1: 1, 2: 2, 3: 3, 0: 0}
 >>> nx.set_node_attributes(G1, dict(zip(G1, ["blue", "red", "green", "yellow"])), "label")
 >>> nx.set_node_attributes(G2, dict(zip([mapped[u] for u in G1], ["blue", "red", "green", "yellow"])), "label")
->>> nx.vf2pp_is_isomorphic(G1, G2, node_labels="label")
+>>> nx.vf2pp_is_isomorphic(G1, G2, node_label="label")
 True
 >>> nx.vf2pp_isomorphism(G1, G2, node_label="label")
 {1: 1, 2: 2, 0: 0, 3: 3}
@@ -95,7 +95,7 @@ def vf2pp_isomorphism(G1, G2, node_label=None, default_label=None):
     node_label : str, optional
         The name of the node attribute to be used when comparing nodes.
         The default is `None`, meaning node attributes are not considered
-        in the comparison. Any node that doesn't have the `node_labels`
+        in the comparison. Any node that doesn't have the `node_label`
         attribute uses `default_label` instead.
 
     default_label : scalar
@@ -114,7 +114,7 @@ def vf2pp_isomorphism(G1, G2, node_label=None, default_label=None):
         return None
 
 
-def vf2pp_is_isomorphic(G1, G2, node_labels=None, default_label=None):
+def vf2pp_is_isomorphic(G1, G2, node_label=None, default_label=None):
     """Examines whether G1 and G2 are isomorphic.
 
     Parameters
@@ -125,7 +125,7 @@ def vf2pp_is_isomorphic(G1, G2, node_labels=None, default_label=None):
     node_label : str, optional
         The name of the node attribute to be used when comparing nodes.
         The default is `None`, meaning node attributes are not considered
-        in the comparison. Any node that doesn't have the `node_labels`
+        in the comparison. Any node that doesn't have the `node_label`
         attribute uses `default_label` instead.
 
     default_label : scalar
@@ -137,12 +137,12 @@ def vf2pp_is_isomorphic(G1, G2, node_labels=None, default_label=None):
     bool
         True if the two graphs are isomorphic, False otherwise.
     """
-    if vf2pp_isomorphism(G1, G2, node_labels, default_label) is not None:
+    if vf2pp_isomorphism(G1, G2, node_label, default_label) is not None:
         return True
     return False
 
 
-def vf2pp_all_isomorphisms(G1, G2, node_labels=None, default_label=None):
+def vf2pp_all_isomorphisms(G1, G2, node_label=None, default_label=None):
     """Yields all the possible mappings between G1 and G2.
 
     Parameters
@@ -153,7 +153,7 @@ def vf2pp_all_isomorphisms(G1, G2, node_labels=None, default_label=None):
     node_label : str, optional
         The name of the node attribute to be used when comparing nodes.
         The default is `None`, meaning node attributes are not considered
-        in the comparison. Any node that doesn't have the `node_labels`
+        in the comparison. Any node that doesn't have the `node_label`
         attribute uses `default_label` instead.
 
     default_label : scalar
@@ -175,7 +175,7 @@ def vf2pp_all_isomorphisms(G1, G2, node_labels=None, default_label=None):
 
     # Initialize parameters and cache necessary information about degree and labels
     graph_params, state_params = _initialize_parameters(
-        G1, G2, node_labels, default_label
+        G1, G2, node_label, default_label
     )
 
     # Check if G1 and G2 have the same labels, and that number of nodes per label is equal between the two graphs
@@ -244,7 +244,7 @@ def _precheck_label_properties(graph_params):
     return True
 
 
-def _initialize_parameters(G1, G2, node_labels=None, default_label=-1):
+def _initialize_parameters(G1, G2, node_label=None, default_label=-1):
     """Initializes all the necessary parameters for VF2++
 
     Parameters
@@ -279,8 +279,8 @@ def _initialize_parameters(G1, G2, node_labels=None, default_label=-1):
         T1_out, T2_out: set
             Ti_out contains all the nodes from Gi, that are neither in the mapping nor in Ti
     """
-    G1_labels = dict(G1.nodes(data=node_labels, default=default_label))
-    G2_labels = dict(G2.nodes(data=node_labels, default=default_label))
+    G1_labels = dict(G1.nodes(data=node_label, default=default_label))
+    G2_labels = dict(G2.nodes(data=node_label, default=default_label))
 
     graph_params = _GraphParameters(
         G1,
