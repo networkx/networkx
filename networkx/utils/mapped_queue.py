@@ -47,8 +47,8 @@ class _HeapElement:
                 return self.element < other.element
             except TypeError as err:
                 raise TypeError(
-                    f"Consider using a tuple for the priority to avoid such comparisons: "
-                    f"{{k: (v, i) for i, (k,v) in enumerate(data.items())}}"
+                    f"To preserve the incompatible element names, consider pairing "
+                    f"them with priority values, in a tuple, that are sortable."
                 )
         return self.priority < other_priority
 
@@ -63,8 +63,8 @@ class _HeapElement:
                 return self.element > other.element
             except TypeError as err:
                 raise TypeError(
-                    f"Consider using a tuple for the priority to avoid such comparisons: "
-                    f"{{k: (v, i) for i, (k,v) in enumerate(data.items())}}"
+                    f"To preserve the incompatible element names, consider pairing "
+                    f"them with priority values, in a tuple, that are sortable."
                 )
         return self.priority > other_priority
 
