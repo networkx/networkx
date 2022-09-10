@@ -1243,19 +1243,17 @@ def is_path(G, path):
     G : graph
         A NetworkX graph.
 
-    path: list
-        A list of node labels which defines the path to traverse
+    path : list
+        A list of nodes which defines the path to traverse
 
     Returns
     -------
-    isPath: bool
-        A boolean representing whether or not the path exists
+    bool
+        True if `path` is a valid path in `G`
 
     """
     for node, nbr in nx.utils.pairwise(path):
-        if node not in G:
-            return False
-        if nbr not in G[node]:
+        if (node not in G) or (nbr not in G[node]):
             return False
     return True
 
