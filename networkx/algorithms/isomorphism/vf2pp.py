@@ -107,7 +107,7 @@ def vf2pp_isomorphism(G1, G2, node_label=None, default_label=None):
     node_label : str, optional
         The name of the node attribute to be used when comparing nodes.
         The default is `None`, meaning node attributes are not considered
-        in the comparison. Any node that doesn't have the `node_labels`
+        in the comparison. Any node that doesn't have the `node_label`
         attribute uses `default_label` instead.
 
     default_label : scalar
@@ -137,7 +137,7 @@ def vf2pp_is_isomorphic(G1, G2, node_label=None, default_label=None):
     node_label : str, optional
         The name of the node attribute to be used when comparing nodes.
         The default is `None`, meaning node attributes are not considered
-        in the comparison. Any node that doesn't have the `node_labels`
+        in the comparison. Any node that doesn't have the `node_label`
         attribute uses `default_label` instead.
 
     default_label : scalar
@@ -165,7 +165,7 @@ def vf2pp_all_isomorphisms(G1, G2, node_label=None, default_label=-1):
     node_label : str, optional
         The name of the node attribute to be used when comparing nodes.
         The default is `None`, meaning node attributes are not considered
-        in the comparison. Any node that doesn't have the `node_labels`
+        in the comparison. Any node that doesn't have the `node_label`
         attribute uses `default_label` instead.
 
     default_label : scalar
@@ -282,7 +282,7 @@ def _precheck_label_properties(graph_params):
     return True
 
 
-def _initialize_parameters(G1, G2, G2_degree, node_labels=None, default_label=-1):
+def _initialize_parameters(G1, G2, G2_degree, node_label=None, default_label=-1):
     """Initializes all the necessary parameters for VF2++
 
     Parameters
@@ -317,8 +317,8 @@ def _initialize_parameters(G1, G2, G2_degree, node_labels=None, default_label=-1
         T1_out, T2_out: set
             Ti_out contains all the nodes from Gi, that are neither in the mapping nor in Ti
     """
-    G1_labels = dict(G1.nodes(data=node_labels, default=default_label))
-    G2_labels = dict(G2.nodes(data=node_labels, default=default_label))
+    G1_labels = dict(G1.nodes(data=node_label, default=default_label))
+    G2_labels = dict(G2.nodes(data=node_label, default=default_label))
 
     graph_params = _GraphParameters(
         G1,
