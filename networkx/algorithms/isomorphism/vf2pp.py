@@ -58,16 +58,11 @@ True
 import collections
 
 import networkx as nx
-from networkx.algorithms.isomorphism.vf2pp_helpers.candidates import (
-    _find_candidates,
-    _find_candidates_Di,
-)
-from networkx.algorithms.isomorphism.vf2pp_helpers.feasibility import _feasibility
-from networkx.algorithms.isomorphism.vf2pp_helpers.node_ordering import _matching_order
-from networkx.algorithms.isomorphism.vf2pp_helpers.state import (
-    _restore_Tinout,
-    _update_Tinout,
-)
+
+from .vf2pp_helpers.candidates import _find_candidates, _find_candidates_Di
+from .vf2pp_helpers.feasibility import _feasibility
+from .vf2pp_helpers.node_ordering import _matching_order
+from .vf2pp_helpers.state import _restore_Tinout, _restore_Tinout_Di, _update_Tinout
 
 __all__ = ["vf2pp_isomorphism", "vf2pp_is_isomorphic", "vf2pp_all_isomorphisms"]
 
@@ -201,8 +196,10 @@ def vf2pp_all_isomorphisms(G1, G2, node_label=None, default_label=-1):
 
     if not G1.is_directed():
         find_candidates = _find_candidates
+        restore_Tinout = _restore_Tinout
     else:
         find_candidates = _find_candidates_Di
+        restore_Tinout = _restore_Tinout_Di
 
     # Check that both graphs have the same number of nodes and degree sequence
     if G1.order() != G2.order():
@@ -250,7 +247,7 @@ def vf2pp_all_isomorphisms(G1, G2, node_label=None, default_label=-1):
                 popped_node2 = mapping[popped_node1]
                 mapping.pop(popped_node1)
                 reverse_mapping.pop(popped_node2)
-                _restore_Tinout(popped_node1, popped_node2, graph_params, state_params)
+                restore_Tinout(popped_node1, popped_node2, graph_params, state_params)
             continue
 
         if _feasibility(current_node, candidate, graph_params, state_params):

@@ -6,6 +6,7 @@ from networkx.algorithms.isomorphism.vf2pp import (
 )
 from networkx.algorithms.isomorphism.vf2pp_helpers.state import (
     _restore_Tinout,
+    _restore_Tinout_Di,
     _update_Tinout,
 )
 
@@ -278,7 +279,7 @@ class TestDiGraphTinoutUpdating:
         # Remove a node from the mapping
         m.pop(0)
         m_rev.pop("x")
-        _restore_Tinout(0, self.mapped[0], gparams, sparams)
+        _restore_Tinout_Di(0, self.mapped[0], gparams, sparams)
 
         assert T1_out == {2, 7, 9, 8}
         assert T1_in == {1, 7}
@@ -290,7 +291,7 @@ class TestDiGraphTinoutUpdating:
         # Remove a node from the mapping
         m.pop(6)
         m_rev.pop("f")
-        _restore_Tinout(6, self.mapped[6], gparams, sparams)
+        _restore_Tinout_Di(6, self.mapped[6], gparams, sparams)
 
         assert T1_out == {2, 9, 8, 7}
         assert T1_in == {1}
@@ -302,7 +303,7 @@ class TestDiGraphTinoutUpdating:
         # Remove a node from the mapping
         m.pop(3)
         m_rev.pop("c")
-        _restore_Tinout(3, self.mapped[3], gparams, sparams)
+        _restore_Tinout_Di(3, self.mapped[3], gparams, sparams)
 
         assert T1_out == {9, 8, 7}
         assert T1_in == {3}
@@ -314,7 +315,7 @@ class TestDiGraphTinoutUpdating:
         # Remove a node from the mapping
         m.pop(5)
         m_rev.pop("e")
-        _restore_Tinout(5, self.mapped[5], gparams, sparams)
+        _restore_Tinout_Di(5, self.mapped[5], gparams, sparams)
 
         assert T1_out == {9, 5}
         assert T1_in == {3}
@@ -326,7 +327,7 @@ class TestDiGraphTinoutUpdating:
         # Remove a node from the mapping
         m.pop(4)
         m_rev.pop("d")
-        _restore_Tinout(4, self.mapped[4], gparams, sparams)
+        _restore_Tinout_Di(4, self.mapped[4], gparams, sparams)
 
         assert T1_out == set()
         assert T1_in == set()
