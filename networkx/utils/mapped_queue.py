@@ -47,7 +47,7 @@ class _HeapElement:
                 return self.element < other.element
             except TypeError as err:
                 raise TypeError(
-                    f"Consider using a tuple, with a priority value than can be compared."
+                    f"Consider using a tuple, with a priority value that can be compared."
                 )
         return self.priority < other_priority
 
@@ -62,7 +62,7 @@ class _HeapElement:
                 return self.element > other.element
             except TypeError as err:
                 raise TypeError(
-                    f"Consider using a tuple, with a priority value than can be compared."
+                    f"Consider using a tuple, with a priority value that can be compared."
                 )
         return self.priority > other_priority
 
