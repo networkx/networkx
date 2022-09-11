@@ -47,8 +47,7 @@ class _HeapElement:
                 return self.element < other.element
             except TypeError as err:
                 raise TypeError(
-                    f"To preserve the incompatible element names, consider pairing "
-                    f"them with priority values, in a tuple, that are sortable."
+                    f"Consider using a tuple, with a priority value than can be compared."
                 )
         return self.priority < other_priority
 
@@ -63,8 +62,7 @@ class _HeapElement:
                 return self.element > other.element
             except TypeError as err:
                 raise TypeError(
-                    f"To preserve the incompatible element names, consider pairing "
-                    f"them with priority values, in a tuple, that are sortable."
+                    f"Consider using a tuple, with a priority value than can be compared."
                 )
         return self.priority > other_priority
 
