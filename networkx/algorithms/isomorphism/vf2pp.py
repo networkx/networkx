@@ -58,13 +58,11 @@ True
 import collections
 
 import networkx as nx
-from networkx.algorithms.isomorphism.vf2pp_helpers.candidates import _find_candidates
-from networkx.algorithms.isomorphism.vf2pp_helpers.feasibility import _feasibility
-from networkx.algorithms.isomorphism.vf2pp_helpers.node_ordering import _matching_order
-from networkx.algorithms.isomorphism.vf2pp_helpers.state import (
-    _restore_Tinout,
-    _update_Tinout,
-)
+
+from .vf2pp_helpers.candidates import _find_candidates
+from .vf2pp_helpers.feasibility import _feasibility
+from .vf2pp_helpers.node_ordering import _matching_order
+from .vf2pp_helpers.state import _restore_Tinout, _update_Tinout
 
 __all__ = ["vf2pp_isomorphism", "vf2pp_is_isomorphic", "vf2pp_all_isomorphisms"]
 
