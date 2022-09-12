@@ -369,7 +369,7 @@ def _biconnected_dfs(G, components=True):
                 if len(stack) > 1:
                     if low[parent] >= discovery[grandparent]:
                         if components:
-                            ind = edge_index(grandparent, child)
+                            ind = edge_index[grandparent, parent]
                             yield edge_stack[ind:]
                             del edge_stack[ind:]
 
@@ -379,7 +379,7 @@ def _biconnected_dfs(G, components=True):
                 elif stack:  # length 1 so grandparent is root
                     root_children += 1
                     if components:
-                        ind = edge_index(grandparent, child)
+                        ind = edge_index[grandparent, parent]
                         yield edge_stack[ind:]
                         del edge_stack[ind:]
         if not components:
