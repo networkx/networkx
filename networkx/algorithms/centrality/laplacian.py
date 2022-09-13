@@ -6,7 +6,7 @@ __all__ = ["laplacian_centrality"]
 
 
 def laplacian_centrality(
-    G, normalized=True, nbunch=None, **directed_laplacian_matrix_args
+    G, normalized=True, nodelist=None, weight=None, walk_type=None, alpha=0.95
 ):
     r"""Compute the Laplacian centrality for nodes in the graph `G`.
 
@@ -37,11 +37,17 @@ def laplacian_centrality(
         If False the centrality score for each node is the drop in Laplacian
         energy when that node is removed.
 
-    nbunch : list (default = None)
-        An nbunch is a single node, container of nodes or None (representing all nodes).
+    nodelist : list, optional (default = None)
+        The rows and columns are ordered according to the nodes in nodelist. If nodelist is None, then the ordering is produced by G.nodes().
 
-    directed_laplacian_matrix_args : dictionary (default = None)
-        Parameters of the nx.directed_laplacian_matrix function.
+    weight: string or None, optional (default=`weight`)
+        Optional parameter for the Laplacian matrix calculation. The edge data key used to compute each value in the matrix. If None, then each edge has weight 1.
+
+    walk_type : string or None, optional (default=None)
+        Optional parameter for the Laplacian matrix calculation. If None, P is selected depending on the properties of the graph. Otherwise is one of `random`, `lazy`, or `pagerank`.
+
+    alpha : real (default = 0.95)
+        Optional parameter for the Laplacian matrix calculation. (1 - alpha) is the teleportation probability used with pagerank.
 
     Returns
     -------
@@ -88,11 +94,11 @@ def laplacian_centrality(
         )
 
     if G.is_directed():
-        lap_matrix = nx.directed_laplacian_matrix(G, **directed_laplacian_matrix_args)
+        lap_matrix = nx.directed_laplacian_matrix(G, nodelist, weight, walk_type, alpha)
         eigh = sp.linalg.eigh(lap_matrix, eigvals_only=True)
 
     else:
-        lap_matrix = nx.laplacian_matrix(G)
+        lap_matrix = nx.laplacian_matrix(G, nodelist, weight)
         eigh = eigh_f(lap_matrix)
 
     if normalized:
@@ -101,7 +107,7 @@ def laplacian_centrality(
         sum_of_full = 1
 
     laplace_centralities_dict = {}
-    for i, node in enumerate(G.nbunch_iter(nbunch)):
+    for i, node in enumerate(G.nbunch_iter(nodelist)):
 
         new_diag = lap_matrix.diagonal() - abs(lap_matrix.getcol(i).toarray().flatten())
 
