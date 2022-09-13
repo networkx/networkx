@@ -6,7 +6,7 @@ __all__ = ["laplacian_centrality"]
 
 
 def laplacian_centrality(
-    G, normalized=True, nodelist=None, weight=None, walk_type=None, alpha=0.95
+    G, normalized=True, nodelist=None, weight="weight", walk_type=None, alpha=0.95
 ):
     r"""Compute the Laplacian centrality for nodes in the graph `G`.
 
@@ -92,13 +92,19 @@ def laplacian_centrality(
         raise nx.NetworkXPointlessConcept(
             "cannot compute centrality for the null graph"
         )
+        
+    nodeset = set(G.nbunch_iter(nodelist))
+    if len(nodeset) != len(nodelist):
+        raise NetworkXError("nodelist contains duplicate nodes or nodes not in G")
+    full_nodelist = nodelist[:] + [n in G if n not in nodeset]    
+
 
     if G.is_directed():
-        lap_matrix = nx.directed_laplacian_matrix(G, nodelist, weight, walk_type, alpha)
+        lap_matrix = nx.directed_laplacian_matrix(G, full_nodelist, weight, walk_type, alpha)
         eigh = sp.linalg.eigh(lap_matrix, eigvals_only=True)
 
     else:
-        lap_matrix = nx.laplacian_matrix(G, nodelist, weight)
+        lap_matrix = nx.laplacian_matrix(G, full_nodelist, weight)
         eigh = eigh_f(lap_matrix)
 
     if normalized:
@@ -107,7 +113,7 @@ def laplacian_centrality(
         sum_of_full = 1
 
     laplace_centralities_dict = {}
-    for i, node in enumerate(G.nbunch_iter(nodelist)):
+    for i, node in enumerate(G.nbunch_iter(full_nodelist)):
 
         new_diag = lap_matrix.diagonal() - abs(lap_matrix.getcol(i).toarray().flatten())
 
