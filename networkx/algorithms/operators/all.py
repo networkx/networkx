@@ -156,8 +156,8 @@ def compose_all(graphs):
 
     Parameters
     ----------
-    graphs : list
-       List of NetworkX graphs
+    graphs : iterable
+       Iterable of NetworkX graphs
 
     Returns
     -------
@@ -177,30 +177,24 @@ def compose_all(graphs):
     If a graph attribute is present in multiple graphs, then the value
     from the last graph in the list with that attribute is used.
     """
-    graphs = list(graphs)
+    gen = (graph for graph in graphs)
 
-    if not graphs:
+    try:
+        R = next(gen).copy(as_view=False)
+    except StopIteration:
         raise ValueError("cannot apply compose_all to an empty list")
 
-    U = graphs[0]
-
-    if any(G.is_multigraph() != U.is_multigraph() for G in graphs):
-        raise nx.NetworkXError("All graphs must be graphs or multigraphs.")
-
-    R = U.__class__()
     # add graph attributes, H attributes take precedent over G attributes
-    for G in graphs:
+    for G in gen:
+        if G.is_multigraph() != R.is_multigraph():
+            raise nx.NetworkXError("All graphs must be graphs or multigraphs.")
+
         R.graph.update(G.graph)
-
-    for G in graphs:
         R.add_nodes_from(G.nodes(data=True))
+        R.add_edges_from(
+            G.edges(keys=True, data=True) if G.is_multigraph() else G.edges(data=True)
+        )
 
-    if U.is_multigraph():
-        for G in graphs:
-            R.add_edges_from(G.edges(keys=True, data=True))
-    else:
-        for G in graphs:
-            R.add_edges_from(G.edges(data=True))
     return R
 
 
