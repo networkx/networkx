@@ -6,7 +6,7 @@ __all__ = ["laplacian_centrality"]
 
 
 def laplacian_centrality(
-    G, normalized=True, nodelist=None, weight=None, walk_type=None, alpha=None
+    G, normalized=True, nodelist=None, weight=None, walk_type=None, alpha=0.95
 ):
     r"""Compute the Laplacian centrality for nodes in the graph `G`.
 
@@ -46,7 +46,7 @@ def laplacian_centrality(
     walk_type : string or None, optional (default=None)
         Optional parameter for the Laplacian matrix calculation. If None, P is selected depending on the properties of the graph. Otherwise is one of `random`, `lazy`, or `pagerank`.
 
-    alpha : real (default = None)
+    alpha : real (default = 0.95)
         Optional parameter for the Laplacian matrix calculation. (1 - alpha) is the teleportation probability used with pagerank.
 
     Returns
