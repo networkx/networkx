@@ -4,6 +4,7 @@ import pytest
 
 import networkx as nx
 from networkx.readwrite.json_graph import adjacency_data, adjacency_graph
+from networkx.utils import graphs_equal
 
 
 class TestAdjacency:
@@ -52,6 +53,13 @@ class TestAdjacency:
         H = adjacency_graph(adjacency_data(G))
         nx.is_isomorphic(G, H)
         assert H[1][2]["second"]["color"] == "blue"
+
+    def test_deserialized_graph_equal(self):
+        G = nx.MultiGraph()
+        G.add_edge(1, 2, key="first")
+        G.add_edge(1, 2, key="second", color="blue")
+        H = adjacency_graph(adjacency_data(G))
+        assert graphs_equal(G, H)
 
     def test_exception(self):
         with pytest.raises(nx.NetworkXError):
