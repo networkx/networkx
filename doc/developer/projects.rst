@@ -70,6 +70,11 @@ Implement the VF2++ Graph Isomorphism Algorithm
 Completed Projects
 ==================
 
+- `VF2++ algorithm for graph isomorphism`_
+    - Program: Google Summer of Code 2022
+    - Contributor: `@kpetridis24 <https://github.com/kpetridis24/>`__
+..    - Link to Proposal: `
+
 - `Louvain community detection algorithm`_ 
     - Program: Google Summer of Code 2021
     - Contributor: `@z3y50n <https://github.com/z3y50n/>`__
@@ -98,6 +103,7 @@ Completed Projects
     - Contributor: `@MridulS <https://github.com/MridulS/>`__
     - Link to Proposal: `GSoC 2015: NetworkX 2.0 API <https://github.com/networkx/archive/blob/main/proposals-gsoc/GSoC-2015-NetworkX-2.0-api.md>`__
 
+.. _`VF2++ algorithm for graph isomorphism`: https://github.com/networkx/networkx/pull/5788
 .. _`Louvain community detection algorithm`: https://github.com/networkx/networkx/pull/4929
 .. _`Asadpour algorithm for directed travelling salesman problem`: https://github.com/networkx/networkx/pull/4740
 .. _`Directed acyclic graphs and topological sort`: https://github.com/networkx/nx-guides/pull/44
