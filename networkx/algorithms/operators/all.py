@@ -118,18 +118,13 @@ def disjoint_union_all(graphs):
     If a graph attribute is present in multiple graphs, then the value
     from the last graph in the list with that attribute is used.
     """
-    graph_info = []
-
-    def yield_relabeled():
+    def yield_relabeled(graphs):
         first_label = 0
         for G in graphs:
             yield nx.convert_node_labels_to_integers(G, first_label=first_label)
             first_label += len(G)
-            graph_info.append(G.graph)
 
-    R = union_all(yield_relabeled())
-    for info in graph_info:
-        R.graph.update(info)
+    R = union_all(yield_relabeled(graphs))
 
     return R
 
