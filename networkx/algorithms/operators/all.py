@@ -7,7 +7,7 @@ import networkx as nx
 __all__ = ["union_all", "compose_all", "disjoint_union_all", "intersection_all"]
 
 
-def union_all(graphs, rename=(None,)):
+def union_all(graphs, rename=()):
     """Returns the union of all graphs.
 
     The graphs must be disjoint, otherwise an exception is raised.
@@ -17,8 +17,8 @@ def union_all(graphs, rename=(None,)):
     graphs : iterable
        Iterable of NetworkX graphs
 
-    rename : bool , default=(None, None)
-       Node names of G and H can be changed by specifying the tuple
+    rename : tuple , optional
+       Node names of graphs can be changed by specifying the tuple
        rename=('G-','H-') (for example).  Node "u" in G is then renamed
        "G-u" and "v" in H is renamed "H-v".
 
@@ -54,11 +54,7 @@ def union_all(graphs, rename=(None,)):
             return graph
 
         def label(x):
-            if isinstance(x, str):
-                name = prefix + x
-            else:
-                name = prefix + repr(x)
-            return name
+            return f"{prefix}{x}"
 
         return nx.relabel_nodes(graph, label)
 
