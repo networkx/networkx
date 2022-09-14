@@ -50,10 +50,14 @@ def cytoscape_data(G, name="name", ident="id"):
     if name == ident:
         raise nx.NetworkXError("name and ident must be different.")
 
-    jsondata = {"data": list(G.graph.items())}
-    jsondata["directed"] = G.is_directed()
-    jsondata["multigraph"] = G.is_multigraph()
-    jsondata["elements"] = {"nodes": [], "edges": []}
+    jsondata = {
+        "data": list(
+            G.graph.items()
+        ),  # Serialise map as a list to allow non-String keys
+        "directed": G.is_directed(),
+        "multigraph": G.is_multigraph(),
+        "elements": {"nodes": [], "edges": []},
+    }
     nodes = jsondata["elements"]["nodes"]
     edges = jsondata["elements"]["edges"]
 
@@ -149,22 +153,17 @@ def cytoscape_graph(data, name="name", ident="id"):
     graph.graph = dict(data.get("data"))
     for d in data["elements"]["nodes"]:
         node_data = d["data"].copy()
-        node = d["data"]["value"]
-
-        if d["data"].get(name):
-            node_data[name] = d["data"].get(name)
-        if d["data"].get(ident):
-            node_data[ident] = d["data"].get(ident)
+        node = node_data.pop("value")
 
         graph.add_node(node)
         graph.nodes[node].update(node_data)
 
     for d in data["elements"]["edges"]:
         edge_data = d["data"].copy()
-        sour = d["data"]["source"]
-        targ = d["data"]["target"]
+        sour = edge_data.pop("source")
+        targ = edge_data.pop("target")
         if multigraph:
-            key = d["data"].get("key", 0)
+            key = edge_data.pop("key", 0)
             graph.add_edge(sour, targ, key=key)
             graph.edges[sour, targ, key].update(edge_data)
         else:

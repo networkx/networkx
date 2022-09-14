@@ -73,16 +73,14 @@ def tree_data(G, root, ident="id", children="children"):
             return []
         children_ = []
         for child in nbrs:
-            d = dict(chain(G.nodes[child].items(), [(ident, child)]))
+            d = {**G.nodes[child], ident: child}
             c = add_children(child, G)
             if c:
                 d[children] = c
             children_.append(d)
         return children_
 
-    data = dict(chain(G.nodes[root].items(), [(ident, root)]))
-    data[children] = add_children(root, G)
-    return data
+    return {**G.nodes[root], ident: root, children: add_children(root, G)}
 
 
 def tree_graph(data, ident="id", children="children"):
@@ -117,22 +115,20 @@ def tree_graph(data, ident="id", children="children"):
     tree_data, node_link_data, adjacency_data
     """
     graph = nx.DiGraph()
+    copy = data.copy()
 
     def add_children(parent, children_):
-        for data in children_:
-            child = data[ident]
+        for _data in children_:
+            d = _data.copy()
+            child = d.pop(ident)
             graph.add_edge(parent, child)
-            grandchildren = data.get(children, [])
+            grandchildren = d.pop(children, []).copy()
             if grandchildren:
                 add_children(child, grandchildren)
-            nodedata = {
-                str(k): v for k, v in data.items() if k != ident and k != children
-            }
-            graph.add_node(child, **nodedata)
+            graph.add_node(child, **d)
 
-    root = data[ident]
-    children_ = data.get(children, [])
-    nodedata = {str(k): v for k, v in data.items() if k != ident and k != children}
-    graph.add_node(root, **nodedata)
+    root = copy.pop(ident)
+    children_ = copy.pop(children, [])
+    graph.add_node(root, **copy)
     add_children(root, children_)
     return graph

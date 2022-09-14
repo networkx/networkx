@@ -1,3 +1,4 @@
+import copy
 import json
 
 import pytest
@@ -11,12 +12,21 @@ class TestAdjacency:
     def test_graph(self):
         G = nx.path_graph(4)
         H = adjacency_graph(adjacency_data(G))
-        assert nx.is_isomorphic(G, H)
         assert graphs_equal(G, H)
 
+    def test_dict_form_jsonisable(self):
+        G = nx.path_graph(4)
+        # Checks that the dict produced can be serialised into and deserialised from json
         H = adjacency_graph(json.loads(json.dumps(adjacency_data(G))))
-        assert nx.is_isomorphic(G, H)
         assert graphs_equal(G, H)
+
+    def test_input_data_is_not_modified_when_building_graph(self):
+        G = nx.path_graph(4)
+        input_data = adjacency_data(G)
+        orig_data = copy.deepcopy(input_data)
+        # Ensure input is unmodified by deserialisation
+        adjacency_graph(input_data)
+        assert input_data == orig_data
 
     def test_graph_attributes(self):
         G = nx.path_graph(4)
@@ -27,8 +37,10 @@ class TestAdjacency:
 
         H = adjacency_graph(adjacency_data(G))
         assert H.graph["foo"] == "bar"
+        assert H.graph[1] == "one"
         assert H.nodes[1]["color"] == "red"
         assert H[1][2]["width"] == 7
+        assert graphs_equal(G, H)
 
         d = json.dumps(adjacency_data(G))
         H = adjacency_graph(json.loads(d))
@@ -36,14 +48,15 @@ class TestAdjacency:
         assert H.graph[1] == "one"
         assert H.nodes[1]["color"] == "red"
         assert H[1][2]["width"] == 7
+        assert graphs_equal(G, H)
 
     def test_digraph(self):
         G = nx.DiGraph()
         nx.add_path(G, [1, 2, 3])
         H = adjacency_graph(adjacency_data(G))
         assert H.is_directed()
-        assert nx.is_isomorphic(G, H)
         assert graphs_equal(G, H)
+        assert isinstance(H, nx.DiGraph)
 
     def test_multidigraph(self):
         G = nx.MultiDiGraph()
@@ -51,16 +64,17 @@ class TestAdjacency:
         H = adjacency_graph(adjacency_data(G))
         assert H.is_directed()
         assert H.is_multigraph()
-        assert nx.is_isomorphic(G, H)
         assert graphs_equal(G, H)
+        assert isinstance(H, nx.MultiDiGraph)
 
     def test_multigraph(self):
         G = nx.MultiGraph()
         G.add_edge(1, 2, key="first")
         G.add_edge(1, 2, key="second", color="blue")
         H = adjacency_graph(adjacency_data(G))
-        assert nx.is_isomorphic(G, H)
         assert graphs_equal(G, H)
+        assert H.is_multigraph()
+        assert isinstance(H, nx.MultiGraph)
         assert H[1][2]["second"]["color"] == "blue"
 
     def test_exception(self):

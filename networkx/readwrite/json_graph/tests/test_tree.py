@@ -1,3 +1,4 @@
+import copy
 import json
 
 import pytest
@@ -28,6 +29,19 @@ def test_graph_attributes():
     d = json.dumps(tree_data(G, 1))
     H = tree_graph(json.loads(d))
     assert H.nodes[1]["color"] == "red"
+
+
+def test_input_data_is_not_modified_when_building_graph():
+    G = nx.DiGraph()
+    G.add_nodes_from([1, 2, 3], color="red")
+    G.add_edge(1, 2, foo=7)
+    G.add_edge(1, 3, foo=10)
+    G.add_edge(3, 4, foo=10)
+    input_data = tree_data(G, 1)
+    orig_data = copy.deepcopy(input_data)
+    # Ensure input is unmodified by deserialisation
+    tree_graph(input_data)
+    assert input_data == orig_data
 
 
 def test_exceptions():

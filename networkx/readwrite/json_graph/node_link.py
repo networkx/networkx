@@ -162,19 +162,16 @@ def node_link_data(
     data = {
         "directed": G.is_directed(),
         "multigraph": multigraph,
-        "graph": G.graph,
-        "nodes": [dict(chain(G.nodes[n].items(), [(name, n)])) for n in G],
+        "graph": list(G.graph.items()),
+        "nodes": [{**G.nodes[n], name: n} for n in G],
     }
     if multigraph:
         data[link] = [
-            dict(chain(d.items(), [(source, u), (target, v), (key, k)]))
+            {**d, source: u, target: v, key: k}
             for u, v, k, d in G.edges(keys=True, data=True)
         ]
     else:
-        data[link] = [
-            dict(chain(d.items(), [(source, u), (target, v)]))
-            for u, v, d in G.edges(data=True)
-        ]
+        data[link] = [{**d, source: u, target: v} for u, v, d in G.edges(data=True)]
     return data
 
 
@@ -310,24 +307,19 @@ def node_link_graph(
 
     # Allow 'key' to be omitted from attrs if the graph is not a multigraph.
     key = None if not multigraph else key
-    graph.graph = data.get("graph", {})
+    graph.graph = dict(data.get("graph"))
     c = count()
     for d in data["nodes"]:
-        node = _to_tuple(d.get(name, next(c)))
-        nodedata = {str(k): v for k, v in d.items() if k != name}
-        graph.add_node(node, **nodedata)
+        node_data = d.copy()
+        node = _to_tuple(node_data.pop(name, next(c)))
+        graph.add_node(node, **node_data)
     for d in data[link]:
-        src = tuple(d[source]) if isinstance(d[source], list) else d[source]
-        tgt = tuple(d[target]) if isinstance(d[target], list) else d[target]
+        edgedata = d.copy()
+        src = _to_tuple(edgedata.pop(source))
+        tgt = _to_tuple(edgedata.pop(target))
         if not multigraph:
-            edgedata = {str(k): v for k, v in d.items() if k != source and k != target}
             graph.add_edge(src, tgt, **edgedata)
         else:
-            ky = d.get(key, None)
-            edgedata = {
-                str(k): v
-                for k, v in d.items()
-                if k != source and k != target and k != key
-            }
+            ky = edgedata.pop(key, None)
             graph.add_edge(src, tgt, ky, **edgedata)
     return graph

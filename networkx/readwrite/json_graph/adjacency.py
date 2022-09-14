@@ -70,15 +70,15 @@ def adjacency_data(G, attrs=_attrs):
     data["nodes"] = []
     data["adjacency"] = []
     for n, nbrdict in G.adjacency():
-        data["nodes"].append(dict(chain(G.nodes[n].items(), [(id_, n)])))
+        data["nodes"].append({**G.nodes[n], id_: n})
         adj = []
         if multigraph:
             for nbr, keys in nbrdict.items():
                 for k, d in keys.items():
-                    adj.append(dict(chain(d.items(), [(id_, nbr), (key, k)])))
+                    adj.append({**d, id_: nbr, key: k})
         else:
             for nbr, d in nbrdict.items():
-                adj.append(dict(chain(d.items(), [(id_, nbr)])))
+                adj.append({**d, id_: nbr})
         data["adjacency"].append(adj)
     return data
 
