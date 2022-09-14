@@ -118,6 +118,7 @@ def disjoint_union_all(graphs):
     If a graph attribute is present in multiple graphs, then the value
     from the last graph in the list with that attribute is used.
     """
+
     def yield_relabeled(graphs):
         first_label = 0
         for G in graphs:
@@ -218,6 +219,8 @@ def intersection_all(graphs):
         else:
             node_intersection &= G_nodes_set
             edge_intersection &= G_edges_set
+
+        R.graph.update(G.graph)
 
     if R is None:
         raise ValueError("cannot apply intersection_all to an empty list")
