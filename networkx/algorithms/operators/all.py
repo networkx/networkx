@@ -65,7 +65,7 @@ def union_all(graphs, rename=(None,)):
     graphs = (add_prefix(G, name) for G, name in zip_longest(graphs, rename))
 
     for i, G in enumerate(graphs):
-        G_nodes_set = set(G)
+        G_nodes_set = set(G.nodes)
         if i == 0:
             # Union is the same type as first graph
             R = G.__class__()
@@ -212,17 +212,20 @@ def intersection_all(graphs):
     graph.
     """
     R = None
-    node_intersection, edge_intersection = set(), set()
 
     for i, G in enumerate(graphs):
+        G_nodes_set = set(G.nodes)
+        G_edges_set = set(G.edges(keys=True) if G.is_multigraph() else G.edges())
         if i == 0:
             # create new graph
             R = G.__class__()
+            node_intersection = G_nodes_set
+            edge_intersection = G_edges_set
         elif G.is_multigraph() != R.is_multigraph():
             raise nx.NetworkXError("All graphs must be graphs or multigraphs.")
-
-        node_intersection &= set(G.nodes)
-        edge_intersection &= set(G.edges(keys=True) if G.is_multigraph() else G.edges())
+        else:
+            node_intersection &= G_nodes_set
+            edge_intersection &= G_edges_set
 
     if R is None:
         raise ValueError("cannot apply intersection_all to an empty list")
