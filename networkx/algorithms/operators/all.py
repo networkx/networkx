@@ -1,6 +1,6 @@
 """Operations on many graphs.
 """
-from itertools import zip_longest
+from itertools import chain, repeat
 
 import networkx as nx
 
@@ -17,10 +17,11 @@ def union_all(graphs, rename=()):
     graphs : iterable
        Iterable of NetworkX graphs
 
-    rename : tuple , optional
+    rename : iterable , optional
        Node names of graphs can be changed by specifying the tuple
        rename=('G-','H-') (for example).  Node "u" in G is then renamed
-       "G-u" and "v" in H is renamed "H-v".
+       "G-u" and "v" in H is renamed "H-v". Infinite generators (like itertools.count)
+       are also supported.
 
     Returns
     -------
@@ -58,7 +59,9 @@ def union_all(graphs, rename=()):
 
         return nx.relabel_nodes(graph, label)
 
-    graphs = (add_prefix(G, name) for G, name in zip_longest(graphs, rename))
+    graphs = (
+        add_prefix(G, name) for G, name in zip(graphs, chain(rename, repeat(None)))
+    )
 
     for i, G in enumerate(graphs):
         G_nodes_set = set(G.nodes)
