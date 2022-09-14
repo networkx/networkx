@@ -130,18 +130,16 @@ def disjoint_union_all(graphs):
     from the last graph in the list with that attribute is used.
     """
     first_labels = [0]
-    relabeled, graph_info = [], []
+    graph_info = []
 
-    for G in graphs:
-        first_label = first_labels[-1]
-        first_labels.append(len(G) + first_label)
-        relabeled.append(nx.convert_node_labels_to_integers(G, first_label=first_label))
-        graph_info.append(G.graph)
+    def yield_relabeled():
+        for G in graphs:
+            first_label = first_labels[-1]
+            first_labels.append(len(G) + first_label)
+            graph_info.append(G.graph)
+            yield nx.convert_node_labels_to_integers(G, first_label=first_label)
 
-    if not relabeled:
-        raise ValueError("cannot apply disjoint_union_all to an empty list")
-
-    R = union_all(relabeled)
+    R = union_all(yield_relabeled())
     for info in graph_info:
         R.graph.update(info)
 
@@ -182,6 +180,7 @@ def compose_all(graphs):
     # add graph attributes, H attributes take precedent over G attributes
     for i, G in enumerate(graphs):
         if i == 0:
+            # create new graph
             R = G.__class__()
         elif G.is_multigraph() != R.is_multigraph():
             raise nx.NetworkXError("All graphs must be graphs or multigraphs.")
