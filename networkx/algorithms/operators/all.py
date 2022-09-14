@@ -59,9 +59,8 @@ def union_all(graphs, rename=()):
 
         return nx.relabel_nodes(graph, label)
 
-    graphs = (
-        add_prefix(G, name) for G, name in zip(graphs, chain(rename, repeat(None)))
-    )
+    rename = chain(rename, repeat(None))
+    graphs = (add_prefix(G, name) for G, name in zip(graphs, rename))
 
     for i, G in enumerate(graphs):
         G_nodes_set = set(G.nodes)
