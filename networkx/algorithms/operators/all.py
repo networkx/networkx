@@ -109,8 +109,8 @@ def disjoint_union_all(graphs):
 
     Parameters
     ----------
-    graphs : list
-       List of NetworkX graphs
+    graphs : iterable
+       Iterable of NetworkX graphs
 
     Returns
     -------
@@ -129,22 +129,22 @@ def disjoint_union_all(graphs):
     If a graph attribute is present in multiple graphs, then the value
     from the last graph in the list with that attribute is used.
     """
-    graphs = list(graphs)
+    first_labels = [0]
+    relabeled, graph_info = [], []
 
-    if not graphs:
+    for G in graphs:
+        first_label = first_labels[-1]
+        first_labels.append(len(G) + first_label)
+        relabeled.append(nx.convert_node_labels_to_integers(G, first_label=first_label))
+        graph_info.append(G.graph)
+
+    if not relabeled:
         raise ValueError("cannot apply disjoint_union_all to an empty list")
 
-    first_labels = [0]
-    for G in graphs[:-1]:
-        first_labels.append(len(G) + first_labels[-1])
-
-    relabeled = [
-        nx.convert_node_labels_to_integers(G, first_label=first_label)
-        for G, first_label in zip(graphs, first_labels)
-    ]
     R = union_all(relabeled)
-    for G in graphs:
-        R.graph.update(G.graph)
+    for info in graph_info:
+        R.graph.update(info)
+
     return R
 
 
@@ -177,16 +177,13 @@ def compose_all(graphs):
     If a graph attribute is present in multiple graphs, then the value
     from the last graph in the list with that attribute is used.
     """
-    gen = (graph for graph in graphs)
-
-    try:
-        R = next(gen).copy(as_view=False)
-    except StopIteration:
-        raise ValueError("cannot apply compose_all to an empty list")
+    R = None
 
     # add graph attributes, H attributes take precedent over G attributes
-    for G in gen:
-        if G.is_multigraph() != R.is_multigraph():
+    for i, G in enumerate(graphs):
+        if i == 0:
+            R = G.__class__()
+        elif G.is_multigraph() != R.is_multigraph():
             raise nx.NetworkXError("All graphs must be graphs or multigraphs.")
 
         R.graph.update(G.graph)
@@ -194,6 +191,9 @@ def compose_all(graphs):
         R.add_edges_from(
             G.edges(keys=True, data=True) if G.is_multigraph() else G.edges(data=True)
         )
+
+    if R is None:
+        raise ValueError("cannot apply compose_all to an empty list")
 
     return R
 
@@ -204,8 +204,8 @@ def intersection_all(graphs):
 
     Parameters
     ----------
-    graphs : list
-       List of NetworkX graphs
+    graphs : iterable
+       Iterable of NetworkX graphs
 
     Returns
     -------
@@ -221,27 +221,23 @@ def intersection_all(graphs):
     Attributes from the graph, nodes, and edges are not copied to the new
     graph.
     """
-    graphs = list(graphs)
+    R = None
+    node_intersection, edge_intersection = set(), set()
 
-    if not graphs:
+    for i, G in enumerate(graphs):
+        if i == 0:
+            # create new graph
+            R = G.__class__()
+        elif G.is_multigraph() != R.is_multigraph():
+            raise nx.NetworkXError("All graphs must be graphs or multigraphs.")
+
+        node_intersection &= G.nodes
+        edge_intersection &= G.edges(keys=True) if G.is_multigraph() else G.edges()
+
+    if R is None:
         raise ValueError("cannot apply intersection_all to an empty list")
 
-    U = graphs[0]
-
-    if any(G.is_multigraph() != U.is_multigraph() for G in graphs):
-        raise nx.NetworkXError("All graphs must be graphs or multigraphs.")
-
-    # create new graph
-    node_intersection = set.intersection(*[set(G.nodes) for G in graphs])
-    R = U.__class__()
     R.add_nodes_from(node_intersection)
-
-    if U.is_multigraph():
-        edge_sets = [set(G.edges(keys=True)) for G in graphs]
-    else:
-        edge_sets = [set(G.edges()) for G in graphs]
-
-    edge_intersection = set.intersection(*edge_sets)
     R.add_edges_from(edge_intersection)
 
     return R
