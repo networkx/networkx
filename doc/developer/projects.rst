@@ -41,34 +41,13 @@ Pedagogical Interactive Notebooks for Algorithms Implemented in NetworkX
   pedagogical interactive notebooks for the medium duration project and 4-5 notebooks
   for the long duration project.
 
-Implement the VF2++ Graph Isomorphism Algorithm
------------------------------------------------
-
-- Abstract: The `Graph Isomorphism Problem`_ is a famous difficult network problem at
-  the boundary between P and NP-Complete. The VF2 algorithm is included with NetworkX
-  in a recursive formulation. There is an improved version of this algorithm called
-  `VF2++`_ which we intend to implement. We have early attempts at a nonrecursive version
-  of the main algorithm that also address subgraph isomorphism and subgraph monomorphism.
-  This project involves fully implementing them and extending to directed and multigraph
-  settings.
-
-- Recommended Skills: Python, graph algorithms
-
-- Expected Outcome: A new set of functions in NetworkX that implement the VF2++
-  algorithm for all problem and graph types in a nonrecursive manner.
-
-- Complexity: Moderate
-
-- Interested Mentors: `@dschult <https://github.com/dschult/>`__,
-  `@MridulS <https://github.com/MridulS/>`__, `@boothby <https://github.com/boothby/>`__,
-
-.. _`Graph Isomorphism Problem`: https://en.wikipedia.org/wiki/Graph_isomorphism_problem
-.. _VF2++: https://doi.org/10.1016/j.dam.2018.02.018
-
-- Expected time commitment: Long project (~350 hours)
-
 Completed Projects
 ==================
+
+- `VF2++ algorithm for graph isomorphism`_
+    - Program: Google Summer of Code 2022
+    - Contributor: `@kpetridis24 <https://github.com/kpetridis24/>`__
+    - Link to Proposal: `GSoC 2022: VF2++ Algorithm <https://github.com/networkx/archive/blob/main/proposals-gsoc/GSoC-2022-VF2plusplus-isomorphism.pdf`_
 
 - `Louvain community detection algorithm`_ 
     - Program: Google Summer of Code 2021
@@ -98,6 +77,7 @@ Completed Projects
     - Contributor: `@MridulS <https://github.com/MridulS/>`__
     - Link to Proposal: `GSoC 2015: NetworkX 2.0 API <https://github.com/networkx/archive/blob/main/proposals-gsoc/GSoC-2015-NetworkX-2.0-api.md>`__
 
+.. _`VF2++ algorithm for graph isomorphism`: https://github.com/networkx/networkx/pull/5788
 .. _`Louvain community detection algorithm`: https://github.com/networkx/networkx/pull/4929
 .. _`Asadpour algorithm for directed travelling salesman problem`: https://github.com/networkx/networkx/pull/4740
 .. _`Directed acyclic graphs and topological sort`: https://github.com/networkx/nx-guides/pull/44
