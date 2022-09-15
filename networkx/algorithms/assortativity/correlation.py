@@ -1,11 +1,9 @@
 """Node assortativity coefficients and correlation measures.
 """
-from networkx.algorithms.assortativity.mixing import attribute_mixing_matrix
-from networkx.algorithms.assortativity.pairs import (
-    node_degree_xy,
-    node_attribute_xy,
-)
 import numpy as np
+
+from networkx.algorithms.assortativity.mixing import attribute_mixing_matrix
+from networkx.algorithms.assortativity.pairs import node_attribute_xy, node_degree_xy
 
 __all__ = [
     "degree_assortativity_coefficient",

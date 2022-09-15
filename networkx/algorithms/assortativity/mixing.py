@@ -109,7 +109,7 @@ def attribute_mixing_matrix(G, attribute, nodes=None, mapping=None, normalized=T
     >>> # mixing matrix
     >>> print(mix_mat)
     [[0.   0.25]
-    [0.25 0.5 ]]
+     [0.25 0.5 ]]
     >>> # mixing from male nodes to female nodes
     >>> mix_mat[mapping['male'], mapping['female']]
     0.25
