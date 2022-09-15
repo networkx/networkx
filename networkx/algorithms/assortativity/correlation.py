@@ -1,7 +1,5 @@
 """Node assortativity coefficients and correlation measures.
 """
-import numpy as np
-
 from networkx.algorithms.assortativity.mixing import attribute_mixing_matrix
 from networkx.algorithms.assortativity.pairs import node_attribute_xy, node_degree_xy
 
@@ -70,6 +68,8 @@ def degree_assortativity_coefficient(G, x="out", y="in", weight=None, nodes=None
     .. [2] Foster, J.G., Foster, D.V., Grassberger, P. & Paczuski, M.
        Edge direction and the structure of networks, PNAS 107, 10815-20 (2010)
     """
+    import numpy as np
+
     xy = node_degree_xy(G, x=x, y=y, nodes=nodes, weight=weight)
     x, y = zip(*xy)
     return np.corrcoef(x, y)[0, 1]
@@ -165,6 +165,8 @@ def scalar_assortativity_coefficient(G, attribute, nodes=None):
     .. [1] M. E. J. Newman, Mixing patterns in networks
            Physical Review E, 67 026126, 2003
     """
+    import numpy as np
+
     xy = node_attribute_xy(G, attribute, nodes=nodes)
     x, y = zip(*xy)
     return np.corrcoef(x, y)[0, 1]
