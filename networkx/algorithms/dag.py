@@ -1006,7 +1006,15 @@ def dag_longest_path(G, weight="weight", default_weight=1, topo_order=None):
     dist = {}  # stores {v : (length, u)}
     for v in topo_order:
         us = [
-            (dist[u][0] + data.get(weight, default_weight), u)
+            (
+                dist[u][0]
+                + (
+                    max(data.values(), key=lambda x: x.get(weight, default_weight))
+                    if G.is_multigraph()
+                    else data
+                ).get(weight, default_weight),
+                u,
+            )
             for u, data in G.pred[v].items()
         ]
 
@@ -1068,8 +1076,13 @@ def dag_longest_path_length(G, weight="weight", default_weight=1):
     """
     path = nx.dag_longest_path(G, weight, default_weight)
     path_length = 0
-    for (u, v) in pairwise(path):
-        path_length += G[u][v].get(weight, default_weight)
+    if G.is_multigraph():
+        for u, v in pairwise(path):
+            i = max(G[u][v], key=lambda x: G[u][v][x].get(weight, default_weight))
+            path_length += G[u][v][i].get(weight, default_weight)
+    else:
+        for (u, v) in pairwise(path):
+            path_length += G[u][v].get(weight, default_weight)
 
     return path_length
 
