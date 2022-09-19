@@ -1,5 +1,6 @@
-"""Laplacian centrality measures."""
-
+"""
+Laplacian centrality measures.
+"""
 import networkx as nx
 
 __all__ = ["laplacian_centrality"]
@@ -78,9 +79,7 @@ def laplacian_centrality(
     Laplacian centrality: A new centrality measure for weighted networks.
     Information Sciences, 194:240-253.
     https://math.wvu.edu/~cqzhang/Publication-files/my-paper/INS-2012-Laplacian-W.pdf
-
     """
-
     import numpy as np
     import scipy as sp
     import scipy.linalg  # call as sp.linalg
