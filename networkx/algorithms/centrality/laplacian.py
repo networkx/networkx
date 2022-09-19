@@ -80,6 +80,7 @@ def laplacian_centrality(
     https://math.wvu.edu/~cqzhang/Publication-files/my-paper/INS-2012-Laplacian-W.pdf
 
     """
+
     import numpy as np
     import scipy as sp
     import scipy.linalg  # call as sp.linalg
@@ -93,19 +94,14 @@ def laplacian_centrality(
             "cannot compute centrality for the null graph"
         )
 
-    nodeset = set(G.nbunch_iter(nodelist))
-    if len(nodeset) != len(nodelist):
-        raise NetworkXError("nodelist contains duplicate nodes or nodes not in G")
-    # full_nodelist = nodelist[:] + [n in G if n not in nodeset]
-
     if G.is_directed():
-        lap_matrix = nx.directed_laplacian_matrix(
-            G, full_nodelist, weight, walk_type, alpha
+        lap_matrix = sp.sparse.csr_matrix(
+            nx.directed_laplacian_matrix(G, nodelist, weight, walk_type, alpha)
         )
-        eigh = sp.linalg.eigh(lap_matrix, eigvals_only=True)
+        eigh = eigh_f(lap_matrix)
 
     else:
-        lap_matrix = nx.laplacian_matrix(G, full_nodelist, weight)
+        lap_matrix = nx.laplacian_matrix(G, nodelist, weight)
         eigh = eigh_f(lap_matrix)
 
     if normalized:
@@ -114,7 +110,7 @@ def laplacian_centrality(
         sum_of_full = 1
 
     laplace_centralities_dict = {}
-    for i, node in enumerate(G.nbunch_iter(full_nodelist)):
+    for i, node in enumerate(G.nbunch_iter(nodelist)):
 
         new_diag = lap_matrix.diagonal() - abs(lap_matrix.getcol(i).toarray().flatten())
 
