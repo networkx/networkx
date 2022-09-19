@@ -54,6 +54,13 @@ Improvements
   This fixes a bug related for ``mapping=str`` and may change the behavior for
   other ``mapping`` arguments that implement both ``__getitem__`` and
   ``__call__``.
+- [`#5898 <https://github.com/networkx/networkx/pull/5898>`_]
+  Implements computing and checking for minimal d-separators between two nodes.
+  Also adds functionality to DAGs for computing v-structures.
+- [`#5943 <https://github.com/networkx/networkx/pull/5943>`_]
+  ``is_path`` used to raise a `KeyError` when the ``path`` argument contained
+  a node that was not in the Graph. The behavior has been updated so that
+  ``is_path`` returns `False` in this case rather than raising the exception.
 
 API Changes
 -----------

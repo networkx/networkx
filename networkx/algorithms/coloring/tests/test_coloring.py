@@ -432,51 +432,76 @@ class TestColoring:
         check_state(**params)
 
     def test_strategy_saturation_largest_first(self):
-        def color_remaining_nodes(G, colored_vertices):
-            color_assignments = []
-            aux_colored_vertices = colored_vertices.copy()
+        def color_remaining_nodes(
+            G,
+            colored_nodes,
+            full_color_assignment=None,
+            nodes_to_add_between_calls=1,
+        ):
 
-            scratch_iterator = nx.algorithms.coloring.greedy_coloring.strategy_saturation_largest_first(
-                G, aux_colored_vertices
+            color_assignments = []
+            aux_colored_nodes = colored_nodes.copy()
+
+            node_iterator = nx.algorithms.coloring.greedy_coloring.strategy_saturation_largest_first(
+                G, aux_colored_nodes
             )
 
-            for u in scratch_iterator:
+            for u in node_iterator:
                 # Set to keep track of colors of neighbours
                 neighbour_colors = {
-                    aux_colored_vertices[v] for v in G[u] if v in aux_colored_vertices
+                    aux_colored_nodes[v] for v in G[u] if v in aux_colored_nodes
                 }
                 # Find the first unused color.
                 for color in itertools.count():
                     if color not in neighbour_colors:
                         break
-                # Assign the new color to the current node.
-                aux_colored_vertices[u] = color
+                aux_colored_nodes[u] = color
                 color_assignments.append((u, color))
 
-            return color_assignments, aux_colored_vertices
+                # Color nodes between iterations
+                for i in range(nodes_to_add_between_calls - 1):
+                    if not len(color_assignments) + len(colored_nodes) >= len(
+                        full_color_assignment
+                    ):
+                        full_color_assignment_node, color = full_color_assignment[
+                            len(color_assignments) + len(colored_nodes)
+                        ]
+
+                        # Assign the new color to the current node.
+                        aux_colored_nodes[full_color_assignment_node] = color
+                        color_assignments.append((full_color_assignment_node, color))
+
+            return color_assignments, aux_colored_nodes
 
         for G, _, _ in SPECIAL_TEST_CASES["saturation_largest_first"]:
 
             G = G()
 
-            # Get a full color assignment, (including the order in which nodes were colored)
-            colored_vertices = {}
-            full_color_assignment, full_colored_vertices = color_remaining_nodes(
-                G, colored_vertices
-            )
+            # Check that function still works when nodes are colored between iterations
+            for nodes_to_add_between_calls in range(1, 5):
+                # Get a full color assignment, (including the order in which nodes were colored)
+                colored_nodes = {}
+                full_color_assignment, full_colored_nodes = color_remaining_nodes(
+                    G, colored_nodes
+                )
 
-            # for each node in the color assignment, add it to colored_vertices and re-run the function
-            for ind, (vertex, color) in enumerate(full_color_assignment):
-                colored_vertices[vertex] = color
+                # For each node in the color assignment, add it to colored_nodes and re-run the function
+                for ind, (node, color) in enumerate(full_color_assignment):
+                    colored_nodes[node] = color
 
-                (
-                    partial_color_assignment,
-                    partial_colored_vertices,
-                ) = color_remaining_nodes(G, colored_vertices)
+                    (
+                        partial_color_assignment,
+                        partial_colored_nodes,
+                    ) = color_remaining_nodes(
+                        G,
+                        colored_nodes,
+                        full_color_assignment=full_color_assignment,
+                        nodes_to_add_between_calls=nodes_to_add_between_calls,
+                    )
 
-                # check that the color assignment and order of remaining nodes are the same
-                assert full_color_assignment[ind + 1 :] == partial_color_assignment
-                assert full_colored_vertices == partial_colored_vertices
+                    # Check that the color assignment and order of remaining nodes are the same
+                    assert full_color_assignment[ind + 1 :] == partial_color_assignment
+                    assert full_colored_nodes == partial_colored_nodes
 
 
 #  ############################  Utility functions ############################
