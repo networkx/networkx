@@ -114,16 +114,10 @@ def relabel_nodes(G, mapping, copy=True):
     --------
     convert_node_labels_to_integers
     """
-    # you can pass a function f(old_label) -> new_label
-    # or a class e.g. str(old_label) -> new_label
-    # but we'll just make a dictionary here regardless
-    # To allow classes, we check if __getitem__ is a bound method using __self__
-    if not (
-        hasattr(mapping, "__getitem__") and hasattr(mapping.__getitem__, "__self__")
-    ):
-        m = {n: mapping(n) for n in G}
-    else:
-        m = mapping
+    # you can pass any callable e.g. f(old_label) -> new_label or
+    # e.g. str(old_label) -> new_label, but we'll just make a dictionary here regardless
+    m = {n: mapping(n) for n in G} if callable(mapping) else mapping
+
     if copy:
         return _relabel_copy(G, m)
     else:

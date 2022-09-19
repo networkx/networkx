@@ -179,7 +179,8 @@ def louvain_partitions(
     )
     improvement = True
     while improvement:
-        yield partition
+        # gh-5901 protect the sets in the yielded list from further manipulation here
+        yield [s.copy() for s in partition]
         new_mod = modularity(
             graph, inner_partition, resolution=resolution, weight="weight"
         )
