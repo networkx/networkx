@@ -103,7 +103,9 @@ def all_simple_paths(G, source, target, cutoff=None):
     path_generator: generator
        A generator that produces lists of simple paths.  If there are no paths
        between the source and target within the given cutoff the generator
-       produces no output.
+       produces no output. If it is possible to traverse the same sequence of
+       nodes in multiple ways, namely through parallel edges, then it will be
+       returned multiple times (once for each viable edge combination).
 
     Examples
     --------
@@ -198,6 +200,13 @@ def all_simple_paths(G, source, target, cutoff=None):
         ...     all_paths.extend(paths)
         >>> all_paths
         [[0, 1, 3], [0, 1, 4], [2, 1, 3], [2, 1, 4]]
+
+    If parallel edges offer multiple ways to traverse a given sequence of
+    nodes, this sequence of nodes will be returned multiple times:
+
+        >>> G = nx.MultiDiGraph([(0, 1), (0, 1), (1, 2)])
+        >>> list(nx.all_simple_paths(G, 0, 2))
+        [[0, 1, 2], [0, 1, 2]]
 
     Notes
     -----
