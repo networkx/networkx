@@ -2,6 +2,7 @@
 testing 
 """
 import pytest
+
 import networkx as nx
 
 np = pytest.importorskip("numpy")
