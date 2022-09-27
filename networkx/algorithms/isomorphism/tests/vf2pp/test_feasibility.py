@@ -1447,14 +1447,17 @@ class TestDiGraphISOFeasibility:
         u, v = 10, "k"
         assert _consistent_PT(u, v, gparams, sparams)
 
-        """
-        Delete one uncovered neighbor of u. Notice how it still passes the test. Two reasons for this:
-        1. If u, v had different degrees from the beginning, they wouldn't be selected as candidates in the first place.
-        2. Even if they are selected, consistency is basically 1-look-ahead, meaning that we take into consideration 
-           the relation of the candidates with their mapped neighbors. The node we deleted is not a covered neighbor.
-           Such nodes will be checked by the cut_PT function, which is basically the 2-look-ahead, checking the relation
-           of the candidates with T1, T2 (in which belongs the node we just deleted). 
-        """
+        # Delete one uncovered neighbor of u. Notice how it still passes the
+        # test. Two reasons for this:
+        #   1. If u, v had different degrees from the beginning, they wouldn't
+        #      be selected as candidates in the first place.
+        #   2. Even if they are selected, consistency is basically
+        #      1-look-ahead, meaning that we take into consideration the
+        #      relation of the candidates with their mapped neighbors.
+        #      The node we deleted is not a covered neighbor.
+        #      Such nodes will be checked by the cut_PT function, which is
+        #      basically the 2-look-ahead, checking the relation of the
+        #      candidates with T1, T2 (in which belongs the node we just deleted).
         G1.remove_node(6)
         assert _consistent_PT(u, v, gparams, sparams)
 
