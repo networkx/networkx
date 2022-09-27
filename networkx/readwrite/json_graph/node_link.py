@@ -1,4 +1,4 @@
-from itertools import chain, count
+from itertools import count
 
 import networkx as nx
 
@@ -162,7 +162,7 @@ def node_link_data(
     data = {
         "directed": G.is_directed(),
         "multigraph": multigraph,
-        "graph": list(G.graph.items()),
+        "graph": G.graph,
         "nodes": [{**G.nodes[n], name: n} for n in G],
     }
     if multigraph:
@@ -307,7 +307,7 @@ def node_link_graph(
 
     # Allow 'key' to be omitted from attrs if the graph is not a multigraph.
     key = None if not multigraph else key
-    graph.graph = dict(data.get("graph"))
+    graph.graph = data.get("graph", {})
     c = count()
     for d in data["nodes"]:
         node_data = d.copy()
