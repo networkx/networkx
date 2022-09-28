@@ -1,5 +1,3 @@
-from itertools import chain
-
 import networkx as nx
 
 __all__ = ["adjacency_data", "adjacency_graph"]

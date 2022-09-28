@@ -135,9 +135,9 @@ def cytoscape_graph(data, name="name", ident="id"):
     >>> G.nodes()
     NodeView((0, 1))
     >>> G.nodes(data=True)[0]
-    {'id': '0', 'value': 0, 'name': '0'}
+    {'id': '0', 'name': '0'}
     >>> G.edges(data=True)
-    EdgeDataView([(0, 1, {'source': 0, 'target': 1})])
+    EdgeDataView([(0, 1, {})])
     """
     if name == ident:
         raise nx.NetworkXError("name and ident must be different.")
