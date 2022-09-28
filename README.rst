@@ -19,6 +19,7 @@ of complex networks.
 - **Mailing list:** https://groups.google.com/forum/#!forum/networkx-discuss
 - **Source:** https://github.com/networkx/networkx
 - **Bug reports:** https://github.com/networkx/networkx/issues
+- **Report a security vulnerability:** https://tidelift.com/docs/security
 - **Tutorial:** https://networkx.org/documentation/latest/tutorial.html
 - **GitHub Discussions:** https://github.com/networkx/networkx/discussions
 
