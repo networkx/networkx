@@ -354,7 +354,7 @@ def average_shortest_path_length(G, weight=None, method=None):
         If `G` is the null graph (that is, the graph on zero nodes).
 
     NetworkXError
-        If `G` is not connected (or not weakly connected, in the case
+        If `G` is not connected (or not strongly connected, in the case
         of a directed graph).
 
     ValueError
@@ -397,9 +397,10 @@ def average_shortest_path_length(G, weight=None, method=None):
     # For the special case of the trivial graph, return zero immediately.
     if n == 1:
         return 0
-    # Shortest path length is undefined if the graph is disconnected.
-    if G.is_directed() and not nx.is_weakly_connected(G):
-        raise nx.NetworkXError("Graph is not weakly connected.")
+    # Shortest path length is undefined if the graph is not strongly connected.
+    if G.is_directed() and not nx.is_strongly_connected(G):
+        raise nx.NetworkXError("Graph is not strongly connected.")
+    # Shortest path length is undefined if the graph is not connected.
     if not G.is_directed() and not nx.is_connected(G):
         raise nx.NetworkXError("Graph is not connected.")
 
