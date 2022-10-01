@@ -1,7 +1,7 @@
 NetworkX 2.8.7
 ==============
 
-Release date: TBD
+Release date: 1 October 2022
 
 Supports Python 3.8, 3.9, and 3.10.
 
@@ -21,6 +21,17 @@ Minor documentation and bug fixes.
 Merged PRs
 ----------
 
+- Bump release version
+- Fixed unused root argument in has_bridges (#5846)
+- docstring updates for `union`, `disjoint_union`, and `compose` (#5892)
+- Updated networkx/classes/function.py . Solves Issue #5463 (#5474)
+- Improved documentation for all_simple_paths (#5944)
+- Change is_path to return False when node not in G instead of raising exception (#5943)
+- Minor docstring touchups and test refactor for `is_path` (#5967)
+- Update documentation header links for latest pydata-sphinx-theme (#5966)
+- Fix failing example due to mpl 3.6 colorbar. (#5994)
+- Add Tidelift security vulnerability link (#6001)
+- Update linters (#6006)
 
 Improvements
 ------------
@@ -33,3 +44,9 @@ Improvements
 Contributors
 ------------
 
+- Juanita Gomez
+- Kevin Brown
+- 0ddoes
+- pmlpm1986
+- Dan Schult
+- Jarrod Millman
