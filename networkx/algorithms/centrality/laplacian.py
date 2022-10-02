@@ -94,16 +94,12 @@ def laplacian_centrality(
         )
 
     if nodelist != None:
-        nodeset = set(
-            G.nbunch_iter(nodelist)
-        ) 
-        if len(nodeset) != len(
-            nodelist
-        ): 
-            raise nx.NetworkXError("nodelist contains duplicate nodes or nodes not in G")
-        full_nodelist = nodelist + [
-            n for n in G if n not in nodeset
-        ] 
+        nodeset = set(G.nbunch_iter(nodelist))
+        if len(nodeset) != len(nodelist):
+            raise nx.NetworkXError(
+                "nodelist contains duplicate nodes or nodes not in G"
+            )
+        full_nodelist = nodelist + [n for n in G if n not in nodeset]
     else:
         full_nodelist = set(G.nbunch_iter(nodelist))
 
@@ -121,7 +117,7 @@ def laplacian_centrality(
         sum_of_full = np.power(eigh, 2).sum()
     else:
         sum_of_full = 1
-    
+
     laplace_centralities_dict = {}
     for i, node in enumerate(full_nodelist):
 
