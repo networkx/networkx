@@ -19,7 +19,7 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None, weight=None
 
     .. math::
 
-        x^T A = \lambda x^T,
+         \lambda x^T = x^T A,
 
     where $A$ is the adjacency matrix of the graph `G`. By definition of
     row-column product, the equation above is equivalent to
