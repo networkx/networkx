@@ -14,7 +14,7 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None, weight=None
     Eigenvector centrality computes the centrality for a node by adding
     the centrality of its predecessors. The centrality for node $i$ is the
     $i$-th element of a left eigenvector associated with the positive
-    eigenvalue $\lamba$ of largest modulus. Such an eigenvector $x$ is
+    eigenvalue $\lambda$ of maximum modulus. Such an eigenvector $x$ is
     defined up to a multiplicative constant by the equation
 
     .. math::
@@ -26,10 +26,11 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None, weight=None
 
     .. math::
 
-        \lambda x_i = \sum {j\to i}x_j.
+        \lambda x_i = \sum_{j\to i}x_j.
 
-    That is, adding the eigenvector centrality of the predecessor of $i$
-    one obtains the eigenvector centrality of $i$ multiplied by $\lambda$.
+    That is, adding the eigenvector centralities of the predecessors of
+    $i$ one obtains the eigenvector centrality of $i$ multiplied by
+    $\lambda$.
 
     By virtue of the Perron–Frobenius theorem [1]_, if `G` is strongly
     connected there is a unique such eigenvector $x$, and all its entries
@@ -45,17 +46,17 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None, weight=None
       A networkx graph
 
     max_iter : integer, optional (default=100)
-      Maximum number of iterations in power method.
+      Maximum number of power iterations.
 
     tol : float, optional (default=1.0e-6)
       Error tolerance (in Euclidean norm) used to check convergence in
-      power method iteration.
+      power iteration.
 
     nstart : dictionary, optional (default=None)
-      Starting value of eigenvector iteration for each node. Must have a
-      nonzero projection on the desired eigenvector for the power method
-      to converge. If None, this implementation uses an all-ones vector,
-      which is a safe choice.
+      Starting value of power iteration for each node. Must have a nonzero
+      projection on the desired eigenvector for the power method to converge.
+      If None, this implementation uses an all-ones vector, which is a safe
+      choice.
 
     weight : None or string, optional (default=None)
       If None, all edge weights are considered equal. Otherwise holds the
