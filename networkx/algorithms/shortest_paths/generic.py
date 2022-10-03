@@ -326,6 +326,8 @@ def average_shortest_path_length(G, weight=None, method=None):
     `d(s, t)` is the shortest path from `s` to `t`,
     and `n` is the number of nodes in `G`.
 
+    .. versionchanged:: 3.0
+
     Parameters
     ----------
     G : NetworkX graph
