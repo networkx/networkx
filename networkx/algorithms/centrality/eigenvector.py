@@ -33,7 +33,7 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None, weight=None
     $\lambda$.
 
     By virtue of the Perron–Frobenius theorem [1]_, if `G` is strongly
-    connected there is a unique such eigenvector $x$, and all its entries
+    connected there is a unique eigenvector $x$, and all its entries
     are strictly positive.
 
     If `G` is not strongly connected there might be several left
