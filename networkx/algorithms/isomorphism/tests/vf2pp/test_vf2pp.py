@@ -8,7 +8,7 @@ from networkx.algorithms.isomorphism.vf2pp import vf2pp_isomorphism
 
 
 class TestAllGraphTypesEdgeCases:
-    @pytest.mark.parametrize("graph_type", (nx.Graph, nx.MultiGraph))
+    @pytest.mark.parametrize("graph_type", (nx.Graph, nx.MultiGraph, nx.DiGraph))
     def test_both_graphs_empty(self, graph_type):
         G = graph_type()
         H = graph_type()
@@ -22,13 +22,13 @@ class TestAllGraphTypesEdgeCases:
         H.add_node(0)
         assert vf2pp_isomorphism(G, H) == {0: 0}
 
-    @pytest.mark.parametrize("graph_type", (nx.Graph, nx.MultiGraph))
+    @pytest.mark.parametrize("graph_type", (nx.Graph, nx.MultiGraph, nx.DiGraph))
     def test_first_graph_empty(self, graph_type):
         G = graph_type()
         H = graph_type([(0, 1)])
         assert vf2pp_isomorphism(G, H) is None
 
-    @pytest.mark.parametrize("graph_type", (nx.Graph, nx.MultiGraph))
+    @pytest.mark.parametrize("graph_type", (nx.Graph, nx.MultiGraph, nx.DiGraph))
     def test_second_graph_empty(self, graph_type):
         G = graph_type([(0, 1)])
         H = graph_type()
@@ -1499,3 +1499,72 @@ class TestMultiGraphISOVF2pp:
         G1.add_edges_from([(i, i) for i in range(0, 3)] * 7)
         m = vf2pp_isomorphism(G1, G2, node_label="label")
         assert m
+
+
+class TestDiGraphISOVF2pp:
+    def test_wikipedia_graph(self):
+        edges1 = [
+            (1, 5),
+            (1, 2),
+            (1, 4),
+            (3, 2),
+            (6, 2),
+            (3, 4),
+            (7, 3),
+            (4, 8),
+            (5, 8),
+            (6, 5),
+            (6, 7),
+            (7, 8),
+        ]
+        mapped = {1: "a", 2: "h", 3: "d", 4: "i", 5: "g", 6: "b", 7: "j", 8: "c"}
+
+        G1 = nx.DiGraph(edges1)
+        G2 = nx.relabel_nodes(G1, mapped)
+
+        assert vf2pp_isomorphism(G1, G2) == mapped
+
+        # Change the direction of an edge
+        G1.remove_edge(1, 5)
+        G1.add_edge(5, 1)
+        assert vf2pp_isomorphism(G1, G2) is None
+
+    def test_non_isomorphic_same_degree_sequence(self):
+        r"""
+                G1                           G2
+        x--------------x              x--------------x
+        | \            |              | \            |
+        |  x-------x   |              |  x-------x   |
+        |  |       |   |              |  |       |   |
+        |  x-------x   |              |  x-------x   |
+        | /            |              |            \ |
+        x--------------x              x--------------x
+        """
+        edges1 = [
+            (1, 5),
+            (1, 2),
+            (4, 1),
+            (3, 2),
+            (3, 4),
+            (4, 8),
+            (5, 8),
+            (6, 5),
+            (6, 7),
+            (7, 8),
+        ]
+        edges2 = [
+            (1, 5),
+            (1, 2),
+            (4, 1),
+            (3, 2),
+            (4, 3),
+            (5, 8),
+            (6, 5),
+            (6, 7),
+            (3, 7),
+            (8, 7),
+        ]
+
+        G1 = nx.DiGraph(edges1)
+        G2 = nx.DiGraph(edges2)
+        assert vf2pp_isomorphism(G1, G2) is None

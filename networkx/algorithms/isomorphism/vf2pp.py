@@ -37,7 +37,7 @@ Without node labels:
 >>> import networkx as nx
 >>> G1 = nx.path_graph(4)
 >>> G2 = nx.path_graph(4)
->>> nx.vf2pp_is_isomorphic(G1, G2, node_labels=None)
+>>> nx.vf2pp_is_isomorphic(G1, G2, node_label=None)
 True
 >>> nx.vf2pp_isomorphism(G1, G2, node_label=None)
 {1: 1, 2: 2, 0: 0, 3: 3}
@@ -49,7 +49,7 @@ With node labels:
 >>> mapped = {1: 1, 2: 2, 3: 3, 0: 0}
 >>> nx.set_node_attributes(G1, dict(zip(G1, ["blue", "red", "green", "yellow"])), "label")
 >>> nx.set_node_attributes(G2, dict(zip([mapped[u] for u in G1], ["blue", "red", "green", "yellow"])), "label")
->>> nx.vf2pp_is_isomorphic(G1, G2, node_labels="label")
+>>> nx.vf2pp_is_isomorphic(G1, G2, node_label="label")
 True
 >>> nx.vf2pp_isomorphism(G1, G2, node_label="label")
 {1: 1, 2: 2, 0: 0, 3: 3}
@@ -59,10 +59,10 @@ import collections
 
 import networkx as nx
 
-from .vf2pp_helpers.candidates import _find_candidates
+from .vf2pp_helpers.candidates import _find_candidates, _find_candidates_Di
 from .vf2pp_helpers.feasibility import _feasibility
 from .vf2pp_helpers.node_ordering import _matching_order
-from .vf2pp_helpers.state import _restore_Tinout, _update_Tinout
+from .vf2pp_helpers.state import _restore_Tinout, _restore_Tinout_Di, _update_Tinout
 
 __all__ = ["vf2pp_isomorphism", "vf2pp_is_isomorphic", "vf2pp_all_isomorphisms"]
 
@@ -78,9 +78,21 @@ _GraphParameters = collections.namedtuple(
         "G2_nodes_of_degree",
     ],
 )
+
 _StateParameters = collections.namedtuple(
     "_StateParameters",
-    ["mapping", "reverse_mapping", "T1", "T1_tilde", "T2", "T2_tilde"],
+    [
+        "mapping",
+        "reverse_mapping",
+        "T1",
+        "T1_in",
+        "T1_tilde",
+        "T1_tilde_in",
+        "T2",
+        "T2_in",
+        "T2_tilde",
+        "T2_tilde_in",
+    ],
 )
 
 
@@ -95,7 +107,7 @@ def vf2pp_isomorphism(G1, G2, node_label=None, default_label=None):
     node_label : str, optional
         The name of the node attribute to be used when comparing nodes.
         The default is `None`, meaning node attributes are not considered
-        in the comparison. Any node that doesn't have the `node_labels`
+        in the comparison. Any node that doesn't have the `node_label`
         attribute uses `default_label` instead.
 
     default_label : scalar
@@ -114,7 +126,7 @@ def vf2pp_isomorphism(G1, G2, node_label=None, default_label=None):
         return None
 
 
-def vf2pp_is_isomorphic(G1, G2, node_labels=None, default_label=None):
+def vf2pp_is_isomorphic(G1, G2, node_label=None, default_label=None):
     """Examines whether G1 and G2 are isomorphic.
 
     Parameters
@@ -125,7 +137,7 @@ def vf2pp_is_isomorphic(G1, G2, node_labels=None, default_label=None):
     node_label : str, optional
         The name of the node attribute to be used when comparing nodes.
         The default is `None`, meaning node attributes are not considered
-        in the comparison. Any node that doesn't have the `node_labels`
+        in the comparison. Any node that doesn't have the `node_label`
         attribute uses `default_label` instead.
 
     default_label : scalar
@@ -137,12 +149,12 @@ def vf2pp_is_isomorphic(G1, G2, node_labels=None, default_label=None):
     bool
         True if the two graphs are isomorphic, False otherwise.
     """
-    if vf2pp_isomorphism(G1, G2, node_labels, default_label) is not None:
+    if vf2pp_isomorphism(G1, G2, node_label, default_label) is not None:
         return True
     return False
 
 
-def vf2pp_all_isomorphisms(G1, G2, node_labels=None, default_label=None):
+def vf2pp_all_isomorphisms(G1, G2, node_label=None, default_label=None):
     """Yields all the possible mappings between G1 and G2.
 
     Parameters
@@ -153,7 +165,7 @@ def vf2pp_all_isomorphisms(G1, G2, node_labels=None, default_label=None):
     node_label : str, optional
         The name of the node attribute to be used when comparing nodes.
         The default is `None`, meaning node attributes are not considered
-        in the comparison. Any node that doesn't have the `node_labels`
+        in the comparison. Any node that doesn't have the `node_label`
         attribute uses `default_label` instead.
 
     default_label : scalar
@@ -164,18 +176,40 @@ def vf2pp_all_isomorphisms(G1, G2, node_labels=None, default_label=None):
     ------
     dict
         Isomorphic mapping between the nodes in `G1` and `G2`.
-
     """
     if G1.number_of_nodes() == 0 or G2.number_of_nodes() == 0:
         return False
 
+    # Create the degree dicts based on graph type
+    if G1.is_directed():
+        G1_degree = {
+            n: (in_degree, out_degree)
+            for (n, in_degree), (_, out_degree) in zip(G1.in_degree, G1.out_degree)
+        }
+        G2_degree = {
+            n: (in_degree, out_degree)
+            for (n, in_degree), (_, out_degree) in zip(G2.in_degree, G2.out_degree)
+        }
+    else:
+        G1_degree = dict(G1.degree)
+        G2_degree = dict(G2.degree)
+
+    if not G1.is_directed():
+        find_candidates = _find_candidates
+        restore_Tinout = _restore_Tinout
+    else:
+        find_candidates = _find_candidates_Di
+        restore_Tinout = _restore_Tinout_Di
+
     # Check that both graphs have the same number of nodes and degree sequence
-    if not nx.faster_could_be_isomorphic(G1, G2):
+    if G1.order() != G2.order():
+        return False
+    if sorted(G1_degree.values()) != sorted(G2_degree.values()):
         return False
 
     # Initialize parameters and cache necessary information about degree and labels
     graph_params, state_params = _initialize_parameters(
-        G1, G2, node_labels, default_label
+        G1, G2, G2_degree, node_label, default_label
     )
 
     # Check if G1 and G2 have the same labels, and that number of nodes per label is equal between the two graphs
@@ -187,7 +221,9 @@ def vf2pp_all_isomorphisms(G1, G2, node_labels=None, default_label=None):
 
     # Initialize the stack
     stack = []
-    candidates = iter(_find_candidates(node_order[0], graph_params, state_params))
+    candidates = iter(
+        find_candidates(node_order[0], graph_params, state_params, G1_degree)
+    )
     stack.append((node_order[0], candidates))
 
     mapping = state_params.mapping
@@ -211,7 +247,7 @@ def vf2pp_all_isomorphisms(G1, G2, node_labels=None, default_label=None):
                 popped_node2 = mapping[popped_node1]
                 mapping.pop(popped_node1)
                 reverse_mapping.pop(popped_node2)
-                _restore_Tinout(popped_node1, popped_node2, graph_params, state_params)
+                restore_Tinout(popped_node1, popped_node2, graph_params, state_params)
             continue
 
         if _feasibility(current_node, candidate, graph_params, state_params):
@@ -228,7 +264,9 @@ def vf2pp_all_isomorphisms(G1, G2, node_labels=None, default_label=None):
             _update_Tinout(current_node, candidate, graph_params, state_params)
             # Append the next node and its candidates to the stack
             candidates = iter(
-                _find_candidates(node_order[matching_node], graph_params, state_params)
+                find_candidates(
+                    node_order[matching_node], graph_params, state_params, G1_degree
+                )
             )
             stack.append((node_order[matching_node], candidates))
             matching_node += 1
@@ -244,7 +282,7 @@ def _precheck_label_properties(graph_params):
     return True
 
 
-def _initialize_parameters(G1, G2, node_labels=None, default_label=-1):
+def _initialize_parameters(G1, G2, G2_degree, node_label=None, default_label=-1):
     """Initializes all the necessary parameters for VF2++
 
     Parameters
@@ -279,8 +317,8 @@ def _initialize_parameters(G1, G2, node_labels=None, default_label=-1):
         T1_out, T2_out: set
             Ti_out contains all the nodes from Gi, that are neither in the mapping nor in Ti
     """
-    G1_labels = dict(G1.nodes(data=node_labels, default=default_label))
-    G2_labels = dict(G2.nodes(data=node_labels, default=default_label))
+    G1_labels = dict(G1.nodes(data=node_label, default=default_label))
+    G2_labels = dict(G2.nodes(data=node_label, default=default_label))
 
     graph_params = _GraphParameters(
         G1,
@@ -289,11 +327,32 @@ def _initialize_parameters(G1, G2, node_labels=None, default_label=-1):
         G2_labels,
         nx.utils.groups(G1_labels),
         nx.utils.groups(G2_labels),
-        nx.utils.groups({node: degree for node, degree in G2.degree()}),
+        nx.utils.groups(G2_degree),
     )
 
+    T1, T1_in = set(), set()
+    T2, T2_in = set(), set()
+    if G1.is_directed():
+        T1_tilde, T1_tilde_in = (
+            set(G1.nodes()),
+            set(),
+        )  # todo: do we need Ti_tilde_in? What nodes does it have?
+        T2_tilde, T2_tilde_in = set(G2.nodes()), set()
+    else:
+        T1_tilde, T1_tilde_in = set(G1.nodes()), set()
+        T2_tilde, T2_tilde_in = set(G2.nodes()), set()
+
     state_params = _StateParameters(
-        dict(), dict(), set(), set(G1.nodes()), set(), set(G2.nodes())
+        dict(),
+        dict(),
+        T1,
+        T1_in,
+        T1_tilde,
+        T1_tilde_in,
+        T2,
+        T2_in,
+        T2_tilde,
+        T2_tilde_in,
     )
 
     return graph_params, state_params
