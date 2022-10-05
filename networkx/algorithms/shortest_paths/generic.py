@@ -327,6 +327,8 @@ def average_shortest_path_length(G, weight=None, method=None):
     and `n` is the number of nodes in `G`.
 
     .. versionchanged:: 3.0
+       An exception is raised for directed graphs that are not strongly
+       connected.
 
     Parameters
     ----------
