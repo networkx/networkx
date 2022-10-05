@@ -320,7 +320,7 @@ def average_shortest_path_length(G, weight=None, method=None):
 
     .. math::
 
-       a =\sum_{s,t \in V, s\neq t} \frac{d(s, t)}{n(n-1)}
+       a =\sum_{\substack{s,t \in V \\ s\neq t}} \frac{d(s, t)}{n(n-1)}
 
     where `V` is the set of nodes in `G`,
     `d(s, t)` is the shortest path from `s` to `t`,
