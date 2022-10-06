@@ -30,7 +30,7 @@ def test_margulis_gabber_galil_graph():
 
     # Eigenvalues are already sorted using the scipy eigvalsh,
     # but the implementation in numpy does not guarantee order.
-    w = sorted(sp.linalg.eigvalsh(adjacency_matrix(g).A))
+    w = sorted(sp.linalg.eigvalsh(adjacency_matrix(g).toarray()))
     assert w[-2] < 5 * np.sqrt(2)
 
 
