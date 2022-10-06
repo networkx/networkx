@@ -13,6 +13,7 @@ __all__ = [
 ]
 
 
+@nx.dispatch("is_simple_path")
 def is_simple_path(G, nodes):
     """Returns True if and only if `nodes` form a simple path in `G`.
 

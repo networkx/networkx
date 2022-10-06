@@ -43,8 +43,14 @@ the backend implementation.
 Example pytest invocation:
 NETWORKX_GRAPH_CONVERT=sparse pytest --pyargs networkx
 
-The expectation is that each backend will pass all networkx tests
-to be considered a fully compliant backend.
+Any dispatchable algorithms which are not implemented by the backend
+will cause a `pytest.xfail()`, giving some indication that not all
+tests are working without causing an explicit failure.
+
+A special `mark_nx_tests(items)` function may be defined by the backend.
+It will be called with the list of NetworkX tests discovered. Each item
+is a pytest.Node object. If the backend does not support the test, it
+can be marked as xfail to indicate it is not being handled.
 """
 import os
 import sys
@@ -53,7 +59,7 @@ from functools import wraps
 from importlib.metadata import entry_points
 
 
-__all__ = ["dispatch"]
+__all__ = ["dispatch", "mark_tests"]
 
 
 known_plugins = [
@@ -122,6 +128,11 @@ if os.environ.get("NETWORKX_GRAPH_CONVERT"):
     if plugin_name not in plugins:
         raise Exception(f"No registered networkx.plugins entry_point named {plugin_name}")
 
+    try:
+        import pytest
+    except ImportError:
+        raise ImportError(f"Missing pytest, which is required when using NETWORKX_GRAPH_CONVERT")
+
     def dispatch(algo):
         def algorithm(func):
             sig = inspect.signature(func)
@@ -129,14 +140,33 @@ if os.environ.get("NETWORKX_GRAPH_CONVERT"):
             @wraps(func)
             def wrapper(*args, **kwds):
                 backend = plugins[plugin_name].load()
+                if not hasattr(backend, algo):
+                    pytest.xfail(f"'{algo}' not implemented by {plugin_name}")
                 bound = sig.bind(*args, **kwds)
                 bound.apply_defaults()
                 graph, *args = args
                 # Convert graph into backend graph-like object
                 #   Include the weight label, if provided to the algorithm
-                graph = backend.convert(graph, bound.arguments.get("weight"))
+                weight = None
+                if "weight" in bound.arguments:
+                    weight = bound.arguments["weight"]
+                elif "data" in bound.arguments and "default" in bound.arguments:
+                    # This case exists for several MultiGraph edge algorithms
+                    if bound.arguments["data"]:
+                        weight = "weight"
+                graph = backend.convert(graph, weight=weight)
                 return getattr(backend, algo).__call__(graph, *args, **kwds)
 
             return wrapper
 
         return algorithm
+
+
+def mark_tests(items):
+    # Allow backend to mark tests (skip or xfail) if they aren't
+    # able to correctly handle them
+    if os.environ.get("NETWORKX_GRAPH_CONVERT"):
+        plugin_name = os.environ["NETWORKX_GRAPH_CONVERT"]
+        backend = plugins[plugin_name].load()
+        if hasattr(backend, "mark_nx_tests"):
+            getattr(backend, "mark_nx_tests")(items)

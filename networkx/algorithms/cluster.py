@@ -16,6 +16,7 @@ __all__ = [
 ]
 
 
+@nx.dispatch("triangles")
 @not_implemented_for("directed")
 def triangles(G, nodes=None):
     """Compute the number of triangles.
