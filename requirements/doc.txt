@@ -1,5 +1,5 @@
 sphinx>=5.2
-pydata-sphinx-theme>=0.10
+pydata-sphinx-theme>=0.11.0
 sphinx-gallery>=0.11
 numpydoc>=1.4
 pillow>=9.r21
