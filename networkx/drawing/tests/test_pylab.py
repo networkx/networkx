@@ -485,18 +485,19 @@ def test_multigraph_edgelist_tuples():
 
 def test_alpha_iter():
     pos = nx.random_layout(barbell)
+    fig = plt.figure()
     # with fewer alpha elements than nodes
-    plt.subplot(131)
+    fig.add_subplot(131)  # Each test in a new axis object
     nx.draw_networkx_nodes(barbell, pos, alpha=[0.1, 0.2])
     # with equal alpha elements and nodes
     num_nodes = len(barbell.nodes)
     alpha = [x / num_nodes for x in range(num_nodes)]
     colors = range(num_nodes)
-    plt.subplot(132)
+    fig.add_subplot(132)
     nx.draw_networkx_nodes(barbell, pos, node_color=colors, alpha=alpha)
     # with more alpha elements than nodes
     alpha.append(1)
-    plt.subplot(133)
+    fig.add_subplot(133)
     nx.draw_networkx_nodes(barbell, pos, alpha=alpha)
 
 
