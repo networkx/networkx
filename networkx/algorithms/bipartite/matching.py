@@ -587,3 +587,13 @@ def minimum_weight_full_matching(G, top_nodes=None, weight="weight"):
     # add the ones from right to left as well.
     d.update({v: u for u, v in d.items()})
     return d
+
+def envy_free_matching(G):
+
+    def EFM_partition(G, matching):
+        X , Y = nx.bipartite.sets(G)
+        X_0 = set(X) - set(matching)
+        pass
+
+
+
