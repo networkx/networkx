@@ -10,8 +10,8 @@ def maximum_weight_fractional_matching(G: nx.Graph):
     A fractional graph is a graph in which every edge has a fraction [0,1]
     such that the sum of fractions of edges adjacent to each vertex is at most 1.
     A matching is a set of edges that do not share any nodes.
-    A maximum-weight fractional matching is one with the maximum fraction for each edge
-    such that the sum of multiplication of fractions and weights of edges adjacent to each vertex is at most 1.
+    Define fw(e) for each edge e to be the multiplication of its weight and fraction.
+    A maximum-weight fractional matching is one with the maximum fw(e) sum of all e in E(G).
 
     A fractional matching of maximum weight in a graph can be found by linear programming.
 
@@ -36,15 +36,15 @@ def maximum_weight_fractional_matching(G: nx.Graph):
         >>> G.add_nodes_from(["a1", "a2"])
         >>> G.add_edge("a1", "a2", weight=3)
         >>> F = maximum_weight_fractional_matching(G)
-        >>> print(F=={('a1', 'a2'): 0.333})
+        >>> print(F=={('a1', 'a2'): 1.0})
         True
         >>> F[('a1','a2')]
-        '0.333'
+        1.0
 
     explanation:                                               weight = 3
                     G =                                     a1-----------a2
 
-                                                              frac = 0.333
+                                                              frac = 1.0
                     maximum_weight_fractional_matching(G) = a1-----------a2
 
     The returned value is {('a1', 'a2'): 0.333}.
@@ -54,27 +54,27 @@ def maximum_weight_fractional_matching(G: nx.Graph):
     another example:
         >>> G = nx.Graph()
         >>> G.add_nodes_from(["a1", "a2", "a3"])
-        >>> G.add_edges_from([("a1", "a2"), ("a1", "a3"), ("a2", "a3")])
+        >>> G.add_weighted_edges_from([("a1", "a2", 1), ("a1", "a3", 2), ("a2", "a3", 3)])
         >>> F = maximum_weight_fractional_matching(G)
         >>> print(F=={('a1', 'a2'): 0.5, ('a1', 'a3'): 0.5, ('a2', 'a3'): 0.5})
         True
-        >>> F[('a1','a2')]
-        '0.5'
+        >>> F[('a2','a3')]
+        0.5
 
-    explanation:
+    explanation:                                                weight = 1
                     G =                                     a1------------a2
-                                                              \\          \
-                                                                \\       \
-                                                                  \\    \
-                                                                    \\ \
+                                                              \\          \\
+                                                    weight = 2  \\       \\ weight = 3
+                                                                  \\    \\
+                                                                    \\ \\
                                                                      a3
 
                                                                frac = 0.5
                     maximum_weight_fractional_matching(G) = a1------------a2
-                                                              \\          \
+                                                              \\          \\
                                                      frac = 0.5 \\       \\ frac = 0.5
-                                                                  \\    \
-                                                                    \\ \
+                                                                  \\    \\
+                                                                    \\ \\
                                                                      a3
 
     The returned value is {('a1', 'a2'): 0.5, ('a1', 'a3'): 0.5, ('a2', 'a3'): 0.5}.
@@ -108,47 +108,9 @@ def maximum_weight_fractional_matching(G: nx.Graph):
     index_edge = {edge: i for i, edge in enumerate(G.edges)}
     A = np.zeros([num_nodes, num_edges], dtype=int)
     for edge in G.edges:
-        weight = G.edges[edge].get("weight", 1)
         i_edge = index_edge[edge]
         i_node1, i_node2 = index_node[edge[0]], index_node[edge[1]]
-        A[i_node1, i_edge] = -1 * weight
-        A[i_node2, i_edge] = -1 * weight
-    res = linprog(c, A_ub=A, b_ub=b, bounds=bounds)
+        A[i_node1, i_edge] = -1
+        A[i_node2, i_edge] = -1
+    res = linprog(c, A_ub=A, b_ub=b, bounds=bounds, method="highs")
     return dict(zip(G.edges, np.abs(np.round(res.x, 3))))
-
-
-if __name__ == "__main__":
-    G = nx.complete_graph(4)
-    res = maximum_weight_fractional_matching(G)
-    print(res)
-    # G = nx.Graph()
-    # G.add_node(1)  # 0
-    # G.add_node(2)  # 1
-    # G.add_node("liel")  # 2
-    # G.add_node("oriya")  # 3
-
-    # G.add_edge(1, 2, weight=3)
-    # G.add_weighted_edges_from([(1, 2, -1)])
-
-    # G.add_edge(1, "liel")
-    # G.add_edge(2, "liel")
-
-    # G.add_weighted_edges_from([(1, 2, -1), (1, "liel", -2), (2, "liel", 3)])
-    # G.add_weighted_edges_from([(1, 2, -1), (1, "liel", 5)])
-
-    # G.add_edge(1, "oriya")
-    # G.add_edge(2, "liel")
-    # G.add_edge(2, "oriya")
-    # G.add_edge("oriya", "liel")
-    # res = maximum_weight_fractional_matching(G)
-    # print(np.allclose(res, [0.5, 0.5, 0.5]))
-    # print(np.round(res, 3))
-    # print(res)
-
-    G = nx.Graph()
-    G.add_nodes_from([i for i in range(0, 7)])
-    G.add_edges_from(
-        [(0, 1), (0, 2), (0, 6), (0, 5), (1, 6), (2, 3), (2, 4), (2, 6), (3, 4)]
-    )
-    res = maximum_weight_fractional_matching(G)
-    print(res)
