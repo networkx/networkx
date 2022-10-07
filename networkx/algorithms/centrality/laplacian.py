@@ -101,7 +101,8 @@ def laplacian_centrality(
             )
         full_nodelist = nodelist + [n for n in G if n not in nodeset]
     else:
-        full_nodelist = set(G.nbunch_iter(nodelist))
+        nodeset = set(G.nbunch_iter(nodelist))
+        full_nodelist = nodeset
 
     if G.is_directed():
         lap_matrix = sp.sparse.csr_matrix(
@@ -119,7 +120,7 @@ def laplacian_centrality(
         sum_of_full = 1
 
     laplace_centralities_dict = {}
-    for i, node in enumerate(full_nodelist):
+    for i, node in enumerate(nodeset):
 
         new_diag = lap_matrix.diagonal() - abs(lap_matrix.getcol(i).toarray().flatten())
 
