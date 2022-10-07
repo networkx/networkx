@@ -1,7 +1,8 @@
-import unittest
 from random import randint
 
-import numpy as np
+import pytest
+
+np = pytest.importorskip("numpy")
 
 import networkx as nx
 import networkx.algorithms.maximum_weight_fractional_matching as mw
@@ -11,38 +12,38 @@ def get_max_weight_frac(res, G=nx.Graph()):
     return sum(frac * G.edges[edge]["weight"] for edge, frac in res.items())
 
 
-class MyTestCase(unittest.TestCase):
+class TestMaximumWeightFractionalMatching:
     def test_empty_graph(self):
         G = nx.Graph()
         res = mw.maximum_weight_fractional_matching(G)
-        self.assertEqual({}, res)
+        assert {} == res
 
     def test_graph_without_edges(self):
         G = nx.Graph()
         G.add_nodes_from([i for i in range(0, 10)])
         res = mw.maximum_weight_fractional_matching(G)
-        self.assertEqual({}, res)
+        assert {} == res
 
     def test_simple_graph_without_weights(self):
         G = nx.Graph()
         G.add_nodes_from(["a1", "a2"])
         G.add_edge("a1", "a2")
         res = mw.maximum_weight_fractional_matching(G)
-        self.assertEqual({("a1", "a2"): 1.0}, res)
+        assert {("a1", "a2"): 1.0} == res
 
     def test_simple_graph_with_weight(self):
         G = nx.Graph()
         G.add_nodes_from(["a1", "a2"])
         G.add_edge("a1", "a2", weight=3)
         res = mw.maximum_weight_fractional_matching(G)
-        self.assertEqual({("a1", "a2"): 1.0}, res)
+        assert {("a1", "a2"): 1.0} == res
 
     def test_simple_graph_with_negative_weight(self):
         G = nx.Graph()
         G.add_nodes_from(["a1", "a2"])
         G.add_edge("a1", "a2", weight=-1)
         res = mw.maximum_weight_fractional_matching(G)
-        self.assertEqual({("a1", "a2"): 0}, res)
+        assert {("a1", "a2"): 0} == res
 
     def test_3_nodes_graph_without_weights(self):
         G = nx.Graph()
@@ -52,7 +53,7 @@ class MyTestCase(unittest.TestCase):
         max_weight = np.round(sum(frac for frac in res.values()), 3)
         exp_val = {("a1", "a2"): 0.5, ("a1", "a3"): 0.5, ("a2", "a3"): 0.5}
         weight = np.round(sum(frac for frac in exp_val.values()), 3)
-        self.assertEqual(weight, max_weight)
+        assert weight == max_weight
 
     def test_simple_graph_with_equal_weights(self):
         G = nx.Graph()
@@ -62,7 +63,7 @@ class MyTestCase(unittest.TestCase):
         max_weight = get_max_weight_frac(res, G)
         exp_val = {("a1", "a2"): 0.5, ("a1", "a3"): 0.5, ("a2", "a3"): 0.5}
         weight = get_max_weight_frac(exp_val, G)
-        self.assertEqual(weight, max_weight)
+        assert weight == max_weight
 
     def test_3_nodes_graph_1_3_weights(self):
         G = nx.Graph()
@@ -72,7 +73,7 @@ class MyTestCase(unittest.TestCase):
         max_weight = get_max_weight_frac(res, G)
         exp_val = {("a1", "a2"): 0.5, ("a1", "a3"): 0.5, ("a2", "a3"): 0.5}
         weight = get_max_weight_frac(exp_val, G)
-        self.assertEqual(weight, max_weight)
+        assert weight == max_weight
 
     def test_3_nodes_graph_with_weights(self):
         G = nx.Graph()
@@ -82,7 +83,7 @@ class MyTestCase(unittest.TestCase):
         max_weight = get_max_weight_frac(res, G)
         exp_val = {("a1", "a2"): 0.0, ("a1", "a3"): 0.0, ("a2", "a3"): 1.0}
         weight = get_max_weight_frac(exp_val, G)
-        self.assertEqual(weight, max_weight)
+        assert weight == max_weight
 
     def test_3_nodes_graph_with_negative_weight(self):
         G = nx.Graph()
@@ -92,7 +93,7 @@ class MyTestCase(unittest.TestCase):
         max_weight = get_max_weight_frac(res, G)
         exp_val = {("a1", "a2"): 0.0, ("a1", "a3"): 0.0, ("a2", "a3"): 1.0}
         weight = get_max_weight_frac(exp_val, G)
-        self.assertEqual(weight, max_weight)
+        assert weight == max_weight
 
     def test_7_nodes_graph_without_weights(self):
         G = nx.Graph()
@@ -114,7 +115,7 @@ class MyTestCase(unittest.TestCase):
             (3, 4): 0.5,
         }
         weight = np.round(sum(frac for frac in exp_val.values()), 3)
-        self.assertEqual(weight, max_weight)
+        assert weight == max_weight
 
     def test_7_nodes_graph_with_weights(self):
         G = nx.Graph()
@@ -146,7 +147,7 @@ class MyTestCase(unittest.TestCase):
             (3, 4): 0.5,
         }
         weight = get_max_weight_frac(exp_val, G)
-        self.assertEqual(weight, max_weight)
+        assert weight == max_weight
 
     def test_completes_graph_without_weights(self):
         for i in range(0, 5):
@@ -155,7 +156,7 @@ class MyTestCase(unittest.TestCase):
             res = mw.maximum_weight_fractional_matching(G)
             max_weight = np.round(sum(frac for frac in res.values()), 3)
             weight = np.round((1 / (n - 1)) * len(G.edges()), 3)
-            self.assertEqual(weight, max_weight)
+            assert weight == max_weight
 
     def test_sum_of_weights_in_every_node_in_random_graph_is_less_than_1(self):
         seed = 1
@@ -169,8 +170,4 @@ class MyTestCase(unittest.TestCase):
                         sum_adj += res[edge]
                     else:
                         sum_adj += res[(edge[1], edge[0])]
-                self.assertLessEqual(sum_adj, 1)
-
-
-if __name__ == "__main__":
-    unittest.main()
+                assert sum_adj == 1
