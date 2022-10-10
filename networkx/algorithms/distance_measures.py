@@ -1,6 +1,7 @@
 """Graph diameter, radius, eccentricity and other properties."""
 
 import math
+
 import networkx as nx
 from networkx.utils import not_implemented_for
 

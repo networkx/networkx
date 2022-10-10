@@ -1,7 +1,6 @@
-from random import Random
-
 import math
 import pytest
+from random import Random
 
 import networkx as nx
 from networkx import convert_node_labels_to_integers as cnlti
