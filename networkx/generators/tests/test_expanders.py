@@ -5,18 +5,12 @@
 import pytest
 
 import networkx as nx
-from networkx import adjacency_matrix, number_of_nodes
-from networkx.generators.expanders import (
-    chordal_cycle_graph,
-    margulis_gabber_galil_graph,
-    paley_graph,
-)
 
 
 @pytest.mark.parametrize("n", (2, 3, 5, 6, 10))
 def test_margulis_gabber_galil_graph_properties(n):
-    g = margulis_gabber_galil_graph(n)
-    assert number_of_nodes(g) == n * n
+    g = nx.margulis_gabber_galil_graph(n)
+    assert g.number_of_nodes() == n * n
     for node in g:
         assert g.degree(node) == 8
         assert len(node) == 2
@@ -31,22 +25,22 @@ def test_margulis_gabber_galil_graph_eigvals(n):
     sp = pytest.importorskip("scipy")
     import scipy.linalg
 
-    g = margulis_gabber_galil_graph(n)
+    g = nx.margulis_gabber_galil_graph(n)
     # Eigenvalues are already sorted using the scipy eigvalsh,
     # but the implementation in numpy does not guarantee order.
-    w = sorted(sp.linalg.eigvalsh(adjacency_matrix(g).toarray()))
+    w = sorted(sp.linalg.eigvalsh(nx.adjacency_matrix(g).toarray()))
     assert w[-2] < 5 * np.sqrt(2)
 
 
 @pytest.mark.parametrize("p", (3, 5, 7, 11))  # Primes
 def test_chordal_cycle_graph(p):
     """Test for the :func:`networkx.chordal_cycle_graph` function."""
-    G = chordal_cycle_graph(p)
+    G = nx.chordal_cycle_graph(p)
     assert len(G) == p
     # TODO The second largest eigenvalue should be smaller than a constant,
     # independent of the number of nodes in the graph:
     #
-    #     eigs = sorted(sp.linalg.eigvalsh(adjacency_matrix(G).A))
+    #     eigs = sorted(sp.linalg.eigvalsh(nx.adjacency_matrix(G).toarray()))
     #     assert_less(eigs[-2], ...)
     #
 
@@ -54,7 +48,7 @@ def test_chordal_cycle_graph(p):
 @pytest.mark.parametrize("p", (3, 5, 7, 11, 13))  # Primes
 def test_paley_graph(p):
     """Test for the :func:`networkx.paley_graph` function."""
-    G = paley_graph(p)
+    G = nx.paley_graph(p)
     # G has p nodes
     assert len(G) == p
     # G is (p-1)/2-regular
@@ -71,5 +65,5 @@ def test_paley_graph(p):
 
 
 def test_margulis_gabber_galil_graph_badinput():
-    pytest.raises(nx.NetworkXError, margulis_gabber_galil_graph, 3, nx.DiGraph())
-    pytest.raises(nx.NetworkXError, margulis_gabber_galil_graph, 3, nx.Graph())
+    pytest.raises(nx.NetworkXError, nx.margulis_gabber_galil_graph, 3, nx.DiGraph())
+    pytest.raises(nx.NetworkXError, nx.margulis_gabber_galil_graph, 3, nx.Graph())
