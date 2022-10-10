@@ -1,5 +1,6 @@
 """Biconnected components and articulation points."""
 from itertools import chain
+
 from networkx.utils.decorators import not_implemented_for
 
 __all__ = [
@@ -74,15 +75,20 @@ def is_biconnected(G):
        Communications of the ACM 16: 372–378. doi:10.1145/362248.362272
 
     """
-    bcc = list(biconnected_components(G))
-    if len(bcc) == 1:
-        return len(bcc[0]) == len(G)
-    return False  # Multiple bicomponents or No bicomponents (empty graph?)
-
-
-#    if len(bcc) == 0:  # No bicomponents (it could be an empty graph)
-#        return False
-#    return len(bcc[0]) == len(G)
+    bccs = biconnected_components(G)
+    try:
+        bcc = next(bccs)
+    except StopIteration:
+        # No bicomponents (empty graph?)
+        return False
+    try:
+        next(bccs)
+    except StopIteration:
+        # Only one bicomponent
+        return len(bcc) == len(G)
+    else:
+        # Multiple bicomponents
+        return False
 
 
 @not_implemented_for("directed")
@@ -337,6 +343,7 @@ def _biconnected_dfs(G, components=True):
         visited.add(start)
         edge_stack = []
         stack = [(start, start, iter(G[start]))]
+        edge_index = {}
         while stack:
             grandparent, parent, children = stack[-1]
             try:
@@ -347,29 +354,34 @@ def _biconnected_dfs(G, components=True):
                     if discovery[child] <= discovery[parent]:  # back edge
                         low[parent] = min(low[parent], discovery[child])
                         if components:
+                            edge_index[parent, child] = len(edge_stack)
                             edge_stack.append((parent, child))
                 else:
                     low[child] = discovery[child] = len(discovery)
                     visited.add(child)
                     stack.append((parent, child, iter(G[child])))
                     if components:
+                        edge_index[parent, child] = len(edge_stack)
                         edge_stack.append((parent, child))
+
             except StopIteration:
                 stack.pop()
                 if len(stack) > 1:
                     if low[parent] >= discovery[grandparent]:
                         if components:
-                            ind = edge_stack.index((grandparent, parent))
+                            ind = edge_index[grandparent, parent]
                             yield edge_stack[ind:]
-                            edge_stack = edge_stack[:ind]
+                            del edge_stack[ind:]
+
                         else:
                             yield grandparent
                     low[grandparent] = min(low[parent], low[grandparent])
                 elif stack:  # length 1 so grandparent is root
                     root_children += 1
                     if components:
-                        ind = edge_stack.index((grandparent, parent))
+                        ind = edge_index[grandparent, parent]
                         yield edge_stack[ind:]
+                        del edge_stack[ind:]
         if not components:
             # root node is articulation point if it has more than 1 child
             if root_children > 1:

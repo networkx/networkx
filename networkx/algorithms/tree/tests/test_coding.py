@@ -2,8 +2,9 @@
 from itertools import product
 
 import pytest
+
 import networkx as nx
-from networkx.utils import nodes_equal, edges_equal
+from networkx.utils import edges_equal, nodes_equal
 
 
 class TestPruferSequence:
@@ -83,7 +84,7 @@ class TestNestedTuple:
             nx.to_nested_tuple(G, "bogus")
 
     def test_encoding(self):
-        T = nx.full_rary_tree(2, 2 ** 3 - 1)
+        T = nx.full_rary_tree(2, 2**3 - 1)
         expected = (((), ()), ((), ()))
         actual = nx.to_nested_tuple(T, 0)
         assert nodes_equal(expected, actual)
@@ -100,7 +101,7 @@ class TestNestedTuple:
 
     def test_decoding(self):
         balanced = (((), ()), ((), ()))
-        expected = nx.full_rary_tree(2, 2 ** 3 - 1)
+        expected = nx.full_rary_tree(2, 2**3 - 1)
         actual = nx.from_nested_tuple(balanced)
         assert nx.is_isomorphic(expected, actual)
 
@@ -108,5 +109,5 @@ class TestNestedTuple:
         balanced = (((), ()), ((), ()))
         T = nx.from_nested_tuple(balanced, sensible_relabeling=True)
         edges = [(0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6)]
-        assert nodes_equal(list(T), list(range(2 ** 3 - 1)))
+        assert nodes_equal(list(T), list(range(2**3 - 1)))
         assert edges_equal(list(T.edges()), edges)

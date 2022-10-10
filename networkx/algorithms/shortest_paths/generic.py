@@ -51,10 +51,15 @@ def shortest_path(G, source=None, target=None, weight=None, method="dijkstra"):
         Ending node for path. If not specified, compute shortest
         paths to all possible nodes.
 
-    weight : None or string, optional (default = None)
+    weight : None, string or function, optional (default = None)
         If None, every edge has weight/distance/cost 1.
         If a string, use this edge attribute as the edge weight.
         Any edge attribute not present defaults to 1.
+        If this is a function, the weight of an edge is the value
+        returned by the function. The function must accept exactly
+        three positional arguments: the two endpoints of an edge and
+        the dictionary of edge attributes for that edge.
+        The function must return a number.
 
     method : string, optional (default = 'dijkstra')
         The algorithm to use to compute the path.
@@ -96,14 +101,14 @@ def shortest_path(G, source=None, target=None, weight=None, method="dijkstra"):
     >>> print(nx.shortest_path(G, source=0, target=4))
     [0, 1, 2, 3, 4]
     >>> p = nx.shortest_path(G, source=0)  # target not specified
-    >>> p[4]
-    [0, 1, 2, 3, 4]
+    >>> p[3] # shortest path from source=0 to target=3
+    [0, 1, 2, 3]
     >>> p = nx.shortest_path(G, target=4)  # source not specified
-    >>> p[0]
-    [0, 1, 2, 3, 4]
+    >>> p[1] # shortest path from source=1 to target=4
+    [1, 2, 3, 4]
     >>> p = nx.shortest_path(G)  # source, target not specified
-    >>> p[0][4]
-    [0, 1, 2, 3, 4]
+    >>> p[2][4] # shortest path from source=2 to target=4
+    [2, 3, 4]
 
     Notes
     -----
@@ -182,10 +187,15 @@ def shortest_path_length(G, source=None, target=None, weight=None, method="dijks
         If not specified, compute shortest path lengths using all nodes as
         target nodes.
 
-    weight : None or string, optional (default = None)
+    weight : None, string or function, optional (default = None)
         If None, every edge has weight/distance/cost 1.
         If a string, use this edge attribute as the edge weight.
         Any edge attribute not present defaults to 1.
+        If this is a function, the weight of an edge is the value
+        returned by the function. The function must accept exactly
+        three positional arguments: the two endpoints of an edge and
+        the dictionary of edge attributes for that edge.
+        The function must return a number.
 
     method : string, optional (default = 'dijkstra')
         The algorithm to use to compute the path length.
@@ -310,20 +320,29 @@ def average_shortest_path_length(G, weight=None, method=None):
 
     .. math::
 
-       a =\sum_{s,t \in V} \frac{d(s, t)}{n(n-1)}
+       a =\sum_{\substack{s,t \in V \\ s\neq t}} \frac{d(s, t)}{n(n-1)}
 
     where `V` is the set of nodes in `G`,
     `d(s, t)` is the shortest path from `s` to `t`,
     and `n` is the number of nodes in `G`.
 
+    .. versionchanged:: 3.0
+       An exception is raised for directed graphs that are not strongly
+       connected.
+
     Parameters
     ----------
     G : NetworkX graph
 
-    weight : None or string, optional (default = None)
-       If None, every edge has weight/distance/cost 1.
-       If a string, use this edge attribute as the edge weight.
-       Any edge attribute not present defaults to 1.
+    weight : None, string or function, optional (default = None)
+        If None, every edge has weight/distance/cost 1.
+        If a string, use this edge attribute as the edge weight.
+        Any edge attribute not present defaults to 1.
+        If this is a function, the weight of an edge is the value
+        returned by the function. The function must accept exactly
+        three positional arguments: the two endpoints of an edge and
+        the dictionary of edge attributes for that edge.
+        The function must return a number.
 
     method : string, optional (default = 'unweighted' or 'djikstra')
         The algorithm to use to compute the path lengths.
@@ -339,7 +358,7 @@ def average_shortest_path_length(G, weight=None, method=None):
         If `G` is the null graph (that is, the graph on zero nodes).
 
     NetworkXError
-        If `G` is not connected (or not weakly connected, in the case
+        If `G` is not connected (or not strongly connected, in the case
         of a directed graph).
 
     ValueError
@@ -382,9 +401,10 @@ def average_shortest_path_length(G, weight=None, method=None):
     # For the special case of the trivial graph, return zero immediately.
     if n == 1:
         return 0
-    # Shortest path length is undefined if the graph is disconnected.
-    if G.is_directed() and not nx.is_weakly_connected(G):
-        raise nx.NetworkXError("Graph is not weakly connected.")
+    # Shortest path length is undefined if the graph is not strongly connected.
+    if G.is_directed() and not nx.is_strongly_connected(G):
+        raise nx.NetworkXError("Graph is not strongly connected.")
+    # Shortest path length is undefined if the graph is not connected.
     if not G.is_directed() and not nx.is_connected(G):
         raise nx.NetworkXError("Graph is not connected.")
 
@@ -422,10 +442,15 @@ def all_shortest_paths(G, source, target, weight=None, method="dijkstra"):
     target : node
        Ending node for path.
 
-    weight : None or string, optional (default = None)
-       If None, every edge has weight/distance/cost 1.
-       If a string, use this edge attribute as the edge weight.
-       Any edge attribute not present defaults to 1.
+    weight : None, string or function, optional (default = None)
+        If None, every edge has weight/distance/cost 1.
+        If a string, use this edge attribute as the edge weight.
+        Any edge attribute not present defaults to 1.
+        If this is a function, the weight of an edge is the value
+        returned by the function. The function must accept exactly
+        three positional arguments: the two endpoints of an edge and
+        the dictionary of edge attributes for that edge.
+        The function must return a number.
 
     method : string, optional (default = 'dijkstra')
        The algorithm to use to compute the path lengths.
@@ -522,9 +547,7 @@ def _build_paths_from_predecessors(sources, target, pred):
     bellman_ford_path
     """
     if target not in pred:
-        raise nx.NetworkXNoPath(
-            f"Target {target} cannot be reached" f"from given sources"
-        )
+        raise nx.NetworkXNoPath(f"Target {target} cannot be reached from given sources")
 
     seen = {target}
     stack = [[target, 0]]

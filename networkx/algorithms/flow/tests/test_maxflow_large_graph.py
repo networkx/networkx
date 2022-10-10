@@ -1,16 +1,22 @@
 """Maximum flow algorithms test suite on large graphs.
 """
 
+import bz2
 import os
+import pickle
+
 import pytest
 
 import networkx as nx
-from networkx.algorithms.flow import build_flow_dict, build_residual_network
-from networkx.algorithms.flow import boykov_kolmogorov
-from networkx.algorithms.flow import dinitz
-from networkx.algorithms.flow import edmonds_karp
-from networkx.algorithms.flow import preflow_push
-from networkx.algorithms.flow import shortest_augmenting_path
+from networkx.algorithms.flow import (
+    boykov_kolmogorov,
+    build_flow_dict,
+    build_residual_network,
+    dinitz,
+    edmonds_karp,
+    preflow_push,
+    shortest_augmenting_path,
+)
 
 flow_funcs = [
     boykov_kolmogorov,
@@ -43,8 +49,10 @@ def gen_pyramid(N):
 
 def read_graph(name):
     dirname = os.path.dirname(__file__)
-    path = os.path.join(dirname, name + ".gpickle.bz2")
-    return nx.read_gpickle(path)
+    fname = os.path.join(dirname, name + ".gpickle.bz2")
+    with bz2.BZ2File(fname, "rb") as f:
+        G = pickle.load(f)
+    return G
 
 
 def validate_flows(G, s, t, soln_value, R, flow_func):

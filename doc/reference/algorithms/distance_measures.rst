@@ -11,7 +11,6 @@ Distance Measures
    diameter
    harmonic_diameter
    eccentricity
-   extrema_bounding
    periphery
    radius
    resistance_distance

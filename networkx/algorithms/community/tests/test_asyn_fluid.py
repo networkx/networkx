@@ -1,4 +1,5 @@
 import pytest
+
 from networkx import Graph, NetworkXError
 from networkx.algorithms.community.asyn_fluid import asyn_fluidc
 

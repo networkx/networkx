@@ -5,14 +5,14 @@ In general, these functions do not check for acyclic-ness, so it is up
 to the user to check for that.
 """
 
-from collections import deque
-from math import gcd
-from functools import partial
-from itertools import chain, product, starmap
 import heapq
+from collections import deque
+from functools import partial
+from itertools import chain, combinations, product, starmap
+from math import gcd
 
 import networkx as nx
-from networkx.utils import arbitrary_element, pairwise, not_implemented_for
+from networkx.utils import arbitrary_element, not_implemented_for, pairwise
 
 __all__ = [
     "descendants",
@@ -30,6 +30,7 @@ __all__ = [
     "dag_longest_path",
     "dag_longest_path_length",
     "dag_to_branching",
+    "compute_v_structures",
 ]
 
 chaini = chain.from_iterable
@@ -56,8 +57,13 @@ def descendants(G, source):
     Examples
     --------
     >>> DG = nx.path_graph(5, create_using=nx.DiGraph)
-    >>> sorted(list(nx.descendants(DG, 2)))
+    >>> sorted(nx.descendants(DG, 2))
     [3, 4]
+
+    The `source` node is not a descendant of itself, but can be included manually:
+
+    >>> sorted(nx.descendants(DG, 2) | {2})
+    [2, 3, 4]
 
     See also
     --------
@@ -87,8 +93,13 @@ def ancestors(G, source):
     Examples
     --------
     >>> DG = nx.path_graph(5, create_using=nx.DiGraph)
-    >>> sorted(list(nx.ancestors(DG, 2)))
+    >>> sorted(nx.ancestors(DG, 2))
     [0, 1]
+
+    The `source` node is not an ancestor of itself, but can be included manually:
+
+    >>> sorted(nx.ancestors(DG, 2) | {2})
+    [0, 1, 2]
 
     See also
     --------
@@ -294,12 +305,27 @@ def topological_sort(G):
 
 
 def lexicographical_topological_sort(G, key=None):
-    """Returns a generator of nodes in lexicographically topologically sorted
-    order.
+    """Generate the nodes in the unique lexicographical topological sort order.
 
-    A topological sort is a nonunique permutation of the nodes such that an
-    edge from u to v implies that u appears before v in the topological sort
-    order.
+    Generates a unique ordering of nodes by first sorting topologically (for which there are often
+    multiple valid orderings) and then additionally by sorting lexicographically.
+
+    A topological sort arranges the nodes of a directed graph so that the
+    upstream node of each directed edge precedes the downstream node.
+    It is always possible to find a solution for directed graphs that have no cycles.
+    There may be more than one valid solution.
+
+    Lexicographical sorting is just sorting alphabetically. It is used here to break ties in the
+    topological sort and to determine a single, unique ordering.  This can be useful in comparing
+    sort results.
+
+    The lexicographical order can be customized by providing a function to the `key=` parameter.
+    The definition of the key function is the same as used in python's built-in `sort()`.
+    The function takes a single argument and returns a key to use for sorting purposes.
+
+    Lexicographical sorting can fail if the node names are un-sortable. See the example below.
+    The solution is to provide a function to the `key=` argument that returns sortable keys.
+
 
     Parameters
     ----------
@@ -307,13 +333,13 @@ def lexicographical_topological_sort(G, key=None):
         A directed acyclic graph (DAG)
 
     key : function, optional
-        This function maps nodes to keys with which to resolve ambiguities in
-        the sort order.  Defaults to the identity function.
+        A function of one argument that converts a node name to a comparison key.
+        It defines and resolves ambiguities in the sort order.  Defaults to the identity function.
 
     Yields
     ------
     nodes
-        Yields the nodes in lexicographical topological sort order.
+        Yields the nodes of G in lexicographical topological sort order.
 
     Raises
     ------
@@ -329,6 +355,10 @@ def lexicographical_topological_sort(G, key=None):
     RuntimeError
         If `G` is changed while the returned iterator is being processed.
 
+    TypeError
+        Results from un-sortable node names.
+        Consider using `key=` parameter to resolve ambiguities in the sort order.
+
     Examples
     --------
     >>> DG = nx.DiGraph([(2, 1), (2, 5), (1, 3), (1, 4), (5, 4)])
@@ -336,6 +366,25 @@ def lexicographical_topological_sort(G, key=None):
     [2, 1, 3, 5, 4]
     >>> list(nx.lexicographical_topological_sort(DG, key=lambda x: -x))
     [2, 5, 1, 4, 3]
+
+    The sort will fail for any graph with integer and string nodes. Comparison of integer to strings
+    is not defined in python.  Is 3 greater or less than 'red'?
+
+    >>> DG = nx.DiGraph([(1, 'red'), (3, 'red'), (1, 'green'), (2, 'blue')])
+    >>> list(nx.lexicographical_topological_sort(DG))
+    Traceback (most recent call last):
+    ...
+    TypeError: '<' not supported between instances of 'str' and 'int'
+    ...
+
+    Incomparable nodes can be resolved using a `key` function. This example function
+    allows comparison of integers and strings by returning a tuple where the first
+    element is True for `str`, False otherwise. The second element is the node name.
+    This groups the strings and integers separately so they can be compared only among themselves.
+
+    >>> key = lambda node: (isinstance(node, str), node)
+    >>> list(nx.lexicographical_topological_sort(DG, key=key))
+    [1, 2, 3, 'blue', 'green', 'red']
 
     Notes
     -----
@@ -381,7 +430,12 @@ def lexicographical_topological_sort(G, key=None):
             except KeyError as err:
                 raise RuntimeError("Graph changed during iteration") from err
             if indegree_map[child] == 0:
-                heapq.heappush(zero_indegree, create_tuple(child))
+                try:
+                    heapq.heappush(zero_indegree, create_tuple(child))
+                except TypeError as err:
+                    raise TypeError(
+                        f"{err}\nConsider using `key=` parameter to resolve ambiguities in the sort order."
+                    )
                 del indegree_map[child]
 
         yield node
@@ -621,7 +675,7 @@ def transitive_closure(G, reflexive=False):
     reflexive : Bool or None, optional (default: False)
         Determines when cycles create self-loops in the Transitive Closure.
         If True, trivial cycles (length 0) create self-loops. The result
-        is a reflexive tranistive closure of G.
+        is a reflexive transitive closure of G.
         If False (the default) non-trivial cycles create self-loops.
         If None, self-loops are not created.
 
@@ -905,7 +959,7 @@ def dag_longest_path(G, weight="weight", default_weight=1, topo_order=None):
         The weight of edges that do not have a weight attribute
 
     topo_order: list or tuple, optional
-        A topological order for G (if None, the function will compute one)
+        A topological order for `G` (if None, the function will compute one)
 
     Returns
     -------
@@ -925,6 +979,17 @@ def dag_longest_path(G, weight="weight", default_weight=1, topo_order=None):
     >>> nx.dag_longest_path(DG)
     [0, 1, 2]
     >>> nx.dag_longest_path(DG, weight="cost")
+    [0, 2]
+
+    In the case where multiple valid topological orderings exist, `topo_order`
+    can be used to specify a specific ordering:
+
+    >>> DG = nx.DiGraph([(0, 1), (0, 2)])
+    >>> sorted(nx.all_topological_sorts(DG))  # Valid topological orderings
+    [[0, 1, 2], [0, 2, 1]]
+    >>> nx.dag_longest_path(DG, topo_order=[0, 1, 2])
+    [0, 1]
+    >>> nx.dag_longest_path(DG, topo_order=[0, 2, 1])
     [0, 2]
 
     See also
@@ -1123,3 +1188,33 @@ def dag_to_branching(G):
     B.remove_node(0)
     B.remove_node(-1)
     return B
+
+
+@not_implemented_for("undirected")
+def compute_v_structures(G):
+    """Iterate through the graph to compute all v-structures.
+
+    V-structures are triples in the directed graph where
+    two parent nodes point to the same child and the two parent nodes
+    are not adjacent.
+
+    Parameters
+    ----------
+    G : graph
+        A networkx DiGraph.
+
+    Returns
+    -------
+    vstructs : iterator of tuples
+        The v structures within the graph. Each v structure is a 3-tuple with the
+        parent, collider, and other parent.
+
+    Notes
+    -----
+    https://en.wikipedia.org/wiki/Collider_(statistics)
+    """
+    for collider, preds in G.pred.items():
+        for common_parents in combinations(preds, r=2):
+            # ensure that the colliders are the same
+            common_parents = sorted(common_parents)
+            yield (common_parents[0], collider, common_parents[1])

@@ -1,4 +1,2 @@
-black==21.12b0
-pyupgrade>=2.29.1
-pre-commit>=2.16
-mypy>=0.930
+pre-commit>=2.20
+mypy>=0.982

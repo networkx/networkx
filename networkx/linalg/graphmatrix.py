@@ -3,7 +3,7 @@ Adjacency matrix and incidence matrix of graphs.
 """
 import networkx as nx
 
-__all__ = ["incidence_matrix", "adj_matrix", "adjacency_matrix"]
+__all__ = ["incidence_matrix", "adjacency_matrix"]
 
 
 def incidence_matrix(G, nodelist=None, edgelist=None, oriented=False, weight=None):
@@ -66,7 +66,7 @@ def incidence_matrix(G, nodelist=None, edgelist=None, oriented=False, weight=Non
             edgelist = list(G.edges(keys=True))
         else:
             edgelist = list(G.edges())
-    A = sp.sparse.lil_matrix((len(nodelist), len(edgelist)))
+    A = sp.sparse.lil_array((len(nodelist), len(edgelist)))
     node_index = {node: i for i, node in enumerate(nodelist)}
     for ei, e in enumerate(edgelist):
         (u, v) = e[:2]
@@ -77,7 +77,7 @@ def incidence_matrix(G, nodelist=None, edgelist=None, oriented=False, weight=Non
             vi = node_index[v]
         except KeyError as err:
             raise nx.NetworkXError(
-                f"node {u} or {v} in edgelist " f"but not in nodelist"
+                f"node {u} or {v} in edgelist but not in nodelist"
             ) from err
         if weight is None:
             wt = 1
@@ -93,6 +93,14 @@ def incidence_matrix(G, nodelist=None, edgelist=None, oriented=False, weight=Non
         else:
             A[ui, ei] = wt
             A[vi, ei] = wt
+    import warnings
+
+    warnings.warn(
+        "incidence_matrix will return a scipy.sparse array instead of a matrix in Networkx 3.0.",
+        FutureWarning,
+        stacklevel=2,
+    )
+    # TODO: Rm sp.sparse.csc_matrix in Networkx 3.0
     return A.asformat("csc")
 
 
@@ -150,25 +158,8 @@ def adjacency_matrix(G, nodelist=None, dtype=None, weight="weight"):
     See Also
     --------
     to_numpy_array
-    to_scipy_sparse_matrix
+    to_scipy_sparse_array
     to_dict_of_dicts
     adjacency_spectrum
     """
-    return nx.to_scipy_sparse_matrix(G, nodelist=nodelist, dtype=dtype, weight=weight)
-
-
-def _adj_matrix_warning(G, nodelist=None, dtype=None, weight="weight"):
-    import warnings
-
-    warnings.warn(
-        (
-            "adj_matrix is deprecated and will be removed in version 3.0.\n"
-            "Use `adjacency_matrix` instead\n"
-        ),
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    return adjacency_matrix(G, nodelist, dtype, weight)
-
-
-adj_matrix = _adj_matrix_warning
+    return nx.to_scipy_sparse_array(G, nodelist=nodelist, dtype=dtype, weight=weight)

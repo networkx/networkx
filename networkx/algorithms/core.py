@@ -115,7 +115,16 @@ def core_number(G):
     return core
 
 
-find_cores = core_number
+def find_cores(G):
+    import warnings
+
+    msg = (
+        "\nfind_cores is deprecated as of version 2.7 and will be removed "
+        "in version 3.0.\n"
+        "The find_cores function is renamed core_number\n"
+    )
+    warnings.warn(msg, DeprecationWarning, stacklevel=2)
+    return nx.core_number(G)
 
 
 def _core_subgraph(G, k_filter, k=None, core=None):
@@ -308,7 +317,7 @@ def k_crust(G, k=None, core_number=None):
     # Default for k is one less than in _core_subgraph, so just inline.
     #    Filter is c[v] <= k
     if core_number is None:
-        core_number = find_cores(G)
+        core_number = nx.core_number(G)
     if k is None:
         k = max(core_number.values()) - 1
     nodes = (v for v in core_number if core_number[v] <= k)

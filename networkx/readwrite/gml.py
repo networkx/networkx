@@ -27,18 +27,18 @@ For additional documentation on the GML file format, please see the
 Several example graphs in GML format may be found on Mark Newman's
 `Network data page <http://www-personal.umich.edu/~mejn/netdata/>`_.
 """
-from io import StringIO
+import html.entities as htmlentitydefs
+import re
+import warnings
 from ast import literal_eval
 from collections import defaultdict
 from enum import Enum
+from io import StringIO
 from typing import Any, NamedTuple
+
 import networkx as nx
 from networkx.exception import NetworkXError
 from networkx.utils import open_file
-
-import warnings
-import re
-import html.entities as htmlentitydefs
 
 __all__ = ["read_gml", "parse_gml", "generate_gml", "write_gml"]
 
@@ -591,7 +591,7 @@ def literal_stringizer(value):
                 stringize(item)
             buf.write("}")
         else:
-            msg = "{value!r} cannot be converted into a Python literal"
+            msg = f"{value!r} cannot be converted into a Python literal"
             raise ValueError(msg)
 
     buf = StringIO()
@@ -658,7 +658,7 @@ def generate_gml(G, stringizer=None):
         label "1"
       ]
     ]
-    >>> G = nx.OrderedMultiGraph([("a", "b"), ("a", "b")])
+    >>> G = nx.MultiGraph([("a", "b"), ("a", "b")])
     >>> print("\n".join(nx.generate_gml(G)))
     graph [
       multigraph 1
@@ -701,7 +701,7 @@ def generate_gml(G, stringizer=None):
                 elif value is False:
                     yield indent + key + " 0"
                 # GML only supports signed 32-bit integers
-                elif value < -(2 ** 31) or value >= 2 ** 31:
+                elif value < -(2**31) or value >= 2**31:
                     yield indent + key + ' "' + str(value) + '"'
                 else:
                     yield indent + key + " " + str(value)

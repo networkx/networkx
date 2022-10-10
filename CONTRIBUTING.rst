@@ -47,7 +47,7 @@ Development Workflow
          # Install main development and runtime dependencies of networkx
          pip install -r requirements/default.txt -r requirements/test.txt -r requirements/developer.txt
          #
-         # (Optional) Install pygraphviz, pydot, and gdal packages
+         # (Optional) Install pygraphviz and pydot packages
          # These packages require that you have your system properly configured
          # and what that involves differs on various systems.
          # pip install -r requirements/extra.txt
@@ -68,7 +68,7 @@ Development Workflow
          # Install main development and runtime dependencies of networkx
          conda install -c conda-forge --file requirements/default.txt --file requirements/test.txt --file requirements/developer.txt
          #
-         # (Optional) Install pygraphviz, pydot, and gdal packages
+         # (Optional) Install pygraphviz and pydot packages
          # These packages require that you have your system properly configured
          # and what that involves differs on various systems.
          # conda install -c conda-forge --file requirements/extra.txt
@@ -291,13 +291,14 @@ Guidelines
 
   .. code-block:: python
 
-      @nx.not_implemented_for('directed', 'multigraph')
+      @nx.not_implemented_for("directed", "multigraph")
       def function_not_for_MultiDiGraph(G, others):
           # function not for graphs that are directed *and* multigraph
           pass
 
-      @nx.not_implemented_for('directed')
-      @nx.not_implemented_for('multigraph')
+
+      @nx.not_implemented_for("directed")
+      @nx.not_implemented_for("multigraph")
       def function_only_for_Graph(G, others):
           # function not for directed graphs *or* for multigraphs
           pass
@@ -324,11 +325,11 @@ Or the tests for a specific submodule::
 
 Or tests from a specific file::
 
-    $ PYTHONPATH=. pytest networkx/readwrite/tests/test_yaml.py
+    $ PYTHONPATH=. pytest networkx/readwrite/tests/test_edgelist.py
 
 Or a single test within that file::
 
-    $ PYTHONPATH=. pytest networkx/readwrite/tests/test_yaml.py::TestYaml::testUndirected
+    $ PYTHONPATH=. pytest networkx/readwrite/tests/test_edgelist.py::test_parse_edgelist_with_data_list
 
 Use ``--doctest-modules`` to run doctests.
 For example, run all tests and all doctests using::
@@ -385,6 +386,69 @@ General guidelines for making a good gallery plot:
 * Add comments to explain things are aren't obvious from reading the code.
 * Describe the feature that you're showcasing and link to other relevant parts of the
   documentation.
+
+Adding References
+-----------------
+
+If you are contributing a new algorithm (or an improvement to a current algorithm),
+a reference paper or resource should also be provided in the function docstring.
+For references to published papers, we try to follow the
+`Chicago Citation Style <https://en.wikipedia.org/wiki/The_Chicago_Manual_of_Style>`__.
+The quickest way of generating citation in this style is
+by searching for the paper on `Google Scholar <https://scholar.google.com/>`_ and clicking on
+the ``cite`` button. It will pop up the citation of the paper in multiple formats, and copy the
+``Chicago`` style.
+
+We prefer adding DOI links for URLs. If the DOI link resolves to a paywalled version of
+the article, we prefer adding a link to the arXiv version (if available) or any other
+publicly accessible copy of the paper.
+
+An example of a reference::
+
+    .. [1] Cheong, Se-Hang, and Yain-Whar Si. "Force-directed algorithms for schematic drawings and
+    placement: A survey." Information Visualization 19, no. 1 (2020): 65-91.
+    https://doi.org/10.1177%2F1473871618821740
+
+
+If the resource is uploaded as a PDF/DOCX/PPT on the web (lecture notes, presentations) it is better
+to use the `wayback machine <https://web.archive.org/>`_ to create a snapshot of the resource
+and link the internet archive link. The URL of the resource can change, and it creates unreachable
+links from the documentation.
+
+
+Image comparison
+----------------
+
+To run image comparisons::
+
+    $ PYTHONPATH=. pytest --mpl --pyargs networkx.drawing
+
+The ``--mpl`` tells ``pytest`` to use ``pytest-mpl`` to compare the generated plots
+with baseline ones stored in ``networkx/drawing/tests/baseline``.
+
+To add a new test, add a test function to ``networkx/drawing/tests`` that
+returns a Matplotlib figure (or any figure object that has a savefig method)
+and decorate it as follows::
+
+    @pytest.mark.mpl_image_compare
+    def test_barbell():
+        fig = plt.figure()
+        barbell = nx.barbell_graph(4, 6)
+        # make sure to fix any randomness
+        pos = nx.spring_layout(barbell, seed=42)
+        nx.draw(barbell, pos=pos)
+        return fig
+
+Then create a baseline image to compare against later::
+
+    $ pytest -k test_barbell --mpl-generate-path=networkx/drawing/tests/baseline
+
+.. note: In order to keep the size of the repository from becoming too large, we
+   prefer to limit the size and number of baseline images we include.
+
+And test::
+
+    $ pytest -k test_barbell --mpl
 
 Bugs
 ----

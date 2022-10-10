@@ -6,10 +6,10 @@ from itertools import combinations
 from operator import itemgetter
 
 import networkx as nx
-from networkx.utils import not_implemented_for
 
 # Define the default maximum flow function.
 from networkx.algorithms.flow import edmonds_karp
+from networkx.utils import not_implemented_for
 
 default_flow_func = edmonds_karp
 

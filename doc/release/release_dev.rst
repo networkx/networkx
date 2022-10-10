@@ -1,9 +1,9 @@
-Next Release
-============
+NetworkX 3.0 (unreleased)
+=========================
 
 Release date: TBD
 
-Supports Python 3.8, 3.9, and ...
+Supports Python ...
 
 NetworkX is a Python package for the creation, manipulation, and study of the
 structure, dynamics, and functions of complex networks.
@@ -19,46 +19,59 @@ Highlights
 This release is the result of X of work with over X pull requests by
 X contributors. Highlights include:
 
-.. warning::
-   Hash values observed in outputs of 
-   `~networkx.algorithms.graph_hashing.weisfeiler_lehman_graph_hash`
-   have changed in version 2.7 due to bug fixes. See gh-4946_ for details.
-   This means that comparing hashes of the same graph computed with different
-   versions of NetworkX (i.e. before and after version 2.7)
-   could wrongly fail an isomorphism test (isomorphic graphs always have matching
-   Weisfeiler-Lehman hashes). Users are advised to recalculate any stored graph
-   hashes they may have on upgrading.
-
-.. _gh-4946: https://github.com/networkx/networkx/pull/4946#issuecomment-914623654
-
-- Dropped support for Python 3.7.
+- Better syncing between G._succ and G._adj for directed G.
+  And slightly better speed from all the core adjacency data structures.
+  G.adj is now a cached_property while still having the cache reset when
+  G._adj is set to a new dict (which doesn't happen very often).
+  Note: We have always assumed that G._succ and G._adj point to the same
+  object. But we did not enforce it well. If you have somehow worked
+  around our attempts and are relying on these private attributes being
+  allowed to be different from each other due to loopholes in our previous
+  code, you will have to look for other loopholes in our new code
+  (or subclass DiGraph to explicitly allow this).
+- If your code sets G._succ or G._adj to new dictionary-like objects, you no longer
+  have to set them both. Setting either will ensure the other is set as well.
+  And the cached_properties G.adj and G.succ will be rest accordingly too.
+- If you use the presence of the attribute `_adj` as a criteria for the object
+  being a Graph instance, that code may need updating. The graph classes
+  themselves now have an attribute `_adj`. So, it is possible that whatever you
+  are checking might be a class rather than an instance. We suggest you check
+  for attribute `_adj` to verify it is like a NetworkX graph object or type and
+  then `type(obj) is type` to check if it is a class.
 
 Improvements
 ------------
-
+- [`#5663 <https://github.com/networkx/networkx/pull/5663>`_]
+  Implements edge swapping for directed graphs.
+- [`#5883 <https://github.com/networkx/networkx/pull/5883>`_]
+  Replace the implementation of ``lowest_common_ancestor`` and
+  ``all_pairs_lowest_common_ancestor`` with a "naive" algorithm to fix
+  several bugs and improve performance.
+- [`#5912 <https://github.com/networkx/networkx/pull/5912>`_]
+  The ``mapping`` argument of the ``relabel_nodes`` function can be either a
+  mapping or a function that creates a mapping. ``relabel_nodes`` first checks
+  whether the ``mapping`` is callable - if so, then it is used as a function.
+  This fixes a bug related for ``mapping=str`` and may change the behavior for
+  other ``mapping`` arguments that implement both ``__getitem__`` and
+  ``__call__``.
+- [`#5898 <https://github.com/networkx/networkx/pull/5898>`_]
+  Implements computing and checking for minimal d-separators between two nodes.
+  Also adds functionality to DAGs for computing v-structures.
+- [`#5943 <https://github.com/networkx/networkx/pull/5943>`_]
+  ``is_path`` used to raise a `KeyError` when the ``path`` argument contained
+  a node that was not in the Graph. The behavior has been updated so that
+  ``is_path`` returns `False` in this case rather than raising the exception.
+- [`#6003 <https://github.com/networkx/networkx/pull/6003>`_]
+  ``avg_shortest_path_length`` now raises an exception if the provided
+  graph is directed but not strongly connected. The previous test (weak
+  connecting) was wrong; in that case, the returned value was nonsensical.
 
 API Changes
 -----------
 
-- The values in the dictionary returned by
-  `~networkx.drawing.layout.rescale_layout_dict` are now `numpy.ndarray` objects
-  instead of tuples. This makes the return type of ``rescale_layout_dict``
-  consistent with that of all of the other layout functions.
-- A ``FutureWarning`` has been added to ``google_matrix`` to indicated that the
-  return type will change from a ``numpy.matrix`` object to a ``numpy.ndarray``
-  in NetworkX 3.0.
 
 Deprecations
 ------------
-
-- [`#5055 <https://github.com/networkx/networkx/pull/5055>`_]
-  Deprecate the ``random_state`` alias in favor of ``np_random_state``
-- [`#5114 <https://github.com/networkx/networkx/pull/5114>`_]
-  Deprecate the ``name`` kwarg from ``union`` as it isn't used.
-- [`#5143 <https://github.com/networkx/networkx/pull/5143>`_]
-  Deprecate ``euclidean`` in favor of ``math.dist``.
-- [`#5166 <https://github.com/networkx/networkx/pull/5166>`_]
-  Deprecate the ``hmn`` and ``lgc`` modules in ``node_classification``.
 
 
 Merged PRs
