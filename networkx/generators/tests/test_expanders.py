@@ -13,21 +13,25 @@ from networkx.generators.expanders import (
 )
 
 
-def test_margulis_gabber_galil_graph():
-    for n in 2, 3, 5, 6, 10:
-        g = margulis_gabber_galil_graph(n)
-        assert number_of_nodes(g) == n * n
-        for node in g:
-            assert g.degree(node) == 8
-            assert len(node) == 2
-            for i in node:
-                assert int(i) == i
-                assert 0 <= i < n
+@pytest.mark.parametrize("n", (2, 3, 5, 6, 10))
+def test_margulis_gabber_galil_graph_properties(n):
+    g = margulis_gabber_galil_graph(n)
+    assert number_of_nodes(g) == n * n
+    for node in g:
+        assert g.degree(node) == 8
+        assert len(node) == 2
+        for i in node:
+            assert int(i) == i
+            assert 0 <= i < n
 
+
+@pytest.mark.parametrize("n", (2, 3, 5, 6, 10))
+def test_margulis_gabber_galil_graph_eigvals(n):
     np = pytest.importorskip("numpy")
     sp = pytest.importorskip("scipy")
     import scipy.linalg
 
+    g = margulis_gabber_galil_graph(n)
     # Eigenvalues are already sorted using the scipy eigvalsh,
     # but the implementation in numpy does not guarantee order.
     w = sorted(sp.linalg.eigvalsh(adjacency_matrix(g).toarray()))
