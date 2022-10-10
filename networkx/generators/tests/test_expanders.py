@@ -64,6 +64,9 @@ def test_paley_graph(p):
             assert (v, u) in G.edges
 
 
-def test_margulis_gabber_galil_graph_badinput():
-    pytest.raises(nx.NetworkXError, nx.margulis_gabber_galil_graph, 3, nx.DiGraph())
-    pytest.raises(nx.NetworkXError, nx.margulis_gabber_galil_graph, 3, nx.Graph())
+@pytest.mark.parametrize("graph_type", (nx.Graph, nx.DiGraph))
+def test_margulis_gabber_galil_graph_badinput(graph_type):
+    with pytest.raises(
+        nx.NetworkXError, match="`create_using` must be an undirected multigraph"
+    ):
+        nx.margulis_gabber_galil_graph(3, create_using=graph_type)
