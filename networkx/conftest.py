@@ -52,43 +52,6 @@ def set_warnings():
         category=DeprecationWarning,
         message="literal_destringizer is deprecated",
     )
-    warnings.filterwarnings(
-        "ignore",
-        category=DeprecationWarning,
-        message="context manager reversed is deprecated",
-    )
-    warnings.filterwarnings(
-        "ignore",
-        category=DeprecationWarning,
-        message="This will return a generator in 3.0*",
-    )
-    warnings.filterwarnings(
-        "ignore", category=PendingDeprecationWarning, message="the matrix subclass"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="edges_from_line"
-    )
-    warnings.filterwarnings("ignore", category=DeprecationWarning, message="consume")
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="iterable is deprecated"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="`almost_equal`"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="`assert_nodes_equal`"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="`assert_edges_equal`"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="`assert_graphs_equal`"
-    )
-    warnings.filterwarnings(
-        "ignore",
-        category=FutureWarning,
-        message="google_matrix will return an np.ndarray instead of a np.matrix",
-    )
     ### Future warnings from scipy.sparse array transition
     warnings.filterwarnings(
         "ignore", category=FutureWarning, message="biadjacency_matrix"
@@ -119,22 +82,6 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=FutureWarning, message="directed_modularity_matrix"
     )
-    warnings.filterwarnings(
-        "ignore", category=FutureWarning, message="adjacency_matrix"
-    )
-    warnings.filterwarnings(
-        "ignore",
-        category=DeprecationWarning,
-        message="\n\nThe scipy.sparse array containers",
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="networkx.project"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="\nfind_cores"
-    )
-    warnings.filterwarnings("ignore", category=FutureWarning, message="attr_matrix")
-    warnings.filterwarnings("ignore", category=DeprecationWarning, message="info")
     # create_using for scale_free_graph
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="The create_using argument"
