@@ -378,7 +378,7 @@ def k_corona(G, k, core_number=None):
     return _core_subgraph(G, func, k, core_number)
 
 
-@nx.dispatch("k_truss")
+@nx.dispatch
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def k_truss(G, k):

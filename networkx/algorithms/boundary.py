@@ -14,7 +14,7 @@ from itertools import chain
 __all__ = ["edge_boundary", "node_boundary"]
 
 
-@nx.dispatch("edge_boundary")
+@nx.dispatch
 def edge_boundary(G, nbunch1, nbunch2=None, data=False, keys=False, default=None):
     """Returns the edge boundary of `nbunch1`.
 
@@ -91,7 +91,7 @@ def edge_boundary(G, nbunch1, nbunch2=None, data=False, keys=False, default=None
     )
 
 
-@nx.dispatch("node_boundary")
+@nx.dispatch()
 def node_boundary(G, nbunch1, nbunch2=None):
     """Returns the node boundary of `nbunch1`.
 

@@ -7,7 +7,7 @@ from ..utils import not_implemented_for
 __all__ = ["reciprocity", "overall_reciprocity"]
 
 
-@nx.dispatch("reciprocity")
+@nx.dispatch
 @not_implemented_for("undirected", "multigraph")
 def reciprocity(G, nodes=None):
     r"""Compute the reciprocity in a directed graph.
@@ -75,7 +75,7 @@ def _reciprocity_iter(G, nodes):
             yield (node, reciprocity)
 
 
-@nx.dispatch("overall_reciprocity")
+@nx.dispatch
 @not_implemented_for("undirected", "multigraph")
 def overall_reciprocity(G):
     """Compute the reciprocity for the whole graph.

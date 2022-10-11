@@ -275,7 +275,7 @@ def triadic_census(G, nodelist=None):
     return census
 
 
-@nx.dispatch("is_triad")
+@nx.dispatch()
 def is_triad(G):
     """Returns True if the graph G is a triad, else False.
 
