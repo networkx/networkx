@@ -1,7 +1,8 @@
 from operator import truediv
 from pickle import TRUE
-import pytest
+
 import networkx as nx
+import pytest
 
 
 class TestLoadCentrality:
@@ -22,7 +23,7 @@ class TestLoadCentrality:
         cls.G = G
         cls.exact_weighted = {0: 4.0, 1: 0.0, 2: 8.0, 3: 6.0, 4: 8.0, 5: 0.0}
         cls.K = nx.krackhardt_kite_graph()
-        cls.P2=nx.path_graph(2)
+        cls.P2 = nx.path_graph(2)
         cls.P3 = nx.path_graph(3)
         cls.P4 = nx.path_graph(4)
         cls.K5 = nx.complete_graph(5)
@@ -39,16 +40,16 @@ class TestLoadCentrality:
 
     def test_P2_normalized_load(self):
         G = self.P2
-        c = nx.load_centrality(G,normalized=True)
+        c = nx.load_centrality(G, normalized=True)
         d = {0: 0.000, 1: 0.000}
         for n in sorted(G):
             assert c[n] == pytest.approx(d[n], abs=1e-3)
-    
+
     def test_C2_normalized_load(self):
-         G = self.C2
-         c = nx.load_centrality(G,normalized=True)
-         d = {0: 0.000, 1: 0.000}
-         for n in sorted(G):
+        G = self.C2
+        c = nx.load_centrality(G, normalized=True)
+        d = {0: 0.000, 1: 0.000}
+        for n in sorted(G):
             assert c[n] == pytest.approx(d[n], abs=1e-3)
 
     def test_K2_normalized_load(self):
