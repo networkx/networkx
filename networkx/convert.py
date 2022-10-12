@@ -135,7 +135,7 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
     except ImportError:
         warnings.warn("pandas not found, skipping conversion test.", ImportWarning)
 
-    # numpy matrix or ndarray
+    # numpy array
     try:
         import numpy as np
 
