@@ -71,5 +71,3 @@ class TestMinWeightDominatingSet:
         with pytest.raises(ValueError, match="Expected non-empty NetworkX graph!"):
             min_edge_dominating_set(graph)
         
-# C:\Users\lenovo\Documents\networkx\networkx\algorithms\approximation\tests\test_dominating_set.py
-# C:\Users\lenovo\Documents\networkx\networkx\algorithms\approximation\tests\test_dominating_set.py
