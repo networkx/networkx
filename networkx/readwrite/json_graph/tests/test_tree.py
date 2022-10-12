@@ -13,7 +13,7 @@ def test_graph():
     G.add_edge(1, 3, foo=10)
     G.add_edge(3, 4, foo=10)
     H = tree_graph(tree_data(G, 1))
-    nx.is_isomorphic(G, H)
+    assert nx.is_isomorphic(G, H)
 
 
 def test_graph_attributes():

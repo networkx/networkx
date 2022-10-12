@@ -180,10 +180,10 @@ class TestRelabel:
         K5 = nx.complete_graph(4)
         G = nx.complete_graph(4)
         G = nx.relabel_nodes(G, {i: i + 1 for i in range(4)}, copy=False)
-        nx.is_isomorphic(K5, G)
+        assert nx.is_isomorphic(K5, G)
         G = nx.complete_graph(4)
         G = nx.relabel_nodes(G, {i: i - 1 for i in range(4)}, copy=False)
-        nx.is_isomorphic(K5, G)
+        assert nx.is_isomorphic(K5, G)
 
     def test_relabel_selfloop(self):
         G = nx.DiGraph([(1, 1), (1, 2), (2, 3)])
