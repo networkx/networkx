@@ -52,13 +52,13 @@ It will be called with the list of NetworkX tests discovered. Each item
 is a pytest.Node object. If the backend does not support the test, that
 test can be marked as xfail.
 """
+import functools
+import inspect
 import os
 import sys
-import inspect
-import functools
 from importlib.metadata import entry_points
-from ..exception import NetworkXNotImplemented
 
+from ..exception import NetworkXNotImplemented
 
 __all__ = ["dispatch", "mark_tests"]
 
@@ -72,6 +72,7 @@ known_plugins = [
 
 class PluginInfo:
     """Lazily loaded entry_points plugin information"""
+
     def __init__(self):
         self._items = None
 
@@ -137,7 +138,9 @@ def dispatch(func=None, *, name=None):
                 if hasattr(backend, name):
                     return getattr(backend, name).__call__(*args, **kwds)
                 else:
-                    raise NetworkXNotImplemented(f"'{name}' not implemented by {plugin_name}")
+                    raise NetworkXNotImplemented(
+                        f"'{name}' not implemented by {plugin_name}"
+                    )
         return func(*args, **kwds)
 
     _register_algo(name, wrapper)
@@ -194,16 +197,22 @@ def test_override_dispatch(func=None, *, name=None):
 if os.environ.get("NETWORKX_GRAPH_CONVERT"):
     plugin_name = os.environ["NETWORKX_GRAPH_CONVERT"]
     if plugin_name not in known_plugins:
-        raise Exception(f"{plugin_name} is not a known plugin; must be one of {known_plugins}")
+        raise Exception(
+            f"{plugin_name} is not a known plugin; must be one of {known_plugins}"
+        )
     if not plugins:
         raise Exception("No registered networkx.plugins entry_points")
     if plugin_name not in plugins:
-        raise Exception(f"No registered networkx.plugins entry_point named {plugin_name}")
+        raise Exception(
+            f"No registered networkx.plugins entry_point named {plugin_name}"
+        )
 
     try:
         import pytest
     except ImportError:
-        raise ImportError(f"Missing pytest, which is required when using NETWORKX_GRAPH_CONVERT")
+        raise ImportError(
+            f"Missing pytest, which is required when using NETWORKX_GRAPH_CONVERT"
+        )
 
     # Override `dispatch` for testing
     dispatch = test_override_dispatch
