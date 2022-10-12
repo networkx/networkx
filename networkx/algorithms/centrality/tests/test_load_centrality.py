@@ -1,4 +1,3 @@
-from locale import normalize
 from operator import truediv
 from pickle import TRUE
 import pytest
@@ -40,6 +39,7 @@ class TestLoadCentrality:
         b=nx.load_centrality(self.G,normalized=True)
         for i in b.values():
             assert i >= 0 and i <=1
+
     def test_not_strongly_connected(self):
         b = nx.load_centrality(self.D)
         result = {0: 5.0 / 12, 1: 1.0 / 4, 2: 1.0 / 12, 3: 1.0 / 4, 4: 0.000}
