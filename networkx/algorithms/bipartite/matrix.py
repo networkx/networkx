@@ -103,7 +103,6 @@ def biadjacency_matrix(
                 if u in row_index and v in col_index
             )
         )
-    # TODO: Rm coo_array wrapper when scipy adds sparse array creation fns
     A = sp.sparse.coo_array((data, (row, col)), shape=(nlen, mlen), dtype=dtype)
     try:
         return A.asformat(format)
