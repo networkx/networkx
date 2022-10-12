@@ -1,4 +1,5 @@
 import pytest
+
 import networkx as nx
 from networkx.algorithms.approximation import (
     min_edge_dominating_set,
@@ -70,4 +71,3 @@ class TestMinWeightDominatingSet:
         graph = nx.Graph()  # empty Networkx graph
         with pytest.raises(ValueError, match="Expected non-empty NetworkX graph!"):
             min_edge_dominating_set(graph)
-        
