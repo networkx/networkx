@@ -2,6 +2,7 @@ from .graph import Graph
 from .digraph import DiGraph
 from .multigraph import MultiGraph
 from .multidigraph import MultiDiGraph
+from .backends import dispatch
 
 from .function import *
 from .backends import *
