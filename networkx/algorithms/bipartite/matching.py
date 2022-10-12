@@ -579,8 +579,8 @@ def minimum_weight_full_matching(G, top_nodes=None, weight="weight"):
     return d
 
 def envy_free_matching(G):
-
-    def EFM_partition(G, matching):
+    matching = hopcroft_karp_matching(G)
+    def EFM_partition():
         X , Y = nx.bipartite.sets(G)
         X_0 = set(X) - set(matching)
         pass
