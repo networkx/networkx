@@ -22,11 +22,13 @@ class TestLoadCentrality:
         cls.G = G
         cls.exact_weighted = {0: 4.0, 1: 0.0, 2: 8.0, 3: 6.0, 4: 8.0, 5: 0.0}
         cls.K = nx.krackhardt_kite_graph()
+        cls.P2=nx.path_graph(2)
         cls.P3 = nx.path_graph(3)
         cls.P4 = nx.path_graph(4)
         cls.K5 = nx.complete_graph(5)
-
+        cls.K2 = nx.complete_graph(2)
         cls.C4 = nx.cycle_graph(4)
+        cls.C2 = nx.cycle_graph(2)
         cls.T = nx.balanced_tree(r=2, h=2)
         cls.Gb = nx.Graph()
         cls.Gb.add_edges_from([(0, 1), (0, 2), (1, 3), (2, 3), (2, 4), (4, 5), (3, 5)])
@@ -35,10 +37,26 @@ class TestLoadCentrality:
         cls.D = nx.cycle_graph(3, create_using=nx.DiGraph())
         cls.D.add_edges_from([(3, 0), (4, 3)])
 
-    def test_normalized_load_centrality(self):
-        b=nx.load_centrality(self.G,normalized=True)
-        for i in b.values():
-            assert i >= 0 and i <=1
+    def test_P2_normalized_load(self):
+        G = self.P2
+        c = nx.load_centrality(G,normalized=True)
+        d = {0: 0.000, 1: 0.000}
+        for n in sorted(G):
+            assert c[n] == pytest.approx(d[n], abs=1e-3)
+    
+    def test_C2_normalized_load(self):
+         G = self.C2
+         c = nx.load_centrality(G,normalized=True)
+         d = {0: 0.000, 1: 0.000}
+         for n in sorted(G):
+            assert c[n] == pytest.approx(d[n], abs=1e-3)
+
+    def test_K2_normalized_load(self):
+        G = self.K2
+        c = nx.load_centrality(G, normalized=True)
+        d = {0: 0.000, 1: 0.000}
+        for n in sorted(G):
+            assert c[n] == pytest.approx(d[n], abs=1e-3)
 
     def test_not_strongly_connected(self):
         b = nx.load_centrality(self.D)
