@@ -701,7 +701,6 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
     """
     import numpy as np
     import scipy as sp
-    import scipy.sparse.linalg  # call as sp.sparse.linalg
 
     if not nx.is_connected(G):
         msg = "Graph G must be strongly connected."

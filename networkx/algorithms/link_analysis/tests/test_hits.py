@@ -4,7 +4,6 @@ import networkx as nx
 
 np = pytest.importorskip("numpy")
 sp = pytest.importorskip("scipy")
-import scipy.sparse  # call as sp.sparse
 
 from networkx.algorithms.link_analysis.hits_alg import (
     _hits_numpy,

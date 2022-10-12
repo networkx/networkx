@@ -23,7 +23,6 @@ def test_margulis_gabber_galil_graph_properties(n):
 def test_margulis_gabber_galil_graph_eigvals(n):
     np = pytest.importorskip("numpy")
     sp = pytest.importorskip("scipy")
-    import scipy.linalg
 
     g = nx.margulis_gabber_galil_graph(n)
     # Eigenvalues are already sorted using the scipy eigvalsh,

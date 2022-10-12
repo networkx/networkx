@@ -57,7 +57,6 @@ def incidence_matrix(G, nodelist=None, edgelist=None, oriented=False, weight=Non
        http://videolectures.net/mit18085f07_strang_lec03/
     """
     import scipy as sp
-    import scipy.sparse  # call as sp.sparse
 
     if nodelist is None:
         nodelist = list(G)

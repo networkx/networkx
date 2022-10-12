@@ -39,7 +39,6 @@ def laplacian_spectrum(G, weight="weight"):
     laplacian_matrix
     """
     import scipy as sp
-    import scipy.linalg  # call as sp.linalg
 
     return sp.linalg.eigvalsh(nx.laplacian_matrix(G, weight=weight).todense())
 
@@ -71,7 +70,6 @@ def normalized_laplacian_spectrum(G, weight="weight"):
     normalized_laplacian_matrix
     """
     import scipy as sp
-    import scipy.linalg  # call as sp.linalg
 
     return sp.linalg.eigvalsh(
         nx.normalized_laplacian_matrix(G, weight=weight).todense()
@@ -105,7 +103,6 @@ def adjacency_spectrum(G, weight="weight"):
     adjacency_matrix
     """
     import scipy as sp
-    import scipy.linalg  # call as sp.linalg
 
     return sp.linalg.eigvals(nx.adjacency_matrix(G, weight=weight).todense())
 
@@ -133,7 +130,6 @@ def modularity_spectrum(G):
        Proc. Natl. Acad. Sci. USA, vol. 103, pp. 8577-8582, 2006.
     """
     import scipy as sp
-    import scipy.linalg  # call as sp.linalg
 
     if G.is_directed():
         return sp.linalg.eigvals(nx.directed_modularity_matrix(G))
@@ -168,6 +164,5 @@ def bethe_hessian_spectrum(G, r=None):
        Advances in Neural Information Processing Systems. 2014.
     """
     import scipy as sp
-    import scipy.linalg  # call as sp.linalg
 
     return sp.linalg.eigvalsh(nx.bethe_hessian_matrix(G, r).todense())
