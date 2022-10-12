@@ -74,8 +74,7 @@ def bfs_beam_edges(G, source, value, width=None):
 
     if width is None:
         width = len(G)
-    else
-        true
+    
     def successors(v):
         """Returns a list of the best neighbors of a node.
 
