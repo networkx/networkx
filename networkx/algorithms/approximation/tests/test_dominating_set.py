@@ -69,6 +69,6 @@ class TestMinWeightDominatingSet:
                 assert found, "Non adjacent edge found!"
 
         graph = nx.Graph()  # empty Networkx graph
-        with pytest.raises(ValueError, match="Expected non-empty NetworkX graph!"):
+        with pytest.raises(
+                ValueError, match="Expected non-empty NetworkX graph!"):
             min_edge_dominating_set(graph)
-            
