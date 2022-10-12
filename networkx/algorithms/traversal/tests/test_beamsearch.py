@@ -10,7 +10,7 @@ def identity(x):
 class TestBeamSearch:
     """Unit tests for the beam search function."""
 
-    def test_narrow(self):
+    def test_narrow(self): 
         """Tests that a narrow beam width may cause an incomplete search."""
         # In this search, we enqueue only the neighbor 3 at the first
         # step, then only the neighbor 2 at the second step. Once at
