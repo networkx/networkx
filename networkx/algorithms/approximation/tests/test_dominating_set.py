@@ -1,3 +1,4 @@
+import pytest
 import networkx as nx
 from networkx.algorithms.approximation import (
     min_edge_dominating_set,
@@ -65,3 +66,7 @@ class TestMinWeightDominatingSet:
                 for dom_edge in dom_set:
                     found |= u == dom_edge[0] or u == dom_edge[1]
                 assert found, "Non adjacent edge found!"
+
+        graph = nx.Graph() # empty Networkx graph
+        with pytest.raises(ValueError, match="Expected non-empty NetworkX graph!"):
+            min_edge_dominating_set(graph)
