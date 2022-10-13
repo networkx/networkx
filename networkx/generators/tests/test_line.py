@@ -13,7 +13,7 @@ class TestGeneratorLine:
 
     def test_path(self):
         G = nx.path_graph(5)
-        L = nx.line_graph(G) 
+        L = nx.line_graph(G)
         assert nx.is_isomorphic(L, nx.path_graph(4))
 
     def test_cycle(self):
@@ -275,7 +275,7 @@ class TestGeneratorInverseLine:
         H = nx.line_graph(G)
         J = nx.inverse_line_graph(H)
         assert nx.is_isomorphic(G, J)
-    
+
     def test_line_inverse_line_edgeless_graph(self):
         G = nx.Graph()
         G_nodes = [1, 2, 3, "w", "s"]
