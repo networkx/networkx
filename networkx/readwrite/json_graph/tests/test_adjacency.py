@@ -42,7 +42,6 @@ class TestAdjacency:
         assert H.is_directed()
         assert graphs_equal(G, H)
 
-
     def test_multidigraph(self):
         G = nx.MultiDiGraph()
         nx.add_path(G, [1, 2, 3])
