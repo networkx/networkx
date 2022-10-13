@@ -13,7 +13,7 @@ class TestGeneratorLine:
 
     def test_path(self):
         G = nx.path_graph(5)
-        L = nx.line_graph(G)
+        L = nx.line_graph(G) 
         assert nx.is_isomorphic(L, nx.path_graph(4))
 
     def test_cycle(self):
