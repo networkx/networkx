@@ -70,3 +70,18 @@ def test_margulis_gabber_galil_graph_badinput(graph_type):
         nx.NetworkXError, match="`create_using` must be an undirected multigraph"
     ):
         nx.margulis_gabber_galil_graph(3, create_using=graph_type)
+
+
+@pytest.mark.parametrize("graph_type", (nx.Graph, nx.DiGraph))
+def test_chordal_cycle_graph_badinput(graph_type):
+    with pytest.raises(
+        nx.NetworkXError, match="`create_using` must be an undirected multigraph"
+    ):
+        nx.chordal_cycle_graph(3, create_using=graph_type)
+
+
+def test_paley_graph_badinput():
+    with pytest.raises(
+        nx.NetworkXError, match="`create_using` cannot be a multigraph."
+    ):
+        nx.paley_graph(3, create_using=nx.MultiGraph)
