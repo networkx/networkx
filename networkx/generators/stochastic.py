@@ -42,8 +42,5 @@ def stochastic_graph(G, copy=True, weight="weight"):
     # inside the loop may be costly in computation time.
     degree = dict(G.out_degree(weight=weight))
     for u, v, d in G.edges(data=True):
-        if degree[u] == 0:
-            d[weight] = 0
-        else:
-            d[weight] = d.get(weight, 1) / degree[u]
+        d[weight] = d.get(weight, 1) / degree[u]
     return G
