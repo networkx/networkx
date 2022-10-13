@@ -463,6 +463,7 @@ class TestMaxFlowMinCutInterface:
                 result = interface_func(G, 0, 2, flow_func=flow_func, **kwargs)
                 if interface_func in max_min_funcs:
                     result = result[0]
+                    print(result)
                 assert fv == result, errmsg
 
     def test_kwargs_default_flow_func(self):
@@ -549,3 +550,4 @@ class TestCutoff:
                     G, 0, 4, flow_func=flow_func, cutoff=cutoff
                 )
                 assert cutoff == result, f"cutoff error in {flow_func.__name__}"
+# C:\Users\lenovo\Documents\networkx\networkx\algorithms\flow\tests\test_maxflow.py
