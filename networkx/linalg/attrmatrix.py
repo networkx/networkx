@@ -307,7 +307,7 @@ def attr_matrix(
 def attr_sparse_matrix(
     G, edge_attr=None, node_attr=None, normalized=False, rc_order=None, dtype=None
 ):
-    """Returns a SciPy sparse matrix using attributes from G.
+    """Returns a SciPy sparse array using attributes from G.
 
     If only `G` is passed in, then the adjacency matrix is constructed.
 
@@ -356,7 +356,7 @@ def attr_sparse_matrix(
 
     Returns
     -------
-    M : SciPy sparse matrix
+    M : SciPy sparse array
         The attribute matrix.
 
     ordering : list

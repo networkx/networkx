@@ -237,7 +237,7 @@ def tournament_matrix(G):
 
     Returns
     -------
-    SciPy sparse matrix
+    SciPy sparse array
         The tournament matrix of the tournament graph `G`.
 
     Raises
