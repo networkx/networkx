@@ -72,8 +72,10 @@ def test_margulis_gabber_galil_graph_badinput():
     pytest.raises(nx.NetworkXError, margulis_gabber_galil_graph, 3, nx.DiGraph())
     pytest.raises(nx.NetworkXError, margulis_gabber_galil_graph, 3, nx.Graph())
 
+
 def test_paley_graph_badinput():
     pytest.raises(nx.NetworkXError, paley_graph, 3, nx.MultiGraph())
+    
 
 def test_chordal_cycle_graph_badinput():
     pytest.raises(nx.NetworkXError, chordal_cycle_graph, 3, nx.DiGraph())
