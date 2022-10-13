@@ -275,3 +275,10 @@ class TestGeneratorInverseLine:
         H = nx.line_graph(G)
         J = nx.inverse_line_graph(H)
         assert nx.is_isomorphic(G, J)
+
+    def test_line_inverse_line_edgeless_graph(self):
+        G = nx.Graph()
+        G_nodes = [1,2,3, "w", "s"]
+        G.add_nodes_from(G_nodes)
+        pytest.raises(nx.NetworkXError, nx.inverse_line_graph, G)
+
