@@ -78,5 +78,3 @@ def test_paley_graph_badinput():
 def test_chordal_cycle_graph_badinput():
     pytest.raises(nx.NetworkXError, chordal_cycle_graph, 3, nx.DiGraph())
     pytest.raises(nx.NetworkXError, chordal_cycle_graph, 3, nx.Graph())
-
-# C:\Users\lenovo\Documents\networkx\networkx\generators\tests\test_expanders.pya
