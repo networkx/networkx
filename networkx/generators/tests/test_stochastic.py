@@ -1,7 +1,6 @@
 """Unit tests for the :mod:`networkx.generators.stochastic` module."""
-import pytest
-
 import networkx as nx
+import pytest
 
 
 class TestStochasticGraph:
@@ -18,13 +17,12 @@ class TestStochasticGraph:
             (0, 2, {"weight": 0.5}),
         ]
 
-
     def test_in_place(self):
         """Tests for an in-place reweighting of the edges of the graph."""
         G = nx.DiGraph()
         G.add_edge(0, 1, weight=1)
         G.add_edge(0, 2, weight=1)
-        S=nx.stochastic_graph(G, copy=False)
+        S = nx.stochastic_graph(G, copy=False)
         assert sorted(S.edges(data=True)) == [
             (0, 1, {"weight": 0.5}),
             (0, 2, {"weight": 0.5}),
