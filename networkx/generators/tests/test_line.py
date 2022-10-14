@@ -281,3 +281,7 @@ class TestGeneratorInverseLine:
         G_nodes = [1, 2, 3, "tree", "branches"]
         G.add_nodes_from(G_nodes)
         pytest.raises(nx.NetworkXError, nx.inverse_line_graph, G)
+
+    def test_line_graph_exists(self):
+        G = nx.barabasi_albert_graph(100, 5)
+        pytest.raises(nx.NetworkXError, nx.inverse_line_graph, G)
