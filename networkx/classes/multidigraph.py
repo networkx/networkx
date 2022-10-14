@@ -287,7 +287,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
             an empty graph is created.  The data can be an edge list, or any
             NetworkX graph object.  If the corresponding optional Python
             packages are installed the data can also be a 2D NumPy array, a
-            SciPy sparse matrix, or a PyGraphviz graph.
+            SciPy sparse array, or a PyGraphviz graph.
 
         multigraph_input : bool or None (default None)
             Note: Only used when `incoming_graph_data` is a dict.

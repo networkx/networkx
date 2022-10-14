@@ -50,7 +50,7 @@ def biadjacency_matrix(
 
     Returns
     -------
-    M : SciPy sparse matrix
+    M : SciPy sparse array
         Biadjacency matrix representation of the bipartite graph G.
 
     Notes
@@ -103,16 +103,8 @@ def biadjacency_matrix(
                 if u in row_index and v in col_index
             )
         )
-    # TODO: change coo_matrix -> coo_array for NX 3.0
-    A = sp.sparse.coo_matrix((data, (row, col)), shape=(nlen, mlen), dtype=dtype)
+    A = sp.sparse.coo_array((data, (row, col)), shape=(nlen, mlen), dtype=dtype)
     try:
-        import warnings
-
-        warnings.warn(
-            "biadjacency_matrix will return a scipy.sparse array instead of a matrix in NetworkX 3.0",
-            FutureWarning,
-            stacklevel=2,
-        )
         return A.asformat(format)
     except ValueError as err:
         raise nx.NetworkXError(f"Unknown sparse array format: {format}") from err
@@ -120,11 +112,11 @@ def biadjacency_matrix(
 
 def from_biadjacency_matrix(A, create_using=None, edge_attribute="weight"):
     r"""Creates a new bipartite graph from a biadjacency matrix given as a
-    SciPy sparse matrix.
+    SciPy sparse array.
 
     Parameters
     ----------
-    A: scipy sparse matrix
+    A: scipy sparse array
       A biadjacency matrix representation of a graph
 
     create_using: NetworkX graph
