@@ -18,13 +18,14 @@ class TestStochasticGraph:
             (0, 2, {"weight": 0.5}),
         ]
 
+
     def test_in_place(self):
         """Tests for an in-place reweighting of the edges of the graph."""
         G = nx.DiGraph()
         G.add_edge(0, 1, weight=1)
         G.add_edge(0, 2, weight=1)
-        nx.stochastic_graph(G, copy=False)
-        assert sorted(G.edges(data=True)) == [
+        S=nx.stochastic_graph(G, copy=False)
+        assert sorted(S.edges(data=True)) == [
             (0, 1, {"weight": 0.5}),
             (0, 2, {"weight": 0.5}),
         ]
