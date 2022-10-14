@@ -243,5 +243,5 @@ class TestEdgeSubsetBetweennessCentrality:
             G, sources=[1], targets=[9], weight=None
         )
         for n in G.edges():
-            sort_n = tuple(sorted(n))
-            assert b[n] == pytest.approx(b_answer[sort_n], abs=1e-7)
+            sorted_n = tuple(sorted(n))
+            assert b[n] == pytest.approx(b_answer[sorted_n], abs=1e-7)
