@@ -278,6 +278,6 @@ class TestGeneratorInverseLine:
 
     def test_line_inverse_edgeless_graph(self):
         G = nx.Graph()
-        G_nodes = [1, 2, 3, "wilber", "seth"]
+        G_nodes = [1, 2, 3, "tree", "branches"]
         G.add_nodes_from(G_nodes)
         pytest.raises(nx.NetworkXError, nx.inverse_line_graph, G)
