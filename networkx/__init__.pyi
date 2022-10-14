@@ -814,6 +814,7 @@ __all__ = [
     "uniform_random_intersection_graph",
     "union",
     "union_all",
+    "vf2pp_all_isomorphisms",
     "vf2pp_isomorphism",
     "vf2pp_is_isomorphic",
     "volume",
