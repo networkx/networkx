@@ -105,7 +105,7 @@ def dijkstra_path(G, source, target, weight="weight"):
         returned by the function. The function must accept exactly three
         positional arguments: the two endpoints of an edge and the
         dictionary of edge attributes for that edge. The function must
-        return a number.
+        return a number or None.
 
     Returns
     -------
@@ -186,7 +186,7 @@ def dijkstra_path_length(G, source, target, weight="weight"):
         returned by the function. The function must accept exactly three
         positional arguments: the two endpoints of an edge and the
         dictionary of edge attributes for that edge. The function must
-        return a number.
+        return a number or None.
 
     Returns
     -------
@@ -266,7 +266,7 @@ def single_source_dijkstra_path(G, source, cutoff=None, weight="weight"):
         returned by the function. The function must accept exactly three
         positional arguments: the two endpoints of an edge and the
         dictionary of edge attributes for that edge. The function must
-        return a number.
+        return a number or None.
 
     Returns
     -------
@@ -330,7 +330,7 @@ def single_source_dijkstra_path_length(G, source, cutoff=None, weight="weight"):
         returned by the function. The function must accept exactly three
         positional arguments: the two endpoints of an edge and the
         dictionary of edge attributes for that edge. The function must
-        return a number.
+        return a number or None.
 
     Returns
     -------
@@ -408,7 +408,7 @@ def single_source_dijkstra(G, source, target=None, cutoff=None, weight="weight")
         returned by the function. The function must accept exactly three
         positional arguments: the two endpoints of an edge and the
         dictionary of edge attributes for that edge. The function must
-        return a number.
+        return a number or None.
 
     Returns
     -------
@@ -506,7 +506,7 @@ def multi_source_dijkstra_path(G, sources, cutoff=None, weight="weight"):
         returned by the function. The function must accept exactly three
         positional arguments: the two endpoints of an edge and the
         dictionary of edge attributes for that edge. The function must
-        return a number.
+        return a number or None.
 
     Returns
     -------
@@ -579,7 +579,7 @@ def multi_source_dijkstra_path_length(G, sources, cutoff=None, weight="weight"):
         returned by the function. The function must accept exactly three
         positional arguments: the two endpoints of an edge and the
         dictionary of edge attributes for that edge. The function must
-        return a number.
+        return a number or None.
 
     Returns
     -------
@@ -664,7 +664,7 @@ def multi_source_dijkstra(G, sources, target=None, cutoff=None, weight="weight")
         returned by the function. The function must accept exactly three
         positional arguments: the two endpoints of an edge and the
         dictionary of edge attributes for that edge. The function must
-        return a number.
+        return a number or None.
 
     Returns
     -------
@@ -778,7 +778,7 @@ def _dijkstra_multisource(
         nodes.
 
     weight: function
-        Function with (u, v, data) input that returns that edges weight
+        Function with (u, v, data) input that returns that edge's weight or None
 
     pred: dict of lists, optional(default=None)
         dict to store a list of predecessors keyed by that node
@@ -892,7 +892,7 @@ def dijkstra_predecessor_and_distance(G, source, cutoff=None, weight="weight"):
         returned by the function. The function must accept exactly three
         positional arguments: the two endpoints of an edge and the
         dictionary of edge attributes for that edge. The function must
-        return a number.
+        return a number or None.
 
     Returns
     -------
@@ -957,7 +957,7 @@ def all_pairs_dijkstra(G, cutoff=None, weight="weight"):
         returned by the function. The function must accept exactly three
         positional arguments: the two endpoints of an edge and the
         dictionary of edge attributes for that edge. The function must
-        return a number.
+        return a number or None.
 
     Yields
     ------
@@ -1025,7 +1025,7 @@ def all_pairs_dijkstra_path_length(G, cutoff=None, weight="weight"):
         returned by the function. The function must accept exactly three
         positional arguments: the two endpoints of an edge and the
         dictionary of edge attributes for that edge. The function must
-        return a number.
+        return a number or None.
 
     Returns
     -------
@@ -1083,7 +1083,7 @@ def all_pairs_dijkstra_path(G, cutoff=None, weight="weight"):
         returned by the function. The function must accept exactly three
         positional arguments: the two endpoints of an edge and the
         dictionary of edge attributes for that edge. The function must
-        return a number.
+        return a number or None.
 
     Returns
     -------
@@ -2251,7 +2251,7 @@ def bidirectional_dijkstra(G, source, target, weight="weight"):
         returned by the function. The function must accept exactly three
         positional arguments: the two endpoints of an edge and the
         dictionary of edge attributes for that edge. The function must
-        return a number.
+        return a number or None.
 
     Returns
     -------
