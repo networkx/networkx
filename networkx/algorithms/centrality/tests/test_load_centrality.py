@@ -24,8 +24,6 @@ class TestLoadCentrality:
         cls.P3 = nx.path_graph(3)
         cls.P4 = nx.path_graph(4)
         cls.K5 = nx.complete_graph(5)
-        cls.K2 = nx.complete_graph(2)
-        cls.C2 = nx.cycle_graph(2)
         cls.P2 = nx.path_graph(2)
 
         cls.C4 = nx.cycle_graph(4)
@@ -46,20 +44,6 @@ class TestLoadCentrality:
 
     def test_P2_normalized_load(self):
         G = self.P2
-        c = nx.load_centrality(G, normalized=True)
-        d = {0: 0.000, 1: 0.000}
-        for n in sorted(G):
-            assert c[n] == pytest.approx(d[n], abs=1e-3)
-
-    def test_C2_normalized_load(self):
-        G = self.C2
-        c = nx.load_centrality(G, normalized=True)
-        d = {0: 0.000, 1: 0.000}
-        for n in sorted(G):
-            assert c[n] == pytest.approx(d[n], abs=1e-3)
-
-    def test_K2_normalized_load(self):
-        G = self.K2
         c = nx.load_centrality(G, normalized=True)
         d = {0: 0.000, 1: 0.000}
         for n in sorted(G):
