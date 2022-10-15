@@ -39,6 +39,11 @@ class TestMinWeightDominatingSet:
         G = nx.relabel_nodes(G, {0: 9, 9: 0})
         assert min_weighted_dominating_set(G) == {9}
 
+    def test_null_graph(self):
+        """Tests that the unique dominating set for the null graph is an empty set"""
+        G = nx.Graph()
+        assert min_weighted_dominating_set(G) == set()
+
     def test_min_edge_dominating_set(self):
         graph = nx.path_graph(5)
         dom_set = min_edge_dominating_set(graph)
