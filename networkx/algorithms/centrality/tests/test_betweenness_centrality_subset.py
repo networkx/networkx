@@ -136,7 +136,6 @@ class TestSubsetBetweennessCentrality:
         )
         for n in sorted(G):
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
-        
 
 
 class TestEdgeSubsetBetweennessCentrality:
