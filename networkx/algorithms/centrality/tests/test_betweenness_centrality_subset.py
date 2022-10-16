@@ -116,6 +116,28 @@ class TestSubsetBetweennessCentrality:
         for n in sorted(G):
             assert b[n] == pytest.approx(expected_b[n], abs=1e-7)
 
+    def test_normalized_p2(self):
+        G = nx.Graph()
+        nx.add_path(G, range(2))
+        print(G.edges())
+        b_answer = {0: 0, 1: 0.0}
+        b = nx.betweenness_centrality_subset(
+            G, sources=[0], targets=[3], normalized=True, weight=None
+        )
+        for n in sorted(G):
+            assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
+
+    def test_normalized_P5_directed(self):
+        G = nx.DiGraph()
+        nx.add_path(G, range(5))
+        b_answer = {0: 0, 1: 1 / 12, 2: 1 / 12, 3: 0, 4: 0, 5: 0}
+        b = nx.betweenness_centrality_subset(
+            G, sources=[0], targets=[3], normalized=True, weight=None
+        )
+        for n in sorted(G):
+            assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
+        
+
 
 class TestEdgeSubsetBetweennessCentrality:
     def test_K5(self):
