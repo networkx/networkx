@@ -46,7 +46,7 @@ def astar_path(G, source, target, heuristic=None, weight="weight"):
        returned by the function. The function must accept exactly three
        positional arguments: the two endpoints of an edge and the
        dictionary of edge attributes for that edge. The function must
-       return a number or None.
+       return a number or None to indicate a hidden edge.
 
     Raises
     ------
@@ -190,7 +190,7 @@ def astar_path_length(G, source, target, heuristic=None, weight="weight"):
        returned by the function. The function must accept exactly three
        positional arguments: the two endpoints of an edge and the
        dictionary of edge attributes for that edge. The function must
-       return a number or None.
+       return a number or None to indicate a hidden edge.
     Raises
     ------
     NetworkXNoPath
