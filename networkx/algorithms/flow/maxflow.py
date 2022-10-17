@@ -14,7 +14,6 @@ from .utils import build_flow_dict
 default_flow_func = preflow_push
 # Functions that don't support cutoff for minimum cut computations.
 flow_funcs_without_cutoff = [
-    boykov_kolmogorov,
     dinitz,
     edmonds_karp,
     preflow_push,

@@ -14,7 +14,6 @@ from networkx.algorithms.flow import (
 )
 
 flow_funcs_without_cutoff = {
-    boykov_kolmogorov,
     dinitz,
     edmonds_karp,
     preflow_push,
