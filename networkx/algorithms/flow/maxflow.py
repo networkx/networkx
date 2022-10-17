@@ -13,9 +13,7 @@ from .utils import build_flow_dict
 # Define the default flow function for computing maximum flow.
 default_flow_func = preflow_push
 # Functions that don't support cutoff for minimum cut computations.
-flow_funcs_without_cutoff = [
-    preflow_push,
-]
+flow_funcs_without_cutoff = [preflow_push]
 
 __all__ = ["maximum_flow", "maximum_flow_value", "minimum_cut", "minimum_cut_value"]
 
