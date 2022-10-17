@@ -285,3 +285,27 @@ class TestGeneratorInverseLine:
     def test_line_graph_exists(self):
         G = nx.barabasi_albert_graph(100, 5)
         pytest.raises(nx.NetworkXError, nx.inverse_line_graph, G)
+
+    def test_line_triangle_vertex_not_in_graph(self):
+        G = nx.Graph()
+        pytest.raises(nx.NetworkXError, line._triangles, G, (1, 2))
+
+    def test_line_edge_not_exists(self):
+        G = nx.barabasi_albert_graph(100, 5)
+        pytest.raises(nx.NetworkXError, line._triangles, G, (1, 2))
+
+    def test_line_odd_triangle_vertex_not_in_graph(self):
+        G = nx.Graph()
+        pytest.raises(nx.NetworkXError, line._odd_triangle, G, [(1, 2), (2, 3), (3, 1)])
+
+    def test_line_starting_edge_not_in_graph(self):
+        G = nx.Graph()
+        G_edges = [(1, 2), (2, 3), (3, 1)]
+        G.add_edges_from(G_edges)
+        pytest.raises(nx.NetworkXError, line._select_starting_cell, G, (1, 4))
+
+    def test_line_rs(self):
+        G = nx.Graph()
+        G_nodes = [(1, 2), (2, 3), (3, 1), (1, 4), (4, 2)]
+        G.add_edges_from(G_nodes)
+        assert line._select_starting_cell(G, (1, 2)) == (1, 2, 4)
