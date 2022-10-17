@@ -12,10 +12,7 @@ from networkx.algorithms.flow import (
     preflow_push,
     shortest_augmenting_path,
 )
-
-flow_funcs_without_cutoff = {
-    preflow_push,
-}
+from networkx.algorithms.flow.maxflow import flow_funcs_without_cutoff
 
 flow_funcs = {
     boykov_kolmogorov,
