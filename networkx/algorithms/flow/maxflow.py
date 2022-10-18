@@ -446,7 +446,7 @@ def minimum_cut(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     if not callable(flow_func):
         raise nx.NetworkXError("flow_func has to be callable.")
 
-    if kwargs.get("cutoff") is not None and flow_func in flow_funcs_without_cutoff:
+    if kwargs.get("cutoff") is not None and flow_func is preflow_push:
         raise nx.NetworkXError("cutoff should not be specified.")
 
     R = flow_func(flowG, _s, _t, capacity=capacity, value_only=True, **kwargs)
