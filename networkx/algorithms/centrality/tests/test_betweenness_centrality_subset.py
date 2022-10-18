@@ -136,6 +136,25 @@ class TestSubsetBetweennessCentrality:
         for n in sorted(G):
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
+    def test_weighted_graph(self):
+        G = nx.DiGraph()
+        G.add_edge(0, 1, weight=3)
+        G.add_edge(0, 2, weight=2)
+        G.add_edge(0, 3, weight=6)
+        G.add_edge(0, 4, weight=4)
+        G.add_edge(1, 3, weight=5)
+        G.add_edge(1, 5, weight=5)
+        G.add_edge(2, 4, weight=1)
+        G.add_edge(3, 4, weight=2)
+        G.add_edge(3, 5, weight=1)
+        G.add_edge(4, 5, weight=4)
+        b_answer = {0: 0.0, 1: 0.0, 2: 0.5, 3: 0.5, 4: 0.5, 5: 0.0}
+        b = nx.betweenness_centrality_subset(
+            G, sources=[0], targets=[5], normalized=False, weight="weight"
+        )
+        for n in sorted(G):
+            assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
+
 
 class TestEdgeSubsetBetweennessCentrality:
     def test_K5(self):
@@ -283,6 +302,27 @@ class TestEdgeSubsetBetweennessCentrality:
         b_answer[(0, 1)] = b_answer[(1, 2)] = b_answer[(2, 3)] = 0.05
         b = nx.edge_betweenness_centrality_subset(
             G, sources=[0], targets=[3], normalized=True, weight=None
+        )
+        for n in G.edges():
+            assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
+
+    def test_weighted_graph(self):
+        G = nx.DiGraph()
+        G.add_edge(0, 1, weight=3)
+        G.add_edge(0, 2, weight=2)
+        G.add_edge(0, 3, weight=6)
+        G.add_edge(0, 4, weight=4)
+        G.add_edge(1, 3, weight=5)
+        G.add_edge(1, 5, weight=5)
+        G.add_edge(2, 4, weight=1)
+        G.add_edge(3, 4, weight=2)
+        G.add_edge(3, 5, weight=1)
+        G.add_edge(4, 5, weight=4)
+        b_answer = dict.fromkeys(G.edges(), 0)
+        b_answer[(0, 2)] = b_answer[(2, 4)] = b_answer[(4, 5)] = 0.5
+        b_answer[(0, 3)] = b_answer[(3, 5)] = 0.5
+        b = nx.edge_betweenness_centrality_subset(
+            G, sources=[0], targets=[5], normalized=False, weight="weight"
         )
         for n in G.edges():
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
