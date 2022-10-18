@@ -712,3 +712,10 @@ class TestPropertyLists:
             f.seek(0)
             graph = nx.read_gml(f)
         assert graph.nodes(data=True)["n1"] == {"properties": ["element"]}
+
+
+def test_stringize_empty_list():
+    G = nx.path_graph(2)
+    G.nodes[0]["test"] = []  # test serializing an empty list
+    f = io.BytesIO()
+    nx.write_gml(G, f)  # Smoke test - should not raise
