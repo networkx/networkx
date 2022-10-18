@@ -1,6 +1,7 @@
 """Unit tests for matplotlib drawing functions."""
 import itertools
 import os
+import warnings
 
 import pytest
 
@@ -780,4 +781,11 @@ def test_user_warnings_for_unused_edge_drawing_kwargs(fap_only_kwarg):
         UserWarning, match=f"\n\nThe {kwarg_name} keyword argument is not applicable"
     ):
         nx.draw_networkx_edges(G, pos, ax=ax, **fap_only_kwarg)
+    # FancyArrowPatches are always used when `arrows=True` is specified.
+    # Check that warnings are *not* raised in this case
+    with warnings.catch_warnings():
+        # Escalate warnings -> errors so tests fail if warnings are raised
+        warnings.simplefilter("error")
+        nx.draw_networkx_edges(G, pos, ax=ax, arrows=True, **fap_only_kwarg)
+
     plt.delaxes(ax)
