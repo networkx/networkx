@@ -571,10 +571,6 @@ graph
         G = nx.Graph()
         G.graph["data"] = frozenset([1, 2, 3])
         assert_generate_error(G, stringizer=literal_stringizer)
-        G = nx.Graph()
-        G.graph["data"] = []
-        assert_generate_error(G)
-        assert_generate_error(G, stringizer=len)
 
     def test_label_kwarg(self):
         G = nx.parse_gml(self.simple_data, label="id")
