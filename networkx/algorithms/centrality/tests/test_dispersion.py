@@ -58,7 +58,7 @@ class TestDispersion:
         assert len(disp_Gu) == len(G) - 1
         assert isinstance(disp_uv, float)
 
-    def test_dispersion_Gh(self):
+    def test_dispersion_vonly(self):
         G = small_ego_G()
         disp_Gh = nx.dispersion(G, v="h", normalized=False)
         disp_Gh_normalized = nx.dispersion(G, v="h", normalized=True)
