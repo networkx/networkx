@@ -396,6 +396,7 @@ def test_labels_and_colors():
         G,
         pos,
         edgelist=[(4, 5), (5, 6), (6, 7), (7, 4)],
+        arrows=True,
         min_source_margin=0.5,
         min_target_margin=0.75,
         width=8,
