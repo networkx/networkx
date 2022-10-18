@@ -1,5 +1,5 @@
-import networkx as nx
 import pytest
+import networkx as nx
 
 
 class TestMinEdgeCover:
@@ -15,8 +15,11 @@ class TestMinEdgeCover:
         assert nx.min_edge_cover(G) == {(0, 0)}
 
     def test_graph_with_isolated_v(self):
-        with pytest.raises(nx.NetworkXException, match="Graph has a node with no edge incident on it, so no edge "
-                                                       "cover exists."):
+        with pytest.raises(
+            nx.NetworkXException,
+            match="Graph has a node with no edge incident on it, so no edge "
+            "cover exists.",
+        ):
             G = nx.Graph()
             G.add_node(1)
             nx.min_edge_cover(G)
