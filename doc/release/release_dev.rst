@@ -38,6 +38,8 @@ X contributors. Highlights include:
   are checking might be a class rather than an instance. We suggest you check
   for attribute `_adj` to verify it is like a NetworkX graph object or type and
   then `type(obj) is type` to check if it is a class.
+- All all functions and submodules in the main namespace are now lazily
+  loaded, improving library import time.
 
 Improvements
 ------------

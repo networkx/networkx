@@ -303,6 +303,11 @@ Guidelines
           # function not for directed graphs *or* for multigraphs
           pass
 
+* To have a new submodule or function appear in the root `nx`
+  namespace, import it in `networkx/__init__.pyi` and, in the same
+  file, add it to `__all__`. Upon library import, our `lazy loading
+  machinery <https://github.com/scientific-python/lazy_loader>`__
+  populates the root namespace from that file.
 
 Testing
 -------
