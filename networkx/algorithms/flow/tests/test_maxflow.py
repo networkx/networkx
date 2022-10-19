@@ -12,7 +12,6 @@ from networkx.algorithms.flow import (
     preflow_push,
     shortest_augmenting_path,
 )
-from networkx.algorithms.flow.maxflow import flow_funcs_without_cutoff
 
 flow_funcs = {
     boykov_kolmogorov,
@@ -429,25 +428,24 @@ class TestMaxFlowMinCutInterface:
 
     def test_minimum_cut_no_cutoff(self):
         G = self.G
-        for flow_func in flow_funcs_without_cutoff:
-            pytest.raises(
-                nx.NetworkXError,
-                nx.minimum_cut,
-                G,
-                "x",
-                "y",
-                flow_func=flow_func,
-                cutoff=1.0,
-            )
-            pytest.raises(
-                nx.NetworkXError,
-                nx.minimum_cut_value,
-                G,
-                "x",
-                "y",
-                flow_func=flow_func,
-                cutoff=1.0,
-            )
+        pytest.raises(
+            nx.NetworkXError,
+            nx.minimum_cut,
+            G,
+            "x",
+            "y",
+            flow_func=preflow_push,
+            cutoff=1.0,
+        )
+        pytest.raises(
+            nx.NetworkXError,
+            nx.minimum_cut_value,
+            G,
+            "x",
+            "y",
+            flow_func=preflow_push,
+            cutoff=1.0,
+        )
 
     def test_kwargs(self):
         G = self.H
