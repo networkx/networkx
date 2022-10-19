@@ -352,3 +352,9 @@ class TestGeneratorInverseLine:
         ]
         G.add_edges_from(G_edges)
         pytest.raises(nx.NetworkXError, line._select_starting_cell, G)
+
+    def test_line_rs1(self):
+        G = nx.Graph()
+        G_nodes = [(1, 2), (2, 3), (3, 1), (1, 4), (4, 2), (1, 5), (5, 2)]
+        G.add_edges_from(G_nodes)
+        pytest.raises(nx.NetworkXError, line.inverse_line_graph, G)
