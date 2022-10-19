@@ -683,6 +683,9 @@ class TestGraph(BaseAttrGraphTester):
         G = self.Graph()
         G.add_edge(*(0, 1))
         assert G.adj == {0: {1: {}}, 1: {0: {}}}
+        G = self.Graph()
+        with pytest.raises(ValueError):
+            G.add_edge(None, "anything")
 
     def test_add_edges_from(self):
         G = self.Graph()
