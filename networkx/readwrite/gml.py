@@ -363,6 +363,11 @@ def parse_gml_lines(lines, label, destringizer):
                         value = destringizer(value)
                     except ValueError:
                         pass
+                # Special handling for empty lists and tuples
+                if value == "()":
+                    value = tuple()
+                if value == "[]":
+                    value = list()
                 curr_token = next(tokens)
             elif category == Pattern.DICT_START:
                 curr_token, value = parse_dict(curr_token)
@@ -728,12 +733,9 @@ def generate_gml(G, stringizer=None):
                 for key, value in value.items():
                     yield from stringize(key, value, (), next_indent)
                 yield indent + "]"
-            elif (
-                isinstance(value, (list, tuple))
-                and key != "label"
-                and value
-                and not in_list
-            ):
+            elif isinstance(value, (list, tuple)) and key != "label" and not in_list:
+                if len(value) == 0:
+                    yield indent + key + " " + f'"{value!r}"'
                 if len(value) == 1:
                     yield indent + key + " " + f'"{LIST_START_VALUE}"'
                 for val in value:
