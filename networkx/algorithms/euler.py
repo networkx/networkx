@@ -437,8 +437,8 @@ def eulerize(G):
         for m, n in combinations(odd_degree_nodes, 2)
     ]
 
-    # use the number of vertices in a graph + 1 as an upper bound on
-    # the maximum length of a path in G
+    # use the number of vertices in a graph as an upper bound on
+    # the maximum length of a path in G + 1
     upper_bound_on_max_path_length = len(G) + 1
 
     # use "len(G) + 1 - len(P)",
