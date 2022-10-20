@@ -277,7 +277,7 @@ def communicability_betweenness_centrality(G):
         B[i, :] = 0
         B[:, i] = 0
         B -= np.diag(np.diag(B))
-        cbc[v] = float(B.sum())
+        cbc[v] = B.sum()
         # put row and col back
         A[i, :] = row
         A[:, i] = col

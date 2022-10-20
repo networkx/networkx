@@ -48,6 +48,7 @@ classifiers = [
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3 :: Only",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Scientific/Engineering :: Bio-Informatics",
@@ -67,7 +68,6 @@ packages = [
     "networkx.algorithms",
     "networkx.algorithms.assortativity",
     "networkx.algorithms.bipartite",
-    "networkx.algorithms.node_classification",
     "networkx.algorithms.centrality",
     "networkx.algorithms.community",
     "networkx.algorithms.components",
@@ -89,7 +89,6 @@ packages = [
     "networkx.readwrite",
     "networkx.readwrite.json_graph",
     "networkx.tests",
-    "networkx.testing",
     "networkx.utils",
 ]
 
@@ -123,13 +122,12 @@ dd = os.path.join(docdirbase, "examples", "javascript/force")
 pp = os.path.join("examples", "javascript/force")
 data.append((dd, glob(os.path.join(pp, "*"))))
 
-# add the tests
+# add the tests and helper subpackage(s)
 package_data = {
     "networkx": ["tests/*.py"],
     "networkx.algorithms": ["tests/*.py"],
     "networkx.algorithms.assortativity": ["tests/*.py"],
     "networkx.algorithms.bipartite": ["tests/*.py"],
-    "networkx.algorithms.node_classification": ["tests/*.py"],
     "networkx.algorithms.centrality": ["tests/*.py"],
     "networkx.algorithms.community": ["tests/*.py"],
     "networkx.algorithms.components": ["tests/*.py"],
@@ -137,7 +135,11 @@ package_data = {
     "networkx.algorithms.coloring": ["tests/*.py"],
     "networkx.algorithms.minors": ["tests/*.py"],
     "networkx.algorithms.flow": ["tests/*.py", "tests/*.bz2"],
-    "networkx.algorithms.isomorphism": ["tests/*.py", "tests/*.*99"],
+    "networkx.algorithms.isomorphism": [
+        "tests/*.py",
+        "tests/*.*99",
+        "vf2pp_helpers/*.py",
+    ],
     "networkx.algorithms.link_analysis": ["tests/*.py"],
     "networkx.algorithms.approximation": ["tests/*.py"],
     "networkx.algorithms.operators": ["tests/*.py"],
@@ -150,7 +152,6 @@ package_data = {
     "networkx.linalg": ["tests/*.py"],
     "networkx.readwrite": ["tests/*.py"],
     "networkx.readwrite.json_graph": ["tests/*.py"],
-    "networkx.testing": ["tests/*.py"],
     "networkx.utils": ["tests/*.py"],
 }
 

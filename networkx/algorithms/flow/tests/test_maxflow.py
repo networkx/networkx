@@ -3,24 +3,28 @@
 import pytest
 
 import networkx as nx
-from networkx.algorithms.flow import build_flow_dict, build_residual_network
-from networkx.algorithms.flow import boykov_kolmogorov
-from networkx.algorithms.flow import edmonds_karp
-from networkx.algorithms.flow import preflow_push
-from networkx.algorithms.flow import shortest_augmenting_path
-from networkx.algorithms.flow import dinitz
+from networkx.algorithms.flow import (
+    boykov_kolmogorov,
+    build_flow_dict,
+    build_residual_network,
+    dinitz,
+    edmonds_karp,
+    preflow_push,
+    shortest_augmenting_path,
+)
 
-flow_funcs = [
+flow_funcs = {
     boykov_kolmogorov,
     dinitz,
     edmonds_karp,
     preflow_push,
     shortest_augmenting_path,
-]
-max_min_funcs = [nx.maximum_flow, nx.minimum_cut]
-flow_value_funcs = [nx.maximum_flow_value, nx.minimum_cut_value]
-interface_funcs = max_min_funcs + flow_value_funcs
-all_funcs = sum([flow_funcs, interface_funcs], [])
+}
+
+max_min_funcs = {nx.maximum_flow, nx.minimum_cut}
+flow_value_funcs = {nx.maximum_flow_value, nx.minimum_cut_value}
+interface_funcs = max_min_funcs & flow_value_funcs
+all_funcs = flow_funcs & interface_funcs
 
 
 def compute_cutset(G, partition):
@@ -424,25 +428,24 @@ class TestMaxFlowMinCutInterface:
 
     def test_minimum_cut_no_cutoff(self):
         G = self.G
-        for flow_func in flow_funcs:
-            pytest.raises(
-                nx.NetworkXError,
-                nx.minimum_cut,
-                G,
-                "x",
-                "y",
-                flow_func=flow_func,
-                cutoff=1.0,
-            )
-            pytest.raises(
-                nx.NetworkXError,
-                nx.minimum_cut_value,
-                G,
-                "x",
-                "y",
-                flow_func=flow_func,
-                cutoff=1.0,
-            )
+        pytest.raises(
+            nx.NetworkXError,
+            nx.minimum_cut,
+            G,
+            "x",
+            "y",
+            flow_func=preflow_push,
+            cutoff=1.0,
+        )
+        pytest.raises(
+            nx.NetworkXError,
+            nx.minimum_cut_value,
+            G,
+            "x",
+            "y",
+            flow_func=preflow_push,
+            cutoff=1.0,
+        )
 
     def test_kwargs(self):
         G = self.H

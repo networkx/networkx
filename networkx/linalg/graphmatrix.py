@@ -3,7 +3,7 @@ Adjacency matrix and incidence matrix of graphs.
 """
 import networkx as nx
 
-__all__ = ["incidence_matrix", "adj_matrix", "adjacency_matrix"]
+__all__ = ["incidence_matrix", "adjacency_matrix"]
 
 
 def incidence_matrix(G, nodelist=None, edgelist=None, oriented=False, weight=None):
@@ -40,7 +40,7 @@ def incidence_matrix(G, nodelist=None, edgelist=None, oriented=False, weight=Non
 
     Returns
     -------
-    A : SciPy sparse matrix
+    A : SciPy sparse array
       The incidence matrix of G.
 
     Notes
@@ -93,14 +93,6 @@ def incidence_matrix(G, nodelist=None, edgelist=None, oriented=False, weight=Non
         else:
             A[ui, ei] = wt
             A[vi, ei] = wt
-    import warnings
-
-    warnings.warn(
-        "incidence_matrix will return a scipy.sparse array instead of a matrix in Networkx 3.0.",
-        FutureWarning,
-        stacklevel=2,
-    )
-    # TODO: Rm sp.sparse.csc_matrix in Networkx 3.0
     return A.asformat("csc")
 
 
@@ -126,7 +118,7 @@ def adjacency_matrix(G, nodelist=None, dtype=None, weight="weight"):
 
     Returns
     -------
-    A : SciPy sparse matrix
+    A : SciPy sparse array
       Adjacency matrix representation of G.
 
     Notes
@@ -145,7 +137,7 @@ def adjacency_matrix(G, nodelist=None, dtype=None, weight="weight"):
     diagonal matrix entry value to the edge weight attribute
     (or the number 1 if the edge has no weight attribute).  If the
     alternate convention of doubling the edge weight is desired the
-    resulting Scipy sparse matrix can be modified as follows:
+    resulting SciPy sparse array can be modified as follows:
 
     >>> G = nx.Graph([(1, 1)])
     >>> A = nx.adjacency_matrix(G)
@@ -162,29 +154,4 @@ def adjacency_matrix(G, nodelist=None, dtype=None, weight="weight"):
     to_dict_of_dicts
     adjacency_spectrum
     """
-    import warnings
-
-    warnings.warn(
-        "adjacency_matrix will return a scipy.sparse array instead of a matrix in Networkx 3.0.",
-        FutureWarning,
-        stacklevel=2,
-    )
-    # TODO: Change to `to_scipy_sparse_array` for networkx 3.0
-    return nx.to_scipy_sparse_matrix(G, nodelist=nodelist, dtype=dtype, weight=weight)
-
-
-def _adj_matrix_warning(G, nodelist=None, dtype=None, weight="weight"):
-    import warnings
-
-    warnings.warn(
-        (
-            "adj_matrix is deprecated and will be removed in version 3.0.\n"
-            "Use `adjacency_matrix` instead\n"
-        ),
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    return adjacency_matrix(G, nodelist, dtype, weight)
-
-
-adj_matrix = _adj_matrix_warning
+    return nx.to_scipy_sparse_array(G, nodelist=nodelist, dtype=dtype, weight=weight)

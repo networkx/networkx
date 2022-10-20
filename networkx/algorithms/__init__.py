@@ -55,6 +55,7 @@ from networkx.algorithms.triads import *
 from networkx.algorithms.vitality import *
 from networkx.algorithms.voronoi import *
 from networkx.algorithms.wiener import *
+from networkx.algorithms.polynomials import *
 
 # Make certain subpackages available to the user as direct imports from
 # the `networkx` namespace.
@@ -116,6 +117,7 @@ from networkx.algorithms.isomorphism import could_be_isomorphic
 from networkx.algorithms.isomorphism import fast_could_be_isomorphic
 from networkx.algorithms.isomorphism import faster_could_be_isomorphic
 from networkx.algorithms.isomorphism import is_isomorphic
+from networkx.algorithms.isomorphism.vf2pp import *
 from networkx.algorithms.tree.branchings import maximum_branching
 from networkx.algorithms.tree.branchings import maximum_spanning_arborescence
 from networkx.algorithms.tree.branchings import minimum_branching

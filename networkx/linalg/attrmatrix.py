@@ -150,7 +150,7 @@ def attr_matrix(
     dtype=None,
     order=None,
 ):
-    """Returns a NumPy matrix using attributes from G.
+    """Returns the attribute matrix using attributes from `G` as a numpy array.
 
     If only `G` is passed in, then the adjacency matrix is constructed.
 
@@ -164,12 +164,12 @@ def attr_matrix(
     Parameters
     ----------
     G : graph
-        The NetworkX graph used to construct the NumPy matrix.
+        The NetworkX graph used to construct the attribute matrix.
 
     edge_attr : str, optional
         Each element of the matrix represents a running total of the
         specified edge attribute for edges whose node attributes correspond
-        to the rows/cols of the matirx. The attribute must be present for
+        to the rows/cols of the matrix. The attribute must be present for
         all edges in the graph. If no attribute is specified, then we
         just count the number of edges whose node attributes correspond
         to the matrix element.
@@ -204,11 +204,11 @@ def attr_matrix(
 
     Returns
     -------
-    M : NumPy matrix
+    M : 2D NumPy ndarray
         The attribute matrix.
 
     ordering : list
-        If `rc_order` was specified, then only the matrix is returned.
+        If `rc_order` was specified, then only the attribute matrix is returned.
         However, if `rc_order` was None, then the ordering used to construct
         the matrix is returned as well.
 
@@ -221,16 +221,16 @@ def attr_matrix(
     >>> G.add_edge(0, 2, thickness=2)
     >>> G.add_edge(1, 2, thickness=3)
     >>> nx.attr_matrix(G, rc_order=[0, 1, 2])
-    matrix([[0., 1., 1.],
-            [1., 0., 1.],
-            [1., 1., 0.]])
+    array([[0., 1., 1.],
+           [1., 0., 1.],
+           [1., 1., 0.]])
 
     Alternatively, we can obtain the matrix describing edge thickness.
 
     >>> nx.attr_matrix(G, edge_attr="thickness", rc_order=[0, 1, 2])
-    matrix([[0., 1., 2.],
-            [1., 0., 3.],
-            [2., 3., 0.]])
+    array([[0., 1., 2.],
+           [1., 0., 3.],
+           [2., 3., 0.]])
 
     We can also color the nodes and ask for the probability distribution over
     all edges (u,v) describing:
@@ -242,8 +242,8 @@ def attr_matrix(
     >>> G.nodes[2]["color"] = "blue"
     >>> rc = ["red", "blue"]
     >>> nx.attr_matrix(G, node_attr="color", normalized=True, rc_order=rc)
-    matrix([[0.33333333, 0.66666667],
-            [1.        , 0.        ]])
+    array([[0.33333333, 0.66666667],
+           [1.        , 0.        ]])
 
     For example, the above tells us that for all edges (u,v):
 
@@ -256,8 +256,8 @@ def attr_matrix(
     Finally, we can obtain the total weights listed by the node colors.
 
     >>> nx.attr_matrix(G, edge_attr="weight", node_attr="color", rc_order=rc)
-    matrix([[3., 2.],
-            [2., 0.]])
+    array([[3., 2.],
+           [2., 0.]])
 
     Thus, the total weight over all edges (u,v) with u and v having colors:
 
@@ -298,19 +298,6 @@ def attr_matrix(
     if normalized:
         M /= M.sum(axis=1).reshape((N, 1))
 
-    import warnings
-
-    warnings.warn(
-        (
-            "attr_matrix will return an numpy.ndarray instead of a numpy.matrix "
-            "in NetworkX 3.0."
-        ),
-        category=FutureWarning,
-        stacklevel=2,
-    )
-    # TODO: Remove asmatrix in NetworkX 3.0
-    M = np.asmatrix(M)
-
     if rc_order is None:
         return M, ordering
     else:
@@ -320,7 +307,7 @@ def attr_matrix(
 def attr_sparse_matrix(
     G, edge_attr=None, node_attr=None, normalized=False, rc_order=None, dtype=None
 ):
-    """Returns a SciPy sparse matrix using attributes from G.
+    """Returns a SciPy sparse array using attributes from G.
 
     If only `G` is passed in, then the adjacency matrix is constructed.
 
@@ -369,7 +356,7 @@ def attr_sparse_matrix(
 
     Returns
     -------
-    M : SciPy sparse matrix
+    M : SciPy sparse array
         The attribute matrix.
 
     ordering : list

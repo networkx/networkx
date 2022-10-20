@@ -5,9 +5,8 @@ from collections import Counter
 from itertools import chain
 
 import networkx as nx
-from networkx.utils import pairwise, not_implemented_for
-from networkx.classes.graphviews import subgraph_view, reverse_view
-
+from networkx.classes.graphviews import reverse_view, subgraph_view
+from networkx.utils import not_implemented_for, pairwise
 
 __all__ = [
     "nodes",
@@ -19,7 +18,6 @@ __all__ = [
     "number_of_edges",
     "density",
     "is_directed",
-    "info",
     "freeze",
     "is_frozen",
     "subgraph",
@@ -385,9 +383,11 @@ def induced_subgraph(G, nbunch):
     Examples
     --------
     >>> G = nx.path_graph(4)  # or DiGraph, MultiGraph, MultiDiGraph, etc
-    >>> H = G.subgraph([0, 1, 2])
+    >>> H = nx.induced_subgraph(G, [0, 1, 3])
     >>> list(H.edges)
-    [(0, 1), (1, 2)]
+    [(0, 1)]
+    >>> list(H.nodes)
+    [0, 1, 3]
     """
     induced_nodes = nx.filters.show_nodes(G.nbunch_iter(nbunch))
     return nx.graphviews.subgraph_view(G, induced_nodes)
@@ -549,51 +549,6 @@ def create_empty_copy(G, with_data=True):
     if with_data:
         H.graph.update(G.graph)
     return H
-
-
-def info(G, n=None):
-    """Return a summary of information for the graph G or a single node n.
-
-    The summary includes the number of nodes and edges, or neighbours for a single
-    node.
-
-    Parameters
-    ----------
-    G : Networkx graph
-       A graph
-    n : node (any hashable)
-       A node in the graph G
-
-    Returns
-    -------
-    info : str
-        A string containing the short summary
-
-    Raises
-    ------
-    NetworkXError
-        If n is not in the graph G
-
-    .. deprecated:: 2.7
-       ``info`` is deprecated and will be removed in NetworkX 3.0.
-    """
-    import warnings
-
-    warnings.warn(
-        ("info is deprecated and will be removed in version 3.0.\n"),
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    if n is None:
-        return str(G)
-    if n not in G:
-        raise nx.NetworkXError(f"node {n} not in graph")
-    info = ""  # append this all to a string
-    info += f"Node {n} has the following properties:\n"
-    info += f"Degree: {G.degree(n)}\n"
-    info += "Neighbors: "
-    info += " ".join(str(nbr) for nbr in G.neighbors(n))
-    return info
 
 
 def set_node_attributes(G, values, name=None):
@@ -785,6 +740,11 @@ def set_edge_attributes(G, values, name=None):
         >>> G[1][2]["attr2"]
         3
 
+    The attributes of one Graph can be used to set those of another.
+
+        >>> H = nx.path_graph(3)
+        >>> nx.set_edge_attributes(H, G.edges)
+
     Note that if the dict contains edges that are not in `G`, they are
     silently ignored::
 
@@ -792,6 +752,29 @@ def set_edge_attributes(G, values, name=None):
         >>> nx.set_edge_attributes(G, {(1, 2): {"weight": 2.0}})
         >>> (1, 2) in G.edges()
         False
+
+    For multigraphs, the `values` dict is expected to be keyed by 3-tuples
+    including the edge key::
+
+        >>> MG = nx.MultiGraph()
+        >>> edges = [(0, 1), (0, 1)]
+        >>> MG.add_edges_from(edges)  # Returns list of edge keys
+        [0, 1]
+        >>> attributes = {(0, 1, 0): {"cost": 21}, (0, 1, 1): {"cost": 7}}
+        >>> nx.set_edge_attributes(MG, attributes)
+        >>> MG[0][1][0]["cost"]
+        21
+        >>> MG[0][1][1]["cost"]
+        7
+
+    If MultiGraph attributes are desired for a Graph, you must convert the 3-tuple
+    multiedge to a 2-tuple edge and the last multiedge's attribute value will
+    overwrite the previous values. Continuing from the previous case we get::
+
+        >>> H = nx.path_graph([0, 1, 2])
+        >>> nx.set_edge_attributes(H, {(u, v): ed for u, v, ed in MG.edges.data()})
+        >>> nx.get_edge_attributes(H, "cost")
+        {(0, 1): 7}
 
     """
     if name is not None:
@@ -1250,24 +1233,27 @@ def number_of_selfloops(G):
 
 
 def is_path(G, path):
-    """Returns whether or not the specified path exists
+    """Returns whether or not the specified path exists.
+
+    For it to return True, every node on the path must exist and
+    each consecutive pair must be connected via one or more edges.
 
     Parameters
     ----------
     G : graph
         A NetworkX graph.
 
-    path: list
-        A list of node labels which defines the path to traverse
+    path : list
+        A list of nodes which defines the path to traverse
 
     Returns
     -------
-    isPath: bool
-        A boolean representing whether or not the path exists
+    bool
+        True if `path` is a valid path in `G`
 
     """
     for node, nbr in nx.utils.pairwise(path):
-        if nbr not in G[node]:
+        if (node not in G) or (nbr not in G[node]):
             return False
     return True
 
@@ -1288,8 +1274,8 @@ def path_weight(G, path, weight):
 
     Returns
     -------
-    cost: int
-        A integer representing the total cost with respect to the
+    cost: int or float
+        An integer or a float representing the total cost with respect to the
         specified weight of the specified path
 
     Raises

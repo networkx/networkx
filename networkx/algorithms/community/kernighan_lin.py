@@ -1,9 +1,10 @@
 """Functions for computing the Kernighan–Lin bipartition algorithm."""
 
-import networkx as nx
 from itertools import count
-from networkx.utils import not_implemented_for, py_random_state, BinaryHeap
+
+import networkx as nx
 from networkx.algorithms.community.community_utils import is_partition
+from networkx.utils import BinaryHeap, not_implemented_for, py_random_state
 
 __all__ = ["kernighan_lin_bisection"]
 

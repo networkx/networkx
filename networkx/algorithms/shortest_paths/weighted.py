@@ -3,11 +3,11 @@ Shortest path algorithms for weighted graphs.
 """
 
 from collections import deque
-from heapq import heappush, heappop
+from heapq import heappop, heappush
 from itertools import count
+
 import networkx as nx
 from networkx.algorithms.shortest_paths.generic import _build_paths_from_predecessors
-
 
 __all__ = [
     "dijkstra_path",
@@ -813,7 +813,7 @@ def _dijkstra_multisource(
     as arguments. No need to explicitly return pred or paths.
 
     """
-    G_succ = G._succ if G.is_directed() else G._adj
+    G_succ = G._adj  # For speed-up (and works for both directed and undirected graphs)
 
     push = heappush
     pop = heappop
@@ -899,8 +899,6 @@ def dijkstra_predecessor_and_distance(G, source, cutoff=None, weight="weight"):
     pred, distance : dictionaries
         Returns two dictionaries representing a list of predecessors
         of a node and the distance to each node.
-        Warning: If target is specified, the dicts are incomplete as they
-        only contain information for the nodes along a path to target.
 
     Raises
     ------
@@ -1396,7 +1394,7 @@ def _inner_bellman_ford(
     pred_edge = {v: None for v in sources}
     recent_update = {v: nonexistent_edge for v in sources}
 
-    G_succ = G.succ if G.is_directed() else G.adj
+    G_succ = G._adj  # For speed-up (and works for both directed and undirected graphs)
     inf = float("inf")
     n = len(G)
 
@@ -1980,10 +1978,7 @@ def goldberg_radzik(G, source, weight="weight"):
     if len(G) == 1:
         return {source: None}, {source: 0}
 
-    if G.is_directed():
-        G_succ = G.succ
-    else:
-        G_succ = G.adj
+    G_succ = G._adj  # For speed-up (and works for both directed and undirected graphs)
 
     inf = float("inf")
     d = {u: inf for u in G}
@@ -2159,9 +2154,8 @@ def find_negative_cycle(G, source, weight="weight"):
     ----------
     G : NetworkX graph
 
-    source: list of nodes
-        List of source nodes. The search starts from all of the source
-        nodes in the list.
+    source: node label
+        The search for the negative cycle will start from this node.
 
     weight : string or function
         If this is a string, then edge weights will be accessed via the
@@ -2175,6 +2169,13 @@ def find_negative_cycle(G, source, weight="weight"):
         positional arguments: the two endpoints of an edge and the
         dictionary of edge attributes for that edge. The function must
         return a number.
+
+    Examples
+    --------
+    >>> G = nx.DiGraph()
+    >>> G.add_weighted_edges_from([(0, 1, 2), (1, 2, 2), (2, 0, 1), (1, 4, 2), (4, 0, -5)])
+    >>> nx.find_negative_cycle(G, 0)
+    [4, 0, 1, 4]
 
     Returns
     -------

@@ -1,27 +1,23 @@
+import random
 from copy import copy
 
 import pytest
+
 import networkx as nx
-import random
 from networkx.utils import (
+    PythonRandomInterface,
     arbitrary_element,
     create_py_random_state,
     create_random_state,
-    discrete_sequence,
     dict_to_numpy_array,
-    dict_to_numpy_array1,
-    dict_to_numpy_array2,
+    discrete_sequence,
     flatten,
-    is_string_like,
-    iterable,
     groups,
     make_list_of_ints,
-    make_str,
     pairwise,
     powerlaw_sequence,
-    PythonRandomInterface,
-    to_tuple,
 )
+from networkx.utils.misc import _dict_to_numpy_array1, _dict_to_numpy_array2
 
 nested_depth = (
     1,
@@ -62,28 +58,6 @@ def test_flatten(nested, result):
     assert issubclass(type(val), tuple)
 
 
-def test_is_string_like():
-    assert is_string_like("aaaa")
-    assert not is_string_like(None)
-    assert not is_string_like(123)
-
-
-def test_iterable():
-    assert not iterable(None)
-    assert not iterable(10)
-    assert iterable([1, 2, 3])
-    assert iterable((1, 2, 3))
-    assert iterable({1: "A", 2: "X"})
-    assert iterable("ABC")
-
-
-def test_graph_iterable():
-    K = nx.complete_graph(10)
-    assert iterable(K)
-    assert iterable(K.nodes())
-    assert iterable(K.edges())
-
-
 def test_make_list_of_ints():
     mylist = [1, 2, 3.0, 42, -2]
     assert make_list_of_ints(mylist) is mylist
@@ -97,20 +71,6 @@ def test_random_number_distribution():
     # smoke test only
     z = powerlaw_sequence(20, exponent=2.5)
     z = discrete_sequence(20, distribution=[0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 3])
-
-
-def test_make_str_with_bytes():
-    x = "qualité"
-    y = make_str(x)
-    assert isinstance(y, str)
-    assert len(y) == 7
-
-
-def test_make_str_with_unicode():
-    x = "qualité"
-    y = make_str(x)
-    assert isinstance(y, str)
-    assert len(y) == 7
 
 
 class TestNumpyArray:
@@ -129,24 +89,24 @@ class TestNumpyArray:
         assert type(B[0]) == int
         pytest.raises(nx.NetworkXError, make_list_of_ints, c)
 
-    def test_dict_to_numpy_array1(self):
+    def test__dict_to_numpy_array1(self):
         d = {"a": 1, "b": 2}
-        a = dict_to_numpy_array1(d, mapping={"a": 0, "b": 1})
+        a = _dict_to_numpy_array1(d, mapping={"a": 0, "b": 1})
         np.testing.assert_allclose(a, np.array([1, 2]))
-        a = dict_to_numpy_array1(d, mapping={"b": 0, "a": 1})
+        a = _dict_to_numpy_array1(d, mapping={"b": 0, "a": 1})
         np.testing.assert_allclose(a, np.array([2, 1]))
 
-        a = dict_to_numpy_array1(d)
+        a = _dict_to_numpy_array1(d)
         np.testing.assert_allclose(a.sum(), 3)
 
-    def test_dict_to_numpy_array2(self):
+    def test__dict_to_numpy_array2(self):
         d = {"a": {"a": 1, "b": 2}, "b": {"a": 10, "b": 20}}
 
         mapping = {"a": 1, "b": 0}
-        a = dict_to_numpy_array2(d, mapping=mapping)
+        a = _dict_to_numpy_array2(d, mapping=mapping)
         np.testing.assert_allclose(a, np.array([[20, 10], [2, 1]]))
 
-        a = dict_to_numpy_array2(d)
+        a = _dict_to_numpy_array2(d)
         np.testing.assert_allclose(a.sum(), 33)
 
     def test_dict_to_numpy_array_a(self):
@@ -160,7 +120,7 @@ class TestNumpyArray:
         a = dict_to_numpy_array(d, mapping=mapping)
         np.testing.assert_allclose(a, np.array([[20, 10], [2, 1]]))
 
-        a = dict_to_numpy_array2(d)
+        a = _dict_to_numpy_array2(d)
         np.testing.assert_allclose(a.sum(), 33)
 
     def test_dict_to_numpy_array_b(self):
@@ -170,7 +130,7 @@ class TestNumpyArray:
         a = dict_to_numpy_array(d, mapping=mapping)
         np.testing.assert_allclose(a, np.array([1, 2]))
 
-        a = dict_to_numpy_array1(d)
+        a = _dict_to_numpy_array1(d)
         np.testing.assert_allclose(a.sum(), 3)
 
 
@@ -193,23 +153,6 @@ def test_groups():
     expected = {0: {"a", "b"}, 1: {"c", "d"}, 2: {"e"}}
     assert actual == expected
     assert {} == groups({})
-
-
-def test_to_tuple():
-    a_list = [1, 2, [1, 3]]
-    actual = to_tuple(a_list)
-    expected = (1, 2, (1, 3))
-    assert actual == expected
-
-    a_tuple = (1, 2)
-    actual = to_tuple(a_tuple)
-    expected = a_tuple
-    assert actual == expected
-
-    a_mix = (1, 2, [1, 3])
-    actual = to_tuple(a_mix)
-    expected = (1, 2, (1, 3))
-    assert actual == expected
 
 
 def test_create_random_state():
@@ -239,9 +182,13 @@ def test_create_py_random_state():
     np = pytest.importorskip("numpy")
 
     rs = np.random.RandomState
+    rng = np.random.default_rng(1000)
+    rng_explicit = np.random.Generator(np.random.SFC64())
     nprs = PythonRandomInterface
     assert isinstance(create_py_random_state(np.random), nprs)
     assert isinstance(create_py_random_state(rs(1)), nprs)
+    assert isinstance(create_py_random_state(rng), nprs)
+    assert isinstance(create_py_random_state(rng_explicit), nprs)
     # test default rng input
     assert isinstance(PythonRandomInterface(), nprs)
 

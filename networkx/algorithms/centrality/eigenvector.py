@@ -117,7 +117,7 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None, weight=None
     x = {k: v / nstart_sum for k, v in nstart.items()}
     nnodes = G.number_of_nodes()
     # make up to max_iter iterations
-    for i in range(max_iter):
+    for _ in range(max_iter):
         xlast = x
         x = xlast.copy()  # Start with xlast times I to iterate with (A+I)
         # do the multiplication y^T = x^T A (left eigenvector)
@@ -221,7 +221,7 @@ def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
             "cannot compute centrality for the null graph"
         )
     M = nx.to_scipy_sparse_array(G, nodelist=list(G), weight=weight, dtype=float)
-    eigenvalue, eigenvector = sp.sparse.linalg.eigs(
+    _, eigenvector = sp.sparse.linalg.eigs(
         M.T, k=1, which="LR", maxiter=max_iter, tol=tol
     )
     largest = eigenvector.flatten().real

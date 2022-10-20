@@ -19,6 +19,7 @@ of complex networks.
 - **Mailing list:** https://groups.google.com/forum/#!forum/networkx-discuss
 - **Source:** https://github.com/networkx/networkx
 - **Bug reports:** https://github.com/networkx/networkx/issues
+- **Report a security vulnerability:** https://tidelift.com/security
 - **Tutorial:** https://networkx.org/documentation/latest/tutorial.html
 - **GitHub Discussions:** https://github.com/networkx/networkx/discussions
 
@@ -27,15 +28,15 @@ Simple example
 
 Find the shortest path between two nodes in an undirected graph:
 
-.. code:: python
+.. code:: pycon
 
     >>> import networkx as nx
     >>> G = nx.Graph()
-    >>> G.add_edge('A', 'B', weight=4)
-    >>> G.add_edge('B', 'D', weight=2)
-    >>> G.add_edge('A', 'C', weight=3)
-    >>> G.add_edge('C', 'D', weight=4)
-    >>> nx.shortest_path(G, 'A', 'D', weight='weight')
+    >>> G.add_edge("A", "B", weight=4)
+    >>> G.add_edge("B", "D", weight=2)
+    >>> G.add_edge("A", "C", weight=3)
+    >>> G.add_edge("C", "D", weight=4)
+    >>> nx.shortest_path(G, "A", "D", weight="weight")
     ['A', 'B', 'D']
 
 Install

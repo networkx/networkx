@@ -1,10 +1,11 @@
-import pickle
 import gc
+import pickle
 import platform
+
 import pytest
 
 import networkx as nx
-from networkx.utils import nodes_equal, edges_equal, graphs_equal
+from networkx.utils import edges_equal, graphs_equal, nodes_equal
 
 
 class BaseGraphTester:
@@ -26,6 +27,11 @@ class BaseGraphTester:
 
     def test_nodes(self):
         G = self.K3
+        assert isinstance(G._node, G.node_dict_factory)
+        assert isinstance(G._adj, G.adjlist_outer_dict_factory)
+        assert all(
+            isinstance(adj, G.adjlist_inner_dict_factory) for adj in G._adj.values()
+        )
         assert sorted(G.nodes()) == self.k3nodes
         assert sorted(G.nodes(data=True)) == [(0, {}), (1, {}), (2, {})]
 
@@ -88,6 +94,7 @@ class BaseGraphTester:
 
     def test_edges(self):
         G = self.K3
+        assert isinstance(G._adj, G.adjlist_outer_dict_factory)
         assert edges_equal(G.edges(), [(0, 1), (0, 2), (1, 2)])
         assert edges_equal(G.edges(0), [(0, 1), (0, 2)])
         assert edges_equal(G.edges([0, 1]), [(0, 1), (0, 2), (1, 2)])
@@ -163,6 +170,25 @@ class BaseGraphTester:
         G.add_edge(0, 0)
         G.add_edge(1, 1)
         G.remove_nodes_from([0, 1])
+
+    def test_cache_reset(self):
+        G = self.K3.copy()
+        old_adj = G.adj
+        assert id(G.adj) == id(old_adj)
+        G._adj = {}
+        assert id(G.adj) != id(old_adj)
+
+        old_nodes = G.nodes
+        assert id(G.nodes) == id(old_nodes)
+        G._node = {}
+        assert id(G.nodes) != id(old_nodes)
+
+    def test_attributes_cached(self):
+        G = self.K3.copy()
+        assert id(G.nodes) == id(G.nodes)
+        assert id(G.edges) == id(G.edges)
+        assert id(G.degree) == id(G.degree)
+        assert id(G.adj) == id(G.adj)
 
 
 class BaseAttrGraphTester(BaseGraphTester):
@@ -351,6 +377,7 @@ class BaseAttrGraphTester(BaseGraphTester):
     def test_graph_attr(self):
         G = self.K3.copy()
         G.graph["foo"] = "bar"
+        assert isinstance(G.graph, G.graph_attr_dict_factory)
         assert G.graph["foo"] == "bar"
         del G.graph["foo"]
         assert G.graph == {}
@@ -360,6 +387,9 @@ class BaseAttrGraphTester(BaseGraphTester):
     def test_node_attr(self):
         G = self.K3.copy()
         G.add_node(1, foo="bar")
+        assert all(
+            isinstance(d, G.node_attr_dict_factory) for u, d in G.nodes(data=True)
+        )
         assert nodes_equal(G.nodes(), [0, 1, 2])
         assert nodes_equal(G.nodes(data=True), [(0, {}), (1, {"foo": "bar"}), (2, {})])
         G.nodes[1]["foo"] = "baz"
@@ -386,6 +416,9 @@ class BaseAttrGraphTester(BaseGraphTester):
     def test_edge_attr(self):
         G = self.Graph()
         G.add_edge(1, 2, foo="bar")
+        assert all(
+            isinstance(d, G.edge_attr_dict_factory) for u, v, d in G.edges(data=True)
+        )
         assert edges_equal(G.edges(data=True), [(1, 2, {"foo": "bar"})])
         assert edges_equal(G.edges(data="foo"), [(1, 2, "bar")])
 
@@ -574,6 +607,7 @@ class TestGraph(BaseAttrGraphTester):
 
     def test_getitem(self):
         G = self.K3
+        assert G.adj[0] == {1: {}, 2: {}}
         assert G[0] == {1: {}, 2: {}}
         with pytest.raises(KeyError):
             G.__getitem__("j")

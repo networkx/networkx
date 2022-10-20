@@ -1,31 +1,16 @@
-import json
-import pytest
-import networkx as nx
 import copy
+import json
+
+import pytest
+
+import networkx as nx
 from networkx.readwrite.json_graph import cytoscape_data, cytoscape_graph
-
-
-# TODO: To be removed when signature change complete in 3.0
-def test_attrs_deprecation(recwarn):
-    G = nx.path_graph(3)
-
-    # No warnings when `attrs` kwarg not used
-    data = cytoscape_data(G)
-    H = cytoscape_graph(data)
-    assert len(recwarn) == 0
-
-    # Future warning raised with `attrs` kwarg
-    attrs = {"name": "foo", "ident": "bar"}
-    with pytest.warns(DeprecationWarning):
-        data = cytoscape_data(G, attrs)
-    with pytest.warns(DeprecationWarning):
-        H = cytoscape_graph(data, attrs)
 
 
 def test_graph():
     G = nx.path_graph(4)
     H = cytoscape_graph(cytoscape_data(G))
-    nx.is_isomorphic(G, H)
+    assert nx.is_isomorphic(G, H)
 
 
 def test_input_data_is_not_modified_when_building_graph():
@@ -67,7 +52,7 @@ def test_digraph():
     nx.add_path(G, [1, 2, 3])
     H = cytoscape_graph(cytoscape_data(G))
     assert H.is_directed()
-    nx.is_isomorphic(G, H)
+    assert nx.is_isomorphic(G, H)
 
 
 def test_multidigraph():

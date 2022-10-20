@@ -135,8 +135,9 @@ html_theme_options = {
         },
     ],
     "external_links": [{"name": "Guides", "url": "https://networkx.org/nx-guides/"}],
-    "navbar_end": ["navbar-icon-links", "version"],
+    "navbar_end": ["theme-switcher", "navbar-icon-links", "version"],
     "page_sidebar_items": ["search-field", "page-toc", "edit-this-page"],
+    "header_links_before_dropdown": 7,
 }
 html_sidebars = {
     "**": ["sidebar-nav-bs", "sidebar-ethical-ads"],
@@ -188,6 +189,7 @@ html_context = {
         "latest": "devel (latest)",
         "stable": "current (stable)",
     },
+    "default_mode": "light",
 }
 
 # Options for LaTeX output
@@ -228,6 +230,7 @@ intersphinx_mapping = {
     "pygraphviz": ("https://pygraphviz.github.io/documentation/stable/", None),
     "sphinx-gallery": ("https://sphinx-gallery.github.io/stable/", None),
     "nx-guides": ("https://networkx.org/nx-guides/", None),
+    "sympy": ("https://docs.sympy.org/latest/", None),
 }
 
 # The reST default role (used for this markup: `text`) to use for all

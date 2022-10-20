@@ -17,15 +17,16 @@ See Also
  - :obj:`matplotlib.patches.FancyArrowPatch`
 """
 from numbers import Number
+
 import networkx as nx
 from networkx.drawing.layout import (
-    shell_layout,
     circular_layout,
     kamada_kawai_layout,
+    planar_layout,
+    random_layout,
+    shell_layout,
     spectral_layout,
     spring_layout,
-    random_layout,
-    planar_layout,
 )
 
 __all__ = [
@@ -109,10 +110,10 @@ def draw(G, pos=None, ax=None, **kwds):
         cf = ax.get_figure()
     cf.set_facecolor("w")
     if ax is None:
-        if cf._axstack() is None:
-            ax = cf.add_axes((0, 0, 1, 1))
-        else:
+        if cf.axes:
             ax = cf.gca()
+        else:
+            ax = cf.add_axes((0, 0, 1, 1))
 
     if "with_labels" not in kwds:
         kwds["with_labels"] = "labels" in kwds
@@ -150,8 +151,10 @@ def draw_networkx(G, pos=None, arrows=None, with_labels=True, **kwds):
         For directed graphs, if True draw arrowheads.
         Note: Arrows will be the same color as edges.
 
-    arrowstyle : str (default='-\|>')
+    arrowstyle : str (default='-\|>' for directed graphs)
         For directed graphs, choose the style of the arrowsheads.
+        For undirected graphs default to '-'
+
         See `matplotlib.patches.ArrowStyle` for more options.
 
     arrowsize : int or list (default=10)
@@ -266,58 +269,25 @@ def draw_networkx(G, pos=None, arrows=None, with_labels=True, **kwds):
     draw_networkx_labels
     draw_networkx_edge_labels
     """
+    from inspect import signature
+
     import matplotlib.pyplot as plt
 
-    valid_node_kwds = (
-        "nodelist",
-        "node_size",
-        "node_color",
-        "node_shape",
-        "alpha",
-        "cmap",
-        "vmin",
-        "vmax",
-        "ax",
-        "linewidths",
-        "edgecolors",
-        "label",
-    )
+    # Get all valid keywords by inspecting the signatures of draw_networkx_nodes,
+    # draw_networkx_edges, draw_networkx_labels
 
-    valid_edge_kwds = (
-        "edgelist",
-        "width",
-        "edge_color",
-        "style",
-        "alpha",
-        "arrowstyle",
-        "arrowsize",
-        "edge_cmap",
-        "edge_vmin",
-        "edge_vmax",
-        "ax",
-        "label",
-        "node_size",
-        "nodelist",
-        "node_shape",
-        "connectionstyle",
-        "min_source_margin",
-        "min_target_margin",
-    )
+    valid_node_kwds = signature(draw_networkx_nodes).parameters.keys()
+    valid_edge_kwds = signature(draw_networkx_edges).parameters.keys()
+    valid_label_kwds = signature(draw_networkx_labels).parameters.keys()
 
-    valid_label_kwds = (
-        "labels",
-        "font_size",
-        "font_color",
-        "font_family",
-        "font_weight",
-        "alpha",
-        "bbox",
-        "ax",
-        "horizontalalignment",
-        "verticalalignment",
-    )
-
-    valid_kwds = valid_node_kwds + valid_edge_kwds + valid_label_kwds
+    # Create a set with all valid keywords across the three functions and
+    # remove the arguments of this function (draw_networkx)
+    valid_kwds = (valid_node_kwds | valid_edge_kwds | valid_label_kwds) - {
+        "G",
+        "pos",
+        "arrows",
+        "with_labels",
+    }
 
     if any([k not in valid_kwds for k in kwds]):
         invalid_args = ", ".join([k for k in kwds if k not in valid_kwds])
@@ -436,10 +406,11 @@ def draw_networkx_nodes(
     draw_networkx_edge_labels
     """
     from collections.abc import Iterable
-    import numpy as np
+
     import matplotlib as mpl
     import matplotlib.collections  # call as mpl.collections
     import matplotlib.pyplot as plt
+    import numpy as np
 
     if ax is None:
         ax = plt.gca()
@@ -500,7 +471,7 @@ def draw_networkx_edges(
     edge_color="k",
     style="solid",
     alpha=None,
-    arrowstyle="-|>",
+    arrowstyle=None,
     arrowsize=10,
     edge_cmap=None,
     edge_vmin=None,
@@ -572,8 +543,9 @@ def draw_networkx_edges(
 
         Note: Arrowheads will be the same color as edges.
 
-    arrowstyle : str (default='-\|>')
+    arrowstyle : str (default='-\|>' for directed graphs)
         For directed graphs and `arrows==True` defaults to '-\|>',
+        For undirected graphs default to '-'.
 
         See `matplotlib.patches.ArrowStyle` for more options.
 
@@ -666,18 +638,25 @@ def draw_networkx_edges(
     draw_networkx_edge_labels
 
     """
-    import numpy as np
     import matplotlib as mpl
+    import matplotlib.collections  # call as mpl.collections
     import matplotlib.colors  # call as mpl.colors
     import matplotlib.patches  # call as mpl.patches
-    import matplotlib.collections  # call as mpl.collections
     import matplotlib.path  # call as mpl.path
     import matplotlib.pyplot as plt
+    import numpy as np
 
     # The default behavior is to use LineCollection to draw edges for
     # undirected graphs (for performance reasons) and use FancyArrowPatches
     # for directed graphs.
     # The `arrows` keyword can be used to override the default behavior
+
+    if arrowstyle == None:
+        if G.is_directed():
+            arrowstyle = "-|>"
+        else:
+            arrowstyle = "-"
+
     use_linecollection = not G.is_directed()
     if arrows in (True, False):
         use_linecollection = not arrows
@@ -697,6 +676,7 @@ def draw_networkx_edges(
     # FancyArrowPatch handles color=None different from LineCollection
     if edge_color is None:
         edge_color = "k"
+    edgelist_tuple = list(map(tuple, edgelist))
 
     # set edge positions
     edge_pos = np.asarray([(pos[e[0]], pos[e[1]]) for e in edgelist])
@@ -797,7 +777,7 @@ def draw_networkx_edges(
 
         # FancyArrowPatch doesn't handle color strings
         arrow_colors = mpl.colors.colorConverter.to_rgba_array(edge_color, alpha)
-        for i, (src, dst) in enumerate(edge_pos):
+        for i, (src, dst) in zip(fancy_edges_indices, edge_pos):
             x1, y1 = src
             x2, y2 = dst
             shrink_source = 0  # space from source to tail
@@ -822,7 +802,7 @@ def draw_networkx_edges(
             if shrink_target < min_target_margin:
                 shrink_target = min_target_margin
 
-            if len(arrow_colors) == len(edge_pos):
+            if len(arrow_colors) > i:
                 arrow_color = arrow_colors[i]
             elif len(arrow_colors) == 1:
                 arrow_color = arrow_colors[0]
@@ -830,7 +810,7 @@ def draw_networkx_edges(
                 arrow_color = arrow_colors[i % len(arrow_colors)]
 
             if np.iterable(width):
-                if len(width) == len(edge_pos):
+                if len(width) > i:
                     line_width = width[i]
                 else:
                     line_width = width[i % len(width)]
@@ -842,7 +822,7 @@ def draw_networkx_edges(
                 and not isinstance(style, str)
                 and not isinstance(style, tuple)
             ):
-                if len(style) == len(edge_pos):
+                if len(style) > i:
                     linestyle = style[i]
                 else:  # Cycle through styles
                     linestyle = style[i % len(style)]
@@ -882,10 +862,14 @@ def draw_networkx_edges(
         # Make sure selfloop edges are also drawn
         selfloops_to_draw = [loop for loop in nx.selfloop_edges(G) if loop in edgelist]
         if selfloops_to_draw:
+            fancy_edges_indices = [
+                edgelist_tuple.index(loop) for loop in selfloops_to_draw
+            ]
             edge_pos = np.asarray([(pos[e[0]], pos[e[1]]) for e in selfloops_to_draw])
             arrowstyle = "-"
             _draw_networkx_edges_fancy_arrow_patch()
     else:
+        fancy_edges_indices = range(len(edgelist))
         edge_viz_obj = _draw_networkx_edges_fancy_arrow_patch()
 
     # update view after drawing
@@ -1493,11 +1477,12 @@ def apply_alpha(colors, alpha, elem_list, cmap=None, vmin=None, vmax=None):
         Array containing RGBA format values for each of the node colours.
 
     """
-    from itertools import islice, cycle
-    import numpy as np
+    from itertools import cycle, islice
+
     import matplotlib as mpl
-    import matplotlib.colors  # call as mpl.colors
     import matplotlib.cm  # call as mpl.cm
+    import matplotlib.colors  # call as mpl.colors
+    import numpy as np
 
     # If we have been provided with a list of numbers as long as elem_list,
     # apply the color mapping.
