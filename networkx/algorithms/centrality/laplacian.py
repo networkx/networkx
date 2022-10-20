@@ -119,6 +119,7 @@ def laplacian_centrality(
     else:
         sum_of_full = 1
 
+    # calculate laplace centrality
     laplace_centralities_dict = {}
     for i, node in enumerate(nodeset):
 
