@@ -974,11 +974,11 @@ class DiGraph(Graph):
             of objects handle requests for all edges without any data. The
             *EdgeDataView family of objects handle special requests: either
             restricting to source nodes via nbunch or asking for edge data
-             via data. Also note the difference between G.edges and G.edges()
-             in the examples. G.edges reports edge tuples. If they are multiedges,
-             then the edge tuples are 3-tuples: (n, nbr, edgekey). But if they are
-             not multiedges they are 2-tuples: (n, nbr). But G.edges() returns 2-tuples
-             whether they are multiedges or not.
+            via data. Also note the difference between G.edges and G.edges()
+            in the examples. G.edges reports edge tuples. If they are multiedges,
+            then the edge tuples are 3-tuples: (n, nbr, edgekey). But if they are
+            not multiedges they are 2-tuples: (n, nbr). But G.edges() returns 2-tuples
+            whether they are multiedges or not.
 
         Examples
         -----
