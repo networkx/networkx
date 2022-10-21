@@ -303,6 +303,9 @@ class TestMultiGraph(BaseMultiGraphTester, _TestGraph):
         G = self.Graph()
         G.add_edge(*(0, 1))
         assert G.adj == {0: {1: {0: {}}}, 1: {0: {0: {}}}}
+        G = self.Graph()
+        with pytest.raises(ValueError):
+            G.add_edge(None, "anything")
 
     def test_add_edge_conflicting_key(self):
         G = self.Graph()
