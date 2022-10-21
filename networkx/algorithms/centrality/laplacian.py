@@ -125,8 +125,7 @@ def laplacian_centrality(
         # remove row and col i from lap_matrix
         all_but_i = list(np.arange(lap_matrix.shape[0]))
         all_but_i.remove(i)
-        A_2 = lap_matrix[all_but_i, :]
-        A_2 = A_2[:, all_but_i]
+        A_2 = lap_matrix[all_but_i, :][:, all_but_i]
 
         A_2.setdiag(np.r_[new_diag[:i], new_diag[i + 1 :]])
 
