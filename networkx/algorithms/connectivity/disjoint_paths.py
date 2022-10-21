@@ -54,7 +54,7 @@ def edge_disjoint_paths(
         :meth:`shortest_augmenting_path` support the cutoff parameter,
         and will terminate when the flow value reaches or exceeds the
         cutoff. Other algorithms will ignore this parameter (see
-        :algorithms:`flow` for details). Default value: None.
+        :ref:`flow<flow>` for details). Default value: None.
 
     auxiliary : NetworkX DiGraph
         Auxiliary digraph to compute flow based edge connectivity. It has
@@ -260,7 +260,7 @@ def node_disjoint_paths(
         :meth:`shortest_augmenting_path` support the cutoff parameter,
         and will terminate when the flow value reaches or exceeds the
         cutoff. Other algorithms will ignore this parameter (see
-        :algorithms:`flow` for details). Default value: None.
+        :ref:`flow<flow>` for details). Default value: None.
 
     auxiliary : NetworkX DiGraph
         Auxiliary digraph to compute flow based node connectivity. It has
