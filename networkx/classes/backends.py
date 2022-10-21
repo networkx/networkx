@@ -60,7 +60,7 @@ from importlib.metadata import entry_points
 
 from ..exception import NetworkXNotImplemented
 
-__all__ = ["dispatch", "mark_tests"]
+__all__ = ["_dispatch", "_mark_tests"]
 
 
 known_plugins = [
@@ -109,21 +109,21 @@ def _register_algo(name, wrapped_func):
     _registered_algorithms[name] = wrapped_func
 
 
-def dispatch(func=None, *, name=None):
+def _dispatch(func=None, *, name=None):
     """Dispatches to a backend algorithm
     when the first argument is a backend graph-like object.
     """
     # Allow any of the following decorator forms:
-    #  - @dispatch
-    #  - @dispatch()
-    #  - @dispatch("override_name")
-    #  - @dispatch(name="override_name")
+    #  - @_dispatch
+    #  - @_dispatch()
+    #  - @_dispatch("override_name")
+    #  - @_dispatch(name="override_name")
     if func is None:
         if name is None:
-            return dispatch
-        return functools.partial(dispatch, name=name)
+            return _dispatch
+        return functools.partial(_dispatch, name=name)
     if isinstance(func, str):
-        return functools.partial(dispatch, name=func)
+        return functools.partial(_dispatch, name=func)
     # If name not provided, use the name of the function
     if name is None:
         name = func.__name__
@@ -218,7 +218,7 @@ if os.environ.get("NETWORKX_GRAPH_CONVERT"):
     dispatch = test_override_dispatch
 
 
-def mark_tests(items):
+def _mark_tests(items):
     """Allow backend to mark tests (skip or xfail) if they aren't able to correctly handle them"""
     if os.environ.get("NETWORKX_GRAPH_CONVERT"):
         plugin_name = os.environ["NETWORKX_GRAPH_CONVERT"]

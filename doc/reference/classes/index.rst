@@ -99,13 +99,12 @@ Filters
 Backends
 ========
 
-.. note:: This is an experimental feature to dispatch your computations to a
+.. note:: This is an experimental feature to dispatch your computations to an
    alternate backend like GraphBLAS, instead of using pure Python dictionaries
-   for computation.
+   for computation. Things will change and break in the future!
 
 .. automodule:: networkx.classes.backends
-
 .. autosummary::
    :toctree: generated/
 
-   dispatch
+   _dispatch
