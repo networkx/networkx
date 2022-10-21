@@ -80,7 +80,7 @@ def local_node_connectivity(
         flow value reaches or exceeds the cutoff. This is only for the
         algorithms that support the cutoff parameter: e.g., :meth:`edmonds_karp`,
         and :meth:`shortest_augmenting_path`. Other algorithms will ignore this
-        parameter (see :meth:`maximum_flow` for details). Default value: None.
+        parameter (see :algorithms:`flow` for details). Default value: None.
 
     Returns
     -------
@@ -534,7 +534,7 @@ def local_edge_connectivity(
         flow value reaches or exceeds the cutoff. This is only for the
         algorithms that support the cutoff parameter: e.g., :meth:`edmonds_karp`,
         and :meth:`shortest_augmenting_path`. Other algorithms will ignore this
-        parameter (see :meth:`maximum_flow` for details). Default value: None.
+        parameter (see :algorithms:`flow` for details). Default value: None.
 
     Returns
     -------
@@ -684,7 +684,7 @@ def edge_connectivity(G, s=None, t=None, flow_func=None, cutoff=None):
         flow value reaches or exceeds the cutoff. This is only for the
         algorithms that support the cutoff parameter: e.g., :meth:`edmonds_karp`,
         and :meth:`shortest_augmenting_path`. Other algorithms will ignore this
-        parameter (see :meth:`maximum_flow` for details). Default value: None.
+        parameter (see :algorithms:`flow` for details). Default value: None.
 
     Returns
     -------
