@@ -105,11 +105,11 @@ def laplacian_centrality(
         lap_matrix = sp.sparse.csr_matrix(
             nx.directed_laplacian_matrix(G, full_nodelist, weight, walk_type, alpha)
         )
-        eigh = sp.linalg.eigh(lap_matrix.toarray(), eigvals_only=True)
 
     else:
         lap_matrix = nx.laplacian_matrix(G, full_nodelist, weight)
-        eigh = sp.linalg.eigh(lap_matrix.toarray(), eigvals_only=True)
+        
+    eigh = sp.linalg.eigh(lap_matrix.toarray(), eigvals_only=True)    
 
     if normalized:
         sum_of_full = np.power(eigh, 2).sum()
