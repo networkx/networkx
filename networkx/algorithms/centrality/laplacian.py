@@ -127,7 +127,7 @@ def laplacian_centrality(
         all_but_i.remove(i)
         A_2 = lap_matrix[all_but_i, :][:, all_but_i]
 
-        A_2.setdiag(np.r_[new_diag[:i], new_diag[i + 1 :]])
+        A_2.setdiag(new_diag[all_but_i])
 
         sum_of_eigen_values_2 = np.power(sp.linalg.eigh(A_2.toarray(), eigvals_only=True), 2).sum()
 
