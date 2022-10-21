@@ -85,9 +85,6 @@ def laplacian_centrality(
     import scipy.linalg  # call as sp.linalg
     import scipy.sparse  # call as sp.sparse
 
-    def eigh_f(A):
-        return sp.linalg.eigh(A.toarray(), eigvals_only=True)
-
     if len(G) == 0:
         raise nx.NetworkXPointlessConcept(
             "cannot compute centrality for the null graph"
@@ -108,11 +105,11 @@ def laplacian_centrality(
         lap_matrix = sp.sparse.csr_matrix(
             nx.directed_laplacian_matrix(G, full_nodelist, weight, walk_type, alpha)
         )
-        eigh = eigh_f(lap_matrix)
+        eigh = sp.linalg.eigh(lap_matrix.toarray(), eigvals_only=True)
 
     else:
         lap_matrix = nx.laplacian_matrix(G, full_nodelist, weight)
-        eigh = eigh_f(lap_matrix)
+        eigh = sp.linalg.eigh(lap_matrix.toarray(), eigvals_only=True)
 
     if normalized:
         sum_of_full = np.power(eigh, 2).sum()
@@ -133,7 +130,7 @@ def laplacian_centrality(
 
         A_2.setdiag(np.r_[new_diag[:i], new_diag[i + 1 :]])
 
-        sum_of_eigen_values_2 = np.power(eigh_f(A_2), 2).sum()
+        sum_of_eigen_values_2 = np.power(sp.linalg.eigh(A_2.toarray(), eigvals_only=True), 2).sum()
 
         if normalized:
             l_cent = 1 - (sum_of_eigen_values_2 / sum_of_full)
