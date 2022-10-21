@@ -53,8 +53,8 @@ def edge_disjoint_paths(
         algorithms, such as :meth:`edmonds_karp` (the default) and
         :meth:`shortest_augmenting_path` support the cutoff parameter,
         and will terminate when the flow value reaches or exceeds the
-        cutoff. Other algorithms will ignore this parameter.
-        Default value: None.
+        cutoff. Other algorithms will ignore this parameter (see :meth:
+        `maximum_flow` for details). Default value: None.
 
     auxiliary : NetworkX DiGraph
         Auxiliary digraph to compute flow based edge connectivity. It has
@@ -259,8 +259,8 @@ def node_disjoint_paths(
         algorithms, such as :meth:`edmonds_karp` (the default) and
         :meth:`shortest_augmenting_path` support the cutoff parameter,
         and will terminate when the flow value reaches or exceeds the
-        cutoff. Other algorithms will ignore this parameter.
-        Default value: None.
+        cutoff. Other algorithms will ignore this parameter (see :meth:
+        `maximum_flow` for details). Default value: None.
 
     auxiliary : NetworkX DiGraph
         Auxiliary digraph to compute flow based node connectivity. It has
