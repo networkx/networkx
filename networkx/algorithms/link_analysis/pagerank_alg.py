@@ -171,6 +171,7 @@ def _pagerank_python(
     raise nx.PowerIterationFailedConvergence(max_iter)
 
 
+@nx._dispatch
 def google_matrix(
     G, alpha=0.85, personalization=None, nodelist=None, weight="weight", dangling=None
 ):
