@@ -276,7 +276,7 @@ class TestGeneratorInverseLine:
         J = nx.inverse_line_graph(H)
         assert nx.is_isomorphic(G, J)
 
-    def test_line_vertex_more(self):
+    def test_line_vertex_partition_appearances(self):
         G = nx.Graph()
         G_vertices = [
             (1, 2),
