@@ -982,11 +982,11 @@ class DiGraph(Graph):
 
         Examples
         -----
-            >>> g = nx.DiGraph()
-            >>> g.add_edge(1,2,color='blue')
-            >>> g.in_edges() # == g.in_edges(nbunch=None)
+            >>> G = nx.DiGraph()
+            >>> G.add_edge(1,2,color='blue')
+            >>> G.in_edges() # == G.in_edges(nbunch=None)
             InEdgeView([(1, 2)])
-            >>> g.in_edges(2) # == g.in_edges(nbunch=2)
+            >>> G.in_edges(2) # == G.in_edges(nbunch=2)
             InEdgeDataView([(1, 2)])
             >>> G = nx.MultiGraph([(1,2,0, {"color": "blue"})])
             >>> G.edges()
