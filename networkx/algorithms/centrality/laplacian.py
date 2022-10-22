@@ -108,15 +108,15 @@ def laplacian_centrality(
 
     else:
         lap_matrix = nx.laplacian_matrix(G, full_nodelist, weight)
-        
-    eigh = sp.linalg.eigh(lap_matrix.toarray(), eigvals_only=True)    
+
+    eigh = sp.linalg.eigh(lap_matrix.toarray(), eigvals_only=True)
 
     if normalized:
         sum_of_full = np.power(eigh, 2).sum()
     else:
         sum_of_full = 1
 
-    # calculate laplace centrality
+    # calculate laplacian centrality
     laplace_centralities_dict = {}
     for i, node in enumerate(nodeset):
 
@@ -129,7 +129,9 @@ def laplacian_centrality(
 
         A_2.setdiag(new_diag[all_but_i])
 
-        sum_of_eigen_values_2 = np.power(sp.linalg.eigh(A_2.toarray(), eigvals_only=True), 2).sum()
+        sum_of_eigen_values_2 = np.power(
+            sp.linalg.eigh(A_2.toarray(), eigvals_only=True), 2
+        ).sum()
 
         if normalized:
             l_cent = 1 - (sum_of_eigen_values_2 / sum_of_full)
