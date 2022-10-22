@@ -77,6 +77,17 @@ class TestDagLongestPath:
         G.add_weighted_edges_from(edges)
         assert nx.dag_longest_path(G) == [1, 3]
 
+    def test_multigraph_weighted_default_weight(self):
+
+        G = nx.MultiDiGraph([(1, 2), (2, 3)])
+
+        edges = [(1, 3, 1), (1, 3, 5), (1, 3, 2)]
+
+        G.add_weighted_edges_from(edges)
+
+        assert nx.dag_longest_path(G, default_weight = 0) == [1, 3]
+        assert nx.dag_longest_path(G, default_weight = 3) == [1, 2, 3]
+
 
 class TestDagLongestPathLength:
     """Unit tests for computing the length of a longest path in a
@@ -125,6 +136,15 @@ class TestDagLongestPathLength:
         G.add_weighted_edges_from(edges)
         assert nx.dag_longest_path_length(G) == 5
 
+    def test_multigraph_weighted_default_weight(self):
+
+        G = nx.MultiDiGraph([(1, 2), (2, 3)])
+
+        edges = [(1, 3, 1), (1, 3, 5), (1, 3, 2)]
+        G.add_weighted_edges_from(edges)
+
+        assert nx.dag_longest_path_length(G) == 5
+        assert nx.dag_longest_path_length(G, default_weight=5) == 10
 
 class TestDAG:
     @classmethod
