@@ -709,8 +709,6 @@ class TestGraph(BaseAttrGraphTester):
             G.add_edges_from([(0, 1, 2, 3)])  # too many in tuple
         with pytest.raises(TypeError):
             G.add_edges_from([0])  # not a tuple
-        with pytest.raises(ValueError):
-            G.add_edges_from([(None, 3), (3, 2)])  # None cannot be a node
 
     def test_remove_edge(self):
         G = self.K3.copy()
