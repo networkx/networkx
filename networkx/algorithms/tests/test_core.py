@@ -1,3 +1,7 @@
+import warnings
+
+import pytest
+
 import networkx as nx
 from networkx.utils import nodes_equal
 
@@ -66,6 +70,17 @@ class TestCore:
         assert nodes_equal(nodes_by_core[0], [0])
         assert nodes_equal(nodes_by_core[1], [1, 3])
         assert nodes_equal(nodes_by_core[2], [2, 4, 5, 6])
+
+    def test_core_number_self_loop(self):
+        self_loop = nx.cycle_graph(3)
+        self_loop.add_edge(0, 0)
+        with pytest.raises(nx.NetworkXError):
+            nx.core_number(self_loop)
+
+    def test_find_cores_warning(self):
+        G = nx.cycle_graph(3)
+        with pytest.deprecated_call():
+            nx.find_cores(G)
 
     def test_directed_core_number(self):
         """core number had a bug for directed graphs found in issue #1959"""
@@ -169,3 +184,9 @@ class TestCore:
         assert nodes_equal(nodes_by_layer[3], [9, 11])
         assert nodes_equal(nodes_by_layer[4], [1, 2, 4, 5, 6, 8])
         assert nodes_equal(nodes_by_layer[5], [3, 7])
+
+    def test_onion_self_loop(self):
+        self_loop = nx.cycle_graph(3)
+        self_loop.add_edge(0, 0)
+        with pytest.raises(nx.NetworkXError):
+            nx.onion_layers(self_loop)
