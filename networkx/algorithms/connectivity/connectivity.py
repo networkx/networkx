@@ -75,7 +75,7 @@ def local_node_connectivity(
         Residual network to compute maximum flow. If provided it will be
         reused instead of recreated. Default value: None.
 
-    integer, float, or None (default: None)
+    cutoff : integer, float, or None (default: None)
         If specified, the maximum flow algorithm will terminate when the
         flow value reaches or exceeds the cutoff. This only works for flows
         that support the cutoff parameter (most do) and is ignored otherwise.
@@ -527,7 +527,7 @@ def local_edge_connectivity(
         Residual network to compute maximum flow. If provided it will be
         reused instead of recreated. Default value: None.
 
-    integer, float, or None (default: None)
+    cutoff : integer, float, or None (default: None)
         If specified, the maximum flow algorithm will terminate when the
         flow value reaches or exceeds the cutoff. This only works for flows
         that support the cutoff parameter (most do) and is ignored otherwise.
@@ -675,7 +675,7 @@ def edge_connectivity(G, s=None, t=None, flow_func=None, cutoff=None):
         choice of the default function may change from version
         to version and should not be relied on. Default value: None.
 
-    integer, float, or None (default: None)
+    cutoff : integer, float, or None (default: None)
         If specified, the maximum flow algorithm will terminate when the
         flow value reaches or exceeds the cutoff. This only works for flows
         that support the cutoff parameter (most do) and is ignored otherwise.
