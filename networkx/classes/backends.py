@@ -215,7 +215,7 @@ if os.environ.get("NETWORKX_GRAPH_CONVERT"):
         )
 
     # Override `dispatch` for testing
-    dispatch = test_override_dispatch
+    _dispatch = test_override_dispatch
 
 
 def _mark_tests(items):
