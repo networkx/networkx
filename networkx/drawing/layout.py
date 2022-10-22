@@ -21,6 +21,7 @@ from networkx.utils import np_random_state
 __all__ = [
     "bipartite_layout",
     "circular_layout",
+    "circular_center_node_layout",
     "kamada_kawai_layout",
     "random_layout",
     "rescale_layout",
@@ -168,6 +169,83 @@ def circular_layout(G, scale=1, center=None, dim=2):
         pos = np.column_stack(
             [np.cos(theta), np.sin(theta), np.zeros((len(G), paddims))]
         )
+        pos = rescale_layout(pos, scale=scale) + center
+        pos = dict(zip(G, pos))
+
+    return pos
+
+
+def circular_center_node_layout(G, center_node, scale=1, center=None, dim=2):
+    """Position nodes on a circle with one node at the center.
+
+    Parameters
+    ----------
+    G : NetworkX graph or list of nodes
+        A position will be assigned to every node in G.
+
+    center_node : int or str
+        Index or name of the node in G to be placed
+        at the center of the circle.
+
+    scale : number (default: 1)
+        Scale factor for positions.
+
+    center : array-like or None
+        Coordinate pair around which to center the layout.
+
+    dim : int
+        Dimension of layout.
+        If dim>2, the remaining dimensions are set to zero
+        in the returned positions.
+        If dim<2, a ValueError is raised.
+
+    Returns
+    -------
+    pos : dict
+        A dictionary of positions keyed by node
+
+    Raises
+    ------
+    ValueError
+        If dim < 2
+
+    Examples
+    --------
+    >>> G = nx.path_graph(4)
+    >>> pos = nx.circular_center_node_layout(G, 3)
+
+    Notes
+    -----
+    This algorithm currently only works in two dimensions and does not
+    try to minimize edge crossings.
+
+    """
+    import numpy as np
+
+    if dim < 2:
+        raise ValueError("cannot handle dimensions < 2")
+
+    G, center = _process_params(G, center, dim)
+    nodes = list(G)
+
+    idx_cn = center_node if type(center_node) is int else nodes.index(center_node)
+
+    paddims = max(0, (dim - 2))
+
+    if len(G) == 0:
+        pos = {}
+    elif len(G) == 1:
+        pos = {nx.utils.arbitrary_element(G): center}
+    else:
+        # Discard the extra angle since it matches 0 radians.
+        theta = np.linspace(0, 1, len(G))[:-1] * 2 * np.pi
+        theta = theta.astype(np.float32)
+        pos = np.column_stack(
+            [np.cos(theta), np.sin(theta), np.zeros((len(G) - 1, paddims))]
+        )
+        center_coord = np.array([0.0, 0.0]) if center is None else center
+        center_pos = np.concatenate([center_coord, np.zeros(paddims)])
+        pos = np.vstack([pos[0:idx_cn], center_pos, pos[idx_cn:]])
         pos = rescale_layout(pos, scale=scale) + center
         pos = dict(zip(G, pos))
 
