@@ -90,11 +90,35 @@ class TestEdgelist:
         # comment line
         1 2 {'weight':2.0}
         # comment line
-        2 3 {'weight':none}
+        2 3 ['weight':'a']
         """
         with pytest.raises(TypeError):
             bytesIO = io.BytesIO(s)
             bipartite.read_edgelist(bytesIO, nodetype=int, data=True)
+
+    def test_read_edgelist_7(self):
+        s = b"""\
+        # comment line
+        1 2 {'weight':2.0}
+        # comment line
+        2 3 {'weight':'a'}
+        """
+        with pytest.raises(TypeError):
+            bytesIO = io.BytesIO(s)
+            bipartite.read_edgelist(bytesIO, nodetype=int, data=[("weight", float)])
+
+    def test_read_edgelist_8(self):
+        s = b"""\
+                # comment line
+                1 2 {'weight':2.0}
+                # comment line
+                2 3 {'weight':'a'}
+                """
+        with pytest.raises(IndexError):
+            bytesIO = io.BytesIO(s)
+            bipartite.read_edgelist(
+                bytesIO, nodetype=int, data=[("weight", float), ("color", int)]
+            )
 
     def test_write_edgelist_1(self):
         fh = io.BytesIO()
