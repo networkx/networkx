@@ -152,6 +152,12 @@ class TestGeneratorsBipartite:
         assert len(G) == 4
         assert G.number_of_edges() == 0
 
+        aseq = [1, 0, 0]
+        bseq = [1, 0, 0]
+        G = havel_hakimi_graph(aseq, bseq)
+        assert len(G) == 6
+        assert G.number_of_edges() == 1
+
         aseq = [3, 3, 3, 3]
         bseq = [2, 2, 2, 2, 2]
         pytest.raises(nx.NetworkXError, havel_hakimi_graph, aseq, bseq)
@@ -202,6 +208,12 @@ class TestGeneratorsBipartite:
         G = reverse_havel_hakimi_graph(aseq, bseq)
         assert len(G) == 4
         assert G.number_of_edges() == 0
+
+        aseq = [1, 0, 0]
+        bseq = [1, 0, 0]
+        G = reverse_havel_hakimi_graph(aseq, bseq)
+        assert len(G) == 6
+        assert G.number_of_edges() == 1
 
         aseq = [3, 3, 3, 3]
         bseq = [2, 2, 2, 2, 2]
@@ -266,6 +278,12 @@ class TestGeneratorsBipartite:
         G = alternating_havel_hakimi_graph(aseq, bseq)
         assert len(G) == 4
         assert G.number_of_edges() == 0
+
+        aseq = [1, 0, 0]
+        bseq = [1, 0, 0]
+        G = alternating_havel_hakimi_graph(aseq, bseq)
+        assert len(G) == 6
+        assert G.number_of_edges() == 1
 
         aseq = [3, 3, 3, 3]
         bseq = [2, 2, 2, 2, 2]
@@ -333,6 +351,12 @@ class TestGeneratorsBipartite:
             nx.NetworkXError,
             preferential_attachment_graph,
             aseq,
+            1.1,
+        )
+        pytest.raises(
+            nx.NetworkXError,
+            preferential_attachment_graph,
+            aseq,
             0.5,
             create_using=nx.DiGraph(),
         )
@@ -352,6 +376,16 @@ class TestGeneratorsBipartite:
         )
 
     def test_random_graph(self):
+        n = 10
+        m = 20
+        G = random_graph(n, m, 0)
+        assert len(G) == n + m
+        assert len(G.edges()) == 0
+        n = 10
+        m = 20
+        G = random_graph(n, m, 1)
+        assert len(G) == n + m
+        assert len(G.edges()) == n * m
         n = 10
         m = 20
         G = random_graph(n, m, 0.9)
@@ -397,4 +431,32 @@ class TestGeneratorsBipartite:
         # print(X)
         assert set(range(n)) == X
         assert set(range(n, n + m)) == Y
+        assert edges == len(list(G.edges()))
+
+    def test_gnmk_random_graph_directed(self):
+        n = 10
+        m = 20
+        edges = 100
+        # set seed because sometimes it is not connected
+        # which raises an error in bipartite.sets(G) below.
+        G = gnmk_random_graph(n, m, edges, seed=1234, directed=True)
+        assert len(G) == n + m
+        assert nx.is_bipartite(G)
+        assert nx.is_directed(G)
+        X, Y = nx.algorithms.bipartite.sets(G)
+        # print(X)
+        assert set(range(n)) == X
+        assert set(range(n, n + m)) == Y
+        assert edges == len(list(G.edges()))
+
+    def test_gnmk_random_graph_star(self):
+        n = 1
+        m = 20
+        edges = 15
+        # set seed because sometimes it is not connected
+        # which raises an error in bipartite.sets(G) below.
+        # Remove set size test, as resulting graph should be disconnected for these values
+        G = gnmk_random_graph(n, m, edges, seed=1234)
+        assert len(G) == n + m
+        assert nx.is_bipartite(G)
         assert edges == len(list(G.edges()))

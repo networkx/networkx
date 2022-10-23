@@ -566,8 +566,6 @@ def gnmk_random_graph(n, m, k, seed=None, directed=False):
     if directed:
         G = nx.DiGraph(G)
     G.name = f"bipartite_gnm_random_graph({n},{m},{k})"
-    if n == 1 or m == 1:
-        return G
     max_edges = n * m  # max_edges for bipartite networks
     if k >= max_edges:  # Maybe we should raise an exception here
         return nx.complete_bipartite_graph(n, m, create_using=G)
