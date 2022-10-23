@@ -39,7 +39,6 @@ class TestLayout:
         G = []
         nx.random_layout(G)
         nx.circular_layout(G)
-        nx.circular_center_node_layout(G, center_node=0)
         nx.planar_layout(G)
         nx.spring_layout(G)
         nx.fruchterman_reingold_layout(G)
@@ -54,7 +53,6 @@ class TestLayout:
         G = self.Gi
         nx.random_layout(G)
         nx.circular_layout(G)
-        nx.circular_center_node_layout(G, center_node=0)
         nx.planar_layout(G)
         nx.spring_layout(G)
         nx.fruchterman_reingold_layout(G)
@@ -74,7 +72,6 @@ class TestLayout:
         G = self.Gs
         nx.random_layout(G)
         nx.circular_layout(G)
-        nx.circular_center_node_layout(G, center_node=0)
         nx.planar_layout(G)
         nx.spring_layout(G)
         nx.fruchterman_reingold_layout(G)
@@ -106,11 +103,6 @@ class TestLayout:
         sc(nx.spring_layout(G, scale=2, center=c), scale=2, center=c)
         sc(nx.spectral_layout(G, scale=2, center=c), scale=2, center=c)
         sc(nx.circular_layout(G, scale=2, center=c), scale=2, center=c)
-        sc(
-            nx.circular_center_node_layout(G, center_node=0, scale=2, center=c),
-            scale=2,
-            center=c,
-        )
         sc(nx.shell_layout(G, scale=2, center=c), scale=2, center=c)
         sc(nx.spiral_layout(G, scale=2, center=c), scale=2, center=c)
         sc(nx.kamada_kawai_layout(G, scale=2, center=c), scale=2, center=c)
@@ -136,7 +128,6 @@ class TestLayout:
         sc(nx.spring_layout(G), scale=1, center=c)
         sc(nx.spectral_layout(G), scale=1, center=c)
         sc(nx.circular_layout(G), scale=1, center=c)
-        sc(nx.circular_center_node_layout(G, center_node=0), scale=1, center=c)
         sc(nx.shell_layout(G), scale=1, center=c)
         sc(nx.spiral_layout(G), scale=1, center=c)
         sc(nx.kamada_kawai_layout(G), scale=1, center=c)
@@ -147,7 +138,6 @@ class TestLayout:
     def test_circular_planar_and_shell_dim_error(self):
         G = nx.path_graph(4)
         pytest.raises(ValueError, nx.circular_layout, G, dim=1)
-        pytest.raises(ValueError, nx.circular_center_node_layout, G, 0, dim=1)
         pytest.raises(ValueError, nx.shell_layout, G, dim=1)
         pytest.raises(ValueError, nx.shell_layout, G, dim=3)
         pytest.raises(ValueError, nx.planar_layout, G, dim=1)
@@ -207,8 +197,6 @@ class TestLayout:
         nx.random_layout(G, center=(1, 1))
         vpos = nx.circular_layout(G, center=(1, 1))
         assert tuple(vpos[0]) == (1, 1)
-        vpos = nx.circular_center_node_layout(G, center_node=0, center=(1, 1))
-        assert tuple(vpos[0]) == (1, 1)
         vpos = nx.planar_layout(G, center=(1, 1))
         assert tuple(vpos[0]) == (1, 1)
         vpos = nx.spring_layout(G, center=(1, 1))
@@ -227,13 +215,6 @@ class TestLayout:
         assert id(nx.spring_layout) == id(nx.fruchterman_reingold_layout)
         pytest.raises(ValueError, nx.random_layout, G, center=(1, 1, 1))
         pytest.raises(ValueError, nx.circular_layout, G, center=(1, 1, 1))
-        pytest.raises(
-            ValueError,
-            nx.circular_center_node_layout,
-            G,
-            center_node=0,
-            center=(1, 1, 1),
-        )
         pytest.raises(ValueError, nx.planar_layout, G, center=(1, 1, 1))
         pytest.raises(ValueError, nx.spring_layout, G, center=(1, 1, 1))
         pytest.raises(ValueError, nx.spring_layout, G, dim=3, center=(1, 1))
@@ -248,8 +229,6 @@ class TestLayout:
         vpos = nx.random_layout(G, center=(1, 1))
         assert vpos == {}
         vpos = nx.circular_layout(G, center=(1, 1))
-        assert vpos == {}
-        vpos = nx.circular_center_node_layout(G, center_node=0, center=(1, 1))
         assert vpos == {}
         vpos = nx.planar_layout(G, center=(1, 1))
         assert vpos == {}
