@@ -14,6 +14,9 @@ class TestBipartiteCentrality:
         cls.top_nodes = [
             n for n, d in cls.davis.nodes(data=True) if d["bipartite"] == 0
         ]
+        G = nx.complete_bipartite_graph(3, 3)
+        G.add_edge(6, 7)
+        cls.disconnected = G
 
     def test_degree_centrality(self):
         d = bipartite.degree_centrality(self.P4, [1, 3])
@@ -54,6 +57,20 @@ class TestBipartiteCentrality:
         assert c == {0: 0.0, 1: 0.0}
         c = bipartite.closeness_centrality(G, [1])
         assert c == {0: 0.0, 1: 0.0}
+        c = bipartite.closeness_centrality(
+            self.disconnected, [0, 2, 4, 6], normalized=False
+        )
+        answer = {
+            0: 10.0 / 7,
+            2: 10.0 / 7,
+            4: 10.0 / 7,
+            6: 10.0,
+            1: 10.0 / 7,
+            3: 10.0 / 7,
+            5: 10.0 / 7,
+            7: 10.0,
+        }
+        assert c == answer
 
     def test_davis_degree_centrality(self):
         G = self.davis
