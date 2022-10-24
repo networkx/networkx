@@ -1,4 +1,5 @@
 import networkx as nx
+import pytest
 
 
 def validate_grid_path(r, c, s, t, p):
@@ -32,6 +33,13 @@ class TestUnweightedPath:
             4, 4, 1, 12, nx.bidirectional_shortest_path(self.grid, 1, 12)
         )
         assert nx.bidirectional_shortest_path(self.directed_cycle, 0, 3) == [0, 1, 2, 3]
+        # test missing source and target
+        target = 8
+        source = 10
+        with pytest.raises(nx.NodeNotFound, match=f"Either source {source} or target {target} is not in G"):
+            nx.bidirectional_shortest_path(self.cycle, source, target)
+        # test source = target
+        assert nx.bidirectional_shortest_path(self.cycle, 3, 3) == [3]
 
     def test_shortest_path_length(self):
         assert nx.shortest_path_length(self.cycle, 0, 3) == 3
@@ -64,6 +72,10 @@ class TestUnweightedPath:
         assert p[3] == [3, 2, 1, 0]
         p = nx.single_target_shortest_path(self.cycle, 0, cutoff=0)
         assert p == {0: [0]}
+        # test missing targets
+        target = 8
+        with pytest.raises(nx.NodeNotFound, match=f"Target {target} not in G"):
+            nx.single_target_shortest_path(self.cycle, target)
 
     def test_single_target_shortest_path_length(self):
         pl = nx.single_target_shortest_path_length
@@ -71,6 +83,10 @@ class TestUnweightedPath:
         assert dict(pl(self.cycle, 0)) == lengths
         lengths = {0: 0, 1: 6, 2: 5, 3: 4, 4: 3, 5: 2, 6: 1}
         assert dict(pl(self.directed_cycle, 0)) == lengths
+        # test missing targets
+        target = 8
+        with pytest.raises(nx.NodeNotFound, match=f"Target {target} is not in G"):
+            nx.single_target_shortest_path_length(self.cycle, target)
 
     def test_all_pairs_shortest_path(self):
         p = dict(nx.all_pairs_shortest_path(self.cycle))
@@ -114,3 +130,8 @@ class TestUnweightedPath:
         p, s = nx.predecessor(G, 0, 3, cutoff=2, return_seen=True)
         assert p == []
         assert s == -1
+
+    def test_predecessor_missing_source(self):
+        source = 8
+        with pytest.raises(nx.NodeNotFound, match=f"Source {source} not in G"):
+            nx.predecessor(self.cycle, source)
