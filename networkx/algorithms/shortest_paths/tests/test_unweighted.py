@@ -36,7 +36,10 @@ class TestUnweightedPath:
         # test missing source and target
         target = 8
         source = 10
-        with pytest.raises(nx.NodeNotFound, match=f"Either source {source} or target {target} is not in G"):
+        with pytest.raises(
+            nx.NodeNotFound,
+            match=f"Either source {source} or target {target} is not in G",
+        ):
             nx.bidirectional_shortest_path(self.cycle, source, target)
         # test source = target
         assert nx.bidirectional_shortest_path(self.cycle, 3, 3) == [3]
