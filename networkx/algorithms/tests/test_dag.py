@@ -81,7 +81,7 @@ class TestDagLongestPath:
         G = nx.MultiDiGraph([(1, 2), (2, 3)])  # Unweighted edges
         G.add_weighted_edges_from([(1, 3, 1), (1, 3, 5), (1, 3, 2)])
         
-        # Default value for default weight is 0
+        # Default value for default weight is 1
         assert nx.dag_longest_path(G) == [1, 3]
         assert nx.dag_longest_path(G, default_weight=3) == [1, 2, 3]
 
