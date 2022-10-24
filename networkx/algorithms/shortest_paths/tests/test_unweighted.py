@@ -1,5 +1,6 @@
-import networkx as nx
 import pytest
+
+import networkx as nx
 
 
 def validate_grid_path(r, c, s, t, p):
