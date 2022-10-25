@@ -260,9 +260,9 @@ class TestDiGraph(BaseAttrDiGraphTester, _TestGraph):
             G.add_edges_from([(0, 1, 2, 3)])  # too many in tuple
         with pytest.raises(TypeError):
             G.add_edges_from([0])  # not a tuple
-        with pytest.raises(ValueError):
-            G.add_edges_from([(None, 3), (3, 2)])  # Node cannot be none
-
+        with pytest.raises(ValueError, match="None cannot be a node"):
+            G.add_edges_from([(None, 3), (3, 2)])
+    
     def test_remove_edge(self):
         G = self.K3.copy()
         G.remove_edge(0, 1)
