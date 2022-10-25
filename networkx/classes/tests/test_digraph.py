@@ -244,8 +244,7 @@ class TestDiGraph(BaseAttrDiGraphTester, _TestGraph):
         assert G.adj == {0: {1: {}}, 1: {}}
         assert G.succ == {0: {1: {}}, 1: {}}
         assert G.pred == {0: {}, 1: {0: {}}}
-        G = self.Graph()
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="None cannot be a node"):
             G.add_edge(None, 3)
 
     def test_add_edges_from(self):
