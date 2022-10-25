@@ -330,12 +330,15 @@ class TestGeneratorInverseLine:
         G.add_edges_from(G_edges)
         pytest.raises(nx.NetworkXError, line._select_starting_cell, G, (1, 4))
 
+    # if r == 2 and s==0, in this case either triangle works
     def test_line_rs(self):
         G = nx.Graph()
         G_nodes = [(1, 2), (2, 3), (3, 1), (1, 4), (4, 2)]
         G.add_edges_from(G_nodes)
         assert line._select_starting_cell(G, (1, 2)) == (1, 2, 4)
 
+    # there is exactly one triangle, T, containing e. If other 2 edges
+    # of T belong only to this triangle then T is starting cell
     def test_line_ac(self):
         G = nx.Graph()
         G_edges = [
@@ -353,6 +356,8 @@ class TestGeneratorInverseLine:
         G.add_edges_from(G_edges)
         pytest.raises(nx.NetworkXError, line._select_starting_cell, G)
 
+    # if ab was original edge so check the other 2 edges
+    # and other 2 edges are not in the same triangle
     def test_line_rs1(self):
         G = nx.Graph()
         G_nodes = [(1, 2), (2, 3), (3, 1), (1, 4), (4, 2), (1, 5), (5, 2)]
