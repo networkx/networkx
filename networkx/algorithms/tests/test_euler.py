@@ -290,6 +290,6 @@ class TestEulerize:
         G.add_edge(27, 28)
         G.add_edge(28, 13)
         assert not nx.is_eulerian(G)
-        G = nx.eulerize(G)
+        G = nx.eulerize(G, localized=True)
         assert nx.is_eulerian(G)
         assert nx.number_of_edges(G) == 39
