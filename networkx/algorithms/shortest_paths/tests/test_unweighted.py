@@ -34,16 +34,16 @@ class TestUnweightedPath:
             4, 4, 1, 12, nx.bidirectional_shortest_path(self.grid, 1, 12)
         )
         assert nx.bidirectional_shortest_path(self.directed_cycle, 0, 3) == [0, 1, 2, 3]
-        # test missing source and target
-        target = 8
-        source = 10
-        with pytest.raises(
-            nx.NodeNotFound,
-            match=f"Either source {source} or target {target} is not in G",
-        ):
-            nx.bidirectional_shortest_path(self.cycle, source, target)
         # test source = target
         assert nx.bidirectional_shortest_path(self.cycle, 3, 3) == [3]
+
+    @pytest.mark.parametrize(("src", "tgt"), ((8, 3), (3, 8), (8, 10), (8, 8),))
+    def test_bidirectional_shortest_path_src_tgt_not_in_graph(self, src, tgt):
+        with pytest.raises(
+            nx.NodeNotFound,
+            match=f"Either source {src} or target {tgt} is not in G",
+        ):
+            nx.bidirectional_shortest_path(self.cycle, src, tgt)
 
     def test_shortest_path_length(self):
         assert nx.shortest_path_length(self.cycle, 0, 3) == 3
