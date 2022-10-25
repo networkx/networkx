@@ -160,9 +160,9 @@ def leiden_partitions(G, weight="weight", resolution=1, threshold=0.0000001, see
         graph.add_weighted_edges_from(G.edges(data=weight, default=1))
 
     m = graph.size(weight="weight")
-    partition, inner_partition, improvement = _one_level(
+    partition, inner_partition, improvement, nbrs = _one_level(
         graph, m, partition, resolution, is_directed, seed
-    )
+    )  ## Added nbrs here in order to have it available in other functions but I'm sure there is a better way to do this.
     improvement = True
     while improvement:
         yield partition
@@ -172,9 +172,9 @@ def leiden_partitions(G, weight="weight", resolution=1, threshold=0.0000001, see
         if new_mod - mod <= threshold:
             return
         mod = new_mod
-        # Here goes the call to the refinement function
-        graph = _gen_graph(graph, inner_partition)
-        partition, inner_partition, improvement = _one_level(
+        ref_partition = refine_partition(G, partition, inner_partition, nbrs)
+        graph = _gen_graph(graph, ref_partition)  # Not sure this goes like this
+        partition, inner_partition, improvement, nbrs = _one_level(
             graph, m, partition, resolution, is_directed, seed
         )
 
@@ -317,3 +317,69 @@ def _convert_multigraph(G, weight, is_directed):
         else:
             H.add_edge(u, v, weight=wt)
     return H
+
+
+def refine_partition(G, partition, inner_partition, nbrs):
+    "Refine partition of a graph"
+    # I'm still missing the inner partition part of this
+    ref_partition = [{u} for u in G.nodes()]
+    for com in partition:
+        ref_partition = merge_nodes(G, ref_partition, com, nbrs)
+    return ref_partition
+
+
+def merge_nodes(G, partition, com, nbrs):
+    "Merge nodes in communities to refine the partition of a graph"
+    refined_set = [
+        node
+        for node in com
+        if _is_well_connected_node(G, node, com, 0.14, partition, nbrs)
+    ]
+    node2com = {u: i for i, u in enumerate(G.nodes())}
+    for node in refined_set:
+        if len(partition[node2com[node]]) == 1:
+            T = [
+                com1
+                for com1 in partition
+                if (
+                    com1.issubset(com)
+                    and _is_well_connected_node(G, com1, com, 0.14, partition, nbrs)
+                )
+            ]
+            old_com = G.nodes[node].get("nodes", {node})
+            ## We need to compute the modularity for each graph moving the node to each community
+            ## Then choose a random community with the function on the paper but I'm not sure I know how to do it.
+            ## I'm doing this in the meantime:
+            import random
+
+            random.seed(45)  # This is just for testing purposes
+            idx = random.randint(
+                0, len(T)
+            )  ## This is temporary while I figure out how to write this correctly
+            ## Move the node to the community T[idx]
+            partition[node2com[node]].difference_update(old_com)
+            partition[idx].update(old_com)
+
+            # I'm still missing the lines of code needed to update inner partition but it would probably be something like:
+            # inner_partition[node2com[node]].remove(node)
+            # inner_partition[node2com[node]].add(node)
+    return partition
+
+
+def _is_well_connected_node(G, node, com, resolution, partition, nbrs):
+    # Partition is the internal partition
+    # This doesnt work with inner partitions yet
+    E = 0
+    # E(C, D) = |{(u, v) ∈ E(G) | u ∈ C, v ∈ D}|
+    if isinstance(node, int):
+        norm = resolution * len({node}) * (len(com) - len({node}))
+        for node_neigh in com:
+            if node in nbrs[node_neigh].keys():
+                E = E + nbrs[node_neigh][node]
+    else:
+        norm = resolution * len(node) * (len(com) - len(node))
+        for node_neigh in com:
+            for node_s in node:
+                if node_s in nbrs[node_neigh].keys():
+                    E = E + nbrs[node_neigh][node_s]
+    return E >= norm
