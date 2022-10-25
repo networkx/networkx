@@ -37,7 +37,15 @@ class TestUnweightedPath:
         # test source = target
         assert nx.bidirectional_shortest_path(self.cycle, 3, 3) == [3]
 
-    @pytest.mark.parametrize(("src", "tgt"), ((8, 3), (3, 8), (8, 10), (8, 8),))
+    @pytest.mark.parametrize(
+        ("src", "tgt"),
+        (
+            (8, 3),
+            (3, 8),
+            (8, 10),
+            (8, 8),
+        )
+    )
     def test_bidirectional_shortest_path_src_tgt_not_in_graph(self, src, tgt):
         with pytest.raises(
             nx.NodeNotFound,
