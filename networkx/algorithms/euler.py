@@ -381,7 +381,7 @@ def eulerian_path(G, source=None, keys=False):
 
 
 @not_implemented_for("directed")
-def eulerize(G):
+def eulerize(G, localized=False):
     """Transforms a graph into an Eulerian graph.
 
     If `G` is Eulerian the result is `G` as a MultiGraph, otherwise the result is a smallest
@@ -391,6 +391,11 @@ def eulerize(G):
     ----------
     G : NetworkX graph
        An undirected graph
+
+    localized : Should be set to True if odd degree nodes are "close to each other", that is,
+        contained in a "local part" of G.
+        For optimizing the strategy for computing shortest path length between
+        odd degree nodes.
 
     Returns
     -------
@@ -426,38 +431,51 @@ def eulerize(G):
         raise nx.NetworkXPointlessConcept("Cannot Eulerize null graph")
     if not nx.is_connected(G):
         raise nx.NetworkXError("G is not connected")
-    odd_degree_nodes = [n for n, d in G.degree() if d % 2 == 1]
+    odd_degree_nodes = {n for n, d in G.degree() if d % 2 == 1}
     G = nx.MultiGraph(G)
     if len(odd_degree_nodes) == 0:
         return G
 
-    # get all shortest paths between vertices of odd degree
-    odd_deg_pairs_paths = [
-        (m, {n: nx.shortest_path(G, source=m, target=n)})
-        for m, n in combinations(odd_degree_nodes, 2)
-    ]
+    # get all shortest paths lengths between vertices of odd degree
+    if localized:
+        odd_deg_pairs_path_length = {
+            m: {
+                n: nx.shortest_path_length(G, source=m, target=n)
+                for n in odd_degree_nodes
+            }
+            for m in odd_degree_nodes
+        }
+    else:
+        odd_deg_pairs_path_length = {
+            m: {
+                n: length
+                for n, length in nx.shortest_path_length(G, source=m).items()
+                if n in odd_degree_nodes
+            }
+            for m in odd_degree_nodes
+        }
 
-    # use the number of vertices in a graph as an upper bound on
-    # the maximum length of a path in G + 1
+    # use the number of vertices in a graph + 1 as an upper bound on
+    # the maximum length of a path in G
     upper_bound_on_max_path_length = len(G) + 1
 
     # use "len(G) + 1 - len(P)",
     # where P is a shortest path between vertices n and m,
     # as edge-weights in a new graph
-    # store the paths in the graph for easy indexing later
     Gp = nx.Graph()
-    for n, Ps in odd_deg_pairs_paths:
-        for m, P in Ps.items():
-            if n != m:
-                Gp.add_edge(
-                    m, n, weight=upper_bound_on_max_path_length - len(P), path=P
-                )
+    for n, m in combinations(odd_degree_nodes, 2):
+        if n != m:
+            Gp.add_edge(
+                m,
+                n,
+                weight=upper_bound_on_max_path_length - odd_deg_pairs_path_length[n][m],
+            )
 
     # find the minimum weight matching of edges in the weighted graph
     best_matching = nx.Graph(list(nx.max_weight_matching(Gp)))
 
     # duplicate each edge along each path in the set of paths in Gp
     for m, n in best_matching.edges():
-        path = Gp[m][n]["path"]
+        path = nx.shortest_path(G, source=m, target=n)
         G.add_edges_from(nx.utils.pairwise(path))
     return G
