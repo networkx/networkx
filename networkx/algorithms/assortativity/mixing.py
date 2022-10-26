@@ -14,10 +14,7 @@ __all__ = [
 
 
 def attribute_mixing_dict(G, attribute, nodes=None, normalized=False):
-    """Returns dictionary representation of mixing patterns for attribute.
-
-    Dictionary representation of mixing patterns allows to read mixing
-    value by attribute pair.
+    """Returns dictionary representation of mixing matrix for attribute.
 
     Parameters
     ----------
@@ -55,7 +52,7 @@ def attribute_mixing_dict(G, attribute, nodes=None, normalized=False):
 
 
 def attribute_mixing_matrix(G, attribute, nodes=None, mapping=None, normalized=True):
-    """Returns matrix representation of mixing patterns for attribute.
+    """Returns mixing matrix for attribute.
 
     Parameters
     ----------
@@ -83,10 +80,6 @@ def attribute_mixing_matrix(G, attribute, nodes=None, mapping=None, normalized=T
 
     Notes
     -----
-    Matrix representation of mixing patterns allows to compute mixing
-    properties, e.g. the marginal distribution over the joint distribution
-    of attribute pairs. Mixing values can be read by given mapping.
-
     If each node has a unique attribute value, the unnormalized mixing matrix
     will be equal to the adjacency matrix. To get a denser mixing matrix,
     the rounding can be performed to form groups of nodes with equal values.
@@ -106,16 +99,9 @@ def attribute_mixing_matrix(G, attribute, nodes=None, mapping=None, normalized=T
     >>> nx.set_node_attributes(G, gender, 'gender')
     >>> mapping = {'male': 0, 'female': 1}
     >>> mix_mat = nx.attribute_mixing_matrix(G, 'gender', mapping=mapping)
-    >>> # mixing matrix
-    >>> print(mix_mat)
-    [[0.   0.25]
-     [0.25 0.5 ]]
     >>> # mixing from male nodes to female nodes
     >>> mix_mat[mapping['male'], mapping['female']]
     0.25
-    >>> # marginal distribution of income attribute values
-    >>> print(mix_mat.sum(axis=0))
-    [0.25 0.75]
     """
     d = attribute_mixing_dict(G, attribute, nodes)
     a = dict_to_numpy_array(d, mapping=mapping)
@@ -125,10 +111,7 @@ def attribute_mixing_matrix(G, attribute, nodes=None, mapping=None, normalized=T
 
 
 def degree_mixing_dict(G, x="out", y="in", weight=None, nodes=None, normalized=False):
-    """Returns dictionary representation of mixing patterns for degree.
-
-    Dictionary representation of degree mixing patterns allows to
-    read mixing value by degree pair.
+    """Returns dictionary representation of mixing matrix for degree.
 
     Parameters
     ----------
@@ -197,11 +180,6 @@ def degree_mixing_matrix(
 
     Notes
     -----
-    Matrix representation of mixing patterns allows to compute
-    mixing properties, e.g. the marginal distribution over
-    the joint distribution of degree pairs. Mixing values can
-    be read by given mapping.
-
     Definitions of degree mixing matrix vary on whether the matrix
     should include rows for degree values that don't arise. Here we
     do not include such empty-rows. But you can force them to appear
