@@ -41,6 +41,18 @@ class TestGeneratorsDirected:
         G = gnc_graph(100, seed=1)
         MG = gnc_graph(100, create_using=MultiDiGraph(), seed=1)
         assert sorted(G.edges()) == sorted(MG.edges())
+        G = gn_graph(1, seed=1)
+        MG = gn_graph(1, create_using=MultiDiGraph(), seed=1)
+        assert G.number_of_nodes() == 1 and G.number_of_edges() == 0
+        assert MG.number_of_nodes() == 1 and MG.number_of_edges() == 0
+        G = gnr_graph(1, 0.5, seed=1)
+        MG = gnr_graph(1, 0.5, create_using=MultiDiGraph(), seed=1)
+        assert G.number_of_nodes() == 1 and G.number_of_edges() == 0
+        assert MG.number_of_nodes() == 1 and MG.number_of_edges() == 0
+        G = gnc_graph(1, seed=1)
+        MG = gnc_graph(1, create_using=MultiDiGraph(), seed=1)
+        assert G.number_of_nodes() == 1 and G.number_of_edges() == 0
+        assert MG.number_of_nodes() == 1 and MG.number_of_edges() == 0
 
         G = scale_free_graph(
             100,
@@ -55,7 +67,8 @@ class TestGeneratorsDirected:
         pytest.raises(ValueError, scale_free_graph, 100, 0.5, 0.4, 0.3)
         pytest.raises(ValueError, scale_free_graph, 100, alpha=-0.3)
         pytest.raises(ValueError, scale_free_graph, 100, beta=-0.3)
-        pytest.raises(ValueError, scale_free_graph, 100, gamma=-0.3)
+        pytest.raises(ValueError, scale_free_graph, 100, delta_in=-0.3)
+        pytest.raises(ValueError, scale_free_graph, 100, delta_out=-0.3)
 
 
 @pytest.mark.parametrize("ig", (nx.Graph(), nx.DiGraph([(0, 1)])))
@@ -88,6 +101,14 @@ class TestRandomKOutGraph:
         G = random_k_out_graph(n, k, alpha, self_loops=False)
         assert nx.number_of_selfloops(G) == 0
 
+    def test_negative_alpha(self):
+        """"Tests that using negative alpha value raises the correct exception"""
+        n = 10
+        k = 3
+        alpha = -4
+        with pytest.raises(ValueError, match="alpha must be positive"):
+            random_k_out_graph(n, k, alpha, self_loops=False)
+
 
 class TestUniformRandomKOutGraph:
     """Unit tests for the
@@ -110,6 +131,9 @@ class TestUniformRandomKOutGraph:
         n = 10
         k = 3
         G = random_uniform_k_out_graph(n, k, self_loops=False)
+        assert nx.number_of_selfloops(G) == 0
+        assert all(d == k for v, d in G.out_degree())
+        G = random_uniform_k_out_graph(n, k, self_loops=False, with_replacement=False)
         assert nx.number_of_selfloops(G) == 0
         assert all(d == k for v, d in G.out_degree())
 
