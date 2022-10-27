@@ -102,7 +102,7 @@ class TestRandomKOutGraph:
         assert nx.number_of_selfloops(G) == 0
 
     def test_negative_alpha(self):
-        """"Tests that using negative alpha value raises the correct exception"""
+        """Tests that using negative alpha value raises the correct exception"""
         n = 10
         k = 3
         alpha = -4
