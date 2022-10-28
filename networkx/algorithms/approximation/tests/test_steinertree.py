@@ -168,7 +168,13 @@ class TestSteinerTree:
                     edges_equal(list(S.edges(data=True)), valid_tree)
                     for valid_tree in valid_trees
                 )
-
+        for G, term_nodes, valid_trees in zip(
+                [self.G1, self.G2, self.G3],
+                [self.G1_term_nodes, self.G2_term_nodes, self.G3_term_nodes],
+                valid_steiner_trees,
+            ):
+                S = steiner_tree(G, term_nodes, method=method)
+                w
     def test_multigraph_steiner_tree(self):
         G = nx.MultiGraph()
         G.add_edges_from(
