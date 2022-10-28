@@ -251,7 +251,8 @@ def all_pairs_node_connectivity(G, nbunch=None, cutoff=None):
     
     >>> G = nx.cycle_graph(3)
     >>> G.add_edge(2, 3)
-    >>> nx.all_pairs_node_connectivity(G)
+    >>> import pprint  # for nice dictionary formatting
+    >>> pprint.pprint(nx.all_pairs_node_connectivity(G))
     {0: {1: 2, 2: 2, 3: 1},
     1: {0: 2, 2: 2, 3: 1},
     2: {0: 2, 1: 2, 3: 1},
