@@ -246,8 +246,9 @@ def all_pairs_node_connectivity(G, nbunch=None, cutoff=None):
 
     Examples
     --------
-    >>> # A 3 node cycle with one extra node attached has connectivity 2 between all
-    >>> # nodes in the cycle and connectivity 1 between the extra node and the rest
+    A 3 node cycle with one extra node attached has connectivity 2 between all
+    nodes in the cycle and connectivity 1 between the extra node and the rest:
+    
     >>> G = nx.cycle_graph(3)
     >>> G.add_edge(2, 3)
     >>> nx.all_pairs_node_connectivity(G)
