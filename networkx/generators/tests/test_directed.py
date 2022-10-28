@@ -41,18 +41,6 @@ class TestGeneratorsDirected:
         G = gnc_graph(100, seed=1)
         MG = gnc_graph(100, create_using=MultiDiGraph(), seed=1)
         assert sorted(G.edges()) == sorted(MG.edges())
-        G = gn_graph(1, seed=1)
-        MG = gn_graph(1, create_using=MultiDiGraph(), seed=1)
-        assert G.number_of_nodes() == 1 and G.number_of_edges() == 0
-        assert MG.number_of_nodes() == 1 and MG.number_of_edges() == 0
-        G = gnr_graph(1, 0.5, seed=1)
-        MG = gnr_graph(1, 0.5, create_using=MultiDiGraph(), seed=1)
-        assert G.number_of_nodes() == 1 and G.number_of_edges() == 0
-        assert MG.number_of_nodes() == 1 and MG.number_of_edges() == 0
-        G = gnc_graph(1, seed=1)
-        MG = gnc_graph(1, create_using=MultiDiGraph(), seed=1)
-        assert G.number_of_nodes() == 1 and G.number_of_edges() == 0
-        assert MG.number_of_nodes() == 1 and MG.number_of_edges() == 0
 
         G = scale_free_graph(
             100,
@@ -75,6 +63,18 @@ class TestGeneratorsDirected:
 def test_scale_free_graph_initial_graph_kwarg(ig):
     with pytest.raises(nx.NetworkXError):
         scale_free_graph(100, initial_graph=ig)
+
+
+@pytest.mark.parametrize("create_using", [None, MultiDiGraph()])
+@pytest.mark.parametrize("graph", ['gn', 'gnr', 'gnc'])
+def test_gn_graph_generators_single_node(create_using, graph):
+    if graph == 'gn':
+        G = gn_graph(1, create_using=create_using, seed=1)
+    elif graph == 'gnr':
+        G = gnr_graph(1, 0.5, create_using=create_using, seed=1)
+    elif graph == 'gnc':
+        G = gnc_graph(1, create_using=create_using, seed=1)
+    assert G.number_of_nodes() == 1 and G.number_of_edges() == 0
 
 
 class TestRandomKOutGraph:
@@ -126,14 +126,12 @@ class TestUniformRandomKOutGraph:
         G = random_uniform_k_out_graph(n, k, seed=42)
         assert all(d == k for v, d in G.out_degree())
 
-    def test_no_self_loops(self):
+    @pytest.mark.parametrize("with_replacement", [False, True])
+    def test_no_self_loops(self, with_replacement):
         """Tests for forbidding self-loops."""
         n = 10
         k = 3
-        G = random_uniform_k_out_graph(n, k, self_loops=False)
-        assert nx.number_of_selfloops(G) == 0
-        assert all(d == k for v, d in G.out_degree())
-        G = random_uniform_k_out_graph(n, k, self_loops=False, with_replacement=False)
+        G = random_uniform_k_out_graph(n, k, self_loops=False, with_replacement=with_replacement)
         assert nx.number_of_selfloops(G) == 0
         assert all(d == k for v, d in G.out_degree())
 
