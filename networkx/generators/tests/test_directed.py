@@ -66,13 +66,13 @@ def test_scale_free_graph_initial_graph_kwarg(ig):
 
 
 @pytest.mark.parametrize("create_using", [None, MultiDiGraph()])
-@pytest.mark.parametrize("graph", ['gn', 'gnr', 'gnc'])
+@pytest.mark.parametrize("graph", ["gn", "gnr", "gnc"])
 def test_gn_graph_generators_single_node(create_using, graph):
-    if graph == 'gn':
+    if graph == "gn":
         G = gn_graph(1, create_using=create_using, seed=1)
-    elif graph == 'gnr':
+    elif graph == "gnr":
         G = gnr_graph(1, 0.5, create_using=create_using, seed=1)
-    elif graph == 'gnc':
+    elif graph == "gnc":
         G = gnc_graph(1, create_using=create_using, seed=1)
     assert G.number_of_nodes() == 1 and G.number_of_edges() == 0
 
