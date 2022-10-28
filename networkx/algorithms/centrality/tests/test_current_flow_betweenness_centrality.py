@@ -187,14 +187,8 @@ def test_unconnected_graphs_betweenness_centrality():
     UG.add_nodes_from([1, 2, 3, 4, 5])
     UG.add_edges_from([(1, 2), (3, 4)])
     assert nx.is_connected(UG) is False
-    pytest.raises(
-        nx.NetworkXError,
-        nx.edge_current_flow_betweenness_centrality,
-        UG
-    )
+    pytest.raises(nx.NetworkXError, nx.edge_current_flow_betweenness_centrality, UG)
     pytest.raises(nx.NetworkXError, nx.current_flow_betweenness_centrality, UG)
     pytest.raises(
-        nx.NetworkXError,
-        nx.approximate_current_flow_betweenness_centrality,
-        UG
+        nx.NetworkXError, nx.approximate_current_flow_betweenness_centrality, UG
     )
