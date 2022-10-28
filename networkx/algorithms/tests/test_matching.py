@@ -122,9 +122,6 @@ class TestMaxWeightMatching:
         assert edges_equal(
             nx.min_weight_matching(G), matching_dict_to_set({1: 2, 3: 4})
         )
-        assert edges_equal(
-            nx.min_weight_matching(G, 1), matching_dict_to_set({1: 2, 3: 4})
-        )
 
     def test_s_blossom(self):
         """Create S-blossom and use it for augmentation:"""
