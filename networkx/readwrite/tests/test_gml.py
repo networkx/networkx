@@ -217,15 +217,16 @@ graph
         # Writing tuple labels to GML failed.
         G = nx.Graph()
         G.add_edge((0, 1), (1, 0))
-        data = "\n".join(nx.generate_gml(G))
+        # Default stringizer doesn't allow 2-tuple labels
+        data = "\n".join(nx.generate_gml(G, stringizer=str))
         answer = """graph [
   node [
     id 0
-    label "(0,1)"
+    label "(0, 1)"
   ]
   node [
     id 1
-    label "(1,0)"
+    label "(1, 0)"
   ]
   edge [
     source 0
