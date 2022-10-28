@@ -40,8 +40,9 @@ def all_node_cuts(G, k=None, flow_func=None):
 
     flow_func : function
         Function to perform the underlying flow computations. Default value is
-        :meth:`edmonds_karp`. This function performs better in sparse graphs with
-        right tailed degree distributions. :meth:`shortest_augmenting_path` will
+        :func:`~networkx.algorithms.flow.edmonds_karp`. This function performs
+        better in sparse graphs with right tailed degree distributions.
+        :func:`~networkx.algorithms.flow.shortest_augmenting_path` will
         perform better in denser graphs.
 
 
