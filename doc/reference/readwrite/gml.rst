@@ -8,4 +8,3 @@ GML
    write_gml
    parse_gml
    generate_gml
-   literal_destringizer

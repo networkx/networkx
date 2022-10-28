@@ -10,7 +10,6 @@ from textwrap import dedent
 import pytest
 
 import networkx as nx
-from networkx.readwrite.gml import literal_destringizer
 
 
 class TestGraph:
@@ -480,9 +479,6 @@ graph
         assert answer == gml
 
     def test_exceptions(self):
-        pytest.raises(ValueError, literal_destringizer, "(")
-        pytest.raises(ValueError, literal_destringizer, "frozenset([1, 2, 3])")
-        pytest.raises(ValueError, literal_destringizer, literal_destringizer)
         with tempfile.TemporaryFile() as f:
             f.write(codecs.BOM_UTF8 + b"graph[]")
             f.seek(0)

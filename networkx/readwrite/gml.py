@@ -83,36 +83,6 @@ def unescape(text):
     return re.sub("&(?:[0-9A-Za-z]+|#(?:[0-9]+|x[0-9A-Fa-f]+));", fixup, text)
 
 
-def literal_destringizer(rep):
-    """Convert a Python literal to the value it represents.
-
-    Parameters
-    ----------
-    rep : string
-        A Python literal.
-
-    Returns
-    -------
-    value : object
-        The value of the Python literal.
-
-    Raises
-    ------
-    ValueError
-        If `rep` is not a Python literal.
-    """
-    msg = "literal_destringizer is deprecated and will be removed in 3.0."
-    warnings.warn(msg, DeprecationWarning)
-    if isinstance(rep, str):
-        orig_rep = rep
-        try:
-            return literal_eval(rep)
-        except SyntaxError as err:
-            raise ValueError(f"{orig_rep!r} is not a valid Python literal") from err
-    else:
-        raise ValueError(f"{rep!r} is not a string")
-
-
 @open_file(0, mode="rb")
 def read_gml(path, label="label", destringizer=None):
     """Read graph in GML format from `path`.
@@ -144,7 +114,6 @@ def read_gml(path, label="label", destringizer=None):
     See Also
     --------
     write_gml, parse_gml
-    literal_destringizer
 
     Notes
     -----
