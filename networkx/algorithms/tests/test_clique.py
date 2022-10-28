@@ -233,6 +233,17 @@ class TestCliques:
         with pytest.raises(nx.NetworkXNotImplemented):
             next(nx.find_cliques(nx.DiGraph()))
 
+    def test_find_cliques_trivial(self):
+        G = nx.Graph()
+        assert sorted(nx.find_cliques(G)) == []
+        assert sorted(nx.find_cliques_recursive(G)) == []
+
+    def test_make_max_clique_graph_2(self):
+        "Test the create_using parameter"
+        G = nx.Graph()
+        G.add_edges_from([(1, 2), (3, 1), (4, 1), (5, 6)])
+        assert sorted(nx.make_max_clique_graph(G, nx.Graph)) == [0, 1, 2, 3]
+
 
 class TestEnumerateAllCliques:
     def test_paper_figure_4(self):
