@@ -439,7 +439,6 @@ graph
             10**20,
             -2e33,
             "'",
-            '"&&amp;&&#34;"',
             [{(b"\xfd",): "\x7f", chr(0x4444): (1, 2)}, (2, "3")],
         ]
         data.append(chr(0x14444))
@@ -449,7 +448,7 @@ graph
         G.graph["data"] = data
         G.add_node(0, int=-1, data=dict(data=data))
         G.add_edge(0, 0, float=-2.5, data=data)
-        gml = "\n".join(nx.generate_gml(G))
+        gml = "\n".join(nx.generate_gml(G, stringizer=str))
         G = nx.parse_gml(gml, destringizer=literal_destringizer)
         assert data == G.name
         assert {"name": data, "data": data} == G.graph
