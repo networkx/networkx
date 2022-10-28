@@ -131,7 +131,9 @@ class TestUniformRandomKOutGraph:
         """Tests for forbidding self-loops."""
         n = 10
         k = 3
-        G = random_uniform_k_out_graph(n, k, self_loops=False, with_replacement=with_replacement)
+        G = random_uniform_k_out_graph(
+            n, k, self_loops=False, with_replacement=with_replacement
+        )
         assert nx.number_of_selfloops(G) == 0
         assert all(d == k for v, d in G.out_degree())
 
