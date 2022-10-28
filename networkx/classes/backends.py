@@ -22,9 +22,9 @@ class WrappedSparse:
     ...
 ```
 
-When a dispatchable networkx algorithm encounters a Graph-like object
+When a dispatchable NetworkX algorithm encounters a Graph-like object
 with a `__networkx_plugin__` attribute, it will look for the associated
-dispatch object in the entry_points, load it, and dispatch the work ot it.
+dispatch object in the entry_points, load it, and dispatch the work to it.
 
 
 Testing
@@ -33,19 +33,24 @@ To assist in validating the backend algorithm implementations, if an
 environment variable `NETWORKX_GRAPH_CONVERT` is set to one of the known
 plugin keys, the dispatch machinery will automatically convert regular
 networkx Graphs and DiGraphs to the backend equivalent by calling
-`<backend dispatcher>.convert(G, weight=weight)`.
+`<backend dispatcher>.convert_from_nx(G, weight=weight)`.
 
-By defining a `convert` method and setting the environment variable,
-networkx will automatically route tests on dispatchable algorithms
-to the backend, allowing the full networkx test suite to be run against
-the backend implementation.
+The converted object is then passed to the backend implementation of
+the algorithm. The result is then passed to
+`<backend dispatcher>.convert_to_nx(result)` to convert back to a form
+expected by the NetworkX tests.
+
+By defining `convert_from_nx` and `convert_to_nx` methods and setting
+the environment variable, NetworkX will automatically route tests on
+dispatchable algorithms to the backend, allowing the full networkx test
+suite to be run against the backend implementation.
 
 Example pytest invocation:
 NETWORKX_GRAPH_CONVERT=sparse pytest --pyargs networkx
 
 Dispatchable algorithms which are not implemented by the backend
 will cause a `pytest.xfail()`, giving some indication that not all
-tests are working without causing an explicit failure.
+tests are working, while avoiding causing an explicit failure.
 
 A special `on_start_tests(items)` function may be defined by the backend.
 It will be called with the list of NetworkX tests discovered. Each item
@@ -182,8 +187,9 @@ def test_override_dispatch(func=None, *, name=None):
                 weight = bound.arguments["data"]
             elif bound.arguments["data"]:
                 weight = "weight"
-        graph = backend.convert(graph, weight=weight)
-        return getattr(backend, name).__call__(graph, *args, **kwds)
+        graph = backend.convert_from_nx(graph, weight=weight)
+        result = getattr(backend, name).__call__(graph, *args, **kwds)
+        return backend.convert_to_nx(result)
 
     _register_algo(name, wrapper)
     return wrapper
