@@ -448,7 +448,15 @@ graph
         G.add_node(0, int=-1, data=dict(data=data))
         G.add_edge(0, 0, float=-2.5, data=data)
         gml = "\n".join(nx.generate_gml(G, stringizer=str))
-        G = nx.parse_gml(gml, destringizer=literal_destringizer)
+
+        def destr(val):
+            """literal_eval with special handling for nested quotation case."""
+            try:
+                return literal_eval(val)
+            except SyntaxError:
+                return val
+
+        G = nx.parse_gml(gml, destringizer=destr)
         assert data == G.name
         assert {"name": data, "data": data} == G.graph
         assert list(G.nodes(data=True)) == [(0, dict(int=-1, data=dict(data=data)))]
