@@ -153,7 +153,7 @@ __all__ = [
     "NotATree",
     "PlanarEmbedding",
     "PowerIterationFailedConvergence",
-    "SpanningTreeIterator"
+    "SpanningTreeIterator",
     # Functions
     "_lazy_import",
     "LCF_graph",
