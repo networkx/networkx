@@ -123,3 +123,9 @@ def test_degree_seq_c4():
     degrees = sorted(d for n, d in G.degree())
     G = nx.double_edge_swap(G, 1, 100)
     assert degrees == sorted(d for n, d in G.degree())
+
+
+def test_zero_degree():
+    G = nx.DiGraph()
+    G.add_nodes_from([0, 1, 2])
+    pytest.raises(nx.NetworkXError, nx.directed_edge_swap, G)

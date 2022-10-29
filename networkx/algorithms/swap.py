@@ -71,6 +71,8 @@ def directed_edge_swap(G, *, nswap=1, max_tries=100, seed=None):
         raise nx.NetworkXError("Number of swaps > number of tries allowed.")
     if len(G) < 4:
         raise nx.NetworkXError("Graph has less than four nodes.")
+    if len(G.edges) == 0:
+        raise nx.NetworkXError("Graph has no edges.")
 
     # Instead of choosing uniformly at random from a generated edge list,
     # this algorithm chooses nonuniformly from the set of nodes with
