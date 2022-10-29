@@ -50,6 +50,13 @@ class TestCycles:
             G = nx.MultiGraph()
             cy = networkx.cycle_basis(G, 0)
 
+    def test_cycle_basis_self_loop(self):
+        """Tests the function for graphs with self loops"""
+        G = nx.Graph()
+        nx.add_cycle(G, [0, 1, 2, 3])
+        nx.add_cycle(G, [0, 0, 6, 2])
+        assert nx.cycle_basis(G) == [[0], [1, 2, 0], [3, 2, 0], [6, 2, 0]]
+
     def test_simple_cycles(self):
         edges = [(0, 0), (0, 1), (0, 2), (1, 2), (2, 0), (2, 1), (2, 2)]
         G = nx.DiGraph(edges)
