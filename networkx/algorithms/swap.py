@@ -71,7 +71,7 @@ def directed_edge_swap(G, *, nswap=1, max_tries=100, seed=None):
         raise nx.NetworkXError("Number of swaps > number of tries allowed.")
     if len(G) < 4:
         raise nx.NetworkXError("DiGraph has less than four nodes.")
-    elif len(G.edges) < 3:
+    if len(G.edges) < 3:
         raise nx.NetworkXError("DiGraph has less than 3 edges")
 
     # Instead of choosing uniformly at random from a generated edge list,
