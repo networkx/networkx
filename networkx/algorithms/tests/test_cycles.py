@@ -55,7 +55,9 @@ class TestCycles:
         G = nx.Graph()
         nx.add_cycle(G, [0, 1, 2, 3])
         nx.add_cycle(G, [0, 0, 6, 2])
-        assert nx.cycle_basis(G) == [[0], [1, 2, 0], [3, 2, 0], [6, 2, 0]]
+        cy = nx.cycle_basis(G)
+        sort_cy = sorted(sorted(c) for c in cy)
+        assert sort_cy == [[0], [0, 1, 2], [0, 2, 3], [0, 2, 6]]
 
     def test_simple_cycles(self):
         edges = [(0, 0), (0, 1), (0, 2), (1, 2), (2, 0), (2, 1), (2, 2)]
