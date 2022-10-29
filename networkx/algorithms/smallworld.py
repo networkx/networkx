@@ -126,7 +126,7 @@ def lattice_reference(G, niter=5, D=None, connectivity=True, seed=None):
     Parameters
     ----------
     G : graph
-        An undirected graph with 4 or more nodes.
+        An undirected graph.
 
     niter : integer (optional, default=1)
         An edge is rewired approximatively niter times.
@@ -145,6 +145,11 @@ def lattice_reference(G, niter=5, D=None, connectivity=True, seed=None):
     -------
     G : graph
         The latticized graph.
+
+    Raises
+    ------
+    NetworkXError
+        If there are fewer than 4 nodes or 2 edges in `G`
 
     Notes
     -----
