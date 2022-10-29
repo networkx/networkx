@@ -163,6 +163,15 @@ def double_edge_swap(G, nswap=1, max_tries=100, seed=None):
     G : graph
        The graph after double edge swaps.
 
+    Raises
+    ------
+    NetworkXError
+        If `G` is directed, or
+        If nswap > max_tries, or
+        If there are fewer than 4 nodes or 2 edges in `G`.
+    NetworkXAlgorithmError
+        If the number of swap attempts exceeds `max_tries` before `nswap` swaps are made
+
     Notes
     -----
     Does not enforce any connectivity constraints.
@@ -177,6 +186,8 @@ def double_edge_swap(G, nswap=1, max_tries=100, seed=None):
         raise nx.NetworkXError("Number of swaps > number of tries allowed.")
     if len(G) < 4:
         raise nx.NetworkXError("Graph has less than four nodes.")
+    if len(G.edges) < 2:
+        raise nx.NetworkXError("Graph has less than 2 edges")
     # Instead of choosing uniformly at random from a generated edge list,
     # this algorithm chooses nonuniformly from the set of nodes with
     # probability weighted by degree.
