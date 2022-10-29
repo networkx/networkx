@@ -125,7 +125,13 @@ def test_degree_seq_c4():
     assert degrees == sorted(d for n, d in G.degree())
 
 
-def test_zero_degree():
+def test_no_edges():
     G = nx.DiGraph()
     G.add_nodes_from([0, 1, 2])
+    pytest.raises(nx.NetworkXError, nx.directed_edge_swap, G)
+
+
+def test_less_than_3_edges():
+    G = nx.DiGraph()
+    G.add_edges_from([(0, 1), (1, 2)])
     pytest.raises(nx.NetworkXError, nx.directed_edge_swap, G)

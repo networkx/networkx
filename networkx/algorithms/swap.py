@@ -46,7 +46,7 @@ def directed_edge_swap(G, *, nswap=1, max_tries=100, seed=None):
     NetworkXError
         If `G` is not directed, or
         If nswap > max_tries, or
-        If there are fewer than 4 nodes in `G`
+        If there are fewer than 4 nodes or 3 edges in `G`.
     NetworkXAlgorithmError
         If the number of swap attempts exceeds `max_tries` before `nswap` swaps are made
 
@@ -70,9 +70,9 @@ def directed_edge_swap(G, *, nswap=1, max_tries=100, seed=None):
     if nswap > max_tries:
         raise nx.NetworkXError("Number of swaps > number of tries allowed.")
     if len(G) < 4:
-        raise nx.NetworkXError("Graph has less than four nodes.")
-    if len(G.edges) == 0:
-        raise nx.NetworkXError("Graph has no edges.")
+        raise nx.NetworkXError("DiGraph has less than four nodes.")
+    elif len(G.edges) < 3:
+        raise nx.NetworkXError("DiGraph has less than 3 edges")
 
     # Instead of choosing uniformly at random from a generated edge list,
     # this algorithm chooses nonuniformly from the set of nodes with
