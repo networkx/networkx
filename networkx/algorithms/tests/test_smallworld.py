@@ -68,3 +68,10 @@ def test_omega():
 
     for o in omegas:
         assert -1 <= o <= 1
+
+
+def test_graph_no_edges():
+    G = nx.Graph()
+    G.add_nodes_from([0, 1, 2, 3])
+    pytest.raises(nx.NetworkXError, nx.random_reference, G)
+    pytest.raises(nx.NetworkXError, nx.lattice_reference, G)
