@@ -377,6 +377,21 @@ def algebraic_connectivity(
     See Also
     --------
     laplacian_matrix
+
+    Examples
+    --------
+    For undirected graphs algebraic connectivity can tell us if a graph is connected or not
+    𝐺 is connected iff  𝑎𝑙𝑔𝑒𝑏𝑟𝑎𝑖𝑐_𝑐𝑜𝑛𝑛𝑒𝑐𝑡𝑖𝑣𝑖𝑡𝑦(𝐺)>0
+
+    >>> #if G is a complete grpah then G is connected
+    >>> G = nx.complete_graph(5)
+    >>> nx.algebraic_connectivity(G) > 0
+    True
+    >>> #Add a node so G is no longer connected
+    >>> G.add_node(10)
+    >>> nx.algebraic_connectivity(G) > 0
+    False
+
     """
     if len(G) < 2:
         raise nx.NetworkXError("graph has less than two nodes.")
