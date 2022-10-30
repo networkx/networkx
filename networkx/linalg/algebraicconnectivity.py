@@ -460,6 +460,17 @@ def fiedler_vector(
     See Also
     --------
     laplacian_matrix
+
+    Examples
+    --------
+    Given a connected graph the signs of the values in the Fiedler vector can be
+    used to partition the graph into two components.
+
+    >>> G = nx.cycle_graph(4)
+    >>> print(nx.fiedler_vector(G, normalized=True, seed = 1))
+    [-0.69141345 -0.1481467   0.69141344  0.14814671]
+
+    The connected components are {0,1} and {2,3}.
     """
     import numpy as np
 
