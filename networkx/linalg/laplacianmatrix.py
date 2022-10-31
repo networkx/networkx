@@ -46,6 +46,20 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
     to_numpy_array
     normalized_laplacian_matrix
     laplacian_spectrum
+
+    Examples
+    --------
+
+    >>> L = nx.barbell_graph(3, 1)
+    >>> nx.laplacian_matrix(L).todense()
+    array([[ 2, -1, -1,  0,  0,  0,  0],
+           [-1,  2, -1,  0,  0,  0,  0],
+           [-1, -1,  3,  0,  0,  0, -1],
+           [ 0,  0,  0,  3, -1, -1, -1],
+           [ 0,  0,  0, -1,  2, -1,  0],
+           [ 0,  0,  0, -1, -1,  2,  0],
+           [ 0,  0, -1, -1,  0,  0,  2]])
+
     """
     import scipy as sp
     import scipy.sparse  # call as sp.sparse
