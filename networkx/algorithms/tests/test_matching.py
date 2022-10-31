@@ -450,7 +450,7 @@ class TestIsMatching:
         assert not nx.is_matching(G, {(0, 0), (1, 2), (2, 3)})
         # selfloop edge in G
         G.add_edge(0, 0)
-        assert not nx.is_matching(G, {(0, 0), (1, 2), (2, 3)})
+        assert not nx.is_matching(G, {(0, 0), (1, 2)})
 
     def test_invalid_matching(self):
         G = nx.path_graph(4)
@@ -476,6 +476,16 @@ class TestIsMaximalMatching:
         G = nx.path_graph(4)
         assert nx.is_maximal_matching(G, {0: 1, 1: 0, 2: 3, 3: 2})
 
+    def test_invalid_input(self):
+        error = nx.NetworkXError
+        G = nx.path_graph(4)
+        # edge to node not in G
+        raises(error, nx.is_maximal_matching, G, {(0, 5)})
+        raises(error, nx.is_maximal_matching, G, {(5, 0)})
+        # edge not a 2-tuple
+        raises(error, nx.is_maximal_matching, G, {(0, 1, 2), (2, 3)})
+        raises(error, nx.is_maximal_matching, G, {(0,), (2, 3)})
+
     def test_valid(self):
         G = nx.path_graph(4)
         assert nx.is_maximal_matching(G, {(0, 1), (2, 3)})
@@ -483,6 +493,9 @@ class TestIsMaximalMatching:
     def test_not_matching(self):
         G = nx.path_graph(4)
         assert not nx.is_maximal_matching(G, {(0, 1), (1, 2), (2, 3)})
+        assert not nx.is_maximal_matching(G, {(0, 3)})
+        G.add_edge(0, 0)
+        assert not nx.is_maximal_matching(G, {(0, 0)})
 
     def test_not_maximal(self):
         G = nx.path_graph(4)
@@ -511,8 +524,30 @@ class TestIsPerfectMatching:
 
         assert nx.is_perfect_matching(G, {(1, 4), (0, 3), (5, 2)})
 
+    def test_invalid_input(self):
+        error = nx.NetworkXError
+        G = nx.path_graph(4)
+        # edge to node not in G
+        raises(error, nx.is_perfect_matching, G, {(0, 5)})
+        raises(error, nx.is_perfect_matching, G, {(5, 0)})
+        # edge not a 2-tuple
+        raises(error, nx.is_perfect_matching, G, {(0, 1, 2), (2, 3)})
+        raises(error, nx.is_perfect_matching, G, {(0,), (2, 3)})
+
+    def test_selfloops(self):
+        error = nx.NetworkXError
+        G = nx.path_graph(4)
+        # selfloop for node not in G
+        raises(error, nx.is_perfect_matching, G, {(5, 5), (2, 3)})
+        # selfloop edge not in G
+        assert not nx.is_perfect_matching(G, {(0, 0), (1, 2), (2, 3)})
+        # selfloop edge in G
+        G.add_edge(0, 0)
+        assert not nx.is_perfect_matching(G, {(0, 0), (1, 2)})
+
     def test_not_matching(self):
         G = nx.path_graph(4)
+        assert not nx.is_perfect_matching(G, {(0, 3)})
         assert not nx.is_perfect_matching(G, {(0, 1), (1, 2), (2, 3)})
 
     def test_maximal_but_not_perfect(self):
