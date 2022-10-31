@@ -33,12 +33,12 @@ To assist in validating the backend algorithm implementations, if an
 environment variable `NETWORKX_GRAPH_CONVERT` is set to one of the known
 plugin keys, the dispatch machinery will automatically convert regular
 networkx Graphs and DiGraphs to the backend equivalent by calling
-`<backend dispatcher>.convert_from_nx(G, weight=weight)`.
+`<backend dispatcher>.convert_from_nx(G, weight=weight, name=name)`.
 
 The converted object is then passed to the backend implementation of
 the algorithm. The result is then passed to
-`<backend dispatcher>.convert_to_nx(result)` to convert back to a form
-expected by the NetworkX tests.
+`<backend dispatcher>.convert_to_nx(result, name=name)` to convert back
+to a form expected by the NetworkX tests.
 
 By defining `convert_from_nx` and `convert_to_nx` methods and setting
 the environment variable, NetworkX will automatically route tests on
@@ -187,9 +187,9 @@ def test_override_dispatch(func=None, *, name=None):
                 weight = bound.arguments["data"]
             elif bound.arguments["data"]:
                 weight = "weight"
-        graph = backend.convert_from_nx(graph, weight=weight)
+        graph = backend.convert_from_nx(graph, weight=weight, name=name)
         result = getattr(backend, name).__call__(graph, *args, **kwds)
-        return backend.convert_to_nx(result)
+        return backend.convert_to_nx(result, name=name)
 
     _register_algo(name, wrapper)
     return wrapper
