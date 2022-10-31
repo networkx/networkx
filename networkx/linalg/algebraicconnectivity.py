@@ -470,9 +470,6 @@ def fiedler_vector(
     >>> nx.fiedler_vector(G, normalized=True, seed=1)
     array([-0.32864129, -0.32864129, -0.32864129, -0.32864129, -0.26072899,
             0.26072899,  0.32864129,  0.32864129,  0.32864129,  0.32864129])
-    >>> nx.fiedler_vector(G, normalized=True, seed=1)
-    array([-0.32864129, -0.32864129, -0.32864129, -0.32864129, -0.26072899,
-            0.26072899,  0.32864129,  0.32864129,  0.32864129,  0.32864129])
 
     The connected components are the two 5-node cliques of the barbell graph.
     """
