@@ -117,13 +117,11 @@ class TestMaxWeightMatching:
             nx.max_weight_matching(G), matching_dict_to_set({1: 2, 2: 1})
         )
         assert edges_equal(
-            nx.max_weight_matching(G, 1), matching_dict_to_set({1: 3, 2: 4, 3: 1, 4: 2})
+            nx.max_weight_matching(G, maxcardinality=True),
+            matching_dict_to_set({1: 3, 2: 4, 3: 1, 4: 2}),
         )
         assert edges_equal(
             nx.min_weight_matching(G), matching_dict_to_set({1: 2, 3: 4})
-        )
-        assert edges_equal(
-            nx.min_weight_matching(G, 1), matching_dict_to_set({1: 2, 3: 4})
         )
 
     def test_s_blossom(self):
