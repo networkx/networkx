@@ -384,10 +384,8 @@ def eulerian_path(G, source=None, keys=False):
 def eulerize(G):
     """Transforms a graph into an Eulerian graph.
 
-        If G is Eulerian the result is G, otherwise
-        the result is a smallest (in terms of the number
-        of edges) multigraph whose underlying
-        simple graph is G.
+    If `G` is Eulerian the result is `G`, otherwise the result is a smallest
+    (in terms of the number of edges) multigraph whose underlying simple graph is `G`.
 
     Parameters
     ----------
