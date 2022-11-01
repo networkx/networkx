@@ -25,7 +25,7 @@ def test_isolated_K5():
 
 
 class TestZacharyKarateClub:
-    def setup(self):
+    def setup_method(self):
         self.G = nx.karate_club_graph()
 
     def _check_communities(self, k, expected):
