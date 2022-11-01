@@ -1,13 +1,14 @@
 from copy import copy
 from typing import Dict
 
+import networkx as nx
 from networkx.algorithms.mis import maximal_independent_set
 from networkx.classes import Graph
 
 __all__ = ["sampled_rlf"]
 
 
-def sampled_rlf(G: Graph, n_searches: int = 1e4) -> Dict:
+def sampled_rlf(G: Graph, n_searches: int = 1_000) -> Dict:
     """This is a non-deterministic approach to the Recursive
     Largest First algorithm that leverages the
     `networkx.maximal_independent_set` method, which randomly
@@ -24,6 +25,10 @@ def sampled_rlf(G: Graph, n_searches: int = 1e4) -> Dict:
     Returns:
         Dict: A dictionary where the key is the node and the value is the color
     """
+    if not isinstance(n_searches, int):
+        raise nx.NetworkXError(
+            "n_searches must be an integer. " f"{n_searches} not valid."
+        )
     color = {}
 
     temp_graph = copy(G)

@@ -59,13 +59,23 @@ BASIC_TEST_CASES = {
 @pytest.mark.parametrize(
     "graph_func, n_nodes", [(k, v) for k, v in BASIC_TEST_CASES.items()]
 )
-@pytest.mark.parametrize("n_searches", [1e1, 1e2, 1e3, 1e4, 1e5])
+@pytest.mark.parametrize("n_searches", [10, 100, 1_000, 10_000])
 def test_basic_case(graph_func, n_nodes, n_searches):
     graph = graph_func()
     coloring = nx.coloring.sampled_rlf(graph, n_searches=n_searches)
     print(coloring)
     assert verify_length(coloring, n_nodes)
     assert verify_coloring(graph, coloring)
+
+
+def test_bad_inputs():
+    graph = one_node_graph()
+    pytest.raises(
+        nx.NetworkXError,
+        nx.coloring.sampled_rlf,
+        graph,
+        n_searches="invalid search",
+    )
 
 
 #  ############################  Utility functions ############################
