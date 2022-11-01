@@ -255,7 +255,7 @@ def is_perfect_matching(G, matching):
 
 @not_implemented_for("multigraph")
 @not_implemented_for("directed")
-def min_weight_matching(G, maxcardinality=None, weight="weight"):
+def min_weight_matching(G, weight="weight"):
     """Computing a minimum-weight maximal matching of G.
 
     Use the maximum-weight algorithm with edge weights subtracted
@@ -290,15 +290,6 @@ def min_weight_matching(G, maxcardinality=None, weight="weight"):
     G : NetworkX graph
       Undirected graph
 
-    maxcardinality: bool
-        .. deprecated:: 2.8
-            The `maxcardinality` parameter will be removed in v3.0.
-            It doesn't make sense to set it to False when looking for
-            a min weight matching because then we just return no edges.
-
-        If maxcardinality is True, compute the maximum-cardinality matching
-        with minimum weight among all maximum-cardinality matchings.
-
     weight: string, optional (default='weight')
        Edge data key corresponding to the edge weight.
        If key not found, uses 1 as weight.
@@ -312,12 +303,6 @@ def min_weight_matching(G, maxcardinality=None, weight="weight"):
     --------
     max_weight_matching
     """
-    if maxcardinality not in (True, None):
-        raise nx.NetworkXError(
-            "The argument maxcardinality does not make sense "
-            "in the context of minimum weight matchings."
-            "It is deprecated and will be removed in v3.0."
-        )
     if len(G.edges) == 0:
         return max_weight_matching(G, maxcardinality=True, weight=weight)
     G_edges = G.edges(data=weight, default=1)

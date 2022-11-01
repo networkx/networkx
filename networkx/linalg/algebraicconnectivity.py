@@ -460,6 +460,18 @@ def fiedler_vector(
     See Also
     --------
     laplacian_matrix
+
+    Examples
+    --------
+    Given a connected graph the signs of the values in the Fiedler vector can be
+    used to partition the graph into two components.
+
+    >>> G = nx.barbell_graph(5, 0)
+    >>> nx.fiedler_vector(G, normalized=True, seed=1)
+    array([-0.32864129, -0.32864129, -0.32864129, -0.32864129, -0.26072899,
+            0.26072899,  0.32864129,  0.32864129,  0.32864129,  0.32864129])
+
+    The connected components are the two 5-node cliques of the barbell graph.
     """
     import numpy as np
 

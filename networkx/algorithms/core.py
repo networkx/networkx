@@ -34,7 +34,6 @@ from networkx.utils import not_implemented_for
 
 __all__ = [
     "core_number",
-    "find_cores",
     "k_core",
     "k_shell",
     "k_crust",
@@ -113,18 +112,6 @@ def core_number(G):
                 bin_boundaries[core[u]] += 1
                 core[u] -= 1
     return core
-
-
-def find_cores(G):
-    import warnings
-
-    msg = (
-        "\nfind_cores is deprecated as of version 2.7 and will be removed "
-        "in version 3.0.\n"
-        "The find_cores function is renamed core_number\n"
-    )
-    warnings.warn(msg, DeprecationWarning, stacklevel=2)
-    return nx.core_number(G)
 
 
 def _core_subgraph(G, k_filter, k=None, core=None):
