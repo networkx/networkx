@@ -41,6 +41,12 @@ def disconnected():
     return graph
 
 
+def directed():
+    graph = nx.DiGraph()
+    graph.add_edges_from([(1, 2), (1, 3), (3, 4), (2, 5)])
+    return graph
+
+
 # --------------------------------------------------------------------------
 # Basic tests for all strategies
 # For each basic graph function, specify the number of expected colors.
@@ -62,7 +68,7 @@ BASIC_TEST_CASES = {
 @pytest.mark.parametrize("n_searches", [10, 100, 1_000, 10_000])
 def test_basic_case(graph_func, n_nodes, n_searches):
     graph = graph_func()
-    coloring = nx.coloring.sampled_rlf(graph, n_searches=n_searches)
+    coloring = nx.coloring.sampled_rlf_color(graph, n_searches=n_searches)
     print(coloring)
     assert verify_length(coloring, n_nodes)
     assert verify_coloring(graph, coloring)
@@ -72,9 +78,16 @@ def test_bad_inputs():
     graph = one_node_graph()
     pytest.raises(
         nx.NetworkXError,
-        nx.coloring.sampled_rlf,
+        nx.coloring.sampled_rlf_color,
         graph,
         n_searches="invalid search",
+    )
+
+
+def test_invalid_graph():
+    graph = directed()
+    pytest.raises(
+        nx.NetworkXNotImplemented, nx.coloring.sampled_rlf_color, graph, n_searches=10
     )
 
 
