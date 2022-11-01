@@ -33,116 +33,39 @@ class TestMatching:
         self.graph.add_nodes_from(range(12))
         self.graph.add_edges_from(edges)
 
-        # Example bipartite graph from issue 2127
-        G = nx.Graph()
-        G.add_nodes_from(
-            [
-                (1, "C"),
-                (1, "B"),
-                (0, "G"),
-                (1, "F"),
-                (1, "E"),
-                (0, "C"),
-                (1, "D"),
-                (1, "I"),
-                (0, "A"),
-                (0, "D"),
-                (0, "F"),
-                (0, "E"),
-                (0, "H"),
-                (1, "G"),
-                (1, "A"),
-                (0, "I"),
-                (0, "B"),
-                (1, "H"),
-            ]
-        )
-        G.add_edge((1, "C"), (0, "A"))
-        G.add_edge((1, "B"), (0, "A"))
-        G.add_edge((0, "G"), (1, "I"))
-        G.add_edge((0, "G"), (1, "H"))
-        G.add_edge((1, "F"), (0, "A"))
-        G.add_edge((1, "F"), (0, "C"))
-        G.add_edge((1, "F"), (0, "E"))
-        G.add_edge((1, "E"), (0, "A"))
-        G.add_edge((1, "E"), (0, "C"))
-        G.add_edge((0, "C"), (1, "D"))
-        G.add_edge((0, "C"), (1, "I"))
-        G.add_edge((0, "C"), (1, "G"))
-        G.add_edge((0, "C"), (1, "H"))
-        G.add_edge((1, "D"), (0, "A"))
-        G.add_edge((1, "I"), (0, "A"))
-        G.add_edge((1, "I"), (0, "E"))
-        G.add_edge((0, "A"), (1, "G"))
-        G.add_edge((0, "A"), (1, "H"))
-        G.add_edge((0, "E"), (1, "G"))
-        G.add_edge((0, "E"), (1, "H"))
-        self.disconnected_graph = G
-
-    def check_match(self, matching):
-        """Asserts that the matching is what we expect from the bipartite graph
-        constructed in the :meth:`setup` fixture.
-
-        """
-        # For the sake of brevity, rename `matching` to `M`.
-        M = matching
-        matched_vertices = frozenset(itertools.chain(*M.items()))
-        # Assert that the maximum number of vertices (10) is matched.
-        assert matched_vertices == frozenset(range(12)) - {1, 10}
-        # Assert that no vertex appears in two edges, or in other words, that
-        # the matching (u, v) and (v, u) both appear in the matching
-        # dictionary.
-        assert all(u == M[M[u]] for u in range(12) if u in M)
-
-    def check_vertex_cover(self, vertices):
-        """Asserts that the given set of vertices is the vertex cover we
-        expected from the bipartite graph constructed in the :meth:`setup`
-        fixture.
-
-        """
-        # By Konig's theorem, the number of edges in a maximum matching equals
-        # the number of vertices in a minimum vertex cover.
-        assert len(vertices) == 5
-        # Assert that the set is truly a vertex cover.
-        for (u, v) in self.graph.edges():
-            assert u in vertices or v in vertices
-        # TODO Assert that the vertices are the correct ones.
+        G = nx.complete_bipartite_graph(2, 2)
+        self.disconnected_graph = nx.disjoint_union(G, G)
 
     def test_eppstein_matching(self):
-        """Tests that David Eppstein's implementation of the Hopcroft--Karp
-        algorithm produces a maximum cardinality matching.
-
-        """
-        self.check_match(eppstein_matching(self.graph, self.top_nodes))
+        M = eppstein_matching(self.graph, self.top_nodes)
+        assert frozenset(itertools.chain(*M.items())) == frozenset(range(12)) - {1, 10}
+        assert all(u == M[M[u]] for u in M)
 
     def test_hopcroft_karp_matching(self):
-        """Tests that the Hopcroft--Karp algorithm produces a maximum
-        cardinality matching in a bipartite graph.
-
-        """
-        self.check_match(hopcroft_karp_matching(self.graph, self.top_nodes))
+        M = hopcroft_karp_matching(self.graph, self.top_nodes)
+        assert frozenset(itertools.chain(*M.items())) == frozenset(range(12)) - {1, 10}
+        assert all(u == M[M[u]] for u in M)
 
     def test_to_vertex_cover(self):
-        """Test for converting a maximum matching to a minimum vertex cover."""
         matching = maximum_matching(self.graph, self.top_nodes)
-        vertex_cover = to_vertex_cover(self.graph, matching, self.top_nodes)
-        self.check_vertex_cover(vertex_cover)
+        vertices = to_vertex_cover(self.graph, matching, self.top_nodes)
+        for (u, v) in self.graph.edges():
+            assert u in vertices or v in vertices
+        assert vertices == {0, 2, 3, 4, 5} or vertices == {6, 7, 8, 9, 11}
 
     def test_eppstein_matching_simple(self):
-        match = eppstein_matching(self.simple_graph)
-        assert match == self.simple_solution
+        assert self.simple_solution == eppstein_matching(self.simple_graph)
 
     def test_hopcroft_karp_matching_simple(self):
-        match = hopcroft_karp_matching(self.simple_graph)
-        assert match == self.simple_solution
+        assert hopcroft_karp_matching(self.simple_graph) == self.simple_solution
 
     def test_eppstein_matching_disconnected(self):
         with pytest.raises(nx.AmbiguousSolution):
-            match = eppstein_matching(self.disconnected_graph)
+            eppstein_matching(self.disconnected_graph)
 
     def test_hopcroft_karp_matching_disconnected(self):
         with pytest.raises(nx.AmbiguousSolution):
-            match = hopcroft_karp_matching(self.disconnected_graph)
+            hopcroft_karp_matching(self.disconnected_graph)
 
     def test_issue_2127(self):
         """Test from issue 2127"""
@@ -203,16 +126,15 @@ class TestMatching:
         for u, v in G.edges():
             assert u in vertex_cover or v in vertex_cover
 
-
-def test_eppstein_matching():
-    """Test in accordance to issue #1927"""
-    G = nx.Graph()
-    G.add_nodes_from(["a", 2, 3, 4], bipartite=0)
-    G.add_nodes_from([1, "b", "c"], bipartite=1)
-    G.add_edges_from([("a", 1), ("a", "b"), (2, "b"), (2, "c"), (3, "c"), (4, 1)])
-    matching = eppstein_matching(G)
-    assert len(matching) == len(maximum_matching(G))
-    assert all(x in set(matching.keys()) for x in set(matching.values()))
+    def test_eppstein_matching2(self):
+        """Test in accordance to issue #1927"""
+        G = nx.Graph()
+        G.add_nodes_from(["a", 2, 3, 4], bipartite=0)
+        G.add_nodes_from([1, "b", "c"], bipartite=1)
+        G.add_edges_from([("a", 1), ("a", "b"), (2, "b"), (2, "c"), (3, "c"), (4, 1)])
+        matching = eppstein_matching(G)
+        assert len(matching) == len(maximum_matching(G))
+        assert all(x in set(matching.keys()) for x in set(matching.values()))
 
 
 class TestMinimumWeightFullMatching:
