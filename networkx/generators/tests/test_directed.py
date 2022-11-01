@@ -65,15 +65,16 @@ def test_scale_free_graph_initial_graph_kwarg(ig):
         scale_free_graph(100, initial_graph=ig)
 
 
-@pytest.mark.parametrize("create_using", [None, MultiDiGraph()])
-@pytest.mark.parametrize("graph", ["gn", "gnr", "gnc"])
-def test_gn_graph_generators_single_node(create_using, graph):
-    if graph == "gn":
-        G = gn_graph(1, create_using=create_using, seed=1)
-    elif graph == "gnr":
-        G = gnr_graph(1, 0.5, create_using=create_using, seed=1)
-    elif graph == "gnc":
-        G = gnc_graph(1, create_using=create_using, seed=1)
+@pytest.mark.parametrize("create_using", [None, MultiDiGraph])
+@pytest.mark.parametrize("gn_func", (gn_graph, gnc_graph))
+def test_gn_gnc_generators_single_node(create_using, gn_func):
+    G = gn_func(1, create_using=create_using, seed=1)
+    assert G.number_of_nodes() == 1 and G.number_of_edges() == 0
+
+
+@pytest.mark.parametrize("create_using", [None, MultiDiGraph])
+def test_gnr_graph_single_node(create_using):
+    G = gnr_graph(1, 0.5, create_using=create_using, seed=1)
     assert G.number_of_nodes() == 1 and G.number_of_edges() == 0
 
 
@@ -134,6 +135,10 @@ class TestUniformRandomKOutGraph:
         G = random_uniform_k_out_graph(
             n, k, self_loops=False, with_replacement=with_replacement
         )
+        if with_replacement:
+            assert G.is_multigraph() and nx.is_directed(G)
+        else:
+            assert not G.is_multigraph() and nx.is_directed(G)
         assert nx.number_of_selfloops(G) == 0
         assert all(d == k for v, d in G.out_degree())
 
