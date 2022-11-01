@@ -62,11 +62,11 @@ def generate_adjlist(G, delimiter=" "):
 
     Notes
     -----
-    If spaces are embedded in the names of nodes, the parser in read_adjlist will
-    be confused because space is the default delimiter. The parser will not
-    know if a space belongs in the node name or is just a delimiter.
-    To avoid this problem, specify an alternate delimiter when spaces are
+    The default `delimiter=" "` will result in unexpected results if node names contain
+    whitespace characters. To avoid this problem, specify an alternate delimiter when spaces are
     valid in node names.
+
+    NB: This option is not available for data that isn't user-generated.
 
     """
     directed = G.is_directed()
@@ -121,11 +121,11 @@ def write_adjlist(G, path, comments="#", delimiter=" ", encoding="utf-8"):
 
     Notes
     -----
-    If spaces are embedded in the names of nodes, the parser in read_adjlist will
-    be confused because space is the default delimiter. The parser will not
-    know if a space belongs in the node name or is just a delimiter.
-    To avoid this problem, specify an alternate delimiter when spaces are
+    The default `delimiter=" "` will result in unexpected results if node names contain
+    whitespace characters. To avoid this problem, specify an alternate delimiter when spaces are
     valid in node names.
+    NB: This option is not available for data that isn't user-generated.
+
     This format does not store graph, node, or edge data.
 
     See Also
