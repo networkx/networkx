@@ -141,11 +141,12 @@ def hopcroft_karp_matching(G, top_nodes=None):
     def depth_first_search(v):
         if v is not None:
             for u in G[v]:
-                if distances[rightmatches[u]] == distances[v] + 1:
-                    if depth_first_search(rightmatches[u]):
-                        rightmatches[u] = v
-                        leftmatches[v] = u
-                        return True
+                if distances[rightmatches[u]] == distances[
+                    v
+                ] + 1 and depth_first_search(rightmatches[u]):
+                    rightmatches[u] = v
+                    leftmatches[v] = u
+                    return True
             distances[v] = INFINITY
             return False
         return True
@@ -162,9 +163,8 @@ def hopcroft_karp_matching(G, top_nodes=None):
     num_matched_pairs = 0
     while breadth_first_search():
         for v in left:
-            if leftmatches[v] is None:
-                if depth_first_search(v):
-                    num_matched_pairs += 1
+            if leftmatches[v] is None and depth_first_search(v):
+                num_matched_pairs += 1
 
     # Strip the entries matched to `None`.
     leftmatches = {k: v for k, v in leftmatches.items() if v is not None}
@@ -269,28 +269,6 @@ def eppstein_matching(G, top_nodes=None):
 
         # did we finish layering without finding any alternating paths?
         if not unmatched:
-            unlayered = {}
-            for u in G:
-                # TODO Why is extra inner loop necessary?
-                for v in G[u]:
-                    if v not in preds:
-                        unlayered[v] = None
-            # TODO Originally, this function returned a three-tuple:
-            #
-            #     return (matching, list(pred), list(unlayered))
-            #
-            # For some reason, the documentation for this function
-            # indicated that the second and third elements of the returned
-            # three-tuple would be the vertices in the left and right vertex
-            # sets, respectively, that are also in the maximum independent set.
-            # However, what I think the author meant was that the second
-            # element is the list of vertices that were unmatched and the third
-            # element was the list of vertices that were matched. Since that
-            # seems to be the case, they don't really need to be returned,
-            # since that information can be inferred from the matching
-            # dictionary.
-
-            # All the matched nodes must be a key in the dictionary
             for key in matching.copy():
                 matching[matching[key]] = key
             return matching
