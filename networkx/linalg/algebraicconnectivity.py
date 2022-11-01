@@ -317,7 +317,7 @@ def _get_fiedler_func(method):
 def algebraic_connectivity(
     G, weight="weight", normalized=False, tol=1e-8, method="tracemin_pcg", seed=None
 ):
-    """Returns the algebraic connectivity of an undirected graph.
+    r"""Returns the algebraic connectivity of an undirected graph.
 
     The algebraic connectivity of a connected undirected graph is the second
     smallest eigenvalue of its Laplacian matrix.
@@ -381,7 +381,7 @@ def algebraic_connectivity(
     Examples
     --------
     For undirected graphs algebraic connectivity can tell us if a graph is connected or not
-    𝐺 is connected iff  𝑎𝑙𝑔𝑒𝑏𝑟𝑎𝑖𝑐_𝑐𝑜𝑛𝑛𝑒𝑐𝑡𝑖𝑣𝑖𝑡𝑦(𝐺)>0
+    G is connected iff  :math: `algebraic\_connectivity(G)>0`
 
     >>> #if G is a complete grpah then G is connected
     >>> G = nx.complete_graph(5)
