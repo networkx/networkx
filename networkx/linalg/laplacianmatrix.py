@@ -49,16 +49,17 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
 
     Examples
     --------
+    For graphs with multiple connected components, L is permutation-similar
+    to a block diagonal matrix where each block is the respective Laplacian
+    matrix for each component.
 
-    >>> L = nx.barbell_graph(3, 1)
-    >>> nx.laplacian_matrix(L).todense()
-    array([[ 2, -1, -1,  0,  0,  0,  0],
-           [-1,  2, -1,  0,  0,  0,  0],
-           [-1, -1,  3,  0,  0,  0, -1],
-           [ 0,  0,  0,  3, -1, -1, -1],
-           [ 0,  0,  0, -1,  2, -1,  0],
-           [ 0,  0,  0, -1, -1,  2,  0],
-           [ 0,  0, -1, -1,  0,  0,  2]])
+    >>> G = nx.graph_atlas(26) #This graph from the Graph Atlas has 2 connected components.
+    >>> nx.laplacian_matrix(G).todense()
+    array([[ 1, -1,  0,  0,  0],
+           [-1,  2, -1,  0,  0],
+           [ 0, -1,  1,  0,  0],
+           [ 0,  0,  0,  1, -1],
+           [ 0,  0,  0, -1,  1]])
 
     """
     import scipy as sp
