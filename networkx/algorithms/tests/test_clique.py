@@ -239,8 +239,7 @@ class TestCliques:
         assert sorted(nx.find_cliques_recursive(G)) == []
 
     def test_make_max_clique_graph_create_using(self):
-        G = nx.Graph()
-        G.add_edges_from([(1, 2), (3, 1), (4, 1), (5, 6)])
+        G = nx.Graph([(1, 2), (3, 1), (4, 1), (5, 6)])
         assert sorted(nx.make_max_clique_graph(G, nx.Graph)) == [0, 1, 2, 3]
 
 
