@@ -6,10 +6,6 @@ from networkx.utils import edges_equal, nodes_equal
 
 
 class TestBipartiteProject:
-    def test_project_warning(self):
-        G = nx.path_graph(4)
-        pytest.deprecated_call(nx.bipartite.project, G, [1, 3])
-
     def test_path_projected_graph(self):
         G = nx.path_graph(4)
         P = bipartite.projected_graph(G, [1, 3])
