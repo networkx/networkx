@@ -66,6 +66,13 @@ class TestMCS:
         with pytest.raises(nx.NetworkXError, match="Input graph is not chordal"):
             nx.is_chordal(self.self_loop_G)
 
+    def test_chordal_maximum_independent_set(self):
+        assert len(nx.chordal_maximum_independent_set(self.chordal_G)) == 4
+        with pytest.raises(nx.NetworkXError, match="Input graph is not chordal"):
+            nx.chordal_maximum_independent_set(self.non_chordal_G)
+        with pytest.raises(nx.NetworkXError, match="Input graph is not chordal"):
+            nx.chordal_maximum_independent_set(self.self_loop_G)
+
     def test_induced_nodes(self):
         G = nx.generators.classic.path_graph(10)
         Induced_nodes = nx.find_induced_nodes(G, 1, 9, 2)

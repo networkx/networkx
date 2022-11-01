@@ -18,6 +18,7 @@ __all__ = [
     "chordal_graph_treewidth",
     "NetworkXTreewidthBoundExceeded",
     "complete_to_chordal_graph",
+    "chordal_maximum_independent_set",
 ]
 
 
@@ -37,12 +38,12 @@ def is_chordal(G):
     Parameters
     ----------
     G : graph
-      A NetworkX graph.
+        A NetworkX graph.
 
     Returns
     -------
     chordal : bool
-      True if G is a chordal graph and False otherwise.
+        True if G is a chordal graph and False otherwise.
 
     Raises
     ------
@@ -69,18 +70,148 @@ def is_chordal(G):
 
     Notes
     -----
-    The routine tries to go through every node following maximum cardinality
-    search. It returns False when it finds that the separator for any node
-    is not a clique.  Based on the algorithms in [1]_.
+    Based on the algorithms in [1]_ algorithm 3.
+    Based on the following caracterization: A graph is chordal if the LexBFS gives a lexicographical ordering
+
+    Checking if the ordering is lexicographical with the following algorithm:
+    Iterate the following from P={V}.
+    P = {P1, P2, . . . , Pk}, and a pivot p from P1, append p to the order.
+    We use N(p) to refine P by creating the following new partition
+    {P1 ∩ N(p), P1-N(p), P2 ∩ N(p), P2-N(p), . . . , Pi ∩ N(p), Pi-N(p), . . . , Pk ∩ N(p), Pk-N(p)},
+    while maintaining the order of the partition classes and leav the empy ones out.
+    The algorithm stops when all the partition classes are either empty.
 
     References
     ----------
-    .. [1] R. E. Tarjan and M. Yannakakis, Simple linear-time algorithms
-       to test chordality of graphs, test acyclicity of hypergraphs, and
-       selectively reduce acyclic hypergraphs, SIAM J. Comput., 13 (1984),
-       pp. 566–579.
+    .. [1] Michel Habib, Ross McConnell, Christophe Paul, and Laurent Viennot.
+    Lex-bfs and partition refinement, with applications to transitive orientation,
+    interval graph recognition and consecutive ones testing.
+    Theoretical Computer Science, 234(1):59–84, 2000.
     """
-    return len(_find_chordality_breaker(G)) == 0
+    if nx.number_of_selfloops(G) > 0:
+        raise nx.NetworkXError("Input graph is not chordal.")
+
+    order = _LexBFS(G)
+    dic_Np = {n: set() for n in G.nodes}
+    dic_last = {n: None for n in G.nodes}
+    for i, j in G.edges:
+        if order[i] < order[j]:
+            dic_Np[i].add(j)
+            if dic_last[i] == None:
+                dic_last[i] = j
+            elif order[j] < order[dic_last[i]]:
+                dic_last[i] = j
+        else:
+            dic_Np[j].add(i)
+            if dic_last[j] == None:
+                dic_last[j] = i
+            elif order[i] < order[dic_last[j]]:
+                dic_last[j] = i
+    for n in sorted(order, key=order.get):
+        p = dic_last[n]
+        if not p == None:
+            if not (dic_Np[n] - {p}).issubset(dic_Np[p]):
+                return False
+    return True
+
+
+def _LexBFS(G):
+    """LexicographicalBFS based on [1]_ algorithm 2.
+
+    Returns a dictionary which assign an int for every nodes. This represent an ordering
+    This order is a lexicographical ordering for chordal graphs
+
+    Parameters
+    ----------
+    G : graph
+        A NetworkX graph
+
+    Returns
+    -------
+    dic: a dictionary which assign an int for every nodes
+        The nodes ordered by these numbers represent an ordering
+
+    References
+    ----------
+    .. [1] Michel Habib, Ross McConnell, Christophe Paul, Laurent Viennot
+    Lex-BFS and partition refinement, with applications
+    to transitive orientation, interval graph recognition and consecutive ones testing
+    Theoretical Computer Science 234 (2000) 59–84
+    """
+    nodes = set(G.nodes)
+    i = len(nodes)
+    ls_sets = [nodes]
+    ls_sets = list(filter(lambda x: x != set(), ls_sets))
+    order = {n: None for n in nodes}
+    while len(ls_sets) > 0:
+        p = ls_sets[0].pop()
+        i -= 1
+        order[p] = i
+        N = set(G.neighbors(p))
+        ls_splited = []
+        for S in ls_sets:
+            ls_splited.append(S.intersection(N))
+            ls_splited.append(S - N)
+        ls_sets = list(filter(lambda x: x != set(), ls_splited))
+    return order
+
+
+def chordal_maximum_independent_set(G):
+    """Gives a set of maximum independent nodes in a chordal graph.
+
+    Based on the existance of lexicographical ordering of chordal graphs.
+
+    Parameters
+    ----------
+    G : graph
+        A NetworkX graph.
+
+    Returns
+    -------
+    independent: a set of maximal independent nodes
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        The algorithm does not support DiGraph, MultiGraph and MultiDiGraph.
+
+    Examples
+    --------
+    >>> e = [
+    ...     (1, 2),
+    ...     (1, 3),
+    ...     (2, 3),
+    ...     (2, 4),
+    ...     (3, 4),
+    ...     (3, 5),
+    ...     (3, 6),
+    ...     (4, 5),
+    ...     (4, 6),
+    ...     (5, 6),
+    ... ]
+    >>> G = nx.Graph(e)
+    >>> nx.chordal_maximum_independent_set(G)
+    {2, 6}
+
+    Notes
+    -----
+    Based on the algorithms in [1]_ algorithm 2.
+
+    References
+    ----------
+    .. [1] Lalla Mouatadid (University of Toronto), Graph Searching & Perfect Graphs (lecture notes)
+    """
+    if not is_chordal(G):
+        raise nx.NetworkXError("Input graph is not chordal.")
+    order = _LexBFS(G)
+    independent = set()
+    Neighbor = set()
+    for n in sorted(order, key=order.get):
+        if not n in Neighbor:
+            for v in G.neighbors(n):
+                Neighbor.add(v)
+            independent.add(n)
+    return independent
 
 
 def find_induced_nodes(G, s, t, treewidth_bound=sys.maxsize):
