@@ -381,7 +381,7 @@ def algebraic_connectivity(
     Examples
     --------
     For undirected graphs algebraic connectivity can tell us if a graph is connected or not
-    G is connected iff  :math: `algebraic\_connectivity(G)>0`
+    `G` is connected iff  ``algebraic_connectivity(G) > 0``:
 
     >>> #if G is a complete grpah then G is connected
     >>> G = nx.complete_graph(5)
