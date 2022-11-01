@@ -7,7 +7,7 @@ from networkx.utils import edges_equal, nodes_equal
 
 
 class TestReverseView:
-    def setup(self):
+    def setup_method(self):
         self.G = nx.path_graph(9, create_using=nx.DiGraph())
         self.rv = nx.reverse_view(self.G)
 
@@ -55,7 +55,7 @@ class TestReverseView:
 
 
 class TestMultiReverseView:
-    def setup(self):
+    def setup_method(self):
         self.G = nx.path_graph(9, create_using=nx.MultiDiGraph())
         self.G.add_edge(4, 5)
         self.rv = nx.reverse_view(self.G)
@@ -98,7 +98,7 @@ def test_generic_multitype():
 
 
 class TestToDirected:
-    def setup(self):
+    def setup_method(self):
         self.G = nx.path_graph(9)
         self.dv = nx.to_directed(self.G)
         self.MG = nx.path_graph(9, create_using=nx.MultiGraph())
@@ -137,7 +137,7 @@ class TestToDirected:
 
 
 class TestToUndirected:
-    def setup(self):
+    def setup_method(self):
         self.DG = nx.path_graph(9, create_using=nx.DiGraph())
         self.uv = nx.to_undirected(self.DG)
         self.MDG = nx.path_graph(9, create_using=nx.MultiDiGraph())
