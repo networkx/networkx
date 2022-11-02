@@ -54,12 +54,12 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
     matrix for each component.
 
     >>> G = nx.graph_atlas(26) #This graph from the Graph Atlas has 2 connected components.
-    >>> nx.laplacian_matrix(G).todense()
-    array([[ 1, -1,  0,  0,  0],
-           [-1,  2, -1,  0,  0],
-           [ 0, -1,  1,  0,  0],
-           [ 0,  0,  0,  1, -1],
-           [ 0,  0,  0, -1,  1]])
+    >>> print(nx.laplacian_matrix(G).todense())
+    [[ 1 -1  0  0  0]
+     [-1  2 -1  0  0]
+     [ 0 -1  1  0  0]
+     [ 0  0  0  1 -1]
+     [ 0  0  0 -1  1]]
 
     """
     import scipy as sp
