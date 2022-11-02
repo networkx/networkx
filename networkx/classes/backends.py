@@ -5,7 +5,7 @@ Create a Dispatcher
 -------------------
 
 To be a valid plugin, a package must register an entry_point
-of `networkx.plugins` with a known key pointing to the handler.
+of `networkx.plugins` with a key pointing to the handler.
 
 For example,
 ```
@@ -13,7 +13,7 @@ entry_points={'networkx.plugins': 'sparse = networkx_plugin_sparse'}
 ```
 
 The plugin must create a Graph-like object which contains an attribute
-`__networkx_plugin__` with a value of the known key.
+`__networkx_plugin__` with a value of the entry point name.
 
 Continuing the example above:
 ```
@@ -30,7 +30,7 @@ dispatch object in the entry_points, load it, and dispatch the work to it.
 Testing
 -------
 To assist in validating the backend algorithm implementations, if an
-environment variable `NETWORKX_GRAPH_CONVERT` is set to one of the known
+environment variable `NETWORKX_GRAPH_CONVERT` is set to a registered
 plugin keys, the dispatch machinery will automatically convert regular
 networkx Graphs and DiGraphs to the backend equivalent by calling
 `<backend dispatcher>.convert_from_nx(G, weight=weight, name=name)`.
@@ -66,13 +66,6 @@ from importlib.metadata import entry_points
 from ..exception import NetworkXNotImplemented
 
 __all__ = ["_dispatch", "_mark_tests"]
-
-
-known_plugins = [
-    "sparse",  # scipy.sparse
-    "graphblas",  # python-graphblas
-    "cugraph",  # cugraph
-]
 
 
 class PluginInfo:
@@ -202,10 +195,6 @@ def test_override_dispatch(func=None, *, name=None):
 # pytest.
 if os.environ.get("NETWORKX_GRAPH_CONVERT"):
     plugin_name = os.environ["NETWORKX_GRAPH_CONVERT"]
-    if plugin_name not in known_plugins:
-        raise Exception(
-            f"{plugin_name} is not a known plugin; must be one of {known_plugins}"
-        )
     if not plugins:
         raise Exception("No registered networkx.plugins entry_points")
     if plugin_name not in plugins:
