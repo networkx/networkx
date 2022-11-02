@@ -80,7 +80,7 @@ def sampled_rlf_color(G: Graph, n_searches: int = 1_000) -> Dict:
 
     while len(temp_graph.nodes) > 0:
         # finding node with the highest degree
-        init_node = sorted(G.degree, key=lambda x: x[1], reverse=True)[0][0]
+        init_node = sorted(temp_graph.degree, key=lambda x: x[1], reverse=True)[0][0]
 
         # iteratively finding maximal independent set, assigning color
         # then removing the maximal independent set from the graph
