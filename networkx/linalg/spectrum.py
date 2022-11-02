@@ -32,7 +32,7 @@ def laplacian_spectrum(G, weight="weight"):
     Notes
     -----
     For MultiGraph/MultiDiGraph, the edges weights are summed.
-    See to_numpy_array for other options.
+    See :func:`~networkx.convert_matrix.to_numpy_array` for other options.
 
     See Also
     --------
