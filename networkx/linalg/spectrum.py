@@ -37,6 +37,18 @@ def laplacian_spectrum(G, weight="weight"):
     See Also
     --------
     laplacian_matrix
+
+    Examples
+    --------
+    The multiplicity of O as an eigenvalue of the laplacian matrix is equal
+    to the number of connected components of G.
+
+    >>> import numpy as np
+    >>> G = nx.graph_atlas(22) #This graph from the Graph Atlas has 3 connected components.
+    >>> eigvals = nx.laplacian_spectrum(G).round(10)
+    >>> print(len(eigvals) - np.count_nonzero(eigvals)) #Count zero eigvalues
+    3
+
     """
     import scipy as sp
     import scipy.linalg  # call as sp.linalg
