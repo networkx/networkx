@@ -241,6 +241,11 @@ class TestCliques:
     def test_make_max_clique_graph_create_using(self):
         G = nx.Graph([(1, 2), (3, 1), (4, 1), (5, 6)])
         assert sorted(nx.make_max_clique_graph(G, nx.Graph)) == [0, 1, 2, 3]
+        assert sorted(nx.make_max_clique_graph(G, nx.Graph).edges) == [
+            (0, 1),
+            (0, 2),
+            (1, 2),
+        ]
 
 
 class TestEnumerateAllCliques:
