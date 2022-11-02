@@ -47,8 +47,8 @@ def sampled_rlf_color(G: Graph, n_searches: int = 1_000) -> Dict:
     --------
     >>> G = nx.Graph([(0, 1), (1, 2), (1, 3)])
     >>> d = nx.coloring.sampled_rlf_color(G, n_searches=1_000)
-    >>> print(d)
-    {0: 1, 1: 0, 2: 1, 3: 1}
+    >>> d == {0: 1, 1: 0, 2: 1, 3: 1}
+    TRUE
 
     Raises
     ------
