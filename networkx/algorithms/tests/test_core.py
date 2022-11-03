@@ -77,11 +77,6 @@ class TestCore:
         with pytest.raises(nx.NetworkXError, match="Input graph has self loops"):
             nx.core_number(G)
 
-    def test_find_cores_warning(self):
-        G = nx.cycle_graph(3)
-        with pytest.deprecated_call():
-            nx.find_cores(G)
-
     def test_directed_core_number(self):
         """core number had a bug for directed graphs found in issue #1959"""
         # small example where too timid edge removal can make cn[2] = 3
