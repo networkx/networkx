@@ -578,7 +578,45 @@ def number_of_cliques(G, nodes=None, cliques=None):
 
     Returns a single or list depending on input nodes.
     Optional list of cliques can be input if already computed.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        An undirected graph.
+
+    nodes: list, optional (default=None)
+        A list of input nodes.
+
+    cliques : list, optional (default=None)
+        A list of cliques, each of which is itself a list of nodes.
+        If not specified, the list of all cliques will be computed
+        using :func:`find_cliques`.
+
+    Returns
+    -------
+    int or dict
+        If `nodes` is a single node, returns
+        the size of the number of maximal cliques `G` containing
+        that node. Otherwise return a dict keyed by node to the the
+        number of maximal cliques containing that node.
+
+    See Also
+    --------
+    find_cliques
+        find_cliques yields the maximal cliques of G.
+        It accepts a `nodes` argument which restricts consideration to
+        maximal cliques containing all the given `nodes`.
+        The search for the cliques is optimized for `nodes`.
+
+    Examples
+    --------
+    >>> import pprint
+    >>> G = nx.complete_multipartite_graph(1, 2, 2)
+    >>> pprint.pprint(nx.number_of_cliques(G))
+    {0: 4, 1: 2, 2: 2, 3: 2, 4: 2}
+
     """
+
     if cliques is None:
         cliques = list(find_cliques(G))
 
