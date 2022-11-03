@@ -1,4 +1,4 @@
-from copy import copy
+from copy import deepcopy
 from typing import Dict
 
 import networkx as nx
@@ -75,7 +75,7 @@ def sampled_rlf_color(G: Graph, n_searches: int = 1_000) -> Dict:
         )
     color = {}
 
-    temp_graph = copy(G)
+    temp_graph = deepcopy(G)
     color_iter = 0
 
     while len(temp_graph.nodes) > 0:
