@@ -72,10 +72,10 @@ class TestCore:
         assert nodes_equal(nodes_by_core[2], [2, 4, 5, 6])
 
     def test_core_number_self_loop(self):
-        self_loop = nx.cycle_graph(3)
-        self_loop.add_edge(0, 0)
-        with pytest.raises(nx.NetworkXError):
-            nx.core_number(self_loop)
+        G = nx.cycle_graph(3)
+        G.add_edge(0, 0)
+        with pytest.raises(nx.NetworkXError, match="Input graph has self loops"):
+            nx.core_number(G)
 
     def test_find_cores_warning(self):
         G = nx.cycle_graph(3)
