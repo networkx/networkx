@@ -181,7 +181,7 @@ class TestEdgelist:
         fh.seek(0)
         assert fh.read() == b"1 2 2.0\n3 2 3.0\n"
 
-    def test_write_edgelist_4(self):
+    def test_write_edgelist_5(self):
         fh = io.BytesIO()
         G = nx.Graph()
         G.add_edge(1, 2, weight=2.0)
