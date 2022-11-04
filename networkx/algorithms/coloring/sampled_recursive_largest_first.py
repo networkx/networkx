@@ -1,4 +1,3 @@
-from copy import deepcopy
 from typing import Dict
 
 import networkx as nx
@@ -75,12 +74,12 @@ def sampled_rlf_color(G: Graph, n_searches: int = 1_000) -> Dict:
         )
     color = {}
 
-    temp_graph = deepcopy(G)
+    temp_graph = G.copy()
     color_iter = 0
 
     while len(temp_graph.nodes) > 0:
         # finding node with the highest degree
-        init_node = sorted(temp_graph.degree, key=lambda x: x[1], reverse=True)[0][0]
+        init_node = max(temp_graph.degree, key=lambda x: x[1])[0]
 
         # iteratively finding maximal independent set, assigning color
         # then removing the maximal independent set from the graph
@@ -101,5 +100,4 @@ def sampled_rlf_color(G: Graph, n_searches: int = 1_000) -> Dict:
         color_iter += 1
         temp_graph.remove_nodes_from(max_independent_set)
 
-    # update the node coloring dictionary so it is ordered
     return color

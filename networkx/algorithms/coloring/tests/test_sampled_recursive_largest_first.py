@@ -69,7 +69,6 @@ BASIC_TEST_CASES = {
 def test_basic_case(graph_func, n_nodes, n_searches):
     graph = graph_func()
     coloring = nx.coloring.sampled_rlf_color(graph, n_searches=n_searches)
-    print(coloring)
     assert verify_length(coloring, n_nodes)
     assert verify_coloring(graph, coloring)
 
@@ -106,18 +105,4 @@ def verify_coloring(graph, coloring):
 
 
 def verify_length(coloring, expected):
-    coloring = dict_to_sets(coloring)
-    return len(coloring) == expected
-
-
-def dict_to_sets(colors):
-    if len(colors) == 0:
-        return []
-
-    k = max(colors.values()) + 1
-    sets = [set() for _ in range(k)]
-
-    for (node, color) in colors.items():
-        sets[color].add(node)
-
-    return sets
+    return len(set(coloring.values())) == expected
