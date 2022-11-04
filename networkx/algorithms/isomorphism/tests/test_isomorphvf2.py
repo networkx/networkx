@@ -401,3 +401,26 @@ def test_monomorphism_edge_match():
 
     gm = iso.DiGraphMatcher(G, SG, edge_match=iso.categorical_edge_match("label", None))
     assert gm.subgraph_is_monomorphic()
+
+
+def test_monomorphism_unconnected_match():
+    G = nx.DiGraph()
+    G.add_node(1)
+    G.add_node(2)
+    G.add_node(3)
+    G.add_node(4)
+    G.add_node(5)
+    G.add_edge(1, 2, label="A")
+    G.add_edge(2, 3, label="B")
+    G.add_edge(4, 5, label="C")
+
+    SG = nx.DiGraph()
+    SG.add_node(7)
+    SG.add_node(8)
+    SG.add_node(9)
+    SG.add_node(10)
+    SG.add_edge(7, 8, label="A")
+    SG.add_edge(9, 10, label="C")
+
+    gm = iso.DiGraphMatcher(G, SG, edge_match=iso.categorical_edge_match("label", None))
+    assert gm.subgraph_is_monomorphic()
