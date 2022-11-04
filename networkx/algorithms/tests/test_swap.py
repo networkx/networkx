@@ -12,11 +12,27 @@ def test_directed_edge_swap():
     assert out_degrees == sorted((n, d) for n, d in G.out_degree())
 
 
+def test_edge_cases_directed_edge_swap():
+    graph = nx.path_graph(4, create_using=nx.DiGraph)
+    with pytest.raises(nx.NetworkXAlgorithmError):
+        nx.directed_edge_swap(graph, nswap=4, max_tries=10, seed=1)
+    graph = nx.DiGraph()
+    edges = [(0, 0), (0, 1), (1, 0), (2, 3), (3, 2)]
+    graph.add_edges_from(edges)
+    with pytest.raises(nx.NetworkXAlgorithmError):
+        nx.directed_edge_swap(graph, nswap=2, max_tries=20, seed=1)
+
+
 def test_double_edge_swap():
     graph = nx.barabasi_albert_graph(200, 1)
     degrees = sorted(d for n, d in graph.degree())
     G = nx.double_edge_swap(graph, 40)
     assert degrees == sorted(d for n, d in graph.degree())
+
+
+def test_edge_cases_con_double_edge_swap():
+    graph = nx.path_graph(4)
+    assert 0 == nx.connected_double_edge_swap(graph)
 
 
 def test_double_edge_swap_seed():
