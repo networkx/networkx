@@ -13,16 +13,18 @@ def test_directed_edge_swap():
 
 
 def test_edge_cases_directed_edge_swap():
+    # Tests cases when swaps are impossible, either too few edges exist, or self loops/cycles are unavoidable
+    # TODO: Rewrite function to explicitly check for impossible swaps and raise error
     e = (
-        f"Maximum number of swap attempts \\(11\\) exceeded "
-        f"before desired swaps achieved \\(4\\)."
+        "Maximum number of swap attempts \\(11\\) exceeded "
+        "before desired swaps achieved \\(\\d\\)."
     )
-    graph = nx.path_graph(4, create_using=nx.DiGraph)
+    graph = nx.DiGraph([(0, 1), (2, 3)])
     with pytest.raises(nx.NetworkXAlgorithmError, match=e):
         nx.directed_edge_swap(graph, nswap=4, max_tries=10, seed=1)
     graph = nx.DiGraph([(0, 0), (0, 1), (1, 0), (2, 3), (3, 2)])
     with pytest.raises(nx.NetworkXAlgorithmError, match=e):
-        nx.directed_edge_swap(graph, nswap=4, max_tries=10, seed=1)
+        nx.directed_edge_swap(graph, nswap=1, max_tries=10, seed=1)
 
 
 def test_double_edge_swap():
