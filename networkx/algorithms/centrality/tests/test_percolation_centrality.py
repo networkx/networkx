@@ -74,7 +74,7 @@ class TestPercolationCentrality:
 
     def test_percolation_example1c(self):
         """percolation centrality: example 1c weighted edges"""
-        G = example1c_G
+        G = example1c_G()
         p = nx.percolation_centrality(G)
         p_answer = {
             1: 0.0,
