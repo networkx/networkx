@@ -31,6 +31,30 @@ def example1b_G():
     return G
 
 
+def example1c_G():
+    G = nx.Graph()
+    G.add_node(1, percolation=0.3)
+    G.add_node(2, percolation=0.5)
+    G.add_node(3, percolation=0.5)
+    G.add_node(4, percolation=0.2)
+    G.add_node(5, percolation=0.3)
+    G.add_node(6, percolation=0.2)
+    G.add_node(7, percolation=0.1)
+    G.add_node(8, percolation=0.1)
+    G.add_edges_from(
+        [
+            (1, 4, {"weight": 4.7}),
+            (2, 4, {"weight": 5.3}),
+            (3, 4, {"weight": 2.1}),
+            (4, 5, {"weight": 3.3}),
+            (5, 6, {"weight": 7.0}),
+            (6, 7, {"weight": 3.3}),
+            (6, 8, {"weight": 4.5}),
+        ]
+    )
+    return G
+
+
 class TestPercolationCentrality:
     def test_percolation_example1a(self):
         """percolation centrality: example 1a"""
@@ -45,6 +69,23 @@ class TestPercolationCentrality:
         G = example1b_G()
         p = nx.percolation_centrality(G)
         p_answer = {4: 0.825, 6: 0.4}
+        for n, k in p_answer.items():
+            assert p[n] == pytest.approx(k, abs=1e-3)
+
+    def test_percolation_example1c(self):
+        """percolation centrality: example 1c weighted edges"""
+        G = example1c_G
+        p = nx.percolation_centrality(G)
+        p_answer = {
+            1: 0.0,
+            2: 0.0,
+            3: 0.0,
+            4: 0.825,
+            5: 0.5350877192982455,
+            6: 0.4,
+            7: 0.0,
+            8: 0.0,
+        }
         for n, k in p_answer.items():
             assert p[n] == pytest.approx(k, abs=1e-3)
 
