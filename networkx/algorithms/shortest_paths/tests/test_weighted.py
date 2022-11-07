@@ -36,7 +36,7 @@ class WeightedTestBase:
 
     """
 
-    def setup(self):
+    def setup_method(self):
         """Creates some graphs for use in the unit tests."""
         cnlti = nx.convert_node_labels_to_integers
         self.grid = cnlti(nx.grid_2d_graph(4, 4), first_label=1, ordering="sorted")
