@@ -198,23 +198,31 @@ class TestCliques:
 
     def test_cliques_containing_node(self):
         G = self.G
-        assert nx.cliques_containing_node(G, 1) == [[2, 6, 1, 3]]
-        assert list(nx.cliques_containing_node(G, [1]).values()) == [[[2, 6, 1, 3]]]
-        assert [
-            sorted(c) for c in list(nx.cliques_containing_node(G, [1, 2]).values())
-        ] == [[[2, 6, 1, 3]], [[2, 6, 1, 3], [2, 6, 4]]]
-        result = nx.cliques_containing_node(G, [1, 2])
+        with pytest.deprecated_call():
+            assert nx.cliques_containing_node(G, 1) == [[2, 6, 1, 3]]
+        with pytest.deprecated_call():
+            assert list(nx.cliques_containing_node(G, [1]).values()) == [[[2, 6, 1, 3]]]
+        with pytest.deprecated_call():
+            assert [
+                sorted(c) for c in list(nx.cliques_containing_node(G, [1, 2]).values())
+            ] == [[[2, 6, 1, 3]], [[2, 6, 1, 3], [2, 6, 4]]]
+        with pytest.deprecated_call():
+            result = nx.cliques_containing_node(G, [1, 2])
         for k, v in result.items():
             result[k] = sorted(v)
         assert result == {1: [[2, 6, 1, 3]], 2: [[2, 6, 1, 3], [2, 6, 4]]}
-        assert nx.cliques_containing_node(G, 1) == [[2, 6, 1, 3]]
+        with pytest.deprecated_call():
+            assert nx.cliques_containing_node(G, 1) == [[2, 6, 1, 3]]
         expected = [{2, 6, 1, 3}, {2, 6, 4}]
-        answer = [set(c) for c in nx.cliques_containing_node(G, 2)]
+        with pytest.deprecated_call():
+            answer = [set(c) for c in nx.cliques_containing_node(G, 2)]
         assert answer in (expected, list(reversed(expected)))
 
-        answer = [set(c) for c in nx.cliques_containing_node(G, 2, cliques=self.cl)]
+        with pytest.deprecated_call():
+            answer = [set(c) for c in nx.cliques_containing_node(G, 2, cliques=self.cl)]
         assert answer in (expected, list(reversed(expected)))
-        assert len(nx.cliques_containing_node(G)) == 11
+        with pytest.deprecated_call():
+            assert len(nx.cliques_containing_node(G)) == 11
 
     def test_make_clique_bipartite(self):
         G = self.G
