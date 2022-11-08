@@ -91,64 +91,74 @@ class TestCliques:
             assert nx.graph_number_of_cliques(G) == 5
         with pytest.deprecated_call():
             assert nx.graph_number_of_cliques(G, cliques=self.cl) == 5
-        assert nx.number_of_cliques(G, 1) == 1
-        assert list(nx.number_of_cliques(G, [1]).values()) == [1]
-        assert list(nx.number_of_cliques(G, [1, 2]).values()) == [1, 2]
-        assert nx.number_of_cliques(G, [1, 2]) == {1: 1, 2: 2}
-        assert nx.number_of_cliques(G, 2) == 2
-        assert nx.number_of_cliques(G) == {
-            1: 1,
-            2: 2,
-            3: 1,
-            4: 2,
-            5: 1,
-            6: 2,
-            7: 1,
-            8: 1,
-            9: 1,
-            10: 1,
-            11: 1,
-        }
-        assert nx.number_of_cliques(G, nodes=list(G)) == {
-            1: 1,
-            2: 2,
-            3: 1,
-            4: 2,
-            5: 1,
-            6: 2,
-            7: 1,
-            8: 1,
-            9: 1,
-            10: 1,
-            11: 1,
-        }
-        assert nx.number_of_cliques(G, nodes=[2, 3, 4]) == {2: 2, 3: 1, 4: 2}
-        assert nx.number_of_cliques(G, cliques=self.cl) == {
-            1: 1,
-            2: 2,
-            3: 1,
-            4: 2,
-            5: 1,
-            6: 2,
-            7: 1,
-            8: 1,
-            9: 1,
-            10: 1,
-            11: 1,
-        }
-        assert nx.number_of_cliques(G, list(G), cliques=self.cl) == {
-            1: 1,
-            2: 2,
-            3: 1,
-            4: 2,
-            5: 1,
-            6: 2,
-            7: 1,
-            8: 1,
-            9: 1,
-            10: 1,
-            11: 1,
-        }
+        with pytest.deprecated_call():
+            assert nx.number_of_cliques(G, 1) == 1
+        with pytest.deprecated_call():
+            assert list(nx.number_of_cliques(G, [1]).values()) == [1]
+        with pytest.deprecated_call():
+            assert list(nx.number_of_cliques(G, [1, 2]).values()) == [1, 2]
+        with pytest.deprecated_call():
+            assert nx.number_of_cliques(G, [1, 2]) == {1: 1, 2: 2}
+        with pytest.deprecated_call():
+            assert nx.number_of_cliques(G, 2) == 2
+        with pytest.deprecated_call():
+            assert nx.number_of_cliques(G) == {
+                1: 1,
+                2: 2,
+                3: 1,
+                4: 2,
+                5: 1,
+                6: 2,
+                7: 1,
+                8: 1,
+                9: 1,
+                10: 1,
+                11: 1,
+            }
+        with pytest.deprecated_call():
+            assert nx.number_of_cliques(G, nodes=list(G)) == {
+                1: 1,
+                2: 2,
+                3: 1,
+                4: 2,
+                5: 1,
+                6: 2,
+                7: 1,
+                8: 1,
+                9: 1,
+                10: 1,
+                11: 1,
+            }
+        with pytest.deprecated_call():
+            assert nx.number_of_cliques(G, nodes=[2, 3, 4]) == {2: 2, 3: 1, 4: 2}
+        with pytest.deprecated_call():
+            assert nx.number_of_cliques(G, cliques=self.cl) == {
+                1: 1,
+                2: 2,
+                3: 1,
+                4: 2,
+                5: 1,
+                6: 2,
+                7: 1,
+                8: 1,
+                9: 1,
+                10: 1,
+                11: 1,
+            }
+        with pytest.deprecated_call():
+            assert nx.number_of_cliques(G, list(G), cliques=self.cl) == {
+                1: 1,
+                2: 2,
+                3: 1,
+                4: 2,
+                5: 1,
+                6: 2,
+                7: 1,
+                8: 1,
+                9: 1,
+                10: 1,
+                11: 1,
+            }
 
     def test_node_clique_number(self):
         G = self.G

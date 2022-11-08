@@ -672,9 +672,29 @@ def node_clique_number(G, nodes=None, cliques=None, separate_nodes=False):
 def number_of_cliques(G, nodes=None, cliques=None):
     """Returns the number of maximal cliques for each node.
 
+    .. deprecated:: 3.0
+
+       number_of_cliques is deprecated and will be removed in v3.2.
+       Use the result of `find_cliques` directly to compute the number of
+       cliques containing each node::
+
+           {n: sum(1 for c in nx.find_cliques(G) if n in c) for n in G}
+
     Returns a single or list depending on input nodes.
     Optional list of cliques can be input if already computed.
     """
+    import warnings
+
+    warnings.warn(
+        (
+            "\n\nnumber_of_cliques is deprecated and will be removed.\n"
+            "Use the result of find_cliques directly to compute the number\n"
+            "of cliques containing each node:\n\n"
+            "    {n: sum(1 for c in nx.find_cliques(G) if n in c) for n in G}\n\n"
+        ),
+        DeprecationWarning,
+        stacklevel=2,
+    )
     if cliques is None:
         cliques = list(find_cliques(G))
 
