@@ -87,8 +87,10 @@ class TestCliques:
 
     def test_number_of_cliques(self):
         G = self.G
-        assert nx.graph_number_of_cliques(G) == 5
-        assert nx.graph_number_of_cliques(G, cliques=self.cl) == 5
+        with pytest.deprecated_call():
+            assert nx.graph_number_of_cliques(G) == 5
+        with pytest.deprecated_call():
+            assert nx.graph_number_of_cliques(G, cliques=self.cl) == 5
         assert nx.number_of_cliques(G, 1) == 1
         assert list(nx.number_of_cliques(G, [1]).values()) == [1]
         assert list(nx.number_of_cliques(G, [1, 2]).values()) == [1, 2]

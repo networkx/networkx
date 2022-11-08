@@ -562,6 +562,13 @@ def graph_clique_number(G, cliques=None):
 def graph_number_of_cliques(G, cliques=None):
     """Returns the number of maximal cliques in the graph.
 
+    .. deprecated:: 3.0
+
+       graph_number_of_cliques is deprecated and will be removed in v3.2.
+       The number of maximal cliques can be computed directly with::
+
+           sum(1 for _ in nx.find_cliques(G))
+
     Parameters
     ----------
     G : NetworkX graph
@@ -584,6 +591,16 @@ def graph_number_of_cliques(G, cliques=None):
     maximal cliques.
 
     """
+    import warnings
+
+    warnings.warn(
+        (
+            "\n\ngraph_number_of_cliques is deprecated and will be removed.\n"
+            "Use: ``sum(1 for _ in nx.find_cliques(G))`` instead."
+        ),
+        DeprecationWarning,
+        stacklevel=2,
+    )
     if cliques is None:
         cliques = list(find_cliques(G))
     return len(cliques)
