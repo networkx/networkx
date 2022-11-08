@@ -1,5 +1,3 @@
-import sys
-
 import pytest
 
 import networkx as nx
@@ -363,8 +361,3 @@ def test_generate_min_degree_itr():
     ):
         nx.generators.community._generate_min_degree(2, 2, 1, 0.01, 0)
 
-
-# Simply testing that no error is raise when scipy.special is not available
-def test_generate_min_degree_no_sp():
-    sys.modules["scipy.special"] = None
-    assert 1 == nx.generators.community._generate_min_degree(2, 2, 1, 100.0, 10)
