@@ -182,13 +182,16 @@ class TestEdgeFlowBetweennessCentrality:
             assert v1 == pytest.approx(v2, abs=1e-7)
 
 
-def test_unconnected_graphs_betweenness_centrality():
-    UG = nx.Graph()
-    UG.add_nodes_from([1, 2, 3, 4, 5])
-    UG.add_edges_from([(1, 2), (3, 4)])
-    assert nx.is_connected(UG) is False
-    pytest.raises(nx.NetworkXError, nx.edge_current_flow_betweenness_centrality, UG)
-    pytest.raises(nx.NetworkXError, nx.current_flow_betweenness_centrality, UG)
-    pytest.raises(
-        nx.NetworkXError, nx.approximate_current_flow_betweenness_centrality, UG
-    )
+@pytest.mark.parametrize(
+    "centrality_func",
+    (
+        nx.current_flow_betweenness_centrality,
+        nx.edge_current_flow_betweenness_centrality,
+        nx.approximate_current_flow_betweenness_centrality,
+    ),
+)
+def test_unconnected_graphs_betweenness_centrality(centrality_func):
+    G = nx.Graph([(1, 2), (3, 4)])
+    G.add_node(5)
+    with pytest.raises(nx.NetworkXError, match="Graph not connected"):
+        centrality_func(G)
