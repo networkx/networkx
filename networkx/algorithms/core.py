@@ -44,6 +44,7 @@ __all__ = [
 ]
 
 
+@nx._dispatch
 @not_implemented_for("multigraph")
 def core_number(G):
     """Returns the core number for each vertex.
@@ -154,6 +155,7 @@ def _core_subgraph(G, k_filter, k=None, core=None):
     return G.subgraph(nodes).copy()
 
 
+@nx._dispatch
 def k_core(G, k=None, core_number=None):
     """Returns the k-core of G.
 
