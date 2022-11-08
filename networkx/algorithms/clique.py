@@ -512,6 +512,14 @@ def graph_clique_number(G, cliques=None):
     The *clique number* of a graph is the size of the largest clique in
     the graph.
 
+    .. deprecated:: 3.0
+
+       graph_clique_number is deprecated in NetworkX 3.0 and will be removed
+       in v3.2. The graph clique number can be computed directly with::
+
+           max(len(c) for c in nx.find_cliques(G))
+
+
     Parameters
     ----------
     G : NetworkX graph
@@ -534,6 +542,16 @@ def graph_clique_number(G, cliques=None):
     maximal cliques.
 
     """
+    import warnings
+
+    warnings.warn(
+        (
+            "\n\ngraph_clique_number is deprecated and will be removed.\n"
+            "Use: ``max(len(c) for c in nx.find_cliques(G))`` instead."
+        ),
+        DeprecationWarning,
+        stacklevel=2,
+    )
     if len(G.nodes) < 1:
         return 0
     if cliques is None:
