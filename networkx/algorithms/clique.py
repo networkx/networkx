@@ -137,6 +137,67 @@ def find_cliques(G, nodes=None):
     ValueError
         If `nodes` is not a clique.
 
+    Examples
+    --------
+    >>> from pprint import pprint  # For nice dict formatting
+    >>> G = nx.karate_club_graph()
+    >>> sum(1 for c in nx.find_cliques(G))  # The number of maximal cliques in G
+    36
+    >>> max(nx.find_cliques(G), key=len)  # The largest maximal clique in G
+    [0, 1, 2, 3, 13]
+
+    The size of the largest maximal clique is known as the *clique number* of
+    the graph, which can be found directly with:
+
+    >>> max(len(c) for c in nx.find_cliques(G))
+    5
+
+    One can also compute the number of maximal cliques in `G` that contain a given
+    node. The following produces a dictionary keyed by node whose
+    values are the number of maximal cliques in `G` that contain the node:
+
+    >>> pprint({n: sum(1 for c in nx.find_cliques(G) if n in c) for n in G})
+    {0: 13,
+     1: 6,
+     2: 7,
+     3: 3,
+     4: 2,
+     5: 3,
+     6: 3,
+     7: 1,
+     8: 3,
+     9: 2,
+     10: 2,
+     11: 1,
+     12: 1,
+     13: 2,
+     14: 1,
+     15: 1,
+     16: 1,
+     17: 1,
+     18: 1,
+     19: 2,
+     20: 1,
+     21: 1,
+     22: 1,
+     23: 3,
+     24: 2,
+     25: 2,
+     26: 1,
+     27: 3,
+     28: 2,
+     29: 2,
+     30: 2,
+     31: 4,
+     32: 9,
+     33: 14}
+
+    Or, similarly, the maximal cliques in `G` that contain a given node.
+    For example, the 4 maximal cliques that contain node 31:
+
+    >>> [c for c in nx.find_cliques(G) if 31 in c]
+    [[0, 31], [33, 32, 31], [33, 28, 31], [24, 25, 31]]
+
     See Also
     --------
     find_cliques_recursive
@@ -274,7 +335,7 @@ def find_cliques_recursive(G, nodes=None):
     See Also
     --------
     find_cliques
-        An iterative version of the same algorithm.
+        An iterative version of the same algorithm. See docstring for examples.
 
     Notes
     -----
