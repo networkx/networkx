@@ -43,6 +43,7 @@ __all__ = [
 ]
 
 
+@nx._dispatch
 @not_implemented_for("multigraph")
 def core_number(G):
     """Returns the core number for each vertex.
@@ -141,6 +142,7 @@ def _core_subgraph(G, k_filter, k=None, core=None):
     return G.subgraph(nodes).copy()
 
 
+@nx._dispatch
 def k_core(G, k=None, core_number=None):
     """Returns the k-core of G.
 
@@ -365,6 +367,7 @@ def k_corona(G, k, core_number=None):
     return _core_subgraph(G, func, k, core_number)
 
 
+@nx._dispatch
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def k_truss(G, k):
