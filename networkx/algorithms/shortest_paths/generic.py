@@ -16,6 +16,7 @@ __all__ = [
 ]
 
 
+@nx._dispatch
 def has_path(G, source, target):
     """Returns *True* if *G* has a path from *source* to *target*.
 
