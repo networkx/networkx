@@ -119,6 +119,12 @@ class TestGeneratorInverseLine:
         ]
         solution.add_edges_from(solution_edges)
         assert nx.is_isomorphic(H, solution)
+        with pytest.raises(
+            nx.NetworkXError,
+            match="inverse_line_graph\\(\\) doesn't work on an edgeless graph. "
+            "Please use this function on each component seperately.",
+        ):
+            nx.inverse_line_graph(nx.empty_graph(2))
 
     def test_example_2(self):
         G = nx.Graph()
@@ -275,3 +281,43 @@ class TestGeneratorInverseLine:
         H = nx.line_graph(G)
         J = nx.inverse_line_graph(H)
         assert nx.is_isomorphic(G, J)
+
+    def test_triangles(self):
+        G = nx.cycle_graph(4)
+        with pytest.raises(nx.NetworkXError, match="Vertex 4 not in graph"):
+            nx.generators.line._triangles(G, (4, 3))
+        with pytest.raises(nx.NetworkXError, match="Edge \\(1, 3\\) not in graph"):
+            nx.generators.line._triangles(G, (1, 3))
+
+    def test_odd_triangle(self):
+        G = nx.cycle_graph(4)
+        with pytest.raises(nx.NetworkXError, match="Vertex 4 not in graph"):
+            nx.generators.line._odd_triangle(G, (4, 3))
+        with pytest.raises(nx.NetworkXError, match="Edge \\(1, 3\\) not in graph"):
+            nx.generators.line._odd_triangle(G, (1, 3))
+
+    def test_select_starting_cell(self):
+        G = nx.cycle_graph(4)
+        G.add_edge(0, 2)
+        assert (0, 2, 3) == nx.generators.line._select_starting_cell(G, (0, 1))
+        assert (0, 2, 3) == nx.generators.line._select_starting_cell(G, (0, 2))
+        with pytest.raises(nx.NetworkXError, match="Vertex 4 not in graph"):
+            nx.generators.line._select_starting_cell(G, (4, 3))
+        with pytest.raises(
+            nx.NetworkXError, match="starting_edge \\(1, 3\\) is not in the Graph"
+        ):
+            nx.generators.line._select_starting_cell(G, (1, 3))
+        G = nx.Graph([(0, 1), (0, 2), (1, 2), (0, 3), (1, 3), (0, 4), (1, 4)])
+        with pytest.raises(
+            nx.NetworkXError,
+            match="G is not a line graph \\(incorrect number of "
+            "odd triangles around starting edge\\)",
+        ):
+            nx.generators.line._select_starting_cell(G, (0, 1))
+        G = nx.Graph([(0, 0), (0, 1), (0, 2), (1, 2)])
+        with pytest.raises(
+            nx.NetworkXError,
+            match="G is not a line graph \\(odd triangles "
+            "do not form complete subgraph\\)",
+        ):
+            nx.generators.line._select_starting_cell(G, (0, 0))

@@ -286,9 +286,6 @@ def inverse_line_graph(G):
         for u in p:
             P_count[u] += 1
 
-    if max(P_count.values()) > 2:
-        msg = "G is not a line graph (vertex found in more than two partition cells)"
-        raise nx.NetworkXError(msg)
     W = tuple((u,) for u in P_count if P_count[u] == 1)
     H = nx.Graph()
     H.add_nodes_from(P)
@@ -433,6 +430,8 @@ def _select_starting_cell(G, starting_edge=None):
         e = arbitrary_element(G.edges())
     else:
         e = starting_edge
+        if e[0] not in G.nodes():
+            raise nx.NetworkXError(f"Vertex {e[0]} not in graph")
         if e[1] not in G[e[0]]:
             msg = f"starting_edge ({e[0]}, {e[1]}) is not in the Graph"
             raise nx.NetworkXError(msg)
