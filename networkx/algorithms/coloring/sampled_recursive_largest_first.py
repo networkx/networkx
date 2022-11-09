@@ -1,13 +1,9 @@
-from typing import Dict
-
-import networkx as nx
 from networkx.algorithms.mis import maximal_independent_set
-from networkx.classes import Graph
 
 __all__ = ["sampled_rlf_color"]
 
 
-def sampled_rlf_color(G: Graph, n_searches: int = 1_000) -> Dict:
+def sampled_rlf_color(G, n_searches=1_000):
     """Color a graph using variant of Recursive Largest First algorithm.
 
     Attempts to color a graph using as few colors as possible, where no
@@ -35,7 +31,7 @@ def sampled_rlf_color(G: Graph, n_searches: int = 1_000) -> Dict:
 
     n_searches : int
        the number of maximal independent set samples to take
-       from graph G
+       from graph G. Default is 1,000.
 
     Returns
     -------
@@ -52,10 +48,7 @@ def sampled_rlf_color(G: Graph, n_searches: int = 1_000) -> Dict:
     Raises
     ------
     NetworkXNotImplemented
-        If ``G`` is not an undirected graph
-
-    NetworkXError
-        If ``n_searches`` is not an integer
+        If `G` is directed.
 
     References
     ----------
@@ -63,15 +56,6 @@ def sampled_rlf_color(G: Graph, n_searches: int = 1_000) -> Dict:
        Wikipedia. Wikimedia Foundation, January 15, 2022.
        https://en.wikipedia.org/wiki/Recursive_largest_first_algorithm#cite_ref-:1_2-0.
     """
-    if not isinstance(n_searches, int):
-        raise nx.NetworkXError(
-            "n_searches must be an integer. " f"{n_searches} not valid."
-        )
-
-    if not isinstance(G, Graph):
-        raise nx.NetworkXNotImplemented(
-            "G must be an undirected networkx graph. " f"{G} not valid."
-        )
     color = {}
 
     temp_graph = G.copy()

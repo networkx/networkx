@@ -8,75 +8,31 @@ import networkx as nx
 is_coloring = nx.algorithms.coloring.equitable_coloring.is_coloring
 
 
-# ############################  Graph Generation ############################
-
-
-def empty_graph():
-    return nx.Graph()
-
-
-def one_node_graph():
-    graph = nx.Graph()
-    graph.add_nodes_from([1])
-    return graph
-
-
-def two_node_graph():
-    graph = nx.Graph()
-    graph.add_nodes_from([1, 2])
-    graph.add_edges_from([(1, 2)])
-    return graph
-
-
-def three_node_clique():
-    graph = nx.Graph()
-    graph.add_nodes_from([1, 2, 3])
-    graph.add_edges_from([(1, 2), (1, 3), (2, 3)])
-    return graph
-
-
-def disconnected():
-    graph = nx.Graph()
-    graph.add_edges_from([(1, 2), (2, 3), (4, 5), (5, 6)])
-    return graph
-
-
-def directed():
-    graph = nx.DiGraph()
-    graph.add_edges_from([(1, 2), (1, 3), (3, 4), (2, 5)])
-    return graph
-
-
 # --------------------------------------------------------------------------
-# Basic tests for all strategies
-# For each basic graph function, specify the number of expected colors.
+# Basic tests
+# For each basic graph, specify the number of expected colors.
 BASIC_TEST_CASES = {
-    empty_graph: 0,
-    one_node_graph: 1,
-    two_node_graph: 2,
-    disconnected: 2,
-    three_node_clique: 3,
+    nx.Graph(): 0,
+    nx.path_graph([1]): 1,
+    nx.Graph([(1, 2)]): 2,
+    nx.Graph([(1, 2), (2, 3), (4, 5), (5, 6)]): 2,
+    nx.cycle_graph(3): 3,
 }
 
 
 # ############################  tests ############################
-
-
-@pytest.mark.parametrize(
-    "graph_func, n_nodes", [(k, v) for k, v in BASIC_TEST_CASES.items()]
-)
+@pytest.mark.parametrize("graph, n_colors", list(BASIC_TEST_CASES.items()))
 @pytest.mark.parametrize("n_searches", [10, 100, 1_000, 10_000])
-def test_basic_case(graph_func, n_nodes, n_searches):
-    graph = graph_func()
+def test_basic_case(graph, n_colors, n_searches):
     coloring = nx.coloring.sampled_rlf_color(graph, n_searches=n_searches)
-    assert verify_length(coloring, n_nodes)
+    assert verify_length(coloring, n_colors)
     assert verify_coloring(graph, coloring)
 
 
 def test_bad_inputs():
-    graph = one_node_graph()
+    graph = nx.path_graph([1])
     pytest.raises(
-        nx.NetworkXError,
+        TypeError,
         nx.coloring.sampled_rlf_color,
         graph,
         n_searches="invalid search",
@@ -84,7 +40,7 @@ def test_bad_inputs():
 
 
 def test_invalid_graph():
-    graph = directed()
+    graph = nx.DiGraph([(1, 2), (2, 3), (4, 5), (5, 6)])
     pytest.raises(
         nx.NetworkXNotImplemented, nx.coloring.sampled_rlf_color, graph, n_searches=10
     )
