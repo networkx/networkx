@@ -40,7 +40,7 @@ def laplacian_spectrum(G, weight="weight"):
 
     Examples
     --------
-    The multiplicity of O as an eigenvalue of the laplacian matrix is equal
+    The multiplicity of 0 as an eigenvalue of the laplacian matrix is equal
     to the number of connected components of G.
 
     >>> import numpy as np
