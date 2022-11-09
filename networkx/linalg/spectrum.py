@@ -47,9 +47,8 @@ def laplacian_spectrum(G, weight="weight"):
     >>> G = nx.Graph()  # Create a graph with 5 nodes and 3 connected components
     >>> G.add_nodes_from(range(5))
     >>> G.add_edges_from([(0, 2), (3, 4)])
-    >>> eigvals = nx.laplacian_spectrum(G).round(10)
-    >>> print(len(eigvals) - np.count_nonzero(eigvals)) #Count zero eigvalues
-    3
+    >>> nx.laplacian_spectrum(G)
+    array([0., 0., 0., 2., 2.])
 
     """
     import scipy as sp
