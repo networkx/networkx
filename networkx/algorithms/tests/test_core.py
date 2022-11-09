@@ -179,7 +179,7 @@ class TestCore:
         assert nodes_equal(nodes_by_layer[5], [3, 7])
 
     def test_onion_self_loop(self):
-        self_loop = nx.cycle_graph(3)
-        self_loop.add_edge(0, 0)
-        with pytest.raises(nx.NetworkXError):
-            nx.onion_layers(self_loop)
+        G = nx.cycle_graph(3)
+        G.add_edge(0, 0)
+        with pytest.raises(nx.NetworkXError, match="Input graph contains self loops"):
+            nx.onion_layers(G)
