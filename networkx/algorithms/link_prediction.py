@@ -94,6 +94,7 @@ def resource_allocation_index(G, ebunch=None):
     return _apply_prediction(G, predict, ebunch)
 
 
+@nx._dispatch
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def jaccard_coefficient(G, ebunch=None):
