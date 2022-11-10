@@ -24,6 +24,7 @@ class TestLoadCentrality:
         cls.P3 = nx.path_graph(3)
         cls.P4 = nx.path_graph(4)
         cls.K5 = nx.complete_graph(5)
+        cls.P2 = nx.path_graph(2)
 
         cls.C4 = nx.cycle_graph(4)
         cls.T = nx.balanced_tree(r=2, h=2)
@@ -40,6 +41,13 @@ class TestLoadCentrality:
         for n in sorted(self.D):
             assert result[n] == pytest.approx(b[n], abs=1e-3)
             assert result[n] == pytest.approx(nx.load_centrality(self.D, n), abs=1e-3)
+
+    def test_P2_normalized_load(self):
+        G = self.P2
+        c = nx.load_centrality(G, normalized=True)
+        d = {0: 0.000, 1: 0.000}
+        for n in sorted(G):
+            assert c[n] == pytest.approx(d[n], abs=1e-3)
 
     def test_weighted_load(self):
         b = nx.load_centrality(self.G, weight="weight", normalized=False)

@@ -30,6 +30,10 @@ def pytest_configure(config):
 
 
 def pytest_collection_modifyitems(config, items):
+    # Allow pluggable backends to add markers to tests when
+    # running in auto-conversion test mode
+    networkx.classes.backends._mark_tests(items)
+
     if config.getoption("--runslow"):
         # --runslow given in cli: do not skip slow tests
         return

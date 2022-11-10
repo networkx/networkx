@@ -178,7 +178,7 @@ def christofides(G, weight="weight", tree=None):
     L.remove_nodes_from([v for v, degree in tree.degree if not (degree % 2)])
     MG = nx.MultiGraph()
     MG.add_edges_from(tree.edges)
-    edges = nx.min_weight_matching(L, maxcardinality=True, weight=weight)
+    edges = nx.min_weight_matching(L, weight=weight)
     MG.add_edges_from(edges)
     return _shortcutting(nx.eulerian_circuit(MG))
 

@@ -86,3 +86,16 @@ def test_random_tree():
     """Tests that a random tree is in fact a tree."""
     T = nx.random_tree(10, seed=1234)
     assert nx.is_tree(T)
+
+
+def test_random_tree_n_zero():
+    """Tests if n = 0 then the NetworkXPointlessConcept exception is raised."""
+    with pytest.raises(nx.NetworkXPointlessConcept):
+        T = nx.random_tree(0, seed=1234)
+
+
+def test_random_tree_using_generator():
+    """Tests that creating a ramdom tree with a generator works"""
+    G = nx.Graph()
+    T = nx.random_tree(10, seed=1234, create_using=G)
+    assert nx.is_tree(T)

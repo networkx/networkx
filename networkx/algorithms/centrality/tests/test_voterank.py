@@ -28,6 +28,10 @@ class TestVoteRankCentrality:
         )
         assert [0, 7, 6] == nx.voterank(G)
 
+    def test_voterank_emptygraph(self):
+        G = nx.Graph()
+        assert [] == nx.voterank(G)
+
     # Graph unit test
     def test_voterank_centrality_2(self):
         G = nx.florentine_families_graph()

@@ -38,8 +38,8 @@ def test_node_match(nm):
         ),
     ],
 )
-class TestMultiEdgeMatch:
-    def setup(self):
+class TestGenericMultiEdgeMatch:
+    def setup_method(self):
         self.G1 = nx.MultiDiGraph()
         self.G2 = nx.MultiDiGraph()
         self.G3 = nx.MultiDiGraph()

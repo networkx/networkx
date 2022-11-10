@@ -94,7 +94,7 @@ Development Workflow
      branch name will appear in the merge message, use a sensible name
      such as 'bugfix-for-issue-1480'::
 
-      git checkout -b bugfix-for-issue-1480
+      git checkout -b bugfix-for-issue-1480 main
 
    * Commit locally as you progress (``git add`` and ``git commit``)
 
