@@ -25,6 +25,12 @@ def test_redundant_nodes():
         assert redundancy[v] == 1
 
 
+def test_redundant_nodes_2():
+    G = cycle_graph(4)
+    redundancy = node_redundancy(G, nodes=[0, 2])
+    assert redundancy == {0: 1.0, 2: 1.0}
+
+
 def test_not_enough_neighbors():
     with pytest.raises(NetworkXError):
         G = complete_bipartite_graph(1, 2)
