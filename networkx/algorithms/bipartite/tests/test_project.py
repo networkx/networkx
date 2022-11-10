@@ -14,6 +14,10 @@ class TestBipartiteProject:
         P = bipartite.projected_graph(G, [0, 2])
         assert nodes_equal(list(P), [0, 2])
         assert edges_equal(list(P.edges()), [(0, 2)])
+        with pytest.raises(nx.NetworkXError):
+            G = nx.MultiGraph()
+            G.add_edge(0, 1)
+            bipartite.projected_graph(G, [0])
 
     def test_path_projected_properties_graph(self):
         G = nx.path_graph(4)
@@ -65,6 +69,14 @@ class TestBipartiteProject:
         assert nodes_equal(list(P), [0, 2])
         assert edges_equal(list(P.edges()), [(0, 2)])
         P[0][2]["weight"] = 1
+
+    def test_digraph_conversion(self):
+        G = nx.DiGraph()
+        edges = [(0, 1, 1), (1, 2, 1), (2, 3, 1), (3, 4, 2)]
+        G.add_weighted_edges_from(edges)
+        P = bipartite.overlap_weighted_projected_graph(G, [1, 3])
+        assert nx.get_edge_attributes(P, "weight") == {(1, 3): 1.0}
+        assert len(P.nodes()) == 2
 
     def test_path_weighted_projected_directed_graph(self):
         G = nx.DiGraph()
