@@ -107,7 +107,7 @@ class TestNodeLink:
         G.add_edge(1, 2, key="first")
         G.add_edge(1, 2, key="second", color="blue")
         H = node_link_graph(node_link_data(G))
-        nx.is_isomorphic(G, H)
+        assert nx.is_isomorphic(G, H)
         assert H[1][2]["second"]["color"] == "blue"
 
     def test_graph_with_tuple_nodes(self):

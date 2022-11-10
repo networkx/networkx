@@ -36,7 +36,7 @@ class MultiGraph(Graph):
         graph is created.  The data can be any format that is supported
         by the to_networkx_graph() function, currently including edge list,
         dict of dicts, dict of lists, NetworkX graph, 2D NumPy array,
-        SciPy sparse matrix, or PyGraphviz graph.
+        SciPy sparse array, or PyGraphviz graph.
 
     multigraph_input : bool or None (default None)
         Note: Only used when `incoming_graph_data` is a dict.
@@ -262,6 +262,27 @@ class MultiGraph(Graph):
     to_undirected_class : callable, (default: Graph or MultiGraph)
         Class to create a new graph structure in the `to_undirected` method.
         If `None`, a NetworkX class (Graph or MultiGraph) is used.
+
+    **Subclassing Example**
+
+    Create a low memory graph class that effectively disallows edge
+    attributes by using a single attribute dict for all edges.
+    This reduces the memory used, but you lose edge attributes.
+
+    >>> class ThinGraph(nx.Graph):
+    ...     all_edge_dict = {"weight": 1}
+    ...
+    ...     def single_edge_dict(self):
+    ...         return self.all_edge_dict
+    ...
+    ...     edge_attr_dict_factory = single_edge_dict
+    >>> G = ThinGraph()
+    >>> G.add_edge(2, 1)
+    >>> G[2][1]
+    {'weight': 1}
+    >>> G.add_edge(2, 2)
+    >>> G[2][1] is G[2][2]
+    True
     """
 
     # node_dict_factory = dict    # already assigned in Graph
@@ -296,7 +317,7 @@ class MultiGraph(Graph):
             an empty graph is created.  The data can be an edge list, or any
             NetworkX graph object.  If the corresponding optional Python
             packages are installed the data can also be a 2D NumPy array, a
-            SciPy sparse matrix, or a PyGraphviz graph.
+            SciPy sparse array, or a PyGraphviz graph.
 
         multigraph_input : bool or None (default None)
             Note: Only used when `incoming_graph_data` is a dict.

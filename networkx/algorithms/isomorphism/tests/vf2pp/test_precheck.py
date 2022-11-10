@@ -94,6 +94,6 @@ class TestPreCheck:
             G2, dict(zip(G2, itertools.cycle(colors2[::-1]))), "label"
         )
 
-        assert not vf2pp_is_isomorphic(G1, G2, node_labels="label")
+        assert not vf2pp_is_isomorphic(G1, G2, node_label="label")
         G2.nodes[3]["label"] = "blue"
-        assert vf2pp_is_isomorphic(G1, G2, node_labels="label")
+        assert vf2pp_is_isomorphic(G1, G2, node_label="label")

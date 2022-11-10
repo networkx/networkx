@@ -34,7 +34,7 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
 
     Returns
     -------
-    L : SciPy sparse matrix
+    L : SciPy sparse array
       The Laplacian matrix of G.
 
     Notes
@@ -56,15 +56,7 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
     n, m = A.shape
     # TODO: rm csr_array wrapper when spdiags can produce arrays
     D = sp.sparse.csr_array(sp.sparse.spdiags(A.sum(axis=1), 0, m, n, format="csr"))
-    import warnings
-
-    warnings.warn(
-        "laplacian_matrix will return a scipy.sparse array instead of a matrix in Networkx 3.0.",
-        FutureWarning,
-        stacklevel=2,
-    )
-    # TODO: rm sp.sparse.csr_matrix in version 3.0
-    return sp.sparse.csr_matrix(D - A)
+    return D - A
 
 
 @not_implemented_for("directed")
@@ -95,7 +87,7 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
 
     Returns
     -------
-    N : Scipy sparse matrix
+    N : SciPy sparse array
       The normalized Laplacian matrix of G.
 
     Notes
@@ -136,15 +128,7 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
     diags_sqrt[np.isinf(diags_sqrt)] = 0
     # TODO: rm csr_array wrapper when spdiags can produce arrays
     DH = sp.sparse.csr_array(sp.sparse.spdiags(diags_sqrt, 0, m, n, format="csr"))
-    import warnings
-
-    warnings.warn(
-        "normalized_laplacian_matrix will return a scipy.sparse array instead of a matrix in Networkx 3.0.",
-        FutureWarning,
-        stacklevel=2,
-    )
-    # TODO: rm csr_matrix wrapper for NX 3.0
-    return sp.sparse.csr_matrix(DH @ (L @ DH))
+    return DH @ (L @ DH)
 
 
 def total_spanning_tree_weight(G, weight=None):
@@ -269,15 +253,7 @@ def directed_laplacian_matrix(
     # NOTE: This could be sparsified for the non-pagerank cases
     I = np.identity(len(G))
 
-    import warnings
-
-    warnings.warn(
-        "directed_laplacian_matrix will return a numpy array instead of a matrix in NetworkX 3.0",
-        FutureWarning,
-        stacklevel=2,
-    )
-    # TODO: rm np.asmatrix for networkx 3.0
-    return np.asmatrix(I - (Q + Q.T) / 2.0)
+    return I - (Q + Q.T) / 2.0
 
 
 @not_implemented_for("undirected")
@@ -356,17 +332,7 @@ def directed_combinatorial_laplacian_matrix(
     # TODO: Rm csr_array wrapper when spdiags array creation becomes available
     Phi = sp.sparse.csr_array(sp.sparse.spdiags(p, 0, n, n)).toarray()
 
-    import warnings
-
-    warnings.warn(
-        "directed_combinatorial_laplacian_matrix will return a numpy array instead of a matrix in NetworkX 3.0",
-        FutureWarning,
-        stacklevel=2,
-    )
-    # TODO: Rm np.asmatrix for networkx 3.0
-    import numpy as np
-
-    return np.asmatrix(Phi - (Phi @ P + P.T @ Phi) / 2.0)
+    return Phi - (Phi @ P + P.T @ Phi) / 2.0
 
 
 def _transition_matrix(G, nodelist=None, weight="weight", walk_type=None, alpha=0.95):

@@ -6,7 +6,6 @@ A graph is chordal if every cycle of length at least 4 has a chord
 https://en.wikipedia.org/wiki/Chordal_graph
 """
 import sys
-import warnings
 
 import networkx as nx
 from networkx.algorithms.components import connected_components

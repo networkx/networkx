@@ -61,6 +61,10 @@ Improvements
   ``is_path`` used to raise a `KeyError` when the ``path`` argument contained
   a node that was not in the Graph. The behavior has been updated so that
   ``is_path`` returns `False` in this case rather than raising the exception.
+- [`#6003 <https://github.com/networkx/networkx/pull/6003>`_]
+  ``avg_shortest_path_length`` now raises an exception if the provided
+  graph is directed but not strongly connected. The previous test (weak
+  connecting) was wrong; in that case, the returned value was nonsensical.
 
 API Changes
 -----------

@@ -34,7 +34,7 @@ def test_union_all_attributes():
 def test_intersection_all():
     G = nx.Graph()
     H = nx.Graph()
-    R = nx.Graph()
+    R = nx.Graph(awesome=True)
     G.add_nodes_from([1, 2, 3, 4])
     G.add_edge(1, 2)
     G.add_edge(2, 3)
@@ -47,6 +47,7 @@ def test_intersection_all():
     I = nx.intersection_all([G, H, R])
     assert set(I.nodes()) == {1, 2, 3, 4}
     assert sorted(I.edges()) == [(2, 3)]
+    assert I.graph["awesome"]
 
 
 def test_intersection_all_different_node_sets():
@@ -238,9 +239,10 @@ def test_union_all_multigraph():
 
 
 def test_input_output():
-    l = [nx.Graph([(1, 2)]), nx.Graph([(3, 4)])]
+    l = [nx.Graph([(1, 2)]), nx.Graph([(3, 4)], awesome=True)]
     U = nx.disjoint_union_all(l)
     assert len(l) == 2
+    assert U.graph["awesome"]
     C = nx.compose_all(l)
     assert len(l) == 2
     l = [nx.Graph([(1, 2)]), nx.Graph([(1, 2)])]

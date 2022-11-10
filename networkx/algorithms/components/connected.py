@@ -12,6 +12,7 @@ __all__ = [
 ]
 
 
+@nx._dispatch
 @not_implemented_for("directed")
 def connected_components(G):
     """Generate connected components.

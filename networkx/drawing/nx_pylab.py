@@ -650,16 +650,48 @@ def draw_networkx_edges(
     # undirected graphs (for performance reasons) and use FancyArrowPatches
     # for directed graphs.
     # The `arrows` keyword can be used to override the default behavior
+    use_linecollection = not G.is_directed()
+    if arrows in (True, False):
+        use_linecollection = not arrows
+
+    # Some kwargs only apply to FancyArrowPatches. Warn users when they use
+    # non-default values for these kwargs when LineCollection is being used
+    # instead of silently ignoring the specified option
+    if use_linecollection and any(
+        [
+            arrowstyle is not None,
+            arrowsize != 10,
+            connectionstyle != "arc3",
+            min_source_margin != 0,
+            min_target_margin != 0,
+        ]
+    ):
+        import warnings
+
+        msg = (
+            "\n\nThe {0} keyword argument is not applicable when drawing edges\n"
+            "with LineCollection.\n\n"
+            "To make this warning go away, either specify `arrows=True` to\n"
+            "force FancyArrowPatches or use the default value for {0}.\n"
+            "Note that using FancyArrowPatches may be slow for large graphs.\n"
+        )
+        if arrowstyle is not None:
+            msg = msg.format("arrowstyle")
+        if arrowsize != 10:
+            msg = msg.format("arrowsize")
+        if connectionstyle != "arc3":
+            msg = msg.format("connectionstyle")
+        if min_source_margin != 0:
+            msg = msg.format("min_source_margin")
+        if min_target_margin != 0:
+            msg = msg.format("min_target_margin")
+        warnings.warn(msg, category=UserWarning, stacklevel=2)
 
     if arrowstyle == None:
         if G.is_directed():
             arrowstyle = "-|>"
         else:
             arrowstyle = "-"
-
-    use_linecollection = not G.is_directed()
-    if arrows in (True, False):
-        use_linecollection = not arrows
 
     if ax is None:
         ax = plt.gca()
