@@ -52,6 +52,7 @@ class TestStochasticGraph:
         ]
 
     def test_zero_weights(self):
+        """Smoke test: ensure ZeroDivisionError is not raised."""
         G = nx.DiGraph()
         G.add_edge(0, 1, weight=0)
         G.add_edge(0, 2, weight=0)
