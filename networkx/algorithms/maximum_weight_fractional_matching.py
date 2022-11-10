@@ -47,9 +47,8 @@ def maximum_weight_fractional_matching(G: nx.Graph):
                                                               frac = 1.0
                     maximum_weight_fractional_matching(G) = a1-----------a2
 
-    The returned value is {('a1', 'a2'): 0.333}.
-    ???
-
+    The returned value is {('a1', 'a2'): 1.0}.
+    There is only one edge, so it gets the maximaum value.
 
     another example:
         >>> G = nx.Graph()
@@ -78,7 +77,24 @@ def maximum_weight_fractional_matching(G: nx.Graph):
                                                                      a3
 
     The returned value is {('a1', 'a2'): 0.5, ('a1', 'a3'): 0.5, ('a2', 'a3'): 0.5}.
-    ???
+    We want to find Max(x,y,z) S.T
+    a1: x +2y<=1
+    a2: x+3z<=1
+    a3: 2y+3z<=1
+    and
+    x,y,z<=1
+    we can solve it using the linprog function:
+    linprog(c, A_ub, b_ub, bounds, method='highs')
+    linprog solve the same problem, but it finds the Min(x,y,z) so if we want Max(x,y,z)
+    we can change our inqualities to be:
+    Min(x,y,z)
+    S.T
+    a1: x +2y>=-1
+    a2: x+3z>=-1
+    a3: 2y+3z>=-1
+    set bounds = (-1, 0)
+    and then take the result as ABS, like that - |Min(x,y,z)|
+    than we will get the solution for our original problem = {('a1', 'a2'): 0.5, ('a1', 'a3'): 0.5, ('a2', 'a3'): 0.5}
 
     Raises
     ------
