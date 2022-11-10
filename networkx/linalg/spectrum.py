@@ -43,7 +43,6 @@ def laplacian_spectrum(G, weight="weight"):
     The multiplicity of 0 as an eigenvalue of the laplacian matrix is equal
     to the number of connected components of G.
 
-    >>> import numpy as np
     >>> G = nx.Graph()  # Create a graph with 5 nodes and 3 connected components
     >>> G.add_nodes_from(range(5))
     >>> G.add_edges_from([(0, 2), (3, 4)])
