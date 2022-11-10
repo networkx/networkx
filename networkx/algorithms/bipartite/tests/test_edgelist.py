@@ -55,6 +55,86 @@ class TestEdgelist:
             G.edges(data=True), [(1, 2, {"weight": 2.0}), (2, 3, {"weight": 3.0})]
         )
 
+    def test_read_edgelist_4(self):
+        s = b"""\
+        # comment line
+        1 
+        # comment line
+        2 3 {'weight':3.0}
+        """
+        bytesIO = io.BytesIO(s)
+        G = bipartite.read_edgelist(bytesIO, nodetype=int, data=False)
+        assert edges_equal(G.edges(), [(2, 3)])
+
+        bytesIO = io.BytesIO(s)
+        G = bipartite.read_edgelist(bytesIO, nodetype=int, data=True)
+        assert edges_equal(G.edges(data=True), [(2, 3, {"weight": 3.0})])
+
+    def test_read_edgelist_5(self):
+        s = b"""\
+        # comment line
+        1 'a' {'weight':2.0}
+        # comment line
+        2 3 {'weight':3.0}
+        """
+        with pytest.raises(TypeError):
+            bytesIO = io.BytesIO(s)
+            bipartite.read_edgelist(bytesIO, nodetype=int, data=False)
+
+        with pytest.raises(TypeError):
+            bytesIO = io.BytesIO(s)
+            bipartite.read_edgelist(bytesIO, nodetype=int, data=True)
+
+    def test_read_edgelist_6(self):
+        s = b"""\
+        # comment line
+        1 2 {'weight':2.0}
+        # comment line
+        2 3 ['weight':'a']
+        """
+        with pytest.raises(TypeError):
+            bytesIO = io.BytesIO(s)
+            bipartite.read_edgelist(bytesIO, nodetype=int, data=True)
+
+    def test_read_edgelist_7(self):
+        s = b"""\
+        # comment line
+        1 2 2.0
+        # comment line
+        2 3 'a'
+        """
+        with pytest.raises(TypeError):
+            bytesIO = io.BytesIO(s)
+            bipartite.read_edgelist(bytesIO, nodetype=int, data=[("weight", float)])
+
+    def test_read_edgelist_8(self):
+        s = b"""\
+                # comment line
+                1 2 2.0
+                # comment line
+                2 3 2.0
+                """
+        with pytest.raises(IndexError):
+            bytesIO = io.BytesIO(s)
+            bipartite.read_edgelist(
+                bytesIO, nodetype=int, data=[("weight", float), ("color", int)]
+            )
+
+    def test_read_edgelist_9(self):
+        s = b"""\
+    # comment line
+    1 2 1.0
+    # comment line
+    2 3
+    """
+        bytesIO = io.BytesIO(s)
+        G = bipartite.read_edgelist(bytesIO, nodetype=int, data=False)
+        assert edges_equal(G.edges(), [(1, 2), (2, 3)])
+
+        bytesIO = io.BytesIO(s)
+        G = bipartite.read_edgelist(bytesIO, nodetype=int, data=[("weight", float)])
+        assert edges_equal(G.edges(data=True), [(1, 2, {"weight": 1.0}), (2, 3, {})])
+
     def test_write_edgelist_1(self):
         fh = io.BytesIO()
         G = nx.Graph()
@@ -100,6 +180,18 @@ class TestEdgelist:
         bipartite.write_edgelist(G, fh, data=[("weight")])
         fh.seek(0)
         assert fh.read() == b"1 2 2.0\n3 2 3.0\n"
+
+    def test_write_edgelist_5(self):
+        fh = io.BytesIO()
+        G = nx.Graph()
+        G.add_edge(1, 2, weight=2.0)
+        G.add_edge(2, 3)
+        G.add_node(1, bipartite=0)
+        G.add_node(2, bipartite=1)
+        G.add_node(3, bipartite=0)
+        bipartite.write_edgelist(G, fh, data=[("weight")])
+        fh.seek(0)
+        assert fh.read() == b"1 2 2.0\n3 2\n"
 
     def test_unicode(self):
         G = nx.Graph()
