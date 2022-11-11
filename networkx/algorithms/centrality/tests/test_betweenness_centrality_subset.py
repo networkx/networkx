@@ -306,7 +306,7 @@ class TestEdgeSubsetBetweennessCentrality:
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
     def test_normalized_P5_directed(self):
-        """Edge betweenness subset centrality: Normalized Directed P5 """
+        """Edge betweenness subset centrality: Normalized Directed P5"""
         G = nx.DiGraph()
         nx.add_path(G, range(5))
         b_answer = dict.fromkeys(G.edges(), 0)
