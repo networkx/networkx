@@ -117,6 +117,10 @@ class TestSubsetBetweennessCentrality:
             assert b[n] == pytest.approx(expected_b[n], abs=1e-7)
 
     def test_normalized_p2(self):
+        """
+        Betweenness Centrality Subset: Normalized P2
+        if n <= 2:  no normalization, betweenness centrality should be 0 for all nodes.
+        """
         G = nx.Graph()
         nx.add_path(G, range(2))
         b_answer = {0: 0, 1: 0.0}
@@ -127,6 +131,7 @@ class TestSubsetBetweennessCentrality:
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
     def test_normalized_P5_directed(self):
+        """Betweenness Centrality Subset: Normalized Directed P5"""
         G = nx.DiGraph()
         nx.add_path(G, range(5))
         b_answer = {0: 0, 1: 1.0 / 12.0, 2: 1.0 / 12.0, 3: 0, 4: 0, 5: 0}
@@ -137,6 +142,7 @@ class TestSubsetBetweennessCentrality:
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
     def test_weighted_graph(self):
+        """Betweenness Centrality Subset: Weighted Graph"""
         G = nx.DiGraph()
         G.add_edge(0, 1, weight=3)
         G.add_edge(0, 2, weight=2)
@@ -248,7 +254,7 @@ class TestEdgeSubsetBetweennessCentrality:
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
     def test_diamond_multi_path(self):
-        """Edge betweenness Centrality Subset: Diamond Multi Path"""
+        """Edge betweenness subset centrality: Diamond Multi Path"""
         G = nx.Graph()
         G.add_edges_from(
             [
@@ -286,6 +292,10 @@ class TestEdgeSubsetBetweennessCentrality:
             assert b[n] == pytest.approx(b_answer[sort_n], abs=1e-7)
 
     def test_normalized_p1(self):
+        """
+        Edge betweenness subset centrality: P1
+        if n <= 1: no normalization b=0 for all nodes
+        """
         G = nx.Graph()
         nx.add_path(G, range(1))
         b_answer = dict.fromkeys(G.edges(), 0)
@@ -296,6 +306,7 @@ class TestEdgeSubsetBetweennessCentrality:
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
     def test_normalized_P5_directed(self):
+        """Edge betweenness subset centrality: Normalized Directed P5"""
         G = nx.DiGraph()
         nx.add_path(G, range(5))
         b_answer = dict.fromkeys(G.edges(), 0)
@@ -307,6 +318,7 @@ class TestEdgeSubsetBetweennessCentrality:
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
     def test_weighted_graph(self):
+        """Edge betweenness subset centrality: Weighted Graph"""
         G = nx.DiGraph()
         G.add_edge(0, 1, weight=3)
         G.add_edge(0, 2, weight=2)
