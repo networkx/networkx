@@ -36,6 +36,7 @@ def line_graph(G, create_using=None):
     >>> L = nx.line_graph(G)
     >>> print(sorted(map(sorted, L.edges())))  # makes a 3-clique, K3
     [[(0, 1), (0, 2)], [(0, 1), (0, 3)], [(0, 2), (0, 3)]]
+
     Edge attributes from `G` are not copied over as node attributes in `L`, but
     attributes can be copied manually:
     >>> G = nx.path_graph(4)
@@ -46,6 +47,7 @@ def line_graph(G, create_using=None):
     >>> H.add_nodes_from((node, G.edges[node]) for node in H)
     >>> H.nodes(data=True)
     NodeDataView({(0, 1): {'tot': 1}, (2, 3): {'tot': 5}, (1, 2): {'tot': 3}})
+
     Notes
     -----
     Graph, node, and edge data are not propagated to the new graph. For
