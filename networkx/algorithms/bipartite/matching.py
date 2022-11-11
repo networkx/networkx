@@ -23,6 +23,7 @@ two vertices on the left and three vertices on the right:
 [2, 3, 4]
 >>> nx.bipartite.maximum_matching(G)
 {0: 2, 1: 3, 2: 0, 3: 1}
+
 The dictionary returned by :func:`maximum_matching` includes a mapping for
 vertices in both the left and right vertex sets.
 Similarly, :func:`minimum_weight_full_matching` produces, for a complete
