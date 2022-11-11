@@ -53,13 +53,13 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
     to a block diagonal matrix where each block is the respective Laplacian
     matrix for each component.
 
-    >>> G = nx.graph_atlas(26) #This graph from the Graph Atlas has 2 connected components.
-    >>> print(nx.laplacian_matrix(G).todense())
-    [[ 1 -1  0  0  0]
-     [-1  2 -1  0  0]
-     [ 0 -1  1  0  0]
-     [ 0  0  0  1 -1]
-     [ 0  0  0 -1  1]]
+    >>> G = nx.Graph([(1,2), (2, 3), (4, 5)])
+    >>> nx.laplacian_matrix(G).toarray()
+    array([[ 1, -1,  0,  0,  0],
+           [-1,  2, -1,  0,  0],
+           [ 0, -1,  1,  0,  0],
+           [ 0,  0,  0,  1, -1],
+           [ 0,  0,  0, -1,  1]])
 
     """
     import scipy as sp
