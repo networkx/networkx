@@ -222,6 +222,7 @@ def inverse_line_graph(G):
     ...     root_graphs.append(nx.inverse_line_graph(G.subgraph(comp)))
     >>> len(root_graphs)
     2
+
     References
     ----------
     * Roussopolous, N, "A max {m, n} algorithm for determining the graph H from
