@@ -386,6 +386,7 @@ def to_vertex_cover(G, matching, top_nodes=None):
     >>> independent_set = set(G) - vertex_cover
     >>> print(list(independent_set))
     [2, 3, 4]
+
     See :mod:`bipartite documentation <networkx.algorithms.bipartite>`
     for further details on how bipartite graphs are handled in NetworkX.
     """
