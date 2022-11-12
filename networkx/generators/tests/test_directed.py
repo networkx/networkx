@@ -56,6 +56,33 @@ class TestGeneratorsDirected:
         pytest.raises(ValueError, scale_free_graph, 100, alpha=-0.3)
         pytest.raises(ValueError, scale_free_graph, 100, beta=-0.3)
         pytest.raises(ValueError, scale_free_graph, 100, gamma=-0.3)
+        G = nx.DiGraph()
+        G.add_node(0)
+
+        def kernel(x):
+            return x
+
+        assert nx.is_isomorphic(gn_graph(1), G)
+        assert nx.is_isomorphic(gn_graph(1, kernel=kernel), G)
+        assert nx.is_isomorphic(gnc_graph(1), G)
+        assert nx.is_isomorphic(gnr_graph(1, 0.5), G)
+
+
+def test_scale_free_errors():
+    with pytest.raises(
+        ValueError,
+        match="Cannot set both create_using and initial_graph. Set create_using=None.",
+    ):
+        G = nx.MultiDiGraph()
+        scale_free_graph(10, create_using=Graph, initial_graph=G)
+    with pytest.raises(ValueError, match="delta_in must be >= 0."):
+        scale_free_graph(10, create_using=None, delta_in=-1)
+    with pytest.raises(ValueError, match="delta_out must be >= 0."):
+        scale_free_graph(10, create_using=None, delta_out=-1)
+    G = MultiDiGraph([("a", "b"), ("b", "c"), ("c", "a")])
+    s = scale_free_graph(3, initial_graph=G)
+    assert len(s) == 3
+    assert len(s.edges) == 3
 
 
 @pytest.mark.parametrize("ig", (nx.Graph(), nx.DiGraph([(0, 1)])))
@@ -88,6 +115,10 @@ class TestRandomKOutGraph:
         G = random_k_out_graph(n, k, alpha, self_loops=False)
         assert nx.number_of_selfloops(G) == 0
 
+    def test_negative_alpha(self):
+        with pytest.raises(ValueError, match="alpha must be positive"):
+            random_k_out_graph(10, 3, -1)
+
 
 class TestUniformRandomKOutGraph:
     """Unit tests for the
@@ -118,6 +149,11 @@ class TestUniformRandomKOutGraph:
         k = 3
         G = random_uniform_k_out_graph(n, k, with_replacement=True)
         assert G.is_multigraph()
+        assert all(d == k for v, d in G.out_degree())
+        n = 10
+        k = 9
+        G = random_uniform_k_out_graph(n, k, with_replacement=False, self_loops=False)
+        assert not nx.number_of_selfloops(G)
         assert all(d == k for v, d in G.out_degree())
 
     def test_without_replacement(self):
