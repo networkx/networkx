@@ -7,8 +7,11 @@ accepts a graph as input, you must provide a tournament graph. The
 responsibility is on the caller to ensure that the graph is a tournament
 graph.
 
-To access the functions in this module, you must access them through the
-:mod:`networkx.algorithms.tournament` module::
+.. warning:: The functions in this module are not imported into the top level 
+:mod:`networkx` namespace.
+
+They can be imported using :mod:`networkx.algorithms.tournament`. 
+For example:
 
     >>> from networkx.algorithms import tournament
     >>> G = nx.DiGraph([(0, 1), (1, 2), (2, 0)])
