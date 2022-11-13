@@ -3,8 +3,9 @@ graphs.  Bipartite graphs `B = (U, V, E)` have two node sets `U,V` and edges in
 `E` that only connect nodes from opposite sets. It is common in the literature
 to use an spatial analogy referring to the two node sets as top and bottom nodes.
 
-The bipartite algorithms are not imported into the networkx namespace
-at the top level so the easiest way to use them is with:
+.. warning:: The bipartite algorithms are not imported in the top-level of ``networkx``
+
+These functions can be accessed using
 
 >>> from networkx.algorithms import bipartite
 
