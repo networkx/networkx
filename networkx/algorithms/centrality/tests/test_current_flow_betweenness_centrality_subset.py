@@ -83,6 +83,15 @@ class TestFlowBetweennessCentrality:
         for n in sorted(G):
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
+    def test_is_connected(self):
+        """Betweenness centrality: star"""
+        G = nx.Graph()
+        nx.add_nodes_from([1, 2, 3, 4])
+        with pytest.raises(nx.NetworkXError, match="Graph not connected."):
+            nx.current_flow_betweenness_centrality_subset(
+                G, list(G), list(G), normalized=True
+            )
+
 
 # class TestWeightedFlowBetweennessCentrality():
 #     pass
@@ -145,3 +154,12 @@ class TestEdgeFlowBetweennessCentrality:
         for (s, t), v1 in b_answer.items():
             v2 = b.get((s, t), b.get((t, s)))
             assert v1 == pytest.approx(v2, abs=1e-7)
+
+    def test_is_connected(self):
+        """Edge betweenness centrality: is_connected"""
+        G = nx.Graph()
+        nx.add_nodes_from([1, 2, 3, 4])
+        with pytest.raises(nx.NetworkXError, match="Graph not connected."):
+            nx.edge_current_flow_betweenness_centrality_subset(
+                G, list(G), list(G), normalized=True
+            )
