@@ -595,8 +595,7 @@ def number_of_cliques(G, nodes=None, cliques=None):
     Returns
     -------
     int or dict
-        If `nodes` is a single node, returns
-        the size of the number of maximal cliques `G` containing
+        If `nodes` is a single node, returns the number of maximal cliques `G` containing
         that node. Otherwise return a dict keyed by node to the the
         number of maximal cliques containing that node.
 
