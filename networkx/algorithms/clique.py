@@ -605,9 +605,8 @@ def number_of_cliques(G, nodes=None, cliques=None):
 
     Examples
     --------
-    >>> import pprint
     >>> G = nx.complete_multipartite_graph(1, 2, 2)
-    >>> pprint.pprint(nx.number_of_cliques(G))
+    >>> nx.number_of_cliques(G)
     {0: 4, 1: 2, 2: 2, 3: 2, 4: 2}
 
     """
