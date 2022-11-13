@@ -602,10 +602,6 @@ def number_of_cliques(G, nodes=None, cliques=None):
     See Also
     --------
     find_cliques
-        find_cliques yields the maximal cliques of G.
-        It accepts a `nodes` argument which restricts consideration to
-        maximal cliques containing all the given `nodes`.
-        The search for the cliques is optimized for `nodes`.
 
     Examples
     --------
