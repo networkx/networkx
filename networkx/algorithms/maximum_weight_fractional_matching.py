@@ -2,9 +2,12 @@ import numpy as np
 from scipy.optimize import linprog
 
 import networkx as nx
+from networkx import incidence_matrix
 
 
-def maximum_weight_fractional_matching(G: nx.Graph):
+def maximum_weight_fractional_matching(
+    G: nx.Graph, weight="weight", **linprog_options: None
+):
     """Returns the maximum-weight fractional matching of the wighted graph `G`.
 
     A fractional graph is a graph in which every edge has a fraction [0,1]
@@ -21,6 +24,10 @@ def maximum_weight_fractional_matching(G: nx.Graph):
     ----------
     G : NetworkX graph
       Undirected weighted graph
+    weight : str
+        the name of the edge attribute that represents the weight of an edge.
+    linprog_options : dict
+        scipy.optimize.linprog options, None as default.
 
     Returns
     -------
@@ -96,13 +103,6 @@ def maximum_weight_fractional_matching(G: nx.Graph):
     and then take the result as ABS, like that - |Min(x,y,z)|
     than we will get the solution for our original problem = {('a1', 'a2'): 0.5, ('a1', 'a3'): 0.5, ('a2', 'a3'): 0.5}
 
-    Raises
-    ------
-
-
-    Notes
-    -----
-
 
     See Also
     --------
@@ -115,18 +115,11 @@ def maximum_weight_fractional_matching(G: nx.Graph):
 
     if G.number_of_nodes() == 0 or G.number_of_edges() == 0:
         return dict()
-    num_nodes = len(G.nodes)
-    num_edges = len(G.edges)
-    c = [G.edges[edge].get("weight", 1) for edge in G.edges]
-    b = [1] * num_nodes
+    c = [G.edges[edge].get(weight, 1) for edge in G.edges]
+    b = [1] * len(G.nodes)
     bounds = (-1, 0)
-    index_node = {node: i for i, node in enumerate(G.nodes)}
-    index_edge = {edge: i for i, edge in enumerate(G.edges)}
-    A = np.zeros([num_nodes, num_edges], dtype=int)
-    for edge in G.edges:
-        i_edge = index_edge[edge]
-        i_node1, i_node2 = index_node[edge[0]], index_node[edge[1]]
-        A[i_node1, i_edge] = -1
-        A[i_node2, i_edge] = -1
-    res = linprog(c, A_ub=A, b_ub=b, bounds=bounds, method="highs")
+    A = -incidence_matrix(G)
+    res = linprog(
+        c, A_ub=A, b_ub=b, bounds=bounds, method="highs", options=linprog_options
+    )
     return dict(zip(G.edges, np.abs(np.round(res.x, 3))))
