@@ -53,7 +53,7 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
     to a block diagonal matrix where each block is the respective Laplacian
     matrix for each component.
 
-    >>> G = nx.Graph([(1,2), (2, 3), (4, 5)])
+    >>> G = nx.Graph([(1, 2), (2, 3), (4, 5)])
     >>> print(nx.laplacian_matrix(G).toarray())
     [[ 1 -1  0  0  0]
      [-1  2 -1  0  0]
