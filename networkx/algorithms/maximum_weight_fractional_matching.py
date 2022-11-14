@@ -5,9 +5,7 @@ import networkx as nx
 from networkx import incidence_matrix
 
 
-def maximum_weight_fractional_matching(
-    G: nx.Graph, weight="weight", **linprog_options: None
-):
+def maximum_weight_fractional_matching(G: nx.Graph, weight="weight", **linprog_options):
     """Returns the maximum-weight fractional matching of the wighted graph `G`.
 
     A fractional graph is a graph in which every edge has a fraction [0,1]
