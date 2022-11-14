@@ -674,7 +674,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
 
     @cached_property
     def in_edges(self):
-        """An InMultiEdgeView of the Graph as G.in_edges or G.in_edges().
+        """A view of the in edges of the graph as G.in_edges or G.in_edges().
 
         in_edges(self, nbunch=None, data=False, keys=False, default=None)
 
@@ -695,7 +695,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
 
         Returns
         -------
-        in_edges : InMultiEdgeView
+        in_edges : InMultiEdgeView or InMultiEdgeDataView
             A view of edge attributes, usually it iterates over (u, v)
             or (u, v, k) or (u, v, k, d) tuples of edges, but can also be
             used for attribute lookup as `edges[u, v, k]['foo']`.

@@ -949,7 +949,7 @@ class DiGraph(Graph):
 
     @cached_property
     def in_edges(self):
-        """An InEdgeView of the Graph as G.in_edges or G.in_edges().
+        """A view of the in edges of the graph as G.in_edges or G.in_edges().
 
         in_edges(self, nbunch=None, data=False, default=None):
 
@@ -967,10 +967,19 @@ class DiGraph(Graph):
 
         Returns
         -------
-        in_edges : InEdgeView
+        in_edges : InEdgeView or InEdgeDataView
             A view of edge attributes, usually it iterates over (u, v)
             or (u, v, d) tuples of edges, but can also be used for
             attribute lookup as `edges[u, v]['foo']`.
+
+        Examples
+        -------
+        >>> G = nx.DiGraph()
+        >>> G.add_edge(1, 2, color='blue')
+        >>> G.in_edges()
+        InEdgeView([(1, 2)])
+        >>> G.in_edges(nbunch=2)
+        InEdgeDataView([(1, 2)])
 
         See Also
         --------
