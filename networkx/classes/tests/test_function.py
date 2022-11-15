@@ -262,13 +262,13 @@ class TestFunction:
         assert G.frozen
 
     def test_node_attributes_are_still_mutable_on_frozen_graph(self):
-        G = nx.freeze(self.G)
+        G = nx.freeze(nx.path_graph(3))
         node = G.nodes[0]
         node["node_attribute"] = True
         assert node["node_attribute"] == True
 
     def test_edge_attributes_are_still_mutable_on_frozen_graph(self):
-        G = nx.freeze(self.G)
+        G = nx.freeze(nx.path_graph(3))
         edge = G.edges[(0, 1)]
         edge["edge_attribute"] = True
         assert edge["edge_attribute"] == True
