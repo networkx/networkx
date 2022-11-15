@@ -223,6 +223,7 @@ class TestGeneratorInverseLine:
         # 4 triangles
         G = nx.diamond_graph()
         G.add_edges_from([(4, 0), (4, 1), (5, 2), (5, 3)])
+        pytest.raises(nx.NetworkXError, nx.inverse_line_graph, G)
 
     def test_wrong_graph_type(self):
         G = nx.DiGraph()
