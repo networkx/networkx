@@ -44,10 +44,7 @@ def pagerank(
 
     tol : float, optional
       Error tolerance used to check convergence in power method solver.
-
-      Note
-      -----
-      Convergence condition is N * tol
+      The iteration will stop after a tolerance of ``len(G) * tol`` is reached.
 
     nstart : dictionary, optional
       Starting value of PageRank iteration for each node.
@@ -395,10 +392,7 @@ def _pagerank_scipy(
 
     tol : float, optional
       Error tolerance used to check convergence in power method solver.
-
-      Note
-      -----
-      Convergence condition is N * tol
+      The iteration will stop after a tolerance of ``len(G) * tol`` is reached.
 
     nstart : dictionary, optional
       Starting value of PageRank iteration for each node.
