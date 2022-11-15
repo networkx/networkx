@@ -169,20 +169,6 @@ class TestGeneratorInverseLine:
         solution = nx.path_graph(2)
         assert nx.is_isomorphic(H, solution)
 
-    def test_diamond_graph(self):
-        G = nx.diamond_graph()
-        H = nx.inverse_line_graph(G)
-        solution = nx.lollipop_graph(3, 1)
-        assert nx.is_isomorphic(H, solution)
-
-    def test_diamond_graph_2(self):
-        # This is the diamond graph with one change: first edge is (1, 0) instead of (0, 1)
-        G = nx.Graph()
-        G.add_edges_from([(1, 0), (0, 2), (1, 2), (1, 3), (2, 3)])
-        H = nx.inverse_line_graph(G)
-        solution = nx.lollipop_graph(3, 1)
-        assert nx.is_isomorphic(H, solution)
-
     def test_edgeless_graph(self):
         G = nx.empty_graph(5)
         pytest.raises(nx.NetworkXError, nx.inverse_line_graph, G)
@@ -313,3 +299,11 @@ class TestGeneratorPrivateFunctions:
         G = nx.diamond_graph()
         pytest.raises(nx.NetworkXError, line._select_starting_cell, G, (4, 0))
         pytest.raises(nx.NetworkXError, line._select_starting_cell, G, (0, 3))
+
+    def test_diamond_graph(self):
+        G = nx.diamond_graph()
+        for edge in G.edges:
+            cell = line._select_starting_cell(G, starting_edge=edge)
+            # Starting cell should always be one of the two triangles
+            assert len(cell) == 3
+            assert all(v in G[u] for u in cell for v in cell if u != v)
