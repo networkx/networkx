@@ -58,3 +58,11 @@ class TestStochasticGraph:
     def test_multigraph_disallowed(self):
         with pytest.raises(nx.NetworkXNotImplemented):
             nx.stochastic_graph(nx.MultiGraph())
+
+    def test_zero_out_degree(self):
+        D = nx.DiGraph([(1, 2, {"weight": 1}), (1, 3, {"weight": -1})])
+        S = nx.stochastic_graph(D)
+        assert sorted(S.edges(data=True)) == [
+            (1, 2, {"weight": 0}),
+            (1, 3, {"weight": 0}),
+        ]
