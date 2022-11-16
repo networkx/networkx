@@ -59,7 +59,14 @@ def test_average_path_graph():
     assert bipartite.average_clustering(G, mode="dot") == 0.5
     assert bipartite.average_clustering(G, mode="max") == 0.5
     assert bipartite.average_clustering(G, mode="min") == 1
-    assert bipartite.average_clustering(G, nodes=[0, 2], mode="min") == 1
+
+
+def test_select_nodes():
+    G = nx.bipartite.random_graph(5, 5, 0.5, seed=1)
+    total = [bipartite.average_clustering(G, nodes=[i], mode="min") for i in range(5)]
+    assert bipartite.average_clustering(G, nodes=range(5), mode="min") == sum(
+        total
+    ) / len(total)
 
 
 def test_ra_clustering_davis():
