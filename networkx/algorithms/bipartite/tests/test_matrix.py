@@ -30,11 +30,10 @@ class TestBiadjacencyMatrix:
             M = bipartite.biadjacency_matrix(G, top)
             assert M.shape[0] == tops[i]
             assert M.shape[1] == bots[i]
-        G = nx.empty_graph(2)
-        M = bipartite.biadjacency_matrix(G, [0])
-        assert not M != sp.sparse.coo_matrix(
-            ([], ([], [])), shape=(1, 1), dtype=np.float64
-        )
+        G = nx.complete_bipartite_graph(3, 3)
+        M = bipartite.biadjacency_matrix(G, [0, 1])
+        answer = sp.sparse.csr_array([[0, 1, 1, 1], [0, 1, 1, 1]])
+        assert np.array_equal(M.todense(), answer.todense())
 
     def test_biadjacency_matrix_order(self):
         G = nx.path_graph(5)
