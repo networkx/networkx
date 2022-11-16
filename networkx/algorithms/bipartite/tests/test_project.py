@@ -14,9 +14,8 @@ class TestBipartiteProject:
         P = bipartite.projected_graph(G, [0, 2])
         assert nodes_equal(list(P), [0, 2])
         assert edges_equal(list(P.edges()), [(0, 2)])
-        with pytest.raises(nx.NetworkXError):
-            G = nx.MultiGraph()
-            G.add_edge(0, 1)
+        G = nx.MultiGraph([(0, 1)])
+        with pytest.raises(nx.NetworkXError, match="not defined for multigraphs"):
             bipartite.projected_graph(G, [0])
 
     def test_path_projected_properties_graph(self):
