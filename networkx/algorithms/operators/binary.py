@@ -14,7 +14,7 @@ __all__ = [
 ]
 
 
-def union(G, H, rename=(None, None)):
+def union(G, H, rename=()):
     """Combine graphs G and H. The names of nodes must be unique.
 
     A name collision between the graphs will raise an exception.
@@ -27,7 +27,7 @@ def union(G, H, rename=(None, None)):
     G, H : graph
        A NetworkX graph
 
-    rename : tuple , default=(None, None)
+    rename : iterable , optional
        Node names of G and H can be changed by specifying the tuple
        rename=('G-','H-') (for example).  Node "u" in G is then renamed
        "G-u" and "v" in H is renamed "H-v".
@@ -418,11 +418,7 @@ def full_join(G, H, rename=(None, None)):
             return graph
 
         def label(x):
-            if isinstance(x, str):
-                name = prefix + x
-            else:
-                name = prefix + repr(x)
-            return name
+            return f"{prefix}{x}"
 
         return nx.relabel_nodes(graph, label)
 

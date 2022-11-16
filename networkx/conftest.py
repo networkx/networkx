@@ -30,6 +30,10 @@ def pytest_configure(config):
 
 
 def pytest_collection_modifyitems(config, items):
+    # Allow pluggable backends to add markers to tests when
+    # running in auto-conversion test mode
+    networkx.classes.backends._mark_tests(items)
+
     if config.getoption("--runslow"):
         # --runslow given in cli: do not skip slow tests
         return
@@ -52,95 +56,17 @@ def set_warnings():
         category=DeprecationWarning,
         message="literal_destringizer is deprecated",
     )
-    warnings.filterwarnings(
-        "ignore",
-        category=DeprecationWarning,
-        message="context manager reversed is deprecated",
-    )
-    warnings.filterwarnings(
-        "ignore",
-        category=DeprecationWarning,
-        message="This will return a generator in 3.0*",
-    )
-    warnings.filterwarnings(
-        "ignore", category=PendingDeprecationWarning, message="the matrix subclass"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="edges_from_line"
-    )
-    warnings.filterwarnings("ignore", category=DeprecationWarning, message="consume")
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="iterable is deprecated"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="`almost_equal`"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="`assert_nodes_equal`"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="`assert_edges_equal`"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="`assert_graphs_equal`"
-    )
-    warnings.filterwarnings(
-        "ignore",
-        category=FutureWarning,
-        message="google_matrix will return an np.ndarray instead of a np.matrix",
-    )
-    ### Future warnings from scipy.sparse array transition
-    warnings.filterwarnings(
-        "ignore", category=FutureWarning, message="biadjacency_matrix"
-    )
-    warnings.filterwarnings(
-        "ignore", category=FutureWarning, message="bethe_hessian_matrix"
-    )
-    warnings.filterwarnings(
-        "ignore", category=FutureWarning, message="incidence_matrix"
-    )
-    warnings.filterwarnings(
-        "ignore", category=FutureWarning, message="laplacian_matrix"
-    )
-    warnings.filterwarnings(
-        "ignore", category=FutureWarning, message="normalized_laplacian_matrix"
-    )
-    warnings.filterwarnings(
-        "ignore", category=FutureWarning, message="directed_laplacian_matrix"
-    )
-    warnings.filterwarnings(
-        "ignore",
-        category=FutureWarning,
-        message="directed_combinatorial_laplacian_matrix",
-    )
-    warnings.filterwarnings(
-        "ignore", category=FutureWarning, message="modularity_matrix"
-    )
-    warnings.filterwarnings(
-        "ignore", category=FutureWarning, message="directed_modularity_matrix"
-    )
-    warnings.filterwarnings(
-        "ignore", category=FutureWarning, message="adjacency_matrix"
-    )
-    warnings.filterwarnings(
-        "ignore",
-        category=DeprecationWarning,
-        message="\n\nThe scipy.sparse array containers",
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="networkx.project"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="\nfind_cores"
-    )
-    warnings.filterwarnings("ignore", category=FutureWarning, message="attr_matrix")
-    warnings.filterwarnings("ignore", category=DeprecationWarning, message="info")
     # create_using for scale_free_graph
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="The create_using argument"
     )
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="nx.nx_pydot"
+    )
+    warnings.filterwarnings(
+        "ignore",
+        category=DeprecationWarning,
+        message="\n\nThe `attrs` keyword argument of node_link",
     )
 
 
@@ -264,7 +190,3 @@ if not has_pydot:
     collect_ignore += needs_pydot
 if not has_sympy:
     collect_ignore += needs_sympy
-
-# FIXME:  This is to avoid errors on AppVeyor
-if sys.platform.startswith("win"):
-    collect_ignore += ["readwrite/graph6.py", "readwrite/sparse6.py"]

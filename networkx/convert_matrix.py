@@ -26,7 +26,6 @@ nx_agraph, nx_pydot
 """
 
 import itertools
-import warnings
 from collections import defaultdict
 
 import networkx as nx
@@ -512,7 +511,7 @@ def to_scipy_sparse_array(G, nodelist=None, dtype=None, weight="weight", format=
     diagonal matrix entry value to the weight attribute of the edge
     (or the number 1 if the edge has no weight attribute).  If the
     alternate convention of doubling the edge weight is desired the
-    resulting Scipy sparse matrix can be modified as follows:
+    resulting SciPy sparse array can be modified as follows:
 
     >>> G = nx.Graph([(1, 1)])
     >>> A = nx.to_scipy_sparse_array(G)
@@ -599,7 +598,7 @@ def to_scipy_sparse_array(G, nodelist=None, dtype=None, weight="weight", format=
 
 
 def _csr_gen_triples(A):
-    """Converts a SciPy sparse matrix in **Compressed Sparse Row** format to
+    """Converts a SciPy sparse array in **Compressed Sparse Row** format to
     an iterable of weighted edge triples.
 
     """
@@ -611,7 +610,7 @@ def _csr_gen_triples(A):
 
 
 def _csc_gen_triples(A):
-    """Converts a SciPy sparse matrix in **Compressed Sparse Column** format to
+    """Converts a SciPy sparse array in **Compressed Sparse Column** format to
     an iterable of weighted edge triples.
 
     """
@@ -623,7 +622,7 @@ def _csc_gen_triples(A):
 
 
 def _coo_gen_triples(A):
-    """Converts a SciPy sparse matrix in **Coordinate** format to an iterable
+    """Converts a SciPy sparse array in **Coordinate** format to an iterable
     of weighted edge triples.
 
     """
@@ -632,7 +631,7 @@ def _coo_gen_triples(A):
 
 
 def _dok_gen_triples(A):
-    """Converts a SciPy sparse matrix in **Dictionary of Keys** format to an
+    """Converts a SciPy sparse array in **Dictionary of Keys** format to an
     iterable of weighted edge triples.
 
     """
@@ -644,7 +643,7 @@ def _generate_weighted_edges(A):
     """Returns an iterable over (u, v, w) triples, where u and v are adjacent
     vertices and w is the weight of the edge joining u and v.
 
-    `A` is a SciPy sparse matrix (in any format).
+    `A` is a SciPy sparse array (in any format).
 
     """
     if A.format == "csr":

@@ -88,6 +88,7 @@ def generic_bfs_edges(G, source, neighbors=None, depth_limit=None, sort_neighbor
             queue.popleft()
 
 
+@nx._dispatch
 def bfs_edges(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
     """Iterate over edges in a breadth-first-search starting at source.
 
@@ -383,7 +384,7 @@ def bfs_layers(G, sources):
         Specify starting nodes for single source or multiple sources breadth-first search
 
     Yields
-    -------
+    ------
     layer: list of nodes
         Yields list of nodes at the same distance from sources
 

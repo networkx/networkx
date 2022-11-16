@@ -59,6 +59,7 @@ def _require_partition(G, partition):
 require_partition = argmap(_require_partition, (0, 1))
 
 
+@nx._dispatch
 def intra_community_edges(G, partition):
     """Returns the number of intra-community edges for a partition of `G`.
 
@@ -76,6 +77,7 @@ def intra_community_edges(G, partition):
     return sum(G.subgraph(block).size() for block in partition)
 
 
+@nx._dispatch
 def inter_community_edges(G, partition):
     """Returns the number of inter-community edges for a partition of `G`.
     according to the given

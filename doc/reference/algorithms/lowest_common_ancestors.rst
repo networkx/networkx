@@ -9,5 +9,3 @@ Lowest Common Ancestor
    all_pairs_lowest_common_ancestor
    tree_all_pairs_lowest_common_ancestor
    lowest_common_ancestor
-   naive_all_pairs_lowest_common_ancestor
-   naive_lowest_common_ancestor

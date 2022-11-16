@@ -10,9 +10,12 @@ nodes in *S* that are outside *S*.
 """
 from itertools import chain
 
+import networkx as nx
+
 __all__ = ["edge_boundary", "node_boundary"]
 
 
+@nx._dispatch
 def edge_boundary(G, nbunch1, nbunch2=None, data=False, keys=False, default=None):
     """Returns the edge boundary of `nbunch1`.
 
@@ -89,6 +92,7 @@ def edge_boundary(G, nbunch1, nbunch2=None, data=False, keys=False, default=None
     )
 
 
+@nx._dispatch()
 def node_boundary(G, nbunch1, nbunch2=None):
     """Returns the node boundary of `nbunch1`.
 

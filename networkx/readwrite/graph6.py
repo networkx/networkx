@@ -206,7 +206,7 @@ def read_graph6(path):
     You can read a graph6 file by giving the path to the file::
 
         >>> import tempfile
-        >>> with tempfile.NamedTemporaryFile() as f:
+        >>> with tempfile.NamedTemporaryFile(delete=False) as f:
         ...     _ = f.write(b">>graph6<<A_\\n")
         ...     _ = f.seek(0)
         ...     G = nx.read_graph6(f.name)
@@ -279,7 +279,7 @@ def write_graph6(G, path, nodes=None, header=True):
     You can write a graph6 file by giving the path to a file::
 
         >>> import tempfile
-        >>> with tempfile.NamedTemporaryFile() as f:
+        >>> with tempfile.NamedTemporaryFile(delete=False) as f:
         ...     nx.write_graph6(nx.path_graph(2), f.name)
         ...     _ = f.seek(0)
         ...     print(f.read())
