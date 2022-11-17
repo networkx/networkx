@@ -1,12 +1,12 @@
 """Approximations of graph properties and Heuristic methods for optimization.
+    
+    The functions in this class are not imported into the top-level
+    :mod:`networkx` namespace so the easiest way to use them is with:
 
-    .. warning:: These functions are not imported in the top-level of ``networkx``
+    >>> from networkx.algorithms import approximation
 
-    These functions can be accessed using
-    ``networkx.approximation.function_name``
-
-    They can be imported using ``from networkx.algorithms import approximation``
-    or ``from networkx.algorithms.approximation import function_name``
+    Another option is to import the specific function with 
+    :mod:`from networkx.algorithms.approximation import function_name`.
 
 """
 from networkx.algorithms.approximation.clustering_coefficient import *
