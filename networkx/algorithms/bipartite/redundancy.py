@@ -104,6 +104,6 @@ def _node_redundancy(G, v):
     """
     n = len(G[v])
     overlap = sum(
-        1 for (u, w) in combinations(G[v], 2) if (G[u].keys() & G[w].keys()) - {v}
+        1 for (u, w) in combinations(G[v], 2) if (set(G[u]) & set(G[w])) - {v}
     )
     return (2 * overlap) / (n * (n - 1))
