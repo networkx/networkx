@@ -290,6 +290,11 @@ def gnm_random_graph(n, m, seed=None, directed=False):
 @py_random_state(3)
 def newman_watts_strogatz_graph(n, k, p, seed=None):
     """Returns a Newman–Watts–Strogatz small-world graph.
+    
+    Note: In the original model by Newman and Watts [2]_, self-loops and multiple
+    connections were allowed. Here an edge is only added if it's to a different
+    unconnected node. However, for large enough `n` and small enough `k` and `p`,
+    this should not deviate much from the original model.
 
     Parameters
     ----------
@@ -306,7 +311,7 @@ def newman_watts_strogatz_graph(n, k, p, seed=None):
 
     Notes
     -----
-    First create a ring over $n$ nodes [1]_.  Then each node in the ring is
+    First create a ring over $n$ nodes [1,2]_.  Then each node in the ring is
     connected with its $k$ nearest neighbors (or $k - 1$ neighbors if $k$
     is odd).  Then shortcuts are created by adding new edges as follows: for
     each edge $(u, v)$ in the underlying "$n$-ring with $k$ nearest
@@ -324,6 +329,9 @@ def newman_watts_strogatz_graph(n, k, p, seed=None):
        Renormalization group analysis of the small-world network model,
        Physics Letters A, 263, 341, 1999.
        https://doi.org/10.1016/S0375-9601(99)00757-4
+    .. [2] Newman, M. E., & Watts, D. J. (1999).
+       Scaling and percolation in the small-world network model. 
+       hysical review E, 60(6), 7332.
     """
     if k > n:
         raise nx.NetworkXError("k>=n, choose smaller k or larger n")
@@ -347,7 +355,8 @@ def newman_watts_strogatz_graph(n, k, p, seed=None):
         if seed.random() < p:
             w = seed.choice(nlist)
             # no self-loops and reject if edge u-w exists
-            # is that the correct NWS model?
+            # this deviates from the original Newman-Watts model
+            # see the note above
             while w == u or G.has_edge(u, w):
                 w = seed.choice(nlist)
                 if G.degree(u) >= n - 1:
