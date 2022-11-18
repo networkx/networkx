@@ -161,6 +161,13 @@ class TestGeneratorInverseLine:
         H = nx.inverse_line_graph(G)
         assert nx.is_isomorphic(H, nx.complete_graph(1))
 
+    def test_edgeless_linegraph(self):
+        # This is the simplest edgeless graph containing more than 1 node
+        G = nx.Graph()
+        G.add_node(0)
+        G.add_node(1)
+        pytest.raises(nx.NetworkXError, nx.inverse_line_graph, G)
+
     def test_K1(self):
         G = nx.complete_graph(1)
         H = nx.inverse_line_graph(G)
