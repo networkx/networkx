@@ -316,6 +316,7 @@ class TestDAGLCA:
 
     def test_all_pairs_lca_one_pair_gh4942(self):
         G = nx.DiGraph()
+        # Note: order edge addition is critical to the test
         G.add_edge(0, 1)
         G.add_edge(2, 0)
         G.add_edge(2, 3)
@@ -323,3 +324,16 @@ class TestDAGLCA:
         G.add_edge(5, 2)
 
         assert nx.lowest_common_ancestor(G, 1, 3) == 2
+
+
+def test_all_pairs_lca_self_ancestors():
+    """Self-ancestors should always be the node itself, i.e. lca of (0, 0) is 0.
+    See gh-4458."""
+    # DAG for test - note order of node/edge addition is relevant
+    G = nx.DiGraph()
+    G.add_nodes_from(range(5))
+    G.add_edges_from([(1, 0), (2, 0), (3, 2), (4, 1), (4, 3)])
+
+    assert all(
+        u == v == a for (u, v), a in nx.all_pairs_lowest_common_ancestor(G) if u == v
+    )
