@@ -166,3 +166,10 @@ class TestEigenvectorCentralityExceptions:
     def test_empty_numpy(self):
         with pytest.raises(nx.NetworkXException):
             nx.eigenvector_centrality_numpy(nx.Graph())
+
+    def test_zero_nstart(self):
+        G = nx.Graph()
+        G.add_nodes_from([1, 2, 3])
+        G.add_edges_from([(1, 2), (1, 3), (2, 3)])
+        with pytest.raises(nx.NetworkXException):
+            nx.eigenvector_centrality_numpy(G, nstart={v: 0 for v in G})
