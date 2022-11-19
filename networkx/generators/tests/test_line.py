@@ -176,7 +176,22 @@ class TestGeneratorInverseLine:
     def test_selfloops(self):
         G = nx.cycle_graph(4)
         G.add_edge(0, 0)
-        pytest.raises(nx.NetworkXError, nx.inverse_line_graph, G)
+        G_ = G.copy()
+        solution = nx.cycle_graph(4)
+        with pytest.warns(UserWarning):
+            H = nx.inverse_line_graph(G)
+            assert nx.is_isomorphic(H, solution)
+            # We check that G hasn't been modified in-place
+            assert nx.is_isomorphic(G_, G)
+
+    def test_selfloops_with_error(self):
+        G = nx.complete_bipartite_graph(1, 3)
+        G.add_edge(0, 0)
+        G_ = G.copy()
+        with pytest.warns(UserWarning):
+            pytest.raises(nx.NetworkXError, nx.inverse_line_graph, G)
+            # We check that G hasn't been modified in-place
+            assert nx.is_isomorphic(G_, G)
 
     def test_non_line_graphs(self):
         # Tests several known non-line graphs for impossibility
