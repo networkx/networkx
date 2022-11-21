@@ -1,6 +1,3 @@
-"""
-testing 
-"""
 import pytest
 
 import networkx as nx
@@ -27,9 +24,34 @@ def test_laplacian_centrality_E():
     for n, dc in d.items():
         assert exact[n] == pytest.approx(dc, abs=1e-7)
 
+    # Check not normalized
+    full_energy = 200
+    dnn = nx.laplacian_centrality(E, normalized=False)
+    for n, dc in dnn.items():
+        assert exact[n] * full_energy == pytest.approx(dc, abs=1e-7)
+
+    # Check unweighted not-normalized version
+    duw_nn = nx.laplacian_centrality(E, normalized=False, weight=None)
+    print(duw_nn)
+    exact_uw_nn = {
+        0: 18,
+        1: 34,
+        2: 18,
+        3: 10,
+        4: 16,
+        5: 6,
+    }
+    for n, dc in duw_nn.items():
+        assert exact_uw_nn[n] == pytest.approx(dc, abs=1e-7)
+
+    # Check unweighted version
+    duw = nx.laplacian_centrality(E, weight=None)
+    full_energy = 42
+    for n, dc in duw.items():
+        assert exact_uw_nn[n] / full_energy == pytest.approx(dc, abs=1e-7)
+
 
 def test_laplacian_centrality_KC():
-
     KC = nx.karate_club_graph()
     d = nx.laplacian_centrality(KC)
     exact = {
@@ -71,6 +93,12 @@ def test_laplacian_centrality_KC():
     for n, dc in d.items():
         assert exact[n] == pytest.approx(dc, abs=1e-7)
 
+    # Check not normalized
+    full_energy = 12502
+    dnn = nx.laplacian_centrality(KC, normalized=False)
+    for n, dc in dnn.items():
+        assert exact[n] * full_energy == pytest.approx(dc, abs=1e-3)
+
 
 def test_laplacian_centrality_K():
     K = nx.krackhardt_kite_graph()
@@ -90,9 +118,14 @@ def test_laplacian_centrality_K():
     for n, dc in d.items():
         assert exact[n] == pytest.approx(dc, abs=1e-7)
 
+    # Check not normalized
+    full_energy = 186
+    dnn = nx.laplacian_centrality(K, normalized=False)
+    for n, dc in dnn.items():
+        assert exact[n] * full_energy == pytest.approx(dc, abs=1e-3)
+
 
 def test_laplacian_centrality_P3():
-
     P3 = nx.path_graph(3)
     d = nx.laplacian_centrality(P3)
     exact = {0: 0.6, 1: 1.0, 2: 0.6}
@@ -101,7 +134,6 @@ def test_laplacian_centrality_P3():
 
 
 def test_laplacian_centrality_K5():
-
     K5 = nx.complete_graph(5)
     d = nx.laplacian_centrality(K5)
     exact = {0: 0.52, 1: 0.52, 2: 0.52, 3: 0.52, 4: 0.52}
@@ -134,15 +166,7 @@ def test_laplacian_centrality_FF():
 
 
 def test_laplacian_centrality_DG():
-    DG = nx.DiGraph()
-    DG.add_edge(0, 5)
-    DG.add_edge(1, 5)
-    DG.add_edge(2, 5)
-    DG.add_edge(3, 5)
-    DG.add_edge(4, 5)
-    DG.add_edge(5, 6)
-    DG.add_edge(5, 7)
-    DG.add_edge(5, 8)
+    DG = nx.DiGraph([(0, 5), (1, 5), (2, 5), (3, 5), (4, 5), (5, 6), (5, 7), (5, 8)])
     d = nx.laplacian_centrality(DG)
     exact = {
         0: 0.2123352,
@@ -157,3 +181,9 @@ def test_laplacian_centrality_DG():
     }
     for n, dc in d.items():
         assert exact[n] == pytest.approx(dc, abs=1e-7)
+
+    # Check not normalized
+    full_energy = 9.50704
+    dnn = nx.laplacian_centrality(DG, normalized=False)
+    for n, dc in dnn.items():
+        assert exact[n] * full_energy == pytest.approx(dc, abs=1e-4)
