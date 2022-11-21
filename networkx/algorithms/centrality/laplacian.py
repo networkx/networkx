@@ -96,7 +96,6 @@ def laplacian_centrality(
     import numpy as np
     import scipy as sp
     import scipy.linalg  # call as sp.linalg
-    import scipy.sparse  # call as sp.sparse
 
     if len(G) == 0:
         raise nx.NetworkXPointlessConcept("null graph has no centrality defined")
@@ -114,33 +113,25 @@ def laplacian_centrality(
     else:
         lap_matrix = nx.laplacian_matrix(G, nodes, weight).toarray()
 
-    eigs = sp.linalg.eigh(lap_matrix, eigvals_only=True)
-
-    if normalized:
-        sum_of_full = np.power(eigs, 2).sum()
-    else:
-        sum_of_full = 1
+    full_energy = np.power(sp.linalg.eigh(lap_matrix, eigvals_only=True), 2).sum()
 
     # calculate laplacian centrality
     laplace_centralities_dict = {}
     for i, node in enumerate(nodelist):
-
-        new_diag = lap_matrix.diagonal() - abs(lap_matrix[:,i])
-
         # remove row and col i from lap_matrix
         all_but_i = list(np.arange(lap_matrix.shape[0]))
         all_but_i.remove(i)
         A_2 = lap_matrix[all_but_i, :][:, all_but_i]
 
+        # Adjust diagonal for removed row
+        new_diag = lap_matrix.diagonal() - abs(lap_matrix[:,i])
         np.fill_diagonal(A_2, new_diag[all_but_i])
 
-        sum_of_eigenvalues_2 = np.power(sp.linalg.eigh(A_2, eigvals_only=True), 2).sum()
-
+        new_energy = np.power(sp.linalg.eigh(A_2, eigvals_only=True), 2).sum()
+        lapl_cent = full_energy - new_energy
         if normalized:
-            l_cent = 1 - (sum_of_eigenvalues_2 / sum_of_full)
-        else:
-            l_cent = sum_of_full - sum_of_eigenvalues_2
+            lapl_cent = lapl_cent / full_energy
 
-        laplace_centralities_dict[node] = l_cent
+        laplace_centralities_dict[node] = lapl_cent
 
     return laplace_centralities_dict
