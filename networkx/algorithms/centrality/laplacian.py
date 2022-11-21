@@ -99,27 +99,20 @@ def laplacian_centrality(
     import scipy.sparse  # call as sp.sparse
 
     if len(G) == 0:
-        raise nx.NetworkXPointlessConcept(
-            "cannot compute centrality for the null graph"
-        )
+        raise nx.NetworkXPointlessConcept("null graph has no centrality defined")
 
     if nodelist != None:
         nodeset = set(G.nbunch_iter(nodelist))
         if len(nodeset) != len(nodelist):
-            raise nx.NetworkXError(
-                "nodelist contains duplicate nodes or nodes not in G"
-            )
-        full_nodelist = nodelist + [n for n in G if n not in nodeset]
+            raise nx.NetworkXError("nodelist has duplicate nodes or nodes not in G")
+        nodes = nodelist + [n for n in G if n not in nodeset]
     else:
-        nodelist = full_nodelist = list(G)
+        nodelist = nodes = list(G)
 
     if G.is_directed():
-        lap_matrix = nx.directed_laplacian_matrix(
-            G, full_nodelist, weight, walk_type, alpha
-        )
-
+        lap_matrix = nx.directed_laplacian_matrix(G, nodes, weight, walk_type, alpha)
     else:
-        lap_matrix = nx.laplacian_matrix(G, full_nodelist, weight).toarray()
+        lap_matrix = nx.laplacian_matrix(G, nodes, weight).toarray()
 
     eigs = sp.linalg.eigh(lap_matrix, eigvals_only=True)
 
