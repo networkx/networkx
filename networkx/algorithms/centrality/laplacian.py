@@ -114,8 +114,8 @@ def laplacian_centrality(
         nodelist = full_nodelist = list(G)
 
     if G.is_directed():
-        lap_matrix = sp.sparse.csr_matrix(
-            nx.directed_laplacian_matrix(G, full_nodelist, weight, walk_type, alpha)
+        lap_matrix = nx.directed_laplacian_matrix(
+            G, full_nodelist, weight, walk_type, alpha
         )
 
     else:
