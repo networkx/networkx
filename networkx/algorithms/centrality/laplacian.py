@@ -11,9 +11,9 @@ def laplacian_centrality(
 ):
     r"""Compute the Laplacian centrality for nodes in the graph `G`.
 
-    The Laplacian Centrality of a node `i` is measured by the drop in the Laplacian Energy
-    after deleting node `i` from the graph. The Laplacian Energy is the sum of the squared
-    eigenvalues of a graph's Laplacian matrix.
+    The Laplacian Centrality of a node `i` is measured by the drop in the
+    Laplacian Energy after deleting node `i` from the graph. The Laplacian Energy
+    is the sum of the squared eigenvalues of a graph's Laplacian matrix.
 
     .. math::
 
@@ -39,16 +39,24 @@ def laplacian_centrality(
         energy when that node is removed.
 
     nodelist : list, optional (default = None)
-        The rows and columns are ordered according to the nodes in nodelist. If nodelist is None, then the ordering is produced by G.nodes().
+        The rows and columns are ordered according to the nodes in nodelist.
+        If nodelist is None, then the ordering is produced by G.nodes().
 
     weight: string or None, optional (default=`weight`)
-        Optional parameter for the Laplacian matrix calculation. The edge data key used to compute each value in the matrix. If None, then each edge has weight 1.
+        Optional parameter `weight` to compute the Laplacian matrix.
+        The edge data key used to compute each value in the matrix.
+        If None, then each edge has weight 1.
 
     walk_type : string or None, optional (default=None)
-        Optional parameter for the Laplacian matrix calculation. If None, P is selected depending on the properties of the graph. Otherwise is one of `random`, `lazy`, or `pagerank`.
+        Optional parameter `walk_type` used when calling
+        :func:`directed_laplacian_matrix <networkx.directed_laplacian_matrix>`.
+        If None, the transition matrix is selected depending on the properties
+        of the graph. Otherwise can be `random`, `lazy`, or `pagerank`.
 
     alpha : real (default = 0.95)
-        Optional parameter for the Laplacian matrix calculation. (1 - alpha) is the teleportation probability used with pagerank.
+        Optional parameter `alpha` used when calling
+        :func:`directed_laplacian_matrix <networkx.directed_laplacian_matrix>`.
+        (1 - alpha) is the teleportation probability used with pagerank.
 
     Returns
     -------
@@ -79,6 +87,11 @@ def laplacian_centrality(
     Laplacian centrality: A new centrality measure for weighted networks.
     Information Sciences, 194:240-253.
     https://math.wvu.edu/~cqzhang/Publication-files/my-paper/INS-2012-Laplacian-W.pdf
+
+    See Also
+    ========
+    directed_laplacian_matrix
+    laplacian_matrix
     """
     import numpy as np
     import scipy as sp
