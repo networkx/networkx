@@ -34,11 +34,6 @@ def test_double_edge_swap():
     assert degrees == sorted(d for n, d in graph.degree())
 
 
-def test_edge_cases_con_double_edge_swap():
-    graph = nx.path_graph(4)
-    assert 0 == nx.connected_double_edge_swap(graph)
-
-
 def test_double_edge_swap_seed():
     graph = nx.barabasi_albert_graph(200, 1)
     degrees = sorted(d for n, d in graph.degree())
