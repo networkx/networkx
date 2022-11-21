@@ -124,7 +124,7 @@ def laplacian_centrality(
         A_2 = lap_matrix[all_but_i, :][:, all_but_i]
 
         # Adjust diagonal for removed row
-        new_diag = lap_matrix.diagonal() - abs(lap_matrix[:,i])
+        new_diag = lap_matrix.diagonal() - abs(lap_matrix[:, i])
         np.fill_diagonal(A_2, new_diag[all_but_i])
 
         new_energy = np.power(sp.linalg.eigh(A_2, eigvals_only=True), 2).sum()
