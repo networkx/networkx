@@ -7,12 +7,12 @@ def sampled_rlf_color(G, n_searches=1_000):
     """Color a graph using variant of Recursive Largest First algorithm.
 
     Attempts to color a graph using as few colors as possible, where no
-    neighbours of a node can have same color as the node itself. The
-    number `n_searches` is the number of maximal independent sets
-    sampled. Of all the maximal independent sets, the set with the
-    greatest number of nodes is selected to be colored. This is a
-    non-deterministic approach. The pseudo-code for this algorithm
-    is as follows:
+    neighbors of a node can have same color as the node itself. At each
+    stage a maximal independent set of nodes is colored with a previously
+    unused color. The maximal independent set is found using `n_searches`
+    attempts with a greedy random maximal independent set algorithm.
+    The maximal independent set with the greatest number of nodes is 
+    selected to be colored. The pseudo-code for this algorithm is as follows:
 
     1. Let `G` be an undirected graph with nodes `n_1 ... n_n`
     2. Select the node from `n_1 ... n_n` with the highest degree.
