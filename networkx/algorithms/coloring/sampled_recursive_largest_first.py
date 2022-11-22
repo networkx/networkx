@@ -14,14 +14,13 @@ def sampled_rlf_color(G, n_searches=1_000):
     The maximal independent set with the greatest number of nodes is 
     selected to be colored. The pseudo-code for this algorithm is as follows:
 
-    1. Let `G` be an undirected graph with nodes `n_1 ... n_n`
-    2. Select the node from `n_1 ... n_n` with the highest degree.
-    If there are multiple, just select the first one.
-    3. Sample `n_searches` maximal idependent sets using
-    `nx.maximal_independent_set()` and choose the set with
-    the greatest number of nodes, called `n_max`.
-    4. Assign `n_max` to the same color.
-    5. Remove `n_max` from the graph.
+    1. Let `G` be an undirected graph.
+    2. Select an arbitrary node with the highest degree.
+    3. Sample `n_searches` maximal independent sets using
+    `nx.maximal_independent_set()` starting from that node
+    and choose the set with the greatest number of nodes.
+    4. Assign all nodes in the chosen set to a previously unused color.
+    5. Remove those nodes from the graph.
     6. Repeat steps 2 through 5 until there are no more nodes
     in the graph.
 
