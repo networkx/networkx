@@ -107,5 +107,3 @@ LaTeX Code
    write_latex
    to_latex_tikz_raw
    to_latex_tikz
-   to_latex_adigraph_raw
-   to_latex_adigraph
