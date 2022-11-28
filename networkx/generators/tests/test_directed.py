@@ -56,7 +56,7 @@ class TestGeneratorsDirected:
         pytest.raises(ValueError, scale_free_graph, 100, alpha=-0.3)
         pytest.raises(ValueError, scale_free_graph, 100, beta=-0.3)
         pytest.raises(ValueError, scale_free_graph, 100, gamma=-0.3)
- 
+
     def test_parameters(self):
         G = nx.DiGraph()
         G.add_node(0)
@@ -79,6 +79,7 @@ def test_scale_free_errors():
         scale_free_graph(10, create_using=Graph, initial_graph=G)
     with pytest.raises(ValueError, match="delta_in must be >= 0."):
         scale_free_graph(10, create_using=None, delta_in=-1)
+
 
 def test_non_numeric_ordering(self):
     with pytest.raises(ValueError, match="delta_out must be >= 0."):
@@ -157,7 +158,7 @@ class TestUniformRandomKOutGraph:
         n = 10
         k = 9
         G = random_uniform_k_out_graph(n, k, with_replacement=False, self_loops=False)
-        assert nx.number_of_selfloops(G) == 0 
+        assert nx.number_of_selfloops(G) == 0
         assert all(d == k for v, d in G.out_degree())
 
     def test_without_replacement(self):
