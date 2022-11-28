@@ -81,7 +81,7 @@ def test_scale_free_errors():
         scale_free_graph(10, create_using=None, delta_in=-1)
 
 
-def test_non_numeric_ordering(self):
+def test_non_numeric_ordering():
     with pytest.raises(ValueError, match="delta_out must be >= 0."):
         scale_free_graph(10, create_using=None, delta_out=-1)
     G = MultiDiGraph([("a", "b"), ("b", "c"), ("c", "a")])
