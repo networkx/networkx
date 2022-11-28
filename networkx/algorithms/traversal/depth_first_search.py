@@ -364,14 +364,14 @@ def dfs_labeled_edges(G, source=None, depth_limit=None):
     edges: generator
        A generator of triples of the form (*u*, *v*, *d*), where (*u*,
        *v*) is the edge being explored in the depth-first search and *d*
-       is one of the strings 'forward', 'nontree', or 'reverse'. A
-       'forward' edge is one in which *u* has been visited but *v* has
+       is one of the strings 'forward', 'nontree', 'reverse', or 'reverse-depth_limit'.
+       A 'forward' edge is one in which *u* has been visited but *v* has
        not. A 'nontree' edge is one in which both *u* and *v* have been
        visited but the edge is not in the DFS tree. A 'reverse' edge is
        one in which both *u* and *v* have been visited and the edge is in
-       the DFS tree. When the depth_limit is reached via a 'forward' edge,
+       the DFS tree. When the `depth_limit` is reached via a 'forward' edge,
        a 'reverse' edge is immediately generated rather than the subtree
-       being explore. To indicate this flavor of 'reverse' edge, the string
+       being explored. To indicate this flavor of 'reverse' edge, the string
        yielded is 'reverse-depth_limit'.
 
     Examples
