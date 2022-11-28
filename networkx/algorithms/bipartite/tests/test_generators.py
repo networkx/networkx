@@ -418,7 +418,7 @@ class TestGeneratorsBipartite:
         # print(X)
         assert set(range(n)) == X
         assert set(range(n, n + m)) == Y
-        assert edges == len(list(G.edges()))
+        assert edges == len(G.edges())
 
     def test_gnmk_random_graph_complete(self):
         n = 10
@@ -431,32 +431,26 @@ class TestGeneratorsBipartite:
         # print(X)
         assert set(range(n)) == X
         assert set(range(n, n + m)) == Y
-        assert edges == len(list(G.edges()))
+        assert edges == len(G.edges())
 
     def test_gnmk_random_graph_directed(self):
         n = 10
         m = 20
-        edges = 100
-        # set seed because sometimes it is not connected
-        # which raises an error in bipartite.sets(G) below.
-        G = gnmk_random_graph(n, m, edges, seed=1234, directed=True)
+        num_edges = 100
+        G = gnmk_random_graph(n, m, num_edges, seed=1234, directed=True)
         assert len(G) == n + m
         assert nx.is_bipartite(G)
         assert nx.is_directed(G)
         X, Y = nx.algorithms.bipartite.sets(G)
-        # print(X)
         assert set(range(n)) == X
         assert set(range(n, n + m)) == Y
-        assert edges == len(list(G.edges()))
+        assert num_edges == len(G.edges())
 
     def test_gnmk_random_graph_star(self):
         n = 1
         m = 20
-        edges = 15
-        # set seed because sometimes it is not connected
-        # which raises an error in bipartite.sets(G) below.
-        # Remove set size test, as resulting graph should be disconnected for these values
-        G = gnmk_random_graph(n, m, edges, seed=1234)
+        num_edges = 15
+        G = gnmk_random_graph(n, m, num_edges, seed=1234)
         assert len(G) == n + m
         assert nx.is_bipartite(G)
-        assert edges == len(list(G.edges()))
+        assert num_edges == len(G.edges())
