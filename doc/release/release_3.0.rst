@@ -146,7 +146,7 @@ A total of 217 changes have been committed.
 - Fix defect and update docs for MappedQueue, related to gh-5681 (#5939)
 - Fix warnings from running tests in randomized order (#6014)
 - Update pydata-sphinx-theme (#6012)
-- update secutiry link to tidelift (#6019)
+- update security link to tidelift (#6019)
 - Update numpydoc (#6022)
 - Support Python 3.11 (#6023)
 - Update linters (#6024)
