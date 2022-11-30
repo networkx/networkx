@@ -393,6 +393,9 @@ def is_minimal_d_separator(G, u, v, z):
     if any(node not in marks for node in z):
         return False
 
+    if not d_separated(G, {u}, {v}, z):
+        return False
+
     return True
 
 
