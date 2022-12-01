@@ -177,7 +177,7 @@ class TestDepthLimitedSearch:
         edges = list(nx.dfs_labeled_edges(self.G, source=5, depth_limit=1))
         forward = [(u, v) for (u, v, d) in edges if d == "forward"]
         assert forward == [(5, 5), (5, 4), (5, 6)]
-        # Note: reverse-depth_limit edge types were not reported before gh-6239
+        # Note: reverse-depth_limit edge types were not reported before gh-6240
         assert edges == [
             (5, 5, "forward"),
             (5, 4, "forward"),
