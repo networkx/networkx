@@ -5,11 +5,17 @@ import sys
 import string
 import shlex
 
-if len(sys.argv) != 2:
-    print("Usage: ./contributors.py tag-of-previous-release")
+if len(sys.argv) < 2 or len(sys.argv) > 3:
+    print(
+        "Usage: ./contributors.py tag-of-previous-release tag-of-newer-release (optional)"
+    )
     sys.exit(-1)
 
 tag = sys.argv[1]
+if len(sys.argv) < 3:
+    compare_tag = None
+else:
+    compare_tag = sys.argv[2]
 
 
 def call(cmd):
@@ -17,19 +23,42 @@ def call(cmd):
 
 
 tag_date = call(f"git log -n1 --format='%ci' {tag}")[0]
+if compare_tag:
+    compare_tag_date = call(f"git log -n1 --format='%ci' {compare_tag}")[0]
+
 print(f"Release {tag} was on {tag_date}\n")
 
-merges = call(f"git log --since='{tag_date}' --merges --format='>>>%B' --reverse")
+if compare_tag:
+    merges = call(
+        f"git log --since='{tag_date}' --until='{compare_tag_date}' --merges --format='>>>%B' --reverse"
+    )
+else:
+    merges = call(f"git log --since='{tag_date}' --merges --format='>>>%B' --reverse")
 merges = [m for m in merges if m.strip()]
 merges = "\n".join(merges).split(">>>")
 merges = [m.split("\n")[:2] for m in merges]
 merges = [m for m in merges if len(m) == 2 and m[1].strip()]
 
-num_commits = call(f"git rev-list {tag}..HEAD --count")[0]
+if compare_tag:
+    num_commits = call(f"git rev-list {tag}..{compare_tag} --count")[0]
+else:
+    num_commits = call(f"git rev-list {tag}..HEAD --count")[0]
+
 print(f"A total of {num_commits} changes have been committed.\n")
 
 # Use filter to remove empty strings
-commits = filter(None, call(f"git log --since='{tag_date}' --pretty=%s --reverse"))
+if compare_tag:
+    commits = filter(
+        None,
+        call(
+            f"git log --since='{tag_date}' --until='{compare_tag_date}' --pretty=%s --reverse"
+        ),
+    )
+else:
+    commits = filter(
+        None,
+        call(f"git log --since='{tag_date}' --pretty=%s --reverse"),
+    )
 for c in commits:
     print("- " + c)
 
@@ -44,12 +73,17 @@ for (merge, message) in merges:
 
 print("\nMade by the following committers [alphabetical by last name]:\n")
 
-authors = call(f"git log --since='{tag_date}' --format=%aN")
+if compare_tag:
+    authors = call(
+        f"git log --since='{tag_date}' --until='{compare_tag_date}' --format=%aN"
+    )
+else:
+    authors = call(f"git log --since='{tag_date}' --format=%aN")
 authors = [a.strip() for a in authors if a.strip()]
 
 
 def key(author):
-    author = [v for v in author.split() if v[0] in string.ascii_letters]
+    author = [v for v in author.split()]
     if len(author) > 0:
         return author[-1]
 
