@@ -584,6 +584,74 @@ class MultiDiGraph(MultiGraph, DiGraph):
             del self._succ[u][v]
             del self._pred[v][u]
 
+    def remove_edges_from(self, ebunch):
+        """Remove all edges specified in ebunch.
+
+        Parameters
+        ----------
+        ebunch: list or container of edge tuples
+            Each edge given in the list or container will be removed
+            from the graph. The edges can be:
+
+                - 2-tuples (u, v) A single edge between u and v is removed.
+                - 3-tuples (u, v, key) The edge identified by key is removed.
+                - 4-tuples (u, v, key, data) where data is ignored.
+
+        See Also
+        --------
+        remove_edge : remove a single edge
+
+        Notes
+        -----
+        Will fail silently if an edge in ebunch is not in the graph.
+
+        Examples
+        --------
+        >>> G = nx.path_graph(4)  # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> ebunch = [(1, 2), (2, 3)]
+        >>> G.remove_edges_from(ebunch)
+
+        Removing multiple copies of edges
+
+        >>> G = nx.MultiDiGraph()
+        >>> keys = G.add_edges_from([(1, 2), (1, 2), (1, 2)])
+        >>> G.remove_edges_from([(1, 2), (2, 1)])  # edges aren't directed
+        >>> list(G.edges())
+        [(1, 2)]
+        >>> G.remove_edges_from([(1, 2), (1, 2)])  # silently ignore extra copy
+        >>> list(G.edges)  # now empty graph
+        []
+
+        When the edge is a 2-tuple ``(u, v)`` but there are multiple edges between
+        u and v in the graph, the most recent edge (in terms of insertion
+        order) is removed.
+
+        >>> G = nx.MultiGraph()
+        >>> for key in ("x", "y", "a"):
+        ...     k = G.add_edge(0, 1, key=key)
+        >>> G.edges(keys=True)
+        MultiEdgeView([(0, 1, 'x'), (0, 1, 'y'), (0, 1, 'a')])
+        >>> G.remove_edges_from([(0, 1)])
+        >>> G.edges(keys=True)
+        MultiEdgeView([(0, 1, 'x'), (0, 1, 'y')])
+
+        """
+        for e in ebunch:
+            try:
+                key_flag = e[2]
+            except IndexError:
+                key_flag = None
+
+            try:
+                if key_flag is None:
+                    while e in self.edges():
+                        self.remove_edge(*e[:3])
+
+                else:
+                    self.remove_edge(*e[:3])
+            except nx.NetworkXError:
+                pass
+
     @cached_property
     def edges(self):
         """An OutMultiEdgeView of the Graph as G.edges or G.edges().

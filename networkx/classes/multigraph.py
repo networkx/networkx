@@ -732,10 +732,26 @@ class MultiGraph(Graph):
         MultiEdgeView([(0, 1, 'x'), (0, 1, 'y')])
 
         """
+        # for e in ebunch:
+        #    try:
+        #        self.remove_edge(*e[:3])
+        #    except NetworkXError:
+        #        pass
+
         for e in ebunch:
             try:
-                self.remove_edge(*e[:3])
-            except NetworkXError:
+                key_flag = e[2]
+            except IndexError:
+                key_flag = None
+
+            try:
+                if key_flag is None:
+                    while e in self.edges():
+                        self.remove_edge(*e[:3])
+
+                else:
+                    self.remove_edge(*e[:3])
+            except nx.NetworkXError:
                 pass
 
     def has_edge(self, u, v, key=None):
