@@ -56,3 +56,4 @@ networkx.egg-info/
 
 # Virtual environment directory
 networkx-dev/
+.venv
