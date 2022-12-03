@@ -1,12 +1,12 @@
 """
-Converting a code with semantic meaning to a control flow graph.
+Building a control flow graph from a code with semantic meaning.
 """
 
-__all__ = ["build_control_graph"]
+__all__ = ["build_CFG"]
 import networkx as nx
 
-def build_control_graph(semantic_program):
-    """Converting a given program's code with semantic meaning to a control flow graph.
+def build_CFG(semantic_program):
+    """Building a control flow graph (CFG) from the given program's code with semantic meaning
 
     Parameters
     ----------
@@ -15,7 +15,7 @@ def build_control_graph(semantic_program):
 
     Returns
     -------
-    control_flow_graph : NetworkX Graph
+    control_flow_graph : NetworkX DiGraph
         A graph that represents the flow of the code.    
 
     Raises
@@ -70,7 +70,7 @@ def build_control_graph(semantic_program):
     >>> G.add_edges_from(edges)
 
     # runs the function
-    >>> build_control_graph(file1)
+    >>> build_CFG(file1)
     G
 
     Example 2: invalid path
@@ -78,7 +78,7 @@ def build_control_graph(semantic_program):
     file_name2 = 'semantic-code2.txt'
     file2 = path + file_name # file does not exist
 
-    >>> build_control_graph(file2)
+    >>> build_CFG(file2)
     Exception: NetworkXPathDoesNotExist
     """
     return 0  # Empty implementation
