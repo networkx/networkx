@@ -1,21 +1,22 @@
 """
-Converting a program to a code with semantic meaning
+Converting a code with semantic meaning to a control flow graph.
 """
 
-__all__ = ["convert_to_semantic"]
+__all__ = ["build_control_graph"]
 
-def convert_to_semantic(program):
-    """Converts the given program parsed and transformed to a code with semantic meaning
+
+def build_control_graph(semantic_program):
+    """Converting a given program's code with semantic meaning to a control flow graph.
 
     Parameters
     ----------
     program : string
-        A path to the file that contains the source code
+        A path to the file that contains the semantic code
 
     Returns
     -------
-    sementic_code : string
-        A string that will contain the semantic code of the original program 
+    control_flow_graph : NetworkX Graph
+        A graph that represents the flow of the code.    
 
     Raises
     ------
@@ -24,11 +25,10 @@ def convert_to_semantic(program):
 
     Notes
     -----
-    Sementic refers to the meaning associated with the statement in a programming language.
-    It is all about the meaning of the statement which interprets the program easily.
-    Errors are handled at runtime.
+    A control-flow graph (CFG) is a representation, using graph notation,
+    of all paths that might be traversed through a program during its execution.
 
-    https://www.geeksforgeeks.org/difference-between-syntax-and-semantics/
+    https://en.wikipedia.org/wiki/Control-flow_graph
 
     References
     ----------
@@ -43,18 +43,10 @@ def convert_to_semantic(program):
     Example 1: valid path
     ---------------------
     path = '/Users/liozakirav/Documents/computer-science/fourth-year/Research-Algorithms/networkx/networkx/algorithms/malicious/code-examples/'
-    file_name = 'original-code1.txt'
+    file_name = 'semantic1.txt'
     file1 = path + file_name
     with open(file1, 'w') as f:
-        f.write('1: dim n, p, i\n\
-    2: n = 5\n\
-    3: p = 1\n\
-    4: for i = 1 to n do\n\
-    5: p = p * i\n\
-    6: end for')
-
-    >>> convert_to_semantic(file1)
-    '1: dim n\n\
+        f.write('1: dim n\n\
     2: dim p\n\
     3: dim i\n\
     4: n=5\n\
@@ -64,14 +56,21 @@ def convert_to_semantic(program):
     8: p=p * i\n\
     9: i=i + 1\n\
     10: goto 7:\n\
-    11: end if'
+    11: end if')
+
+    >>> build_control_graph(file1)
+
+    
 
     Example 2: invalid path
     -----------------------
-    file_name2 = 'original-code2.txt'
+    file_name2 = 'semantic-code2.txt'
     file2 = path + file_name # file does not exist
 
     >>> convert_to_semantic(file2)
     Exception: NetworkXPathDoesNotExist
     """
     return 0  # Empty implementation
+
+
+
