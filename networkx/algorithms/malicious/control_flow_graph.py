@@ -60,23 +60,22 @@ def build_CFG(semantic_program):
     >>> 11: end if')
 
     # creates and builds the control flow graph  
-    >>> G = nx.DiGraph()
+    >>> control_flow_graph = nx.DiGraph()
     >>> nodes = range(1, 12)
-    >>> G.add_nodes_from(nodes)
+    >>> control_flow_graph.add_nodes_from(nodes)
     >>> edges = [(edge, edge+1) for edge in range(1, 11)]
     >>> edges.append((7,11))
     >>> edges.append((10, 7))
-    >>> print(edges)
-    >>> G.add_edges_from(edges)
+    >>> control_flow_graph.add_edges_from(edges)
 
     # runs the function
     >>> build_CFG(file1)
-    G
+    control_flow_graph
 
     Example 2: invalid path
     -----------------------
-    file_name2 = 'semantic-code2.txt'
-    file2 = path + file_name # file does not exist
+    >>> file_name2 = 'semantic-code2.txt'
+    >>> file2 = path + file_name # file does not exist
 
     >>> build_CFG(file2)
     Exception: NetworkXPathDoesNotExist

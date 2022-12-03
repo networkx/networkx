@@ -6,8 +6,9 @@ __all__ = ["build_DG_from_CFG"]
 import networkx as nx
 
 
-def build_DG_from_CFG(semantic_program):
-    """Converting a control flow graph (CFG) to a dependency graph (DG).
+def build_DG_from_CFG(control_flow_graph):
+    """
+    Building a dependency graph (DG) from a control flow graph (CFG)
 
     Parameters
     ----------
@@ -38,13 +39,22 @@ def build_DG_from_CFG(semantic_program):
 
     Example 1: building a DG graph
     ------------------------------
+   # creates and builds the control flow graph  
+    >>> control_flow_graph = nx.DiGraph()
+    >>> nodes = range(1, 12)
+    >>> control_flow_graph.add_nodes_from(nodes)
+    >>> edges = [(edge, edge+1) for edge in range(1, 11)]
+    >>> edges.append((7,11))
+    >>> edges.append((10, 7))
+    >>> control_flow_graph.add_edges_from(edges)
+
     # creates and builds the DG graph
     >>> directed_G1 = nx.DiGraph()
     >>> directed_G1.add_nodes_from(range(1,12))
     >>> directed_G1.add_edges_from([(1, 4),(2, 5),(3, 6),(4, 7),(5, 8),(6, 7),(6, 8),(6, 9),(8, 8),(9, 7),(9, 8),(9,9)])
 
     # runs the function
-    >>> build_control_graph(file1)
+    >>> build_DG_from_CFG(control_flow_graph)
     directed_G1
     """
     return 0  # Empty implementation
