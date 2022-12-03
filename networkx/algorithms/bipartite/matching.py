@@ -115,6 +115,7 @@ def hopcroft_karp_matching(G, top_nodes=None):
        2.4 (1973), pp. 225--231. <https://doi.org/10.1137/0202019>.
 
     """
+
     # First we define some auxiliary search functions.
     #
     # If you are a human reading these auxiliary search functions, the "global"
@@ -406,7 +407,7 @@ def _connected_by_alternating_paths(G, matching, targets):
         v
         for v in G
         if v in targets
-        or _is_connected_by_alternating_path(
+           or _is_connected_by_alternating_path(
             G, v, matched_edges, unmatched_edges, targets
         )
     }
@@ -578,12 +579,78 @@ def minimum_weight_full_matching(G, top_nodes=None, weight="weight"):
     d.update({v: u for u, v in d.items()})
     return d
 
+
+def _EFM_partition(G, M: dict):
+    r"""Returns the unique EFM partition of bipartite graph.
+
+    A matching in a bipartite graph with parts X and Y is called envy-free, if no unmatched
+    vertex in X is adjacent to a matched vertex in Y.
+    Every bipartite graph has a unique partition such that all envy-free matchings are
+    contained in one of the partition set.
+
+    Parameters
+    ----------
+    G:  NetworkX graph
+
+      Undirected bipartite graph
+    M: dict
+       dictionary that represents a maximum matching in G.
+
+    Returns
+    -------
+    EFM: list of sets
+        The partition returns as a list of 4 sets of vertices:
+        X_L,X_S,Y_L,Y_S where X_L,Y_L are the "good vertices" of G and
+        X_S,Y_S are the "bad vertices" of G.
+
+    References
+    ----------
+    .. [1] "Envy-free Matchings in Bipartite Graphs and their Applications to Fair Division",
+    by Elad Aigner-Horev and Erel Segal-Halevi (2022), https://arxiv.org/abs/1901.09527
+    Algorithm 1: Finding the EFM partition of a bipartite graph.
+
+    Programmers
+    -----------
+        Benjamin Saldman
+        Daniel Gilkarov
+    Examples
+    --------
+        Example 1: Perfect matching
+        >>> Graph=nx.complete_bipartite_graph(3,3)
+        >>> Matching=hopcroft_karp_matching(Graph)
+        >>> _EFM_partition(Graph,Matching)
+        [{0,1,2},{},{3,4,5},{}]
+
+        Example 2: Non-empty envy-free matching
+        >>> Graph=nx.Graph([(0,3),(3,0),(0,4),(4,0),(1,4),(4,1),(2,4),(4,2)])
+        >>> Matching={0:3,3:0,1:4,4:1}
+        >>> _EFM_partition(Graph,Matching)
+        [{0},{1,2},{3},{4}]
+
+        Example 3: Odd path
+        >>> Graph=nx.Graph([(0,3),(3,0),(1,3),(3,1),(1,4),(4,1),(2,4),(4,2)])
+        >>> Matching={0:3,3:0,4:1,1:4}
+        >>> _EFM_partition(Graph,Matching)
+        [{},{0,1,2},{},{3,4}]
+
+        Example 4: Y-path-saturated graph
+        >>> Graph=nx.Graph([(0,6),(6,0),(1,6),(6,1),(1,7),(7,1),(2,6),(6,2),(2,8),(8,2),(3,9),(9,3),(3,6),(6,3),(4,8),(8,4),(4,7),(7,4),(5,9),(9,5)])
+        >>> Matching={0:6,6:0,1:7,7:1,2:8,8:2,3:9,9:3}
+        >>> _EFM_partition(Graph,Matching)
+        [{},{0,1,2,3,4,5},{},{6,7,8,9}]
+
+    """
+    pass
+
 def envy_free_matching(G):
-    matching = hopcroft_karp_matching(G)
-    def EFM_partition():
-        X , Y = nx.bipartite.sets(G)
-        X_0 = set(X) - set(matching)
-        pass
+    r"""
 
+    Parameters
+    ----------
+    G
 
+    Returns
+    -------
 
+    """
+    pass
