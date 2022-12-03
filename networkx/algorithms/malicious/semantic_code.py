@@ -2,9 +2,9 @@
 Converting a program to a code with semantic meaning
 """
 
-__all__ = ["convert_to_semantic"]
+__all__ = ["convert_code__to_semantic"]
 
-def convert_to_semantic(program):
+def convert_code__to_semantic(program):
     """Converts the given program parsed and transformed to a code with semantic meaning
 
     Parameters
@@ -53,7 +53,7 @@ def convert_to_semantic(program):
     5: p = p * i\n\
     6: end for')
 
-    >>> convert_to_semantic(file1)
+    >>> convert_code__to_semantic(file1)
     '1: dim n\n\
     2: dim p\n\
     3: dim i\n\
@@ -71,7 +71,7 @@ def convert_to_semantic(program):
     file_name2 = 'original-code2.txt'
     file2 = path + file_name # file does not exist
 
-    >>> convert_to_semantic(file2)
+    >>> convert_code__to_semantic(file2)
     Exception: NetworkXPathDoesNotExist
     """
     return 0  # Empty implementation

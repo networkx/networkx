@@ -3,7 +3,7 @@ Converting a code with semantic meaning to a control flow graph.
 """
 
 __all__ = ["build_control_graph"]
-
+import networkx as nx
 
 def build_control_graph(semantic_program):
     """Converting a given program's code with semantic meaning to a control flow graph.
@@ -42,32 +42,43 @@ def build_control_graph(semantic_program):
 
     Example 1: valid path
     ---------------------
-    path = '/Users/liozakirav/Documents/computer-science/fourth-year/Research-Algorithms/networkx/networkx/algorithms/malicious/code-examples/'
-    file_name = 'semantic1.txt'
-    file1 = path + file_name
-    with open(file1, 'w') as f:
-        f.write('1: dim n\n\
-    2: dim p\n\
-    3: dim i\n\
-    4: n=5\n\
-    5: p=1\n\
-    6: i=1\n\
-    7: if i ≤ n then\n\
-    8: p=p * i\n\
-    9: i=i + 1\n\
-    10: goto 7:\n\
-    11: end if')
+    # creates a semantic code 
+    >>> path = '/Users/liozakirav/Documents/computer-science/fourth-year/Research-Algorithms/networkx/networkx/algorithms/malicious/code-examples/'
+    >>> file_name = 'semantic1.txt'
+    >>> path = '/Users/lioz'file1 = path + file_name
+    >>> path = '/Users/lioz'file2 = path +with open(file1, 'w') as f:
+    >>>    f.write('1: dim n\n\
+    >>> 2: dim p\n\
+    >>> 3: dim i\n\
+    >>> 4: n=5\n\
+    >>> 5: p=1\n\
+    >>> 6: i=1\n\
+    >>> 7: if i ≤ n then\n\
+    >>> 8: p=p * i\n\
+    >>> 9: i=i + 1\n\
+    >>> 10: goto 7:\n\
+    >>> 11: end if')
 
+    # creates and builds the control flow graph  
+    >>> G = nx.DiGraph()
+    >>> nodes = range(1, 12)
+    >>> G.add_nodes_from(nodes)
+    >>> edges = [(edge, edge+1) for edge in range(1, 11)]
+    >>> edges.append((7,11))
+    >>> edges.append((10, 7))
+    >>> print(edges)
+    >>> G.add_edges_from(edges)
+
+    # runs the function
     >>> build_control_graph(file1)
-
-    
+    G
 
     Example 2: invalid path
     -----------------------
     file_name2 = 'semantic-code2.txt'
     file2 = path + file_name # file does not exist
 
-    >>> convert_to_semantic(file2)
+    >>> build_control_graph(file2)
     Exception: NetworkXPathDoesNotExist
     """
     return 0  # Empty implementation
