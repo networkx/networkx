@@ -6,7 +6,8 @@ __all__ = ["build_DG_from_CFG"]
 
 def build_DG_from_CFG(control_flow_graph):
     """
-    Building a dependency graph (DG) from a control flow graph (CFG)
+    Building a dependency graph (DG) from a control flow graph (CFG).
+    The function returns the DG.
 
     Parameters
     ----------

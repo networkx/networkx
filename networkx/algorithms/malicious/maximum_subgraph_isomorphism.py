@@ -6,7 +6,8 @@ __all__ = ["find_max_sub_isomorphism_graph"]
 
 def find_max_sub_isomorphism_graph(G1, G2):
     """
-    Finding the maximum subgraph isomorphism on two given (directed) graphs: G1 and G2
+    Finding the maximum subgraph isomorphism on two given (directed) graphs: G1 and G2.
+    The function returns the maximum subgraph.
 
     Parameters
     ----------

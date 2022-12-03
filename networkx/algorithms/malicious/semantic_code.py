@@ -5,7 +5,9 @@ Converting a program to a code with semantic meaning
 __all__ = ["convert_code__to_semantic"]
 
 def convert_code__to_semantic(program):
-    """Converts the given program parsed and transformed to a code with semantic meaning
+    """
+    Converts the given program parsed and transformed to a code with semantic meaning.
+    The function returns a string with the semantic code.
 
     Parameters
     ----------

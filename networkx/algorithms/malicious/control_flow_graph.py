@@ -5,7 +5,9 @@ Building a control flow graph from a code with semantic meaning.
 __all__ = ["build_CFG"]
 
 def build_CFG(semantic_program):
-    """Building a control flow graph (CFG) from the given program's code with semantic meaning
+    """
+    Building a control flow graph (CFG) from the given program's code with semantic meaning.
+    The function returns the CFG.
 
     Parameters
     ----------

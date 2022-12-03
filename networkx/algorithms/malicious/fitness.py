@@ -6,11 +6,12 @@ __all__ = ["calculate_fitness"]
 
 def calculate_fitness(G1, G2):
     """
-    measures the proportion of the number of different edges
+    Measures the proportion of the number of different edges
     between two given graphs against the number of edges in the
-    smaller graph, to evaluate a chromosome. that will be called the
+    smaller graph, to evaluate a chromosome. That will be called the
     difference, noted by d, of the graphs. The difference value 0
     means that G2 is a complete subgraph of G1.
+    The function returns the difference.
 
     Parameters
     ----------

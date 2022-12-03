@@ -6,7 +6,8 @@ __all__ = ["build_GR_from_DG"]
 
 def build_RG_from_DG(dependency_graph):
     """
-    Building a reduced graph (RG) from a dependency graph (DG)
+    Building a reduced graph (RG) from a dependency graph (DG).
+    The function returns the RG.
 
     Parameters
     ----------
