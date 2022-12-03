@@ -3,7 +3,6 @@ Building a control flow graph from a code with semantic meaning.
 """
 
 __all__ = ["build_CFG"]
-import networkx as nx
 
 def build_CFG(semantic_program):
     """Building a control flow graph (CFG) from the given program's code with semantic meaning
@@ -16,7 +15,7 @@ def build_CFG(semantic_program):
     Returns
     -------
     control_flow_graph : NetworkX DiGraph
-        A graph that represents the flow of the code.    
+        A (dirceted) graph that represents the flow of the code.    
 
     Raises
     ------
@@ -42,6 +41,8 @@ def build_CFG(semantic_program):
 
     Example 1: valid path
     ---------------------
+    >>> import networkx as nx
+
     # creates a semantic code 
     >>> path = '/Users/liozakirav/Documents/computer-science/fourth-year/Research-Algorithms/networkx/networkx/algorithms/malicious/code-examples/'
     >>> file_name = 'semantic1.txt'

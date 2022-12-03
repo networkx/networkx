@@ -3,8 +3,6 @@ Building a dependency graph from a control flow graph.
 """
 
 __all__ = ["build_DG_from_CFG"]
-import networkx as nx
-
 
 def build_DG_from_CFG(control_flow_graph):
     """
@@ -13,12 +11,12 @@ def build_DG_from_CFG(control_flow_graph):
     Parameters
     ----------
     control_flow_graph : NetworkX DiGraph
-        A CFG graph
+        A CFG (dirceted) graph
 
     Returns
     -------
     dependency_graph : NetworkX DiGraph
-        A dependency graph    
+        A dependency (dirceted) graph    
 
     Notes
     -----
@@ -39,6 +37,8 @@ def build_DG_from_CFG(control_flow_graph):
 
     Example 1: building a DG graph
     ------------------------------
+    >>> import networkx as nx
+
    # creates and builds the control flow graph  
     >>> control_flow_graph = nx.DiGraph()
     >>> nodes = range(1, 12)

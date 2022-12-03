@@ -3,8 +3,6 @@ Building a reduced graph from a dependency graph.
 """
 
 __all__ = ["build_GR_from_DG"]
-import networkx as nx
-
 
 def build_RG_from_DG(dependency_graph):
     """
@@ -13,12 +11,12 @@ def build_RG_from_DG(dependency_graph):
     Parameters
     ----------
     dependency_graph : NetworkX DiGraph
-        A dependency graph 
+        A (dirceted) dependency graph 
 
     Returns
     -------
     reduced_graph : NetworkX DiGraph
-        A reduced graph    
+        A (dirceted) reduced graph    
 
     Notes
     -----
@@ -51,6 +49,8 @@ def build_RG_from_DG(dependency_graph):
 
     Example 1: building a RG graph
     ------------------------------
+    >>> import networkx as nx
+
     # creates and builds the DG graph
     >>> directed_G1 = nx.DiGraph()
     >>> directed_G1.add_nodes_from(range(1,12))
@@ -65,7 +65,7 @@ def build_RG_from_DG(dependency_graph):
     >>> build_RG_from_DG(directed_G1)
     reduction_G1
     
-    Example 2: a graph that can not be reduced (the original graph will be return)
+    Example 2: a graph that can not be reduced (the original graph will be returned)
     ------------------------------------------------------------------------------
     # creates and builds the DG graph
     >>> directed_G2 = nx.DiGraph()
