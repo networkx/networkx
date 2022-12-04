@@ -49,6 +49,8 @@ __all__ = [
     "eppstein_matching",
     "to_vertex_cover",
     "minimum_weight_full_matching",
+    "envy_free_matching",
+    "minimum_weight_envy_free_matching",
 ]
 
 INFINITY = float("inf")
