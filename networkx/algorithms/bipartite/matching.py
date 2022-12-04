@@ -643,14 +643,53 @@ def _EFM_partition(G, M: dict):
     pass
 
 def envy_free_matching(G):
-    r"""
+    r"""Return an envy-free matching of maximum cardinality
 
     Parameters
     ----------
     G
+        NetworkX graph
+
+        Undirected bipartite graph
 
     Returns
     -------
+    Matching: dictionary
+        The matching is returned as a dictionary.
+    References
+    ----------
+    .. [1] "Envy-free Matchings in Bipartite Graphs and their Applications to Fair Division",
+    by Elad Aigner-Horev and Erel Segal-Halevi (2022), https://arxiv.org/abs/1901.09527
+    Algorithm 2: Finding an envy-free matching of maximum cardinality.
+    Programmers
+    -----------
+        Benjamin Saldman
+        Daniel Gilkarov
+    Examples
+    --------
+        Example 1: Perfect matching
+        >>> Graph=nx.complete_bipartite_graph(3,3)
+        >>> envy_free_matching(Graph)
+        {0:3,3:0,1:4,4:1,2:5,5:2}
 
+        Example 2: Non-empty envy-free matching
+        >>> Graph=nx.Graph([(0,3),(3,0),(0,4),(4,0),(1,4),(4,1),(2,4),(4,2)])
+        >>> envy_free_matching(Graph)
+        {0:3,3:0}
+
+        Example 3: Odd path
+        >>> Graph=nx.Graph([(0,3),(3,0),(1,3),(3,1),(1,4),(4,1),(2,4),(4,2)])
+        >>> envy_free_matching(Graph)
+        {}
+
+        Example 3: Odd path
+        >>> Graph=nx.Graph([(0,3),(3,0),(1,3),(3,1),(1,4),(4,1),(2,4),(4,2)])
+        >>> envy_free_matching(Graph)
+        {}
+
+        Example 4: Y-path-saturated graph
+        >>> Graph=nx.Graph([(0,6),(6,0),(1,6),(6,1),(1,7),(7,1),(2,6),(6,2),(2,8),(8,2),(3,9),(9,3),(3,6),(6,3),(4,8),(8,4),(4,7),(7,4),(5,9),(9,5)])
+        >>> envy_free_matching(Graph)
+        {}
     """
     pass
