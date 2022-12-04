@@ -400,3 +400,20 @@ class TestMinimumWeightEnvyFreeMatching:
         B.add_edge(5, 3, weight=0)
         matching = minimum_weight_envy_free_matching(B)
         assert matching == {0: 3, 3: 0, 1: 4, 4: 1, 2: 5, 5: 2}
+
+    def test_non_empty_envy_free_matching(self):
+        A = nx.Graph()
+        A.add_edge(0, 4, weight=5)
+        A.add_edge(4, 0, weight=5)
+        A.add_edge(1, 4, weight=1)
+        A.add_edge(4, 1, weight=1)
+        A.add_edge(2, 5, weight=3)
+        A.add_edge(5, 2, weight=3)
+        A.add_edge(2, 7, weight=9)
+        A.add_edge(7, 2, weight=9)
+        A.add_edge(3, 6, weight=3)
+        A.add_edge(6, 3, weight=3)
+        A.add_edge(3, 7, weight=7)
+        A.add_edge(7, 3, weight=7)
+        matching = minimum_weight_envy_free_matching(A)
+        assert matching == {2: 5, 5: 2, 3: 6, 6: 3}
