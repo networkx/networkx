@@ -60,13 +60,13 @@ class TestDepndencyGraph:
         CFG.add_edge_from((1,2),(2,3),(3,4),(4,10),(10,11),(11,12),(12,13),(13,5),(5,6),(6,7),(7,8),(8,5)(8,9),(5,9))
     ###############################################
 
-    #stupid code_v1 control_flow_graph
+    #stupid code control_flow_graph
         stupid_CFG = nx.diGraph()
         stupid_CFG.add_nodes_from(range(1,7))
         edges = [(edge, edge+1) for edge in range(1, 7)]
         stupid_CFG.add_edges_from(edges)
     
-    #stupid_code_v2 contrfol_flow_graph
+    #stupid_code_v1 contrfol_flow_graph
     #variable renaming
         stupid_v1_CFG = nx.diGraph()
         stupid_v1_CFG.add_nodes_from(range(1,7))
@@ -165,7 +165,7 @@ class TestDepndencyGraph:
 
         """
         basic_DG_v5 = nx.diGraph()
-        basic_DG_v5.add_nodes_from(range(1,12))
+        basic_DG_v5.add_nodes_from(range(1,14))
         edges = [(1,11),(2,12),(3,10),(11,6),(12,6),(12,7),(12,5),(10,5),(6,6),(7,6),(7,7),(7,5)]
         basic_DG_v5.add_edges_from(edges)
 
