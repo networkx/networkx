@@ -277,7 +277,7 @@ class TestSemanticCode:
 
         assert convert_code__to_semantic(self.stupid_code_v1) == expected
 
-    def test_stupid_fork_code(self):
+    def test_fork_code(self):
         """
         Checks the fork_code virus code:
         """
@@ -291,7 +291,7 @@ class TestSemanticCode:
 
         assert convert_code__to_semantic(self.fork_code) == expected
 
-    def test_stupid_fork_code_v1(self):
+    def test_fork_code_v1(self):
         """
         Checks the first variant of fork_code virus code:
         """

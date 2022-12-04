@@ -275,7 +275,7 @@ class TestControlFlowGraph:
 
         assert build_CFG(self.basic_code) == CFG
 
-    def test_stupid_fork_code(self):
+    def test_fork_code(self):
         """
         Checks the fork_code virus code:
         """
@@ -288,7 +288,7 @@ class TestControlFlowGraph:
 
         assert build_CFG(self.basic_code) == CFG
 
-    def test_stupid_fork_code_v1(self):
+    def test_fork_code_v1(self):
         """
         Checks the first variant of fork_code virus code:
         """
