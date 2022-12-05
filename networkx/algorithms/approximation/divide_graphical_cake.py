@@ -16,10 +16,12 @@ def two_agents_approx_cake(k: int) -> float:
  The approximation of the algo. It will be at most 1/2 - 1/(2*3^k). This number represents the amount of "cake" both
  agents will get.
 
- Example 1
+Example 1
  >>> two_agents_approx_cake(2)
  4/9
+Example 2
   >>> two_agents_approx_cake(1)
+Example 3
  1/3
   >>> two_agents_approx_cake(3)
  13/27
