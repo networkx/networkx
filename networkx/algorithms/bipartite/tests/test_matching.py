@@ -329,31 +329,73 @@ class TestMinimumWeightFullMatching:
 
 
 class TestEnvyFreeMatching:
+
     def test_envy_free_perfect_matching(self):
+        def generate_marriable_bipartite_graph(size: int):
+            return nx.Graph([(i, i+size) for i in range(size)])
+
         A = nx.complete_bipartite_graph(3, 3)
         matching = envy_free_matching(A)
         assert matching == {0: 3, 3: 0, 1: 4, 4: 1, 2: 5, 5: 2}
+
         B = nx.Graph([(0, 3), (3, 0), (0, 4), (4, 0), (1, 4), (4, 1), (1, 5), (5, 1), (2, 5), (5, 2)])
         matching = envy_free_matching(B)
         assert matching == {0: 3, 3: 0, 1: 4, 4: 1, 2: 5, 5: 2}
+
+        C = generate_marriable_bipartite_graph(10)
+        matching = envy_free_matching(C)
+        assert matching == {(i, i+10) for i in range(10)}
+
+        D = generate_marriable_bipartite_graph(10000)
+        matching = envy_free_matching(C)
+        assert matching == {(i, i + 10000) for i in range(10000)}
 
     def test_non_empty_envy_free_matching(self):
         A = nx.Graph([(0, 3), (3, 0), (0, 4), (4, 0), (1, 4), (4, 1), (2, 4), (4, 2)])
         matching = envy_free_matching(A)
         assert matching == {0: 3, 3: 0}
+
         B = nx.Graph([(0, 4), (4, 0), (0, 5), (5, 0), (0, 8), (8, 0), (1, 6), (6, 1), (2, 7), (7, 2), (3, 7), (7, 3)])
         matching = envy_free_matching(B)
         assert matching == {0: 4, 4: 0, 1: 6, 6: 1}
 
     def test_empty_envy_free_matching(self):
-        A = nx.Graph([(0, 3), (3, 0), (1, 3), (3, 1), (1, 4), (4, 1), (2, 4), (4, 2)])
-        matching = envy_free_matching(A)
-        assert matching == {}
+        def generate_odd_path(size: int):
+            """
+            generate_odd_path
+
+            input: positive number
+            output: bipartite graph with one set of cardinality = size and one set of cardinality = size - 1
+            with the shape of an odd path.
+
+            >>> generate_odd_path(3)
+            nx.Graph([(0, 3), (1, 3), (1, 4), (2, 4), (3, 0), (3, 1), (4, 1), (4, 2)])
+
+            """
+            edges = [(0, size)]
+
+            actions = {
+                0: lambda: edges.append((edges[-1][0], edges[-1][1] + 1)),
+
+                1: lambda: edges.append((edges[-1][0] + 1, edges[-1][1]))
+            }
+
+            for i in range(1, size + 1):
+                actions[i % 2]()
+            return nx.Graph(edges)
+
+        A = generate_odd_path(3)  # check small input first
+
         B = nx.Graph(
             [(0, 6), (6, 0), (1, 6), (6, 1), (1, 7), (7, 1), (2, 6), (6, 2), (2, 8), (8, 2), (3, 9), (9, 3), (3, 6),
-             (6, 3), (4, 8), (8, 4), (4, 7), (7, 4), (5, 9), (9, 5)])
-        matching = envy_free_matching(B)
-        assert matching == {}
+             (6, 3), (4, 8), (8, 4), (4, 7), (7, 4), (5, 9), (9, 5)])  # more intricate graph
+
+        C = generate_odd_path(100)  # check big inputs
+        D = generate_odd_path(10000)  # check even bigger inputs
+
+        graphs = {A, B, C, D}
+        for graph in graphs:
+            assert envy_free_matching(G=graph) == {}
 
 
 class TestMinimumWeightEnvyFreeMatching:
