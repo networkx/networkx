@@ -44,34 +44,34 @@ def convert_code__to_semantic(program):
 
     Example 1: valid path
     ---------------------
-    path = '/Users/liozakirav/Documents/computer-science/fourth-year/Research-Algorithms/networkx/networkx/algorithms/malicious/code-examples/'
-    file_name = 'original-code1.txt'
-    file1 = path + file_name
-    with open(file1, 'w') as f:
-        f.write('1: dim n, p, i\n\
-    2: n = 5\n\
-    3: p = 1\n\
-    4: for i = 1 to n do\n\
-    5: p = p * i\n\
-    6: end for')
+    >>> path = '/Users/liozakirav/Documents/computer-science/fourth-year/Research-Algorithms/networkx/networkx/algorithms/malicious/code-examples/'
+    >>> file_name = 'original-code1.txt'
+    >>> file1 = path + file_name
+    >>> with open(file1, 'w') as f:
+    >>>     f.write('1: dim n, p, i\n\
+    >>> 2: n = 5\n\
+    >>> 3: p = 1\n\
+    >>> 4: for i = 1 to n do\n\
+    >>> 5: p = p * i\n\
+    >>> 6: end for')
 
     >>> convert_code__to_semantic(file1)
-    '1: dim n\n\
-    2: dim p\n\
-    3: dim i\n\
-    4: n=5\n\
-    5: p=1\n\
-    6: i=1\n\
-    7: if i ≤ n then\n\
-    8: p=p * i\n\
-    9: i=i + 1\n\
-    10: goto 7:\n\
-    11: end if'
+        '1: dim n\n'\
+        '2: dim p\n'\
+        '3: dim i\n'\
+        '4: n=5\n'\
+        '5: p=1\n'\
+        '6: i=1\n'\
+        '7: if i ≤ n then\n'\
+        '8: p=p * i\n'\
+        '9: i=i + 1\n'\
+        '10: goto 7:\n'\
+        '11: end if'
 
     Example 2: invalid path
     -----------------------
-    file_name2 = 'original-code2.txt'
-    file2 = path + file_name # file does not exist
+    >>> file_name2 = 'original-code2.txt'
+    >>> file2 = path + file_name # file does not exist
 
     >>> convert_code__to_semantic(file2)
     Exception: NetworkXPathDoesNotExist
