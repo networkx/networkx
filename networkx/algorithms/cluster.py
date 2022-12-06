@@ -52,12 +52,11 @@ def triangles(G, nodes=None):
     Self loops are ignored.
 
     """
-    
+
     # if nodes is None, then compute triangles for the complete graph
     if nodes is None:
         return _triangle_count(G)
 
-    
     # if specific nodes are provided, then for efficiency create a subgraph
     # that preserves the edges among the alters for each node in the `nodes`
     from networkx import ancestors
