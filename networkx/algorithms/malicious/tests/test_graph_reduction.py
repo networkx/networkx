@@ -7,7 +7,7 @@ import networkx as nx
 from networkx.algorithms.malicious.graph_reduction import build_RG_from_DG
 
 
-class TestDepndencyGraph:
+class TestGraphReduction:
     # basic_code control_flow_graph
     basic_DG = nx.diGraph()
     basic_DG.add_nodes_from(range(1, 12))
