@@ -168,7 +168,7 @@ class TestControlFlowGraph:
         http://rosaec.snu.ac.kr/publish/2010/T2/KiMo-GECCO-2010.pdf
         """
         
-        CFG = nx.diGraph()
+        CFG = nx.DiGraph()
         CFG.add_nodes_from(range(1,12))
         edges = [(edge, edge+1) for edge in range(1, 11)]
         edges.append((7,11))
@@ -183,7 +183,7 @@ class TestControlFlowGraph:
         http://rosaec.snu.ac.kr/publish/2010/T2/KiMo-GECCO-2010.pdf
         """
 
-        CFG = nx.diGraph()
+        CFG = nx.DiGraph()
         CFG.add_nodes_from(range(1,12))
         edges = [(edge, edge+1) for edge in range(1, 11)]
         edges.append((7,11))
@@ -198,7 +198,7 @@ class TestControlFlowGraph:
         http://rosaec.snu.ac.kr/publish/2010/T2/KiMo-GECCO-2010.pdf
         """
 
-        CFG = nx.diGraph()
+        CFG = nx.DiGraph()
         CFG.add_nodes_from(range(1,12))
         edges = [(edge, edge+1) for edge in range(1, 11)]
         edges.append((7,11))
@@ -214,7 +214,7 @@ class TestControlFlowGraph:
         
         """
 
-        CFG = nx.diGraph()
+        CFG = nx.DiGraph()
         CFG.add_nodes_from(range(1,12))
         edges = [(edge, edge+1) for edge in range(1, 11)]
         edges.append((7,11))
@@ -230,7 +230,7 @@ class TestControlFlowGraph:
         
         """
 
-        CFG = nx.diGraph()
+        CFG = nx.DiGraph()
         CFG.add_nodes_from(range(1,12))
         edges = [(edge, edge+1) for edge in range(1, 11)]
         edges.append((7,11))
@@ -246,9 +246,9 @@ class TestControlFlowGraph:
         http://rosaec.snu.ac.kr/publish/2010/T2/KiMo-GECCO-2010.pdf
 
         """
-        CFG = nx.diGraph()
+        CFG = nx.DiGraph()
         CFG.add_nodes_from(range(1,14))
-        CFG.add_edge_from((1,2),(2,3),(3,4),(4,10),(10,11),(11,12),(12,13),(13,5),(5,6),(6,7),(7,8),(8,5)(8,9),(5,9))
+        CFG.add_edge_from((1,2),(2,3),(3,4),(4,10),(10,11),(11,12),(12,13),(13,5),(5,6),(6,7),(7,8),(8,5),(8,9),(5,9))
 
         assert build_CFG(self.basic_code) == CFG
 
@@ -256,7 +256,7 @@ class TestControlFlowGraph:
         """
         Checks the stupid_code example that we made up:
         """
-        CFG = nx.diGraph()
+        CFG = nx.DiGraph()
         CFG.add_nodes_from(range(1,7))
         edges = [(edge, edge+1) for edge in range(1, 7)]
         CFG.add_edges_from(edges)
@@ -268,7 +268,7 @@ class TestControlFlowGraph:
         Checks the first variant of stupid_code:
         """
         
-        CFG = nx.diGraph()
+        CFG = nx.DiGraph()
         CFG.add_nodes_from(range(1,7))
         edges = [(edge, edge+1) for edge in range(1, 7)]
         CFG.add_edges_from(edges)
@@ -280,7 +280,7 @@ class TestControlFlowGraph:
         Checks the fork_code virus code:
         """
         
-        CFG = nx.diGraph()
+        CFG = nx.DiGraph()
         CFG.add_nodes_from(range(1,7))
         edges = [(edge, edge+1) for edge in range(1, 5)]
         edges.append((5,3),(3,6))
@@ -293,10 +293,13 @@ class TestControlFlowGraph:
         Checks the first variant of fork_code virus code:
         """
         
-        CFG = nx.diGraph()
+        CFG = nx.DiGraph()
         CFG.add_nodes_from(range(1,15))
         edges = [(edge, edge+1) for edge in range(1, 15)]
-        edges.append((8,12),(11,8),(13,7),(7,14))
+        edges.append((7, 14))
+        edges.append((8, 12))
+        edges.append((11, 8))
+        edges.append((13, 7))
         CFG.add_edges_from(edges)
         assert build_CFG(self.basic_code) == CFG
 
