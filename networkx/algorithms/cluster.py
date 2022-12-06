@@ -55,7 +55,7 @@ def triangles(G, nodes=None):
     
     # if nodes is None, then compute triangles for the complete graph
     if nodes is None:
-        return __triangle_count(G)
+        return _triangle_count(G)
 
     
     # if specific nodes are provided, then for efficiency create a subgraph
@@ -75,7 +75,7 @@ def triangles(G, nodes=None):
     # since the other edges are not preserved when G_subgraph is created
     triangle_counts = {
         node: n_triangles
-        for node, n_triangles in __triangle_count(G_subgraph).items()
+        for node, n_triangles in _triangle_count(G_subgraph).items()
         if node in nodes
     }
     # print(triangle_counts, _return_single_value)
