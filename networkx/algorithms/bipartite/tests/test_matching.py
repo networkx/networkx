@@ -356,7 +356,7 @@ class TestEnvyFreeMatching:
         assert matching == {(i, i+10) for i in range(10)}
 
         D = generate_marriable_bipartite_graph(10000)
-        matching = envy_free_matching(C)
+        matching = envy_free_matching(D)
         assert matching == {(i, i + 10000) for i in range(10000)}
 
     def test_non_empty_envy_free_matching(self):
