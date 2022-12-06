@@ -522,8 +522,11 @@ def draw_networkx_edges(
         Also, `(offset, onoffseq)` tuples can be used as style instead of a strings.
         (See `matplotlib.patches.FancyArrowPatch`: `linestyle`)
 
-    alpha : float or None (default=None)
-        The edge transparency
+    alpha : float or array of floats (default=None)
+        The edge transparency.  This can be a single alpha value,
+        in which case it will be applied to all specified edges. Otherwise,
+        if it is an array, the elements of alpha will be applied to the colors
+        in order (cycling through alpha multiple times if necessary).
 
     edge_cmap : Matplotlib colormap, optional
         Colormap for mapping intensities of edges
