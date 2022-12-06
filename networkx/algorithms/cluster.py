@@ -67,7 +67,6 @@ def triangles(G, nodes=None):
 
     subset_nodes = set(nodes).union(*(ancestors(G, n) for n in nodes))
     G_subgraph = G.subgraph(subset_nodes)
-    # print(subset_nodes)
 
     # compute the triangles for the subgraph
     # note that the triangle counts will be correct only for nodes in the `nodes`
@@ -77,7 +76,7 @@ def triangles(G, nodes=None):
         for node, n_triangles in _triangle_count(G_subgraph).items()
         if node in nodes
     }
-    # print(triangle_counts, _return_single_value)
+
     # if only one node is passed, then the returned value should be the triangle count
     if _return_single_value:
         return triangle_counts[_return_node]
