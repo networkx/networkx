@@ -94,7 +94,9 @@ def _triangle_count(G):
 
     # iterate over the nodes in a graph
     for node, neighbors in G.adjacency():
-        later_neighbors[node] = {n for n in neighbors if n not in later_neighbors}
+        later_neighbors[node] = {
+            n for n in neighbors if n not in later_neighbors and n is not node
+        }
 
     # instantiate with a zero count for each node
     # add 1 to the count if a nodes neighbor's neighbor is also a neighbor
