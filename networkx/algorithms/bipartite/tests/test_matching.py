@@ -332,6 +332,15 @@ class TestEnvyFreeMatching:
 
     def test_envy_free_perfect_matching(self):
         def generate_marriable_bipartite_graph(size: int):
+            """
+            generate_marriable_bipartite_graph
+
+            input: positive number
+            output: bipartite graph with both sets of cardinality = size each node has one edge to exactly one node.
+
+            >>> generate_marriable_bipartite_graph(3).edges
+            [(0, 3), (1, 4), (2, 5)]
+            """
             return nx.Graph([(i, i+size) for i in range(size)])
 
         A = nx.complete_bipartite_graph(3, 3)
@@ -368,8 +377,8 @@ class TestEnvyFreeMatching:
             output: bipartite graph with one set of cardinality = size and one set of cardinality = size - 1
             with the shape of an odd path.
 
-            >>> generate_odd_path(3)
-            nx.Graph([(0, 3), (1, 3), (1, 4), (2, 4), (3, 0), (3, 1), (4, 1), (4, 2)])
+            >>> generate_odd_path(3).edges
+            [(0, 3), (1, 3), (1, 4), (2, 4), (3, 0), (3, 1), (4, 1), (4, 2)]
 
             """
             edges = [(0, size)]
