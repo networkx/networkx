@@ -27,13 +27,15 @@ def triangles(G, nodes=None):
     ----------
     G : graph
        A networkx graph
-    nodes : container of nodes, optional (default= all nodes in G)
+
+    nodes : container of nodes, optional (default = compute for all nodes in G)
        Compute triangles for nodes in this container.
 
     Returns
     -------
-    out : dictionary
-       Number of triangles keyed by node label.
+    out : dictionary or int
+       Number of triangles keyed by node label (dict) if nodes is a container of nodes.
+       Number of triangles for a specific node (int) if nodes is a specific node.
 
     Examples
     --------
@@ -47,17 +49,65 @@ def triangles(G, nodes=None):
 
     Notes
     -----
-    When computing triangles for the entire graph each triangle is counted
-    three times, once at each node.  Self loops are ignored.
+    Self loops are ignored.
 
     """
-    # If `nodes` represents a single node in the graph, return only its number
-    # of triangles.
-    if nodes in G:
-        return next(_triangles_and_degree_iter(G, nodes))[2] // 2
-    # Otherwise, `nodes` represents an iterable of nodes, so return a
-    # dictionary mapping node to number of triangles.
-    return {v: t // 2 for v, d, t, _ in _triangles_and_degree_iter(G, nodes)}
+    
+    # if nodes is None, then compute triangles for the complete graph
+    if nodes is None:
+        return __triangle_count(G)
+
+    
+    # if specific nodes are provided, then for efficiency create a subgraph
+    # that preserves the edges among the alters for each node in the `nodes`
+    from networkx import ancestors
+
+    if _return_single_value := not hasattr(nodes, "__contains__"):
+        _return_node = nodes
+        nodes = [nodes]
+
+    subset_nodes = set(nodes).union(*(ancestors(G, n) for n in nodes))
+    G_subgraph = G.subgraph(subset_nodes)
+    # print(subset_nodes)
+
+    # compute the triangles for the subgraph
+    # note that the triangle counts will be correct only for nodes in the `nodes`
+    # since the other edges are not preserved when G_subgraph is created
+    triangle_counts = {
+        node: n_triangles
+        for node, n_triangles in __triangle_count(G_subgraph).items()
+        if node in nodes
+    }
+    # print(triangle_counts, _return_single_value)
+    # if only one node is passed, then the returned value should be the triangle count
+    if _return_single_value:
+        return triangle_counts[_return_node]
+    else:
+        return triangle_counts
+
+
+def _triangle_count(G):
+    """This is a utility function to calculate triangles via a single pass."""
+
+    # dict used to avoid visiting the same nodes twice
+    # this allows calculating/counting each triangle only once
+    later_neighbors = {}
+
+    # iterate over the nodes in a graph
+    for node, neighbors in G.adjacency():
+        later_neighbors[node] = {n for n in neighbors if n not in later_neighbors}
+
+    # instantiate with a zero count for each node
+    # add 1 to the count if a nodes neighbor's neighbor is also a neighbor
+    triangle_counts = {node: 0 for node in G}
+    for node1, neighbors in later_neighbors.items():
+        for node2 in neighbors:
+            for node3 in neighbors & later_neighbors[node2]:
+                triangle_counts[node1] += 1
+                triangle_counts[node2] += 1
+                triangle_counts[node3] += 1
+
+    return triangle_counts
 
 
 @not_implemented_for("multigraph")
