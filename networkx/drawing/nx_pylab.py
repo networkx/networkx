@@ -524,7 +524,7 @@ def draw_networkx_edges(
 
     alpha : float or array of floats (default=None)
         The edge transparency.  This can be a single alpha value,
-        in which case it will be applied to all the nodes of color. Otherwise,
+        in which case it will be applied to all specified edges. Otherwise,
         if it is an array, the elements of alpha will be applied to the colors
         in order (cycling through alpha multiple times if necessary).
 
