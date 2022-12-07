@@ -1361,7 +1361,7 @@ class OutMultiEdgeView(OutEdgeView):
         u, v, k = e
         return self._adjdict[u][v][k]
 
-    def __call__(self, nbunch=None, data=False, keys=False, default=None):
+    def __call__(self, nbunch=None, data=False, default=None, keys=False):
         if nbunch is None and data is False and keys is True:
             return self
         return self.dataview(self, nbunch, data, keys, default)
