@@ -99,7 +99,7 @@ def _triangle_count(G):
 
     # instantiate with a zero count for each node
     # add 1 to the count if a nodes neighbor's neighbor is also a neighbor
-    triangle_counts = {node: 0 for node in G}
+    triangle_counts = dict.fromkeys(G, 0)
     for node1, neighbors in later_neighbors.items():
         for node2 in neighbors:
             for node3 in neighbors & later_neighbors[node2]:
