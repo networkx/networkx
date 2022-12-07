@@ -163,6 +163,11 @@ class TestConvertNumpyArray:
             A, parallel_edges=False, create_using=nx.MultiDiGraph
         )
         assert graphs_equal(actual, expected)
+    
+    def test_from_numpy_array_no_edge_attr(self):
+        A = np.array([[0, 1], [1, 0]])
+        G = nx.from_numpy_array(A, create_using=nx.MultiGraph, edge_attr=None)
+        assert "weight" not in G.edges[0,1]
 
     def test_symmetric(self):
         """Tests that a symmetric array has edges added only once to an
