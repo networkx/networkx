@@ -1153,9 +1153,12 @@ def from_numpy_array(A, parallel_edges=False, create_using=None, edge_attr="weig
         #         for d in range(A[u, v]):
         #             G.add_edge(u, v, weight=1)
         #
-        triples = chain(
-            ((u, v, {edge_attr: 1}) for d in range(A[u, v])) for (u, v) in edges
-        ) if edge_attr else chain(
+        if edge_attr:
+            triples = chain(
+                ((u, v, {edge_attr: 1}) for d in range(A[u, v])) for (u, v) in edges
+            ) 
+        else:
+            triples = chain(
             ((u, v, {}) for d in range(A[u, v])) for (u, v) in edges
         )
     else:  # basic data type
