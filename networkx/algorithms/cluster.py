@@ -56,12 +56,12 @@ def triangles(G, nodes=None):
     # of triangles.
     if nodes in G:
         return next(_triangles_and_degree_iter(G, nodes))[2] // 2
-    
+
     # if `nodes` is a container of nodes, then return a
     # dictionary mapping node to number of triangles.
     if nodes:
         return {v: t // 2 for v, d, t, _ in _triangles_and_degree_iter(G, nodes)}
- 
+
     # if nodes is None, then compute triangles for the complete graph
 
     # dict used to avoid visiting the same nodes twice
