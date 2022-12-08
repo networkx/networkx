@@ -52,40 +52,17 @@ def triangles(G, nodes=None):
     Self loops are ignored.
 
     """
-
+    # If `nodes` represents a single node in the graph, return only its number
+    # of triangles.
+    if nodes in G:
+        return next(_triangles_and_degree_iter(G, nodes))[2] // 2
+    
+    # if `nodes` is a container of nodes, then return a
+    # dictionary mapping node to number of triangles.
+    if nodes:
+        return {v: t // 2 for v, d, t, _ in _triangles_and_degree_iter(G, nodes)}
+ 
     # if nodes is None, then compute triangles for the complete graph
-    if nodes is None:
-        return _triangle_count(G)
-
-    # if specific nodes are provided, then for efficiency create a subgraph
-    # that preserves the edges among the alters for each node in the `nodes`
-    from networkx import ancestors
-
-    if _return_single_value := not hasattr(nodes, "__contains__"):
-        _return_node = nodes
-        nodes = [nodes]
-
-    subset_nodes = set(nodes).union(*(ancestors(G, n) for n in nodes))
-    G_subgraph = G.subgraph(subset_nodes)
-
-    # compute the triangles for the subgraph
-    # note that the triangle counts will be correct only for nodes in the `nodes`
-    # since the other edges are not preserved when G_subgraph is created
-    triangle_counts = {
-        node: n_triangles
-        for node, n_triangles in _triangle_count(G_subgraph).items()
-        if node in nodes
-    }
-
-    # if only one node is passed, then the returned value should be that node's triangle count
-    if _return_single_value:
-        return triangle_counts[_return_node]
-    else:
-        return triangle_counts
-
-
-def _triangle_count(G):
-    """This is a utility function to calculate triangles via a single pass."""
 
     # dict used to avoid visiting the same nodes twice
     # this allows calculating/counting each triangle only once
