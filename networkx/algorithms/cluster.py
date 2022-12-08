@@ -77,7 +77,7 @@ def triangles(G, nodes=None):
         if node in nodes
     }
 
-    # if only one node is passed, then the returned value should be the triangle count
+    # if only one node is passed, then the returned value should be that node's triangle count
     if _return_single_value:
         return triangle_counts[_return_node]
     else:
