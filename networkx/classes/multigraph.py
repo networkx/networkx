@@ -591,7 +591,7 @@ class MultiGraph(Graph):
         >>> # wrong way - will raise RuntimeError
         >>> # G.add_edges_from(((5,n) for n in G.nodes))
         >>> # right way - note that there will be no self-edge for node 5
-        >>> G.add_edges_from(list((5,n) for n in G.nodes))
+        >>> assigned_keys = G.add_edges_from(list((5,n) for n in G.nodes))
         """
         keylist = []
         for e in ebunch_to_add:
