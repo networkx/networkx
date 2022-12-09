@@ -616,9 +616,9 @@ class Graph:
         Evaluate an iterator over a graph if using it to modify the same graph
 
         >>> G = nx.Graph([(0, 1), (1, 2), (3, 4)])
-        >>> # this command will fail, as the graph's dict is modified during iteration
+        >>> # wrong way - will raise RuntimeError
         >>> # G.add_nodes_from(n + 1 for n in G.nodes)
-        >>> # this command will work, since the dictionary underlying graph is not modified
+        >>> # correct way
         >>> G.add_nodes_from(list(n + 1 for n in G.nodes))
         """
         for n in nodes_for_adding:
