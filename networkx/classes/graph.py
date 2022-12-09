@@ -579,6 +579,16 @@ class Graph:
         --------
         add_node
 
+        Notes
+        -------
+        When providing a container of nodes which is an iterator over the
+        current graph, a `RuntimeError` can be raised with message:
+        `RuntimeError: dictionary changed size during iteration`. This
+        happens when the graph's underlying dictionary is modified during
+        iteration. To avoid this error, evaluate the iterator into a separate
+        variable, e.g. by using `list(iterator_of_nodes)`, and pass this
+        variable to `G.add_nodes_from`.
+
         Examples
         --------
         >>> G = nx.Graph()  # or DiGraph, MultiGraph, MultiDiGraph, etc
@@ -603,6 +613,13 @@ class Graph:
         >>> H.nodes[1]["size"]
         11
 
+        Evaluate an iterator over a graph if using it to modify the same graph
+
+        >>> G = nx.Graph([(0, 1), (1, 2), (3, 4)])
+        >>> # this command will fail, as the graph's dict is modified during iteration
+        >>> # G.add_nodes_from(n + 1 for n in G.nodes)
+        >>> # this command will work, since the dictionary underlying graph is not modified
+        >>> G.add_nodes_from(list(n + 1 for n in G.nodes))
         """
         for n in nodes_for_adding:
             try:
