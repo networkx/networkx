@@ -562,6 +562,16 @@ class MultiGraph(Graph):
         This method can be overridden by subclassing the base class and
         providing a custom ``new_edge_key()`` method.
 
+        Warning
+        -------
+        When providing a container of edges, make sure that it is not an
+        iterator over the current graph. If it is, a `RuntimeError` will be
+        raised with message: `RuntimeError: dictionary changed size during
+        iteration`. This is because the graph is modified during execution of
+        the command. To avoid this error, evaluate the iterator into a separate
+        variable, e.g. by using `list(iterator_of_edges)`, and pass this
+        variable to `G.add_edges_from`.
+
         Examples
         --------
         >>> G = nx.Graph()  # or DiGraph, MultiGraph, MultiDiGraph, etc
@@ -573,6 +583,15 @@ class MultiGraph(Graph):
 
         >>> G.add_edges_from([(1, 2), (2, 3)], weight=3)
         >>> G.add_edges_from([(3, 4), (1, 4)], label="WN2898")
+
+        Evaluate an iterator over edges before passing it
+
+        >>> G = nx.MultiGraph([(1,2),(2,3),(3,4)])
+        >>> # Grow graph by one new node, adding edges to all existing nodes.
+        >>> # wrong way - will raise RuntimeError
+        >>> # G.add_edges_from(((5,n) for n in G.nodes))
+        >>> # right way - note that there will be no self-edge for node 5
+        >>> G.add_edges_from(list((5,n) for n in G.nodes))
         """
         keylist = []
         for e in ebunch_to_add:
