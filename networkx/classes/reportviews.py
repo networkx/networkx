@@ -1085,7 +1085,7 @@ class OutEdgeView(Set, Mapping):
         return self._adjdict[u][v]
 
     # EdgeDataView methods
-    def __call__(self, nbunch=None, *, data=False, default=None):
+    def __call__(self, nbunch=None, data=False, *, default=None):
         if nbunch is None and data is False:
             return self
         return self.dataview(self, nbunch, data, default)
@@ -1352,7 +1352,7 @@ class OutMultiEdgeView(OutEdgeView):
         u, v, k = e
         return self._adjdict[u][v][k]
 
-    def __call__(self, nbunch=None, *, data=False, default=None, keys=False):
+    def __call__(self, nbunch=None, data=False, *, default=None, keys=False):
         if nbunch is None and data is False and keys is True:
             return self
         return self.dataview(self, nbunch, data, keys, default)
