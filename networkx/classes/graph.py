@@ -691,6 +691,16 @@ class Graph:
         --------
         remove_node
 
+        Notes
+        -------
+        When providing a container of nodes which is an iterator over the
+        current graph, a `RuntimeError` will be raised with message:
+        `RuntimeError: dictionary changed size during iteration`. This
+        happens when the graph's underlying dictionary is modified during
+        iteration. To avoid this error, evaluate the iterator into a separate
+        variable, e.g. by using `list(iterator_of_nodes)`, and pass this
+        variable to `G.remove_nodes_from`.
+
         Examples
         --------
         >>> G = nx.path_graph(3)  # or DiGraph, MultiGraph, MultiDiGraph, etc
@@ -701,6 +711,13 @@ class Graph:
         >>> list(G.nodes)
         []
 
+        Evaluate an iterator over a graph if using it to modify the same graph
+
+        >>> G = nx.Graph([(0, 1), (1, 2), (3, 4)])
+        >>> # this command will fail, as the graph's dict is modified during iteration
+        >>> # G.remove_nodes_from(n for n in G.nodes if n < 2)
+        >>> # this command will work, since the dictionary underlying graph is not modified
+        >>> G.remove_nodes_from(list(n for n in G.nodes if n < 2))
         """
         adj = self._adj
         for n in nodes:
