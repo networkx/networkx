@@ -1357,7 +1357,7 @@ class OutMultiEdgeView(OutEdgeView):
             return self
         return self.dataview(self, nbunch, data, keys, default)
 
-    def data(self, data=True, keys=False, default=None, nbunch=None):
+    def data(self, data=True, default=None, nbunch=None, keys=False):
         if nbunch is None and data is False and keys is True:
             return self
         return self.dataview(self, nbunch, data, keys, default)
