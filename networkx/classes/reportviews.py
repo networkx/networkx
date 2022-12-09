@@ -902,7 +902,7 @@ class OutMultiEdgeDataView(OutEdgeDataView):
     def __setstate__(self, state):
         self.__init__(**state)
 
-    def __init__(self, viewer, nbunch=None, data=False, keys=False, default=None):
+    def __init__(self, viewer, nbunch=None, data=False, *, default=None, keys=False):
         self._viewer = viewer
         adjdict = self._adjdict = viewer._adjdict
         self.keys = keys
@@ -1369,7 +1369,7 @@ class OutMultiEdgeView(OutEdgeView):
     def data(self, data=True, default=None, nbunch=None, keys=False):
         if nbunch is None and data is False and keys is True:
             return self
-        return self.dataview(self, nbunch, data, keys, default)
+        return self.dataview(self, nbunch, data, default=default, keys=keys)
 
 
 class MultiEdgeView(OutMultiEdgeView):
