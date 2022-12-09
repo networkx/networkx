@@ -485,6 +485,16 @@ class DiGraph(Graph):
         --------
         add_node
 
+        Notes
+        -------
+        When providing a container of nodes which is an iterator over the
+        current graph, a `RuntimeError` can be raised with message:
+        `RuntimeError: dictionary changed size during iteration`. This
+        happens when the graph's underlying dictionary is modified during
+        iteration. To avoid this error, evaluate the iterator into a separate
+        variable, e.g. by using `list(iterator_of_nodes)`, and pass this
+        variable to `G.add_nodes_from`.
+
         Examples
         --------
         >>> G = nx.Graph()  # or DiGraph, MultiGraph, MultiDiGraph, etc
@@ -509,6 +519,13 @@ class DiGraph(Graph):
         >>> H.nodes[1]["size"]
         11
 
+        Evaluate an iterator over a graph if using it to modify the same graph
+
+        >>> G = nx.DiGraph([(0, 1), (1, 2), (3, 4)])
+        >>> # wrong way - will raise RuntimeError
+        >>> # G.add_nodes_from(n + 1 for n in G.nodes)
+        >>> # correct way
+        >>> G.add_nodes_from(list(n + 1 for n in G.nodes))
         """
         for n in nodes_for_adding:
             try:
@@ -582,6 +599,16 @@ class DiGraph(Graph):
         --------
         remove_node
 
+        Notes
+        -------
+        When providing a container of nodes which is an iterator over the
+        current graph, a `RuntimeError` will be raised with message:
+        `RuntimeError: dictionary changed size during iteration`. This
+        happens when the graph's underlying dictionary is modified during
+        iteration. To avoid this error, evaluate the iterator into a separate
+        variable, e.g. by using `list(iterator_of_nodes)`, and pass this
+        variable to `G.remove_nodes_from`.
+
         Examples
         --------
         >>> G = nx.path_graph(3)  # or DiGraph, MultiGraph, MultiDiGraph, etc
@@ -592,6 +619,13 @@ class DiGraph(Graph):
         >>> list(G.nodes)
         []
 
+        Evaluate an iterator over a graph if using it to modify the same graph
+
+        >>> G = nx.DiGraph([(0, 1), (1, 2), (3, 4)])
+        >>> # this command will fail, as the graph's dict is modified during iteration
+        >>> # G.remove_nodes_from(n for n in G.nodes if n < 2)
+        >>> # this command will work, since the dictionary underlying graph is not modified
+        >>> G.remove_nodes_from(list(n for n in G.nodes if n < 2))
         """
         for n in nodes:
             try:
@@ -702,13 +736,11 @@ class DiGraph(Graph):
         Edge attributes specified in an ebunch take precedence over
         attributes specified via keyword arguments.
 
-        Warning
-        -------
-        When providing a container of edges, make sure that it is not an
-        iterator over the current graph. If it is, a `RuntimeError` will be
-        raised with message: `RuntimeError: dictionary changed size during
-        iteration`. This is because the graph is modified during execution of
-        the command. To avoid this error, evaluate the iterator into a separate
+        When providing a container of edges which is an iterator over the
+        current graph, a `RuntimeError` can be raised with message:
+        `RuntimeError: dictionary changed size during iteration`. This
+        happens when the graph's underlying dictionary is modified during
+        iteration. To avoid this error, evaluate the iterator into a separate
         variable, e.g. by using `list(iterator_of_edges)`, and pass this
         variable to `G.add_edges_from`.
 
@@ -726,12 +758,12 @@ class DiGraph(Graph):
 
         Evaluate an iterator over edges before passing it
 
-        >>> G = nx.DiGraph([(1,2),(2,3),(3,4)])
+        >>> G = nx.DiGraph([(1, 2), (2, 3), (3, 4)])
         >>> # Grow graph by one new node, adding edges to all existing nodes.
         >>> # wrong way - will raise RuntimeError
-        >>> # G.add_edges_from(((5,n) for n in G.nodes))
+        >>> # G.add_edges_from(((5, n) for n in G.nodes))
         >>> # right way - note that there will be no self-edge for node 5
-        >>> G.add_edges_from(list((5,n) for n in G.nodes))
+        >>> G.add_edges_from(list((5, n) for n in G.nodes))
         """
         for e in ebunch_to_add:
             ne = len(e)
