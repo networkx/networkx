@@ -1063,11 +1063,11 @@ class Graph:
         the edge data. For MultiGraph/MultiDiGraph, duplicate edges
         are stored.
 
-        When providing a container of edges, make sure that it is not an
-        iterator over the current graph. If it is, a `RuntimeError` will be
-        raised with message: `RuntimeError: dictionary changed size during
-        iteration`. This is because the graph is modified during execution of
-        the command. To avoid this error, evaluate the iterator into a separate
+        When providing a container of edges which is an iterator over the
+        current graph, a `RuntimeError` can be raised with message:
+        `RuntimeError: dictionary changed size during iteration`. This
+        happens when the graph's underlying dictionary is modified during
+        iteration. To avoid this error, evaluate the iterator into a separate
         variable, e.g. by using `list(iterator_of_edges)`, and pass this
         variable to `G.add_weighted_edges_from`.
 
@@ -1078,13 +1078,13 @@ class Graph:
 
         Evaluate an iterator over edges before passing it
 
-        >>> G = nx.Graph([(1,2),(2,3),(3,4)])
-        >>> weight=0.1
+        >>> G = nx.Graph([(1, 2), (2, 3), (3, 4)])
+        >>> weight = 0.1
         >>> # Grow graph by one new node, adding edges to all existing nodes.
         >>> # wrong way - will raise RuntimeError
-        >>> # G.add_weighted_edges_from(((5,n, weight) for n in G.nodes))
+        >>> # G.add_weighted_edges_from(((5, n, weight) for n in G.nodes))
         >>> # correct way - note that there will be no self-edge for node 5
-        >>> G.add_weighted_edges_from(list((5,n, weight) for n in G.nodes))
+        >>> G.add_weighted_edges_from(list((5, n, weight) for n in G.nodes))
         """
         self.add_edges_from(((u, v, {weight: d}) for u, v, d in ebunch_to_add), **attr)
 
