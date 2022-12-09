@@ -757,7 +757,7 @@ class OutEdgeDataView:
     def __setstate__(self, state):
         self.__init__(**state)
 
-    def __init__(self, viewer, nbunch=None, data=False, default=None):
+    def __init__(self, viewer, nbunch=None, data=False, *, default=None):
         self._viewer = viewer
         adjdict = self._adjdict = viewer._adjdict
         if nbunch is None:
@@ -1166,7 +1166,7 @@ class OutEdgeView(Set, Mapping):
         """
         if nbunch is None and data is False:
             return self
-        return self.dataview(self, nbunch, data, default)
+        return self.dataview(self, nbunch, data, default=default)
 
     # String Methods
     def __str__(self):
@@ -1355,7 +1355,7 @@ class OutMultiEdgeView(OutEdgeView):
     def __call__(self, nbunch=None, data=False, *, default=None, keys=False):
         if nbunch is None and data is False and keys is True:
             return self
-        return self.dataview(self, nbunch, data, keys, default)
+        return self.dataview(self, nbunch, data, default=default, keys=keys)
 
     def data(self, data=True, default=None, nbunch=None, keys=False):
         if nbunch is None and data is False and keys is True:
