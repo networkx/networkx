@@ -756,7 +756,7 @@ class DiGraph(Graph):
         >>> G.add_edges_from([(1, 2), (2, 3)], weight=3)
         >>> G.add_edges_from([(3, 4), (1, 4)], label="WN2898")
 
-        Evaluate an iterator over edges before passing it
+        Evaluate an iterator over a graph if using it to modify the same graph
 
         >>> G = nx.DiGraph([(1, 2), (2, 3), (3, 4)])
         >>> # Grow graph by one new node, adding edges to all existing nodes.
