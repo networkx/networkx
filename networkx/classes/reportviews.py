@@ -1088,7 +1088,7 @@ class OutEdgeView(Set, Mapping):
     def __call__(self, nbunch=None, data=False, *, default=None):
         if nbunch is None and data is False:
             return self
-        return self.dataview(self, nbunch, data, default)
+        return self.dataview(self, nbunch, data, default=default)
 
     def data(self, data=True, default=None, nbunch=None):
         """
