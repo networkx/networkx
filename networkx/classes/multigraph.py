@@ -562,13 +562,13 @@ class MultiGraph(Graph):
         This method can be overridden by subclassing the base class and
         providing a custom ``new_edge_key()`` method.
 
-        When providing a container of edges which is an iterator over the
-        current graph, a `RuntimeError` can be raised with message:
+        When adding edges from an iterator over the graph you are changing,
+        a `RuntimeError` can be raised with message:
         `RuntimeError: dictionary changed size during iteration`. This
         happens when the graph's underlying dictionary is modified during
         iteration. To avoid this error, evaluate the iterator into a separate
-        variable, e.g. by using `list(iterator_of_edges)`, and pass this
-        variable to `G.add_edges_from`.
+        object, e.g. by using `list(iterator_of_edges)`, and pass this
+        object to `G.add_edges_from`.
 
         Examples
         --------
