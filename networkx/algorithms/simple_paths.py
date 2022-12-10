@@ -77,11 +77,11 @@ def is_simple_path(G, nodes):
     # is not in the graph, then this is not a simple path
     if not all(n in G for n in nodes):
         return False
-    
+
     # If the list is a single node, and it's in the graph, this is a simple path
     if len(nodes) == 1:
         return True
-    
+
     # Test that no node appears more than once, and that each
     # adjacent pair of nodes is adjacent.
     return len(set(nodes)) == len(nodes) and all(v in G[u] for u, v in pairwise(nodes))
