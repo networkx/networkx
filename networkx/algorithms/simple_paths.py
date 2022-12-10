@@ -257,7 +257,7 @@ def _empty_generator():
 
 
 def _all_simple_paths_graph(G, source, targets, cutoff):
-    visited = dict.fromkeys([source], value=True)
+    visited = dict.fromkeys([source], True)
     stack = [iter(G[source])]
     while stack:
         children = stack[-1]
@@ -283,7 +283,7 @@ def _all_simple_paths_graph(G, source, targets, cutoff):
 
 
 def _all_simple_paths_multigraph(G, source, targets, cutoff):
-    visited = dict.fromkeys([source], value=True)
+    visited = dict.fromkeys([source], True)
     stack = [(v for u, v in G.edges(source))]
     while stack:
         children = stack[-1]
