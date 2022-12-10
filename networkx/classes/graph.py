@@ -581,13 +581,13 @@ class Graph:
 
         Notes
         -------
-        When providing a container of nodes which is an iterator over the
-        current graph, a `RuntimeError` can be raised with message:
+        When adding nodes from an iterator over the graph you are changing,
+        a `RuntimeError` can be raised with message:
         `RuntimeError: dictionary changed size during iteration`. This
         happens when the graph's underlying dictionary is modified during
         iteration. To avoid this error, evaluate the iterator into a separate
-        variable, e.g. by using `list(iterator_of_nodes)`, and pass this
-        variable to `G.add_nodes_from`.
+        object, e.g. by using `list(iterator_of_nodes)`, and pass this
+        object to `G.add_nodes_from`.
 
         Examples
         --------
@@ -693,13 +693,13 @@ class Graph:
 
         Notes
         -------
-        When providing a container of nodes which is an iterator over the
-        current graph, a `RuntimeError` will be raised with message:
+        When removing nodes from an iterator over the graph you are changing,
+        a `RuntimeError` will be raised with message:
         `RuntimeError: dictionary changed size during iteration`. This
         happens when the graph's underlying dictionary is modified during
         iteration. To avoid this error, evaluate the iterator into a separate
-        variable, e.g. by using `list(iterator_of_nodes)`, and pass this
-        variable to `G.remove_nodes_from`.
+        object, e.g. by using `list(iterator_of_nodes)`, and pass this
+        object to `G.remove_nodes_from`.
 
         Examples
         --------
@@ -984,13 +984,13 @@ class Graph:
         Edge attributes specified in an ebunch take precedence over
         attributes specified via keyword arguments.
 
-        When providing a container of edges which is an iterator over the
-        current graph, a `RuntimeError` can be raised with message:
+        When adding edges from an iterator over the graph you are changing,
+        a `RuntimeError` can be raised with message:
         `RuntimeError: dictionary changed size during iteration`. This
         happens when the graph's underlying dictionary is modified during
         iteration. To avoid this error, evaluate the iterator into a separate
-        variable, e.g. by using `list(iterator_of_edges)`, and pass this
-        variable to `G.add_edges_from`.
+        object, e.g. by using `list(iterator_of_edges)`, and pass this
+        object to `G.add_edges_from`.
 
         Examples
         --------
@@ -1063,13 +1063,13 @@ class Graph:
         the edge data. For MultiGraph/MultiDiGraph, duplicate edges
         are stored.
 
-        When providing a container of edges which is an iterator over the
-        current graph, a `RuntimeError` can be raised with message:
+        When adding edges from an iterator over the graph you are changing,
+        a `RuntimeError` can be raised with message:
         `RuntimeError: dictionary changed size during iteration`. This
         happens when the graph's underlying dictionary is modified during
         iteration. To avoid this error, evaluate the iterator into a separate
-        variable, e.g. by using `list(iterator_of_edges)`, and pass this
-        variable to `G.add_weighted_edges_from`.
+        object, e.g. by using `list(iterator_of_edges)`, and pass this
+        object to `G.add_weighted_edges_from`.
 
         Examples
         --------
