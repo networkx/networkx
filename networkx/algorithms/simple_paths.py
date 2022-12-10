@@ -283,7 +283,7 @@ def _all_simple_paths_graph(G, source, targets, cutoff):
 
 
 def _all_simple_paths_multigraph(G, source, targets, cutoff):
-    visited = dict.fromkeys([source], True)
+    visited = {source: True}
     stack = [(v for u, v in G.edges(source))]
     while stack:
         children = stack[-1]
