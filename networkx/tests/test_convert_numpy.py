@@ -164,8 +164,16 @@ class TestConvertNumpyArray:
         )
         assert graphs_equal(actual, expected)
 
-    def test_from_numpy_array_no_edge_attr(self):
-        A = np.array([[0, 1], [1, 0]])
+    @pytest.mark.parametrize(
+        "dt",
+        (
+            None,  # default
+            int,  # integer dtype
+            np.dtype([("weight", "f8"), ("color", "i1")]),  # Structured dtype with named fields
+        ),
+    )
+    def test_from_numpy_array_no_edge_attr(self, dt):
+        A = np.array([[0, 1], [1, 0]], dtype=dt)
         G = nx.from_numpy_array(A, edge_attr=None)
         assert "weight" not in G.edges[0, 1]
         assert len(G.edges[0, 1]) == 0
