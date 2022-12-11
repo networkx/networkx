@@ -77,7 +77,7 @@ def triangles(G, nodes=None):
 
     # instantiate with a zero count for each node
     # add 1 to the count if a nodes neighbor's neighbor is also a neighbor
-    triangle_counts = Counter()
+    triangle_counts = Counter(dict.fromkeys(G, 0))
     for node1, neighbors in later_neighbors.items():
         for node2 in neighbors:
             third_nodes = neighbors & later_neighbors[node2]
@@ -86,7 +86,7 @@ def triangles(G, nodes=None):
             triangle_counts[node2] += m
             triangle_counts.update(third_nodes)
 
-    return triangle_counts
+    return dict(triangle_counts)
 
 
 @not_implemented_for("multigraph")
