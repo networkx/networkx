@@ -33,9 +33,9 @@ def triangles(G, nodes=None):
 
     Returns
     -------
-    out : dictionary or int
-       Number of triangles keyed by node label (dict) if nodes is a container of nodes.
-       Number of triangles for a specific node (int) if nodes is a specific node.
+    out : dict or int
+       If `nodes` is a container of nodes, returns number of triangles keyed by node (dict).
+       If `nodes` is a specific node, returns number of triangles for the node (int).
 
     Examples
     --------
