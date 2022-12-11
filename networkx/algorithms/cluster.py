@@ -28,7 +28,7 @@ def triangles(G, nodes=None):
     G : graph
        A networkx graph
 
-    nodes : container of nodes, optional (default = compute for all nodes in G)
+    nodes : container of nodes, optional (default = all nodes in G)
        Compute triangles for nodes in this container.
 
     Returns
