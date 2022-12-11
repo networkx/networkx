@@ -56,7 +56,7 @@ def triangles(G, nodes=None):
         # this checks if `nodes` could potentially refer to a single node
         # If `nodes` represents a single node, return only its number of triangles
         # (if it's in the graph) or zero (if the node is not in the graph).
-        if callable(getattr(nodes, '__hash__')):
+        if callable(getattr(nodes, "__hash__")):
             return next(_triangles_and_degree_iter(G, nodes))[2] // 2
 
         # if `nodes` is a container of nodes, then return a
@@ -77,7 +77,7 @@ def triangles(G, nodes=None):
 
     # instantiate with a zero count for each node
     # add 1 to the count if a nodes neighbor's neighbor is also a neighbor
-    triangle_counts = collections.Counter()
+    triangle_counts = Counter()
     for node1, neighbors in later_neighbors.items():
         for node2 in neighbors:
             third_nodes = neighbors & later_neighbors[node2]
