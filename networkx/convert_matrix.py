@@ -1022,7 +1022,7 @@ def from_numpy_array(A, parallel_edges=False, create_using=None, edge_attr="weig
 
     edge_attr : String, optional (default="weight")
         The attribute to which the array values are assigned on each edge. If
-        it is Falsy, edge attributes will not be assigned.
+        it is None, edge attributes will not be assigned.
 
     Notes
     -----
