@@ -44,7 +44,7 @@ def triangles(G, nodes=None):
     6
     >>> print(nx.triangles(G))
     {0: 6, 1: 6, 2: 6, 3: 6, 4: 6}
-    >>> print(list(nx.triangles(G, (0, 1)).values()))
+    >>> print(list(nx.triangles(G, [0, 1]).values()))
     [6, 6]
 
     Notes
