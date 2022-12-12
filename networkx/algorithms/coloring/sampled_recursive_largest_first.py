@@ -11,7 +11,7 @@ def sampled_rlf_color(G, n_searches=1_000):
     stage a maximal independent set of nodes is colored with a previously
     unused color. The maximal independent set is found using `n_searches`
     attempts with a greedy random maximal independent set algorithm.
-    The maximal independent set with the greatest number of nodes is 
+    The maximal independent set with the greatest number of nodes is
     selected to be colored. The pseudo-code for this algorithm is as follows:
 
     1. Let `G` be an undirected graph.
