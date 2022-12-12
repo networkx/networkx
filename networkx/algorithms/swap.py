@@ -167,7 +167,7 @@ def double_edge_swap(G, nswap=1, max_tries=100, seed=None):
     ------
     NetworkXError
         If `G` is directed, or
-        If nswap > max_tries, or
+        If `nswap` > `max_tries`, or
         If there are fewer than 4 nodes or 2 edges in `G`.
     NetworkXAlgorithmError
         If the number of swap attempts exceeds `max_tries` before `nswap` swaps are made
