@@ -69,7 +69,7 @@ def is_simple_path(G, nodes):
 
     """
     assert isinstance(nodes, list), "Object passed as `nodes` must be a list."
-    
+
     # The empty list is not a valid path. Could also return
     # NetworkXPointlessConcept here.
     if not nodes:
