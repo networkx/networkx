@@ -317,7 +317,7 @@ def _get_fiedler_func(method):
 def algebraic_connectivity(
     G, weight="weight", normalized=False, tol=1e-8, method="tracemin_pcg", seed=None
 ):
-    """Returns the algebraic connectivity of an undirected graph.
+    r"""Returns the algebraic connectivity of an undirected graph.
 
     The algebraic connectivity of a connected undirected graph is the second
     smallest eigenvalue of its Laplacian matrix.
@@ -377,6 +377,19 @@ def algebraic_connectivity(
     See Also
     --------
     laplacian_matrix
+
+    Examples
+    --------
+    For undirected graphs algebraic connectivity can tell us if a graph is connected or not
+    `G` is connected iff  ``algebraic_connectivity(G) > 0``:
+
+    >>> G = nx.complete_graph(5)
+    >>> nx.algebraic_connectivity(G) > 0
+    True
+    >>> G.add_node(10)  # G is no longer connected
+    >>> nx.algebraic_connectivity(G) > 0
+    False
+
     """
     if len(G) < 2:
         raise nx.NetworkXError("graph has less than two nodes.")
@@ -460,6 +473,18 @@ def fiedler_vector(
     See Also
     --------
     laplacian_matrix
+
+    Examples
+    --------
+    Given a connected graph the signs of the values in the Fiedler vector can be
+    used to partition the graph into two components.
+
+    >>> G = nx.barbell_graph(5, 0)
+    >>> nx.fiedler_vector(G, normalized=True, seed=1)
+    array([-0.32864129, -0.32864129, -0.32864129, -0.32864129, -0.26072899,
+            0.26072899,  0.32864129,  0.32864129,  0.32864129,  0.32864129])
+
+    The connected components are the two 5-node cliques of the barbell graph.
     """
     import numpy as np
 

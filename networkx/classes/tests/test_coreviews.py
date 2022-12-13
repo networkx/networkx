@@ -7,7 +7,7 @@ import networkx as nx
 
 class TestAtlasView:
     # node->data
-    def setup(self):
+    def setup_method(self):
         self.d = {0: {"color": "blue", "weight": 1.2}, 1: {}, 2: {"color": 1}}
         self.av = nx.classes.coreviews.AtlasView(self.d)
 
@@ -62,7 +62,7 @@ class TestAtlasView:
 
 class TestAdjacencyView:
     # node->nbr->data
-    def setup(self):
+    def setup_method(self):
         dd = {"color": "blue", "weight": 1.2}
         self.nd = {0: dd, 1: {}, 2: {"color": 1}}
         self.adj = {3: self.nd, 0: {3: dd}, 1: {}, 2: {3: {"color": 1}}}
@@ -114,7 +114,7 @@ class TestAdjacencyView:
 
 class TestMultiAdjacencyView(TestAdjacencyView):
     # node->nbr->key->data
-    def setup(self):
+    def setup_method(self):
         dd = {"color": "blue", "weight": 1.2}
         self.kd = {0: dd, 1: {}, 2: {"color": 1}}
         self.nd = {3: self.kd, 0: {3: dd}, 1: {0: {}}, 2: {3: {"color": 1}}}
@@ -143,7 +143,7 @@ class TestMultiAdjacencyView(TestAdjacencyView):
 
 class TestUnionAtlas:
     # node->data
-    def setup(self):
+    def setup_method(self):
         self.s = {0: {"color": "blue", "weight": 1.2}, 1: {}, 2: {"color": 1}}
         self.p = {3: {"color": "blue", "weight": 1.2}, 4: {}, 2: {"watch": 2}}
         self.av = nx.classes.coreviews.UnionAtlas(self.s, self.p)
@@ -199,7 +199,7 @@ class TestUnionAtlas:
 
 class TestUnionAdjacency:
     # node->nbr->data
-    def setup(self):
+    def setup_method(self):
         dd = {"color": "blue", "weight": 1.2}
         self.nd = {0: dd, 1: {}, 2: {"color": 1}}
         self.s = {3: self.nd, 0: {}, 1: {}, 2: {3: {"color": 1}}}
@@ -249,7 +249,7 @@ class TestUnionAdjacency:
 
 class TestUnionMultiInner(TestUnionAdjacency):
     # nbr->key->data
-    def setup(self):
+    def setup_method(self):
         dd = {"color": "blue", "weight": 1.2}
         self.kd = {7: {}, "ekey": {}, 9: {"color": 1}}
         self.s = {3: self.kd, 0: {7: dd}, 1: {}, 2: {"key": {"color": 1}}}
@@ -284,7 +284,7 @@ class TestUnionMultiInner(TestUnionAdjacency):
 
 class TestUnionMultiAdjacency(TestUnionAdjacency):
     # node->nbr->key->data
-    def setup(self):
+    def setup_method(self):
         dd = {"color": "blue", "weight": 1.2}
         self.kd = {7: {}, 8: {}, 9: {"color": 1}}
         self.nd = {3: self.kd, 0: {9: dd}, 1: {8: {}}, 2: {9: {"color": 1}}}
@@ -314,7 +314,7 @@ class TestUnionMultiAdjacency(TestUnionAdjacency):
 
 
 class TestFilteredGraphs:
-    def setup(self):
+    def setup_method(self):
         self.Graphs = [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
 
     def test_hide_show_nodes(self):

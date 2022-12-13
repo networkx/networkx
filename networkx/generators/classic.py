@@ -233,6 +233,8 @@ def complete_graph(n, create_using=None):
     n : int or iterable container of nodes
         If n is an integer, nodes are from range(n).
         If n is a container of nodes, those nodes appear in the graph.
+        Warning: n is not checked for duplicates and if present the
+        resulting graph may not be as desired. Make sure you have no duplicates.
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
        Graph type to create. If graph instance, then cleared before populated.
 
@@ -360,6 +362,8 @@ def cycle_graph(n, create_using=None):
     n : int or iterable container of nodes
         If n is an integer, nodes are from `range(n)`.
         If n is a container of nodes, those nodes appear in the graph.
+        Warning: n is not checked for duplicates and if present the
+        resulting graph may not be as desired. Make sure you have no duplicates.
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
        Graph type to create. If graph instance, then cleared before populated.
 
@@ -523,7 +527,9 @@ def lollipop_graph(m, n, create_using=None):
     ----------
     m, n : int or iterable container of nodes (default = 0)
         If an integer, nodes are from `range(m)` and `range(m,m+n)`.
-        If a container, the entries are the coordinate of the node.
+        If a container of nodes, those nodes appear in the graph.
+        Warning: m and n are not checked for duplicates and if present the
+        resulting graph may not be as desired. Make sure you have no duplicates.
 
         The nodes for m appear in the complete graph $K_m$ and the nodes
         for n appear in the path $P_n$
@@ -587,6 +593,8 @@ def path_graph(n, create_using=None):
     n : int or iterable
         If an integer, nodes are 0 to n - 1.
         If an iterable of nodes, in the order they appear in the path.
+        Warning: n is not checked for duplicates and if present the
+        resulting graph may not be as desired. Make sure you have no duplicates.
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
        Graph type to create. If graph instance, then cleared before populated.
 
@@ -608,6 +616,8 @@ def star_graph(n, create_using=None):
     n : int or iterable
         If an integer, node labels are 0 to n with center 0.
         If an iterable of nodes, the center is the first.
+        Warning: n is not checked for duplicates and if present the
+        resulting graph may not be as desired. Make sure you have no duplicates.
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
        Graph type to create. If graph instance, then cleared before populated.
 
@@ -679,6 +689,8 @@ def wheel_graph(n, create_using=None):
     n : int or iterable
         If an integer, node labels are 0 to n with center 0.
         If an iterable of nodes, the center is the first.
+        Warning: n is not checked for duplicates and if present the
+        resulting graph may not be as desired. Make sure you have no duplicates.
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
        Graph type to create. If graph instance, then cleared before populated.
 

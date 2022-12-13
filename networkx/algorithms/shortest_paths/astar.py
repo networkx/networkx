@@ -46,7 +46,7 @@ def astar_path(G, source, target, heuristic=None, weight="weight"):
        returned by the function. The function must accept exactly three
        positional arguments: the two endpoints of an edge and the
        dictionary of edge attributes for that edge. The function must
-       return a number.
+       return a number or None to indicate a hidden edge.
 
     Raises
     ------
@@ -67,6 +67,14 @@ def astar_path(G, source, target, heuristic=None, weight="weight"):
     >>> print(nx.astar_path(G, (0, 0), (2, 2), heuristic=dist, weight="cost"))
     [(0, 0), (0, 1), (0, 2), (1, 2), (2, 2)]
 
+    Notes
+    -----
+    Edge weight attributes must be numerical.
+    Distances are calculated as sums of weighted edges traversed.
+
+    The weight function can be used to hide edges by returning None.
+    So ``weight = lambda u, v, d: 1 if d['color']=="red" else None``
+    will find the shortest red path.
 
     See Also
     --------
@@ -127,7 +135,10 @@ def astar_path(G, source, target, heuristic=None, weight="weight"):
         explored[curnode] = parent
 
         for neighbor, w in G[curnode].items():
-            ncost = dist + weight(curnode, neighbor, w)
+            cost = weight(curnode, neighbor, w)
+            if cost is None:
+                continue
+            ncost = dist + cost
             if neighbor in enqueued:
                 qcost, h = enqueued[neighbor]
                 # if qcost <= ncost, a less costly path from the
@@ -179,7 +190,7 @@ def astar_path_length(G, source, target, heuristic=None, weight="weight"):
        returned by the function. The function must accept exactly three
        positional arguments: the two endpoints of an edge and the
        dictionary of edge attributes for that edge. The function must
-       return a number.
+       return a number or None to indicate a hidden edge.
     Raises
     ------
     NetworkXNoPath
