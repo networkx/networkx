@@ -174,7 +174,7 @@ def lattice_reference(G, niter=5, D=None, connectivity=True, seed=None):
     if len(G) < 4:
         raise nx.NetworkXError("Graph has fewer than four nodes.")
     if len(G.edges) < 2:
-        raise nx.NetworkXError("Graph has fewer than two edges")
+        raise nx.NetworkXError("Graph has fewer that 2 edges")
     # Instead of choosing uniformly at random from a generated edge list,
     # this algorithm chooses nonuniformly from the set of nodes with
     # probability weighted by degree.
