@@ -47,7 +47,7 @@ def test_HeapElement_getitem():
 
 
 class TestMappedQueue:
-    def setup(self):
+    def setup_method(self):
         pass
 
     def _check_map(self, q):

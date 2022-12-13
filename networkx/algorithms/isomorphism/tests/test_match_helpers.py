@@ -11,7 +11,7 @@ def test_categorical_node_match():
 
 
 class TestGenericMultiEdgeMatch:
-    def setup(self):
+    def setup_method(self):
         self.G1 = nx.MultiDiGraph()
         self.G2 = nx.MultiDiGraph()
         self.G3 = nx.MultiDiGraph()

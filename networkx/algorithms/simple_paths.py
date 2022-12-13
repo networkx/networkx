@@ -13,6 +13,7 @@ __all__ = [
 ]
 
 
+@nx._dispatch
 def is_simple_path(G, nodes):
     """Returns True if and only if `nodes` form a simple path in `G`.
 
@@ -256,7 +257,7 @@ def _empty_generator():
 
 
 def _all_simple_paths_graph(G, source, targets, cutoff):
-    visited = dict.fromkeys([source])
+    visited = {source: True}
     stack = [iter(G[source])]
     while stack:
         children = stack[-1]
@@ -269,7 +270,7 @@ def _all_simple_paths_graph(G, source, targets, cutoff):
                 continue
             if child in targets:
                 yield list(visited) + [child]
-            visited[child] = None
+            visited[child] = True
             if targets - set(visited.keys()):  # expand stack until find all targets
                 stack.append(iter(G[child]))
             else:
@@ -282,7 +283,7 @@ def _all_simple_paths_graph(G, source, targets, cutoff):
 
 
 def _all_simple_paths_multigraph(G, source, targets, cutoff):
-    visited = dict.fromkeys([source])
+    visited = {source: True}
     stack = [(v for u, v in G.edges(source))]
     while stack:
         children = stack[-1]
@@ -295,7 +296,7 @@ def _all_simple_paths_multigraph(G, source, targets, cutoff):
                 continue
             if child in targets:
                 yield list(visited) + [child]
-            visited[child] = None
+            visited[child] = True
             if targets - set(visited.keys()):
                 stack.append((v for u, v in G.edges(child)))
             else:
