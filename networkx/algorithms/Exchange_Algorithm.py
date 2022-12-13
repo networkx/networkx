@@ -18,7 +18,7 @@ link:http://eprints.gla.ac.uk/25732/
 """
 def ExactAlgorithm(graph: nx.DiGraph, k: int) -> list:
     """
-    Algorithm - the algorithm finds maximum weight k-way exchanges using reduction from directed graph to non directed
+    Algorithm - the algorithm finds the exact maximum weight k-way exchanges using reduction from directed graph to non directed
     graph
     "Algorithm 2 - Exact algorithm for kidney exchange programs" by Biro, P. and Manlove, D.F. and Rizzi, R.
     Returns the list of max weighted exchanges of directed weighted graph 'G'
@@ -56,14 +56,6 @@ def ExactAlgorithm(graph: nx.DiGraph, k: int) -> list:
     >>> Digraph.add_weighted_edges_from([(10,11,10),(11,12,5),(12,13,6),(13,10,4),(11,14,2),(14,16,3),(16,15,8),(15,14,6)])
     >>> print(ExactAlgorithm(graphEX3, 2))
     []
-    Notes
-    -----------
-    Algorithm - the algorithm finds maximum weight k-way exchanges using reduction from graph to hyper-graph by
-    the algorithm in the published article Exact-complete algorithm for kidney exchange programs"
-
-    Refrences
-    ----------
-    Algorithm 1 - 'MAXIMUM WEIGHT CYCLE PACKING IN DIRECTED GRAPHS, WITH APPLICATION TO KIDNEY EXCHANGE PROGRAMS' by Biro, P. and Manlove, D.F. and Rizzi, R. http://eprints.gla.ac.uk/25732/
 
     """
     f = 5
