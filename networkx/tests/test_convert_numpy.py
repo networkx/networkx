@@ -169,7 +169,9 @@ class TestConvertNumpyArray:
         (
             None,  # default
             int,  # integer dtype
-            np.dtype([("weight", "f8"), ("color", "i1")]),  # Structured dtype with named fields
+            np.dtype(
+                [("weight", "f8"), ("color", "i1")]
+            ),  # Structured dtype with named fields
         ),
     )
     def test_from_numpy_array_no_edge_attr(self, dt):
