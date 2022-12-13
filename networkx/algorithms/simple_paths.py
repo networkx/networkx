@@ -72,7 +72,12 @@ def is_simple_path(G, nodes):
     # NetworkXPointlessConcept here.
     if len(nodes) == 0:
         return False
-    
+
+    # If the list is a single node, just check that the node is actually
+    # in the graph.
+    if len(nodes) == 1:
+        return nodes[0] in G
+
     # check that all nodes in the list are in the graph, if at least one
     # is not in the graph, then this is not a simple path
     if not all(n in G for n in nodes):
