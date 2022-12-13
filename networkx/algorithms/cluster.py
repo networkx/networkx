@@ -57,7 +57,11 @@ def triangles(G, nodes=None):
         # If `nodes` represents a single node, return only its number of triangles
         # (if it's in the graph) or zero (if the node is not in the graph).
         if callable(getattr(nodes, "__hash__")):
-            return next(_triangles_and_degree_iter(G, nodes))[2] // 2
+            if nodes in G:
+                return next(_triangles_and_degree_iter(G, nodes))[2] // 2
+            else:
+                # node is not in the graph, so its triangle count is zero
+                return 0
 
         # if `nodes` is a container of nodes, then return a
         # dictionary mapping node to number of triangles.
