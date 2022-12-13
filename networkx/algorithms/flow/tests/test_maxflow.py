@@ -387,7 +387,7 @@ class TestMaxflowMinCutCommon:
 
 
 class TestMaxFlowMinCutInterface:
-    def setup(self):
+    def setup_method(self):
         G = nx.DiGraph()
         G.add_edge("x", "a", capacity=3.0)
         G.add_edge("x", "b", capacity=1.0)

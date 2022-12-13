@@ -9,6 +9,7 @@ __all__ = [
 ]
 
 
+@nx._dispatch
 @not_implemented_for("undirected")
 def weakly_connected_components(G):
     """Generate weakly connected components of G.

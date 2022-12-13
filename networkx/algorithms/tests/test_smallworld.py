@@ -69,9 +69,9 @@ def test_omega():
     for o in omegas:
         assert -1 <= o <= 1
 
-
-def test_graph_no_edges():
+@pytest.mark.parametrize("f", (nx.random_reference, nx.lattice_reference))
+def test_graph_no_edges(f):
     G = nx.Graph()
     G.add_nodes_from([0, 1, 2, 3])
-    pytest.raises(nx.NetworkXError, nx.random_reference, G)
-    pytest.raises(nx.NetworkXError, nx.lattice_reference, G)
+    with pytest.raises(nx.NetworkXError, match="Graph has less than 2 edges"):
+        f(G)

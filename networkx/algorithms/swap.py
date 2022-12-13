@@ -350,7 +350,7 @@ def connected_double_edge_swap(G, nswap=1, _window_threshold=3, seed=None):
             while wcount < window and n < nswap:
                 # Pick two random edges without creating the edge list. Choose
                 # source nodes from the discrete degree distribution.
-                (ui, xi) = nx.utils.discrete_sequence(2, cdistribution=cdf)
+                (ui, xi) = discrete_sequence(2, cdistribution=cdf, seed=seed)
                 # If the source nodes are the same, skip this pair.
                 if ui == xi:
                     continue

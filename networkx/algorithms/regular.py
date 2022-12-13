@@ -5,6 +5,7 @@ from networkx.utils import not_implemented_for
 __all__ = ["is_regular", "is_k_regular", "k_factor"]
 
 
+@nx._dispatch
 def is_regular(G):
     """Determines whether the graph ``G`` is a regular graph.
 
@@ -40,6 +41,7 @@ def is_regular(G):
         return in_regular and out_regular
 
 
+@nx._dispatch
 @not_implemented_for("directed")
 def is_k_regular(G, k):
     """Determines whether the graph ``G`` is a k-regular graph.

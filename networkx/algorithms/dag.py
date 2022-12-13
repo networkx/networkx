@@ -36,6 +36,7 @@ __all__ = [
 chaini = chain.from_iterable
 
 
+@nx._dispatch
 def descendants(G, source):
     """Returns all nodes reachable from `source` in `G`.
 
@@ -72,6 +73,7 @@ def descendants(G, source):
     return {child for parent, child in nx.bfs_edges(G, source)}
 
 
+@nx._dispatch
 def ancestors(G, source):
     """Returns all nodes having a path to `source` in `G`.
 
