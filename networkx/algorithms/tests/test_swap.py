@@ -125,16 +125,20 @@ def test_degree_seq_c4():
     assert degrees == sorted(d for n, d in G.degree())
 
 
-def test_no_edges():
+def test_fewer_than_4_nodes():
     G = nx.DiGraph()
     G.add_nodes_from([0, 1, 2])
-    pytest.raises(nx.NetworkXError, nx.directed_edge_swap, G)
-    G = nx.Graph()
-    G.add_nodes_from([0, 1, 2, 3])
-    pytest.raises(nx.NetworkXError, nx.double_edge_swap, G)
+    with pytest.raises(nx.NetworkXError, match=".*fewer than four nodes."):
+        nx.directed_edge_swap(G)
 
 
 def test_less_than_3_edges():
-    G = nx.DiGraph()
-    G.add_edges_from([(0, 1), (1, 2)])
-    pytest.raises(nx.NetworkXError, nx.directed_edge_swap, G)
+    G = nx.DiGraph([(0, 1), (1, 2)])
+    G.add_nodes_from([3, 4])
+    with pytest.raises(nx.NetworkXError, match=".*fewer than 3 edges"):
+        nx.directed_edge_swap(G)
+
+    G = nx.Graph()
+    G.add_nodes_from([0, 1, 2, 3])
+    with pytest.raises(nx.NetworkXError, match=".*fewer than 2 edges"):
+        nx.double_edge_swap(G)

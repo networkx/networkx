@@ -70,9 +70,9 @@ def directed_edge_swap(G, *, nswap=1, max_tries=100, seed=None):
     if nswap > max_tries:
         raise nx.NetworkXError("Number of swaps > number of tries allowed.")
     if len(G) < 4:
-        raise nx.NetworkXError("DiGraph has less than four nodes.")
+        raise nx.NetworkXError("DiGraph has fewer than four nodes.")
     if len(G.edges) < 3:
-        raise nx.NetworkXError("DiGraph has less than 3 edges")
+        raise nx.NetworkXError("DiGraph has fewer than 3 edges")
 
     # Instead of choosing uniformly at random from a generated edge list,
     # this algorithm chooses nonuniformly from the set of nodes with
@@ -185,9 +185,9 @@ def double_edge_swap(G, nswap=1, max_tries=100, seed=None):
     if nswap > max_tries:
         raise nx.NetworkXError("Number of swaps > number of tries allowed.")
     if len(G) < 4:
-        raise nx.NetworkXError("Graph has less than four nodes.")
+        raise nx.NetworkXError("Graph has fewer than four nodes.")
     if len(G.edges) < 2:
-        raise nx.NetworkXError("Graph has less than 2 edges")
+        raise nx.NetworkXError("Graph has fewer than 2 edges")
     # Instead of choosing uniformly at random from a generated edge list,
     # this algorithm chooses nonuniformly from the set of nodes with
     # probability weighted by degree.
@@ -298,7 +298,7 @@ def connected_double_edge_swap(G, nswap=1, _window_threshold=3, seed=None):
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph not connected")
     if len(G) < 4:
-        raise nx.NetworkXError("Graph has less than four nodes.")
+        raise nx.NetworkXError("Graph has fewer than four nodes.")
     n = 0
     swapcount = 0
     deg = G.degree()
