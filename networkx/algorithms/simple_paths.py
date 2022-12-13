@@ -68,15 +68,9 @@ def is_simple_path(G, nodes):
     False
 
     """
-    assert isinstance(nodes, list), "Object passed as `nodes` must be a list."
-
-    # The empty list is not a valid path. Could also return
-    # NetworkXPointlessConcept here.
-    if not nodes:
-        return False
-
     # check that all nodes in the list are in the graph, if at least one
     # is not in the graph, then this is not a simple path
+    # Also, the empty list is not a valid path.
     if not all(n in G for n in nodes):
         return False
 
