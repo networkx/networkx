@@ -1,21 +1,3 @@
-# G1 = nx.DiGraph()
-# nodes = range(1, 12)
-# G1.add_nodes_from(nodes)
-# edges = [(1, 4), (2, 5), (3, 6), (4, 7), (5, 8), (6, 7),
-#          (6, 8), (6, 9), (8, 8), (9, 7), (9, 8), (9, 9)]
-# G1.add_edges_from(edges)
-
-# print(G1.nodes)
-
-# G2 = nx.DiGraph()
-# nodes = [2, 1, 3, 4, 5, 6, 7, 8, 9, 11, 10]
-# G2.add_nodes_from(nodes)
-# edges = [(1, 4), (2, 5), (3, 6), (4, 7), (5, 8), (6, 7),
-#          (6, 8), (6, 9), (8, 8), (9, 7), (9, 8), (9, 9)]
-# G2.add_edges_from(edges)
-
-# print(G2.nodes)
-
 """
 Hybrid GA for local optimisation.
 Two heuristics to improve the quality of arrangements for maximum subgraph isomorphism.

@@ -73,7 +73,7 @@ def build_CFG(semantic_program):
 
     # runs the function
     >>> build_CFG(file1)
-    control_flow_graph
+    DiGraph with 11 nodes and 12 edges
 
     Example 2: invalid path
     -----------------------

@@ -64,7 +64,7 @@ def build_RG_from_DG(dependency_graph):
 
     # runs the function
     >>> build_RG_from_DG(directed_G1)
-    reduction_G1
+    DiGraph with 4 nodes and 7 edges
     
     Example 2: a graph that can not be reduced (the original graph will be returned)
     ------------------------------------------------------------------------------
@@ -75,6 +75,6 @@ def build_RG_from_DG(dependency_graph):
 
     # runs the function
     >>> build_RG_from_DG(directed_G2)
-    directed_G2
+    DiGraph with 6 nodes and 2 edges
     """
     return 0  # Empty implementation

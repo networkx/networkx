@@ -46,8 +46,8 @@ def find_max_sub_isomorphism_graph(G1, G2):
 
     # creates and builds G1 
     >>> G1 = nx.DiGraph()
-    >>> directed_G1.add_nodes_from(range(1, 5))
-    >>> directed_G1.add_edges_from([(1, 2),(2, 3),(3, 4),(4, 1)])
+    >>> G1.add_nodes_from(range(1, 5))
+    >>> G1.add_edges_from([(1, 2),(2, 3),(3, 4),(4, 1)])
 
     # creates and builds G2 
     >>> G2 = nx.DiGraph()
@@ -58,6 +58,6 @@ def find_max_sub_isomorphism_graph(G1, G2):
     >>> G2_tag = G1
 
     >>> find_max_sub_isomorphism_graph(G1, G2)
-    G2_tag
+    DiGraph with 4 nodes and 4 edges
     """
     return 0  # Empty implementation

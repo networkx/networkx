@@ -61,11 +61,8 @@ def calculate_fitness(G1, G2):
     >>> G2.add_nodes_from(range(1,15))
     >>> G2.add_edges_from([(1, 4),(2, 6),(3, 5),(4, 7),(5, 8),(5, 10),(10,10)])
 
-    # calculated the difference
-    >>> difference = (0+5)/2
-
     # runs the function
     >>> calculate_fitness(G1, G2)
-    difference
+    2.5
     """
     return 0  # Empty implementation

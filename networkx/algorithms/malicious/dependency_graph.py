@@ -36,7 +36,7 @@ def build_DG_from_CFG(control_flow_graph):
     -----------
     Stu L.Akirav & B.Schtalman
 
-    Example 1: building a DG graph
+    Example: building a DG graph
     ------------------------------
     >>> import networkx as nx
 
@@ -56,6 +56,6 @@ def build_DG_from_CFG(control_flow_graph):
 
     # runs the function
     >>> build_DG_from_CFG(control_flow_graph)
-    directed_G1
+    DiGraph with 11 nodes and 12 edges
     """
     return 0  # Empty implementation
