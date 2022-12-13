@@ -29,7 +29,7 @@ def random_reference(G, niter=1, connectivity=True, seed=None):
     Parameters
     ----------
     G : graph
-        An undirected graph.
+        An undirected graph with 4 or more nodes.
 
     niter : integer (optional, default=1)
         An edge is rewired approximately `niter` times.
@@ -63,9 +63,9 @@ def random_reference(G, niter=1, connectivity=True, seed=None):
            Science 296.5569 (2002): 910-913.
     """
     if len(G) < 4:
-        raise nx.NetworkXError("Graph has less than four nodes.")
+        raise nx.NetworkXError("Graph has fewer than four nodes.")
     if len(G.edges) < 2:
-        raise nx.NetworkXError("Graph has less that 2 edges")
+        raise nx.NetworkXError("Graph has fewer that 2 edges")
 
     from networkx.utils import cumulative_distribution, discrete_sequence
 
@@ -172,9 +172,9 @@ def lattice_reference(G, niter=5, D=None, connectivity=True, seed=None):
     local_conn = nx.connectivity.local_edge_connectivity
 
     if len(G) < 4:
-        raise nx.NetworkXError("Graph has less than four nodes.")
+        raise nx.NetworkXError("Graph has fewer than four nodes.")
     if len(G.edges) < 2:
-        raise nx.NetworkXError("Graph has less than two edges")
+        raise nx.NetworkXError("Graph has fewer than two edges")
     # Instead of choosing uniformly at random from a generated edge list,
     # this algorithm chooses nonuniformly from the set of nodes with
     # probability weighted by degree.
