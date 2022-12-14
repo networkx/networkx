@@ -1,0 +1,823 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Exceptions &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'reference/exceptions';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/reference/exceptions.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Utilities" href="utils.html" />
+    <link rel="prev" title="Randomness" href="randomness.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">
+    Section Navigation
+  </p>
+  <div class="bd-toc-item navbar-nav">
+    <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="classes/index.html">Graph types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="algorithms/index.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="functions.html">Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generators.html">Graph generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="linalg.html">Linear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="convert.html">Converting to and from other data formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="relabel.html">Relabeling nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="readwrite/index.html">Reading and writing graphs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="drawing.html">Drawing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="randomness.html">Randomness</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+
+  </div>
+</nav>
+    </div>
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <section id="module-networkx.exception">
+<span id="exceptions"></span><h1>Exceptions<a class="headerlink" href="#module-networkx.exception" title="Permalink to this heading">#</a></h1>
+<p>Base exceptions and errors for NetworkX.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="networkx.NetworkXException">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">NetworkXException</span></span><a class="reference internal" href="../_modules/networkx/exception.html#NetworkXException"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#networkx.NetworkXException" title="Permalink to this definition">#</a></dt>
+<dd><p>Base class for exceptions in NetworkX.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="networkx.NetworkXError">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">NetworkXError</span></span><a class="reference internal" href="../_modules/networkx/exception.html#NetworkXError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#networkx.NetworkXError" title="Permalink to this definition">#</a></dt>
+<dd><p>Exception for a serious error in NetworkX</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="networkx.NetworkXPointlessConcept">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">NetworkXPointlessConcept</span></span><a class="reference internal" href="../_modules/networkx/exception.html#NetworkXPointlessConcept"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#networkx.NetworkXPointlessConcept" title="Permalink to this definition">#</a></dt>
+<dd><p>Raised when a null graph is provided as input to an algorithm
+that cannot use it.</p>
+<p>The null graph is sometimes considered a pointless concept <a class="reference internal" href="#r24f86977d036-1" id="id1">[1]</a>,
+thus the name of the exception.</p>
+<p class="rubric">References</p>
+<div role="list" class="citation-list">
+<div class="citation" id="r24f86977d036-1" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>Harary, F. and Read, R. “Is the Null Graph a Pointless
+Concept?”  In Graphs and Combinatorics Conference, George
+Washington University.  New York: Springer-Verlag, 1973.</p>
+</div>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="networkx.NetworkXAlgorithmError">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">NetworkXAlgorithmError</span></span><a class="reference internal" href="../_modules/networkx/exception.html#NetworkXAlgorithmError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#networkx.NetworkXAlgorithmError" title="Permalink to this definition">#</a></dt>
+<dd><p>Exception for unexpected termination of algorithms.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="networkx.NetworkXUnfeasible">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">NetworkXUnfeasible</span></span><a class="reference internal" href="../_modules/networkx/exception.html#NetworkXUnfeasible"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#networkx.NetworkXUnfeasible" title="Permalink to this definition">#</a></dt>
+<dd><p>Exception raised by algorithms trying to solve a problem
+instance that has no feasible solution.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="networkx.NetworkXNoPath">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">NetworkXNoPath</span></span><a class="reference internal" href="../_modules/networkx/exception.html#NetworkXNoPath"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#networkx.NetworkXNoPath" title="Permalink to this definition">#</a></dt>
+<dd><p>Exception for algorithms that should return a path when running
+on graphs where such a path does not exist.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="networkx.NetworkXNoCycle">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">NetworkXNoCycle</span></span><a class="reference internal" href="../_modules/networkx/exception.html#NetworkXNoCycle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#networkx.NetworkXNoCycle" title="Permalink to this definition">#</a></dt>
+<dd><p>Exception for algorithms that should return a cycle when running
+on graphs where such a cycle does not exist.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="networkx.NodeNotFound">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">NodeNotFound</span></span><a class="reference internal" href="../_modules/networkx/exception.html#NodeNotFound"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#networkx.NodeNotFound" title="Permalink to this definition">#</a></dt>
+<dd><p>Exception raised if requested node is not present in the graph</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="networkx.HasACycle">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">HasACycle</span></span><a class="reference internal" href="../_modules/networkx/exception.html#HasACycle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#networkx.HasACycle" title="Permalink to this definition">#</a></dt>
+<dd><p>Raised if a graph has a cycle when an algorithm expects that it
+will have no cycles.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="networkx.NetworkXUnbounded">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">NetworkXUnbounded</span></span><a class="reference internal" href="../_modules/networkx/exception.html#NetworkXUnbounded"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#networkx.NetworkXUnbounded" title="Permalink to this definition">#</a></dt>
+<dd><p>Exception raised by algorithms trying to solve a maximization
+or a minimization problem instance that is unbounded.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="networkx.NetworkXNotImplemented">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">NetworkXNotImplemented</span></span><a class="reference internal" href="../_modules/networkx/exception.html#NetworkXNotImplemented"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#networkx.NetworkXNotImplemented" title="Permalink to this definition">#</a></dt>
+<dd><p>Exception raised by algorithms not implemented for a type of graph.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="networkx.AmbiguousSolution">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AmbiguousSolution</span></span><a class="reference internal" href="../_modules/networkx/exception.html#AmbiguousSolution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#networkx.AmbiguousSolution" title="Permalink to this definition">#</a></dt>
+<dd><p>Raised if more than one valid solution exists for an intermediary step
+of an algorithm.</p>
+<p>In the face of ambiguity, refuse the temptation to guess.
+This may occur, for example, when trying to determine the
+bipartite node sets in a disconnected bipartite graph when
+computing bipartite matchings.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="networkx.ExceededMaxIterations">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ExceededMaxIterations</span></span><a class="reference internal" href="../_modules/networkx/exception.html#ExceededMaxIterations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#networkx.ExceededMaxIterations" title="Permalink to this definition">#</a></dt>
+<dd><p>Raised if a loop iterates too many times without breaking.</p>
+<p>This may occur, for example, in an algorithm that computes
+progressively better approximations to a value but exceeds an
+iteration bound specified by the user.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="networkx.PowerIterationFailedConvergence">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">PowerIterationFailedConvergence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_iterations</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/networkx/exception.html#PowerIterationFailedConvergence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#networkx.PowerIterationFailedConvergence" title="Permalink to this definition">#</a></dt>
+<dd><p>Raised when the power iteration method fails to converge within a
+specified iteration limit.</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">num_iterations</span></code> is the number of iterations that have been
+completed when this exception was raised.</p>
+</dd></dl>
+
+</section>
+
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx.NetworkXException">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     NetworkXException
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx.NetworkXError">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     NetworkXError
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx.NetworkXPointlessConcept">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     NetworkXPointlessConcept
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx.NetworkXAlgorithmError">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     NetworkXAlgorithmError
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx.NetworkXUnfeasible">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     NetworkXUnfeasible
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx.NetworkXNoPath">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     NetworkXNoPath
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx.NetworkXNoCycle">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     NetworkXNoCycle
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx.NodeNotFound">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     NodeNotFound
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx.HasACycle">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     HasACycle
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx.NetworkXUnbounded">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     NetworkXUnbounded
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx.NetworkXNotImplemented">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     NetworkXNotImplemented
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx.AmbiguousSolution">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     AmbiguousSolution
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx.ExceededMaxIterations">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     ExceededMaxIterations
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx.PowerIterationFailedConvergence">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     PowerIterationFailedConvergence
+    </span>
+   </code>
+  </a>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,1151 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>NetworkX 0.99 &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'release/api_0.99';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/release/api_0.99.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Old Release Log" href="old_release_log.html" />
+    <link rel="prev" title="NetworkX 1.0" href="api_1.0.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">
+    Section Navigation
+  </p>
+  <div class="bd-toc-item navbar-nav">
+    <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="release_dev.html">NetworkX 3.0 (unreleased)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.8.8.html">NetworkX 2.8.7</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.8.7.html">NetworkX 2.8.7</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.8.6.html">NetworkX 2.8.6</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.8.5.html">NetworkX 2.8.5</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.8.4.html">NetworkX 2.8.4</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.8.3.html">NetworkX 2.8.3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.8.2.html">NetworkX 2.8.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.8.1.html">NetworkX 2.8.1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.8.html">NetworkX 2.8</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.7.1.html">NetworkX 2.7.1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.7.html">NetworkX 2.7</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.6.html">NetworkX 2.6</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.5.html">NetworkX 2.5</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.4.html">NetworkX 2.4</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.3.html">NetworkX 2.3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.2.html">NetworkX 2.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.1.html">NetworkX 2.1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.0.html">NetworkX 2.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_1.11.html">NetworkX 1.11</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_1.10.html">NetworkX 1.10</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_1.9.html">NetworkX 1.9</a></li>
+
+
+<li class="toctree-l1"><a class="reference internal" href="api_1.8.html">NetworkX 1.8</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_1.7.html">NetworkX 1.7</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_1.6.html">NetworkX 1.6</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_1.5.html">NetworkX 1.5</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_1.4.html">NetworkX 1.4</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="api_1.0.html">NetworkX 1.0</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">NetworkX 0.99</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="old_release_log.html">Old Release Log</a></li>
+</ul>
+
+  </div>
+</nav>
+    </div>
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <section id="networkx-0-99">
+<h1>NetworkX 0.99<a class="headerlink" href="#networkx-0-99" title="Permalink to this heading">#</a></h1>
+<p>Release date:  18 November 2008</p>
+<p>See: <a class="reference external" href="https://networkx.lanl.gov/trac/timeline">https://networkx.lanl.gov/trac/timeline</a></p>
+<section id="new-features">
+<h2>New features<a class="headerlink" href="#new-features" title="Permalink to this heading">#</a></h2>
+<p>This release has significant changes to parts of the graph API.
+See <a class="reference external" href="http://networkx.lanl.gov/reference/api_changes.html">http://networkx.lanl.gov/reference/api_changes.html</a></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Update Graph and DiGraph classes to use weighted graphs as default
+Change in API for performance and code simplicity.</p></li>
+<li><p>New MultiGraph and MultiDiGraph classes (replace XGraph and XDiGraph)</p></li>
+<li><p>Update to use Sphinx documentation system <a class="reference external" href="http://networkx.lanl.gov/">http://networkx.lanl.gov/</a></p></li>
+<li><p>Developer site at <a class="reference external" href="https://networkx.lanl.gov/trac/">https://networkx.lanl.gov/trac/</a></p></li>
+<li><p>Experimental LabeledGraph and LabeledDiGraph</p></li>
+<li><p>Moved package and file layout to subdirectories.</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="bug-fixes">
+<h2>Bug fixes<a class="headerlink" href="#bug-fixes" title="Permalink to this heading">#</a></h2>
+<blockquote>
+<div><ul class="simple">
+<li><p>handle root= option to draw_graphviz correctly</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">#</a></h2>
+<blockquote>
+<div><ul class="simple">
+<li><p>Update to work with networkx-0.99 API</p></li>
+<li><p>Drawing examples now use matplotlib.pyplot interface</p></li>
+<li><p>Improved drawings in many examples</p></li>
+<li><p>New examples - see <a class="reference external" href="http://networkx.lanl.gov/examples/">http://networkx.lanl.gov/examples/</a></p></li>
+</ul>
+</div></blockquote>
+<p>The version networkx-0.99 is the penultimate release before
+networkx-1.0.  We have bumped the version from 0.37 to 0.99 to
+indicate (in our unusual version number scheme) that this is a major
+change to NetworkX.</p>
+<p>We have made some significant changes, detailed below, to NetworkX
+to improve  performance, functionality, and clarity.</p>
+<p>Version 0.99 requires Python 2.4 or greater.</p>
+<p>Please send comments and questions to the networkx-discuss mailing list.
+<a class="reference external" href="http://groups.google.com/group/networkx-discuss">http://groups.google.com/group/networkx-discuss</a></p>
+</section>
+<section id="changes-in-base-classes">
+<h2>Changes in base classes<a class="headerlink" href="#changes-in-base-classes" title="Permalink to this heading">#</a></h2>
+<p>The most significant changes are in the graph classes.
+We have redesigned the Graph() and DiGraph() classes
+to optionally allow edge data.
+This change allows Graph and DiGraph to naturally represent
+weighted graphs and to hold arbitrary information on edges.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Both Graph and DiGraph take an optional argument weighted=True|False.
+When weighted=True the graph is assumed to have numeric edge data
+(with default 1).  The Graph and DiGraph classes in earlier versions
+used the Python None as data (which is still allowed as edge data).</p></li>
+<li><p>The Graph and DiGraph classes now allow self loops.</p></li>
+<li><p>The XGraph and XDiGraph classes are removed and replaced with
+MultiGraph and MultiDiGraph. MultiGraph and MultiDiGraph
+optionally allow parallel (multiple) edges between two nodes.</p></li>
+</ul>
+</div></blockquote>
+<p>The mapping from old to new classes is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Graph</span> <span class="o">-&gt;</span> <span class="n">Graph</span> <span class="p">(</span><span class="bp">self</span> <span class="n">loops</span> <span class="n">allowed</span> <span class="n">now</span><span class="p">,</span> <span class="n">default</span> <span class="n">edge</span> <span class="n">data</span> <span class="ow">is</span> <span class="mi">1</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">DiGraph</span> <span class="o">-&gt;</span> <span class="n">DiGraph</span> <span class="p">(</span><span class="bp">self</span> <span class="n">loops</span> <span class="n">allowed</span> <span class="n">now</span><span class="p">,</span> <span class="n">default</span> <span class="n">edge</span> <span class="n">data</span> <span class="ow">is</span> <span class="mi">1</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">XGraph</span><span class="p">(</span><span class="n">multiedges</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Graph</span>
+<span class="o">-</span> <span class="n">XGraph</span><span class="p">(</span><span class="n">multiedges</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MultiGraph</span>
+<span class="o">-</span> <span class="n">XDiGraph</span><span class="p">(</span><span class="n">multiedges</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DiGraph</span>
+<span class="o">-</span> <span class="n">XDiGraph</span><span class="p">(</span><span class="n">multiedges</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MultiDiGraph</span>
+</pre></div>
+</div>
+</section>
+<section id="methods-changed">
+<h2>Methods changed<a class="headerlink" href="#methods-changed" title="Permalink to this heading">#</a></h2>
+<section id="edges">
+<h3>edges()<a class="headerlink" href="#edges" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><p>New keyword data=True|False keyword determines whether to return
+two-tuples (u,v) (False) or three-tuples (u,v,d) (True)</p>
+</div></blockquote>
+</section>
+<section id="delete-node">
+<h3>delete_node()<a class="headerlink" href="#delete-node" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><p>The preferred name is now remove_node().</p>
+</div></blockquote>
+</section>
+<section id="delete-nodes-from">
+<h3>delete_nodes_from()<a class="headerlink" href="#delete-nodes-from" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><p>No longer raises an exception on an attempt to delete a node not in
+the graph.  The preferred name is now remove_nodes_from().</p>
+</div></blockquote>
+</section>
+<section id="delete-edge">
+<h3>delete_edge()<a class="headerlink" href="#delete-edge" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><p>Now raises an exception on an attempt to delete an edge not in the graph.
+The preferred name is now remove_edge().</p>
+</div></blockquote>
+</section>
+<section id="delete-edges-from">
+<h3>delete_edges_from()<a class="headerlink" href="#delete-edges-from" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><p>The preferred name is now remove_edges_from().</p>
+</div></blockquote>
+</section>
+<section id="add-edge">
+<h3>add_edge()<a class="headerlink" href="#add-edge" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><p>The add_edge() method no longer accepts an edge tuple (u,v)
+directly.  The tuple must be unpacked into individual nodes.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">u</span><span class="o">=</span><span class="s1">&#39;a&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span><span class="o">=</span><span class="s1">&#39;b&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">e</span><span class="o">=</span><span class="p">(</span><span class="n">u</span><span class="p">,</span><span class="n">v</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Old</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># G.add_edge((u,v))  # or G.add_edge(e)</span>
+</pre></div>
+</div>
+<p>New</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="o">*</span><span class="n">e</span><span class="p">)</span> <span class="c1"># or G.add_edge(*(u,v))</span>
+</pre></div>
+</div>
+<p>The * operator unpacks the edge tuple in the argument list.</p>
+<p>Add edge now has
+a data keyword parameter for setting the default (data=1) edge
+data.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># G.add_edge(&#39;a&#39;,&#39;b&#39;,&#39;foo&#39;)  # add edge with string &quot;foo&quot; as data</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># G.add_edge(1,2,5.0)  # add edge with float 5 as data</span>
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<section id="add-edges-from">
+<h3>add_edges_from()<a class="headerlink" href="#add-edges-from" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><p>Now can take list or iterator of either 2-tuples (u,v),
+3-tuples (u,v,data) or a mix of both.</p>
+<p>Now has data keyword parameter (default 1) for setting the edge data
+for any edge in the edge list that is a 2-tuple.</p>
+</div></blockquote>
+</section>
+<section id="has-edge">
+<h3>has_edge()<a class="headerlink" href="#has-edge" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><p>The has_edge() method no longer accepts an edge tuple (u,v)
+directly.  The tuple must be unpacked into individual nodes.</p>
+<p>Old:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># G.has_edge((u,v))  # or has_edge(e)</span>
+</pre></div>
+</div>
+<p>New:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">has_edge</span><span class="p">(</span><span class="o">*</span><span class="n">e</span><span class="p">)</span> <span class="c1"># or has_edge(*(u,v))</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>The * operator unpacks the edge tuple in the argument list.</p>
+</div></blockquote>
+</section>
+<section id="get-edge">
+<h3>get_edge()<a class="headerlink" href="#get-edge" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><p>Now has the keyword argument “default” to specify
+what value to return if no edge is found.  If not specified
+an exception is raised if no edge is found.</p>
+<p>The fastest way to get edge data for edge (u,v) is to use G[u][v]
+instead of G.get_edge(u,v)</p>
+</div></blockquote>
+</section>
+<section id="degree-iter">
+<h3>degree_iter()<a class="headerlink" href="#degree-iter" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><p>The degree_iter method now returns an iterator over pairs of (node,
+degree).  This was the previous behavior of degree_iter(with_labels=true)
+Also there is a new keyword weighted=False|True for weighted degree.</p>
+</div></blockquote>
+</section>
+<section id="subgraph">
+<h3>subgraph()<a class="headerlink" href="#subgraph" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><p>The argument inplace=False|True has been replaced with copy=True|False.</p>
+<p>Subgraph no longer takes create_using keyword.  To change the graph
+type either make a copy of
+the graph first and then change type or change type and make
+a subgraph.  E.g.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">path_graph</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">H</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">subgraph</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]))</span> <span class="c1"># digraph of copy of induced subgraph</span>
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<section id="getitem">
+<h3>__getitem__()<a class="headerlink" href="#getitem" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><p>Getting node neighbors from the graph with G[v] now returns
+a dictionary.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">path_graph</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># G[0]</span>
+<span class="go">#  {1: 1}</span>
+</pre></div>
+</div>
+<p>To get a list of neighbors you can either use the keys of that
+dictionary or use</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>  
+<span class="go">[1]</span>
+</pre></div>
+</div>
+<p>This change allows algorithms to use the underlying dict-of-dict
+representation through G[v] for substantial performance gains.
+Warning: The returned dictionary should not be modified as it may
+corrupt the graph data structure.  Make a copy G[v].copy() if you
+wish to modify the dict.</p>
+</div></blockquote>
+</section>
+</section>
+<section id="methods-removed">
+<h2>Methods removed<a class="headerlink" href="#methods-removed" title="Permalink to this heading">#</a></h2>
+<section id="info">
+<h3>info()<a class="headerlink" href="#info" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><p>now a function</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;test me&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nx</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>  
+<span class="go">Name:                  test me</span>
+<span class="go">Type:                  Graph</span>
+<span class="go">Number of nodes:       0</span>
+<span class="go">Number of edges:       0</span>
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<section id="node-boundary">
+<h3>node_boundary()<a class="headerlink" href="#node-boundary" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><p>now a function</p>
+</div></blockquote>
+</section>
+<section id="edge-boundary">
+<h3>edge_boundary()<a class="headerlink" href="#edge-boundary" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><p>now a function</p>
+</div></blockquote>
+</section>
+<section id="is-directed">
+<h3>is_directed()<a class="headerlink" href="#is-directed" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><p>use the directed attribute</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># G.directed</span>
+<span class="go">#  True</span>
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<section id="g-out-edges">
+<h3>G.out_edges()<a class="headerlink" href="#g-out-edges" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><p>use G.edges()</p>
+</div></blockquote>
+</section>
+<section id="g-in-edges">
+<h3>G.in_edges()<a class="headerlink" href="#g-in-edges" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><p>use</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">R</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">R</span><span class="o">.</span><span class="n">edges</span><span class="p">()</span>  
+<span class="go">[]</span>
+</pre></div>
+</div>
+<p>or</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">[(</span><span class="n">v</span><span class="p">,</span><span class="n">u</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span><span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">()]</span>
+<span class="go">[]</span>
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+</section>
+<section id="methods-added">
+<h2>Methods added<a class="headerlink" href="#methods-added" title="Permalink to this heading">#</a></h2>
+<section id="adjacency-list">
+<h3>adjacency_list()<a class="headerlink" href="#adjacency-list" title="Permalink to this heading">#</a></h3>
+<p>Returns a list-of-lists adjacency list representation of the graph.</p>
+</section>
+<section id="adjacency-iter">
+<h3>adjacency_iter()<a class="headerlink" href="#adjacency-iter" title="Permalink to this heading">#</a></h3>
+<p>Returns an iterator of (node, adjacency_dict[node]) over all
+nodes in the graph.  Intended for fast access to the internal
+data structure for use in internal algorithms.</p>
+</section>
+</section>
+</section>
+<section id="other-possible-incompatibilities-with-existing-code">
+<h1>Other possible incompatibilities with existing code<a class="headerlink" href="#other-possible-incompatibilities-with-existing-code" title="Permalink to this heading">#</a></h1>
+<section id="imports">
+<h2>Imports<a class="headerlink" href="#imports" title="Permalink to this heading">#</a></h2>
+<p>Some of the code modules were moved into subdirectories.</p>
+<p>Import statements such as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">networkx.centrality</span>
+<span class="kn">from</span> <span class="nn">networkx.centrality</span> <span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+</div>
+<p>may no longer work (including that example).</p>
+<p>Use either</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">networkx</span> <span class="c1"># e.g. centrality functions available as networkx.fcn()</span>
+</pre></div>
+</div>
+<p>or</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">networkx</span> <span class="kn">import</span> <span class="o">*</span> <span class="c1"># e.g. centrality functions available as fcn()</span>
+</pre></div>
+</div>
+</section>
+<section id="self-loops">
+<h2>Self-loops<a class="headerlink" href="#self-loops" title="Permalink to this heading">#</a></h2>
+<p>For Graph and DiGraph self loops are now allowed.
+This might affect code or algorithms that add self loops
+which were intended to be ignored.</p>
+<p>Use the methods</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>nodes_with_selfloops()</p></li>
+<li><p>selfloop_edges()</p></li>
+<li><p>number_of_selfloops()</p></li>
+</ul>
+</div></blockquote>
+<p>to discover any self loops.</p>
+</section>
+<section id="copy">
+<h2>Copy<a class="headerlink" href="#copy" title="Permalink to this heading">#</a></h2>
+<p>Copies of NetworkX graphs including using the copy() method
+now return complete copies of the graph.  This means that all
+connection information is copied–subsequent changes in the
+copy do not change the old graph.  But node keys and edge
+data in the original and copy graphs are pointers to the same data.</p>
+</section>
+<section id="prepare-nbunch">
+<h2>prepare_nbunch<a class="headerlink" href="#prepare-nbunch" title="Permalink to this heading">#</a></h2>
+<p>Used internally - now called nbunch_iter and returns an iterator.</p>
+</section>
+<section id="converting-your-old-code-to-version-0-99">
+<h2>Converting your old code to Version 0.99<a class="headerlink" href="#converting-your-old-code-to-version-0-99" title="Permalink to this heading">#</a></h2>
+<p>Mostly you can just run the code and python will raise an exception
+for features that changed.  Common places for changes are</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Converting XGraph() to either Graph or MultiGraph</p></li>
+<li><p>Converting XGraph.edges()  to  Graph.edges(data=True)</p></li>
+<li><p>Switching some rarely used methods to attributes (e.g. directed)
+or to functions (e.g. node_boundary)</p></li>
+<li><p>If you relied on the old default edge data being None, you will
+have to account for it now being 1.</p></li>
+</ul>
+</div></blockquote>
+<p>You may also want to look through your code for places which could
+improve speed or readability.  The iterators are helpful with large
+graphs and getting edge data via G[u][v] is quite fast.   You may also
+want to change G.neighbors(n) to G[n] which returns the dict keyed by
+neighbor nodes to the edge data.  It is faster for many purposes but
+does not work well when you are changing the graph.</p>
+</section>
+</section>
+
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#">
+   NetworkX 0.99
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#new-features">
+     New features
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#bug-fixes">
+     Bug fixes
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#examples">
+     Examples
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#changes-in-base-classes">
+     Changes in base classes
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#methods-changed">
+     Methods changed
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#edges">
+       edges()
+      </a>
+     </li>
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#delete-node">
+       delete_node()
+      </a>
+     </li>
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#delete-nodes-from">
+       delete_nodes_from()
+      </a>
+     </li>
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#delete-edge">
+       delete_edge()
+      </a>
+     </li>
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#delete-edges-from">
+       delete_edges_from()
+      </a>
+     </li>
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#add-edge">
+       add_edge()
+      </a>
+     </li>
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#add-edges-from">
+       add_edges_from()
+      </a>
+     </li>
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#has-edge">
+       has_edge()
+      </a>
+     </li>
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#get-edge">
+       get_edge()
+      </a>
+     </li>
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#degree-iter">
+       degree_iter()
+      </a>
+     </li>
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#subgraph">
+       subgraph()
+      </a>
+     </li>
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#getitem">
+       __getitem__()
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#methods-removed">
+     Methods removed
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#info">
+       info()
+      </a>
+     </li>
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#node-boundary">
+       node_boundary()
+      </a>
+     </li>
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#edge-boundary">
+       edge_boundary()
+      </a>
+     </li>
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#is-directed">
+       is_directed()
+      </a>
+     </li>
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#g-out-edges">
+       G.out_edges()
+      </a>
+     </li>
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#g-in-edges">
+       G.in_edges()
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#methods-added">
+     Methods added
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#adjacency-list">
+       adjacency_list()
+      </a>
+     </li>
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#adjacency-iter">
+       adjacency_iter()
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#other-possible-incompatibilities-with-existing-code">
+   Other possible incompatibilities with existing code
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#imports">
+     Imports
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#self-loops">
+     Self-loops
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#copy">
+     Copy
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#prepare-nbunch">
+     prepare_nbunch
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#converting-your-old-code-to-version-0-99">
+     Converting your old code to Version 0.99
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,1141 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>networkx.algorithms.minors.contraction &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/algorithms/minors/contraction';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/algorithms/minors/contraction.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../../../../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../../../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../../../../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <h1>Source code for networkx.algorithms.minors.contraction</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Provides functions for computing minors of a graph.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span><span class="p">,</span> <span class="n">combinations</span><span class="p">,</span> <span class="n">permutations</span><span class="p">,</span> <span class="n">product</span>
+
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">from</span> <span class="nn">networkx</span> <span class="kn">import</span> <span class="n">density</span>
+<span class="kn">from</span> <span class="nn">networkx.exception</span> <span class="kn">import</span> <span class="n">NetworkXException</span>
+<span class="kn">from</span> <span class="nn">networkx.utils</span> <span class="kn">import</span> <span class="n">arbitrary_element</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;contracted_edge&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;contracted_nodes&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;equivalence_classes&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;identified_nodes&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;quotient_graph&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">chaini</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span>
+
+
+<div class="viewcode-block" id="equivalence_classes"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.minors.equivalence_classes.html#networkx.algorithms.minors.equivalence_classes">[docs]</a><span class="k">def</span> <span class="nf">equivalence_classes</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">relation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns equivalence classes of `relation` when applied to `iterable`.</span>
+
+<span class="sd">    The equivalence classes, or blocks, consist of objects from `iterable`</span>
+<span class="sd">    which are all equivalent. They are defined to be equivalent if the</span>
+<span class="sd">    `relation` function returns `True` when passed any two objects from that</span>
+<span class="sd">    class, and `False` otherwise. To define an equivalence relation the</span>
+<span class="sd">    function must be reflexive, symmetric and transitive.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    iterable : list, tuple, or set</span>
+<span class="sd">        An iterable of elements/nodes.</span>
+
+<span class="sd">    relation : function</span>
+<span class="sd">        A Boolean-valued function that implements an equivalence relation</span>
+<span class="sd">        (reflexive, symmetric, transitive binary relation) on the elements</span>
+<span class="sd">        of `iterable` - it must take two elements and return `True` if</span>
+<span class="sd">        they are related, or `False` if not.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    set of frozensets</span>
+<span class="sd">        A set of frozensets representing the partition induced by the equivalence</span>
+<span class="sd">        relation function `relation` on the elements of `iterable`. Each</span>
+<span class="sd">        member set in the return set represents an equivalence class, or</span>
+<span class="sd">        block, of the partition.</span>
+
+<span class="sd">        Duplicate elements will be ignored so it makes the most sense for</span>
+<span class="sd">        `iterable` to be a :class:`set`.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function does not check that `relation` represents an equivalence</span>
+<span class="sd">    relation. You can check that your equivalence classes provide a partition</span>
+<span class="sd">    using `is_partition`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Let `X` be the set of integers from `0` to `9`, and consider an equivalence</span>
+<span class="sd">    relation `R` on `X` of congruence modulo `3`: this means that two integers</span>
+<span class="sd">    `x` and `y` in `X` are equivalent under `R` if they leave the same</span>
+<span class="sd">    remainder when divided by `3`, i.e. `(x - y) mod 3 = 0`.</span>
+
+<span class="sd">    The equivalence classes of this relation are `{0, 3, 6, 9}`, `{1, 4, 7}`,</span>
+<span class="sd">    `{2, 5, 8}`: `0`, `3`, `6`, `9` are all divisible by `3` and leave zero</span>
+<span class="sd">    remainder; `1`, `4`, `7` leave remainder `1`; while `2`, `5` and `8` leave</span>
+<span class="sd">    remainder `2`. We can see this by calling `equivalence_classes` with</span>
+<span class="sd">    `X` and a function implementation of `R`.</span>
+
+<span class="sd">    &gt;&gt;&gt; X = set(range(10))</span>
+<span class="sd">    &gt;&gt;&gt; def mod3(x, y): return (x - y) % 3 == 0</span>
+<span class="sd">    &gt;&gt;&gt; equivalence_classes(X, mod3)    # doctest: +SKIP</span>
+<span class="sd">    {frozenset({1, 4, 7}), frozenset({8, 2, 5}), frozenset({0, 9, 3, 6})}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># For simplicity of implementation, we initialize the return value as a</span>
+    <span class="c1"># list of lists, then convert it to a set of sets at the end of the</span>
+    <span class="c1"># function.</span>
+    <span class="n">blocks</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1"># Determine the equivalence class for each element of the iterable.</span>
+    <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">iterable</span><span class="p">:</span>
+        <span class="c1"># Each element y must be in *exactly one* equivalence class.</span>
+        <span class="c1">#</span>
+        <span class="c1"># Each block is guaranteed to be non-empty</span>
+        <span class="k">for</span> <span class="n">block</span> <span class="ow">in</span> <span class="n">blocks</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">arbitrary_element</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">relation</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+                <span class="n">block</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+                <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># If the element y is not part of any known equivalence class, it</span>
+            <span class="c1"># must be in its own, so we create a new singleton equivalence</span>
+            <span class="c1"># class for it.</span>
+            <span class="n">blocks</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">y</span><span class="p">])</span>
+    <span class="k">return</span> <span class="p">{</span><span class="nb">frozenset</span><span class="p">(</span><span class="n">block</span><span class="p">)</span> <span class="k">for</span> <span class="n">block</span> <span class="ow">in</span> <span class="n">blocks</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="quotient_graph"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.minors.quotient_graph.html#networkx.algorithms.minors.quotient_graph">[docs]</a><span class="k">def</span> <span class="nf">quotient_graph</span><span class="p">(</span>
+    <span class="n">G</span><span class="p">,</span>
+    <span class="n">partition</span><span class="p">,</span>
+    <span class="n">edge_relation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">node_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">edge_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">relabel</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">create_using</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the quotient graph of `G` under the specified equivalence</span>
+<span class="sd">    relation on nodes.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+<span class="sd">        The graph for which to return the quotient graph with the</span>
+<span class="sd">        specified node relation.</span>
+
+<span class="sd">    partition : function, or dict or list of lists, tuples or sets</span>
+<span class="sd">        If a function, this function must represent an equivalence</span>
+<span class="sd">        relation on the nodes of `G`. It must take two arguments *u*</span>
+<span class="sd">        and *v* and return True exactly when *u* and *v* are in the</span>
+<span class="sd">        same equivalence class. The equivalence classes form the nodes</span>
+<span class="sd">        in the returned graph.</span>
+
+<span class="sd">        If a dict of lists/tuples/sets, the keys can be any meaningful</span>
+<span class="sd">        block labels, but the values must be the block lists/tuples/sets</span>
+<span class="sd">        (one list/tuple/set per block), and the blocks must form a valid</span>
+<span class="sd">        partition of the nodes of the graph. That is, each node must be</span>
+<span class="sd">        in exactly one block of the partition.</span>
+
+<span class="sd">        If a list of sets, the list must form a valid partition of</span>
+<span class="sd">        the nodes of the graph. That is, each node must be in exactly</span>
+<span class="sd">        one block of the partition.</span>
+
+<span class="sd">    edge_relation : Boolean function with two arguments</span>
+<span class="sd">        This function must represent an edge relation on the *blocks* of</span>
+<span class="sd">        the `partition` of `G`. It must take two arguments, *B* and *C*,</span>
+<span class="sd">        each one a set of nodes, and return True exactly when there should be</span>
+<span class="sd">        an edge joining block *B* to block *C* in the returned graph.</span>
+
+<span class="sd">        If `edge_relation` is not specified, it is assumed to be the</span>
+<span class="sd">        following relation. Block *B* is related to block *C* if and</span>
+<span class="sd">        only if some node in *B* is adjacent to some node in *C*,</span>
+<span class="sd">        according to the edge set of `G`.</span>
+
+<span class="sd">    edge_data : function</span>
+<span class="sd">        This function takes two arguments, *B* and *C*, each one a set</span>
+<span class="sd">        of nodes, and must return a dictionary representing the edge</span>
+<span class="sd">        data attributes to set on the edge joining *B* and *C*, should</span>
+<span class="sd">        there be an edge joining *B* and *C* in the quotient graph (if</span>
+<span class="sd">        no such edge occurs in the quotient graph as determined by</span>
+<span class="sd">        `edge_relation`, then the output of this function is ignored).</span>
+
+<span class="sd">        If the quotient graph would be a multigraph, this function is</span>
+<span class="sd">        not applied, since the edge data from each edge in the graph</span>
+<span class="sd">        `G` appears in the edges of the quotient graph.</span>
+
+<span class="sd">    node_data : function</span>
+<span class="sd">        This function takes one argument, *B*, a set of nodes in `G`,</span>
+<span class="sd">        and must return a dictionary representing the node data</span>
+<span class="sd">        attributes to set on the node representing *B* in the quotient graph.</span>
+<span class="sd">        If None, the following node attributes will be set:</span>
+
+<span class="sd">        * &#39;graph&#39;, the subgraph of the graph `G` that this block</span>
+<span class="sd">          represents,</span>
+<span class="sd">        * &#39;nnodes&#39;, the number of nodes in this block,</span>
+<span class="sd">        * &#39;nedges&#39;, the number of edges within this block,</span>
+<span class="sd">        * &#39;density&#39;, the density of the subgraph of `G` that this</span>
+<span class="sd">          block represents.</span>
+
+<span class="sd">    relabel : bool</span>
+<span class="sd">        If True, relabel the nodes of the quotient graph to be</span>
+<span class="sd">        nonnegative integers. Otherwise, the nodes are identified with</span>
+<span class="sd">        :class:`frozenset` instances representing the blocks given in</span>
+<span class="sd">        `partition`.</span>
+
+<span class="sd">    create_using : NetworkX graph constructor, optional (default=nx.Graph)</span>
+<span class="sd">       Graph type to create. If graph instance, then cleared before populated.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    NetworkX graph</span>
+<span class="sd">        The quotient graph of `G` under the equivalence relation</span>
+<span class="sd">        specified by `partition`. If the partition were given as a</span>
+<span class="sd">        list of :class:`set` instances and `relabel` is False,</span>
+<span class="sd">        each node will be a :class:`frozenset` corresponding to the same</span>
+<span class="sd">        :class:`set`.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NetworkXException</span>
+<span class="sd">        If the given partition is not a valid partition of the nodes of</span>
+<span class="sd">        `G`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    The quotient graph of the complete bipartite graph under the &quot;same</span>
+<span class="sd">    neighbors&quot; equivalence relation is `K_2`. Under this relation, two nodes</span>
+<span class="sd">    are equivalent if they are not adjacent but have the same neighbor set.</span>
+
+<span class="sd">    &gt;&gt;&gt; G = nx.complete_bipartite_graph(2, 3)</span>
+<span class="sd">    &gt;&gt;&gt; same_neighbors = lambda u, v: (</span>
+<span class="sd">    ...     u not in G[v] and v not in G[u] and G[u] == G[v]</span>
+<span class="sd">    ... )</span>
+<span class="sd">    &gt;&gt;&gt; Q = nx.quotient_graph(G, same_neighbors)</span>
+<span class="sd">    &gt;&gt;&gt; K2 = nx.complete_graph(2)</span>
+<span class="sd">    &gt;&gt;&gt; nx.is_isomorphic(Q, K2)</span>
+<span class="sd">    True</span>
+
+<span class="sd">    The quotient graph of a directed graph under the &quot;same strongly connected</span>
+<span class="sd">    component&quot; equivalence relation is the condensation of the graph (see</span>
+<span class="sd">    :func:`condensation`). This example comes from the Wikipedia article</span>
+<span class="sd">    *`Strongly connected component`_*.</span>
+
+<span class="sd">    &gt;&gt;&gt; G = nx.DiGraph()</span>
+<span class="sd">    &gt;&gt;&gt; edges = [</span>
+<span class="sd">    ...     &quot;ab&quot;,</span>
+<span class="sd">    ...     &quot;be&quot;,</span>
+<span class="sd">    ...     &quot;bf&quot;,</span>
+<span class="sd">    ...     &quot;bc&quot;,</span>
+<span class="sd">    ...     &quot;cg&quot;,</span>
+<span class="sd">    ...     &quot;cd&quot;,</span>
+<span class="sd">    ...     &quot;dc&quot;,</span>
+<span class="sd">    ...     &quot;dh&quot;,</span>
+<span class="sd">    ...     &quot;ea&quot;,</span>
+<span class="sd">    ...     &quot;ef&quot;,</span>
+<span class="sd">    ...     &quot;fg&quot;,</span>
+<span class="sd">    ...     &quot;gf&quot;,</span>
+<span class="sd">    ...     &quot;hd&quot;,</span>
+<span class="sd">    ...     &quot;hf&quot;,</span>
+<span class="sd">    ... ]</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edges_from(tuple(x) for x in edges)</span>
+<span class="sd">    &gt;&gt;&gt; components = list(nx.strongly_connected_components(G))</span>
+<span class="sd">    &gt;&gt;&gt; sorted(sorted(component) for component in components)</span>
+<span class="sd">    [[&#39;a&#39;, &#39;b&#39;, &#39;e&#39;], [&#39;c&#39;, &#39;d&#39;, &#39;h&#39;], [&#39;f&#39;, &#39;g&#39;]]</span>
+<span class="sd">    &gt;&gt;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; C = nx.condensation(G, components)</span>
+<span class="sd">    &gt;&gt;&gt; component_of = C.graph[&quot;mapping&quot;]</span>
+<span class="sd">    &gt;&gt;&gt; same_component = lambda u, v: component_of[u] == component_of[v]</span>
+<span class="sd">    &gt;&gt;&gt; Q = nx.quotient_graph(G, same_component)</span>
+<span class="sd">    &gt;&gt;&gt; nx.is_isomorphic(C, Q)</span>
+<span class="sd">    True</span>
+
+<span class="sd">    Node identification can be represented as the quotient of a graph under the</span>
+<span class="sd">    equivalence relation that places the two nodes in one block and each other</span>
+<span class="sd">    node in its own singleton block.</span>
+
+<span class="sd">    &gt;&gt;&gt; K24 = nx.complete_bipartite_graph(2, 4)</span>
+<span class="sd">    &gt;&gt;&gt; K34 = nx.complete_bipartite_graph(3, 4)</span>
+<span class="sd">    &gt;&gt;&gt; C = nx.contracted_nodes(K34, 1, 2)</span>
+<span class="sd">    &gt;&gt;&gt; nodes = {1, 2}</span>
+<span class="sd">    &gt;&gt;&gt; is_contracted = lambda u, v: u in nodes and v in nodes</span>
+<span class="sd">    &gt;&gt;&gt; Q = nx.quotient_graph(K34, is_contracted)</span>
+<span class="sd">    &gt;&gt;&gt; nx.is_isomorphic(Q, C)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; nx.is_isomorphic(Q, K24)</span>
+<span class="sd">    True</span>
+
+<span class="sd">    The blockmodeling technique described in [1]_ can be implemented as a</span>
+<span class="sd">    quotient graph.</span>
+
+<span class="sd">    &gt;&gt;&gt; G = nx.path_graph(6)</span>
+<span class="sd">    &gt;&gt;&gt; partition = [{0, 1}, {2, 3}, {4, 5}]</span>
+<span class="sd">    &gt;&gt;&gt; M = nx.quotient_graph(G, partition, relabel=True)</span>
+<span class="sd">    &gt;&gt;&gt; list(M.edges())</span>
+<span class="sd">    [(0, 1), (1, 2)]</span>
+
+<span class="sd">    Here is the sample example but using partition as a dict of block sets.</span>
+
+<span class="sd">    &gt;&gt;&gt; G = nx.path_graph(6)</span>
+<span class="sd">    &gt;&gt;&gt; partition = {0: {0, 1}, 2: {2, 3}, 4: {4, 5}}</span>
+<span class="sd">    &gt;&gt;&gt; M = nx.quotient_graph(G, partition, relabel=True)</span>
+<span class="sd">    &gt;&gt;&gt; list(M.edges())</span>
+<span class="sd">    [(0, 1), (1, 2)]</span>
+
+<span class="sd">    Partitions can be represented in various ways:</span>
+
+<span class="sd">    0. a list/tuple/set of block lists/tuples/sets</span>
+<span class="sd">    1. a dict with block labels as keys and blocks lists/tuples/sets as values</span>
+<span class="sd">    2. a dict with block lists/tuples/sets as keys and block labels as values</span>
+<span class="sd">    3. a function from nodes in the original iterable to block labels</span>
+<span class="sd">    4. an equivalence relation function on the target iterable</span>
+
+<span class="sd">    As `quotient_graph` is designed to accept partitions represented as (0), (1) or</span>
+<span class="sd">    (4) only, the `equivalence_classes` function can be used to get the partitions</span>
+<span class="sd">    in the right form, in order to call `quotient_graph`.</span>
+
+<span class="sd">    .. _Strongly connected component: https://en.wikipedia.org/wiki/Strongly_connected_component</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Patrick Doreian, Vladimir Batagelj, and Anuska Ferligoj.</span>
+<span class="sd">           *Generalized Blockmodeling*.</span>
+<span class="sd">           Cambridge University Press, 2004.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># If the user provided an equivalence relation as a function to compute</span>
+    <span class="c1"># the blocks of the partition on the nodes of G induced by the</span>
+    <span class="c1"># equivalence relation.</span>
+    <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">partition</span><span class="p">):</span>
+        <span class="c1"># equivalence_classes always return partition of whole G.</span>
+        <span class="n">partition</span> <span class="o">=</span> <span class="n">equivalence_classes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">partition</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">nx</span><span class="o">.</span><span class="n">community</span><span class="o">.</span><span class="n">is_partition</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">partition</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXException</span><span class="p">(</span>
+                <span class="s2">&quot;Input `partition` is not an equivalence relation for nodes of G&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">_quotient_graph</span><span class="p">(</span>
+            <span class="n">G</span><span class="p">,</span> <span class="n">partition</span><span class="p">,</span> <span class="n">edge_relation</span><span class="p">,</span> <span class="n">node_data</span><span class="p">,</span> <span class="n">edge_data</span><span class="p">,</span> <span class="n">relabel</span><span class="p">,</span> <span class="n">create_using</span>
+        <span class="p">)</span>
+
+    <span class="c1"># If the partition is a dict, it is assumed to be one where the keys are</span>
+    <span class="c1"># user-defined block labels, and values are block lists, tuples or sets.</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">partition</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">partition</span> <span class="o">=</span> <span class="p">[</span><span class="n">block</span> <span class="k">for</span> <span class="n">block</span> <span class="ow">in</span> <span class="n">partition</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+
+    <span class="c1"># If the user provided partition as a collection of sets. Then we</span>
+    <span class="c1"># need to check if partition covers all of G nodes. If the answer</span>
+    <span class="c1"># is &#39;No&#39; then we need to prepare suitable subgraph view.</span>
+    <span class="n">partition_nodes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="o">*</span><span class="n">partition</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">partition_nodes</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">subgraph</span><span class="p">(</span><span class="n">partition_nodes</span><span class="p">)</span>
+    <span class="c1"># Each node in the graph/subgraph must be in exactly one block.</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">nx</span><span class="o">.</span><span class="n">community</span><span class="o">.</span><span class="n">is_partition</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">partition</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">NetworkXException</span><span class="p">(</span><span class="s2">&quot;each node must be in exactly one part of `partition`&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_quotient_graph</span><span class="p">(</span>
+        <span class="n">G</span><span class="p">,</span> <span class="n">partition</span><span class="p">,</span> <span class="n">edge_relation</span><span class="p">,</span> <span class="n">node_data</span><span class="p">,</span> <span class="n">edge_data</span><span class="p">,</span> <span class="n">relabel</span><span class="p">,</span> <span class="n">create_using</span>
+    <span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">_quotient_graph</span><span class="p">(</span>
+    <span class="n">G</span><span class="p">,</span>
+    <span class="n">partition</span><span class="p">,</span>
+    <span class="n">edge_relation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">node_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">edge_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">relabel</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">create_using</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Construct the quotient graph assuming input has been checked&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">create_using</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">H</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">H</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">empty_graph</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">create_using</span><span class="p">)</span>
+    <span class="c1"># By default set some basic information about the subgraph that each block</span>
+    <span class="c1"># represents on the nodes in the quotient graph.</span>
+    <span class="k">if</span> <span class="n">node_data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="k">def</span> <span class="nf">node_data</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
+            <span class="n">S</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">subgraph</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">graph</span><span class="o">=</span><span class="n">S</span><span class="p">,</span> <span class="n">nnodes</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">S</span><span class="p">),</span> <span class="n">nedges</span><span class="o">=</span><span class="n">S</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">(),</span> <span class="n">density</span><span class="o">=</span><span class="n">density</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
+            <span class="p">)</span>
+
+    <span class="c1"># Each block of the partition becomes a node in the quotient graph.</span>
+    <span class="n">partition</span> <span class="o">=</span> <span class="p">[</span><span class="nb">frozenset</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">partition</span><span class="p">]</span>
+    <span class="n">H</span><span class="o">.</span><span class="n">add_nodes_from</span><span class="p">((</span><span class="n">b</span><span class="p">,</span> <span class="n">node_data</span><span class="p">(</span><span class="n">b</span><span class="p">))</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">partition</span><span class="p">)</span>
+    <span class="c1"># By default, the edge relation is the relation defined as follows. B is</span>
+    <span class="c1"># adjacent to C if a node in B is adjacent to a node in C, according to the</span>
+    <span class="c1"># edge set of G.</span>
+    <span class="c1">#</span>
+    <span class="c1"># This is not a particularly efficient implementation of this relation:</span>
+    <span class="c1"># there are O(n^2) pairs to check and each check may require O(log n) time</span>
+    <span class="c1"># (to check set membership). This can certainly be parallelized.</span>
+    <span class="k">if</span> <span class="n">edge_relation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="k">def</span> <span class="nf">edge_relation</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">v</span> <span class="ow">in</span> <span class="n">G</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">product</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">))</span>
+
+    <span class="c1"># By default, sum the weights of the edges joining pairs of nodes across</span>
+    <span class="c1"># blocks to get the weight of the edge joining those two blocks.</span>
+    <span class="k">if</span> <span class="n">edge_data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="k">def</span> <span class="nf">edge_data</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+            <span class="n">edgedata</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">d</span>
+                <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">b</span> <span class="o">|</span> <span class="n">c</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">u</span> <span class="ow">in</span> <span class="n">b</span> <span class="ow">and</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">c</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">u</span> <span class="ow">in</span> <span class="n">c</span> <span class="ow">and</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">b</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;weight&quot;</span><span class="p">:</span> <span class="nb">sum</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">edgedata</span><span class="p">)}</span>
+
+    <span class="n">block_pairs</span> <span class="o">=</span> <span class="n">permutations</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="k">if</span> <span class="n">H</span><span class="o">.</span><span class="n">is_directed</span><span class="p">()</span> <span class="k">else</span> <span class="n">combinations</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="c1"># In a multigraph, add one edge in the quotient graph for each edge</span>
+    <span class="c1"># in the original graph.</span>
+    <span class="k">if</span> <span class="n">H</span><span class="o">.</span><span class="n">is_multigraph</span><span class="p">():</span>
+        <span class="n">edges</span> <span class="o">=</span> <span class="n">chaini</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">G</span><span class="o">.</span><span class="n">get_edge_data</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">{}))</span>
+                <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">product</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G</span><span class="p">[</span><span class="n">u</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">block_pairs</span>
+            <span class="k">if</span> <span class="n">edge_relation</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="c1"># In a simple graph, apply the edge data function to each pair of</span>
+    <span class="c1"># blocks to determine the edge data attributes to apply to each edge</span>
+    <span class="c1"># in the quotient graph.</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">edges</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">edge_data</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">))</span> <span class="k">for</span> <span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="ow">in</span> <span class="n">block_pairs</span> <span class="k">if</span> <span class="n">edge_relation</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="n">H</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span><span class="n">edges</span><span class="p">)</span>
+    <span class="c1"># If requested by the user, relabel the nodes to be integers,</span>
+    <span class="c1"># numbered in increasing order from zero in the same order as the</span>
+    <span class="c1"># iteration order of `partition`.</span>
+    <span class="k">if</span> <span class="n">relabel</span><span class="p">:</span>
+        <span class="c1"># Can&#39;t use nx.convert_node_labels_to_integers() here since we</span>
+        <span class="c1"># want the order of iteration to be the same for backward</span>
+        <span class="c1"># compatibility with the nx.blockmodel() function.</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="p">{</span><span class="n">b</span><span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">partition</span><span class="p">)}</span>
+        <span class="n">H</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">relabel_nodes</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">H</span>
+
+
+<div class="viewcode-block" id="contracted_nodes"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.minors.contracted_nodes.html#networkx.algorithms.minors.contracted_nodes">[docs]</a><span class="k">def</span> <span class="nf">contracted_nodes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">self_loops</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the graph that results from contracting `u` and `v`.</span>
+
+<span class="sd">    Node contraction identifies the two nodes as a single node incident to any</span>
+<span class="sd">    edge that was incident to the original two nodes.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+<span class="sd">        The graph whose nodes will be contracted.</span>
+
+<span class="sd">    u, v : nodes</span>
+<span class="sd">        Must be nodes in `G`.</span>
+
+<span class="sd">    self_loops : Boolean</span>
+<span class="sd">        If this is True, any edges joining `u` and `v` in `G` become</span>
+<span class="sd">        self-loops on the new node in the returned graph.</span>
+
+<span class="sd">    copy : Boolean</span>
+<span class="sd">        If this is True (default True), make a copy of</span>
+<span class="sd">        `G` and return that instead of directly changing `G`.</span>
+
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Networkx graph</span>
+<span class="sd">        If Copy is True,</span>
+<span class="sd">        A new graph object of the same type as `G` (leaving `G` unmodified)</span>
+<span class="sd">        with `u` and `v` identified in a single node. The right node `v`</span>
+<span class="sd">        will be merged into the node `u`, so only `u` will appear in the</span>
+<span class="sd">        returned graph.</span>
+<span class="sd">        If copy is False,</span>
+<span class="sd">        Modifies `G` with `u` and `v` identified in a single node.</span>
+<span class="sd">        The right node `v` will be merged into the node `u`, so</span>
+<span class="sd">        only `u` will appear in the returned graph.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    For multigraphs, the edge keys for the realigned edges may</span>
+<span class="sd">    not be the same as the edge keys for the old edges. This is</span>
+<span class="sd">    natural because edge keys are unique only within each pair of nodes.</span>
+
+<span class="sd">    For non-multigraphs where `u` and `v` are adjacent to a third node</span>
+<span class="sd">    `w`, the edge (`v`, `w`) will be contracted into the edge (`u`,</span>
+<span class="sd">    `w`) with its attributes stored into a &quot;contraction&quot; attribute.</span>
+
+<span class="sd">    This function is also available as `identified_nodes`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Contracting two nonadjacent nodes of the cycle graph on four nodes `C_4`</span>
+<span class="sd">    yields the path graph (ignoring parallel edges):</span>
+
+<span class="sd">    &gt;&gt;&gt; G = nx.cycle_graph(4)</span>
+<span class="sd">    &gt;&gt;&gt; M = nx.contracted_nodes(G, 1, 3)</span>
+<span class="sd">    &gt;&gt;&gt; P3 = nx.path_graph(3)</span>
+<span class="sd">    &gt;&gt;&gt; nx.is_isomorphic(M, P3)</span>
+<span class="sd">    True</span>
+
+<span class="sd">    &gt;&gt;&gt; G = nx.MultiGraph(P3)</span>
+<span class="sd">    &gt;&gt;&gt; M = nx.contracted_nodes(G, 0, 2)</span>
+<span class="sd">    &gt;&gt;&gt; M.edges</span>
+<span class="sd">    MultiEdgeView([(0, 1, 0), (0, 1, 1)])</span>
+
+<span class="sd">    &gt;&gt;&gt; G = nx.Graph([(1, 2), (2, 2)])</span>
+<span class="sd">    &gt;&gt;&gt; H = nx.contracted_nodes(G, 1, 2, self_loops=False)</span>
+<span class="sd">    &gt;&gt;&gt; list(H.nodes())</span>
+<span class="sd">    [1]</span>
+<span class="sd">    &gt;&gt;&gt; list(H.edges())</span>
+<span class="sd">    [(1, 1)]</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    contracted_edge</span>
+<span class="sd">    quotient_graph</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Copying has significant overhead and can be disabled if needed</span>
+    <span class="k">if</span> <span class="n">copy</span><span class="p">:</span>
+        <span class="n">H</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">H</span> <span class="o">=</span> <span class="n">G</span>
+
+    <span class="c1"># edge code uses G.edges(v) instead of G.adj[v] to handle multiedges</span>
+    <span class="k">if</span> <span class="n">H</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+        <span class="n">edges_to_remap</span> <span class="o">=</span> <span class="n">chain</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">in_edges</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">G</span><span class="o">.</span><span class="n">out_edges</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">edges_to_remap</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># If the H=G, the generators change as H changes</span>
+    <span class="c1"># This makes the edges_to_remap independent of H</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">copy</span><span class="p">:</span>
+        <span class="n">edges_to_remap</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">edges_to_remap</span><span class="p">)</span>
+
+    <span class="n">v_data</span> <span class="o">=</span> <span class="n">H</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+    <span class="n">H</span><span class="o">.</span><span class="n">remove_node</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="n">prev_w</span><span class="p">,</span> <span class="n">prev_x</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span> <span class="ow">in</span> <span class="n">edges_to_remap</span><span class="p">:</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="n">prev_w</span> <span class="k">if</span> <span class="n">prev_w</span> <span class="o">!=</span> <span class="n">v</span> <span class="k">else</span> <span class="n">u</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">prev_x</span> <span class="k">if</span> <span class="n">prev_x</span> <span class="o">!=</span> <span class="n">v</span> <span class="k">else</span> <span class="n">u</span>
+
+        <span class="k">if</span> <span class="p">({</span><span class="n">prev_w</span><span class="p">,</span> <span class="n">prev_x</span><span class="p">}</span> <span class="o">==</span> <span class="p">{</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">})</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">self_loops</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">H</span><span class="o">.</span><span class="n">has_edge</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="ow">or</span> <span class="n">G</span><span class="o">.</span><span class="n">is_multigraph</span><span class="p">():</span>
+            <span class="n">H</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="o">**</span><span class="n">d</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">&quot;contraction&quot;</span> <span class="ow">in</span> <span class="n">H</span><span class="o">.</span><span class="n">edges</span><span class="p">[(</span><span class="n">w</span><span class="p">,</span> <span class="n">x</span><span class="p">)]:</span>
+                <span class="n">H</span><span class="o">.</span><span class="n">edges</span><span class="p">[(</span><span class="n">w</span><span class="p">,</span> <span class="n">x</span><span class="p">)][</span><span class="s2">&quot;contraction&quot;</span><span class="p">][(</span><span class="n">prev_w</span><span class="p">,</span> <span class="n">prev_x</span><span class="p">)]</span> <span class="o">=</span> <span class="n">d</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">H</span><span class="o">.</span><span class="n">edges</span><span class="p">[(</span><span class="n">w</span><span class="p">,</span> <span class="n">x</span><span class="p">)][</span><span class="s2">&quot;contraction&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{(</span><span class="n">prev_w</span><span class="p">,</span> <span class="n">prev_x</span><span class="p">):</span> <span class="n">d</span><span class="p">}</span>
+
+    <span class="k">if</span> <span class="s2">&quot;contraction&quot;</span> <span class="ow">in</span> <span class="n">H</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">u</span><span class="p">]:</span>
+        <span class="n">H</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="s2">&quot;contraction&quot;</span><span class="p">][</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">v_data</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">H</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="s2">&quot;contraction&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">v_data</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">H</span></div>
+
+
+<span class="n">identified_nodes</span> <span class="o">=</span> <span class="n">contracted_nodes</span>
+
+
+<div class="viewcode-block" id="contracted_edge"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.minors.contracted_edge.html#networkx.algorithms.minors.contracted_edge">[docs]</a><span class="k">def</span> <span class="nf">contracted_edge</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">self_loops</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the graph that results from contracting the specified edge.</span>
+
+<span class="sd">    Edge contraction identifies the two endpoints of the edge as a single node</span>
+<span class="sd">    incident to any edge that was incident to the original two nodes. A graph</span>
+<span class="sd">    that results from edge contraction is called a *minor* of the original</span>
+<span class="sd">    graph.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+<span class="sd">       The graph whose edge will be contracted.</span>
+
+<span class="sd">    edge : tuple</span>
+<span class="sd">       Must be a pair of nodes in `G`.</span>
+
+<span class="sd">    self_loops : Boolean</span>
+<span class="sd">       If this is True, any edges (including `edge`) joining the</span>
+<span class="sd">       endpoints of `edge` in `G` become self-loops on the new node in the</span>
+<span class="sd">       returned graph.</span>
+
+<span class="sd">    copy : Boolean (default True)</span>
+<span class="sd">        If this is True, a the contraction will be performed on a copy of `G`,</span>
+<span class="sd">        otherwise the contraction will happen in place.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Networkx graph</span>
+<span class="sd">       A new graph object of the same type as `G` (leaving `G` unmodified)</span>
+<span class="sd">       with endpoints of `edge` identified in a single node. The right node</span>
+<span class="sd">       of `edge` will be merged into the left one, so only the left one will</span>
+<span class="sd">       appear in the returned graph.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">       If `edge` is not an edge in `G`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Attempting to contract two nonadjacent nodes yields an error:</span>
+
+<span class="sd">    &gt;&gt;&gt; G = nx.cycle_graph(4)</span>
+<span class="sd">    &gt;&gt;&gt; nx.contracted_edge(G, (1, 3))</span>
+<span class="sd">    Traceback (most recent call last):</span>
+<span class="sd">      ...</span>
+<span class="sd">    ValueError: Edge (1, 3) does not exist in graph G; cannot contract it</span>
+
+<span class="sd">    Contracting two adjacent nodes in the cycle graph on *n* nodes yields the</span>
+<span class="sd">    cycle graph on *n - 1* nodes:</span>
+
+<span class="sd">    &gt;&gt;&gt; C5 = nx.cycle_graph(5)</span>
+<span class="sd">    &gt;&gt;&gt; C4 = nx.cycle_graph(4)</span>
+<span class="sd">    &gt;&gt;&gt; M = nx.contracted_edge(C5, (0, 1), self_loops=False)</span>
+<span class="sd">    &gt;&gt;&gt; nx.is_isomorphic(M, C4)</span>
+<span class="sd">    True</span>
+
+<span class="sd">    See also</span>
+<span class="sd">    --------</span>
+<span class="sd">    contracted_nodes</span>
+<span class="sd">    quotient_graph</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">edge</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">G</span><span class="o">.</span><span class="n">has_edge</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Edge </span><span class="si">{</span><span class="n">edge</span><span class="si">}</span><span class="s2"> does not exist in graph G; cannot contract it&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">contracted_nodes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">self_loops</span><span class="o">=</span><span class="n">self_loops</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="n">copy</span><span class="p">)</span></div>
+</pre></div>
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

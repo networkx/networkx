@@ -1,0 +1,1269 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Tutorial &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorial';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/tutorial.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Reference" href="reference/index.html" />
+    <link rel="prev" title="Install" href="install.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="#">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="#">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <section id="tutorial">
+<h1>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this heading">#</a></h1>
+<p>This guide can help you start working with NetworkX.</p>
+<section id="creating-a-graph">
+<h2>Creating a graph<a class="headerlink" href="#creating-a-graph" title="Permalink to this heading">#</a></h2>
+<p>Create an empty graph with no nodes and no edges.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>By definition, a <a class="reference internal" href="reference/classes/graph.html#networkx.Graph" title="networkx.Graph"><code class="xref py py-class docutils literal notranslate"><span class="pre">Graph</span></code></a> is a collection of nodes (vertices) along with
+identified pairs of nodes (called edges, links, etc).  In NetworkX, nodes can
+be any <a class="reference external" href="https://docs.python.org/3/glossary.html#term-hashable" title="(in Python v3.11)"><span class="xref std std-term">hashable</span></a> object e.g., a text string, an image, an XML object,
+another Graph, a customized node object, etc.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Python’s <code class="docutils literal notranslate"><span class="pre">None</span></code> object is not allowed to be used as a node. It
+determines whether optional function arguments have been assigned in many
+functions.</p>
+</div>
+</section>
+<section id="nodes">
+<h2>Nodes<a class="headerlink" href="#nodes" title="Permalink to this heading">#</a></h2>
+<p>The graph <code class="docutils literal notranslate"><span class="pre">G</span></code> can be grown in several ways.  NetworkX includes many
+<a class="reference internal" href="reference/generators.html"><span class="doc">graph generator functions</span></a> and
+<a class="reference internal" href="reference/readwrite/index.html"><span class="doc">facilities to read and write graphs in many formats</span></a>.
+To get started though we’ll look at simple manipulations.  You can add one node
+at a time,</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>or add nodes from any <a class="reference external" href="https://docs.python.org/3/glossary.html#term-iterable" title="(in Python v3.11)"><span class="xref std std-term">iterable</span></a> container, such as a list</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_nodes_from</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>You can also add nodes along with node
+attributes if your container yields 2-tuples of the form
+<code class="docutils literal notranslate"><span class="pre">(node,</span> <span class="pre">node_attribute_dict)</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_nodes_from</span><span class="p">([</span>
+<span class="gp">... </span>    <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;red&quot;</span><span class="p">}),</span>
+<span class="gp">... </span>    <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;green&quot;</span><span class="p">}),</span>
+<span class="gp">... </span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Node attributes are discussed further <a class="reference internal" href="#attributes"><span class="std std-ref">below</span></a>.</p>
+<p>Nodes from one graph can be incorporated into another:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">H</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">path_graph</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_nodes_from</span><span class="p">(</span><span class="n">H</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">G</span></code> now contains the nodes of <code class="docutils literal notranslate"><span class="pre">H</span></code> as nodes of <code class="docutils literal notranslate"><span class="pre">G</span></code>.
+In contrast, you could use the graph <code class="docutils literal notranslate"><span class="pre">H</span></code> as a node in <code class="docutils literal notranslate"><span class="pre">G</span></code>.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">H</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The graph <code class="docutils literal notranslate"><span class="pre">G</span></code> now contains <code class="docutils literal notranslate"><span class="pre">H</span></code> as a node.  This flexibility is very powerful as
+it allows graphs of graphs, graphs of files, graphs of functions and much more.
+It is worth thinking about how to structure your application so that the nodes
+are useful entities.  Of course you can always use a unique identifier in <code class="docutils literal notranslate"><span class="pre">G</span></code>
+and have a separate dictionary keyed by identifier to the node information if
+you prefer.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You should not change the node object if the hash depends
+on its contents.</p>
+</div>
+</section>
+<section id="edges">
+<h2>Edges<a class="headerlink" href="#edges" title="Permalink to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">G</span></code> can also be grown by adding one edge at a time,</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">e</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="o">*</span><span class="n">e</span><span class="p">)</span>  <span class="c1"># unpack edge tuple*</span>
+</pre></div>
+</div>
+<p>by adding a list of edges,</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">([(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)])</span>
+</pre></div>
+</div>
+<p>or by adding any <a class="reference internal" href="reference/glossary.html#term-ebunch"><span class="xref std std-term">ebunch</span></a> of edges.  An <em>ebunch</em> is any iterable
+container of edge-tuples.  An edge-tuple can be a 2-tuple of nodes or a 3-tuple
+with 2 nodes followed by an edge attribute dictionary, e.g.,
+<code class="docutils literal notranslate"><span class="pre">(2,</span> <span class="pre">3,</span> <span class="pre">{'weight':</span> <span class="pre">3.1415})</span></code>.  Edge attributes are discussed further
+<a class="reference internal" href="#attributes"><span class="std std-ref">below</span></a>.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span><span class="n">H</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>There are no complaints when adding existing nodes or edges. For example,
+after removing all nodes and edges,</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>we add new nodes/edges and NetworkX quietly ignores any that are
+already present.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">([(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s2">&quot;spam&quot;</span><span class="p">)</span>        <span class="c1"># adds node &quot;spam&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_nodes_from</span><span class="p">(</span><span class="s2">&quot;spam&quot;</span><span class="p">)</span>  <span class="c1"># adds 4 nodes: &#39;s&#39;, &#39;p&#39;, &#39;a&#39;, &#39;m&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;m&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>At this stage the graph <code class="docutils literal notranslate"><span class="pre">G</span></code> consists of 8 nodes and 3 edges, as can be seen by:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">()</span>
+<span class="go">8</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">()</span>
+<span class="go">3</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The order of adjacency reporting (e.g., <a class="reference internal" href="reference/classes/generated/networkx.Graph.adj.html#networkx.Graph.adj" title="networkx.Graph.adj"><code class="xref py py-meth docutils literal notranslate"><span class="pre">G.adj</span></code></a>,
+<a class="reference internal" href="reference/classes/generated/networkx.DiGraph.successors.html#networkx.DiGraph.successors" title="networkx.DiGraph.successors"><code class="xref py py-meth docutils literal notranslate"><span class="pre">G.successors</span></code></a>,
+<a class="reference internal" href="reference/classes/generated/networkx.DiGraph.predecessors.html#networkx.DiGraph.predecessors" title="networkx.DiGraph.predecessors"><code class="xref py py-meth docutils literal notranslate"><span class="pre">G.predecessors</span></code></a>) is the order of
+edge addition. However, the order of G.edges is the order of the adjacencies
+which includes both the order of the nodes and each
+node’s adjacencies. See example below:</p>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">DG</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">DG</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>   <span class="c1"># adds the nodes in order 2, 1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">DG</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">DG</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">DG</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="nb">list</span><span class="p">(</span><span class="n">DG</span><span class="o">.</span><span class="n">successors</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span> <span class="o">==</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="nb">list</span><span class="p">(</span><span class="n">DG</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span> <span class="o">==</span> <span class="p">[(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)]</span>
+</pre></div>
+</div>
+</section>
+<section id="examining-elements-of-a-graph">
+<h2>Examining elements of a graph<a class="headerlink" href="#examining-elements-of-a-graph" title="Permalink to this heading">#</a></h2>
+<p>We can examine the nodes and edges. Four basic graph properties facilitate
+reporting: <code class="docutils literal notranslate"><span class="pre">G.nodes</span></code>, <code class="docutils literal notranslate"><span class="pre">G.edges</span></code>, <code class="docutils literal notranslate"><span class="pre">G.adj</span></code> and <code class="docutils literal notranslate"><span class="pre">G.degree</span></code>.  These
+are set-like views of the nodes, edges, neighbors (adjacencies), and degrees
+of nodes in a graph. They offer a continually updated read-only view into
+the graph structure. They are also dict-like in that you can look up node
+and edge data attributes via the views and iterate with data attributes
+using methods <code class="docutils literal notranslate"><span class="pre">.items()</span></code>, <code class="docutils literal notranslate"><span class="pre">.data()</span></code>.
+If you want a specific container type instead of a view, you can specify one.
+Here we use lists, though sets, dicts, tuples and other containers may be
+better in other contexts.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
+<span class="go">[1, 2, 3, &#39;spam&#39;, &#39;s&#39;, &#39;p&#39;, &#39;a&#39;, &#39;m&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span>
+<span class="go">[(1, 2), (1, 3), (3, &#39;m&#39;)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">adj</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>  <span class="c1"># or list(G.neighbors(1))</span>
+<span class="go">[2, 3]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">degree</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># the number of edges incident to 1</span>
+<span class="go">2</span>
+</pre></div>
+</div>
+<p>One can specify to report the edges and degree from a subset of all nodes
+using an <a class="reference internal" href="reference/glossary.html#term-nbunch"><span class="xref std std-term">nbunch</span></a>. An <em>nbunch</em> is any of: <code class="docutils literal notranslate"><span class="pre">None</span></code> (meaning all nodes),
+a node, or an iterable container of nodes that is not itself a node in the
+graph.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;m&#39;</span><span class="p">])</span>
+<span class="go">EdgeDataView([(2, 1), (&#39;m&#39;, 3)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">degree</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="go">DegreeView({2: 1, 3: 2})</span>
+</pre></div>
+</div>
+</section>
+<section id="removing-elements-from-a-graph">
+<h2>Removing elements from a graph<a class="headerlink" href="#removing-elements-from-a-graph" title="Permalink to this heading">#</a></h2>
+<p>One can remove nodes and edges from the graph in a similar fashion to adding.
+Use methods
+<a class="reference internal" href="reference/classes/generated/networkx.Graph.remove_node.html#networkx.Graph.remove_node" title="networkx.Graph.remove_node"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Graph.remove_node()</span></code></a>,
+<a class="reference internal" href="reference/classes/generated/networkx.Graph.remove_nodes_from.html#networkx.Graph.remove_nodes_from" title="networkx.Graph.remove_nodes_from"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Graph.remove_nodes_from()</span></code></a>,
+<a class="reference internal" href="reference/classes/generated/networkx.Graph.remove_edge.html#networkx.Graph.remove_edge" title="networkx.Graph.remove_edge"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Graph.remove_edge()</span></code></a>
+and
+<a class="reference internal" href="reference/classes/generated/networkx.Graph.remove_edges_from.html#networkx.Graph.remove_edges_from" title="networkx.Graph.remove_edges_from"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Graph.remove_edges_from()</span></code></a>, e.g.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">remove_node</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">remove_nodes_from</span><span class="p">(</span><span class="s2">&quot;spam&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
+<span class="go">[1, 3, &#39;spam&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">remove_edge</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="using-the-graph-constructors">
+<h2>Using the graph constructors<a class="headerlink" href="#using-the-graph-constructors" title="Permalink to this heading">#</a></h2>
+<p>Graph objects do not have to be built up incrementally - data specifying
+graph structure can be passed directly to the constructors of the various
+graph classes.
+When creating a graph structure by instantiating one of the graph
+classes you can specify data in several formats.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">H</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>  <span class="c1"># create a DiGraph using the connections from G</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">H</span><span class="o">.</span><span class="n">edges</span><span class="p">())</span>
+<span class="go">[(1, 2), (2, 1)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">edgelist</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">H</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">(</span><span class="n">edgelist</span><span class="p">)</span>  <span class="c1"># create a graph from an edge list</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">H</span><span class="o">.</span><span class="n">edges</span><span class="p">())</span>
+<span class="go">[(0, 1), (1, 2), (2, 3)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">adjacency_dict</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="mi">1</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="mi">2</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">H</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">(</span><span class="n">adjacency_dict</span><span class="p">)</span>  <span class="c1"># create a Graph dict mapping nodes to nbrs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">H</span><span class="o">.</span><span class="n">edges</span><span class="p">())</span>
+<span class="go">[(0, 1), (0, 2), (1, 2)]</span>
+</pre></div>
+</div>
+</section>
+<section id="what-to-use-as-nodes-and-edges">
+<h2>What to use as nodes and edges<a class="headerlink" href="#what-to-use-as-nodes-and-edges" title="Permalink to this heading">#</a></h2>
+<p>You might notice that nodes and edges are not specified as NetworkX
+objects.  This leaves you free to use meaningful items as nodes and
+edges. The most common choices are numbers or strings, but a node can
+be any hashable object (except <code class="docutils literal notranslate"><span class="pre">None</span></code>), and an edge can be associated
+with any object <code class="docutils literal notranslate"><span class="pre">x</span></code> using <code class="docutils literal notranslate"><span class="pre">G.add_edge(n1,</span> <span class="pre">n2,</span> <span class="pre">object=x)</span></code>.</p>
+<p>As an example, <code class="docutils literal notranslate"><span class="pre">n1</span></code> and <code class="docutils literal notranslate"><span class="pre">n2</span></code> could be protein objects from the RCSB Protein
+Data Bank, and <code class="docutils literal notranslate"><span class="pre">x</span></code> could refer to an XML record of publications detailing
+experimental observations of their interaction.</p>
+<p>We have found this power quite useful, but its abuse
+can lead to surprising behavior unless one is familiar with Python.
+If in doubt, consider using <a class="reference internal" href="reference/generated/networkx.relabel.convert_node_labels_to_integers.html#networkx.relabel.convert_node_labels_to_integers" title="networkx.relabel.convert_node_labels_to_integers"><code class="xref py py-func docutils literal notranslate"><span class="pre">convert_node_labels_to_integers()</span></code></a> to obtain
+a more traditional graph with integer labels.</p>
+</section>
+<section id="accessing-edges-and-neighbors">
+<h2>Accessing edges and neighbors<a class="headerlink" href="#accessing-edges-and-neighbors" title="Permalink to this heading">#</a></h2>
+<p>In addition to the views <a class="reference internal" href="reference/classes/generated/networkx.Graph.edges.html#networkx.Graph.edges" title="networkx.Graph.edges"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Graph.edges</span></code></a>, and <a class="reference internal" href="reference/classes/generated/networkx.Graph.adj.html#networkx.Graph.adj" title="networkx.Graph.adj"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Graph.adj</span></code></a>,
+access to edges and neighbors is possible using subscript notation.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">([(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;yellow&quot;</span><span class="p">})])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># same as G.adj[1]</span>
+<span class="go">AtlasView({2: {&#39;color&#39;: &#39;yellow&#39;}})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+<span class="go">{&#39;color&#39;: &#39;yellow&#39;}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+<span class="go">{&#39;color&#39;: &#39;yellow&#39;}</span>
+</pre></div>
+</div>
+<p>You can get/set the attributes of an edge using subscript notation
+if the edge already exists.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">3</span><span class="p">][</span><span class="s1">&#39;color&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;blue&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">][</span><span class="s1">&#39;color&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;red&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+<span class="go">{&#39;color&#39;: &#39;red&#39;}</span>
+</pre></div>
+</div>
+<p>Fast examination of all (node, adjacency) pairs is achieved using
+<code class="docutils literal notranslate"><span class="pre">G.adjacency()</span></code>, or <code class="docutils literal notranslate"><span class="pre">G.adj.items()</span></code>.
+Note that for undirected graphs, adjacency iteration sees each edge twice.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">FG</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">FG</span><span class="o">.</span><span class="n">add_weighted_edges_from</span><span class="p">([(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mf">0.125</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mf">0.375</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">nbrs</span> <span class="ow">in</span> <span class="n">FG</span><span class="o">.</span><span class="n">adj</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+<span class="gp">... </span>   <span class="k">for</span> <span class="n">nbr</span><span class="p">,</span> <span class="n">eattr</span> <span class="ow">in</span> <span class="n">nbrs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+<span class="gp">... </span>       <span class="n">wt</span> <span class="o">=</span> <span class="n">eattr</span><span class="p">[</span><span class="s1">&#39;weight&#39;</span><span class="p">]</span>
+<span class="gp">... </span>       <span class="k">if</span> <span class="n">wt</span> <span class="o">&lt;</span> <span class="mf">0.5</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">nbr</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">wt</span><span class="si">:</span><span class="s2">.3</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+<span class="go">(1, 2, 0.125)</span>
+<span class="go">(2, 1, 0.125)</span>
+<span class="go">(3, 4, 0.375)</span>
+<span class="go">(4, 3, 0.375)</span>
+</pre></div>
+</div>
+<p>Convenient access to all edges is achieved with the edges property.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">wt</span><span class="p">)</span> <span class="ow">in</span> <span class="n">FG</span><span class="o">.</span><span class="n">edges</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="s1">&#39;weight&#39;</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">if</span> <span class="n">wt</span> <span class="o">&lt;</span> <span class="mf">0.5</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">u</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">wt</span><span class="si">:</span><span class="s2">.3</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+<span class="go">(1, 2, 0.125)</span>
+<span class="go">(3, 4, 0.375)</span>
+</pre></div>
+</div>
+</section>
+<section id="adding-attributes-to-graphs-nodes-and-edges">
+<span id="attributes"></span><h2>Adding attributes to graphs, nodes, and edges<a class="headerlink" href="#adding-attributes-to-graphs-nodes-and-edges" title="Permalink to this heading">#</a></h2>
+<p>Attributes such as weights, labels, colors, or whatever Python object you like,
+can be attached to graphs, nodes, or edges.</p>
+<p>Each graph, node, and edge can hold key/value attribute pairs in an associated
+attribute dictionary (the keys must be hashable).  By default these are empty,
+but attributes can be added or changed using <code class="docutils literal notranslate"><span class="pre">add_edge</span></code>, <code class="docutils literal notranslate"><span class="pre">add_node</span></code> or direct
+manipulation of the attribute dictionaries named <code class="docutils literal notranslate"><span class="pre">G.graph</span></code>, <code class="docutils literal notranslate"><span class="pre">G.nodes</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">G.edges</span></code> for a graph <code class="docutils literal notranslate"><span class="pre">G</span></code>.</p>
+<section id="graph-attributes">
+<h3>Graph attributes<a class="headerlink" href="#graph-attributes" title="Permalink to this heading">#</a></h3>
+<p>Assign graph attributes when creating a new graph</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">(</span><span class="n">day</span><span class="o">=</span><span class="s2">&quot;Friday&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">graph</span>
+<span class="go">{&#39;day&#39;: &#39;Friday&#39;}</span>
+</pre></div>
+</div>
+<p>Or you can modify attributes later</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="s1">&#39;day&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Monday&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">graph</span>
+<span class="go">{&#39;day&#39;: &#39;Monday&#39;}</span>
+</pre></div>
+</div>
+</section>
+<section id="node-attributes">
+<h3>Node attributes<a class="headerlink" href="#node-attributes" title="Permalink to this heading">#</a></h3>
+<p>Add node attributes using <code class="docutils literal notranslate"><span class="pre">add_node()</span></code>, <code class="docutils literal notranslate"><span class="pre">add_nodes_from()</span></code>, or <code class="docutils literal notranslate"><span class="pre">G.nodes</span></code></p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="s1">&#39;5pm&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_nodes_from</span><span class="p">([</span><span class="mi">3</span><span class="p">],</span> <span class="n">time</span><span class="o">=</span><span class="s1">&#39;2pm&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="go">{&#39;time&#39;: &#39;5pm&#39;}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;room&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">714</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+<span class="go">NodeDataView({1: {&#39;time&#39;: &#39;5pm&#39;, &#39;room&#39;: 714}, 3: {&#39;time&#39;: &#39;2pm&#39;}})</span>
+</pre></div>
+</div>
+<p>Note that adding a node to <code class="docutils literal notranslate"><span class="pre">G.nodes</span></code> does not add it to the graph, use
+<code class="docutils literal notranslate"><span class="pre">G.add_node()</span></code> to add new nodes. Similarly for edges.</p>
+</section>
+<section id="edge-attributes">
+<h3>Edge Attributes<a class="headerlink" href="#edge-attributes" title="Permalink to this heading">#</a></h3>
+<p>Add/change edge attributes using <code class="docutils literal notranslate"><span class="pre">add_edge()</span></code>, <code class="docutils literal notranslate"><span class="pre">add_edges_from()</span></code>,
+or subscript notation.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mf">4.7</span> <span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">([(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">)],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">([(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;blue&#39;</span><span class="p">}),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;weight&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">})])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">][</span><span class="s1">&#39;weight&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">4.7</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">][</span><span class="s1">&#39;weight&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">4.2</span>
+</pre></div>
+</div>
+<p>The special attribute <code class="docutils literal notranslate"><span class="pre">weight</span></code> should be numeric as it is used by
+algorithms requiring weighted edges.</p>
+</section>
+</section>
+<section id="directed-graphs">
+<h2>Directed graphs<a class="headerlink" href="#directed-graphs" title="Permalink to this heading">#</a></h2>
+<p>The <a class="reference internal" href="reference/classes/digraph.html#networkx.DiGraph" title="networkx.DiGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">DiGraph</span></code></a> class provides additional methods and properties specific
+to directed edges, e.g.,
+<a class="reference internal" href="reference/classes/generated/networkx.DiGraph.out_edges.html#networkx.DiGraph.out_edges" title="networkx.DiGraph.out_edges"><code class="xref py py-attr docutils literal notranslate"><span class="pre">DiGraph.out_edges</span></code></a>, <a class="reference internal" href="reference/classes/generated/networkx.DiGraph.in_degree.html#networkx.DiGraph.in_degree" title="networkx.DiGraph.in_degree"><code class="xref py py-attr docutils literal notranslate"><span class="pre">DiGraph.in_degree</span></code></a>,
+<a class="reference internal" href="reference/classes/generated/networkx.DiGraph.predecessors.html#networkx.DiGraph.predecessors" title="networkx.DiGraph.predecessors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DiGraph.predecessors</span></code></a>, <a class="reference internal" href="reference/classes/generated/networkx.DiGraph.successors.html#networkx.DiGraph.successors" title="networkx.DiGraph.successors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DiGraph.successors</span></code></a> etc.
+To allow algorithms to work with both classes easily, the directed versions of
+<a class="reference internal" href="reference/classes/generated/networkx.DiGraph.neighbors.html#networkx.DiGraph.neighbors" title="networkx.DiGraph.neighbors"><code class="xref py py-meth docutils literal notranslate"><span class="pre">neighbors</span></code></a> is equivalent to
+<a class="reference internal" href="reference/classes/generated/networkx.DiGraph.successors.html#networkx.DiGraph.successors" title="networkx.DiGraph.successors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">successors</span></code></a> while <a class="reference internal" href="reference/classes/generated/networkx.DiGraph.degree.html#networkx.DiGraph.degree" title="networkx.DiGraph.degree"><code class="xref py py-obj docutils literal notranslate"><span class="pre">degree</span></code></a> reports the sum
+of <a class="reference internal" href="reference/classes/generated/networkx.DiGraph.in_degree.html#networkx.DiGraph.in_degree" title="networkx.DiGraph.in_degree"><code class="xref py py-obj docutils literal notranslate"><span class="pre">in_degree</span></code></a> and <a class="reference internal" href="reference/classes/generated/networkx.DiGraph.out_degree.html#networkx.DiGraph.out_degree" title="networkx.DiGraph.out_degree"><code class="xref py py-obj docutils literal notranslate"><span class="pre">out_degree</span></code></a> even though that may feel inconsistent at times.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">DG</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">DG</span><span class="o">.</span><span class="n">add_weighted_edges_from</span><span class="p">([(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">DG</span><span class="o">.</span><span class="n">out_degree</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s1">&#39;weight&#39;</span><span class="p">)</span>
+<span class="go">0.5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">DG</span><span class="o">.</span><span class="n">degree</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s1">&#39;weight&#39;</span><span class="p">)</span>
+<span class="go">1.25</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">DG</span><span class="o">.</span><span class="n">successors</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+<span class="go">[2]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">DG</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+<span class="go">[2]</span>
+</pre></div>
+</div>
+<p>Some algorithms work only for directed graphs and others are not well
+defined for directed graphs.  Indeed the tendency to lump directed
+and undirected graphs together is dangerous.  If you want to treat
+a directed graph as undirected for some measurement you should probably
+convert it using <a class="reference internal" href="reference/classes/generated/networkx.Graph.to_undirected.html#networkx.Graph.to_undirected" title="networkx.Graph.to_undirected"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Graph.to_undirected()</span></code></a> or with</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">H</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>  <span class="c1"># create an undirected graph H from a directed graph G</span>
+</pre></div>
+</div>
+</section>
+<section id="multigraphs">
+<h2>Multigraphs<a class="headerlink" href="#multigraphs" title="Permalink to this heading">#</a></h2>
+<p>NetworkX provides classes for graphs which allow multiple edges
+between any pair of nodes.  The <a class="reference internal" href="reference/classes/multigraph.html#networkx.MultiGraph" title="networkx.MultiGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiGraph</span></code></a> and
+<a class="reference internal" href="reference/classes/multidigraph.html#networkx.MultiDiGraph" title="networkx.MultiDiGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiDiGraph</span></code></a>
+classes allow you to add the same edge twice, possibly with different
+edge data.  This can be powerful for some applications, but many
+algorithms are not well defined on such graphs.
+Where results are well defined,
+e.g., <a class="reference internal" href="reference/classes/generated/networkx.MultiGraph.degree.html#networkx.MultiGraph.degree" title="networkx.MultiGraph.degree"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MultiGraph.degree()</span></code></a> we provide the function.  Otherwise you
+should convert to a standard graph in a way that makes the measurement
+well defined.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">MG</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">MultiGraph</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">MG</span><span class="o">.</span><span class="n">add_weighted_edges_from</span><span class="p">([(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">dict</span><span class="p">(</span><span class="n">MG</span><span class="o">.</span><span class="n">degree</span><span class="p">(</span><span class="n">weight</span><span class="o">=</span><span class="s1">&#39;weight&#39;</span><span class="p">))</span>
+<span class="go">{1: 1.25, 2: 1.75, 3: 0.5}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">GG</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">nbrs</span> <span class="ow">in</span> <span class="n">MG</span><span class="o">.</span><span class="n">adjacency</span><span class="p">():</span>
+<span class="gp">... </span>   <span class="k">for</span> <span class="n">nbr</span><span class="p">,</span> <span class="n">edict</span> <span class="ow">in</span> <span class="n">nbrs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+<span class="gp">... </span>       <span class="n">minvalue</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;weight&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">edict</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span>
+<span class="gp">... </span>       <span class="n">GG</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">nbr</span><span class="p">,</span> <span class="n">weight</span> <span class="o">=</span> <span class="n">minvalue</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nx</span><span class="o">.</span><span class="n">shortest_path</span><span class="p">(</span><span class="n">GG</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="go">[1, 2, 3]</span>
+</pre></div>
+</div>
+</section>
+<section id="graph-generators-and-graph-operations">
+<h2>Graph generators and graph operations<a class="headerlink" href="#graph-generators-and-graph-operations" title="Permalink to this heading">#</a></h2>
+<p>In addition to constructing graphs node-by-node or edge-by-edge, they
+can also be generated by</p>
+<section id="applying-classic-graph-operations-such-as">
+<h3>1. Applying classic graph operations, such as:<a class="headerlink" href="#applying-classic-graph-operations-such-as" title="Permalink to this heading">#</a></h3>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/generated/networkx.classes.function.subgraph.html#networkx.classes.function.subgraph" title="networkx.classes.function.subgraph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">subgraph</span></code></a>(G, nbunch)</p></td>
+<td><p>Returns the subgraph induced on nodes in nbunch.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/algorithms/generated/networkx.algorithms.operators.binary.union.html#networkx.algorithms.operators.binary.union" title="networkx.algorithms.operators.binary.union"><code class="xref py py-obj docutils literal notranslate"><span class="pre">union</span></code></a>(G, H[, rename])</p></td>
+<td><p>Combine graphs G and H.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/algorithms/generated/networkx.algorithms.operators.binary.disjoint_union.html#networkx.algorithms.operators.binary.disjoint_union" title="networkx.algorithms.operators.binary.disjoint_union"><code class="xref py py-obj docutils literal notranslate"><span class="pre">disjoint_union</span></code></a>(G, H)</p></td>
+<td><p>Combine graphs G and H.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/algorithms/generated/networkx.algorithms.operators.product.cartesian_product.html#networkx.algorithms.operators.product.cartesian_product" title="networkx.algorithms.operators.product.cartesian_product"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cartesian_product</span></code></a>(G, H)</p></td>
+<td><p>Returns the Cartesian product of G and H.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/algorithms/generated/networkx.algorithms.operators.binary.compose.html#networkx.algorithms.operators.binary.compose" title="networkx.algorithms.operators.binary.compose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compose</span></code></a>(G, H)</p></td>
+<td><p>Compose graph G with H by combining nodes and edges into a single graph.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/algorithms/generated/networkx.algorithms.operators.unary.complement.html#networkx.algorithms.operators.unary.complement" title="networkx.algorithms.operators.unary.complement"><code class="xref py py-obj docutils literal notranslate"><span class="pre">complement</span></code></a>(G)</p></td>
+<td><p>Returns the graph complement of G.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/generated/networkx.classes.function.create_empty_copy.html#networkx.classes.function.create_empty_copy" title="networkx.classes.function.create_empty_copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_empty_copy</span></code></a>(G[, with_data])</p></td>
+<td><p>Returns a copy of the graph G with all of the edges removed.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/generated/networkx.classes.function.to_undirected.html#networkx.classes.function.to_undirected" title="networkx.classes.function.to_undirected"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_undirected</span></code></a>(graph)</p></td>
+<td><p>Returns an undirected view of the graph <code class="xref py py-obj docutils literal notranslate"><span class="pre">graph</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/generated/networkx.classes.function.to_directed.html#networkx.classes.function.to_directed" title="networkx.classes.function.to_directed"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_directed</span></code></a>(graph)</p></td>
+<td><p>Returns a directed view of the graph <code class="xref py py-obj docutils literal notranslate"><span class="pre">graph</span></code>.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="using-a-call-to-one-of-the-classic-small-graphs-e-g">
+<h3>2. Using a call to one of the classic small graphs, e.g.,<a class="headerlink" href="#using-a-call-to-one-of-the-classic-small-graphs-e-g" title="Permalink to this heading">#</a></h3>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/generated/networkx.generators.small.petersen_graph.html#networkx.generators.small.petersen_graph" title="networkx.generators.small.petersen_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">petersen_graph</span></code></a>([create_using])</p></td>
+<td><p>Returns the Petersen graph.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/generated/networkx.generators.small.tutte_graph.html#networkx.generators.small.tutte_graph" title="networkx.generators.small.tutte_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tutte_graph</span></code></a>([create_using])</p></td>
+<td><p>Returns the Tutte graph.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/generated/networkx.generators.small.sedgewick_maze_graph.html#networkx.generators.small.sedgewick_maze_graph" title="networkx.generators.small.sedgewick_maze_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sedgewick_maze_graph</span></code></a>([create_using])</p></td>
+<td><p>Return a small maze with a cycle.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/generated/networkx.generators.small.tetrahedral_graph.html#networkx.generators.small.tetrahedral_graph" title="networkx.generators.small.tetrahedral_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tetrahedral_graph</span></code></a>([create_using])</p></td>
+<td><p>Returns the 3-regular Platonic Tetrahedral graph.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="using-a-constructive-generator-for-a-classic-graph-e-g">
+<h3>3. Using a (constructive) generator for a classic graph, e.g.,<a class="headerlink" href="#using-a-constructive-generator-for-a-classic-graph-e-g" title="Permalink to this heading">#</a></h3>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/generated/networkx.generators.classic.complete_graph.html#networkx.generators.classic.complete_graph" title="networkx.generators.classic.complete_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">complete_graph</span></code></a>(n[, create_using])</p></td>
+<td><p>Return the complete graph <code class="xref py py-obj docutils literal notranslate"><span class="pre">K_n</span></code> with n nodes.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/algorithms/generated/networkx.algorithms.bipartite.generators.complete_bipartite_graph.html#networkx.algorithms.bipartite.generators.complete_bipartite_graph" title="networkx.algorithms.bipartite.generators.complete_bipartite_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">complete_bipartite_graph</span></code></a>(n1, n2[, create_using])</p></td>
+<td><p>Returns the complete bipartite graph <code class="xref py py-obj docutils literal notranslate"><span class="pre">K_{n_1,n_2}</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/generated/networkx.generators.classic.barbell_graph.html#networkx.generators.classic.barbell_graph" title="networkx.generators.classic.barbell_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">barbell_graph</span></code></a>(m1, m2[, create_using])</p></td>
+<td><p>Returns the Barbell Graph: two complete graphs connected by a path.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/generated/networkx.generators.classic.lollipop_graph.html#networkx.generators.classic.lollipop_graph" title="networkx.generators.classic.lollipop_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lollipop_graph</span></code></a>(m, n[, create_using])</p></td>
+<td><p>Returns the Lollipop Graph; <code class="xref py py-obj docutils literal notranslate"><span class="pre">K_m</span></code> connected to <code class="xref py py-obj docutils literal notranslate"><span class="pre">P_n</span></code>.</p></td>
+</tr>
+</tbody>
+</table>
+<p>like so:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">K_5</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">complete_graph</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">K_3_5</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">complete_bipartite_graph</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">barbell</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">barbell_graph</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lollipop</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">lollipop_graph</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="using-a-stochastic-graph-generator-e-g">
+<h3>4. Using a stochastic graph generator, e.g,<a class="headerlink" href="#using-a-stochastic-graph-generator-e-g" title="Permalink to this heading">#</a></h3>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/generated/networkx.generators.random_graphs.erdos_renyi_graph.html#networkx.generators.random_graphs.erdos_renyi_graph" title="networkx.generators.random_graphs.erdos_renyi_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">erdos_renyi_graph</span></code></a>(n, p[, seed, directed])</p></td>
+<td><p>Returns a <span class="math notranslate nohighlight">\(G_{n,p}\)</span> random graph, also known as an Erdős-Rényi graph or a binomial graph.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/generated/networkx.generators.random_graphs.watts_strogatz_graph.html#networkx.generators.random_graphs.watts_strogatz_graph" title="networkx.generators.random_graphs.watts_strogatz_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">watts_strogatz_graph</span></code></a>(n, k, p[, seed])</p></td>
+<td><p>Returns a Watts–Strogatz small-world graph.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/generated/networkx.generators.random_graphs.barabasi_albert_graph.html#networkx.generators.random_graphs.barabasi_albert_graph" title="networkx.generators.random_graphs.barabasi_albert_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">barabasi_albert_graph</span></code></a>(n, m[, seed, ...])</p></td>
+<td><p>Returns a random graph using Barabási–Albert preferential attachment</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/generated/networkx.generators.random_graphs.random_lobster.html#networkx.generators.random_graphs.random_lobster" title="networkx.generators.random_graphs.random_lobster"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_lobster</span></code></a>(n, p1, p2[, seed])</p></td>
+<td><p>Returns a random lobster graph.</p></td>
+</tr>
+</tbody>
+</table>
+<p>like so:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">er</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">erdos_renyi_graph</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ws</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">watts_strogatz_graph</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ba</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">barabasi_albert_graph</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">red</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">random_lobster</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="reading-a-graph-stored-in-a-file-using-common-graph-formats">
+<h3>5. Reading a graph stored in a file using common graph formats<a class="headerlink" href="#reading-a-graph-stored-in-a-file-using-common-graph-formats" title="Permalink to this heading">#</a></h3>
+<p>NetworkX supports many popular formats, such as edge lists, adjacency lists,
+GML, GraphML, LEDA and others.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">nx</span><span class="o">.</span><span class="n">write_gml</span><span class="p">(</span><span class="n">red</span><span class="p">,</span> <span class="s2">&quot;path.to.file&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mygraph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">read_gml</span><span class="p">(</span><span class="s2">&quot;path.to.file&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For details on graph formats see <a class="reference internal" href="reference/readwrite/index.html"><span class="doc">Reading and writing graphs</span></a>
+and for graph generator functions see <a class="reference internal" href="reference/generators.html"><span class="doc">Graph generators</span></a></p>
+</section>
+</section>
+<section id="analyzing-graphs">
+<h2>Analyzing graphs<a class="headerlink" href="#analyzing-graphs" title="Permalink to this heading">#</a></h2>
+<p>The structure of <code class="docutils literal notranslate"><span class="pre">G</span></code> can be analyzed using various graph-theoretic
+functions such as:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">([(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s2">&quot;spam&quot;</span><span class="p">)</span>       <span class="c1"># adds node &quot;spam&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">connected_components</span><span class="p">(</span><span class="n">G</span><span class="p">))</span>
+<span class="go">[{1, 2, 3}, {&#39;spam&#39;}]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">sorted</span><span class="p">(</span><span class="n">d</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">degree</span><span class="p">())</span>
+<span class="go">[0, 1, 1, 2]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nx</span><span class="o">.</span><span class="n">clustering</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+<span class="go">{1: 0, 2: 0, 3: 0, &#39;spam&#39;: 0}</span>
+</pre></div>
+</div>
+<p>Some functions with large output iterate over (node, value) 2-tuples.
+These are easily stored in a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> structure if you desire.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sp</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">all_pairs_shortest_path</span><span class="p">(</span><span class="n">G</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sp</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+<span class="go">{3: [3], 1: [3, 1], 2: [3, 1, 2]}</span>
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="reference/algorithms/index.html"><span class="doc">Algorithms</span></a> for details on graph algorithms
+supported.</p>
+</section>
+<section id="drawing-graphs">
+<h2>Drawing graphs<a class="headerlink" href="#drawing-graphs" title="Permalink to this heading">#</a></h2>
+<p>NetworkX is not primarily a graph drawing package but basic drawing with
+Matplotlib as well as an interface to use the open source Graphviz software
+package are included.  These are part of the <a class="reference internal" href="reference/drawing.html"><span class="doc">networkx.drawing</span></a>
+module and will be imported if possible.</p>
+<p>First import Matplotlib’s plot interface (pylab works too)</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+</pre></div>
+</div>
+<p>To test if the import of <a class="reference internal" href="reference/drawing.html#module-networkx.drawing.nx_pylab" title="networkx.drawing.nx_pylab"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nx_pylab</span></code></a> was successful draw <code class="docutils literal notranslate"><span class="pre">G</span></code>
+using one of</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">petersen_graph</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subax1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">121</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nx</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">with_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">font_weight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subax2</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">122</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nx</span><span class="o">.</span><span class="n">draw_shell</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">nlist</span><span class="o">=</span><span class="p">[</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)],</span> <span class="n">with_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">font_weight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>(<a class="reference external" href=".//tutorial-34.png">png</a>, <a class="reference external" href=".//tutorial-34.hires.png">hires.png</a>, <a class="reference external" href=".//tutorial-34.pdf">pdf</a>)</p>
+<figure class="align-default">
+<img alt="_images/tutorial-34.png" src="_images/tutorial-34.png" />
+</figure>
+<p>when drawing to an interactive display.  Note that you may need to issue a
+Matplotlib</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>  
+</pre></div>
+</div>
+<p>command if you are not using matplotlib in interactive mode.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">options</span> <span class="o">=</span> <span class="p">{</span>
+<span class="gp">... </span>    <span class="s1">&#39;node_color&#39;</span><span class="p">:</span> <span class="s1">&#39;black&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s1">&#39;node_size&#39;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s1">&#39;width&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subax1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">221</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nx</span><span class="o">.</span><span class="n">draw_random</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subax2</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">222</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nx</span><span class="o">.</span><span class="n">draw_circular</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subax3</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">223</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nx</span><span class="o">.</span><span class="n">draw_spectral</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subax4</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">224</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nx</span><span class="o">.</span><span class="n">draw_shell</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">nlist</span><span class="o">=</span><span class="p">[</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">10</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)],</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>(<a class="reference external" href=".//tutorial-35.png">png</a>, <a class="reference external" href=".//tutorial-35.hires.png">hires.png</a>, <a class="reference external" href=".//tutorial-35.pdf">pdf</a>)</p>
+<figure class="align-default">
+<img alt="_images/tutorial-35.png" src="_images/tutorial-35.png" />
+</figure>
+<p>You can find additional options via <a class="reference internal" href="reference/generated/networkx.drawing.nx_pylab.draw_networkx.html#networkx.drawing.nx_pylab.draw_networkx" title="networkx.drawing.nx_pylab.draw_networkx"><code class="xref py py-func docutils literal notranslate"><span class="pre">draw_networkx()</span></code></a> and
+layouts via the <a class="reference internal" href="reference/drawing.html#module-networkx.drawing.layout" title="networkx.drawing.layout"><code class="xref py py-mod docutils literal notranslate"><span class="pre">layout</span> <span class="pre">module</span></code></a>.
+You can use multiple shells with <a class="reference internal" href="reference/generated/networkx.drawing.nx_pylab.draw_shell.html#networkx.drawing.nx_pylab.draw_shell" title="networkx.drawing.nx_pylab.draw_shell"><code class="xref py py-func docutils literal notranslate"><span class="pre">draw_shell()</span></code></a>.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">dodecahedral_graph</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">shells</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span> <span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span> <span class="p">[</span><span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">13</span><span class="p">]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nx</span><span class="o">.</span><span class="n">draw_shell</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">nlist</span><span class="o">=</span><span class="n">shells</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>(<a class="reference external" href=".//tutorial-36.png">png</a>, <a class="reference external" href=".//tutorial-36.hires.png">hires.png</a>, <a class="reference external" href=".//tutorial-36.pdf">pdf</a>)</p>
+<figure class="align-default">
+<img alt="_images/tutorial-36.png" src="_images/tutorial-36.png" />
+</figure>
+<p>To save drawings to a file, use, for example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">nx</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;path.png&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This function writes to the file <code class="docutils literal notranslate"><span class="pre">path.png</span></code> in the local directory. If Graphviz and
+PyGraphviz or pydot, are available on your system, you can also use
+<a class="reference internal" href="reference/generated/networkx.drawing.nx_agraph.graphviz_layout.html#networkx.drawing.nx_agraph.graphviz_layout" title="networkx.drawing.nx_agraph.graphviz_layout"><code class="xref py py-obj docutils literal notranslate"><span class="pre">networkx.drawing.nx_agraph.graphviz_layout</span></code></a> or
+<a class="reference internal" href="reference/generated/networkx.drawing.nx_pydot.graphviz_layout.html#networkx.drawing.nx_pydot.graphviz_layout" title="networkx.drawing.nx_pydot.graphviz_layout"><code class="xref py py-obj docutils literal notranslate"><span class="pre">networkx.drawing.nx_pydot.graphviz_layout</span></code></a> to get the node positions, or write
+the graph in dot format for further processing.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">networkx.drawing.nx_pydot</span> <span class="kn">import</span> <span class="n">write_dot</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pos</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">nx_agraph</span><span class="o">.</span><span class="n">graphviz_layout</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nx</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="n">pos</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">write_dot</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="s1">&#39;file.dot&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="reference/drawing.html"><span class="doc">Drawing</span></a> for additional details.</p>
+<ul class="simple">
+<li><p><a class="reference download internal" href="tutorial.py">Download this page as a Python code file</a>;</p></li>
+<li><p><a class="reference download internal" href="tutorial.ipynb">Download this page as a Jupyter notebook (no outputs)</a>;</p></li>
+<li><p><a class="reference download internal" href="tutorial_full.ipynb">Download this page as a Jupyter notebook (with outputs)</a>.</p></li>
+</ul>
+</section>
+</section>
+
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#creating-a-graph">
+   Creating a graph
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#nodes">
+   Nodes
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#edges">
+   Edges
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#examining-elements-of-a-graph">
+   Examining elements of a graph
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#removing-elements-from-a-graph">
+   Removing elements from a graph
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#using-the-graph-constructors">
+   Using the graph constructors
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#what-to-use-as-nodes-and-edges">
+   What to use as nodes and edges
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#accessing-edges-and-neighbors">
+   Accessing edges and neighbors
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#adding-attributes-to-graphs-nodes-and-edges">
+   Adding attributes to graphs, nodes, and edges
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#graph-attributes">
+     Graph attributes
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#node-attributes">
+     Node attributes
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#edge-attributes">
+     Edge Attributes
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#directed-graphs">
+   Directed graphs
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#multigraphs">
+   Multigraphs
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#graph-generators-and-graph-operations">
+   Graph generators and graph operations
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#applying-classic-graph-operations-such-as">
+     1. Applying classic graph operations, such as:
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#using-a-call-to-one-of-the-classic-small-graphs-e-g">
+     2. Using a call to one of the classic small graphs, e.g.,
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#using-a-constructive-generator-for-a-classic-graph-e-g">
+     3. Using a (constructive) generator for a classic graph, e.g.,
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#using-a-stochastic-graph-generator-e-g">
+     4. Using a stochastic graph generator, e.g,
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#reading-a-graph-stored-in-a-file-using-common-graph-formats">
+     5. Reading a graph stored in a file using common graph formats
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#analyzing-graphs">
+   Analyzing graphs
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#drawing-graphs">
+   Drawing graphs
+  </a>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

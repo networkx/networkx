@@ -1,0 +1,846 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>networkx.algorithms.graph_hashing &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/algorithms/graph_hashing';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/algorithms/graph_hashing.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../../../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../../../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <h1>Source code for networkx.algorithms.graph_hashing</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Functions for hashing graphs to strings.</span>
+<span class="sd">Isomorphic graphs should be assigned identical hashes.</span>
+<span class="sd">For now, only Weisfeiler-Lehman hashing is implemented.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span><span class="p">,</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">hashlib</span> <span class="kn">import</span> <span class="n">blake2b</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;weisfeiler_lehman_graph_hash&quot;</span><span class="p">,</span> <span class="s2">&quot;weisfeiler_lehman_subgraph_hashes&quot;</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">_hash_label</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">digest_size</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">blake2b</span><span class="p">(</span><span class="n">label</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">),</span> <span class="n">digest_size</span><span class="o">=</span><span class="n">digest_size</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">_init_node_labels</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">edge_attr</span><span class="p">,</span> <span class="n">node_attr</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">node_attr</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">u</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">dd</span><span class="p">[</span><span class="n">node_attr</span><span class="p">])</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">dd</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">)}</span>
+    <span class="k">elif</span> <span class="n">edge_attr</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">u</span><span class="p">:</span> <span class="s2">&quot;&quot;</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">G</span><span class="p">}</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">u</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">deg</span><span class="p">)</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">deg</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">degree</span><span class="p">()}</span>
+
+
+<span class="k">def</span> <span class="nf">_neighborhood_aggregate</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">node_labels</span><span class="p">,</span> <span class="n">edge_attr</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute new labels for given node by aggregating</span>
+<span class="sd">    the labels of each node&#39;s neighbors.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">label_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">nbr</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">edge_attr</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">G</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="n">nbr</span><span class="p">][</span><span class="n">edge_attr</span><span class="p">])</span>
+        <span class="n">label_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">prefix</span> <span class="o">+</span> <span class="n">node_labels</span><span class="p">[</span><span class="n">nbr</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">node_labels</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">label_list</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="weisfeiler_lehman_graph_hash"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.graph_hashing.weisfeiler_lehman_graph_hash.html#networkx.algorithms.graph_hashing.weisfeiler_lehman_graph_hash">[docs]</a><span class="k">def</span> <span class="nf">weisfeiler_lehman_graph_hash</span><span class="p">(</span>
+    <span class="n">G</span><span class="p">,</span> <span class="n">edge_attr</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">node_attr</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">digest_size</span><span class="o">=</span><span class="mi">16</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return Weisfeiler Lehman (WL) graph hash.</span>
+
+<span class="sd">    The function iteratively aggregates and hashes neighbourhoods of each node.</span>
+<span class="sd">    After each node&#39;s neighbors are hashed to obtain updated node labels,</span>
+<span class="sd">    a hashed histogram of resulting labels is returned as the final hash.</span>
+
+<span class="sd">    Hashes are identical for isomorphic graphs and strong guarantees that</span>
+<span class="sd">    non-isomorphic graphs will get different hashes. See [1]_ for details.</span>
+
+<span class="sd">    If no node or edge attributes are provided, the degree of each node</span>
+<span class="sd">    is used as its initial label.</span>
+<span class="sd">    Otherwise, node and/or edge labels are used to compute the hash.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G: graph</span>
+<span class="sd">        The graph to be hashed.</span>
+<span class="sd">        Can have node and/or edge attributes. Can also have no attributes.</span>
+<span class="sd">    edge_attr: string, default=None</span>
+<span class="sd">        The key in edge attribute dictionary to be used for hashing.</span>
+<span class="sd">        If None, edge labels are ignored.</span>
+<span class="sd">    node_attr: string, default=None</span>
+<span class="sd">        The key in node attribute dictionary to be used for hashing.</span>
+<span class="sd">        If None, and no edge_attr given, use the degrees of the nodes as labels.</span>
+<span class="sd">    iterations: int, default=3</span>
+<span class="sd">        Number of neighbor aggregations to perform.</span>
+<span class="sd">        Should be larger for larger graphs.</span>
+<span class="sd">    digest_size: int, default=16</span>
+<span class="sd">        Size (in bits) of blake2b hash digest to use for hashing node labels.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    h : string</span>
+<span class="sd">        Hexadecimal string corresponding to hash of the input graph.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Two graphs with edge attributes that are isomorphic, except for</span>
+<span class="sd">    differences in the edge labels.</span>
+
+<span class="sd">    &gt;&gt;&gt; G1 = nx.Graph()</span>
+<span class="sd">    &gt;&gt;&gt; G1.add_edges_from(</span>
+<span class="sd">    ...     [</span>
+<span class="sd">    ...         (1, 2, {&quot;label&quot;: &quot;A&quot;}),</span>
+<span class="sd">    ...         (2, 3, {&quot;label&quot;: &quot;A&quot;}),</span>
+<span class="sd">    ...         (3, 1, {&quot;label&quot;: &quot;A&quot;}),</span>
+<span class="sd">    ...         (1, 4, {&quot;label&quot;: &quot;B&quot;}),</span>
+<span class="sd">    ...     ]</span>
+<span class="sd">    ... )</span>
+<span class="sd">    &gt;&gt;&gt; G2 = nx.Graph()</span>
+<span class="sd">    &gt;&gt;&gt; G2.add_edges_from(</span>
+<span class="sd">    ...     [</span>
+<span class="sd">    ...         (5, 6, {&quot;label&quot;: &quot;B&quot;}),</span>
+<span class="sd">    ...         (6, 7, {&quot;label&quot;: &quot;A&quot;}),</span>
+<span class="sd">    ...         (7, 5, {&quot;label&quot;: &quot;A&quot;}),</span>
+<span class="sd">    ...         (7, 8, {&quot;label&quot;: &quot;A&quot;}),</span>
+<span class="sd">    ...     ]</span>
+<span class="sd">    ... )</span>
+
+<span class="sd">    Omitting the `edge_attr` option, results in identical hashes.</span>
+
+<span class="sd">    &gt;&gt;&gt; nx.weisfeiler_lehman_graph_hash(G1)</span>
+<span class="sd">    &#39;7bc4dde9a09d0b94c5097b219891d81a&#39;</span>
+<span class="sd">    &gt;&gt;&gt; nx.weisfeiler_lehman_graph_hash(G2)</span>
+<span class="sd">    &#39;7bc4dde9a09d0b94c5097b219891d81a&#39;</span>
+
+<span class="sd">    With edge labels, the graphs are no longer assigned</span>
+<span class="sd">    the same hash digest.</span>
+
+<span class="sd">    &gt;&gt;&gt; nx.weisfeiler_lehman_graph_hash(G1, edge_attr=&quot;label&quot;)</span>
+<span class="sd">    &#39;c653d85538bcf041d88c011f4f905f10&#39;</span>
+<span class="sd">    &gt;&gt;&gt; nx.weisfeiler_lehman_graph_hash(G2, edge_attr=&quot;label&quot;)</span>
+<span class="sd">    &#39;3dcd84af1ca855d0eff3c978d88e7ec7&#39;</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    To return the WL hashes of each subgraph of a graph, use</span>
+<span class="sd">    `weisfeiler_lehman_subgraph_hashes`</span>
+
+<span class="sd">    Similarity between hashes does not imply similarity between graphs.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Shervashidze, Nino, Pascal Schweitzer, Erik Jan Van Leeuwen,</span>
+<span class="sd">       Kurt Mehlhorn, and Karsten M. Borgwardt. Weisfeiler Lehman</span>
+<span class="sd">       Graph Kernels. Journal of Machine Learning Research. 2011.</span>
+<span class="sd">       http://www.jmlr.org/papers/volume12/shervashidze11a/shervashidze11a.pdf</span>
+
+<span class="sd">    See also</span>
+<span class="sd">    --------</span>
+<span class="sd">    weisfeiler_lehman_subgraph_hashes</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">weisfeiler_lehman_step</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">edge_attr</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Apply neighborhood aggregation to each node</span>
+<span class="sd">        in the graph.</span>
+<span class="sd">        Computes a dictionary with labels for each node.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_labels</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="n">_neighborhood_aggregate</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">edge_attr</span><span class="o">=</span><span class="n">edge_attr</span><span class="p">)</span>
+            <span class="n">new_labels</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="n">_hash_label</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">digest_size</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_labels</span>
+
+    <span class="c1"># set initial node labels</span>
+    <span class="n">node_labels</span> <span class="o">=</span> <span class="n">_init_node_labels</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">edge_attr</span><span class="p">,</span> <span class="n">node_attr</span><span class="p">)</span>
+
+    <span class="n">subgraph_hash_counts</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">iterations</span><span class="p">):</span>
+        <span class="n">node_labels</span> <span class="o">=</span> <span class="n">weisfeiler_lehman_step</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">node_labels</span><span class="p">,</span> <span class="n">edge_attr</span><span class="o">=</span><span class="n">edge_attr</span><span class="p">)</span>
+        <span class="n">counter</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span><span class="n">node_labels</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="c1"># sort the counter, extend total counts</span>
+        <span class="n">subgraph_hash_counts</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">counter</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+
+    <span class="c1"># hash the final counter</span>
+    <span class="k">return</span> <span class="n">_hash_label</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">subgraph_hash_counts</span><span class="p">)),</span> <span class="n">digest_size</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="weisfeiler_lehman_subgraph_hashes"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.graph_hashing.weisfeiler_lehman_subgraph_hashes.html#networkx.algorithms.graph_hashing.weisfeiler_lehman_subgraph_hashes">[docs]</a><span class="k">def</span> <span class="nf">weisfeiler_lehman_subgraph_hashes</span><span class="p">(</span>
+    <span class="n">G</span><span class="p">,</span> <span class="n">edge_attr</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">node_attr</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">digest_size</span><span class="o">=</span><span class="mi">16</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return a dictionary of subgraph hashes by node.</span>
+
+<span class="sd">    The dictionary is keyed by node to a list of hashes in increasingly</span>
+<span class="sd">    sized induced subgraphs containing the nodes within 2*k edges</span>
+<span class="sd">    of the key node for increasing integer k until all nodes are included.</span>
+
+<span class="sd">    The function iteratively aggregates and hashes neighbourhoods of each node.</span>
+<span class="sd">    This is achieved for each step by replacing for each node its label from</span>
+<span class="sd">    the previous iteration with its hashed 1-hop neighborhood aggregate.</span>
+<span class="sd">    The new node label is then appended to a list of node labels for each</span>
+<span class="sd">    node.</span>
+
+<span class="sd">    To aggregate neighborhoods at each step for a node $n$, all labels of</span>
+<span class="sd">    nodes adjacent to $n$ are concatenated. If the `edge_attr` parameter is set,</span>
+<span class="sd">    labels for each neighboring node are prefixed with the value of this attribute</span>
+<span class="sd">    along the connecting edge from this neighbor to node $n$. The resulting string</span>
+<span class="sd">    is then hashed to compress this information into a fixed digest size.</span>
+
+<span class="sd">    Thus, at the $i$th iteration nodes within $2i$ distance influence any given</span>
+<span class="sd">    hashed node label. We can therefore say that at depth $i$ for node $n$</span>
+<span class="sd">    we have a hash for a subgraph induced by the $2i$-hop neighborhood of $n$.</span>
+
+<span class="sd">    Can be used to to create general Weisfeiler-Lehman graph kernels, or</span>
+<span class="sd">    generate features for graphs or nodes, for example to generate &#39;words&#39; in a</span>
+<span class="sd">    graph as seen in the &#39;graph2vec&#39; algorithm.</span>
+<span class="sd">    See [1]_ &amp; [2]_ respectively for details.</span>
+
+<span class="sd">    Hashes are identical for isomorphic subgraphs and there exist strong</span>
+<span class="sd">    guarantees that non-isomorphic graphs will get different hashes.</span>
+<span class="sd">    See [1]_ for details.</span>
+
+<span class="sd">    If no node or edge attributes are provided, the degree of each node</span>
+<span class="sd">    is used as its initial label.</span>
+<span class="sd">    Otherwise, node and/or edge labels are used to compute the hash.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G: graph</span>
+<span class="sd">        The graph to be hashed.</span>
+<span class="sd">        Can have node and/or edge attributes. Can also have no attributes.</span>
+<span class="sd">    edge_attr: string, default=None</span>
+<span class="sd">        The key in edge attribute dictionary to be used for hashing.</span>
+<span class="sd">        If None, edge labels are ignored.</span>
+<span class="sd">    node_attr: string, default=None</span>
+<span class="sd">        The key in node attribute dictionary to be used for hashing.</span>
+<span class="sd">        If None, and no edge_attr given, use the degrees of the nodes as labels.</span>
+<span class="sd">    iterations: int, default=3</span>
+<span class="sd">        Number of neighbor aggregations to perform.</span>
+<span class="sd">        Should be larger for larger graphs.</span>
+<span class="sd">    digest_size: int, default=16</span>
+<span class="sd">        Size (in bits) of blake2b hash digest to use for hashing node labels.</span>
+<span class="sd">        The default size is 16 bits</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    node_subgraph_hashes : dict</span>
+<span class="sd">        A dictionary with each key given by a node in G, and each value given</span>
+<span class="sd">        by the subgraph hashes in order of depth from the key node.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Finding similar nodes in different graphs:</span>
+
+<span class="sd">    &gt;&gt;&gt; G1 = nx.Graph()</span>
+<span class="sd">    &gt;&gt;&gt; G1.add_edges_from([</span>
+<span class="sd">    ...     (1, 2), (2, 3), (2, 4), (3, 5), (4, 6), (5, 7), (6, 7)</span>
+<span class="sd">    ... ])</span>
+<span class="sd">    &gt;&gt;&gt; G2 = nx.Graph()</span>
+<span class="sd">    &gt;&gt;&gt; G2.add_edges_from([</span>
+<span class="sd">    ...     (1, 3), (2, 3), (1, 6), (1, 5), (4, 6)</span>
+<span class="sd">    ... ])</span>
+<span class="sd">    &gt;&gt;&gt; g1_hashes = nx.weisfeiler_lehman_subgraph_hashes(G1, iterations=3, digest_size=8)</span>
+<span class="sd">    &gt;&gt;&gt; g2_hashes = nx.weisfeiler_lehman_subgraph_hashes(G2, iterations=3, digest_size=8)</span>
+
+<span class="sd">    Even though G1 and G2 are not isomorphic (they have different numbers of edges),</span>
+<span class="sd">    the hash sequence of depth 3 for node 1 in G1 and node 5 in G2 are similar:</span>
+
+<span class="sd">    &gt;&gt;&gt; g1_hashes[1]</span>
+<span class="sd">    [&#39;a93b64973cfc8897&#39;, &#39;db1b43ae35a1878f&#39;, &#39;57872a7d2059c1c0&#39;]</span>
+<span class="sd">    &gt;&gt;&gt; g2_hashes[5]</span>
+<span class="sd">    [&#39;a93b64973cfc8897&#39;, &#39;db1b43ae35a1878f&#39;, &#39;1716d2a4012fa4bc&#39;]</span>
+
+<span class="sd">    The first 2 WL subgraph hashes match. From this we can conclude that it&#39;s very</span>
+<span class="sd">    likely the neighborhood of 4 hops around these nodes are isomorphic: each</span>
+<span class="sd">    iteration aggregates 1-hop neighbourhoods meaning hashes at depth $n$ are influenced</span>
+<span class="sd">    by every node within $2n$ hops.</span>
+
+<span class="sd">    However the neighborhood of 6 hops is no longer isomorphic since their 3rd hash does</span>
+<span class="sd">    not match.</span>
+
+<span class="sd">    These nodes may be candidates to be classified together since their local topology</span>
+<span class="sd">    is similar.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    To hash the full graph when subgraph hashes are not needed, use</span>
+<span class="sd">    `weisfeiler_lehman_graph_hash` for efficiency.</span>
+
+<span class="sd">    Similarity between hashes does not imply similarity between graphs.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Shervashidze, Nino, Pascal Schweitzer, Erik Jan Van Leeuwen,</span>
+<span class="sd">       Kurt Mehlhorn, and Karsten M. Borgwardt. Weisfeiler Lehman</span>
+<span class="sd">       Graph Kernels. Journal of Machine Learning Research. 2011.</span>
+<span class="sd">       http://www.jmlr.org/papers/volume12/shervashidze11a/shervashidze11a.pdf</span>
+<span class="sd">    .. [2] Annamalai Narayanan, Mahinthan Chandramohan, Rajasekar Venkatesan,</span>
+<span class="sd">       Lihui Chen, Yang Liu and Shantanu Jaiswa. graph2vec: Learning</span>
+<span class="sd">       Distributed Representations of Graphs. arXiv. 2017</span>
+<span class="sd">       https://arxiv.org/pdf/1707.05005.pdf</span>
+
+<span class="sd">    See also</span>
+<span class="sd">    --------</span>
+<span class="sd">    weisfeiler_lehman_graph_hash</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">weisfeiler_lehman_step</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">node_subgraph_hashes</span><span class="p">,</span> <span class="n">edge_attr</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Apply neighborhood aggregation to each node</span>
+<span class="sd">        in the graph.</span>
+<span class="sd">        Computes a dictionary with labels for each node.</span>
+<span class="sd">        Appends the new hashed label to the dictionary of subgraph hashes</span>
+<span class="sd">        originating from and indexed by each node in G</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_labels</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="n">_neighborhood_aggregate</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">edge_attr</span><span class="o">=</span><span class="n">edge_attr</span><span class="p">)</span>
+            <span class="n">hashed_label</span> <span class="o">=</span> <span class="n">_hash_label</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">digest_size</span><span class="p">)</span>
+            <span class="n">new_labels</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="n">hashed_label</span>
+            <span class="n">node_subgraph_hashes</span><span class="p">[</span><span class="n">node</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hashed_label</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_labels</span>
+
+    <span class="n">node_labels</span> <span class="o">=</span> <span class="n">_init_node_labels</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">edge_attr</span><span class="p">,</span> <span class="n">node_attr</span><span class="p">)</span>
+
+    <span class="n">node_subgraph_hashes</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">iterations</span><span class="p">):</span>
+        <span class="n">node_labels</span> <span class="o">=</span> <span class="n">weisfeiler_lehman_step</span><span class="p">(</span>
+            <span class="n">G</span><span class="p">,</span> <span class="n">node_labels</span><span class="p">,</span> <span class="n">node_subgraph_hashes</span><span class="p">,</span> <span class="n">edge_attr</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">node_subgraph_hashes</span><span class="p">)</span></div>
+</pre></div>
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

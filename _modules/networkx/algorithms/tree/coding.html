@@ -1,0 +1,940 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>networkx.algorithms.tree.coding &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/algorithms/tree/coding';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/algorithms/tree/coding.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../../../../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../../../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../../../../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <h1>Source code for networkx.algorithms.tree.coding</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Functions for encoding and decoding trees.</span>
+
+<span class="sd">Since a tree is a highly restricted form of graph, it can be represented</span>
+<span class="sd">concisely in several ways. This module includes functions for encoding</span>
+<span class="sd">and decoding trees in the form of nested tuples and Prüfer</span>
+<span class="sd">sequences. The former requires a rooted tree, whereas the latter can be</span>
+<span class="sd">applied to unrooted trees. Furthermore, there is a bijection from Prüfer</span>
+<span class="sd">sequences to labeled trees.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span>
+
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">from</span> <span class="nn">networkx.utils</span> <span class="kn">import</span> <span class="n">not_implemented_for</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;from_nested_tuple&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;from_prufer_sequence&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;NotATree&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;to_nested_tuple&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;to_prufer_sequence&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="NotATree"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.tree.coding.NotATree.html#networkx.algorithms.tree.coding.NotATree">[docs]</a><span class="k">class</span> <span class="nc">NotATree</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">NetworkXException</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Raised when a function expects a tree (that is, a connected</span>
+<span class="sd">    undirected graph with no cycles) but gets a non-tree graph as input</span>
+<span class="sd">    instead.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="to_nested_tuple"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.tree.coding.to_nested_tuple.html#networkx.algorithms.tree.coding.to_nested_tuple">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;directed&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">to_nested_tuple</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">canonical_form</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns a nested tuple representation of the given tree.</span>
+
+<span class="sd">    The nested tuple representation of a tree is defined</span>
+<span class="sd">    recursively. The tree with one node and no edges is represented by</span>
+<span class="sd">    the empty tuple, ``()``. A tree with ``k`` subtrees is represented</span>
+<span class="sd">    by a tuple of length ``k`` in which each element is the nested tuple</span>
+<span class="sd">    representation of a subtree.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    T : NetworkX graph</span>
+<span class="sd">        An undirected graph object representing a tree.</span>
+
+<span class="sd">    root : node</span>
+<span class="sd">        The node in ``T`` to interpret as the root of the tree.</span>
+
+<span class="sd">    canonical_form : bool</span>
+<span class="sd">        If ``True``, each tuple is sorted so that the function returns</span>
+<span class="sd">        a canonical form for rooted trees. This means &quot;lighter&quot; subtrees</span>
+<span class="sd">        will appear as nested tuples before &quot;heavier&quot; subtrees. In this</span>
+<span class="sd">        way, each isomorphic rooted tree has the same nested tuple</span>
+<span class="sd">        representation.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tuple</span>
+<span class="sd">        A nested tuple representation of the tree.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function is *not* the inverse of :func:`from_nested_tuple`; the</span>
+<span class="sd">    only guarantee is that the rooted trees are isomorphic.</span>
+
+<span class="sd">    See also</span>
+<span class="sd">    --------</span>
+<span class="sd">    from_nested_tuple</span>
+<span class="sd">    to_prufer_sequence</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    The tree need not be a balanced binary tree::</span>
+
+<span class="sd">        &gt;&gt;&gt; T = nx.Graph()</span>
+<span class="sd">        &gt;&gt;&gt; T.add_edges_from([(0, 1), (0, 2), (0, 3)])</span>
+<span class="sd">        &gt;&gt;&gt; T.add_edges_from([(1, 4), (1, 5)])</span>
+<span class="sd">        &gt;&gt;&gt; T.add_edges_from([(3, 6), (3, 7)])</span>
+<span class="sd">        &gt;&gt;&gt; root = 0</span>
+<span class="sd">        &gt;&gt;&gt; nx.to_nested_tuple(T, root)</span>
+<span class="sd">        (((), ()), (), ((), ()))</span>
+
+<span class="sd">    Continuing the above example, if ``canonical_form`` is ``True``, the</span>
+<span class="sd">    nested tuples will be sorted::</span>
+
+<span class="sd">        &gt;&gt;&gt; nx.to_nested_tuple(T, root, canonical_form=True)</span>
+<span class="sd">        ((), ((), ()), ((), ()))</span>
+
+<span class="sd">    Even the path graph can be interpreted as a tree::</span>
+
+<span class="sd">        &gt;&gt;&gt; T = nx.path_graph(4)</span>
+<span class="sd">        &gt;&gt;&gt; root = 0</span>
+<span class="sd">        &gt;&gt;&gt; nx.to_nested_tuple(T, root)</span>
+<span class="sd">        ((((),),),)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_make_tuple</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">_parent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Recursively compute the nested tuple representation of the</span>
+<span class="sd">        given rooted tree.</span>
+
+<span class="sd">        ``_parent`` is the parent node of ``root`` in the supertree in</span>
+<span class="sd">        which ``T`` is a subtree, or ``None`` if ``root`` is the root of</span>
+<span class="sd">        the supertree. This argument is used to determine which</span>
+<span class="sd">        neighbors of ``root`` are children and which is the parent.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Get the neighbors of `root` that are not the parent node. We</span>
+        <span class="c1"># are guaranteed that `root` is always in `T` by construction.</span>
+        <span class="n">children</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">T</span><span class="p">[</span><span class="n">root</span><span class="p">])</span> <span class="o">-</span> <span class="p">{</span><span class="n">_parent</span><span class="p">}</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">children</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">()</span>
+        <span class="n">nested</span> <span class="o">=</span> <span class="p">(</span><span class="n">_make_tuple</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">root</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">children</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">canonical_form</span><span class="p">:</span>
+            <span class="n">nested</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">nested</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">nested</span><span class="p">)</span>
+
+    <span class="c1"># Do some sanity checks on the input.</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">nx</span><span class="o">.</span><span class="n">is_tree</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NotATree</span><span class="p">(</span><span class="s2">&quot;provided graph is not a tree&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">root</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">T</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NodeNotFound</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Graph </span><span class="si">{</span><span class="n">T</span><span class="si">}</span><span class="s2"> contains no node </span><span class="si">{</span><span class="n">root</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">_make_tuple</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="from_nested_tuple"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.tree.coding.from_nested_tuple.html#networkx.algorithms.tree.coding.from_nested_tuple">[docs]</a><span class="k">def</span> <span class="nf">from_nested_tuple</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="n">sensible_relabeling</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the rooted tree corresponding to the given nested tuple.</span>
+
+<span class="sd">    The nested tuple representation of a tree is defined</span>
+<span class="sd">    recursively. The tree with one node and no edges is represented by</span>
+<span class="sd">    the empty tuple, ``()``. A tree with ``k`` subtrees is represented</span>
+<span class="sd">    by a tuple of length ``k`` in which each element is the nested tuple</span>
+<span class="sd">    representation of a subtree.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    sequence : tuple</span>
+<span class="sd">        A nested tuple representing a rooted tree.</span>
+
+<span class="sd">    sensible_relabeling : bool</span>
+<span class="sd">        Whether to relabel the nodes of the tree so that nodes are</span>
+<span class="sd">        labeled in increasing order according to their breadth-first</span>
+<span class="sd">        search order from the root node.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    NetworkX graph</span>
+<span class="sd">        The tree corresponding to the given nested tuple, whose root</span>
+<span class="sd">        node is node 0. If ``sensible_labeling`` is ``True``, nodes will</span>
+<span class="sd">        be labeled in breadth-first search order starting from the root</span>
+<span class="sd">        node.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function is *not* the inverse of :func:`to_nested_tuple`; the</span>
+<span class="sd">    only guarantee is that the rooted trees are isomorphic.</span>
+
+<span class="sd">    See also</span>
+<span class="sd">    --------</span>
+<span class="sd">    to_nested_tuple</span>
+<span class="sd">    from_prufer_sequence</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Sensible relabeling ensures that the nodes are labeled from the root</span>
+<span class="sd">    starting at 0::</span>
+
+<span class="sd">        &gt;&gt;&gt; balanced = (((), ()), ((), ()))</span>
+<span class="sd">        &gt;&gt;&gt; T = nx.from_nested_tuple(balanced, sensible_relabeling=True)</span>
+<span class="sd">        &gt;&gt;&gt; edges = [(0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6)]</span>
+<span class="sd">        &gt;&gt;&gt; all((u, v) in T.edges() or (v, u) in T.edges() for (u, v) in edges)</span>
+<span class="sd">        True</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_make_tree</span><span class="p">(</span><span class="n">sequence</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Recursively creates a tree from the given sequence of nested</span>
+<span class="sd">        tuples.</span>
+
+<span class="sd">        This function employs the :func:`~networkx.tree.join` function</span>
+<span class="sd">        to recursively join subtrees into a larger tree.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># The empty sequence represents the empty tree, which is the</span>
+        <span class="c1"># (unique) graph with a single node. We mark the single node</span>
+        <span class="c1"># with an attribute that indicates that it is the root of the</span>
+        <span class="c1"># graph.</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sequence</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">nx</span><span class="o">.</span><span class="n">empty_graph</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># For a nonempty sequence, get the subtrees for each child</span>
+        <span class="c1"># sequence and join all the subtrees at their roots. After</span>
+        <span class="c1"># joining the subtrees, the root is node 0.</span>
+        <span class="k">return</span> <span class="n">nx</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">join</span><span class="p">([(</span><span class="n">_make_tree</span><span class="p">(</span><span class="n">child</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">sequence</span><span class="p">])</span>
+
+    <span class="c1"># Make the tree and remove the `is_root` node attribute added by the</span>
+    <span class="c1"># helper function.</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">_make_tree</span><span class="p">(</span><span class="n">sequence</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">sensible_relabeling</span><span class="p">:</span>
+        <span class="c1"># Relabel the nodes according to their breadth-first search</span>
+        <span class="c1"># order, starting from the root node (that is, the node 0).</span>
+        <span class="n">bfs_nodes</span> <span class="o">=</span> <span class="n">chain</span><span class="p">([</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="n">v</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">nx</span><span class="o">.</span><span class="n">bfs_edges</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="mi">0</span><span class="p">)))</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bfs_nodes</span><span class="p">)}</span>
+        <span class="c1"># We would like to use `copy=False`, but `relabel_nodes` doesn&#39;t</span>
+        <span class="c1"># allow a relabel mapping that can&#39;t be topologically sorted.</span>
+        <span class="n">T</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">relabel_nodes</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">T</span></div>
+
+
+<div class="viewcode-block" id="to_prufer_sequence"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.tree.coding.to_prufer_sequence.html#networkx.algorithms.tree.coding.to_prufer_sequence">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;directed&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">to_prufer_sequence</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns the Prüfer sequence of the given tree.</span>
+
+<span class="sd">    A *Prüfer sequence* is a list of *n* - 2 numbers between 0 and</span>
+<span class="sd">    *n* - 1, inclusive. The tree corresponding to a given Prüfer</span>
+<span class="sd">    sequence can be recovered by repeatedly joining a node in the</span>
+<span class="sd">    sequence with a node with the smallest potential degree according to</span>
+<span class="sd">    the sequence.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    T : NetworkX graph</span>
+<span class="sd">        An undirected graph object representing a tree.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    list</span>
+<span class="sd">        The Prüfer sequence of the given tree.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NetworkXPointlessConcept</span>
+<span class="sd">        If the number of nodes in `T` is less than two.</span>
+
+<span class="sd">    NotATree</span>
+<span class="sd">        If `T` is not a tree.</span>
+
+<span class="sd">    KeyError</span>
+<span class="sd">        If the set of nodes in `T` is not {0, …, *n* - 1}.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    There is a bijection from labeled trees to Prüfer sequences. This</span>
+<span class="sd">    function is the inverse of the :func:`from_prufer_sequence`</span>
+<span class="sd">    function.</span>
+
+<span class="sd">    Sometimes Prüfer sequences use nodes labeled from 1 to *n* instead</span>
+<span class="sd">    of from 0 to *n* - 1. This function requires nodes to be labeled in</span>
+<span class="sd">    the latter form. You can use :func:`~networkx.relabel_nodes` to</span>
+<span class="sd">    relabel the nodes of your tree to the appropriate format.</span>
+
+<span class="sd">    This implementation is from [1]_ and has a running time of</span>
+<span class="sd">    $O(n)$.</span>
+
+<span class="sd">    See also</span>
+<span class="sd">    --------</span>
+<span class="sd">    to_nested_tuple</span>
+<span class="sd">    from_prufer_sequence</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Wang, Xiaodong, Lei Wang, and Yingjie Wu.</span>
+<span class="sd">           &quot;An optimal algorithm for Prufer codes.&quot;</span>
+<span class="sd">           *Journal of Software Engineering and Applications* 2.02 (2009): 111.</span>
+<span class="sd">           &lt;https://doi.org/10.4236/jsea.2009.22016&gt;</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    There is a bijection between Prüfer sequences and labeled trees, so</span>
+<span class="sd">    this function is the inverse of the :func:`from_prufer_sequence`</span>
+<span class="sd">    function:</span>
+
+<span class="sd">    &gt;&gt;&gt; edges = [(0, 3), (1, 3), (2, 3), (3, 4), (4, 5)]</span>
+<span class="sd">    &gt;&gt;&gt; tree = nx.Graph(edges)</span>
+<span class="sd">    &gt;&gt;&gt; sequence = nx.to_prufer_sequence(tree)</span>
+<span class="sd">    &gt;&gt;&gt; sequence</span>
+<span class="sd">    [3, 3, 3, 4]</span>
+<span class="sd">    &gt;&gt;&gt; tree2 = nx.from_prufer_sequence(sequence)</span>
+<span class="sd">    &gt;&gt;&gt; list(tree2.edges()) == edges</span>
+<span class="sd">    True</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Perform some sanity checks on the input.</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Prüfer sequence undefined for trees with fewer than two nodes&quot;</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXPointlessConcept</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">nx</span><span class="o">.</span><span class="n">is_tree</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NotATree</span><span class="p">(</span><span class="s2">&quot;provided graph is not a tree&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">T</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;tree must have node labels {0, ..., n - 1}&quot;</span><span class="p">)</span>
+
+    <span class="n">degree</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">T</span><span class="o">.</span><span class="n">degree</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">parents</span><span class="p">(</span><span class="n">u</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">T</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="k">if</span> <span class="n">degree</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">index</span> <span class="o">=</span> <span class="n">u</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">if</span> <span class="n">degree</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">2</span><span class="p">):</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">parents</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="n">degree</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">v</span> <span class="o">&lt;</span> <span class="n">index</span> <span class="ow">and</span> <span class="n">degree</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">u</span> <span class="o">=</span> <span class="n">v</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">u</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span> <span class="k">if</span> <span class="n">degree</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="from_prufer_sequence"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.tree.coding.from_prufer_sequence.html#networkx.algorithms.tree.coding.from_prufer_sequence">[docs]</a><span class="k">def</span> <span class="nf">from_prufer_sequence</span><span class="p">(</span><span class="n">sequence</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns the tree corresponding to the given Prüfer sequence.</span>
+
+<span class="sd">    A *Prüfer sequence* is a list of *n* - 2 numbers between 0 and</span>
+<span class="sd">    *n* - 1, inclusive. The tree corresponding to a given Prüfer</span>
+<span class="sd">    sequence can be recovered by repeatedly joining a node in the</span>
+<span class="sd">    sequence with a node with the smallest potential degree according to</span>
+<span class="sd">    the sequence.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    sequence : list</span>
+<span class="sd">        A Prüfer sequence, which is a list of *n* - 2 integers between</span>
+<span class="sd">        zero and *n* - 1, inclusive.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    NetworkX graph</span>
+<span class="sd">        The tree corresponding to the given Prüfer sequence.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    There is a bijection from labeled trees to Prüfer sequences. This</span>
+<span class="sd">    function is the inverse of the :func:`from_prufer_sequence` function.</span>
+
+<span class="sd">    Sometimes Prüfer sequences use nodes labeled from 1 to *n* instead</span>
+<span class="sd">    of from 0 to *n* - 1. This function requires nodes to be labeled in</span>
+<span class="sd">    the latter form. You can use :func:`networkx.relabel_nodes` to</span>
+<span class="sd">    relabel the nodes of your tree to the appropriate format.</span>
+
+<span class="sd">    This implementation is from [1]_ and has a running time of</span>
+<span class="sd">    $O(n)$.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Wang, Xiaodong, Lei Wang, and Yingjie Wu.</span>
+<span class="sd">           &quot;An optimal algorithm for Prufer codes.&quot;</span>
+<span class="sd">           *Journal of Software Engineering and Applications* 2.02 (2009): 111.</span>
+<span class="sd">           &lt;https://doi.org/10.4236/jsea.2009.22016&gt;</span>
+
+<span class="sd">    See also</span>
+<span class="sd">    --------</span>
+<span class="sd">    from_nested_tuple</span>
+<span class="sd">    to_prufer_sequence</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    There is a bijection between Prüfer sequences and labeled trees, so</span>
+<span class="sd">    this function is the inverse of the :func:`to_prufer_sequence`</span>
+<span class="sd">    function:</span>
+
+<span class="sd">    &gt;&gt;&gt; edges = [(0, 3), (1, 3), (2, 3), (3, 4), (4, 5)]</span>
+<span class="sd">    &gt;&gt;&gt; tree = nx.Graph(edges)</span>
+<span class="sd">    &gt;&gt;&gt; sequence = nx.to_prufer_sequence(tree)</span>
+<span class="sd">    &gt;&gt;&gt; sequence</span>
+<span class="sd">    [3, 3, 3, 4]</span>
+<span class="sd">    &gt;&gt;&gt; tree2 = nx.from_prufer_sequence(sequence)</span>
+<span class="sd">    &gt;&gt;&gt; list(tree2.edges()) == edges</span>
+<span class="sd">    True</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sequence</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span>
+    <span class="c1"># `degree` stores the remaining degree (plus one) for each node. The</span>
+    <span class="c1"># degree of a node in the decoded tree is one more than the number</span>
+    <span class="c1"># of times it appears in the code.</span>
+    <span class="n">degree</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span><span class="n">chain</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)))</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">empty_graph</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="c1"># `not_orphaned` is the set of nodes that have a parent in the</span>
+    <span class="c1"># tree. After the loop, there should be exactly two nodes that are</span>
+    <span class="c1"># not in this set.</span>
+    <span class="n">not_orphaned</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="n">u</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">if</span> <span class="n">degree</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">sequence</span><span class="p">:</span>
+        <span class="n">T</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+        <span class="n">not_orphaned</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>
+        <span class="n">degree</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">v</span> <span class="o">&lt;</span> <span class="n">index</span> <span class="ow">and</span> <span class="n">degree</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">u</span> <span class="o">=</span> <span class="n">v</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">u</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span> <span class="k">if</span> <span class="n">degree</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># At this point, there must be exactly two orphaned nodes; join them.</span>
+    <span class="n">orphans</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">T</span><span class="p">)</span> <span class="o">-</span> <span class="n">not_orphaned</span>
+    <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">orphans</span>
+    <span class="n">T</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">T</span></div>
+</pre></div>
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,1004 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>networkx.algorithms.traversal.breadth_first_search &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/algorithms/traversal/breadth_first_search';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/algorithms/traversal/breadth_first_search.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../../../../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../../../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../../../../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <h1>Source code for networkx.algorithms.traversal.breadth_first_search</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Basic algorithms for breadth-first searching the nodes of a graph.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">deque</span>
+
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;bfs_edges&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bfs_tree&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bfs_predecessors&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bfs_successors&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;descendants_at_distance&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bfs_layers&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">generic_bfs_edges</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">neighbors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">depth_limit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sort_neighbors</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Iterate over edges in a breadth-first search.</span>
+
+<span class="sd">    The breadth-first search begins at `source` and enqueues the</span>
+<span class="sd">    neighbors of newly visited nodes specified by the `neighbors`</span>
+<span class="sd">    function.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+
+<span class="sd">    source : node</span>
+<span class="sd">        Starting node for the breadth-first search; this function</span>
+<span class="sd">        iterates over only those edges in the component reachable from</span>
+<span class="sd">        this node.</span>
+
+<span class="sd">    neighbors : function</span>
+<span class="sd">        A function that takes a newly visited node of the graph as input</span>
+<span class="sd">        and returns an *iterator* (not just a list) of nodes that are</span>
+<span class="sd">        neighbors of that node. If not specified, this is just the</span>
+<span class="sd">        ``G.neighbors`` method, but in general it can be any function</span>
+<span class="sd">        that returns an iterator over some or all of the neighbors of a</span>
+<span class="sd">        given node, in any order.</span>
+
+<span class="sd">    depth_limit : int, optional(default=len(G))</span>
+<span class="sd">        Specify the maximum search depth</span>
+
+<span class="sd">    sort_neighbors : function</span>
+<span class="sd">        A function that takes the list of neighbors of given node as input, and</span>
+<span class="sd">        returns an *iterator* over these neighbors but with custom ordering.</span>
+
+<span class="sd">    Yields</span>
+<span class="sd">    ------</span>
+<span class="sd">    edge</span>
+<span class="sd">        Edges in the breadth-first search starting from `source`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.path_graph(3)</span>
+<span class="sd">    &gt;&gt;&gt; print(list(nx.bfs_edges(G, 0)))</span>
+<span class="sd">    [(0, 1), (1, 2)]</span>
+<span class="sd">    &gt;&gt;&gt; print(list(nx.bfs_edges(G, source=0, depth_limit=1)))</span>
+<span class="sd">    [(0, 1)]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This implementation is from `PADS`_, which was in the public domain</span>
+<span class="sd">    when it was first accessed in July, 2004.  The modifications</span>
+<span class="sd">    to allow depth limits are based on the Wikipedia article</span>
+<span class="sd">    &quot;`Depth-limited-search`_&quot;.</span>
+
+<span class="sd">    .. _PADS: http://www.ics.uci.edu/~eppstein/PADS/BFS.py</span>
+<span class="sd">    .. _Depth-limited-search: https://en.wikipedia.org/wiki/Depth-limited_search</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">sort_neighbors</span><span class="p">):</span>
+        <span class="n">_neighbors</span> <span class="o">=</span> <span class="n">neighbors</span>
+        <span class="n">neighbors</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">node</span><span class="p">:</span> <span class="nb">iter</span><span class="p">(</span><span class="n">sort_neighbors</span><span class="p">(</span><span class="n">_neighbors</span><span class="p">(</span><span class="n">node</span><span class="p">)))</span>
+
+    <span class="n">visited</span> <span class="o">=</span> <span class="p">{</span><span class="n">source</span><span class="p">}</span>
+    <span class="k">if</span> <span class="n">depth_limit</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">depth_limit</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+    <span class="n">queue</span> <span class="o">=</span> <span class="n">deque</span><span class="p">([(</span><span class="n">source</span><span class="p">,</span> <span class="n">depth_limit</span><span class="p">,</span> <span class="n">neighbors</span><span class="p">(</span><span class="n">source</span><span class="p">))])</span>
+    <span class="k">while</span> <span class="n">queue</span><span class="p">:</span>
+        <span class="n">parent</span><span class="p">,</span> <span class="n">depth_now</span><span class="p">,</span> <span class="n">children</span> <span class="o">=</span> <span class="n">queue</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">child</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">children</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">child</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="n">parent</span><span class="p">,</span> <span class="n">child</span>
+                <span class="n">visited</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">depth_now</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">queue</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">child</span><span class="p">,</span> <span class="n">depth_now</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">neighbors</span><span class="p">(</span><span class="n">child</span><span class="p">)))</span>
+        <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+            <span class="n">queue</span><span class="o">.</span><span class="n">popleft</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="bfs_edges"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.traversal.breadth_first_search.bfs_edges.html#networkx.algorithms.traversal.breadth_first_search.bfs_edges">[docs]</a><span class="nd">@nx</span><span class="o">.</span><span class="n">_dispatch</span>
+<span class="k">def</span> <span class="nf">bfs_edges</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">depth_limit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sort_neighbors</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Iterate over edges in a breadth-first-search starting at source.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+
+<span class="sd">    source : node</span>
+<span class="sd">       Specify starting node for breadth-first search; this function</span>
+<span class="sd">       iterates over only those edges in the component reachable from</span>
+<span class="sd">       this node.</span>
+
+<span class="sd">    reverse : bool, optional</span>
+<span class="sd">       If True traverse a directed graph in the reverse direction</span>
+
+<span class="sd">    depth_limit : int, optional(default=len(G))</span>
+<span class="sd">        Specify the maximum search depth</span>
+
+<span class="sd">    sort_neighbors : function</span>
+<span class="sd">        A function that takes the list of neighbors of given node as input, and</span>
+<span class="sd">        returns an *iterator* over these neighbors but with custom ordering.</span>
+
+<span class="sd">    Yields</span>
+<span class="sd">    ------</span>
+<span class="sd">    edge: 2-tuple of nodes</span>
+<span class="sd">       Yields edges resulting from the breadth-first search.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    To get the edges in a breadth-first search::</span>
+
+<span class="sd">        &gt;&gt;&gt; G = nx.path_graph(3)</span>
+<span class="sd">        &gt;&gt;&gt; list(nx.bfs_edges(G, 0))</span>
+<span class="sd">        [(0, 1), (1, 2)]</span>
+<span class="sd">        &gt;&gt;&gt; list(nx.bfs_edges(G, source=0, depth_limit=1))</span>
+<span class="sd">        [(0, 1)]</span>
+
+<span class="sd">    To get the nodes in a breadth-first search order::</span>
+
+<span class="sd">        &gt;&gt;&gt; G = nx.path_graph(3)</span>
+<span class="sd">        &gt;&gt;&gt; root = 2</span>
+<span class="sd">        &gt;&gt;&gt; edges = nx.bfs_edges(G, root)</span>
+<span class="sd">        &gt;&gt;&gt; nodes = [root] + [v for u, v in edges]</span>
+<span class="sd">        &gt;&gt;&gt; nodes</span>
+<span class="sd">        [2, 1, 0]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The naming of this function is very similar to</span>
+<span class="sd">    :func:`~networkx.algorithms.traversal.edgebfs.edge_bfs`. The difference</span>
+<span class="sd">    is that ``edge_bfs`` yields edges even if they extend back to an already</span>
+<span class="sd">    explored node while this generator yields the edges of the tree that results</span>
+<span class="sd">    from a breadth-first-search (BFS) so no edges are reported if they extend</span>
+<span class="sd">    to already explored nodes. That means ``edge_bfs`` reports all edges while</span>
+<span class="sd">    ``bfs_edges`` only reports those traversed by a node-based BFS. Yet another</span>
+<span class="sd">    description is that ``bfs_edges`` reports the edges traversed during BFS</span>
+<span class="sd">    while ``edge_bfs`` reports all edges in the order they are explored.</span>
+
+<span class="sd">    Based on the breadth-first search implementation in PADS [1]_</span>
+<span class="sd">    by D. Eppstein, July 2004; with modifications to allow depth limits</span>
+<span class="sd">    as described in [2]_.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] http://www.ics.uci.edu/~eppstein/PADS/BFS.py.</span>
+<span class="sd">    .. [2] https://en.wikipedia.org/wiki/Depth-limited_search</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    bfs_tree</span>
+<span class="sd">    :func:`~networkx.algorithms.traversal.depth_first_search.dfs_edges`</span>
+<span class="sd">    :func:`~networkx.algorithms.traversal.edgebfs.edge_bfs`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">reverse</span> <span class="ow">and</span> <span class="n">G</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+        <span class="n">successors</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">predecessors</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">successors</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">neighbors</span>
+    <span class="k">yield from</span> <span class="n">generic_bfs_edges</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">successors</span><span class="p">,</span> <span class="n">depth_limit</span><span class="p">,</span> <span class="n">sort_neighbors</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="bfs_tree"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.traversal.breadth_first_search.bfs_tree.html#networkx.algorithms.traversal.breadth_first_search.bfs_tree">[docs]</a><span class="k">def</span> <span class="nf">bfs_tree</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">depth_limit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sort_neighbors</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns an oriented tree constructed from of a breadth-first-search</span>
+<span class="sd">    starting at source.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+
+<span class="sd">    source : node</span>
+<span class="sd">       Specify starting node for breadth-first search</span>
+
+<span class="sd">    reverse : bool, optional</span>
+<span class="sd">       If True traverse a directed graph in the reverse direction</span>
+
+<span class="sd">    depth_limit : int, optional(default=len(G))</span>
+<span class="sd">        Specify the maximum search depth</span>
+
+<span class="sd">    sort_neighbors : function</span>
+<span class="sd">        A function that takes the list of neighbors of given node as input, and</span>
+<span class="sd">        returns an *iterator* over these neighbors but with custom ordering.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    T: NetworkX DiGraph</span>
+<span class="sd">       An oriented tree</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.path_graph(3)</span>
+<span class="sd">    &gt;&gt;&gt; print(list(nx.bfs_tree(G, 1).edges()))</span>
+<span class="sd">    [(1, 0), (1, 2)]</span>
+<span class="sd">    &gt;&gt;&gt; H = nx.Graph()</span>
+<span class="sd">    &gt;&gt;&gt; nx.add_path(H, [0, 1, 2, 3, 4, 5, 6])</span>
+<span class="sd">    &gt;&gt;&gt; nx.add_path(H, [2, 7, 8, 9, 10])</span>
+<span class="sd">    &gt;&gt;&gt; print(sorted(list(nx.bfs_tree(H, source=3, depth_limit=3).edges())))</span>
+<span class="sd">    [(1, 0), (2, 1), (2, 7), (3, 2), (3, 4), (4, 5), (5, 6), (7, 8)]</span>
+
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Based on http://www.ics.uci.edu/~eppstein/PADS/BFS.py</span>
+<span class="sd">    by D. Eppstein, July 2004. The modifications</span>
+<span class="sd">    to allow depth limits based on the Wikipedia article</span>
+<span class="sd">    &quot;`Depth-limited-search`_&quot;.</span>
+
+<span class="sd">    .. _Depth-limited-search: https://en.wikipedia.org/wiki/Depth-limited_search</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    dfs_tree</span>
+<span class="sd">    bfs_edges</span>
+<span class="sd">    edge_bfs</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
+    <span class="n">T</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+    <span class="n">edges_gen</span> <span class="o">=</span> <span class="n">bfs_edges</span><span class="p">(</span>
+        <span class="n">G</span><span class="p">,</span>
+        <span class="n">source</span><span class="p">,</span>
+        <span class="n">reverse</span><span class="o">=</span><span class="n">reverse</span><span class="p">,</span>
+        <span class="n">depth_limit</span><span class="o">=</span><span class="n">depth_limit</span><span class="p">,</span>
+        <span class="n">sort_neighbors</span><span class="o">=</span><span class="n">sort_neighbors</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">T</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span><span class="n">edges_gen</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">T</span></div>
+
+
+<div class="viewcode-block" id="bfs_predecessors"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.traversal.breadth_first_search.bfs_predecessors.html#networkx.algorithms.traversal.breadth_first_search.bfs_predecessors">[docs]</a><span class="k">def</span> <span class="nf">bfs_predecessors</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">depth_limit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sort_neighbors</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns an iterator of predecessors in breadth-first-search from source.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+
+<span class="sd">    source : node</span>
+<span class="sd">       Specify starting node for breadth-first search</span>
+
+<span class="sd">    depth_limit : int, optional(default=len(G))</span>
+<span class="sd">        Specify the maximum search depth</span>
+
+<span class="sd">    sort_neighbors : function</span>
+<span class="sd">        A function that takes the list of neighbors of given node as input, and</span>
+<span class="sd">        returns an *iterator* over these neighbors but with custom ordering.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pred: iterator</span>
+<span class="sd">        (node, predecessor) iterator where `predecessor` is the predecessor of</span>
+<span class="sd">        `node` in a breadth first search starting from `source`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.path_graph(3)</span>
+<span class="sd">    &gt;&gt;&gt; print(dict(nx.bfs_predecessors(G, 0)))</span>
+<span class="sd">    {1: 0, 2: 1}</span>
+<span class="sd">    &gt;&gt;&gt; H = nx.Graph()</span>
+<span class="sd">    &gt;&gt;&gt; H.add_edges_from([(0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6)])</span>
+<span class="sd">    &gt;&gt;&gt; print(dict(nx.bfs_predecessors(H, 0)))</span>
+<span class="sd">    {1: 0, 2: 0, 3: 1, 4: 1, 5: 2, 6: 2}</span>
+<span class="sd">    &gt;&gt;&gt; M = nx.Graph()</span>
+<span class="sd">    &gt;&gt;&gt; nx.add_path(M, [0, 1, 2, 3, 4, 5, 6])</span>
+<span class="sd">    &gt;&gt;&gt; nx.add_path(M, [2, 7, 8, 9, 10])</span>
+<span class="sd">    &gt;&gt;&gt; print(sorted(nx.bfs_predecessors(M, source=1, depth_limit=3)))</span>
+<span class="sd">    [(0, 1), (2, 1), (3, 2), (4, 3), (7, 2), (8, 7)]</span>
+<span class="sd">    &gt;&gt;&gt; N = nx.DiGraph()</span>
+<span class="sd">    &gt;&gt;&gt; nx.add_path(N, [0, 1, 2, 3, 4, 7])</span>
+<span class="sd">    &gt;&gt;&gt; nx.add_path(N, [3, 5, 6, 7])</span>
+<span class="sd">    &gt;&gt;&gt; print(sorted(nx.bfs_predecessors(N, source=2)))</span>
+<span class="sd">    [(3, 2), (4, 3), (5, 3), (6, 5), (7, 4)]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Based on http://www.ics.uci.edu/~eppstein/PADS/BFS.py</span>
+<span class="sd">    by D. Eppstein, July 2004. The modifications</span>
+<span class="sd">    to allow depth limits based on the Wikipedia article</span>
+<span class="sd">    &quot;`Depth-limited-search`_&quot;.</span>
+
+<span class="sd">    .. _Depth-limited-search: https://en.wikipedia.org/wiki/Depth-limited_search</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    bfs_tree</span>
+<span class="sd">    bfs_edges</span>
+<span class="sd">    edge_bfs</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">bfs_edges</span><span class="p">(</span>
+        <span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">depth_limit</span><span class="o">=</span><span class="n">depth_limit</span><span class="p">,</span> <span class="n">sort_neighbors</span><span class="o">=</span><span class="n">sort_neighbors</span>
+    <span class="p">):</span>
+        <span class="k">yield</span> <span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="bfs_successors"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.traversal.breadth_first_search.bfs_successors.html#networkx.algorithms.traversal.breadth_first_search.bfs_successors">[docs]</a><span class="k">def</span> <span class="nf">bfs_successors</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">depth_limit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sort_neighbors</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns an iterator of successors in breadth-first-search from source.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+
+<span class="sd">    source : node</span>
+<span class="sd">       Specify starting node for breadth-first search</span>
+
+<span class="sd">    depth_limit : int, optional(default=len(G))</span>
+<span class="sd">        Specify the maximum search depth</span>
+
+<span class="sd">    sort_neighbors : function</span>
+<span class="sd">        A function that takes the list of neighbors of given node as input, and</span>
+<span class="sd">        returns an *iterator* over these neighbors but with custom ordering.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    succ: iterator</span>
+<span class="sd">       (node, successors) iterator where `successors` is the non-empty list of</span>
+<span class="sd">       successors of `node` in a breadth first search from `source`.</span>
+<span class="sd">       To appear in the iterator, `node` must have successors.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.path_graph(3)</span>
+<span class="sd">    &gt;&gt;&gt; print(dict(nx.bfs_successors(G, 0)))</span>
+<span class="sd">    {0: [1], 1: [2]}</span>
+<span class="sd">    &gt;&gt;&gt; H = nx.Graph()</span>
+<span class="sd">    &gt;&gt;&gt; H.add_edges_from([(0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6)])</span>
+<span class="sd">    &gt;&gt;&gt; print(dict(nx.bfs_successors(H, 0)))</span>
+<span class="sd">    {0: [1, 2], 1: [3, 4], 2: [5, 6]}</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.Graph()</span>
+<span class="sd">    &gt;&gt;&gt; nx.add_path(G, [0, 1, 2, 3, 4, 5, 6])</span>
+<span class="sd">    &gt;&gt;&gt; nx.add_path(G, [2, 7, 8, 9, 10])</span>
+<span class="sd">    &gt;&gt;&gt; print(dict(nx.bfs_successors(G, source=1, depth_limit=3)))</span>
+<span class="sd">    {1: [0, 2], 2: [3, 7], 3: [4], 7: [8]}</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.DiGraph()</span>
+<span class="sd">    &gt;&gt;&gt; nx.add_path(G, [0, 1, 2, 3, 4, 5])</span>
+<span class="sd">    &gt;&gt;&gt; print(dict(nx.bfs_successors(G, source=3)))</span>
+<span class="sd">    {3: [4], 4: [5]}</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Based on http://www.ics.uci.edu/~eppstein/PADS/BFS.py</span>
+<span class="sd">    by D. Eppstein, July 2004.The modifications</span>
+<span class="sd">    to allow depth limits based on the Wikipedia article</span>
+<span class="sd">    &quot;`Depth-limited-search`_&quot;.</span>
+
+<span class="sd">    .. _Depth-limited-search: https://en.wikipedia.org/wiki/Depth-limited_search</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    bfs_tree</span>
+<span class="sd">    bfs_edges</span>
+<span class="sd">    edge_bfs</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">source</span>
+    <span class="n">children</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">bfs_edges</span><span class="p">(</span>
+        <span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">depth_limit</span><span class="o">=</span><span class="n">depth_limit</span><span class="p">,</span> <span class="n">sort_neighbors</span><span class="o">=</span><span class="n">sort_neighbors</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="n">p</span> <span class="o">==</span> <span class="n">parent</span><span class="p">:</span>
+            <span class="n">children</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+            <span class="k">continue</span>
+        <span class="k">yield</span> <span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">children</span><span class="p">)</span>
+        <span class="n">children</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="p">]</span>
+        <span class="n">parent</span> <span class="o">=</span> <span class="n">p</span>
+    <span class="k">yield</span> <span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">children</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="bfs_layers"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.traversal.breadth_first_search.bfs_layers.html#networkx.algorithms.traversal.breadth_first_search.bfs_layers">[docs]</a><span class="k">def</span> <span class="nf">bfs_layers</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">sources</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns an iterator of all the layers in breadth-first search traversal.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+<span class="sd">        A graph over which to find the layers using breadth-first search.</span>
+
+<span class="sd">    sources : node in `G` or list of nodes in `G`</span>
+<span class="sd">        Specify starting nodes for single source or multiple sources breadth-first search</span>
+
+<span class="sd">    Yields</span>
+<span class="sd">    ------</span>
+<span class="sd">    layer: list of nodes</span>
+<span class="sd">        Yields list of nodes at the same distance from sources</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.path_graph(5)</span>
+<span class="sd">    &gt;&gt;&gt; dict(enumerate(nx.bfs_layers(G, [0, 4])))</span>
+<span class="sd">    {0: [0, 4], 1: [1, 3], 2: [2]}</span>
+<span class="sd">    &gt;&gt;&gt; H = nx.Graph()</span>
+<span class="sd">    &gt;&gt;&gt; H.add_edges_from([(0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6)])</span>
+<span class="sd">    &gt;&gt;&gt; dict(enumerate(nx.bfs_layers(H, [1])))</span>
+<span class="sd">    {0: [1], 1: [0, 3, 4], 2: [2], 3: [5, 6]}</span>
+<span class="sd">    &gt;&gt;&gt; dict(enumerate(nx.bfs_layers(H, [1, 6])))</span>
+<span class="sd">    {0: [1, 6], 1: [0, 3, 4, 2], 2: [5]}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">sources</span> <span class="ow">in</span> <span class="n">G</span><span class="p">:</span>
+        <span class="n">sources</span> <span class="o">=</span> <span class="p">[</span><span class="n">sources</span><span class="p">]</span>
+
+    <span class="n">current_layer</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sources</span><span class="p">)</span>
+    <span class="n">visited</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">sources</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="n">current_layer</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">source</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">G</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The node </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2"> is not in the graph.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># this is basically BFS, except that the current layer only stores the nodes at</span>
+    <span class="c1"># same distance from sources at each iteration</span>
+    <span class="k">while</span> <span class="n">current_layer</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="n">current_layer</span>
+        <span class="n">next_layer</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">current_layer</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">G</span><span class="p">[</span><span class="n">node</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">child</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span>
+                    <span class="n">visited</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+                    <span class="n">next_layer</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+        <span class="n">current_layer</span> <span class="o">=</span> <span class="n">next_layer</span></div>
+
+
+<div class="viewcode-block" id="descendants_at_distance"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.traversal.breadth_first_search.descendants_at_distance.html#networkx.algorithms.traversal.breadth_first_search.descendants_at_distance">[docs]</a><span class="k">def</span> <span class="nf">descendants_at_distance</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">distance</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns all nodes at a fixed `distance` from `source` in `G`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+<span class="sd">        A graph</span>
+<span class="sd">    source : node in `G`</span>
+<span class="sd">    distance : the distance of the wanted nodes from `source`</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    set()</span>
+<span class="sd">        The descendants of `source` in `G` at the given `distance` from `source`</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.path_graph(5)</span>
+<span class="sd">    &gt;&gt;&gt; nx.descendants_at_distance(G, 2, 2)</span>
+<span class="sd">    {0, 4}</span>
+<span class="sd">    &gt;&gt;&gt; H = nx.DiGraph()</span>
+<span class="sd">    &gt;&gt;&gt; H.add_edges_from([(0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6)])</span>
+<span class="sd">    &gt;&gt;&gt; nx.descendants_at_distance(H, 0, 2)</span>
+<span class="sd">    {3, 4, 5, 6}</span>
+<span class="sd">    &gt;&gt;&gt; nx.descendants_at_distance(H, 5, 0)</span>
+<span class="sd">    {5}</span>
+<span class="sd">    &gt;&gt;&gt; nx.descendants_at_distance(H, 5, 1)</span>
+<span class="sd">    set()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">source</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">G</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The node </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2"> is not in the graph.&quot;</span><span class="p">)</span>
+
+    <span class="n">bfs_generator</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">bfs_layers</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">layer</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bfs_generator</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">distance</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">set</span><span class="p">()</span></div>
+</pre></div>
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

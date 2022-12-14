@@ -1,0 +1,1712 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>networkx.algorithms.isomorphism.ismags &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/algorithms/isomorphism/ismags';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/algorithms/isomorphism/ismags.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../../../../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../../../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../../../../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <h1>Source code for networkx.algorithms.isomorphism.ismags</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">****************</span>
+<span class="sd">ISMAGS Algorithm</span>
+<span class="sd">****************</span>
+
+<span class="sd">Provides a Python implementation of the ISMAGS algorithm. [1]_</span>
+
+<span class="sd">It is capable of finding (subgraph) isomorphisms between two graphs, taking the</span>
+<span class="sd">symmetry of the subgraph into account. In most cases the VF2 algorithm is</span>
+<span class="sd">faster (at least on small graphs) than this implementation, but in some cases</span>
+<span class="sd">there is an exponential number of isomorphisms that are symmetrically</span>
+<span class="sd">equivalent. In that case, the ISMAGS algorithm will provide only one solution</span>
+<span class="sd">per symmetry group.</span>
+
+<span class="sd">&gt;&gt;&gt; petersen = nx.petersen_graph()</span>
+<span class="sd">&gt;&gt;&gt; ismags = nx.isomorphism.ISMAGS(petersen, petersen)</span>
+<span class="sd">&gt;&gt;&gt; isomorphisms = list(ismags.isomorphisms_iter(symmetry=False))</span>
+<span class="sd">&gt;&gt;&gt; len(isomorphisms)</span>
+<span class="sd">120</span>
+<span class="sd">&gt;&gt;&gt; isomorphisms = list(ismags.isomorphisms_iter(symmetry=True))</span>
+<span class="sd">&gt;&gt;&gt; answer = [{0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9}]</span>
+<span class="sd">&gt;&gt;&gt; answer == isomorphisms</span>
+<span class="sd">True</span>
+
+<span class="sd">In addition, this implementation also provides an interface to find the</span>
+<span class="sd">largest common induced subgraph [2]_ between any two graphs, again taking</span>
+<span class="sd">symmetry into account. Given `graph` and `subgraph` the algorithm will remove</span>
+<span class="sd">nodes from the `subgraph` until `subgraph` is isomorphic to a subgraph of</span>
+<span class="sd">`graph`. Since only the symmetry of `subgraph` is taken into account it is</span>
+<span class="sd">worth thinking about how you provide your graphs:</span>
+
+<span class="sd">&gt;&gt;&gt; graph1 = nx.path_graph(4)</span>
+<span class="sd">&gt;&gt;&gt; graph2 = nx.star_graph(3)</span>
+<span class="sd">&gt;&gt;&gt; ismags = nx.isomorphism.ISMAGS(graph1, graph2)</span>
+<span class="sd">&gt;&gt;&gt; ismags.is_isomorphic()</span>
+<span class="sd">False</span>
+<span class="sd">&gt;&gt;&gt; largest_common_subgraph = list(ismags.largest_common_subgraph())</span>
+<span class="sd">&gt;&gt;&gt; answer = [{1: 0, 0: 1, 2: 2}, {2: 0, 1: 1, 3: 2}]</span>
+<span class="sd">&gt;&gt;&gt; answer == largest_common_subgraph</span>
+<span class="sd">True</span>
+<span class="sd">&gt;&gt;&gt; ismags2 = nx.isomorphism.ISMAGS(graph2, graph1)</span>
+<span class="sd">&gt;&gt;&gt; largest_common_subgraph = list(ismags2.largest_common_subgraph())</span>
+<span class="sd">&gt;&gt;&gt; answer = [</span>
+<span class="sd">...     {1: 0, 0: 1, 2: 2},</span>
+<span class="sd">...     {1: 0, 0: 1, 3: 2},</span>
+<span class="sd">...     {2: 0, 0: 1, 1: 2},</span>
+<span class="sd">...     {2: 0, 0: 1, 3: 2},</span>
+<span class="sd">...     {3: 0, 0: 1, 1: 2},</span>
+<span class="sd">...     {3: 0, 0: 1, 2: 2},</span>
+<span class="sd">... ]</span>
+<span class="sd">&gt;&gt;&gt; answer == largest_common_subgraph</span>
+<span class="sd">True</span>
+
+<span class="sd">However, when not taking symmetry into account, it doesn&#39;t matter:</span>
+
+<span class="sd">&gt;&gt;&gt; largest_common_subgraph = list(ismags.largest_common_subgraph(symmetry=False))</span>
+<span class="sd">&gt;&gt;&gt; answer = [</span>
+<span class="sd">...     {1: 0, 0: 1, 2: 2},</span>
+<span class="sd">...     {1: 0, 2: 1, 0: 2},</span>
+<span class="sd">...     {2: 0, 1: 1, 3: 2},</span>
+<span class="sd">...     {2: 0, 3: 1, 1: 2},</span>
+<span class="sd">...     {1: 0, 0: 1, 2: 3},</span>
+<span class="sd">...     {1: 0, 2: 1, 0: 3},</span>
+<span class="sd">...     {2: 0, 1: 1, 3: 3},</span>
+<span class="sd">...     {2: 0, 3: 1, 1: 3},</span>
+<span class="sd">...     {1: 0, 0: 2, 2: 3},</span>
+<span class="sd">...     {1: 0, 2: 2, 0: 3},</span>
+<span class="sd">...     {2: 0, 1: 2, 3: 3},</span>
+<span class="sd">...     {2: 0, 3: 2, 1: 3},</span>
+<span class="sd">... ]</span>
+<span class="sd">&gt;&gt;&gt; answer == largest_common_subgraph</span>
+<span class="sd">True</span>
+<span class="sd">&gt;&gt;&gt; largest_common_subgraph = list(ismags2.largest_common_subgraph(symmetry=False))</span>
+<span class="sd">&gt;&gt;&gt; answer = [</span>
+<span class="sd">...     {1: 0, 0: 1, 2: 2},</span>
+<span class="sd">...     {1: 0, 0: 1, 3: 2},</span>
+<span class="sd">...     {2: 0, 0: 1, 1: 2},</span>
+<span class="sd">...     {2: 0, 0: 1, 3: 2},</span>
+<span class="sd">...     {3: 0, 0: 1, 1: 2},</span>
+<span class="sd">...     {3: 0, 0: 1, 2: 2},</span>
+<span class="sd">...     {1: 1, 0: 2, 2: 3},</span>
+<span class="sd">...     {1: 1, 0: 2, 3: 3},</span>
+<span class="sd">...     {2: 1, 0: 2, 1: 3},</span>
+<span class="sd">...     {2: 1, 0: 2, 3: 3},</span>
+<span class="sd">...     {3: 1, 0: 2, 1: 3},</span>
+<span class="sd">...     {3: 1, 0: 2, 2: 3},</span>
+<span class="sd">... ]</span>
+<span class="sd">&gt;&gt;&gt; answer == largest_common_subgraph</span>
+<span class="sd">True</span>
+
+<span class="sd">Notes</span>
+<span class="sd">-----</span>
+<span class="sd"> - The current implementation works for undirected graphs only. The algorithm</span>
+<span class="sd">   in general should work for directed graphs as well though.</span>
+<span class="sd"> - Node keys for both provided graphs need to be fully orderable as well as</span>
+<span class="sd">   hashable.</span>
+<span class="sd"> - Node and edge equality is assumed to be transitive: if A is equal to B, and</span>
+<span class="sd">   B is equal to C, then A is equal to C.</span>
+
+<span class="sd">References</span>
+<span class="sd">----------</span>
+<span class="sd">    .. [1] M. Houbraken, S. Demeyer, T. Michoel, P. Audenaert, D. Colle,</span>
+<span class="sd">       M. Pickavet, &quot;The Index-Based Subgraph Matching Algorithm with General</span>
+<span class="sd">       Symmetries (ISMAGS): Exploiting Symmetry for Faster Subgraph</span>
+<span class="sd">       Enumeration&quot;, PLoS One 9(5): e97896, 2014.</span>
+<span class="sd">       https://doi.org/10.1371/journal.pone.0097896</span>
+<span class="sd">    .. [2] https://en.wikipedia.org/wiki/Maximum_common_induced_subgraph</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ISMAGS&quot;</span><span class="p">]</span>
+
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span><span class="p">,</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">reduce</span><span class="p">,</span> <span class="n">wraps</span>
+
+
+<span class="k">def</span> <span class="nf">are_all_equal</span><span class="p">(</span><span class="n">iterable</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns ``True`` if and only if all elements in `iterable` are equal; and</span>
+<span class="sd">    ``False`` otherwise.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    iterable: collections.abc.Iterable</span>
+<span class="sd">        The container whose elements will be checked.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bool</span>
+<span class="sd">        ``True`` iff all elements in `iterable` compare equal, ``False``</span>
+<span class="sd">        otherwise.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="n">iterable</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;The function does not works on multidimension arrays.&quot;</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span> <span class="kn">from</span> <span class="bp">None</span>
+
+    <span class="n">iterator</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span>
+    <span class="n">first</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">iterator</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">item</span> <span class="o">==</span> <span class="n">first</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">iterator</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">make_partitions</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="n">test</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Partitions items into sets based on the outcome of ``test(item1, item2)``.</span>
+<span class="sd">    Pairs of items for which `test` returns `True` end up in the same set.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    items : collections.abc.Iterable[collections.abc.Hashable]</span>
+<span class="sd">        Items to partition</span>
+<span class="sd">    test : collections.abc.Callable[collections.abc.Hashable, collections.abc.Hashable]</span>
+<span class="sd">        A function that will be called with 2 arguments, taken from items.</span>
+<span class="sd">        Should return `True` if those 2 items need to end up in the same</span>
+<span class="sd">        partition, and `False` otherwise.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    list[set]</span>
+<span class="sd">        A list of sets, with each set containing part of the items in `items`,</span>
+<span class="sd">        such that ``all(test(*pair) for pair in  itertools.combinations(set, 2))</span>
+<span class="sd">        == True``</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The function `test` is assumed to be transitive: if ``test(a, b)`` and</span>
+<span class="sd">    ``test(b, c)`` return ``True``, then ``test(a, c)`` must also be ``True``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">partitions</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">partition</span> <span class="ow">in</span> <span class="n">partitions</span><span class="p">:</span>
+            <span class="n">p_item</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">partition</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">test</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">p_item</span><span class="p">):</span>
+                <span class="n">partition</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># No break</span>
+            <span class="n">partitions</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="n">item</span><span class="p">})</span>
+    <span class="k">return</span> <span class="n">partitions</span>
+
+
+<span class="k">def</span> <span class="nf">partition_to_color</span><span class="p">(</span><span class="n">partitions</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a dictionary with for every item in partition for every partition</span>
+<span class="sd">    in partitions the index of partition in partitions.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    partitions: collections.abc.Sequence[collections.abc.Iterable]</span>
+<span class="sd">        As returned by :func:`make_partitions`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">colors</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">color</span><span class="p">,</span> <span class="n">keys</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">partitions</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+            <span class="n">colors</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">color</span>
+    <span class="k">return</span> <span class="n">colors</span>
+
+
+<span class="k">def</span> <span class="nf">intersect</span><span class="p">(</span><span class="n">collection_of_sets</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given an collection of sets, returns the intersection of those sets.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    collection_of_sets: collections.abc.Collection[set]</span>
+<span class="sd">        A collection of sets.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    set</span>
+<span class="sd">        An intersection of all sets in `collection_of_sets`. Will have the same</span>
+<span class="sd">        type as the item initially taken from `collection_of_sets`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">collection_of_sets</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">collection_of_sets</span><span class="p">)</span>
+    <span class="n">first</span> <span class="o">=</span> <span class="n">collection_of_sets</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">reduce</span><span class="p">(</span><span class="nb">set</span><span class="o">.</span><span class="n">intersection</span><span class="p">,</span> <span class="n">collection_of_sets</span><span class="p">,</span> <span class="nb">set</span><span class="p">(</span><span class="n">first</span><span class="p">))</span>
+    <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="n">first</span><span class="p">)(</span><span class="n">out</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="ISMAGS"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.isomorphism.ISMAGS.html#networkx.algorithms.isomorphism.ISMAGS">[docs]</a><span class="k">class</span> <span class="nc">ISMAGS</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Implements the ISMAGS subgraph matching algorith. [1]_ ISMAGS stands for</span>
+<span class="sd">    &quot;Index-based Subgraph Matching Algorithm with General Symmetries&quot;. As the</span>
+<span class="sd">    name implies, it is symmetry aware and will only generate non-symmetric</span>
+<span class="sd">    isomorphisms.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The implementation imposes additional conditions compared to the VF2</span>
+<span class="sd">    algorithm on the graphs provided and the comparison functions</span>
+<span class="sd">    (:attr:`node_equality` and :attr:`edge_equality`):</span>
+
+<span class="sd">     - Node keys in both graphs must be orderable as well as hashable.</span>
+<span class="sd">     - Equality must be transitive: if A is equal to B, and B is equal to C,</span>
+<span class="sd">       then A must be equal to C.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    graph: networkx.Graph</span>
+<span class="sd">    subgraph: networkx.Graph</span>
+<span class="sd">    node_equality: collections.abc.Callable</span>
+<span class="sd">        The function called to see if two nodes should be considered equal.</span>
+<span class="sd">        It&#39;s signature looks like this:</span>
+<span class="sd">        ``f(graph1: networkx.Graph, node1, graph2: networkx.Graph, node2) -&gt; bool``.</span>
+<span class="sd">        `node1` is a node in `graph1`, and `node2` a node in `graph2`.</span>
+<span class="sd">        Constructed from the argument `node_match`.</span>
+<span class="sd">    edge_equality: collections.abc.Callable</span>
+<span class="sd">        The function called to see if two edges should be considered equal.</span>
+<span class="sd">        It&#39;s signature looks like this:</span>
+<span class="sd">        ``f(graph1: networkx.Graph, edge1, graph2: networkx.Graph, edge2) -&gt; bool``.</span>
+<span class="sd">        `edge1` is an edge in `graph1`, and `edge2` an edge in `graph2`.</span>
+<span class="sd">        Constructed from the argument `edge_match`.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] M. Houbraken, S. Demeyer, T. Michoel, P. Audenaert, D. Colle,</span>
+<span class="sd">       M. Pickavet, &quot;The Index-Based Subgraph Matching Algorithm with General</span>
+<span class="sd">       Symmetries (ISMAGS): Exploiting Symmetry for Faster Subgraph</span>
+<span class="sd">       Enumeration&quot;, PLoS One 9(5): e97896, 2014.</span>
+<span class="sd">       https://doi.org/10.1371/journal.pone.0097896</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ISMAGS.__init__"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.isomorphism.ISMAGS.html#networkx.algorithms.isomorphism.ISMAGS.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">,</span> <span class="n">subgraph</span><span class="p">,</span> <span class="n">node_match</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">edge_match</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        graph: networkx.Graph</span>
+<span class="sd">        subgraph: networkx.Graph</span>
+<span class="sd">        node_match: collections.abc.Callable or None</span>
+<span class="sd">            Function used to determine whether two nodes are equivalent. Its</span>
+<span class="sd">            signature should look like ``f(n1: dict, n2: dict) -&gt; bool``, with</span>
+<span class="sd">            `n1` and `n2` node property dicts. See also</span>
+<span class="sd">            :func:`~networkx.algorithms.isomorphism.categorical_node_match` and</span>
+<span class="sd">            friends.</span>
+<span class="sd">            If `None`, all nodes are considered equal.</span>
+<span class="sd">        edge_match: collections.abc.Callable or None</span>
+<span class="sd">            Function used to determine whether two edges are equivalent. Its</span>
+<span class="sd">            signature should look like ``f(e1: dict, e2: dict) -&gt; bool``, with</span>
+<span class="sd">            `e1` and `e2` edge property dicts. See also</span>
+<span class="sd">            :func:`~networkx.algorithms.isomorphism.categorical_edge_match` and</span>
+<span class="sd">            friends.</span>
+<span class="sd">            If `None`, all edges are considered equal.</span>
+<span class="sd">        cache: collections.abc.Mapping</span>
+<span class="sd">            A cache used for caching graph symmetries.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: graph and subgraph setter methods that invalidate the caches.</span>
+        <span class="c1"># TODO: allow for precomputed partitions and colors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="o">=</span> <span class="n">graph</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subgraph</span> <span class="o">=</span> <span class="n">subgraph</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_symmetry_cache</span> <span class="o">=</span> <span class="n">cache</span>
+        <span class="c1"># Naming conventions are taken from the original paper. For your</span>
+        <span class="c1"># sanity:</span>
+        <span class="c1">#   sg: subgraph</span>
+        <span class="c1">#   g: graph</span>
+        <span class="c1">#   e: edge(s)</span>
+        <span class="c1">#   n: node(s)</span>
+        <span class="c1"># So: sgn means &quot;subgraph nodes&quot;.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sgn_partitions_</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sge_partitions_</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sgn_colors_</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sge_colors_</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gn_partitions_</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ge_partitions_</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gn_colors_</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ge_colors_</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_node_compat_</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_edge_compat_</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">node_match</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">node_equality</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_match_maker</span><span class="p">(</span><span class="k">lambda</span> <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">:</span> <span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sgn_partitions_</span> <span class="o">=</span> <span class="p">[</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subgraph</span><span class="o">.</span><span class="n">nodes</span><span class="p">)]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_gn_partitions_</span> <span class="o">=</span> <span class="p">[</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">)]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_node_compat_</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">node_equality</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_match_maker</span><span class="p">(</span><span class="n">node_match</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">edge_match</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">edge_equality</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_match_maker</span><span class="p">(</span><span class="k">lambda</span> <span class="n">e1</span><span class="p">,</span> <span class="n">e2</span><span class="p">:</span> <span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sge_partitions_</span> <span class="o">=</span> <span class="p">[</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subgraph</span><span class="o">.</span><span class="n">edges</span><span class="p">)]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ge_partitions_</span> <span class="o">=</span> <span class="p">[</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">edges</span><span class="p">)]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_edge_compat_</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">edge_equality</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_match_maker</span><span class="p">(</span><span class="n">edge_match</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_sgn_partitions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sgn_partitions_</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+
+            <span class="k">def</span> <span class="nf">nodematch</span><span class="p">(</span><span class="n">node1</span><span class="p">,</span> <span class="n">node2</span><span class="p">):</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_equality</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subgraph</span><span class="p">,</span> <span class="n">node1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">subgraph</span><span class="p">,</span> <span class="n">node2</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sgn_partitions_</span> <span class="o">=</span> <span class="n">make_partitions</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subgraph</span><span class="o">.</span><span class="n">nodes</span><span class="p">,</span> <span class="n">nodematch</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sgn_partitions_</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_sge_partitions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sge_partitions_</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+
+            <span class="k">def</span> <span class="nf">edgematch</span><span class="p">(</span><span class="n">edge1</span><span class="p">,</span> <span class="n">edge2</span><span class="p">):</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_equality</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subgraph</span><span class="p">,</span> <span class="n">edge1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">subgraph</span><span class="p">,</span> <span class="n">edge2</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sge_partitions_</span> <span class="o">=</span> <span class="n">make_partitions</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subgraph</span><span class="o">.</span><span class="n">edges</span><span class="p">,</span> <span class="n">edgematch</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sge_partitions_</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_gn_partitions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gn_partitions_</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+
+            <span class="k">def</span> <span class="nf">nodematch</span><span class="p">(</span><span class="n">node1</span><span class="p">,</span> <span class="n">node2</span><span class="p">):</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_equality</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">,</span> <span class="n">node1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">,</span> <span class="n">node2</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_gn_partitions_</span> <span class="o">=</span> <span class="n">make_partitions</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">,</span> <span class="n">nodematch</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gn_partitions_</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_ge_partitions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ge_partitions_</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+
+            <span class="k">def</span> <span class="nf">edgematch</span><span class="p">(</span><span class="n">edge1</span><span class="p">,</span> <span class="n">edge2</span><span class="p">):</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_equality</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">,</span> <span class="n">edge1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">,</span> <span class="n">edge2</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ge_partitions_</span> <span class="o">=</span> <span class="n">make_partitions</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">edges</span><span class="p">,</span> <span class="n">edgematch</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ge_partitions_</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_sgn_colors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sgn_colors_</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sgn_colors_</span> <span class="o">=</span> <span class="n">partition_to_color</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sgn_partitions</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sgn_colors_</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_sge_colors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sge_colors_</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sge_colors_</span> <span class="o">=</span> <span class="n">partition_to_color</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sge_partitions</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sge_colors_</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_gn_colors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gn_colors_</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_gn_colors_</span> <span class="o">=</span> <span class="n">partition_to_color</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_gn_partitions</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gn_colors_</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_ge_colors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ge_colors_</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ge_colors_</span> <span class="o">=</span> <span class="n">partition_to_color</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ge_partitions</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ge_colors_</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_node_compatibility</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_compat_</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_compat_</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_node_compat_</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">sgn_part_color</span><span class="p">,</span> <span class="n">gn_part_color</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span>
+            <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sgn_partitions</span><span class="p">)),</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_gn_partitions</span><span class="p">))</span>
+        <span class="p">):</span>
+            <span class="n">sgn</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sgn_partitions</span><span class="p">[</span><span class="n">sgn_part_color</span><span class="p">]))</span>
+            <span class="n">gn</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_gn_partitions</span><span class="p">[</span><span class="n">gn_part_color</span><span class="p">]))</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_equality</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subgraph</span><span class="p">,</span> <span class="n">sgn</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">,</span> <span class="n">gn</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_node_compat_</span><span class="p">[</span><span class="n">sgn_part_color</span><span class="p">]</span> <span class="o">=</span> <span class="n">gn_part_color</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_compat_</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_edge_compatibility</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_compat_</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_compat_</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_edge_compat_</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">sge_part_color</span><span class="p">,</span> <span class="n">ge_part_color</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span>
+            <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sge_partitions</span><span class="p">)),</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ge_partitions</span><span class="p">))</span>
+        <span class="p">):</span>
+            <span class="n">sge</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sge_partitions</span><span class="p">[</span><span class="n">sge_part_color</span><span class="p">]))</span>
+            <span class="n">ge</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ge_partitions</span><span class="p">[</span><span class="n">ge_part_color</span><span class="p">]))</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_equality</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subgraph</span><span class="p">,</span> <span class="n">sge</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">,</span> <span class="n">ge</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_edge_compat_</span><span class="p">[</span><span class="n">sge_part_color</span><span class="p">]</span> <span class="o">=</span> <span class="n">ge_part_color</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_compat_</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_node_match_maker</span><span class="p">(</span><span class="n">cmp</span><span class="p">):</span>
+        <span class="nd">@wraps</span><span class="p">(</span><span class="n">cmp</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">comparer</span><span class="p">(</span><span class="n">graph1</span><span class="p">,</span> <span class="n">node1</span><span class="p">,</span> <span class="n">graph2</span><span class="p">,</span> <span class="n">node2</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">cmp</span><span class="p">(</span><span class="n">graph1</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node1</span><span class="p">],</span> <span class="n">graph2</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node2</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">comparer</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_edge_match_maker</span><span class="p">(</span><span class="n">cmp</span><span class="p">):</span>
+        <span class="nd">@wraps</span><span class="p">(</span><span class="n">cmp</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">comparer</span><span class="p">(</span><span class="n">graph1</span><span class="p">,</span> <span class="n">edge1</span><span class="p">,</span> <span class="n">graph2</span><span class="p">,</span> <span class="n">edge2</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">cmp</span><span class="p">(</span><span class="n">graph1</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">edge1</span><span class="p">],</span> <span class="n">graph2</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">edge2</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">comparer</span>
+
+<div class="viewcode-block" id="ISMAGS.find_isomorphisms"><a class="viewcode-back" href="../../../../reference/algorithms/generated/generated/networkx.algorithms.isomorphism.ISMAGS.find_isomorphisms.html#networkx.algorithms.isomorphism.ISMAGS.find_isomorphisms">[docs]</a>    <span class="k">def</span> <span class="nf">find_isomorphisms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">symmetry</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Find all subgraph isomorphisms between subgraph and graph</span>
+
+<span class="sd">        Finds isomorphisms where :attr:`subgraph` &lt;= :attr:`graph`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        symmetry: bool</span>
+<span class="sd">            Whether symmetry should be taken into account. If False, found</span>
+<span class="sd">            isomorphisms may be symmetrically equivalent.</span>
+
+<span class="sd">        Yields</span>
+<span class="sd">        ------</span>
+<span class="sd">        dict</span>
+<span class="sd">            The found isomorphism mappings of {graph_node: subgraph_node}.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># The networkx VF2 algorithm is slightly funny in when it yields an</span>
+        <span class="c1"># empty dict and when not.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">subgraph</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="p">{}</span>
+            <span class="k">return</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subgraph</span><span class="p">):</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">symmetry</span><span class="p">:</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">cosets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">analyze_symmetry</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">subgraph</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sgn_partitions</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sge_colors</span>
+            <span class="p">)</span>
+            <span class="n">constraints</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_constraints</span><span class="p">(</span><span class="n">cosets</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">constraints</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">candidates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_nodecolor_candidates</span><span class="p">()</span>
+        <span class="n">la_candidates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_lookahead_candidates</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">sgn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">subgraph</span><span class="p">:</span>
+            <span class="n">extra_candidates</span> <span class="o">=</span> <span class="n">la_candidates</span><span class="p">[</span><span class="n">sgn</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">extra_candidates</span><span class="p">:</span>
+                <span class="n">candidates</span><span class="p">[</span><span class="n">sgn</span><span class="p">]</span> <span class="o">=</span> <span class="n">candidates</span><span class="p">[</span><span class="n">sgn</span><span class="p">]</span> <span class="o">|</span> <span class="p">{</span><span class="nb">frozenset</span><span class="p">(</span><span class="n">extra_candidates</span><span class="p">)}</span>
+
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">candidates</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+            <span class="n">start_sgn</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">candidates</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="nb">min</span><span class="p">(</span><span class="n">candidates</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">))</span>
+            <span class="n">candidates</span><span class="p">[</span><span class="n">start_sgn</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">intersect</span><span class="p">(</span><span class="n">candidates</span><span class="p">[</span><span class="n">start_sgn</span><span class="p">]),)</span>
+            <span class="k">yield from</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_nodes</span><span class="p">(</span><span class="n">start_sgn</span><span class="p">,</span> <span class="n">candidates</span><span class="p">,</span> <span class="n">constraints</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_find_neighbor_color_count</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">node_color</span><span class="p">,</span> <span class="n">edge_color</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        For `node` in `graph`, count the number of edges of a specific color</span>
+<span class="sd">        it has to nodes of a specific color.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">counts</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">()</span>
+        <span class="n">neighbors</span> <span class="o">=</span> <span class="n">graph</span><span class="p">[</span><span class="n">node</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">neighbor</span> <span class="ow">in</span> <span class="n">neighbors</span><span class="p">:</span>
+            <span class="n">n_color</span> <span class="o">=</span> <span class="n">node_color</span><span class="p">[</span><span class="n">neighbor</span><span class="p">]</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">neighbor</span><span class="p">)</span> <span class="ow">in</span> <span class="n">edge_color</span><span class="p">:</span>
+                <span class="n">e_color</span> <span class="o">=</span> <span class="n">edge_color</span><span class="p">[</span><span class="n">node</span><span class="p">,</span> <span class="n">neighbor</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">e_color</span> <span class="o">=</span> <span class="n">edge_color</span><span class="p">[</span><span class="n">neighbor</span><span class="p">,</span> <span class="n">node</span><span class="p">]</span>
+            <span class="n">counts</span><span class="p">[</span><span class="n">e_color</span><span class="p">,</span> <span class="n">n_color</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">counts</span>
+
+    <span class="k">def</span> <span class="nf">_get_lookahead_candidates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a mapping of {subgraph node: collection of graph nodes} for</span>
+<span class="sd">        which the graph nodes are feasible candidates for the subgraph node, as</span>
+<span class="sd">        determined by looking ahead one edge.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">g_counts</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">gn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">:</span>
+            <span class="n">g_counts</span><span class="p">[</span><span class="n">gn</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_neighbor_color_count</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">,</span> <span class="n">gn</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gn_colors</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ge_colors</span>
+            <span class="p">)</span>
+        <span class="n">candidates</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">sgn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">subgraph</span><span class="p">:</span>
+            <span class="n">sg_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_neighbor_color_count</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">subgraph</span><span class="p">,</span> <span class="n">sgn</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sgn_colors</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sge_colors</span>
+            <span class="p">)</span>
+            <span class="n">new_sg_count</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">()</span>
+            <span class="k">for</span> <span class="p">(</span><span class="n">sge_color</span><span class="p">,</span> <span class="n">sgn_color</span><span class="p">),</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">sg_count</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">ge_color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_compatibility</span><span class="p">[</span><span class="n">sge_color</span><span class="p">]</span>
+                    <span class="n">gn_color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_compatibility</span><span class="p">[</span><span class="n">sgn_color</span><span class="p">]</span>
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="k">pass</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">new_sg_count</span><span class="p">[</span><span class="n">ge_color</span><span class="p">,</span> <span class="n">gn_color</span><span class="p">]</span> <span class="o">=</span> <span class="n">count</span>
+
+            <span class="k">for</span> <span class="n">gn</span><span class="p">,</span> <span class="n">g_count</span> <span class="ow">in</span> <span class="n">g_counts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">new_sg_count</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">g_count</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">new_sg_count</span><span class="p">):</span>
+                    <span class="c1"># Valid candidate</span>
+                    <span class="n">candidates</span><span class="p">[</span><span class="n">sgn</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">gn</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">candidates</span>
+
+<div class="viewcode-block" id="ISMAGS.largest_common_subgraph"><a class="viewcode-back" href="../../../../reference/algorithms/generated/generated/networkx.algorithms.isomorphism.ISMAGS.largest_common_subgraph.html#networkx.algorithms.isomorphism.ISMAGS.largest_common_subgraph">[docs]</a>    <span class="k">def</span> <span class="nf">largest_common_subgraph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">symmetry</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Find the largest common induced subgraphs between :attr:`subgraph` and</span>
+<span class="sd">        :attr:`graph`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        symmetry: bool</span>
+<span class="sd">            Whether symmetry should be taken into account. If False, found</span>
+<span class="sd">            largest common subgraphs may be symmetrically equivalent.</span>
+
+<span class="sd">        Yields</span>
+<span class="sd">        ------</span>
+<span class="sd">        dict</span>
+<span class="sd">            The found isomorphism mappings of {graph_node: subgraph_node}.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># The networkx VF2 algorithm is slightly funny in when it yields an</span>
+        <span class="c1"># empty dict and when not.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">subgraph</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="p">{}</span>
+            <span class="k">return</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">symmetry</span><span class="p">:</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">cosets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">analyze_symmetry</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">subgraph</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sgn_partitions</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sge_colors</span>
+            <span class="p">)</span>
+            <span class="n">constraints</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_constraints</span><span class="p">(</span><span class="n">cosets</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">constraints</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">candidates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_nodecolor_candidates</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">candidates</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+            <span class="k">yield from</span> <span class="bp">self</span><span class="o">.</span><span class="n">_largest_common_subgraph</span><span class="p">(</span><span class="n">candidates</span><span class="p">,</span> <span class="n">constraints</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span></div>
+
+<div class="viewcode-block" id="ISMAGS.analyze_symmetry"><a class="viewcode-back" href="../../../../reference/algorithms/generated/generated/networkx.algorithms.isomorphism.ISMAGS.analyze_symmetry.html#networkx.algorithms.isomorphism.ISMAGS.analyze_symmetry">[docs]</a>    <span class="k">def</span> <span class="nf">analyze_symmetry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">,</span> <span class="n">node_partitions</span><span class="p">,</span> <span class="n">edge_colors</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Find a minimal set of permutations and corresponding co-sets that</span>
+<span class="sd">        describe the symmetry of `graph`, given the node and edge equalities</span>
+<span class="sd">        given by `node_partitions` and `edge_colors`, respectively.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        graph : networkx.Graph</span>
+<span class="sd">            The graph whose symmetry should be analyzed.</span>
+<span class="sd">        node_partitions : list of sets</span>
+<span class="sd">            A list of sets containining node keys. Node keys in the same set</span>
+<span class="sd">            are considered equivalent. Every node key in `graph` should be in</span>
+<span class="sd">            exactly one of the sets. If all nodes are equivalent, this should</span>
+<span class="sd">            be ``[set(graph.nodes)]``.</span>
+<span class="sd">        edge_colors : dict mapping edges to their colors</span>
+<span class="sd">            A dict mapping every edge in `graph` to its corresponding color.</span>
+<span class="sd">            Edges with the same color are considered equivalent. If all edges</span>
+<span class="sd">            are equivalent, this should be ``{e: 0 for e in graph.edges}``.</span>
+
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        set[frozenset]</span>
+<span class="sd">            The found permutations. This is a set of frozensets of pairs of node</span>
+<span class="sd">            keys which can be exchanged without changing :attr:`subgraph`.</span>
+<span class="sd">        dict[collections.abc.Hashable, set[collections.abc.Hashable]]</span>
+<span class="sd">            The found co-sets. The co-sets is a dictionary of</span>
+<span class="sd">            ``{node key: set of node keys}``.</span>
+<span class="sd">            Every key-value pair describes which ``values`` can be interchanged</span>
+<span class="sd">            without changing nodes less than ``key``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_symmetry_cache</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="nb">hash</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="nb">tuple</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">),</span>
+                    <span class="nb">tuple</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">edges</span><span class="p">),</span>
+                    <span class="nb">tuple</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="n">node_partitions</span><span class="p">)),</span>
+                    <span class="nb">tuple</span><span class="p">(</span><span class="n">edge_colors</span><span class="o">.</span><span class="n">items</span><span class="p">()),</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_symmetry_cache</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_symmetry_cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="n">node_partitions</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_refine_node_partitions</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">node_partitions</span><span class="p">,</span> <span class="n">edge_colors</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">node_partitions</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="n">node_partitions</span> <span class="o">=</span> <span class="n">node_partitions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">permutations</span><span class="p">,</span> <span class="n">cosets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_ordered_pair_partitions</span><span class="p">(</span>
+            <span class="n">graph</span><span class="p">,</span> <span class="n">node_partitions</span><span class="p">,</span> <span class="n">node_partitions</span><span class="p">,</span> <span class="n">edge_colors</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_symmetry_cache</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_symmetry_cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">permutations</span><span class="p">,</span> <span class="n">cosets</span>
+        <span class="k">return</span> <span class="n">permutations</span><span class="p">,</span> <span class="n">cosets</span></div>
+
+<div class="viewcode-block" id="ISMAGS.is_isomorphic"><a class="viewcode-back" href="../../../../reference/algorithms/generated/generated/networkx.algorithms.isomorphism.ISMAGS.is_isomorphic.html#networkx.algorithms.isomorphism.ISMAGS.is_isomorphic">[docs]</a>    <span class="k">def</span> <span class="nf">is_isomorphic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">symmetry</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns True if :attr:`graph` is isomorphic to :attr:`subgraph` and</span>
+<span class="sd">        False otherwise.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subgraph</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">subgraph_is_isomorphic</span><span class="p">(</span>
+            <span class="n">symmetry</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="ISMAGS.subgraph_is_isomorphic"><a class="viewcode-back" href="../../../../reference/algorithms/generated/generated/networkx.algorithms.isomorphism.ISMAGS.subgraph_is_isomorphic.html#networkx.algorithms.isomorphism.ISMAGS.subgraph_is_isomorphic">[docs]</a>    <span class="k">def</span> <span class="nf">subgraph_is_isomorphic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">symmetry</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns True if a subgraph of :attr:`graph` is isomorphic to</span>
+<span class="sd">        :attr:`subgraph` and False otherwise.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># symmetry=False, since we only need to know whether there is any</span>
+        <span class="c1"># example; figuring out all symmetry elements probably costs more time</span>
+        <span class="c1"># than it gains.</span>
+        <span class="n">isom</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subgraph_isomorphisms_iter</span><span class="p">(</span><span class="n">symmetry</span><span class="o">=</span><span class="n">symmetry</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">isom</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="ISMAGS.isomorphisms_iter"><a class="viewcode-back" href="../../../../reference/algorithms/generated/generated/networkx.algorithms.isomorphism.ISMAGS.isomorphisms_iter.html#networkx.algorithms.isomorphism.ISMAGS.isomorphisms_iter">[docs]</a>    <span class="k">def</span> <span class="nf">isomorphisms_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">symmetry</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Does the same as :meth:`find_isomorphisms` if :attr:`graph` and</span>
+<span class="sd">        :attr:`subgraph` have the same number of nodes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subgraph</span><span class="p">):</span>
+            <span class="k">yield from</span> <span class="bp">self</span><span class="o">.</span><span class="n">subgraph_isomorphisms_iter</span><span class="p">(</span><span class="n">symmetry</span><span class="o">=</span><span class="n">symmetry</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ISMAGS.subgraph_isomorphisms_iter"><a class="viewcode-back" href="../../../../reference/algorithms/generated/generated/networkx.algorithms.isomorphism.ISMAGS.subgraph_isomorphisms_iter.html#networkx.algorithms.isomorphism.ISMAGS.subgraph_isomorphisms_iter">[docs]</a>    <span class="k">def</span> <span class="nf">subgraph_isomorphisms_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">symmetry</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Alternative name for :meth:`find_isomorphisms`.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_isomorphisms</span><span class="p">(</span><span class="n">symmetry</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_find_nodecolor_candidates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Per node in subgraph find all nodes in graph that have the same color.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">candidates</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">sgn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">subgraph</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+            <span class="n">sgn_color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sgn_colors</span><span class="p">[</span><span class="n">sgn</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">sgn_color</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_compatibility</span><span class="p">:</span>
+                <span class="n">gn_color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_compatibility</span><span class="p">[</span><span class="n">sgn_color</span><span class="p">]</span>
+                <span class="n">candidates</span><span class="p">[</span><span class="n">sgn</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">frozenset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_gn_partitions</span><span class="p">[</span><span class="n">gn_color</span><span class="p">]))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">candidates</span><span class="p">[</span><span class="n">sgn</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">frozenset</span><span class="p">())</span>
+        <span class="n">candidates</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">sgn</span><span class="p">,</span> <span class="n">options</span> <span class="ow">in</span> <span class="n">candidates</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">candidates</span><span class="p">[</span><span class="n">sgn</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">candidates</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_make_constraints</span><span class="p">(</span><span class="n">cosets</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Turn cosets into constraints.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">constraints</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">node_i</span><span class="p">,</span> <span class="n">node_ts</span> <span class="ow">in</span> <span class="n">cosets</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">node_t</span> <span class="ow">in</span> <span class="n">node_ts</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">node_i</span> <span class="o">!=</span> <span class="n">node_t</span><span class="p">:</span>
+                    <span class="c1"># Node i must be smaller than node t.</span>
+                    <span class="n">constraints</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">node_i</span><span class="p">,</span> <span class="n">node_t</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">constraints</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_find_node_edge_color</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">node_colors</span><span class="p">,</span> <span class="n">edge_colors</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        For every node in graph, come up with a color that combines 1) the</span>
+<span class="sd">        color of the node, and 2) the number of edges of a color to each type</span>
+<span class="sd">        of node.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">counts</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">int</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">node1</span><span class="p">,</span> <span class="n">node2</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">node1</span><span class="p">,</span> <span class="n">node2</span><span class="p">)</span> <span class="ow">in</span> <span class="n">edge_colors</span><span class="p">:</span>
+                <span class="c1"># FIXME directed graphs</span>
+                <span class="n">ecolor</span> <span class="o">=</span> <span class="n">edge_colors</span><span class="p">[</span><span class="n">node1</span><span class="p">,</span> <span class="n">node2</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ecolor</span> <span class="o">=</span> <span class="n">edge_colors</span><span class="p">[</span><span class="n">node2</span><span class="p">,</span> <span class="n">node1</span><span class="p">]</span>
+            <span class="c1"># Count per node how many edges it has of what color to nodes of</span>
+            <span class="c1"># what color</span>
+            <span class="n">counts</span><span class="p">[</span><span class="n">node1</span><span class="p">][</span><span class="n">ecolor</span><span class="p">,</span> <span class="n">node_colors</span><span class="p">[</span><span class="n">node2</span><span class="p">]]</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">counts</span><span class="p">[</span><span class="n">node2</span><span class="p">][</span><span class="n">ecolor</span><span class="p">,</span> <span class="n">node_colors</span><span class="p">[</span><span class="n">node1</span><span class="p">]]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="n">node_edge_colors</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+            <span class="n">node_edge_colors</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="n">node_colors</span><span class="p">[</span><span class="n">node</span><span class="p">],</span> <span class="nb">set</span><span class="p">(</span><span class="n">counts</span><span class="p">[</span><span class="n">node</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+
+        <span class="k">return</span> <span class="n">node_edge_colors</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_get_permutations_by_length</span><span class="p">(</span><span class="n">items</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get all permutations of items, but only permute items with the same</span>
+<span class="sd">        length.</span>
+
+<span class="sd">        &gt;&gt;&gt; found = list(ISMAGS._get_permutations_by_length([[1], [2], [3, 4], [4, 5]]))</span>
+<span class="sd">        &gt;&gt;&gt; answer = [</span>
+<span class="sd">        ...     (([1], [2]), ([3, 4], [4, 5])),</span>
+<span class="sd">        ...     (([1], [2]), ([4, 5], [3, 4])),</span>
+<span class="sd">        ...     (([2], [1]), ([3, 4], [4, 5])),</span>
+<span class="sd">        ...     (([2], [1]), ([4, 5], [3, 4])),</span>
+<span class="sd">        ... ]</span>
+<span class="sd">        &gt;&gt;&gt; found == answer</span>
+<span class="sd">        True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">by_len</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+            <span class="n">by_len</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">item</span><span class="p">)]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
+        <span class="k">yield from</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span>
+            <span class="o">*</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">permutations</span><span class="p">(</span><span class="n">by_len</span><span class="p">[</span><span class="n">l</span><span class="p">])</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">by_len</span><span class="p">))</span>
+        <span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_refine_node_partitions</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">graph</span><span class="p">,</span> <span class="n">node_partitions</span><span class="p">,</span> <span class="n">edge_colors</span><span class="p">,</span> <span class="n">branch</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given a partition of nodes in graph, make the partitions smaller such</span>
+<span class="sd">        that all nodes in a partition have 1) the same color, and 2) the same</span>
+<span class="sd">        number of edges to specific other partitions.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">equal_color</span><span class="p">(</span><span class="n">node1</span><span class="p">,</span> <span class="n">node2</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">node_edge_colors</span><span class="p">[</span><span class="n">node1</span><span class="p">]</span> <span class="o">==</span> <span class="n">node_edge_colors</span><span class="p">[</span><span class="n">node2</span><span class="p">]</span>
+
+        <span class="n">node_partitions</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">node_partitions</span><span class="p">)</span>
+        <span class="n">node_colors</span> <span class="o">=</span> <span class="n">partition_to_color</span><span class="p">(</span><span class="n">node_partitions</span><span class="p">)</span>
+        <span class="n">node_edge_colors</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_find_node_edge_color</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">node_colors</span><span class="p">,</span> <span class="n">edge_colors</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">all</span><span class="p">(</span>
+            <span class="n">are_all_equal</span><span class="p">(</span><span class="n">node_edge_colors</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">partition</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">partition</span> <span class="ow">in</span> <span class="n">node_partitions</span>
+        <span class="p">):</span>
+            <span class="k">yield</span> <span class="n">node_partitions</span>
+            <span class="k">return</span>
+
+        <span class="n">new_partitions</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="p">[</span><span class="n">new_partitions</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">partition</span> <span class="ow">in</span> <span class="n">node_partitions</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">are_all_equal</span><span class="p">(</span><span class="n">node_edge_colors</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">partition</span><span class="p">):</span>
+                <span class="n">refined</span> <span class="o">=</span> <span class="n">make_partitions</span><span class="p">(</span><span class="n">partition</span><span class="p">,</span> <span class="n">equal_color</span><span class="p">)</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">branch</span>
+                    <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">refined</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span>
+                    <span class="ow">and</span> <span class="nb">len</span><span class="p">({</span><span class="nb">len</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">refined</span><span class="p">})</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">refined</span><span class="p">])</span>
+                <span class="p">):</span>
+                    <span class="c1"># This is where it breaks. There are multiple new cells</span>
+                    <span class="c1"># in refined with the same length, and their order</span>
+                    <span class="c1"># matters.</span>
+                    <span class="c1"># So option 1) Hit it with a big hammer and simply make all</span>
+                    <span class="c1"># orderings.</span>
+                    <span class="n">permutations</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_get_permutations_by_length</span><span class="p">(</span><span class="n">refined</span><span class="p">)</span>
+                    <span class="n">new_output</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="k">for</span> <span class="n">n_p</span> <span class="ow">in</span> <span class="n">output</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">permutation</span> <span class="ow">in</span> <span class="n">permutations</span><span class="p">:</span>
+                            <span class="n">new_output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n_p</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">permutation</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+                    <span class="n">output</span> <span class="o">=</span> <span class="n">new_output</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">n_p</span> <span class="ow">in</span> <span class="n">output</span><span class="p">:</span>
+                        <span class="n">n_p</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">refined</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">n_p</span> <span class="ow">in</span> <span class="n">output</span><span class="p">:</span>
+                    <span class="n">n_p</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">partition</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">n_p</span> <span class="ow">in</span> <span class="n">output</span><span class="p">:</span>
+            <span class="k">yield from</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_refine_node_partitions</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">n_p</span><span class="p">,</span> <span class="n">edge_colors</span><span class="p">,</span> <span class="n">branch</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_edges_of_same_color</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sgn1</span><span class="p">,</span> <span class="n">sgn2</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns all edges in :attr:`graph` that have the same colour as the</span>
+<span class="sd">        edge between sgn1 and sgn2 in :attr:`subgraph`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">sgn1</span><span class="p">,</span> <span class="n">sgn2</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sge_colors</span><span class="p">:</span>
+            <span class="c1"># FIXME directed graphs</span>
+            <span class="n">sge_color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sge_colors</span><span class="p">[</span><span class="n">sgn1</span><span class="p">,</span> <span class="n">sgn2</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">sge_color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sge_colors</span><span class="p">[</span><span class="n">sgn2</span><span class="p">,</span> <span class="n">sgn1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">sge_color</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_compatibility</span><span class="p">:</span>
+            <span class="n">ge_color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_compatibility</span><span class="p">[</span><span class="n">sge_color</span><span class="p">]</span>
+            <span class="n">g_edges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ge_partitions</span><span class="p">[</span><span class="n">ge_color</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">g_edges</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="n">g_edges</span>
+
+    <span class="k">def</span> <span class="nf">_map_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sgn</span><span class="p">,</span> <span class="n">candidates</span><span class="p">,</span> <span class="n">constraints</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">to_be_mapped</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Find all subgraph isomorphisms honoring constraints.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">mapping</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">mapping</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mapping</span> <span class="o">=</span> <span class="n">mapping</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">to_be_mapped</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">to_be_mapped</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subgraph</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
+
+        <span class="c1"># Note, we modify candidates here. Doesn&#39;t seem to affect results, but</span>
+        <span class="c1"># remember this.</span>
+        <span class="c1"># candidates = candidates.copy()</span>
+        <span class="n">sgn_candidates</span> <span class="o">=</span> <span class="n">intersect</span><span class="p">(</span><span class="n">candidates</span><span class="p">[</span><span class="n">sgn</span><span class="p">])</span>
+        <span class="n">candidates</span><span class="p">[</span><span class="n">sgn</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">([</span><span class="n">sgn_candidates</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">gn</span> <span class="ow">in</span> <span class="n">sgn_candidates</span><span class="p">:</span>
+            <span class="c1"># We&#39;re going to try to map sgn to gn.</span>
+            <span class="k">if</span> <span class="n">gn</span> <span class="ow">in</span> <span class="n">mapping</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="ow">or</span> <span class="n">sgn</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">to_be_mapped</span><span class="p">:</span>
+                <span class="c1"># gn is already mapped to something</span>
+                <span class="k">continue</span>  <span class="c1"># pragma: no cover</span>
+
+            <span class="c1"># REDUCTION and COMBINATION</span>
+            <span class="n">mapping</span><span class="p">[</span><span class="n">sgn</span><span class="p">]</span> <span class="o">=</span> <span class="n">gn</span>
+            <span class="c1"># BASECASE</span>
+            <span class="k">if</span> <span class="n">to_be_mapped</span> <span class="o">==</span> <span class="nb">set</span><span class="p">(</span><span class="n">mapping</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                <span class="k">yield</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">mapping</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+                <span class="k">continue</span>
+            <span class="n">left_to_map</span> <span class="o">=</span> <span class="n">to_be_mapped</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">mapping</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+            <span class="n">new_candidates</span> <span class="o">=</span> <span class="n">candidates</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">sgn_neighbours</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subgraph</span><span class="p">[</span><span class="n">sgn</span><span class="p">])</span>
+            <span class="n">not_gn_neighbours</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="n">gn</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">sgn2</span> <span class="ow">in</span> <span class="n">left_to_map</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">sgn2</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sgn_neighbours</span><span class="p">:</span>
+                    <span class="n">gn2_options</span> <span class="o">=</span> <span class="n">not_gn_neighbours</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Get all edges to gn of the right color:</span>
+                    <span class="n">g_edges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edges_of_same_color</span><span class="p">(</span><span class="n">sgn</span><span class="p">,</span> <span class="n">sgn2</span><span class="p">)</span>
+                    <span class="c1"># FIXME directed graphs</span>
+                    <span class="c1"># And all nodes involved in those which are connected to gn</span>
+                    <span class="n">gn2_options</span> <span class="o">=</span> <span class="p">{</span><span class="n">n</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">g_edges</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">e</span> <span class="k">if</span> <span class="n">gn</span> <span class="ow">in</span> <span class="n">e</span><span class="p">}</span>
+                <span class="c1"># Node color compatibility should be taken care of by the</span>
+                <span class="c1"># initial candidate lists made by find_subgraphs</span>
+
+                <span class="c1"># Add gn2_options to the right collection. Since new_candidates</span>
+                <span class="c1"># is a dict of frozensets of frozensets of node indices it&#39;s</span>
+                <span class="c1"># a bit clunky. We can&#39;t do .add, and + also doesn&#39;t work. We</span>
+                <span class="c1"># could do |, but I deem union to be clearer.</span>
+                <span class="n">new_candidates</span><span class="p">[</span><span class="n">sgn2</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_candidates</span><span class="p">[</span><span class="n">sgn2</span><span class="p">]</span><span class="o">.</span><span class="n">union</span><span class="p">(</span>
+                    <span class="p">[</span><span class="nb">frozenset</span><span class="p">(</span><span class="n">gn2_options</span><span class="p">)]</span>
+                <span class="p">)</span>
+
+                <span class="k">if</span> <span class="p">(</span><span class="n">sgn</span><span class="p">,</span> <span class="n">sgn2</span><span class="p">)</span> <span class="ow">in</span> <span class="n">constraints</span><span class="p">:</span>
+                    <span class="n">gn2_options</span> <span class="o">=</span> <span class="p">{</span><span class="n">gn2</span> <span class="k">for</span> <span class="n">gn2</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="k">if</span> <span class="n">gn2</span> <span class="o">&gt;</span> <span class="n">gn</span><span class="p">}</span>
+                <span class="k">elif</span> <span class="p">(</span><span class="n">sgn2</span><span class="p">,</span> <span class="n">sgn</span><span class="p">)</span> <span class="ow">in</span> <span class="n">constraints</span><span class="p">:</span>
+                    <span class="n">gn2_options</span> <span class="o">=</span> <span class="p">{</span><span class="n">gn2</span> <span class="k">for</span> <span class="n">gn2</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="k">if</span> <span class="n">gn2</span> <span class="o">&lt;</span> <span class="n">gn</span><span class="p">}</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">continue</span>  <span class="c1"># pragma: no cover</span>
+                <span class="n">new_candidates</span><span class="p">[</span><span class="n">sgn2</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_candidates</span><span class="p">[</span><span class="n">sgn2</span><span class="p">]</span><span class="o">.</span><span class="n">union</span><span class="p">(</span>
+                    <span class="p">[</span><span class="nb">frozenset</span><span class="p">(</span><span class="n">gn2_options</span><span class="p">)]</span>
+                <span class="p">)</span>
+
+            <span class="c1"># The next node is the one that is unmapped and has fewest</span>
+            <span class="c1"># candidates</span>
+            <span class="c1"># Pylint disables because it&#39;s a one-shot function.</span>
+            <span class="n">next_sgn</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span>
+                <span class="n">left_to_map</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="nb">min</span><span class="p">(</span><span class="n">new_candidates</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">)</span>
+            <span class="p">)</span>  <span class="c1"># pylint: disable=cell-var-from-loop</span>
+            <span class="k">yield from</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_nodes</span><span class="p">(</span>
+                <span class="n">next_sgn</span><span class="p">,</span>
+                <span class="n">new_candidates</span><span class="p">,</span>
+                <span class="n">constraints</span><span class="p">,</span>
+                <span class="n">mapping</span><span class="o">=</span><span class="n">mapping</span><span class="p">,</span>
+                <span class="n">to_be_mapped</span><span class="o">=</span><span class="n">to_be_mapped</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="c1"># Unmap sgn-gn. Strictly not necessary since it&#39;d get overwritten</span>
+            <span class="c1"># when making a new mapping for sgn.</span>
+            <span class="c1"># del mapping[sgn]</span>
+
+    <span class="k">def</span> <span class="nf">_largest_common_subgraph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">candidates</span><span class="p">,</span> <span class="n">constraints</span><span class="p">,</span> <span class="n">to_be_mapped</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Find all largest common subgraphs honoring constraints.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">to_be_mapped</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">to_be_mapped</span> <span class="o">=</span> <span class="p">{</span><span class="nb">frozenset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subgraph</span><span class="o">.</span><span class="n">nodes</span><span class="p">)}</span>
+
+        <span class="c1"># The LCS problem is basically a repeated subgraph isomorphism problem</span>
+        <span class="c1"># with smaller and smaller subgraphs. We store the nodes that are</span>
+        <span class="c1"># &quot;part of&quot; the subgraph in to_be_mapped, and we make it a little</span>
+        <span class="c1"># smaller every iteration.</span>
+
+        <span class="c1"># pylint disable becuase it&#39;s guarded against by default value</span>
+        <span class="n">current_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span>
+            <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">to_be_mapped</span><span class="p">),</span> <span class="p">[])</span>
+        <span class="p">)</span>  <span class="c1"># pylint: disable=stop-iteration-return</span>
+
+        <span class="n">found_iso</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">current_size</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">):</span>
+            <span class="c1"># There&#39;s no point in trying to find isomorphisms of</span>
+            <span class="c1"># graph &gt;= subgraph if subgraph has more nodes than graph.</span>
+
+            <span class="c1"># Try the isomorphism first with the nodes with lowest ID. So sort</span>
+            <span class="c1"># them. Those are more likely to be part of the final</span>
+            <span class="c1"># correspondence. This makes finding the first answer(s) faster. In</span>
+            <span class="c1"># theory.</span>
+            <span class="k">for</span> <span class="n">nodes</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">to_be_mapped</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="nb">sorted</span><span class="p">):</span>
+                <span class="c1"># Find the isomorphism between subgraph[to_be_mapped] &lt;= graph</span>
+                <span class="n">next_sgn</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="nb">min</span><span class="p">(</span><span class="n">candidates</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">))</span>
+                <span class="n">isomorphs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_nodes</span><span class="p">(</span>
+                    <span class="n">next_sgn</span><span class="p">,</span> <span class="n">candidates</span><span class="p">,</span> <span class="n">constraints</span><span class="p">,</span> <span class="n">to_be_mapped</span><span class="o">=</span><span class="n">nodes</span>
+                <span class="p">)</span>
+
+                <span class="c1"># This is effectively `yield from isomorphs`, except that we look</span>
+                <span class="c1"># whether an item was yielded.</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">item</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">isomorphs</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+                    <span class="k">pass</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">yield</span> <span class="n">item</span>
+                    <span class="k">yield from</span> <span class="n">isomorphs</span>
+                    <span class="n">found_iso</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="c1"># BASECASE</span>
+        <span class="k">if</span> <span class="n">found_iso</span> <span class="ow">or</span> <span class="n">current_size</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># Shrinking has no point because either 1) we end up with a smaller</span>
+            <span class="c1"># common subgraph (and we want the largest), or 2) there&#39;ll be no</span>
+            <span class="c1"># more subgraph.</span>
+            <span class="k">return</span>
+
+        <span class="n">left_to_be_mapped</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">nodes</span> <span class="ow">in</span> <span class="n">to_be_mapped</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">sgn</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
+                <span class="c1"># We&#39;re going to remove sgn from to_be_mapped, but subject to</span>
+                <span class="c1"># symmetry constraints. We know that for every constraint we</span>
+                <span class="c1"># have those subgraph nodes are equal. So whenever we would</span>
+                <span class="c1"># remove the lower part of a constraint, remove the higher</span>
+                <span class="c1"># instead. This is all dealth with by _remove_node. And because</span>
+                <span class="c1"># left_to_be_mapped is a set, we don&#39;t do double work.</span>
+
+                <span class="c1"># And finally, make the subgraph one node smaller.</span>
+                <span class="c1"># REDUCTION</span>
+                <span class="n">new_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remove_node</span><span class="p">(</span><span class="n">sgn</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">constraints</span><span class="p">)</span>
+                <span class="n">left_to_be_mapped</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">new_nodes</span><span class="p">)</span>
+        <span class="c1"># COMBINATION</span>
+        <span class="k">yield from</span> <span class="bp">self</span><span class="o">.</span><span class="n">_largest_common_subgraph</span><span class="p">(</span>
+            <span class="n">candidates</span><span class="p">,</span> <span class="n">constraints</span><span class="p">,</span> <span class="n">to_be_mapped</span><span class="o">=</span><span class="n">left_to_be_mapped</span>
+        <span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_remove_node</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">constraints</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a new set where node has been removed from nodes, subject to</span>
+<span class="sd">        symmetry constraints. We know, that for every constraint we have</span>
+<span class="sd">        those subgraph nodes are equal. So whenever we would remove the</span>
+<span class="sd">        lower part of a constraint, remove the higher instead.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">low</span><span class="p">,</span> <span class="n">high</span> <span class="ow">in</span> <span class="n">constraints</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">low</span> <span class="o">==</span> <span class="n">node</span> <span class="ow">and</span> <span class="n">high</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
+                    <span class="n">node</span> <span class="o">=</span> <span class="n">high</span>
+                    <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># no break, couldn&#39;t find node in constraints</span>
+                <span class="k">break</span>
+        <span class="k">return</span> <span class="nb">frozenset</span><span class="p">(</span><span class="n">nodes</span> <span class="o">-</span> <span class="p">{</span><span class="n">node</span><span class="p">})</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_find_permutations</span><span class="p">(</span><span class="n">top_partitions</span><span class="p">,</span> <span class="n">bottom_partitions</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the pairs of top/bottom partitions where the partitions are</span>
+<span class="sd">        different. Ensures that all partitions in both top and bottom</span>
+<span class="sd">        partitions have size 1.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Find permutations</span>
+        <span class="n">permutations</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">top</span><span class="p">,</span> <span class="n">bot</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">top_partitions</span><span class="p">,</span> <span class="n">bottom_partitions</span><span class="p">):</span>
+            <span class="c1"># top and bot have only one element</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">top</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">bot</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span>
+                    <span class="s2">&quot;Not all nodes are coupled. This is&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot; impossible: </span><span class="si">{</span><span class="n">top_partitions</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">bottom_partitions</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="n">top</span> <span class="o">!=</span> <span class="n">bot</span><span class="p">:</span>
+                <span class="n">permutations</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">frozenset</span><span class="p">((</span><span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">top</span><span class="p">)),</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">bot</span><span class="p">)))))</span>
+        <span class="k">return</span> <span class="n">permutations</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_update_orbits</span><span class="p">(</span><span class="n">orbits</span><span class="p">,</span> <span class="n">permutations</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update orbits based on permutations. Orbits is modified in place.</span>
+<span class="sd">        For every pair of items in permutations their respective orbits are</span>
+<span class="sd">        merged.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">permutation</span> <span class="ow">in</span> <span class="n">permutations</span><span class="p">:</span>
+            <span class="n">node</span><span class="p">,</span> <span class="n">node2</span> <span class="o">=</span> <span class="n">permutation</span>
+            <span class="c1"># Find the orbits that contain node and node2, and replace the</span>
+            <span class="c1"># orbit containing node with the union</span>
+            <span class="n">first</span> <span class="o">=</span> <span class="n">second</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">orbit</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">orbits</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">first</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">second</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="k">if</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">orbit</span><span class="p">:</span>
+                    <span class="n">first</span> <span class="o">=</span> <span class="n">idx</span>
+                <span class="k">if</span> <span class="n">node2</span> <span class="ow">in</span> <span class="n">orbit</span><span class="p">:</span>
+                    <span class="n">second</span> <span class="o">=</span> <span class="n">idx</span>
+            <span class="k">if</span> <span class="n">first</span> <span class="o">!=</span> <span class="n">second</span><span class="p">:</span>
+                <span class="n">orbits</span><span class="p">[</span><span class="n">first</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">orbits</span><span class="p">[</span><span class="n">second</span><span class="p">])</span>
+                <span class="k">del</span> <span class="n">orbits</span><span class="p">[</span><span class="n">second</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_couple_nodes</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">top_partitions</span><span class="p">,</span>
+        <span class="n">bottom_partitions</span><span class="p">,</span>
+        <span class="n">pair_idx</span><span class="p">,</span>
+        <span class="n">t_node</span><span class="p">,</span>
+        <span class="n">b_node</span><span class="p">,</span>
+        <span class="n">graph</span><span class="p">,</span>
+        <span class="n">edge_colors</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate new partitions from top and bottom_partitions where t_node is</span>
+<span class="sd">        coupled to b_node. pair_idx is the index of the partitions where t_ and</span>
+<span class="sd">        b_node can be found.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">t_partition</span> <span class="o">=</span> <span class="n">top_partitions</span><span class="p">[</span><span class="n">pair_idx</span><span class="p">]</span>
+        <span class="n">b_partition</span> <span class="o">=</span> <span class="n">bottom_partitions</span><span class="p">[</span><span class="n">pair_idx</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="n">t_node</span> <span class="ow">in</span> <span class="n">t_partition</span> <span class="ow">and</span> <span class="n">b_node</span> <span class="ow">in</span> <span class="n">b_partition</span>
+        <span class="c1"># Couple node to node2. This means they get their own partition</span>
+        <span class="n">new_top_partitions</span> <span class="o">=</span> <span class="p">[</span><span class="n">top</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">for</span> <span class="n">top</span> <span class="ow">in</span> <span class="n">top_partitions</span><span class="p">]</span>
+        <span class="n">new_bottom_partitions</span> <span class="o">=</span> <span class="p">[</span><span class="n">bot</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">for</span> <span class="n">bot</span> <span class="ow">in</span> <span class="n">bottom_partitions</span><span class="p">]</span>
+        <span class="n">new_t_groups</span> <span class="o">=</span> <span class="p">{</span><span class="n">t_node</span><span class="p">},</span> <span class="n">t_partition</span> <span class="o">-</span> <span class="p">{</span><span class="n">t_node</span><span class="p">}</span>
+        <span class="n">new_b_groups</span> <span class="o">=</span> <span class="p">{</span><span class="n">b_node</span><span class="p">},</span> <span class="n">b_partition</span> <span class="o">-</span> <span class="p">{</span><span class="n">b_node</span><span class="p">}</span>
+        <span class="c1"># Replace the old partitions with the coupled ones</span>
+        <span class="k">del</span> <span class="n">new_top_partitions</span><span class="p">[</span><span class="n">pair_idx</span><span class="p">]</span>
+        <span class="k">del</span> <span class="n">new_bottom_partitions</span><span class="p">[</span><span class="n">pair_idx</span><span class="p">]</span>
+        <span class="n">new_top_partitions</span><span class="p">[</span><span class="n">pair_idx</span><span class="p">:</span><span class="n">pair_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_t_groups</span>
+        <span class="n">new_bottom_partitions</span><span class="p">[</span><span class="n">pair_idx</span><span class="p">:</span><span class="n">pair_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_b_groups</span>
+
+        <span class="n">new_top_partitions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_refine_node_partitions</span><span class="p">(</span>
+            <span class="n">graph</span><span class="p">,</span> <span class="n">new_top_partitions</span><span class="p">,</span> <span class="n">edge_colors</span>
+        <span class="p">)</span>
+        <span class="n">new_bottom_partitions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_refine_node_partitions</span><span class="p">(</span>
+            <span class="n">graph</span><span class="p">,</span> <span class="n">new_bottom_partitions</span><span class="p">,</span> <span class="n">edge_colors</span><span class="p">,</span> <span class="n">branch</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="n">new_top_partitions</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">new_top_partitions</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_top_partitions</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="n">new_top_partitions</span> <span class="o">=</span> <span class="n">new_top_partitions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">bot</span> <span class="ow">in</span> <span class="n">new_bottom_partitions</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="nb">list</span><span class="p">(</span><span class="n">new_top_partitions</span><span class="p">),</span> <span class="n">bot</span>
+
+    <span class="k">def</span> <span class="nf">_process_ordered_pair_partitions</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">graph</span><span class="p">,</span>
+        <span class="n">top_partitions</span><span class="p">,</span>
+        <span class="n">bottom_partitions</span><span class="p">,</span>
+        <span class="n">edge_colors</span><span class="p">,</span>
+        <span class="n">orbits</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">cosets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Processes ordered pair partitions as per the reference paper. Finds and</span>
+<span class="sd">        returns all permutations and cosets that leave the graph unchanged.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">orbits</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">orbits</span> <span class="o">=</span> <span class="p">[{</span><span class="n">node</span><span class="p">}</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Note that we don&#39;t copy orbits when we are given one. This means</span>
+            <span class="c1"># we leak information between the recursive branches. This is</span>
+            <span class="c1"># intentional!</span>
+            <span class="n">orbits</span> <span class="o">=</span> <span class="n">orbits</span>
+        <span class="k">if</span> <span class="n">cosets</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">cosets</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cosets</span> <span class="o">=</span> <span class="n">cosets</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="n">t_p</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">b_p</span><span class="p">)</span> <span class="k">for</span> <span class="n">t_p</span><span class="p">,</span> <span class="n">b_p</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">top_partitions</span><span class="p">,</span> <span class="n">bottom_partitions</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="c1"># BASECASE</span>
+        <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">top</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">top</span> <span class="ow">in</span> <span class="n">top_partitions</span><span class="p">):</span>
+            <span class="c1"># All nodes are mapped</span>
+            <span class="n">permutations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_permutations</span><span class="p">(</span><span class="n">top_partitions</span><span class="p">,</span> <span class="n">bottom_partitions</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_orbits</span><span class="p">(</span><span class="n">orbits</span><span class="p">,</span> <span class="n">permutations</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">permutations</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[</span><span class="n">permutations</span><span class="p">],</span> <span class="n">cosets</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[],</span> <span class="n">cosets</span>
+
+        <span class="n">permutations</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">unmapped_nodes</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">idx</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">t_partition</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">top_partitions</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">t_partition</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">t_partition</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span>
+        <span class="p">}</span>
+        <span class="n">node</span><span class="p">,</span> <span class="n">pair_idx</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">unmapped_nodes</span><span class="p">)</span>
+        <span class="n">b_partition</span> <span class="o">=</span> <span class="n">bottom_partitions</span><span class="p">[</span><span class="n">pair_idx</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">node2</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">b_partition</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">b_partition</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># Can never result in symmetry</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">node</span> <span class="o">!=</span> <span class="n">node2</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span>
+                <span class="n">node</span> <span class="ow">in</span> <span class="n">orbit</span> <span class="ow">and</span> <span class="n">node2</span> <span class="ow">in</span> <span class="n">orbit</span> <span class="k">for</span> <span class="n">orbit</span> <span class="ow">in</span> <span class="n">orbits</span>
+            <span class="p">):</span>
+                <span class="c1"># Orbit prune branch</span>
+                <span class="k">continue</span>
+            <span class="c1"># REDUCTION</span>
+            <span class="c1"># Couple node to node2</span>
+            <span class="n">partitions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_couple_nodes</span><span class="p">(</span>
+                <span class="n">top_partitions</span><span class="p">,</span>
+                <span class="n">bottom_partitions</span><span class="p">,</span>
+                <span class="n">pair_idx</span><span class="p">,</span>
+                <span class="n">node</span><span class="p">,</span>
+                <span class="n">node2</span><span class="p">,</span>
+                <span class="n">graph</span><span class="p">,</span>
+                <span class="n">edge_colors</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">opp</span> <span class="ow">in</span> <span class="n">partitions</span><span class="p">:</span>
+                <span class="n">new_top_partitions</span><span class="p">,</span> <span class="n">new_bottom_partitions</span> <span class="o">=</span> <span class="n">opp</span>
+
+                <span class="n">new_perms</span><span class="p">,</span> <span class="n">new_cosets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_ordered_pair_partitions</span><span class="p">(</span>
+                    <span class="n">graph</span><span class="p">,</span>
+                    <span class="n">new_top_partitions</span><span class="p">,</span>
+                    <span class="n">new_bottom_partitions</span><span class="p">,</span>
+                    <span class="n">edge_colors</span><span class="p">,</span>
+                    <span class="n">orbits</span><span class="p">,</span>
+                    <span class="n">cosets</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="c1"># COMBINATION</span>
+                <span class="n">permutations</span> <span class="o">+=</span> <span class="n">new_perms</span>
+                <span class="n">cosets</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">new_cosets</span><span class="p">)</span>
+
+        <span class="n">mapped</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">k</span>
+            <span class="k">for</span> <span class="n">top</span><span class="p">,</span> <span class="n">bottom</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">top_partitions</span><span class="p">,</span> <span class="n">bottom_partitions</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">top</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">top</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">top</span> <span class="o">==</span> <span class="n">bottom</span>
+        <span class="p">}</span>
+        <span class="n">ks</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span> <span class="k">if</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="n">node</span><span class="p">}</span>
+        <span class="c1"># Have all nodes with ID &lt; node been mapped?</span>
+        <span class="n">find_coset</span> <span class="o">=</span> <span class="n">ks</span> <span class="o">&lt;=</span> <span class="n">mapped</span> <span class="ow">and</span> <span class="n">node</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cosets</span>
+        <span class="k">if</span> <span class="n">find_coset</span><span class="p">:</span>
+            <span class="c1"># Find the orbit that contains node</span>
+            <span class="k">for</span> <span class="n">orbit</span> <span class="ow">in</span> <span class="n">orbits</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">orbit</span><span class="p">:</span>
+                    <span class="n">cosets</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="n">orbit</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">permutations</span><span class="p">,</span> <span class="n">cosets</span></div>
+</pre></div>
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

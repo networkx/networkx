@@ -1,0 +1,1976 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>networkx.algorithms.approximation.traveling_salesman &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/algorithms/approximation/traveling_salesman';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/algorithms/approximation/traveling_salesman.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../../../../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../../../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../../../../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <h1>Source code for networkx.algorithms.approximation.traveling_salesman</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">=================================</span>
+<span class="sd">Travelling Salesman Problem (TSP)</span>
+<span class="sd">=================================</span>
+
+<span class="sd">Implementation of approximate algorithms</span>
+<span class="sd">for solving and approximating the TSP problem.</span>
+
+<span class="sd">Categories of algorithms which are implemented:</span>
+
+<span class="sd">- Christofides (provides a 3/2-approximation of TSP)</span>
+<span class="sd">- Greedy</span>
+<span class="sd">- Simulated Annealing (SA)</span>
+<span class="sd">- Threshold Accepting (TA)</span>
+<span class="sd">- Asadpour Asymmetric Traveling Salesman Algorithm</span>
+
+<span class="sd">The Travelling Salesman Problem tries to find, given the weight</span>
+<span class="sd">(distance) between all points where a salesman has to visit, the</span>
+<span class="sd">route so that:</span>
+
+<span class="sd">- The total distance (cost) which the salesman travels is minimized.</span>
+<span class="sd">- The salesman returns to the starting point.</span>
+<span class="sd">- Note that for a complete graph, the salesman visits each point once.</span>
+
+<span class="sd">The function `travelling_salesman_problem` allows for incomplete</span>
+<span class="sd">graphs by finding all-pairs shortest paths, effectively converting</span>
+<span class="sd">the problem to a complete graph problem. It calls one of the</span>
+<span class="sd">approximate methods on that problem and then converts the result</span>
+<span class="sd">back to the original graph using the previously found shortest paths.</span>
+
+<span class="sd">TSP is an NP-hard problem in combinatorial optimization,</span>
+<span class="sd">important in operations research and theoretical computer science.</span>
+
+<span class="sd">http://en.wikipedia.org/wiki/Travelling_salesman_problem</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">math</span>
+
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">from</span> <span class="nn">networkx.algorithms.tree.mst</span> <span class="kn">import</span> <span class="n">random_spanning_tree</span>
+<span class="kn">from</span> <span class="nn">networkx.utils</span> <span class="kn">import</span> <span class="n">not_implemented_for</span><span class="p">,</span> <span class="n">pairwise</span><span class="p">,</span> <span class="n">py_random_state</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;traveling_salesman_problem&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;christofides&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;asadpour_atsp&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;greedy_tsp&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;simulated_annealing_tsp&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;threshold_accepting_tsp&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">swap_two_nodes</span><span class="p">(</span><span class="n">soln</span><span class="p">,</span> <span class="n">seed</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Swap two nodes in `soln` to give a neighbor solution.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    soln : list of nodes</span>
+<span class="sd">        Current cycle of nodes</span>
+
+<span class="sd">    seed : integer, random_state, or None (default)</span>
+<span class="sd">        Indicator of random number generation state.</span>
+<span class="sd">        See :ref:`Randomness&lt;randomness&gt;`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    list</span>
+<span class="sd">        The solution after move is applied. (A neighbor solution.)</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">        This function assumes that the incoming list `soln` is a cycle</span>
+<span class="sd">        (that the first and last element are the same) and also that</span>
+<span class="sd">        we don&#39;t want any move to change the first node in the list</span>
+<span class="sd">        (and thus not the last node either).</span>
+
+<span class="sd">        The input list is changed as well as returned. Make a copy if needed.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">        move_one_node</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">seed</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">soln</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span> <span class="n">k</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">soln</span><span class="p">[</span><span class="n">a</span><span class="p">],</span> <span class="n">soln</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="o">=</span> <span class="n">soln</span><span class="p">[</span><span class="n">b</span><span class="p">],</span> <span class="n">soln</span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">soln</span>
+
+
+<span class="k">def</span> <span class="nf">move_one_node</span><span class="p">(</span><span class="n">soln</span><span class="p">,</span> <span class="n">seed</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Move one node to another position to give a neighbor solution.</span>
+
+<span class="sd">    The node to move and the position to move to are chosen randomly.</span>
+<span class="sd">    The first and last nodes are left untouched as soln must be a cycle</span>
+<span class="sd">    starting at that node.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    soln : list of nodes</span>
+<span class="sd">        Current cycle of nodes</span>
+
+<span class="sd">    seed : integer, random_state, or None (default)</span>
+<span class="sd">        Indicator of random number generation state.</span>
+<span class="sd">        See :ref:`Randomness&lt;randomness&gt;`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    list</span>
+<span class="sd">        The solution after move is applied. (A neighbor solution.)</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">        This function assumes that the incoming list `soln` is a cycle</span>
+<span class="sd">        (that the first and last element are the same) and also that</span>
+<span class="sd">        we don&#39;t want any move to change the first node in the list</span>
+<span class="sd">        (and thus not the last node either).</span>
+
+<span class="sd">        The input list is changed as well as returned. Make a copy if needed.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">        swap_two_nodes</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">seed</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">soln</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span> <span class="n">k</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">soln</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">soln</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">soln</span>
+
+
+<div class="viewcode-block" id="christofides"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.approximation.traveling_salesman.christofides.html#networkx.algorithms.approximation.traveling_salesman.christofides">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;directed&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">christofides</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="n">tree</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Approximate a solution of the traveling salesman problem</span>
+
+<span class="sd">    Compute a 3/2-approximation of the traveling salesman problem</span>
+<span class="sd">    in a complete undirected graph using Christofides [1]_ algorithm.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : Graph</span>
+<span class="sd">        `G` should be a complete weighted undirected graph.</span>
+<span class="sd">        The distance between all pairs of nodes should be included.</span>
+
+<span class="sd">    weight : string, optional (default=&quot;weight&quot;)</span>
+<span class="sd">        Edge data key corresponding to the edge weight.</span>
+<span class="sd">        If any edge does not have this attribute the weight is set to 1.</span>
+
+<span class="sd">    tree : NetworkX graph or None (default: None)</span>
+<span class="sd">        A minimum spanning tree of G. Or, if None, the minimum spanning</span>
+<span class="sd">        tree is computed using :func:`networkx.minimum_spanning_tree`</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    list</span>
+<span class="sd">        List of nodes in `G` along a cycle with a 3/2-approximation of</span>
+<span class="sd">        the minimal Hamiltonian cycle.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Christofides, Nicos. &quot;Worst-case analysis of a new heuristic for</span>
+<span class="sd">       the travelling salesman problem.&quot; No. RR-388. Carnegie-Mellon Univ</span>
+<span class="sd">       Pittsburgh Pa Management Sciences Research Group, 1976.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Remove selfloops if necessary</span>
+    <span class="n">loop_nodes</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">nodes_with_selfloops</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">loop_nodes</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">remove_edge</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">remove_edges_from</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">loop_nodes</span><span class="p">)</span>
+    <span class="c1"># Check that G is a complete graph</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="c1"># This check ignores selfloops which is what we want here.</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nbrdict</span><span class="p">)</span> <span class="o">!=</span> <span class="n">N</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">nbrdict</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">adj</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;G must be a complete graph.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">tree</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">tree</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">minimum_spanning_tree</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">)</span>
+    <span class="n">L</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">L</span><span class="o">.</span><span class="n">remove_nodes_from</span><span class="p">([</span><span class="n">v</span> <span class="k">for</span> <span class="n">v</span><span class="p">,</span> <span class="n">degree</span> <span class="ow">in</span> <span class="n">tree</span><span class="o">.</span><span class="n">degree</span> <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">degree</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)])</span>
+    <span class="n">MG</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">MultiGraph</span><span class="p">()</span>
+    <span class="n">MG</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span>
+    <span class="n">edges</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">min_weight_matching</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">)</span>
+    <span class="n">MG</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span><span class="n">edges</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_shortcutting</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">eulerian_circuit</span><span class="p">(</span><span class="n">MG</span><span class="p">))</span></div>
+
+
+<span class="k">def</span> <span class="nf">_shortcutting</span><span class="p">(</span><span class="n">circuit</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Remove duplicate nodes in the path&quot;&quot;&quot;</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">circuit</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">nodes</span><span class="p">:</span>
+            <span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>
+        <span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">nodes</span>
+
+
+<div class="viewcode-block" id="traveling_salesman_problem"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.approximation.traveling_salesman.traveling_salesman_problem.html#networkx.algorithms.approximation.traveling_salesman.traveling_salesman_problem">[docs]</a><span class="k">def</span> <span class="nf">traveling_salesman_problem</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Find the shortest path in `G` connecting specified nodes</span>
+
+<span class="sd">    This function allows approximate solution to the traveling salesman</span>
+<span class="sd">    problem on networks that are not complete graphs and/or where the</span>
+<span class="sd">    salesman does not need to visit all nodes.</span>
+
+<span class="sd">    This function proceeds in two steps. First, it creates a complete</span>
+<span class="sd">    graph using the all-pairs shortest_paths between nodes in `nodes`.</span>
+<span class="sd">    Edge weights in the new graph are the lengths of the paths</span>
+<span class="sd">    between each pair of nodes in the original graph.</span>
+<span class="sd">    Second, an algorithm (default: `christofides` for undirected and</span>
+<span class="sd">    `asadpour_atsp` for directed) is used to approximate the minimal Hamiltonian</span>
+<span class="sd">    cycle on this new graph. The available algorithms are:</span>
+
+<span class="sd">     - christofides</span>
+<span class="sd">     - greedy_tsp</span>
+<span class="sd">     - simulated_annealing_tsp</span>
+<span class="sd">     - threshold_accepting_tsp</span>
+<span class="sd">     - asadpour_atsp</span>
+
+<span class="sd">    Once the Hamiltonian Cycle is found, this function post-processes to</span>
+<span class="sd">    accommodate the structure of the original graph. If `cycle` is ``False``,</span>
+<span class="sd">    the biggest weight edge is removed to make a Hamiltonian path.</span>
+<span class="sd">    Then each edge on the new complete graph used for that analysis is</span>
+<span class="sd">    replaced by the shortest_path between those nodes on the original graph.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+<span class="sd">        A possibly weighted graph</span>
+
+<span class="sd">    nodes : collection of nodes (default=G.nodes)</span>
+<span class="sd">        collection (list, set, etc.) of nodes to visit</span>
+
+<span class="sd">    weight : string, optional (default=&quot;weight&quot;)</span>
+<span class="sd">        Edge data key corresponding to the edge weight.</span>
+<span class="sd">        If any edge does not have this attribute the weight is set to 1.</span>
+
+<span class="sd">    cycle : bool (default: True)</span>
+<span class="sd">        Indicates whether a cycle should be returned, or a path.</span>
+<span class="sd">        Note: the cycle is the approximate minimal cycle.</span>
+<span class="sd">        The path simply removes the biggest edge in that cycle.</span>
+
+<span class="sd">    method : function (default: None)</span>
+<span class="sd">        A function that returns a cycle on all nodes and approximates</span>
+<span class="sd">        the solution to the traveling salesman problem on a complete</span>
+<span class="sd">        graph. The returned cycle is then used to find a corresponding</span>
+<span class="sd">        solution on `G`. `method` should be callable; take inputs</span>
+<span class="sd">        `G`, and `weight`; and return a list of nodes along the cycle.</span>
+
+<span class="sd">        Provided options include :func:`christofides`, :func:`greedy_tsp`,</span>
+<span class="sd">        :func:`simulated_annealing_tsp` and :func:`threshold_accepting_tsp`.</span>
+
+<span class="sd">        If `method is None`: use :func:`christofides` for undirected `G` and</span>
+<span class="sd">        :func:`threshold_accepting_tsp` for directed `G`.</span>
+
+<span class="sd">        To specify parameters for these provided functions, construct lambda</span>
+<span class="sd">        functions that state the specific value. `method` must have 2 inputs.</span>
+<span class="sd">        (See examples).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    list</span>
+<span class="sd">        List of nodes in `G` along a path with an approximation of the minimal</span>
+<span class="sd">        path through `nodes`.</span>
+
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NetworkXError</span>
+<span class="sd">        If `G` is a directed graph it has to be strongly connected or the</span>
+<span class="sd">        complete version cannot be generated.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; tsp = nx.approximation.traveling_salesman_problem</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.cycle_graph(9)</span>
+<span class="sd">    &gt;&gt;&gt; G[4][5][&quot;weight&quot;] = 5  # all other weights are 1</span>
+<span class="sd">    &gt;&gt;&gt; tsp(G, nodes=[3, 6])</span>
+<span class="sd">    [3, 2, 1, 0, 8, 7, 6, 7, 8, 0, 1, 2, 3]</span>
+<span class="sd">    &gt;&gt;&gt; path = tsp(G, cycle=False)</span>
+<span class="sd">    &gt;&gt;&gt; path in ([4, 3, 2, 1, 0, 8, 7, 6, 5], [5, 6, 7, 8, 0, 1, 2, 3, 4])</span>
+<span class="sd">    True</span>
+
+<span class="sd">    Build (curry) your own function to provide parameter values to the methods.</span>
+
+<span class="sd">    &gt;&gt;&gt; SA_tsp = nx.approximation.simulated_annealing_tsp</span>
+<span class="sd">    &gt;&gt;&gt; method = lambda G, wt: SA_tsp(G, &quot;greedy&quot;, weight=wt, temp=500)</span>
+<span class="sd">    &gt;&gt;&gt; path = tsp(G, cycle=False, method=method)</span>
+<span class="sd">    &gt;&gt;&gt; path in ([4, 3, 2, 1, 0, 8, 7, 6, 5], [5, 6, 7, 8, 0, 1, 2, 3, 4])</span>
+<span class="sd">    True</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+            <span class="n">method</span> <span class="o">=</span> <span class="n">asadpour_atsp</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">method</span> <span class="o">=</span> <span class="n">christofides</span>
+    <span class="k">if</span> <span class="n">nodes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
+
+    <span class="n">dist</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span> <span class="ow">in</span> <span class="n">nx</span><span class="o">.</span><span class="n">all_pairs_dijkstra</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">):</span>
+        <span class="n">dist</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span>
+        <span class="n">path</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span>
+
+    <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+        <span class="c1"># If the graph is not strongly connected, raise an exception</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">nx</span><span class="o">.</span><span class="n">is_strongly_connected</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;G is not strongly connected&quot;</span><span class="p">)</span>
+        <span class="n">GG</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">GG</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">u</span> <span class="o">==</span> <span class="n">v</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">GG</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">dist</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">])</span>
+    <span class="n">best_GG</span> <span class="o">=</span> <span class="n">method</span><span class="p">(</span><span class="n">GG</span><span class="p">,</span> <span class="n">weight</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">cycle</span><span class="p">:</span>
+        <span class="c1"># find and remove the biggest edge</span>
+        <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">pairwise</span><span class="p">(</span><span class="n">best_GG</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">dist</span><span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">best_GG</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">u</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="k">while</span> <span class="n">best_GG</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span> <span class="o">!=</span> <span class="n">v</span><span class="p">:</span>
+            <span class="n">pos</span> <span class="o">=</span> <span class="n">best_GG</span><span class="p">[</span><span class="n">pos</span><span class="p">:]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">u</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">best_GG</span> <span class="o">=</span> <span class="n">best_GG</span><span class="p">[</span><span class="n">pos</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">best_GG</span><span class="p">[:</span><span class="n">pos</span><span class="p">]</span>
+
+    <span class="n">best_path</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">pairwise</span><span class="p">(</span><span class="n">best_GG</span><span class="p">):</span>
+        <span class="n">best_path</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">path</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">best_path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">best_path</span></div>
+
+
+<div class="viewcode-block" id="asadpour_atsp"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.approximation.traveling_salesman.asadpour_atsp.html#networkx.algorithms.approximation.traveling_salesman.asadpour_atsp">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;undirected&quot;</span><span class="p">)</span>
+<span class="nd">@py_random_state</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">asadpour_atsp</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns an approximate solution to the traveling salesman problem.</span>
+
+<span class="sd">    This approximate solution is one of the best known approximations for the</span>
+<span class="sd">    asymmetric traveling salesman problem developed by Asadpour et al,</span>
+<span class="sd">    [1]_. The algorithm first solves the Held-Karp relaxation to find a lower</span>
+<span class="sd">    bound for the weight of the cycle. Next, it constructs an exponential</span>
+<span class="sd">    distribution of undirected spanning trees where the probability of an</span>
+<span class="sd">    edge being in the tree corresponds to the weight of that edge using a</span>
+<span class="sd">    maximum entropy rounding scheme. Next we sample that distribution</span>
+<span class="sd">    $2 \\lceil \\ln n \\rceil$ times and save the minimum sampled tree once the</span>
+<span class="sd">    direction of the arcs is added back to the edges. Finally, we augment</span>
+<span class="sd">    then short circuit that graph to find the approximate tour for the</span>
+<span class="sd">    salesman.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : nx.DiGraph</span>
+<span class="sd">        The graph should be a complete weighted directed graph. The</span>
+<span class="sd">        distance between all paris of nodes should be included and the triangle</span>
+<span class="sd">        inequality should hold. That is, the direct edge between any two nodes</span>
+<span class="sd">        should be the path of least cost.</span>
+
+<span class="sd">    weight : string, optional (default=&quot;weight&quot;)</span>
+<span class="sd">        Edge data key corresponding to the edge weight.</span>
+<span class="sd">        If any edge does not have this attribute the weight is set to 1.</span>
+
+<span class="sd">    seed : integer, random_state, or None (default)</span>
+<span class="sd">        Indicator of random number generation state.</span>
+<span class="sd">        See :ref:`Randomness&lt;randomness&gt;`.</span>
+
+<span class="sd">    source : node label (default=`None`)</span>
+<span class="sd">        If given, return the cycle starting and ending at the given node.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    cycle : list of nodes</span>
+<span class="sd">        Returns the cycle (list of nodes) that a salesman can follow to minimize</span>
+<span class="sd">        the total weight of the trip.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NetworkXError</span>
+<span class="sd">        If `G` is not complete or has less than two nodes, the algorithm raises</span>
+<span class="sd">        an exception.</span>
+
+<span class="sd">    NetworkXError</span>
+<span class="sd">        If `source` is not `None` and is not a node in `G`, the algorithm raises</span>
+<span class="sd">        an exception.</span>
+
+<span class="sd">    NetworkXNotImplemented</span>
+<span class="sd">        If `G` is an undirected graph.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] A. Asadpour, M. X. Goemans, A. Madry, S. O. Gharan, and A. Saberi,</span>
+<span class="sd">       An o(log n/log log n)-approximation algorithm for the asymmetric</span>
+<span class="sd">       traveling salesman problem, Operations research, 65 (2017),</span>
+<span class="sd">       pp. 1043–1061</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import networkx as nx</span>
+<span class="sd">    &gt;&gt;&gt; import networkx.algorithms.approximation as approx</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.complete_graph(3, create_using=nx.DiGraph)</span>
+<span class="sd">    &gt;&gt;&gt; nx.set_edge_attributes(G, {(0, 1): 2, (1, 2): 2, (2, 0): 2, (0, 2): 1, (2, 1): 1, (1, 0): 1}, &quot;weight&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; tour = approx.asadpour_atsp(G,source=0)</span>
+<span class="sd">    &gt;&gt;&gt; tour</span>
+<span class="sd">    [0, 2, 1, 0]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">ceil</span><span class="p">,</span> <span class="n">exp</span>
+    <span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">log</span> <span class="k">as</span> <span class="n">ln</span>
+
+    <span class="c1"># Check that G is a complete graph</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">N</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;G must have at least two nodes&quot;</span><span class="p">)</span>
+    <span class="c1"># This check ignores selfloops which is what we want here.</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nbrdict</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">n</span> <span class="ow">in</span> <span class="n">nbrdict</span><span class="p">)</span> <span class="o">!=</span> <span class="n">N</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">nbrdict</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">adj</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;G is not a complete DiGraph&quot;</span><span class="p">)</span>
+    <span class="c1"># Check that the source vertex, if given, is in the graph</span>
+    <span class="k">if</span> <span class="n">source</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">source</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;Given source node not in G.&quot;</span><span class="p">)</span>
+
+    <span class="n">opt_hk</span><span class="p">,</span> <span class="n">z_star</span> <span class="o">=</span> <span class="n">held_karp_ascent</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="p">)</span>
+
+    <span class="c1"># Test to see if the ascent method found an integer solution or a fractional</span>
+    <span class="c1"># solution. If it is integral then z_star is a nx.Graph, otherwise it is</span>
+    <span class="c1"># a dict</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">z_star</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="c1"># Here we are using the shortcutting method to go from the list of edges</span>
+        <span class="c1"># returned from eularian_circuit to a list of nodes</span>
+        <span class="k">return</span> <span class="n">_shortcutting</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">eulerian_circuit</span><span class="p">(</span><span class="n">z_star</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">))</span>
+
+    <span class="c1"># Create the undirected support of z_star</span>
+    <span class="n">z_support</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">MultiGraph</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">z_star</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">z_support</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
+            <span class="n">edge_weight</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">G</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">][</span><span class="n">weight</span><span class="p">],</span> <span class="n">G</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="n">u</span><span class="p">][</span><span class="n">weight</span><span class="p">])</span>
+            <span class="n">z_support</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="n">weight</span><span class="p">:</span> <span class="n">edge_weight</span><span class="p">})</span>
+
+    <span class="c1"># Create the exponential distribution of spanning trees</span>
+    <span class="n">gamma</span> <span class="o">=</span> <span class="n">spanning_tree_distribution</span><span class="p">(</span><span class="n">z_support</span><span class="p">,</span> <span class="n">z_star</span><span class="p">)</span>
+
+    <span class="c1"># Write the lambda values to the edges of z_support</span>
+    <span class="n">z_support</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">(</span><span class="n">z_support</span><span class="p">)</span>
+    <span class="n">lambda_dict</span> <span class="o">=</span> <span class="p">{(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span> <span class="n">exp</span><span class="p">(</span><span class="n">gamma</span><span class="p">[(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)])</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">z_support</span><span class="o">.</span><span class="n">edges</span><span class="p">()}</span>
+    <span class="n">nx</span><span class="o">.</span><span class="n">set_edge_attributes</span><span class="p">(</span><span class="n">z_support</span><span class="p">,</span> <span class="n">lambda_dict</span><span class="p">,</span> <span class="s2">&quot;weight&quot;</span><span class="p">)</span>
+    <span class="k">del</span> <span class="n">gamma</span><span class="p">,</span> <span class="n">lambda_dict</span>
+
+    <span class="c1"># Sample 2 * ceil( ln(n) ) spanning trees and record the minimum one</span>
+    <span class="n">minimum_sampled_tree</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">minimum_sampled_tree_weight</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">inf</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">ceil</span><span class="p">(</span><span class="n">ln</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">()))):</span>
+        <span class="n">sampled_tree</span> <span class="o">=</span> <span class="n">random_spanning_tree</span><span class="p">(</span><span class="n">z_support</span><span class="p">,</span> <span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
+        <span class="n">sampled_tree_weight</span> <span class="o">=</span> <span class="n">sampled_tree</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">weight</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sampled_tree_weight</span> <span class="o">&lt;</span> <span class="n">minimum_sampled_tree_weight</span><span class="p">:</span>
+            <span class="n">minimum_sampled_tree</span> <span class="o">=</span> <span class="n">sampled_tree</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">minimum_sampled_tree_weight</span> <span class="o">=</span> <span class="n">sampled_tree_weight</span>
+
+    <span class="c1"># Orient the edges in that tree to keep the cost of the tree the same.</span>
+    <span class="n">t_star</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">MultiDiGraph</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">minimum_sampled_tree</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">weight</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="n">G</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">][</span><span class="n">weight</span><span class="p">]:</span>
+            <span class="n">t_star</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="n">weight</span><span class="p">:</span> <span class="n">d</span><span class="p">})</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">t_star</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="n">weight</span><span class="p">:</span> <span class="n">d</span><span class="p">})</span>
+
+    <span class="c1"># Find the node demands needed to neutralize the flow of t_star in G</span>
+    <span class="n">node_demands</span> <span class="o">=</span> <span class="p">{</span><span class="n">n</span><span class="p">:</span> <span class="n">t_star</span><span class="o">.</span><span class="n">out_degree</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">-</span> <span class="n">t_star</span><span class="o">.</span><span class="n">in_degree</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">t_star</span><span class="p">}</span>
+    <span class="n">nx</span><span class="o">.</span><span class="n">set_node_attributes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">node_demands</span><span class="p">,</span> <span class="s2">&quot;demand&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Find the min_cost_flow</span>
+    <span class="n">flow_dict</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">min_cost_flow</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="s2">&quot;demand&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Build the flow into t_star</span>
+    <span class="k">for</span> <span class="n">source</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">flow_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">t_star</span><span class="o">.</span><span class="n">edges</span> <span class="ow">and</span> <span class="n">values</span><span class="p">[</span><span class="n">target</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># IF values[target] &gt; 0 we have to add that many edges</span>
+                <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="n">target</span><span class="p">]):</span>
+                    <span class="n">t_star</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+
+    <span class="c1"># Return the shortcut eulerian circuit</span>
+    <span class="n">circuit</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">eulerian_circuit</span><span class="p">(</span><span class="n">t_star</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_shortcutting</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">held_karp_ascent</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Minimizes the Held-Karp relaxation of the TSP for `G`</span>
+
+<span class="sd">    Solves the Held-Karp relaxation of the input complete digraph and scales</span>
+<span class="sd">    the output solution for use in the Asadpour [1]_ ASTP algorithm.</span>
+
+<span class="sd">    The Held-Karp relaxation defines the lower bound for solutions to the</span>
+<span class="sd">    ATSP, although it does return a fractional solution. This is used in the</span>
+<span class="sd">    Asadpour algorithm as an initial solution which is later rounded to a</span>
+<span class="sd">    integral tree within the spanning tree polytopes. This function solves</span>
+<span class="sd">    the relaxation with the branch and bound method in [2]_.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : nx.DiGraph</span>
+<span class="sd">        The graph should be a complete weighted directed graph.</span>
+<span class="sd">        The distance between all paris of nodes should be included.</span>
+
+<span class="sd">    weight : string, optional (default=&quot;weight&quot;)</span>
+<span class="sd">        Edge data key corresponding to the edge weight.</span>
+<span class="sd">        If any edge does not have this attribute the weight is set to 1.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    OPT : float</span>
+<span class="sd">        The cost for the optimal solution to the Held-Karp relaxation</span>
+<span class="sd">    z : dict or nx.Graph</span>
+<span class="sd">        A symmetrized and scaled version of the optimal solution to the</span>
+<span class="sd">        Held-Karp relaxation for use in the Asadpour algorithm.</span>
+
+<span class="sd">        If an integral solution is found, then that is an optimal solution for</span>
+<span class="sd">        the ATSP problem and that is returned instead.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] A. Asadpour, M. X. Goemans, A. Madry, S. O. Gharan, and A. Saberi,</span>
+<span class="sd">       An o(log n/log log n)-approximation algorithm for the asymmetric</span>
+<span class="sd">       traveling salesman problem, Operations research, 65 (2017),</span>
+<span class="sd">       pp. 1043–1061</span>
+
+<span class="sd">    .. [2] M. Held, R. M. Karp, The traveling-salesman problem and minimum</span>
+<span class="sd">           spanning trees, Operations Research, 1970-11-01, Vol. 18 (6),</span>
+<span class="sd">           pp.1138-1162</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+    <span class="kn">import</span> <span class="nn">scipy.optimize</span> <span class="k">as</span> <span class="nn">optimize</span>
+
+    <span class="k">def</span> <span class="nf">k_pi</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Find the set of minimum 1-Arborescences for G at point pi.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Set</span>
+<span class="sd">            The set of minimum 1-Arborescences</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Create a copy of G without vertex 1.</span>
+        <span class="n">G_1</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">minimum_1_arborescences</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="n">minimum_1_arborescence_weight</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">inf</span>
+
+        <span class="c1"># node is node &#39;1&#39; in the Held and Karp paper</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="fm">__iter__</span><span class="p">())</span>
+        <span class="n">G_1</span><span class="o">.</span><span class="n">remove_node</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+
+        <span class="c1"># Iterate over the spanning arborescences of the graph until we know</span>
+        <span class="c1"># that we have found the minimum 1-arborescences. My proposed strategy</span>
+        <span class="c1"># is to find the most extensive root to connect to from &#39;node 1&#39; and</span>
+        <span class="c1"># the least expensive one. We then iterate over arborescences until</span>
+        <span class="c1"># the cost of the basic arborescence is the cost of the minimum one</span>
+        <span class="c1"># plus the difference between the most and least expensive roots,</span>
+        <span class="c1"># that way the cost of connecting &#39;node 1&#39; will by definition not by</span>
+        <span class="c1"># minimum</span>
+        <span class="n">min_root</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;node&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="n">weight</span><span class="p">:</span> <span class="n">math</span><span class="o">.</span><span class="n">inf</span><span class="p">}</span>
+        <span class="n">max_root</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;node&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="n">weight</span><span class="p">:</span> <span class="o">-</span><span class="n">math</span><span class="o">.</span><span class="n">inf</span><span class="p">}</span>
+        <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">d</span><span class="p">[</span><span class="n">weight</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">min_root</span><span class="p">[</span><span class="n">weight</span><span class="p">]:</span>
+                <span class="n">min_root</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;node&quot;</span><span class="p">:</span> <span class="n">v</span><span class="p">,</span> <span class="n">weight</span><span class="p">:</span> <span class="n">d</span><span class="p">[</span><span class="n">weight</span><span class="p">]}</span>
+            <span class="k">if</span> <span class="n">d</span><span class="p">[</span><span class="n">weight</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">max_root</span><span class="p">[</span><span class="n">weight</span><span class="p">]:</span>
+                <span class="n">max_root</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;node&quot;</span><span class="p">:</span> <span class="n">v</span><span class="p">,</span> <span class="n">weight</span><span class="p">:</span> <span class="n">d</span><span class="p">[</span><span class="n">weight</span><span class="p">]}</span>
+
+        <span class="n">min_in_edge</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">in_edges</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">weight</span><span class="p">])</span>
+        <span class="n">min_root</span><span class="p">[</span><span class="n">weight</span><span class="p">]</span> <span class="o">=</span> <span class="n">min_root</span><span class="p">[</span><span class="n">weight</span><span class="p">]</span> <span class="o">+</span> <span class="n">min_in_edge</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">weight</span><span class="p">]</span>
+        <span class="n">max_root</span><span class="p">[</span><span class="n">weight</span><span class="p">]</span> <span class="o">=</span> <span class="n">max_root</span><span class="p">[</span><span class="n">weight</span><span class="p">]</span> <span class="o">+</span> <span class="n">min_in_edge</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">weight</span><span class="p">]</span>
+
+        <span class="n">min_arb_weight</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">inf</span>
+        <span class="k">for</span> <span class="n">arb</span> <span class="ow">in</span> <span class="n">nx</span><span class="o">.</span><span class="n">ArborescenceIterator</span><span class="p">(</span><span class="n">G_1</span><span class="p">):</span>
+            <span class="n">arb_weight</span> <span class="o">=</span> <span class="n">arb</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">weight</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">min_arb_weight</span> <span class="o">==</span> <span class="n">math</span><span class="o">.</span><span class="n">inf</span><span class="p">:</span>
+                <span class="n">min_arb_weight</span> <span class="o">=</span> <span class="n">arb_weight</span>
+            <span class="k">elif</span> <span class="n">arb_weight</span> <span class="o">&gt;</span> <span class="n">min_arb_weight</span> <span class="o">+</span> <span class="n">max_root</span><span class="p">[</span><span class="n">weight</span><span class="p">]</span> <span class="o">-</span> <span class="n">min_root</span><span class="p">[</span><span class="n">weight</span><span class="p">]:</span>
+                <span class="k">break</span>
+            <span class="c1"># We have to pick the root node of the arborescence for the out</span>
+            <span class="c1"># edge of the first vertex as that is the only node without an</span>
+            <span class="c1"># edge directed into it.</span>
+            <span class="k">for</span> <span class="n">N</span><span class="p">,</span> <span class="n">deg</span> <span class="ow">in</span> <span class="n">arb</span><span class="o">.</span><span class="n">in_degree</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">deg</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="c1"># root found</span>
+                    <span class="n">arb</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="n">weight</span><span class="p">:</span> <span class="n">G</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="n">N</span><span class="p">][</span><span class="n">weight</span><span class="p">]})</span>
+                    <span class="n">arb_weight</span> <span class="o">+=</span> <span class="n">G</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="n">N</span><span class="p">][</span><span class="n">weight</span><span class="p">]</span>
+                    <span class="k">break</span>
+
+            <span class="c1"># We can pick the minimum weight in-edge for the vertex with</span>
+            <span class="c1"># a cycle. If there are multiple edges with the same, minimum</span>
+            <span class="c1"># weight, We need to add all of them.</span>
+            <span class="c1">#</span>
+            <span class="c1"># Delete the edge (N, v) so that we cannot pick it.</span>
+            <span class="n">edge_data</span> <span class="o">=</span> <span class="n">G</span><span class="p">[</span><span class="n">N</span><span class="p">][</span><span class="n">n</span><span class="p">]</span>
+            <span class="n">G</span><span class="o">.</span><span class="n">remove_edge</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+            <span class="n">min_weight</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">in_edges</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">weight</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">])[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">min_edges</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">in_edges</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">weight</span><span class="p">)</span> <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="n">min_weight</span>
+            <span class="p">]</span>
+            <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">min_edges</span><span class="p">:</span>
+                <span class="n">new_arb</span> <span class="o">=</span> <span class="n">arb</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="n">new_arb</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="n">weight</span><span class="p">:</span> <span class="n">d</span><span class="p">})</span>
+                <span class="n">new_arb_weight</span> <span class="o">=</span> <span class="n">arb_weight</span> <span class="o">+</span> <span class="n">d</span>
+                <span class="c1"># Check to see the weight of the arborescence, if it is a</span>
+                <span class="c1"># new minimum, clear all of the old potential minimum</span>
+                <span class="c1"># 1-arborescences and add this is the only one. If its</span>
+                <span class="c1"># weight is above the known minimum, do not add it.</span>
+                <span class="k">if</span> <span class="n">new_arb_weight</span> <span class="o">&lt;</span> <span class="n">minimum_1_arborescence_weight</span><span class="p">:</span>
+                    <span class="n">minimum_1_arborescences</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+                    <span class="n">minimum_1_arborescence_weight</span> <span class="o">=</span> <span class="n">new_arb_weight</span>
+                <span class="c1"># We have a 1-arborescence, add it to the set</span>
+                <span class="k">if</span> <span class="n">new_arb_weight</span> <span class="o">==</span> <span class="n">minimum_1_arborescence_weight</span><span class="p">:</span>
+                    <span class="n">minimum_1_arborescences</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">new_arb</span><span class="p">)</span>
+            <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="o">**</span><span class="n">edge_data</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">minimum_1_arborescences</span>
+
+    <span class="k">def</span> <span class="nf">direction_of_ascent</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Find the direction of ascent at point pi.</span>
+
+<span class="sd">        See [1]_ for more information.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict</span>
+<span class="sd">            A mapping from the nodes of the graph which represents the direction</span>
+<span class="sd">            of ascent.</span>
+
+<span class="sd">        References</span>
+<span class="sd">        ----------</span>
+<span class="sd">        .. [1] M. Held, R. M. Karp, The traveling-salesman problem and minimum</span>
+<span class="sd">           spanning trees, Operations Research, 1970-11-01, Vol. 18 (6),</span>
+<span class="sd">           pp.1138-1162</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># 1. Set d equal to the zero n-vector.</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">G</span><span class="p">:</span>
+            <span class="n">d</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">del</span> <span class="n">n</span>
+        <span class="c1"># 2. Find a 1-Aborescence T^k such that k is in K(pi, d).</span>
+        <span class="n">minimum_1_arborescences</span> <span class="o">=</span> <span class="n">k_pi</span><span class="p">()</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="c1"># Reduce K(pi) to K(pi, d)</span>
+            <span class="c1"># Find the arborescence in K(pi) which increases the lest in</span>
+            <span class="c1"># direction d</span>
+            <span class="n">min_k_d_weight</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">inf</span>
+            <span class="n">min_k_d</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">for</span> <span class="n">arborescence</span> <span class="ow">in</span> <span class="n">minimum_1_arborescences</span><span class="p">:</span>
+                <span class="n">weighted_cost</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">deg</span> <span class="ow">in</span> <span class="n">arborescence</span><span class="o">.</span><span class="n">degree</span><span class="p">:</span>
+                    <span class="n">weighted_cost</span> <span class="o">+=</span> <span class="n">d</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">deg</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">weighted_cost</span> <span class="o">&lt;</span> <span class="n">min_k_d_weight</span><span class="p">:</span>
+                    <span class="n">min_k_d_weight</span> <span class="o">=</span> <span class="n">weighted_cost</span>
+                    <span class="n">min_k_d</span> <span class="o">=</span> <span class="n">arborescence</span>
+
+            <span class="c1"># 3. If sum of d_i * v_{i, k} is greater than zero, terminate</span>
+            <span class="k">if</span> <span class="n">min_k_d_weight</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">d</span><span class="p">,</span> <span class="n">min_k_d</span>
+            <span class="c1"># 4. d_i = d_i + v_{i, k}</span>
+            <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">deg</span> <span class="ow">in</span> <span class="n">min_k_d</span><span class="o">.</span><span class="n">degree</span><span class="p">:</span>
+                <span class="n">d</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">+=</span> <span class="n">deg</span> <span class="o">-</span> <span class="mi">2</span>
+            <span class="c1"># Check that we do not need to terminate because the direction</span>
+            <span class="c1"># of ascent does not exist. This is done with linear</span>
+            <span class="c1"># programming.</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">minimum_1_arborescences</span><span class="p">),</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+            <span class="n">a_eq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">minimum_1_arborescences</span><span class="p">)),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+            <span class="n">b_eq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+            <span class="n">b_eq</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">for</span> <span class="n">arb_count</span><span class="p">,</span> <span class="n">arborescence</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">minimum_1_arborescences</span><span class="p">):</span>
+                <span class="n">n_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+                <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">deg</span> <span class="ow">in</span> <span class="n">arborescence</span><span class="o">.</span><span class="n">degree</span><span class="p">:</span>
+                    <span class="n">a_eq</span><span class="p">[</span><span class="n">n_count</span><span class="p">][</span><span class="n">arb_count</span><span class="p">]</span> <span class="o">=</span> <span class="n">deg</span> <span class="o">-</span> <span class="mi">2</span>
+                    <span class="n">n_count</span> <span class="o">-=</span> <span class="mi">1</span>
+                <span class="n">a_eq</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">)][</span><span class="n">arb_count</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">program_result</span> <span class="o">=</span> <span class="n">optimize</span><span class="o">.</span><span class="n">linprog</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">A_eq</span><span class="o">=</span><span class="n">a_eq</span><span class="p">,</span> <span class="n">b_eq</span><span class="o">=</span><span class="n">b_eq</span><span class="p">)</span>
+            <span class="c1"># If the constants exist, then the direction of ascent doesn&#39;t</span>
+            <span class="k">if</span> <span class="n">program_result</span><span class="o">.</span><span class="n">success</span><span class="p">:</span>
+                <span class="c1"># There is no direction of ascent</span>
+                <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="n">minimum_1_arborescences</span>
+
+            <span class="c1"># 5. GO TO 2</span>
+
+    <span class="k">def</span> <span class="nf">find_epsilon</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given the direction of ascent at pi, find the maximum distance we can go</span>
+<span class="sd">        in that direction.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        k_xy : set</span>
+<span class="sd">            The set of 1-arborescences which have the minimum rate of increase</span>
+<span class="sd">            in the direction of ascent</span>
+
+<span class="sd">        d : dict</span>
+<span class="sd">            The direction of ascent</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float</span>
+<span class="sd">            The distance we can travel in direction `d`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">min_epsilon</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">inf</span>
+        <span class="k">for</span> <span class="n">e_u</span><span class="p">,</span> <span class="n">e_v</span><span class="p">,</span> <span class="n">e_w</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">weight</span><span class="p">):</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">e_u</span><span class="p">,</span> <span class="n">e_v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">k</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="c1"># Now, I have found a condition which MUST be true for the edges to</span>
+            <span class="c1"># be a valid substitute. The edge in the graph which is the</span>
+            <span class="c1"># substitute is the one with the same terminated end. This can be</span>
+            <span class="c1"># checked rather simply.</span>
+            <span class="c1">#</span>
+            <span class="c1"># Find the edge within k which is the substitute. Because k is a</span>
+            <span class="c1"># 1-arborescence, we know that they is only one such edges</span>
+            <span class="c1"># leading into every vertex.</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">k</span><span class="o">.</span><span class="n">in_edges</span><span class="p">(</span><span class="n">e_v</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">weight</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span>
+            <span class="n">sub_u</span><span class="p">,</span> <span class="n">sub_v</span><span class="p">,</span> <span class="n">sub_w</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">k</span><span class="o">.</span><span class="n">in_edges</span><span class="p">(</span><span class="n">e_v</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">weight</span><span class="p">)</span><span class="o">.</span><span class="fm">__iter__</span><span class="p">())</span>
+            <span class="n">k</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">e_u</span><span class="p">,</span> <span class="n">e_v</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="n">weight</span><span class="p">:</span> <span class="n">e_w</span><span class="p">})</span>
+            <span class="n">k</span><span class="o">.</span><span class="n">remove_edge</span><span class="p">(</span><span class="n">sub_u</span><span class="p">,</span> <span class="n">sub_v</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="nb">max</span><span class="p">(</span><span class="n">d</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">k</span><span class="o">.</span><span class="n">in_degree</span><span class="p">())</span> <span class="o">&lt;=</span> <span class="mi">1</span>
+                <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">)</span> <span class="o">==</span> <span class="n">k</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">()</span>
+                <span class="ow">and</span> <span class="n">nx</span><span class="o">.</span><span class="n">is_weakly_connected</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+            <span class="p">):</span>
+                <span class="c1"># Ascent method calculation</span>
+                <span class="k">if</span> <span class="n">d</span><span class="p">[</span><span class="n">sub_u</span><span class="p">]</span> <span class="o">==</span> <span class="n">d</span><span class="p">[</span><span class="n">e_u</span><span class="p">]</span> <span class="ow">or</span> <span class="n">sub_w</span> <span class="o">==</span> <span class="n">e_w</span><span class="p">:</span>
+                    <span class="c1"># Revert to the original graph</span>
+                    <span class="n">k</span><span class="o">.</span><span class="n">remove_edge</span><span class="p">(</span><span class="n">e_u</span><span class="p">,</span> <span class="n">e_v</span><span class="p">)</span>
+                    <span class="n">k</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">sub_u</span><span class="p">,</span> <span class="n">sub_v</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="n">weight</span><span class="p">:</span> <span class="n">sub_w</span><span class="p">})</span>
+                    <span class="k">continue</span>
+                <span class="n">epsilon</span> <span class="o">=</span> <span class="p">(</span><span class="n">sub_w</span> <span class="o">-</span> <span class="n">e_w</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">e_u</span><span class="p">]</span> <span class="o">-</span> <span class="n">d</span><span class="p">[</span><span class="n">sub_u</span><span class="p">])</span>
+                <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">epsilon</span> <span class="o">&lt;</span> <span class="n">min_epsilon</span><span class="p">:</span>
+                    <span class="n">min_epsilon</span> <span class="o">=</span> <span class="n">epsilon</span>
+            <span class="c1"># Revert to the original graph</span>
+            <span class="n">k</span><span class="o">.</span><span class="n">remove_edge</span><span class="p">(</span><span class="n">e_u</span><span class="p">,</span> <span class="n">e_v</span><span class="p">)</span>
+            <span class="n">k</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">sub_u</span><span class="p">,</span> <span class="n">sub_v</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="n">weight</span><span class="p">:</span> <span class="n">sub_w</span><span class="p">})</span>
+
+        <span class="k">return</span> <span class="n">min_epsilon</span>
+
+    <span class="c1"># I have to know that the elements in pi correspond to the correct elements</span>
+    <span class="c1"># in the direction of ascent, even if the node labels are not integers.</span>
+    <span class="c1"># Thus, I will use dictionaries to made that mapping.</span>
+    <span class="n">pi_dict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">G</span><span class="p">:</span>
+        <span class="n">pi_dict</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">del</span> <span class="n">n</span>
+    <span class="n">original_edge_weights</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="n">original_edge_weights</span><span class="p">[(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">weight</span><span class="p">]</span>
+    <span class="n">dir_ascent</span><span class="p">,</span> <span class="n">k_d</span> <span class="o">=</span> <span class="n">direction_of_ascent</span><span class="p">()</span>
+    <span class="k">while</span> <span class="n">dir_ascent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">max_distance</span> <span class="o">=</span> <span class="n">find_epsilon</span><span class="p">(</span><span class="n">k_d</span><span class="p">,</span> <span class="n">dir_ascent</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">dir_ascent</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">pi_dict</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">+=</span> <span class="n">max_distance</span> <span class="o">*</span> <span class="n">v</span>
+        <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="n">d</span><span class="p">[</span><span class="n">weight</span><span class="p">]</span> <span class="o">=</span> <span class="n">original_edge_weights</span><span class="p">[(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)]</span> <span class="o">+</span> <span class="n">pi_dict</span><span class="p">[</span><span class="n">u</span><span class="p">]</span>
+        <span class="n">dir_ascent</span><span class="p">,</span> <span class="n">k_d</span> <span class="o">=</span> <span class="n">direction_of_ascent</span><span class="p">()</span>
+    <span class="c1"># k_d is no longer an individual 1-arborescence but rather a set of</span>
+    <span class="c1"># minimal 1-arborescences at the maximum point of the polytope and should</span>
+    <span class="c1"># be reflected as such</span>
+    <span class="n">k_max</span> <span class="o">=</span> <span class="n">k_d</span>
+
+    <span class="c1"># Search for a cycle within k_max. If a cycle exists, return it as the</span>
+    <span class="c1"># solution</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">k_max</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">([</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">k</span> <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">degree</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">])</span> <span class="o">==</span> <span class="n">G</span><span class="o">.</span><span class="n">order</span><span class="p">():</span>
+            <span class="c1"># Tour found</span>
+            <span class="k">return</span> <span class="n">k</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">weight</span><span class="p">),</span> <span class="n">k</span>
+
+    <span class="c1"># Write the original edge weights back to G and every member of k_max at</span>
+    <span class="c1"># the maximum point. Also average the number of times that edge appears in</span>
+    <span class="c1"># the set of minimal 1-arborescences.</span>
+    <span class="n">x_star</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">size_k_max</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">k_max</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="n">edge_count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">d</span><span class="p">[</span><span class="n">weight</span><span class="p">]</span> <span class="o">=</span> <span class="n">original_edge_weights</span><span class="p">[(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)]</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">k_max</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">k</span><span class="o">.</span><span class="n">edges</span><span class="p">():</span>
+                <span class="n">edge_count</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">k</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">][</span><span class="n">weight</span><span class="p">]</span> <span class="o">=</span> <span class="n">original_edge_weights</span><span class="p">[(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)]</span>
+        <span class="n">x_star</span><span class="p">[(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)]</span> <span class="o">=</span> <span class="n">edge_count</span> <span class="o">/</span> <span class="n">size_k_max</span>
+    <span class="c1"># Now symmetrize the edges in x_star and scale them according to (5) in</span>
+    <span class="c1"># reference [1]</span>
+    <span class="n">z_star</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">scale_factor</span> <span class="o">=</span> <span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">order</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">G</span><span class="o">.</span><span class="n">order</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">x_star</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">frequency</span> <span class="o">=</span> <span class="n">x_star</span><span class="p">[(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)]</span> <span class="o">+</span> <span class="n">x_star</span><span class="p">[(</span><span class="n">v</span><span class="p">,</span> <span class="n">u</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="n">frequency</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">z_star</span><span class="p">[(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)]</span> <span class="o">=</span> <span class="n">scale_factor</span> <span class="o">*</span> <span class="n">frequency</span>
+    <span class="k">del</span> <span class="n">x_star</span>
+    <span class="c1"># Return the optimal weight and the z dict</span>
+    <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="n">k_max</span><span class="o">.</span><span class="fm">__iter__</span><span class="p">())</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">weight</span><span class="p">),</span> <span class="n">z_star</span>
+
+
+<span class="k">def</span> <span class="nf">spanning_tree_distribution</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Find the asadpour exponential distribution of spanning trees.</span>
+
+<span class="sd">    Solves the Maximum Entropy Convex Program in the Asadpour algorithm [1]_</span>
+<span class="sd">    using the approach in section 7 to build an exponential distribution of</span>
+<span class="sd">    undirected spanning trees.</span>
+
+<span class="sd">    This algorithm ensures that the probability of any edge in a spanning</span>
+<span class="sd">    tree is proportional to the sum of the probabilities of the tress</span>
+<span class="sd">    containing that edge over the sum of the probabilities of all spanning</span>
+<span class="sd">    trees of the graph.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : nx.MultiGraph</span>
+<span class="sd">        The undirected support graph for the Held Karp relaxation</span>
+
+<span class="sd">    z : dict</span>
+<span class="sd">        The output of `held_karp_ascent()`, a scaled version of the Held-Karp</span>
+<span class="sd">        solution.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gamma : dict</span>
+<span class="sd">        The probability distribution which approximately preserves the marginal</span>
+<span class="sd">        probabilities of `z`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">exp</span>
+    <span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">log</span> <span class="k">as</span> <span class="n">ln</span>
+
+    <span class="k">def</span> <span class="nf">q</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The value of q(e) is described in the Asadpour paper is &quot;the</span>
+<span class="sd">        probability that edge e will be included in a spanning tree T that is</span>
+<span class="sd">        chosen with probability proportional to exp(gamma(T))&quot; which</span>
+<span class="sd">        basically means that it is the total probability of the edge appearing</span>
+<span class="sd">        across the whole distribution.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        e : tuple</span>
+<span class="sd">            The `(u, v)` tuple describing the edge we are interested in</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float</span>
+<span class="sd">            The probability that a spanning tree chosen according to the</span>
+<span class="sd">            current values of gamma will include edge `e`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Create the laplacian matrices</span>
+        <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="n">d</span><span class="p">[</span><span class="n">lambda_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">exp</span><span class="p">(</span><span class="n">gamma</span><span class="p">[(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)])</span>
+        <span class="n">G_Kirchhoff</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">total_spanning_tree_weight</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">lambda_key</span><span class="p">)</span>
+        <span class="n">G_e</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">contracted_edge</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">self_loops</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">G_e_Kirchhoff</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">total_spanning_tree_weight</span><span class="p">(</span><span class="n">G_e</span><span class="p">,</span> <span class="n">lambda_key</span><span class="p">)</span>
+
+        <span class="c1"># Multiply by the weight of the contracted edge since it is not included</span>
+        <span class="c1"># in the total weight of the contracted graph.</span>
+        <span class="k">return</span> <span class="n">exp</span><span class="p">(</span><span class="n">gamma</span><span class="p">[(</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">])])</span> <span class="o">*</span> <span class="n">G_e_Kirchhoff</span> <span class="o">/</span> <span class="n">G_Kirchhoff</span>
+
+    <span class="c1"># initialize gamma to the zero dict</span>
+    <span class="n">gamma</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
+        <span class="n">gamma</span><span class="p">[(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># set epsilon</span>
+    <span class="n">EPSILON</span> <span class="o">=</span> <span class="mf">0.2</span>
+
+    <span class="c1"># pick an edge attribute name that is unlikely to be in the graph</span>
+    <span class="n">lambda_key</span> <span class="o">=</span> <span class="s2">&quot;spanning_tree_distribution&#39;s secret attribute name for lambda&quot;</span>
+
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="c1"># We need to know that know that no values of q_e are greater than</span>
+        <span class="c1"># (1 + epsilon) * z_e, however changing one gamma value can increase the</span>
+        <span class="c1"># value of a different q_e, so we have to complete the for loop without</span>
+        <span class="c1"># changing anything for the condition to be meet</span>
+        <span class="n">in_range_count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1"># Search for an edge with q_e &gt; (1 + epsilon) * z_e</span>
+        <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">gamma</span><span class="p">:</span>
+            <span class="n">e</span> <span class="o">=</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+            <span class="n">q_e</span> <span class="o">=</span> <span class="n">q</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="n">z_e</span> <span class="o">=</span> <span class="n">z</span><span class="p">[</span><span class="n">e</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">q_e</span> <span class="o">&gt;</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">EPSILON</span><span class="p">)</span> <span class="o">*</span> <span class="n">z_e</span><span class="p">:</span>
+                <span class="n">delta</span> <span class="o">=</span> <span class="n">ln</span><span class="p">(</span>
+                    <span class="p">(</span><span class="n">q_e</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">EPSILON</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">z_e</span><span class="p">))</span>
+                    <span class="o">/</span> <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">q_e</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">EPSILON</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">z_e</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="n">gamma</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">-=</span> <span class="n">delta</span>
+                <span class="c1"># Check that delta had the desired effect</span>
+                <span class="n">new_q_e</span> <span class="o">=</span> <span class="n">q</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                <span class="n">desired_q_e</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">EPSILON</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">z_e</span>
+                <span class="k">if</span> <span class="nb">round</span><span class="p">(</span><span class="n">new_q_e</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">round</span><span class="p">(</span><span class="n">desired_q_e</span><span class="p">,</span> <span class="mi">8</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Unable to modify probability for edge (</span><span class="si">{</span><span class="n">u</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2">)&quot;</span>
+                    <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">in_range_count</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="c1"># Check if the for loop terminated without changing any gamma</span>
+        <span class="k">if</span> <span class="n">in_range_count</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">gamma</span><span class="p">):</span>
+            <span class="k">break</span>
+
+    <span class="c1"># Remove the new edge attributes</span>
+    <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">lambda_key</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+            <span class="k">del</span> <span class="n">d</span><span class="p">[</span><span class="n">lambda_key</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">gamma</span>
+
+
+<div class="viewcode-block" id="greedy_tsp"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.approximation.traveling_salesman.greedy_tsp.html#networkx.algorithms.approximation.traveling_salesman.greedy_tsp">[docs]</a><span class="k">def</span> <span class="nf">greedy_tsp</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return a low cost cycle starting at `source` and its cost.</span>
+
+<span class="sd">    This approximates a solution to the traveling salesman problem.</span>
+<span class="sd">    It finds a cycle of all the nodes that a salesman can visit in order</span>
+<span class="sd">    to visit many nodes while minimizing total distance.</span>
+<span class="sd">    It uses a simple greedy algorithm.</span>
+<span class="sd">    In essence, this function returns a large cycle given a source point</span>
+<span class="sd">    for which the total cost of the cycle is minimized.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : Graph</span>
+<span class="sd">        The Graph should be a complete weighted undirected graph.</span>
+<span class="sd">        The distance between all pairs of nodes should be included.</span>
+
+<span class="sd">    weight : string, optional (default=&quot;weight&quot;)</span>
+<span class="sd">        Edge data key corresponding to the edge weight.</span>
+<span class="sd">        If any edge does not have this attribute the weight is set to 1.</span>
+
+<span class="sd">    source : node, optional (default: first node in list(G))</span>
+<span class="sd">        Starting node.  If None, defaults to ``next(iter(G))``</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    cycle : list of nodes</span>
+<span class="sd">        Returns the cycle (list of nodes) that a salesman</span>
+<span class="sd">        can follow to minimize total weight of the trip.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NetworkXError</span>
+<span class="sd">        If `G` is not complete, the algorithm raises an exception.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from networkx.algorithms import approximation as approx</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.DiGraph()</span>
+<span class="sd">    &gt;&gt;&gt; G.add_weighted_edges_from({</span>
+<span class="sd">    ...     (&quot;A&quot;, &quot;B&quot;, 3), (&quot;A&quot;, &quot;C&quot;, 17), (&quot;A&quot;, &quot;D&quot;, 14), (&quot;B&quot;, &quot;A&quot;, 3),</span>
+<span class="sd">    ...     (&quot;B&quot;, &quot;C&quot;, 12), (&quot;B&quot;, &quot;D&quot;, 16), (&quot;C&quot;, &quot;A&quot;, 13),(&quot;C&quot;, &quot;B&quot;, 12),</span>
+<span class="sd">    ...     (&quot;C&quot;, &quot;D&quot;, 4), (&quot;D&quot;, &quot;A&quot;, 14), (&quot;D&quot;, &quot;B&quot;, 15), (&quot;D&quot;, &quot;C&quot;, 2)</span>
+<span class="sd">    ... })</span>
+<span class="sd">    &gt;&gt;&gt; cycle = approx.greedy_tsp(G, source=&quot;D&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; cost = sum(G[n][nbr][&quot;weight&quot;] for n, nbr in nx.utils.pairwise(cycle))</span>
+<span class="sd">    &gt;&gt;&gt; cycle</span>
+<span class="sd">    [&#39;D&#39;, &#39;C&#39;, &#39;B&#39;, &#39;A&#39;, &#39;D&#39;]</span>
+<span class="sd">    &gt;&gt;&gt; cost</span>
+<span class="sd">    31</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This implementation of a greedy algorithm is based on the following:</span>
+
+<span class="sd">    - The algorithm adds a node to the solution at every iteration.</span>
+<span class="sd">    - The algorithm selects a node not already in the cycle whose connection</span>
+<span class="sd">      to the previous node adds the least cost to the cycle.</span>
+
+<span class="sd">    A greedy algorithm does not always give the best solution.</span>
+<span class="sd">    However, it can construct a first feasible solution which can</span>
+<span class="sd">    be passed as a parameter to an iterative improvement algorithm such</span>
+<span class="sd">    as Simulated Annealing, or Threshold Accepting.</span>
+
+<span class="sd">    Time complexity: It has a running time $O(|V|^2)$</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Check that G is a complete graph</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="c1"># This check ignores selfloops which is what we want here.</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nbrdict</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">n</span> <span class="ow">in</span> <span class="n">nbrdict</span><span class="p">)</span> <span class="o">!=</span> <span class="n">N</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">nbrdict</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">adj</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;G must be a complete graph.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">source</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">source</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">arbitrary_element</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">()</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">neighbor</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="n">source</span><span class="p">))</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">source</span><span class="p">,</span> <span class="n">neighbor</span><span class="p">,</span> <span class="n">source</span><span class="p">]</span>
+
+    <span class="n">nodeset</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+    <span class="n">nodeset</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+    <span class="n">cycle</span> <span class="o">=</span> <span class="p">[</span><span class="n">source</span><span class="p">]</span>
+    <span class="n">next_node</span> <span class="o">=</span> <span class="n">source</span>
+    <span class="k">while</span> <span class="n">nodeset</span><span class="p">:</span>
+        <span class="n">nbrdict</span> <span class="o">=</span> <span class="n">G</span><span class="p">[</span><span class="n">next_node</span><span class="p">]</span>
+        <span class="n">next_node</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">nodeset</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">nbrdict</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">weight</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">cycle</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">next_node</span><span class="p">)</span>
+        <span class="n">nodeset</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">next_node</span><span class="p">)</span>
+    <span class="n">cycle</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cycle</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">cycle</span></div>
+
+
+<div class="viewcode-block" id="simulated_annealing_tsp"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.approximation.traveling_salesman.simulated_annealing_tsp.html#networkx.algorithms.approximation.traveling_salesman.simulated_annealing_tsp">[docs]</a><span class="nd">@py_random_state</span><span class="p">(</span><span class="mi">9</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">simulated_annealing_tsp</span><span class="p">(</span>
+    <span class="n">G</span><span class="p">,</span>
+    <span class="n">init_cycle</span><span class="p">,</span>
+    <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span>
+    <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">temp</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">move</span><span class="o">=</span><span class="s2">&quot;1-1&quot;</span><span class="p">,</span>
+    <span class="n">max_iterations</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">N_inner</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">alpha</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+    <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns an approximate solution to the traveling salesman problem.</span>
+
+<span class="sd">    This function uses simulated annealing to approximate the minimal cost</span>
+<span class="sd">    cycle through the nodes. Starting from a suboptimal solution, simulated</span>
+<span class="sd">    annealing perturbs that solution, occasionally accepting changes that make</span>
+<span class="sd">    the solution worse to escape from a locally optimal solution. The chance</span>
+<span class="sd">    of accepting such changes decreases over the iterations to encourage</span>
+<span class="sd">    an optimal result.  In summary, the function returns a cycle starting</span>
+<span class="sd">    at `source` for which the total cost is minimized. It also returns the cost.</span>
+
+<span class="sd">    The chance of accepting a proposed change is related to a parameter called</span>
+<span class="sd">    the temperature (annealing has a physical analogue of steel hardening</span>
+<span class="sd">    as it cools). As the temperature is reduced, the chance of moves that</span>
+<span class="sd">    increase cost goes down.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : Graph</span>
+<span class="sd">        `G` should be a complete weighted undirected graph.</span>
+<span class="sd">        The distance between all pairs of nodes should be included.</span>
+
+<span class="sd">    init_cycle : list of all nodes or &quot;greedy&quot;</span>
+<span class="sd">        The initial solution (a cycle through all nodes returning to the start).</span>
+<span class="sd">        This argument has no default to make you think about it.</span>
+<span class="sd">        If &quot;greedy&quot;, use `greedy_tsp(G, weight)`.</span>
+<span class="sd">        Other common starting cycles are `list(G) + [next(iter(G))]` or the final</span>
+<span class="sd">        result of `simulated_annealing_tsp` when doing `threshold_accepting_tsp`.</span>
+
+<span class="sd">    weight : string, optional (default=&quot;weight&quot;)</span>
+<span class="sd">        Edge data key corresponding to the edge weight.</span>
+<span class="sd">        If any edge does not have this attribute the weight is set to 1.</span>
+
+<span class="sd">    source : node, optional (default: first node in list(G))</span>
+<span class="sd">        Starting node.  If None, defaults to ``next(iter(G))``</span>
+
+<span class="sd">    temp : int, optional (default=100)</span>
+<span class="sd">        The algorithm&#39;s temperature parameter. It represents the initial</span>
+<span class="sd">        value of temperature</span>
+
+<span class="sd">    move : &quot;1-1&quot; or &quot;1-0&quot; or function, optional (default=&quot;1-1&quot;)</span>
+<span class="sd">        Indicator of what move to use when finding new trial solutions.</span>
+<span class="sd">        Strings indicate two special built-in moves:</span>
+
+<span class="sd">        - &quot;1-1&quot;: 1-1 exchange which transposes the position</span>
+<span class="sd">          of two elements of the current solution.</span>
+<span class="sd">          The function called is :func:`swap_two_nodes`.</span>
+<span class="sd">          For example if we apply 1-1 exchange in the solution</span>
+<span class="sd">          ``A = [3, 2, 1, 4, 3]``</span>
+<span class="sd">          we can get the following by the transposition of 1 and 4 elements:</span>
+<span class="sd">          ``A&#39; = [3, 2, 4, 1, 3]``</span>
+<span class="sd">        - &quot;1-0&quot;: 1-0 exchange which moves an node in the solution</span>
+<span class="sd">          to a new position.</span>
+<span class="sd">          The function called is :func:`move_one_node`.</span>
+<span class="sd">          For example if we apply 1-0 exchange in the solution</span>
+<span class="sd">          ``A = [3, 2, 1, 4, 3]``</span>
+<span class="sd">          we can transfer the fourth element to the second position:</span>
+<span class="sd">          ``A&#39; = [3, 4, 2, 1, 3]``</span>
+
+<span class="sd">        You may provide your own functions to enact a move from</span>
+<span class="sd">        one solution to a neighbor solution. The function must take</span>
+<span class="sd">        the solution as input along with a `seed` input to control</span>
+<span class="sd">        random number generation (see the `seed` input here).</span>
+<span class="sd">        Your function should maintain the solution as a cycle with</span>
+<span class="sd">        equal first and last node and all others appearing once.</span>
+<span class="sd">        Your function should return the new solution.</span>
+
+<span class="sd">    max_iterations : int, optional (default=10)</span>
+<span class="sd">        Declared done when this number of consecutive iterations of</span>
+<span class="sd">        the outer loop occurs without any change in the best cost solution.</span>
+
+<span class="sd">    N_inner : int, optional (default=100)</span>
+<span class="sd">        The number of iterations of the inner loop.</span>
+
+<span class="sd">    alpha : float between (0, 1), optional (default=0.01)</span>
+<span class="sd">        Percentage of temperature decrease in each iteration</span>
+<span class="sd">        of outer loop</span>
+
+<span class="sd">    seed : integer, random_state, or None (default)</span>
+<span class="sd">        Indicator of random number generation state.</span>
+<span class="sd">        See :ref:`Randomness&lt;randomness&gt;`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    cycle : list of nodes</span>
+<span class="sd">        Returns the cycle (list of nodes) that a salesman</span>
+<span class="sd">        can follow to minimize total weight of the trip.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NetworkXError</span>
+<span class="sd">        If `G` is not complete the algorithm raises an exception.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from networkx.algorithms import approximation as approx</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.DiGraph()</span>
+<span class="sd">    &gt;&gt;&gt; G.add_weighted_edges_from({</span>
+<span class="sd">    ...     (&quot;A&quot;, &quot;B&quot;, 3), (&quot;A&quot;, &quot;C&quot;, 17), (&quot;A&quot;, &quot;D&quot;, 14), (&quot;B&quot;, &quot;A&quot;, 3),</span>
+<span class="sd">    ...     (&quot;B&quot;, &quot;C&quot;, 12), (&quot;B&quot;, &quot;D&quot;, 16), (&quot;C&quot;, &quot;A&quot;, 13),(&quot;C&quot;, &quot;B&quot;, 12),</span>
+<span class="sd">    ...     (&quot;C&quot;, &quot;D&quot;, 4), (&quot;D&quot;, &quot;A&quot;, 14), (&quot;D&quot;, &quot;B&quot;, 15), (&quot;D&quot;, &quot;C&quot;, 2)</span>
+<span class="sd">    ... })</span>
+<span class="sd">    &gt;&gt;&gt; cycle = approx.simulated_annealing_tsp(G, &quot;greedy&quot;, source=&quot;D&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; cost = sum(G[n][nbr][&quot;weight&quot;] for n, nbr in nx.utils.pairwise(cycle))</span>
+<span class="sd">    &gt;&gt;&gt; cycle</span>
+<span class="sd">    [&#39;D&#39;, &#39;C&#39;, &#39;B&#39;, &#39;A&#39;, &#39;D&#39;]</span>
+<span class="sd">    &gt;&gt;&gt; cost</span>
+<span class="sd">    31</span>
+<span class="sd">    &gt;&gt;&gt; incycle = [&quot;D&quot;, &quot;B&quot;, &quot;A&quot;, &quot;C&quot;, &quot;D&quot;]</span>
+<span class="sd">    &gt;&gt;&gt; cycle = approx.simulated_annealing_tsp(G, incycle, source=&quot;D&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; cost = sum(G[n][nbr][&quot;weight&quot;] for n, nbr in nx.utils.pairwise(cycle))</span>
+<span class="sd">    &gt;&gt;&gt; cycle</span>
+<span class="sd">    [&#39;D&#39;, &#39;C&#39;, &#39;B&#39;, &#39;A&#39;, &#39;D&#39;]</span>
+<span class="sd">    &gt;&gt;&gt; cost</span>
+<span class="sd">    31</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Simulated Annealing is a metaheuristic local search algorithm.</span>
+<span class="sd">    The main characteristic of this algorithm is that it accepts</span>
+<span class="sd">    even solutions which lead to the increase of the cost in order</span>
+<span class="sd">    to escape from low quality local optimal solutions.</span>
+
+<span class="sd">    This algorithm needs an initial solution. If not provided, it is</span>
+<span class="sd">    constructed by a simple greedy algorithm. At every iteration, the</span>
+<span class="sd">    algorithm selects thoughtfully a neighbor solution.</span>
+<span class="sd">    Consider $c(x)$ cost of current solution and $c(x&#39;)$ cost of a</span>
+<span class="sd">    neighbor solution.</span>
+<span class="sd">    If $c(x&#39;) - c(x) &lt;= 0$ then the neighbor solution becomes the current</span>
+<span class="sd">    solution for the next iteration. Otherwise, the algorithm accepts</span>
+<span class="sd">    the neighbor solution with probability $p = exp - ([c(x&#39;) - c(x)] / temp)$.</span>
+<span class="sd">    Otherwise the current solution is retained.</span>
+
+<span class="sd">    `temp` is a parameter of the algorithm and represents temperature.</span>
+
+<span class="sd">    Time complexity:</span>
+<span class="sd">    For $N_i$ iterations of the inner loop and $N_o$ iterations of the</span>
+<span class="sd">    outer loop, this algorithm has running time $O(N_i * N_o * |V|)$.</span>
+
+<span class="sd">    For more information and how the algorithm is inspired see:</span>
+<span class="sd">    http://en.wikipedia.org/wiki/Simulated_annealing</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">move</span> <span class="o">==</span> <span class="s2">&quot;1-1&quot;</span><span class="p">:</span>
+        <span class="n">move</span> <span class="o">=</span> <span class="n">swap_two_nodes</span>
+    <span class="k">elif</span> <span class="n">move</span> <span class="o">==</span> <span class="s2">&quot;1-0&quot;</span><span class="p">:</span>
+        <span class="n">move</span> <span class="o">=</span> <span class="n">move_one_node</span>
+    <span class="k">if</span> <span class="n">init_cycle</span> <span class="o">==</span> <span class="s2">&quot;greedy&quot;</span><span class="p">:</span>
+        <span class="c1"># Construct an initial solution using a greedy algorithm.</span>
+        <span class="n">cycle</span> <span class="o">=</span> <span class="n">greedy_tsp</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">()</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">cycle</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">cycle</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">init_cycle</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">source</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">source</span> <span class="o">=</span> <span class="n">cycle</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">source</span> <span class="o">!=</span> <span class="n">cycle</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;source must be first node in init_cycle&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cycle</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">cycle</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;init_cycle must be a cycle. (return to start)&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cycle</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nbunch_iter</span><span class="p">(</span><span class="n">cycle</span><span class="p">)))</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;init_cycle should be a cycle over all nodes in G.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Check that G is a complete graph</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="c1"># This check ignores selfloops which is what we want here.</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nbrdict</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">n</span> <span class="ow">in</span> <span class="n">nbrdict</span><span class="p">)</span> <span class="o">!=</span> <span class="n">N</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">nbrdict</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">adj</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;G must be a complete graph.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">()</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">neighbor</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="n">source</span><span class="p">))</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">source</span><span class="p">,</span> <span class="n">neighbor</span><span class="p">,</span> <span class="n">source</span><span class="p">]</span>
+
+    <span class="c1"># Find the cost of initial solution</span>
+    <span class="n">cost</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">G</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">weight</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">pairwise</span><span class="p">(</span><span class="n">cycle</span><span class="p">))</span>
+
+    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">best_cycle</span> <span class="o">=</span> <span class="n">cycle</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">best_cost</span> <span class="o">=</span> <span class="n">cost</span>
+    <span class="k">while</span> <span class="n">count</span> <span class="o">&lt;=</span> <span class="n">max_iterations</span> <span class="ow">and</span> <span class="n">temp</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_inner</span><span class="p">):</span>
+            <span class="n">adj_sol</span> <span class="o">=</span> <span class="n">move</span><span class="p">(</span><span class="n">cycle</span><span class="p">,</span> <span class="n">seed</span><span class="p">)</span>
+            <span class="n">adj_cost</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">G</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">weight</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">pairwise</span><span class="p">(</span><span class="n">adj_sol</span><span class="p">))</span>
+            <span class="n">delta</span> <span class="o">=</span> <span class="n">adj_cost</span> <span class="o">-</span> <span class="n">cost</span>
+            <span class="k">if</span> <span class="n">delta</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># Set current solution the adjacent solution.</span>
+                <span class="n">cycle</span> <span class="o">=</span> <span class="n">adj_sol</span>
+                <span class="n">cost</span> <span class="o">=</span> <span class="n">adj_cost</span>
+
+                <span class="k">if</span> <span class="n">cost</span> <span class="o">&lt;</span> <span class="n">best_cost</span><span class="p">:</span>
+                    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+                    <span class="n">best_cycle</span> <span class="o">=</span> <span class="n">cycle</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                    <span class="n">best_cost</span> <span class="o">=</span> <span class="n">cost</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Accept even a worse solution with probability p.</span>
+                <span class="n">p</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">delta</span> <span class="o">/</span> <span class="n">temp</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">p</span> <span class="o">&gt;=</span> <span class="n">seed</span><span class="o">.</span><span class="n">random</span><span class="p">():</span>
+                    <span class="n">cycle</span> <span class="o">=</span> <span class="n">adj_sol</span>
+                    <span class="n">cost</span> <span class="o">=</span> <span class="n">adj_cost</span>
+        <span class="n">temp</span> <span class="o">-=</span> <span class="n">temp</span> <span class="o">*</span> <span class="n">alpha</span>
+
+    <span class="k">return</span> <span class="n">best_cycle</span></div>
+
+
+<div class="viewcode-block" id="threshold_accepting_tsp"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.approximation.traveling_salesman.threshold_accepting_tsp.html#networkx.algorithms.approximation.traveling_salesman.threshold_accepting_tsp">[docs]</a><span class="nd">@py_random_state</span><span class="p">(</span><span class="mi">9</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">threshold_accepting_tsp</span><span class="p">(</span>
+    <span class="n">G</span><span class="p">,</span>
+    <span class="n">init_cycle</span><span class="p">,</span>
+    <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span>
+    <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">threshold</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">move</span><span class="o">=</span><span class="s2">&quot;1-1&quot;</span><span class="p">,</span>
+    <span class="n">max_iterations</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">N_inner</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns an approximate solution to the traveling salesman problem.</span>
+
+<span class="sd">    This function uses threshold accepting methods to approximate the minimal cost</span>
+<span class="sd">    cycle through the nodes. Starting from a suboptimal solution, threshold</span>
+<span class="sd">    accepting methods perturb that solution, accepting any changes that make</span>
+<span class="sd">    the solution no worse than increasing by a threshold amount. Improvements</span>
+<span class="sd">    in cost are accepted, but so are changes leading to small increases in cost.</span>
+<span class="sd">    This allows the solution to leave suboptimal local minima in solution space.</span>
+<span class="sd">    The threshold is decreased slowly as iterations proceed helping to ensure</span>
+<span class="sd">    an optimum. In summary, the function returns a cycle starting at `source`</span>
+<span class="sd">    for which the total cost is minimized.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : Graph</span>
+<span class="sd">        `G` should be a complete weighted undirected graph.</span>
+<span class="sd">        The distance between all pairs of nodes should be included.</span>
+
+<span class="sd">    init_cycle : list or &quot;greedy&quot;</span>
+<span class="sd">        The initial solution (a cycle through all nodes returning to the start).</span>
+<span class="sd">        This argument has no default to make you think about it.</span>
+<span class="sd">        If &quot;greedy&quot;, use `greedy_tsp(G, weight)`.</span>
+<span class="sd">        Other common starting cycles are `list(G) + [next(iter(G))]` or the final</span>
+<span class="sd">        result of `simulated_annealing_tsp` when doing `threshold_accepting_tsp`.</span>
+
+<span class="sd">    weight : string, optional (default=&quot;weight&quot;)</span>
+<span class="sd">        Edge data key corresponding to the edge weight.</span>
+<span class="sd">        If any edge does not have this attribute the weight is set to 1.</span>
+
+<span class="sd">    source : node, optional (default: first node in list(G))</span>
+<span class="sd">        Starting node.  If None, defaults to ``next(iter(G))``</span>
+
+<span class="sd">    threshold : int, optional (default=1)</span>
+<span class="sd">        The algorithm&#39;s threshold parameter. It represents the initial</span>
+<span class="sd">        threshold&#39;s value</span>
+
+<span class="sd">    move : &quot;1-1&quot; or &quot;1-0&quot; or function, optional (default=&quot;1-1&quot;)</span>
+<span class="sd">        Indicator of what move to use when finding new trial solutions.</span>
+<span class="sd">        Strings indicate two special built-in moves:</span>
+
+<span class="sd">        - &quot;1-1&quot;: 1-1 exchange which transposes the position</span>
+<span class="sd">          of two elements of the current solution.</span>
+<span class="sd">          The function called is :func:`swap_two_nodes`.</span>
+<span class="sd">          For example if we apply 1-1 exchange in the solution</span>
+<span class="sd">          ``A = [3, 2, 1, 4, 3]``</span>
+<span class="sd">          we can get the following by the transposition of 1 and 4 elements:</span>
+<span class="sd">          ``A&#39; = [3, 2, 4, 1, 3]``</span>
+<span class="sd">        - &quot;1-0&quot;: 1-0 exchange which moves an node in the solution</span>
+<span class="sd">          to a new position.</span>
+<span class="sd">          The function called is :func:`move_one_node`.</span>
+<span class="sd">          For example if we apply 1-0 exchange in the solution</span>
+<span class="sd">          ``A = [3, 2, 1, 4, 3]``</span>
+<span class="sd">          we can transfer the fourth element to the second position:</span>
+<span class="sd">          ``A&#39; = [3, 4, 2, 1, 3]``</span>
+
+<span class="sd">        You may provide your own functions to enact a move from</span>
+<span class="sd">        one solution to a neighbor solution. The function must take</span>
+<span class="sd">        the solution as input along with a `seed` input to control</span>
+<span class="sd">        random number generation (see the `seed` input here).</span>
+<span class="sd">        Your function should maintain the solution as a cycle with</span>
+<span class="sd">        equal first and last node and all others appearing once.</span>
+<span class="sd">        Your function should return the new solution.</span>
+
+<span class="sd">    max_iterations : int, optional (default=10)</span>
+<span class="sd">        Declared done when this number of consecutive iterations of</span>
+<span class="sd">        the outer loop occurs without any change in the best cost solution.</span>
+
+<span class="sd">    N_inner : int, optional (default=100)</span>
+<span class="sd">        The number of iterations of the inner loop.</span>
+
+<span class="sd">    alpha : float between (0, 1), optional (default=0.1)</span>
+<span class="sd">        Percentage of threshold decrease when there is at</span>
+<span class="sd">        least one acceptance of a neighbor solution.</span>
+<span class="sd">        If no inner loop moves are accepted the threshold remains unchanged.</span>
+
+<span class="sd">    seed : integer, random_state, or None (default)</span>
+<span class="sd">        Indicator of random number generation state.</span>
+<span class="sd">        See :ref:`Randomness&lt;randomness&gt;`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    cycle : list of nodes</span>
+<span class="sd">        Returns the cycle (list of nodes) that a salesman</span>
+<span class="sd">        can follow to minimize total weight of the trip.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NetworkXError</span>
+<span class="sd">        If `G` is not complete the algorithm raises an exception.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from networkx.algorithms import approximation as approx</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.DiGraph()</span>
+<span class="sd">    &gt;&gt;&gt; G.add_weighted_edges_from({</span>
+<span class="sd">    ...     (&quot;A&quot;, &quot;B&quot;, 3), (&quot;A&quot;, &quot;C&quot;, 17), (&quot;A&quot;, &quot;D&quot;, 14), (&quot;B&quot;, &quot;A&quot;, 3),</span>
+<span class="sd">    ...     (&quot;B&quot;, &quot;C&quot;, 12), (&quot;B&quot;, &quot;D&quot;, 16), (&quot;C&quot;, &quot;A&quot;, 13),(&quot;C&quot;, &quot;B&quot;, 12),</span>
+<span class="sd">    ...     (&quot;C&quot;, &quot;D&quot;, 4), (&quot;D&quot;, &quot;A&quot;, 14), (&quot;D&quot;, &quot;B&quot;, 15), (&quot;D&quot;, &quot;C&quot;, 2)</span>
+<span class="sd">    ... })</span>
+<span class="sd">    &gt;&gt;&gt; cycle = approx.threshold_accepting_tsp(G, &quot;greedy&quot;, source=&quot;D&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; cost = sum(G[n][nbr][&quot;weight&quot;] for n, nbr in nx.utils.pairwise(cycle))</span>
+<span class="sd">    &gt;&gt;&gt; cycle</span>
+<span class="sd">    [&#39;D&#39;, &#39;C&#39;, &#39;B&#39;, &#39;A&#39;, &#39;D&#39;]</span>
+<span class="sd">    &gt;&gt;&gt; cost</span>
+<span class="sd">    31</span>
+<span class="sd">    &gt;&gt;&gt; incycle = [&quot;D&quot;, &quot;B&quot;, &quot;A&quot;, &quot;C&quot;, &quot;D&quot;]</span>
+<span class="sd">    &gt;&gt;&gt; cycle = approx.threshold_accepting_tsp(G, incycle, source=&quot;D&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; cost = sum(G[n][nbr][&quot;weight&quot;] for n, nbr in nx.utils.pairwise(cycle))</span>
+<span class="sd">    &gt;&gt;&gt; cycle</span>
+<span class="sd">    [&#39;D&#39;, &#39;C&#39;, &#39;B&#39;, &#39;A&#39;, &#39;D&#39;]</span>
+<span class="sd">    &gt;&gt;&gt; cost</span>
+<span class="sd">    31</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Threshold Accepting is a metaheuristic local search algorithm.</span>
+<span class="sd">    The main characteristic of this algorithm is that it accepts</span>
+<span class="sd">    even solutions which lead to the increase of the cost in order</span>
+<span class="sd">    to escape from low quality local optimal solutions.</span>
+
+<span class="sd">    This algorithm needs an initial solution. This solution can be</span>
+<span class="sd">    constructed by a simple greedy algorithm. At every iteration, it</span>
+<span class="sd">    selects thoughtfully a neighbor solution.</span>
+<span class="sd">    Consider $c(x)$ cost of current solution and $c(x&#39;)$ cost of</span>
+<span class="sd">    neighbor solution.</span>
+<span class="sd">    If $c(x&#39;) - c(x) &lt;= threshold$ then the neighbor solution becomes the current</span>
+<span class="sd">    solution for the next iteration, where the threshold is named threshold.</span>
+
+<span class="sd">    In comparison to the Simulated Annealing algorithm, the Threshold</span>
+<span class="sd">    Accepting algorithm does not accept very low quality solutions</span>
+<span class="sd">    (due to the presence of the threshold value). In the case of</span>
+<span class="sd">    Simulated Annealing, even a very low quality solution can</span>
+<span class="sd">    be accepted with probability $p$.</span>
+
+<span class="sd">    Time complexity:</span>
+<span class="sd">    It has a running time $O(m * n * |V|)$ where $m$ and $n$ are the number</span>
+<span class="sd">    of times the outer and inner loop run respectively.</span>
+
+<span class="sd">    For more information and how algorithm is inspired see:</span>
+<span class="sd">    https://doi.org/10.1016/0021-9991(90)90201-B</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    simulated_annealing_tsp</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">move</span> <span class="o">==</span> <span class="s2">&quot;1-1&quot;</span><span class="p">:</span>
+        <span class="n">move</span> <span class="o">=</span> <span class="n">swap_two_nodes</span>
+    <span class="k">elif</span> <span class="n">move</span> <span class="o">==</span> <span class="s2">&quot;1-0&quot;</span><span class="p">:</span>
+        <span class="n">move</span> <span class="o">=</span> <span class="n">move_one_node</span>
+    <span class="k">if</span> <span class="n">init_cycle</span> <span class="o">==</span> <span class="s2">&quot;greedy&quot;</span><span class="p">:</span>
+        <span class="c1"># Construct an initial solution using a greedy algorithm.</span>
+        <span class="n">cycle</span> <span class="o">=</span> <span class="n">greedy_tsp</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">()</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">cycle</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">cycle</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">init_cycle</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">source</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">source</span> <span class="o">=</span> <span class="n">cycle</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">source</span> <span class="o">!=</span> <span class="n">cycle</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;source must be first node in init_cycle&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cycle</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">cycle</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;init_cycle must be a cycle. (return to start)&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cycle</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nbunch_iter</span><span class="p">(</span><span class="n">cycle</span><span class="p">)))</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;init_cycle is not all and only nodes.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Check that G is a complete graph</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="c1"># This check ignores selfloops which is what we want here.</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nbrdict</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">n</span> <span class="ow">in</span> <span class="n">nbrdict</span><span class="p">)</span> <span class="o">!=</span> <span class="n">N</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">nbrdict</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">adj</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;G must be a complete graph.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">()</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">neighbor</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="n">source</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">source</span><span class="p">,</span> <span class="n">neighbor</span><span class="p">,</span> <span class="n">source</span><span class="p">]</span>
+
+    <span class="c1"># Find the cost of initial solution</span>
+    <span class="n">cost</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">G</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">weight</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">pairwise</span><span class="p">(</span><span class="n">cycle</span><span class="p">))</span>
+
+    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">best_cycle</span> <span class="o">=</span> <span class="n">cycle</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">best_cost</span> <span class="o">=</span> <span class="n">cost</span>
+    <span class="k">while</span> <span class="n">count</span> <span class="o">&lt;=</span> <span class="n">max_iterations</span><span class="p">:</span>
+        <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">accepted</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_inner</span><span class="p">):</span>
+            <span class="n">adj_sol</span> <span class="o">=</span> <span class="n">move</span><span class="p">(</span><span class="n">cycle</span><span class="p">,</span> <span class="n">seed</span><span class="p">)</span>
+            <span class="n">adj_cost</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">G</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">weight</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">pairwise</span><span class="p">(</span><span class="n">adj_sol</span><span class="p">))</span>
+            <span class="n">delta</span> <span class="o">=</span> <span class="n">adj_cost</span> <span class="o">-</span> <span class="n">cost</span>
+            <span class="k">if</span> <span class="n">delta</span> <span class="o">&lt;=</span> <span class="n">threshold</span><span class="p">:</span>
+                <span class="n">accepted</span> <span class="o">=</span> <span class="kc">True</span>
+
+                <span class="c1"># Set current solution the adjacent solution.</span>
+                <span class="n">cycle</span> <span class="o">=</span> <span class="n">adj_sol</span>
+                <span class="n">cost</span> <span class="o">=</span> <span class="n">adj_cost</span>
+
+                <span class="k">if</span> <span class="n">cost</span> <span class="o">&lt;</span> <span class="n">best_cost</span><span class="p">:</span>
+                    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+                    <span class="n">best_cycle</span> <span class="o">=</span> <span class="n">cycle</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                    <span class="n">best_cost</span> <span class="o">=</span> <span class="n">cost</span>
+        <span class="k">if</span> <span class="n">accepted</span><span class="p">:</span>
+            <span class="n">threshold</span> <span class="o">-=</span> <span class="n">threshold</span> <span class="o">*</span> <span class="n">alpha</span>
+
+    <span class="k">return</span> <span class="n">best_cycle</span></div>
+</pre></div>
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

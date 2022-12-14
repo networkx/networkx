@@ -1,0 +1,807 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>spectral_graph_forge &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'reference/generated/networkx.generators.spectral_graph_forge.spectral_graph_forge';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/reference/generated/networkx.generators.spectral_graph_forge.spectral_graph_forge.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="random_tree" href="networkx.generators.trees.random_tree.html" />
+    <link rel="prev" title="windmill_graph" href="networkx.generators.community.windmill_graph.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">
+    Section Navigation
+  </p>
+  <div class="bd-toc-item navbar-nav">
+    <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../classes/index.html">Graph types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../algorithms/index.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../functions.html">Functions</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../generators.html">Graph generators</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.atlas.graph_atlas.html">graph_atlas</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.atlas.graph_atlas_g.html">graph_atlas_g</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.classic.balanced_tree.html">balanced_tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.classic.barbell_graph.html">barbell_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.classic.binomial_tree.html">binomial_tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.classic.complete_graph.html">complete_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.classic.complete_multipartite_graph.html">complete_multipartite_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.classic.circular_ladder_graph.html">circular_ladder_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.classic.circulant_graph.html">circulant_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.classic.cycle_graph.html">cycle_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.classic.dorogovtsev_goltsev_mendes_graph.html">dorogovtsev_goltsev_mendes_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.classic.empty_graph.html">empty_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.classic.full_rary_tree.html">full_rary_tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.classic.ladder_graph.html">ladder_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.classic.lollipop_graph.html">lollipop_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.classic.null_graph.html">null_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.classic.path_graph.html">path_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.classic.star_graph.html">star_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.classic.trivial_graph.html">trivial_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.classic.turan_graph.html">turan_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.classic.wheel_graph.html">wheel_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.expanders.margulis_gabber_galil_graph.html">margulis_gabber_galil_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.expanders.chordal_cycle_graph.html">chordal_cycle_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.expanders.paley_graph.html">paley_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.lattice.grid_2d_graph.html">grid_2d_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.lattice.grid_graph.html">grid_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.lattice.hexagonal_lattice_graph.html">hexagonal_lattice_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.lattice.hypercube_graph.html">hypercube_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.lattice.triangular_lattice_graph.html">triangular_lattice_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.small.LCF_graph.html">LCF_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.small.bull_graph.html">bull_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.small.chvatal_graph.html">chvatal_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.small.cubical_graph.html">cubical_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.small.desargues_graph.html">desargues_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.small.diamond_graph.html">diamond_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.small.dodecahedral_graph.html">dodecahedral_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.small.frucht_graph.html">frucht_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.small.heawood_graph.html">heawood_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.small.hoffman_singleton_graph.html">hoffman_singleton_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.small.house_graph.html">house_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.small.house_x_graph.html">house_x_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.small.icosahedral_graph.html">icosahedral_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.small.krackhardt_kite_graph.html">krackhardt_kite_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.small.moebius_kantor_graph.html">moebius_kantor_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.small.octahedral_graph.html">octahedral_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.small.pappus_graph.html">pappus_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.small.petersen_graph.html">petersen_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.small.sedgewick_maze_graph.html">sedgewick_maze_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.small.tetrahedral_graph.html">tetrahedral_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.small.truncated_cube_graph.html">truncated_cube_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.small.truncated_tetrahedron_graph.html">truncated_tetrahedron_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.small.tutte_graph.html">tutte_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.random_graphs.fast_gnp_random_graph.html">fast_gnp_random_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.random_graphs.gnp_random_graph.html">gnp_random_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.random_graphs.dense_gnm_random_graph.html">dense_gnm_random_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.random_graphs.gnm_random_graph.html">gnm_random_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.random_graphs.erdos_renyi_graph.html">erdos_renyi_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.random_graphs.binomial_graph.html">binomial_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.random_graphs.newman_watts_strogatz_graph.html">newman_watts_strogatz_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.random_graphs.watts_strogatz_graph.html">watts_strogatz_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.random_graphs.connected_watts_strogatz_graph.html">connected_watts_strogatz_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.random_graphs.random_regular_graph.html">random_regular_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.random_graphs.barabasi_albert_graph.html">barabasi_albert_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.random_graphs.dual_barabasi_albert_graph.html">dual_barabasi_albert_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.random_graphs.extended_barabasi_albert_graph.html">extended_barabasi_albert_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.random_graphs.powerlaw_cluster_graph.html">powerlaw_cluster_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.random_graphs.random_kernel_graph.html">random_kernel_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.random_graphs.random_lobster.html">random_lobster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.random_graphs.random_shell_graph.html">random_shell_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.random_graphs.random_powerlaw_tree.html">random_powerlaw_tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.random_graphs.random_powerlaw_tree_sequence.html">random_powerlaw_tree_sequence</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.random_graphs.random_kernel_graph.html">random_kernel_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.duplication.duplication_divergence_graph.html">duplication_divergence_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.duplication.partial_duplication_graph.html">partial_duplication_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.degree_seq.configuration_model.html">configuration_model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.degree_seq.directed_configuration_model.html">directed_configuration_model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.degree_seq.expected_degree_graph.html">expected_degree_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.degree_seq.havel_hakimi_graph.html">havel_hakimi_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.degree_seq.directed_havel_hakimi_graph.html">directed_havel_hakimi_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.degree_seq.degree_sequence_tree.html">degree_sequence_tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.degree_seq.random_degree_sequence_graph.html">random_degree_sequence_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.random_clustered.random_clustered_graph.html">random_clustered_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.directed.gn_graph.html">gn_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.directed.gnr_graph.html">gnr_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.directed.gnc_graph.html">gnc_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.directed.random_k_out_graph.html">random_k_out_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.directed.scale_free_graph.html">scale_free_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.geometric.geometric_edges.html">geometric_edges</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.geometric.geographical_threshold_graph.html">geographical_threshold_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.geometric.navigable_small_world_graph.html">navigable_small_world_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.geometric.random_geometric_graph.html">random_geometric_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.geometric.soft_random_geometric_graph.html">soft_random_geometric_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.geometric.thresholded_random_geometric_graph.html">thresholded_random_geometric_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.geometric.waxman_graph.html">waxman_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.line.line_graph.html">line_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.line.inverse_line_graph.html">inverse_line_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.ego.ego_graph.html">ego_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.stochastic.stochastic_graph.html">stochastic_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.internet_as_graphs.random_internet_as_graph.html">random_internet_as_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.intersection.uniform_random_intersection_graph.html">uniform_random_intersection_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.intersection.k_random_intersection_graph.html">k_random_intersection_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.intersection.general_random_intersection_graph.html">general_random_intersection_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.social.karate_club_graph.html">karate_club_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.social.davis_southern_women_graph.html">davis_southern_women_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.social.florentine_families_graph.html">florentine_families_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.social.les_miserables_graph.html">les_miserables_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.community.caveman_graph.html">caveman_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.community.connected_caveman_graph.html">connected_caveman_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.community.gaussian_random_partition_graph.html">gaussian_random_partition_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.community.LFR_benchmark_graph.html">LFR_benchmark_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.community.planted_partition_graph.html">planted_partition_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.community.random_partition_graph.html">random_partition_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.community.relaxed_caveman_graph.html">relaxed_caveman_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.community.ring_of_cliques.html">ring_of_cliques</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.community.stochastic_block_model.html">stochastic_block_model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.community.windmill_graph.html">windmill_graph</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">spectral_graph_forge</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.trees.random_tree.html">random_tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.trees.prefix_tree.html">prefix_tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.nonisomorphic_trees.nonisomorphic_trees.html">nonisomorphic_trees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.nonisomorphic_trees.number_of_nonisomorphic_trees.html">number_of_nonisomorphic_trees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.triads.triad_graph.html">triad_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.joint_degree_seq.is_valid_joint_degree.html">is_valid_joint_degree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.joint_degree_seq.joint_degree_graph.html">joint_degree_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.joint_degree_seq.is_valid_directed_joint_degree.html">is_valid_directed_joint_degree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.joint_degree_seq.directed_joint_degree_graph.html">directed_joint_degree_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.mycielski.mycielskian.html">mycielskian</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.mycielski.mycielski_graph.html">mycielski_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.harary_graph.hnm_harary_graph.html">hnm_harary_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.harary_graph.hkn_harary_graph.html">hkn_harary_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.cographs.random_cograph.html">random_cograph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.interval_graph.interval_graph.html">interval_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.generators.sudoku.sudoku_graph.html">sudoku_graph</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../linalg.html">Linear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../convert.html">Converting to and from other data formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../relabel.html">Relabeling nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../readwrite/index.html">Reading and writing graphs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../drawing.html">Drawing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../randomness.html">Randomness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../exceptions.html">Exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils.html">Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../glossary.html">Glossary</a></li>
+</ul>
+
+  </div>
+</nav>
+    </div>
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <section id="spectral-graph-forge">
+<h1>spectral_graph_forge<a class="headerlink" href="#spectral-graph-forge" title="Permalink to this heading">#</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="networkx.generators.spectral_graph_forge.spectral_graph_forge">
+<span class="sig-name descname"><span class="pre">spectral_graph_forge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transformation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'identity'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/networkx/generators/spectral_graph_forge.html#spectral_graph_forge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#networkx.generators.spectral_graph_forge.spectral_graph_forge" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns a random simple graph with spectrum resembling that of <code class="xref py py-obj docutils literal notranslate"><span class="pre">G</span></code></p>
+<p>This algorithm, called Spectral Graph Forge (SGF), computes the
+eigenvectors of a given graph adjacency matrix, filters them and
+builds a random graph with a similar eigenstructure.
+SGF has been proved to be particularly useful for synthesizing
+realistic social networks and it can also be used to anonymize
+graph sensitive data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>G</strong><span class="classifier">Graph</span></dt><dd></dd>
+<dt><strong>alpha</strong><span class="classifier">float</span></dt><dd><p>Ratio representing the percentage of eigenvectors of G to consider,
+values in [0,1].</p>
+</dd>
+<dt><strong>transformation</strong><span class="classifier">string, optional</span></dt><dd><p>Represents the intended matrix linear transformation, possible values
+are ‘identity’ and ‘modularity’</p>
+</dd>
+<dt><strong>seed</strong><span class="classifier">integer, random_state, or None (default)</span></dt><dd><p>Indicator of numpy random number generation state.
+See <a class="reference internal" href="../randomness.html#randomness"><span class="std std-ref">Randomness</span></a>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>H</strong><span class="classifier">Graph</span></dt><dd><p>A graph with a similar eigenvector structure of the input one.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt>NetworkXError</dt><dd><p>If transformation has a value different from ‘identity’ or ‘modularity’</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Spectral Graph Forge (SGF) generates a random simple graph resembling the
+global properties of the given one.
+It leverages the low-rank approximation of the associated adjacency matrix
+driven by the <em>alpha</em> precision parameter.
+SGF preserves the number of nodes of the input graph and their ordering.
+This way, nodes of output graphs resemble the properties of the input one
+and attributes can be directly mapped.</p>
+<p>It considers the graph adjacency matrices which can optionally be
+transformed to other symmetric real matrices (currently transformation
+options include <em>identity</em> and <em>modularity</em>).
+The <em>modularity</em> transformation, in the sense of Newman’s modularity matrix
+allows the focusing on community structure related properties of the graph.</p>
+<p>SGF applies a low-rank approximation whose fixed rank is computed from the
+ratio <em>alpha</em> of the input graph adjacency matrix dimension.
+This step performs a filtering on the input eigenvectors similar to the low
+pass filtering common in telecommunications.</p>
+<p>The filtered values (after truncation) are used as input to a Bernoulli
+sampling for constructing a random adjacency matrix.</p>
+<p class="rubric">References</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="id1" role="note">
+<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
+<p>L. Baldesi, C. T. Butts, A. Markopoulou, “Spectral Graph Forge:
+Graph Generation Targeting Modularity”, IEEE Infocom, ‘18.
+<a class="reference external" href="https://arxiv.org/abs/1801.01715">https://arxiv.org/abs/1801.01715</a></p>
+</aside>
+<aside class="footnote brackets" id="id2" role="note">
+<span class="label"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></span>
+<p>M. Newman, “Networks: an introduction”, Oxford university press,
+2010</p>
+</aside>
+</aside>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">karate_club_graph</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">H</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">spectral_graph_forge</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">)</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx.generators.spectral_graph_forge.spectral_graph_forge">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     spectral_graph_forge()
+    </span>
+   </code>
+  </a>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

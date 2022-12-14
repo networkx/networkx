@@ -1,0 +1,1334 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>networkx.generators.classic &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/generators/classic';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/generators/classic.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../../../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../../../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <h1>Source code for networkx.generators.classic</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Generators for some classic graphs.</span>
+
+<span class="sd">The typical graph builder function is called as follows:</span>
+
+<span class="sd">&gt;&gt;&gt; G = nx.complete_graph(100)</span>
+
+<span class="sd">returning the complete graph on n nodes labeled 0, .., 99</span>
+<span class="sd">as a simple graph. Except for `empty_graph`, all the functions</span>
+<span class="sd">in this module return a Graph class (i.e. a simple, undirected graph).</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">numbers</span>
+
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">from</span> <span class="nn">networkx.classes</span> <span class="kn">import</span> <span class="n">Graph</span>
+<span class="kn">from</span> <span class="nn">networkx.exception</span> <span class="kn">import</span> <span class="n">NetworkXError</span>
+<span class="kn">from</span> <span class="nn">networkx.utils</span> <span class="kn">import</span> <span class="n">nodes_or_number</span><span class="p">,</span> <span class="n">pairwise</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;balanced_tree&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;barbell_graph&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;binomial_tree&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;complete_graph&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;complete_multipartite_graph&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;circular_ladder_graph&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;circulant_graph&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;cycle_graph&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;dorogovtsev_goltsev_mendes_graph&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;empty_graph&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;full_rary_tree&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ladder_graph&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;lollipop_graph&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;null_graph&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;path_graph&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;star_graph&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;trivial_graph&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;turan_graph&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;wheel_graph&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<span class="c1"># -------------------------------------------------------------------</span>
+<span class="c1">#   Some Classic Graphs</span>
+<span class="c1"># -------------------------------------------------------------------</span>
+
+
+<span class="k">def</span> <span class="nf">_tree_edges</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="c1"># helper function for trees</span>
+    <span class="c1"># yields edges in rooted tree at 0 with n nodes and branching ratio r</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+    <span class="n">parents</span> <span class="o">=</span> <span class="p">[</span><span class="nb">next</span><span class="p">(</span><span class="n">nodes</span><span class="p">)]</span>  <span class="c1"># stack of max length r</span>
+    <span class="k">while</span> <span class="n">parents</span><span class="p">:</span>
+        <span class="n">source</span> <span class="o">=</span> <span class="n">parents</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">r</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">target</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+                <span class="n">parents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+                <span class="k">yield</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span>
+            <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+                <span class="k">break</span>
+
+
+<div class="viewcode-block" id="full_rary_tree"><a class="viewcode-back" href="../../../reference/generated/networkx.generators.classic.full_rary_tree.html#networkx.generators.classic.full_rary_tree">[docs]</a><span class="k">def</span> <span class="nf">full_rary_tree</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">create_using</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Creates a full r-ary tree of `n` nodes.</span>
+
+<span class="sd">    Sometimes called a k-ary, n-ary, or m-ary tree.</span>
+<span class="sd">    &quot;... all non-leaf nodes have exactly r children and all levels</span>
+<span class="sd">    are full except for some rightmost position of the bottom level</span>
+<span class="sd">    (if a leaf at the bottom level is missing, then so are all of the</span>
+<span class="sd">    leaves to its right.&quot; [1]_</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    r : int</span>
+<span class="sd">        branching factor of the tree</span>
+<span class="sd">    n : int</span>
+<span class="sd">        Number of nodes in the tree</span>
+<span class="sd">    create_using : NetworkX graph constructor, optional (default=nx.Graph)</span>
+<span class="sd">       Graph type to create. If graph instance, then cleared before populated.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    G : networkx Graph</span>
+<span class="sd">        An r-ary tree with n nodes</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] An introduction to data structures and algorithms,</span>
+<span class="sd">           James Andrew Storer,  Birkhauser Boston 2001, (page 225).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">empty_graph</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">create_using</span><span class="p">)</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span><span class="n">_tree_edges</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">r</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">G</span></div>
+
+
+<div class="viewcode-block" id="balanced_tree"><a class="viewcode-back" href="../../../reference/generated/networkx.generators.classic.balanced_tree.html#networkx.generators.classic.balanced_tree">[docs]</a><span class="k">def</span> <span class="nf">balanced_tree</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">create_using</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the perfectly balanced `r`-ary tree of height `h`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    r : int</span>
+<span class="sd">        Branching factor of the tree; each node will have `r`</span>
+<span class="sd">        children.</span>
+
+<span class="sd">    h : int</span>
+<span class="sd">        Height of the tree.</span>
+
+<span class="sd">    create_using : NetworkX graph constructor, optional (default=nx.Graph)</span>
+<span class="sd">       Graph type to create. If graph instance, then cleared before populated.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    G : NetworkX graph</span>
+<span class="sd">        A balanced `r`-ary tree of height `h`.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This is the rooted tree where all leaves are at distance `h` from</span>
+<span class="sd">    the root. The root has degree `r` and all other internal nodes</span>
+<span class="sd">    have degree `r + 1`.</span>
+
+<span class="sd">    Node labels are integers, starting from zero.</span>
+
+<span class="sd">    A balanced tree is also known as a *complete r-ary tree*.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># The number of nodes in the balanced tree is `1 + r + ... + r^h`,</span>
+    <span class="c1"># which is computed by using the closed-form formula for a geometric</span>
+    <span class="c1"># sum with ratio `r`. In the special case that `r` is 1, the number</span>
+    <span class="c1"># of nodes is simply `h + 1` (since the tree is actually a path</span>
+    <span class="c1"># graph).</span>
+    <span class="k">if</span> <span class="n">r</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">h</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># This must be an integer if both `r` and `h` are integers. If</span>
+        <span class="c1"># they are not, we force integer division anyway.</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">r</span> <span class="o">**</span> <span class="p">(</span><span class="n">h</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span> <span class="o">//</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">r</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">full_rary_tree</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">create_using</span><span class="o">=</span><span class="n">create_using</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="barbell_graph"><a class="viewcode-back" href="../../../reference/generated/networkx.generators.classic.barbell_graph.html#networkx.generators.classic.barbell_graph">[docs]</a><span class="k">def</span> <span class="nf">barbell_graph</span><span class="p">(</span><span class="n">m1</span><span class="p">,</span> <span class="n">m2</span><span class="p">,</span> <span class="n">create_using</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the Barbell Graph: two complete graphs connected by a path.</span>
+
+<span class="sd">    For $m1 &gt; 1$ and $m2 &gt;= 0$.</span>
+
+<span class="sd">    Two identical complete graphs $K_{m1}$ form the left and right bells,</span>
+<span class="sd">    and are connected by a path $P_{m2}$.</span>
+
+<span class="sd">    The `2*m1+m2`  nodes are numbered</span>
+<span class="sd">        `0, ..., m1-1` for the left barbell,</span>
+<span class="sd">        `m1, ..., m1+m2-1` for the path,</span>
+<span class="sd">        and `m1+m2, ..., 2*m1+m2-1` for the right barbell.</span>
+
+<span class="sd">    The 3 subgraphs are joined via the edges `(m1-1, m1)` and</span>
+<span class="sd">    `(m1+m2-1, m1+m2)`. If `m2=0`, this is merely two complete</span>
+<span class="sd">    graphs joined together.</span>
+
+<span class="sd">    This graph is an extremal example in David Aldous</span>
+<span class="sd">    and Jim Fill&#39;s e-text on Random Walks on Graphs.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">m1</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;Invalid graph description, m1 should be &gt;=2&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">m2</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;Invalid graph description, m2 should be &gt;=0&quot;</span><span class="p">)</span>
+
+    <span class="c1"># left barbell</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">complete_graph</span><span class="p">(</span><span class="n">m1</span><span class="p">,</span> <span class="n">create_using</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;Directed Graph not supported&quot;</span><span class="p">)</span>
+
+    <span class="c1"># connecting path</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">add_nodes_from</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">m1</span><span class="p">,</span> <span class="n">m1</span> <span class="o">+</span> <span class="n">m2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">m2</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span><span class="n">pairwise</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">m1</span><span class="p">,</span> <span class="n">m1</span> <span class="o">+</span> <span class="n">m2</span><span class="p">)))</span>
+    <span class="c1"># right barbell</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span>
+        <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m1</span> <span class="o">+</span> <span class="n">m2</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">m1</span> <span class="o">+</span> <span class="n">m2</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">u</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">m1</span> <span class="o">+</span> <span class="n">m2</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="c1"># connect it up</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">m1</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">m1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">m2</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">m1</span> <span class="o">+</span> <span class="n">m2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">m1</span> <span class="o">+</span> <span class="n">m2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">G</span></div>
+
+
+<div class="viewcode-block" id="binomial_tree"><a class="viewcode-back" href="../../../reference/generated/networkx.generators.classic.binomial_tree.html#networkx.generators.classic.binomial_tree">[docs]</a><span class="k">def</span> <span class="nf">binomial_tree</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">create_using</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the Binomial Tree of order n.</span>
+
+<span class="sd">    The binomial tree of order 0 consists of a single node. A binomial tree of order k</span>
+<span class="sd">    is defined recursively by linking two binomial trees of order k-1: the root of one is</span>
+<span class="sd">    the leftmost child of the root of the other.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n : int</span>
+<span class="sd">        Order of the binomial tree.</span>
+
+<span class="sd">    create_using : NetworkX graph constructor, optional (default=nx.Graph)</span>
+<span class="sd">       Graph type to create. If graph instance, then cleared before populated.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    G : NetworkX graph</span>
+<span class="sd">        A binomial tree of $2^n$ nodes and $2^n - 1$ edges.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">empty_graph</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">create_using</span><span class="p">)</span>
+
+    <span class="n">N</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="c1"># Use G.edges() to ensure 2-tuples. G.edges is 3-tuple for MultiGraph</span>
+        <span class="n">edges</span> <span class="o">=</span> <span class="p">[(</span><span class="n">u</span> <span class="o">+</span> <span class="n">N</span><span class="p">,</span> <span class="n">v</span> <span class="o">+</span> <span class="n">N</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">()]</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span><span class="n">edges</span><span class="p">)</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+        <span class="n">N</span> <span class="o">*=</span> <span class="mi">2</span>
+    <span class="k">return</span> <span class="n">G</span></div>
+
+
+<div class="viewcode-block" id="complete_graph"><a class="viewcode-back" href="../../../reference/generated/networkx.generators.classic.complete_graph.html#networkx.generators.classic.complete_graph">[docs]</a><span class="nd">@nodes_or_number</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">complete_graph</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">create_using</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the complete graph `K_n` with n nodes.</span>
+
+<span class="sd">    A complete graph on `n` nodes means that all pairs</span>
+<span class="sd">    of distinct nodes have an edge connecting them.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n : int or iterable container of nodes</span>
+<span class="sd">        If n is an integer, nodes are from range(n).</span>
+<span class="sd">        If n is a container of nodes, those nodes appear in the graph.</span>
+<span class="sd">        Warning: n is not checked for duplicates and if present the</span>
+<span class="sd">        resulting graph may not be as desired. Make sure you have no duplicates.</span>
+<span class="sd">    create_using : NetworkX graph constructor, optional (default=nx.Graph)</span>
+<span class="sd">       Graph type to create. If graph instance, then cleared before populated.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.complete_graph(9)</span>
+<span class="sd">    &gt;&gt;&gt; len(G)</span>
+<span class="sd">    9</span>
+<span class="sd">    &gt;&gt;&gt; G.size()</span>
+<span class="sd">    36</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.complete_graph(range(11, 14))</span>
+<span class="sd">    &gt;&gt;&gt; list(G.nodes())</span>
+<span class="sd">    [11, 12, 13]</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.complete_graph(4, nx.DiGraph())</span>
+<span class="sd">    &gt;&gt;&gt; G.is_directed()</span>
+<span class="sd">    True</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">nodes</span> <span class="o">=</span> <span class="n">n</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">empty_graph</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">create_using</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+            <span class="n">edges</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">permutations</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">edges</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">combinations</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span><span class="n">edges</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">G</span></div>
+
+
+<div class="viewcode-block" id="circular_ladder_graph"><a class="viewcode-back" href="../../../reference/generated/networkx.generators.classic.circular_ladder_graph.html#networkx.generators.classic.circular_ladder_graph">[docs]</a><span class="k">def</span> <span class="nf">circular_ladder_graph</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">create_using</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the circular ladder graph $CL_n$ of length n.</span>
+
+<span class="sd">    $CL_n$ consists of two concentric n-cycles in which</span>
+<span class="sd">    each of the n pairs of concentric nodes are joined by an edge.</span>
+
+<span class="sd">    Node labels are the integers 0 to n-1</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">ladder_graph</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">create_using</span><span class="p">)</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">G</span></div>
+
+
+<div class="viewcode-block" id="circulant_graph"><a class="viewcode-back" href="../../../reference/generated/networkx.generators.classic.circulant_graph.html#networkx.generators.classic.circulant_graph">[docs]</a><span class="k">def</span> <span class="nf">circulant_graph</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">offsets</span><span class="p">,</span> <span class="n">create_using</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns the circulant graph $Ci_n(x_1, x_2, ..., x_m)$ with $n$ nodes.</span>
+
+<span class="sd">    The circulant graph $Ci_n(x_1, ..., x_m)$ consists of $n$ nodes $0, ..., n-1$</span>
+<span class="sd">    such that node $i$ is connected to nodes $(i + x) \mod n$ and $(i - x) \mod n$</span>
+<span class="sd">    for all $x$ in $x_1, ..., x_m$. Thus $Ci_n(1)$ is a cycle graph.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n : integer</span>
+<span class="sd">        The number of nodes in the graph.</span>
+<span class="sd">    offsets : list of integers</span>
+<span class="sd">        A list of node offsets, $x_1$ up to $x_m$, as described above.</span>
+<span class="sd">    create_using : NetworkX graph constructor, optional (default=nx.Graph)</span>
+<span class="sd">       Graph type to create. If graph instance, then cleared before populated.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    NetworkX Graph of type create_using</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Many well-known graph families are subfamilies of the circulant graphs;</span>
+<span class="sd">    for example, to create the cycle graph on n points, we connect every</span>
+<span class="sd">    node to nodes on either side (with offset plus or minus one). For n = 10,</span>
+
+<span class="sd">    &gt;&gt;&gt; G = nx.circulant_graph(10, [1])</span>
+<span class="sd">    &gt;&gt;&gt; edges = [</span>
+<span class="sd">    ...     (0, 9),</span>
+<span class="sd">    ...     (0, 1),</span>
+<span class="sd">    ...     (1, 2),</span>
+<span class="sd">    ...     (2, 3),</span>
+<span class="sd">    ...     (3, 4),</span>
+<span class="sd">    ...     (4, 5),</span>
+<span class="sd">    ...     (5, 6),</span>
+<span class="sd">    ...     (6, 7),</span>
+<span class="sd">    ...     (7, 8),</span>
+<span class="sd">    ...     (8, 9),</span>
+<span class="sd">    ... ]</span>
+<span class="sd">    ...</span>
+<span class="sd">    &gt;&gt;&gt; sorted(edges) == sorted(G.edges())</span>
+<span class="sd">    True</span>
+
+<span class="sd">    Similarly, we can create the complete graph</span>
+<span class="sd">    on 5 points with the set of offsets [1, 2]:</span>
+
+<span class="sd">    &gt;&gt;&gt; G = nx.circulant_graph(5, [1, 2])</span>
+<span class="sd">    &gt;&gt;&gt; edges = [</span>
+<span class="sd">    ...     (0, 1),</span>
+<span class="sd">    ...     (0, 2),</span>
+<span class="sd">    ...     (0, 3),</span>
+<span class="sd">    ...     (0, 4),</span>
+<span class="sd">    ...     (1, 2),</span>
+<span class="sd">    ...     (1, 3),</span>
+<span class="sd">    ...     (1, 4),</span>
+<span class="sd">    ...     (2, 3),</span>
+<span class="sd">    ...     (2, 4),</span>
+<span class="sd">    ...     (3, 4),</span>
+<span class="sd">    ... ]</span>
+<span class="sd">    ...</span>
+<span class="sd">    &gt;&gt;&gt; sorted(edges) == sorted(G.edges())</span>
+<span class="sd">    True</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">empty_graph</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">create_using</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">offsets</span><span class="p">:</span>
+            <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">i</span> <span class="o">-</span> <span class="n">j</span><span class="p">)</span> <span class="o">%</span> <span class="n">n</span><span class="p">)</span>
+            <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="n">j</span><span class="p">)</span> <span class="o">%</span> <span class="n">n</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">G</span></div>
+
+
+<div class="viewcode-block" id="cycle_graph"><a class="viewcode-back" href="../../../reference/generated/networkx.generators.classic.cycle_graph.html#networkx.generators.classic.cycle_graph">[docs]</a><span class="nd">@nodes_or_number</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">cycle_graph</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">create_using</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the cycle graph $C_n$ of cyclically connected nodes.</span>
+
+<span class="sd">    $C_n$ is a path with its two end-nodes connected.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n : int or iterable container of nodes</span>
+<span class="sd">        If n is an integer, nodes are from `range(n)`.</span>
+<span class="sd">        If n is a container of nodes, those nodes appear in the graph.</span>
+<span class="sd">        Warning: n is not checked for duplicates and if present the</span>
+<span class="sd">        resulting graph may not be as desired. Make sure you have no duplicates.</span>
+<span class="sd">    create_using : NetworkX graph constructor, optional (default=nx.Graph)</span>
+<span class="sd">       Graph type to create. If graph instance, then cleared before populated.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    If create_using is directed, the direction is in increasing order.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">nodes</span> <span class="o">=</span> <span class="n">n</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">empty_graph</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">create_using</span><span class="p">)</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span><span class="n">pairwise</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">cyclic</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">G</span></div>
+
+
+<div class="viewcode-block" id="dorogovtsev_goltsev_mendes_graph"><a class="viewcode-back" href="../../../reference/generated/networkx.generators.classic.dorogovtsev_goltsev_mendes_graph.html#networkx.generators.classic.dorogovtsev_goltsev_mendes_graph">[docs]</a><span class="k">def</span> <span class="nf">dorogovtsev_goltsev_mendes_graph</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">create_using</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the hierarchically constructed Dorogovtsev-Goltsev-Mendes graph.</span>
+
+<span class="sd">    n is the generation.</span>
+<span class="sd">    See: arXiv:/cond-mat/0112143 by Dorogovtsev, Goltsev and Mendes.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">empty_graph</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">create_using</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;Directed Graph not supported&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">is_multigraph</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;Multigraph not supported&quot;</span><span class="p">)</span>
+
+    <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">G</span>
+    <span class="n">new_node</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># next node to be added</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>  <span class="c1"># iterate over number of generations.</span>
+        <span class="n">last_generation_edges</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">())</span>
+        <span class="n">number_of_edges_in_last_generation</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">last_generation_edges</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">number_of_edges_in_last_generation</span><span class="p">):</span>
+            <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">new_node</span><span class="p">,</span> <span class="n">last_generation_edges</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">new_node</span><span class="p">,</span> <span class="n">last_generation_edges</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">new_node</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">G</span></div>
+
+
+<div class="viewcode-block" id="empty_graph"><a class="viewcode-back" href="../../../reference/generated/networkx.generators.classic.empty_graph.html#networkx.generators.classic.empty_graph">[docs]</a><span class="nd">@nodes_or_number</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">empty_graph</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">create_using</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">Graph</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the empty graph with n nodes and zero edges.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n : int or iterable container of nodes (default = 0)</span>
+<span class="sd">        If n is an integer, nodes are from `range(n)`.</span>
+<span class="sd">        If n is a container of nodes, those nodes appear in the graph.</span>
+<span class="sd">    create_using : Graph Instance, Constructor or None</span>
+<span class="sd">        Indicator of type of graph to return.</span>
+<span class="sd">        If a Graph-type instance, then clear and use it.</span>
+<span class="sd">        If None, use the `default` constructor.</span>
+<span class="sd">        If a constructor, call it to create an empty graph.</span>
+<span class="sd">    default : Graph constructor (optional, default = nx.Graph)</span>
+<span class="sd">        The constructor to use if create_using is None.</span>
+<span class="sd">        If None, then nx.Graph is used.</span>
+<span class="sd">        This is used when passing an unknown `create_using` value</span>
+<span class="sd">        through your home-grown function to `empty_graph` and</span>
+<span class="sd">        you want a default constructor other than nx.Graph.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.empty_graph(10)</span>
+<span class="sd">    &gt;&gt;&gt; G.number_of_nodes()</span>
+<span class="sd">    10</span>
+<span class="sd">    &gt;&gt;&gt; G.number_of_edges()</span>
+<span class="sd">    0</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.empty_graph(&quot;ABC&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; G.number_of_nodes()</span>
+<span class="sd">    3</span>
+<span class="sd">    &gt;&gt;&gt; sorted(G)</span>
+<span class="sd">    [&#39;A&#39;, &#39;B&#39;, &#39;C&#39;]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The variable create_using should be a Graph Constructor or a</span>
+<span class="sd">    &quot;graph&quot;-like object. Constructors, e.g. `nx.Graph` or `nx.MultiGraph`</span>
+<span class="sd">    will be used to create the returned graph. &quot;graph&quot;-like objects</span>
+<span class="sd">    will be cleared (nodes and edges will be removed) and refitted as</span>
+<span class="sd">    an empty &quot;graph&quot; with nodes specified in n. This capability</span>
+<span class="sd">    is useful for specifying the class-nature of the resulting empty</span>
+<span class="sd">    &quot;graph&quot; (i.e. Graph, DiGraph, MyWeirdGraphClass, etc.).</span>
+
+<span class="sd">    The variable create_using has three main uses:</span>
+<span class="sd">    Firstly, the variable create_using can be used to create an</span>
+<span class="sd">    empty digraph, multigraph, etc.  For example,</span>
+
+<span class="sd">    &gt;&gt;&gt; n = 10</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.empty_graph(n, create_using=nx.DiGraph)</span>
+
+<span class="sd">    will create an empty digraph on n nodes.</span>
+
+<span class="sd">    Secondly, one can pass an existing graph (digraph, multigraph,</span>
+<span class="sd">    etc.) via create_using. For example, if G is an existing graph</span>
+<span class="sd">    (resp. digraph, multigraph, etc.), then empty_graph(n, create_using=G)</span>
+<span class="sd">    will empty G (i.e. delete all nodes and edges using G.clear())</span>
+<span class="sd">    and then add n nodes and zero edges, and return the modified graph.</span>
+
+<span class="sd">    Thirdly, when constructing your home-grown graph creation function</span>
+<span class="sd">    you can use empty_graph to construct the graph by passing a user</span>
+<span class="sd">    defined create_using to empty_graph. In this case, if you want the</span>
+<span class="sd">    default constructor to be other than nx.Graph, specify `default`.</span>
+
+<span class="sd">    &gt;&gt;&gt; def mygraph(n, create_using=None):</span>
+<span class="sd">    ...     G = nx.empty_graph(n, create_using, nx.MultiGraph)</span>
+<span class="sd">    ...     G.add_edges_from([(0, 1), (0, 1)])</span>
+<span class="sd">    ...     return G</span>
+<span class="sd">    &gt;&gt;&gt; G = mygraph(3)</span>
+<span class="sd">    &gt;&gt;&gt; G.is_multigraph()</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; G = mygraph(3, nx.Graph)</span>
+<span class="sd">    &gt;&gt;&gt; G.is_multigraph()</span>
+<span class="sd">    False</span>
+
+<span class="sd">    See also create_empty_copy(G).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">create_using</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="n">default</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">create_using</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">type</span><span class="p">:</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="n">create_using</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">create_using</span><span class="p">,</span> <span class="s2">&quot;adj&quot;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;create_using is not a valid NetworkX graph type or instance&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># create_using is a NetworkX style Graph</span>
+        <span class="n">create_using</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="n">create_using</span>
+
+    <span class="n">_</span><span class="p">,</span> <span class="n">nodes</span> <span class="o">=</span> <span class="n">n</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">add_nodes_from</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">G</span></div>
+
+
+<div class="viewcode-block" id="ladder_graph"><a class="viewcode-back" href="../../../reference/generated/networkx.generators.classic.ladder_graph.html#networkx.generators.classic.ladder_graph">[docs]</a><span class="k">def</span> <span class="nf">ladder_graph</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">create_using</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the Ladder graph of length n.</span>
+
+<span class="sd">    This is two paths of n nodes, with</span>
+<span class="sd">    each pair connected by a single edge.</span>
+
+<span class="sd">    Node labels are the integers 0 to 2*n - 1.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">empty_graph</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n</span><span class="p">,</span> <span class="n">create_using</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;Directed Graph not supported&quot;</span><span class="p">)</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span><span class="n">pairwise</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)))</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span><span class="n">pairwise</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">n</span><span class="p">)))</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">((</span><span class="n">v</span><span class="p">,</span> <span class="n">v</span> <span class="o">+</span> <span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">G</span></div>
+
+
+<div class="viewcode-block" id="lollipop_graph"><a class="viewcode-back" href="../../../reference/generated/networkx.generators.classic.lollipop_graph.html#networkx.generators.classic.lollipop_graph">[docs]</a><span class="nd">@nodes_or_number</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">lollipop_graph</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">create_using</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the Lollipop Graph; `K_m` connected to `P_n`.</span>
+
+<span class="sd">    This is the Barbell Graph without the right barbell.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    m, n : int or iterable container of nodes (default = 0)</span>
+<span class="sd">        If an integer, nodes are from `range(m)` and `range(m,m+n)`.</span>
+<span class="sd">        If a container of nodes, those nodes appear in the graph.</span>
+<span class="sd">        Warning: m and n are not checked for duplicates and if present the</span>
+<span class="sd">        resulting graph may not be as desired. Make sure you have no duplicates.</span>
+
+<span class="sd">        The nodes for m appear in the complete graph $K_m$ and the nodes</span>
+<span class="sd">        for n appear in the path $P_n$</span>
+<span class="sd">    create_using : NetworkX graph constructor, optional (default=nx.Graph)</span>
+<span class="sd">       Graph type to create. If graph instance, then cleared before populated.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The 2 subgraphs are joined via an edge (m-1, m).</span>
+<span class="sd">    If n=0, this is merely a complete graph.</span>
+
+<span class="sd">    (This graph is an extremal example in David Aldous and Jim</span>
+<span class="sd">    Fill&#39;s etext on Random Walks on Graphs.)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">m</span><span class="p">,</span> <span class="n">m_nodes</span> <span class="o">=</span> <span class="n">m</span>
+    <span class="n">M</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">m_nodes</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">M</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;Invalid description: m should indicate at least 2 nodes&quot;</span><span class="p">)</span>
+
+    <span class="n">n</span><span class="p">,</span> <span class="n">n_nodes</span> <span class="o">=</span> <span class="n">n</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Integral</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Integral</span><span class="p">):</span>
+        <span class="n">n_nodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">M</span> <span class="o">+</span> <span class="n">n</span><span class="p">))</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">n_nodes</span><span class="p">)</span>
+
+    <span class="c1"># the ball</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">complete_graph</span><span class="p">(</span><span class="n">m_nodes</span><span class="p">,</span> <span class="n">create_using</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;Directed Graph not supported&quot;</span><span class="p">)</span>
+
+    <span class="c1"># the stick</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">add_nodes_from</span><span class="p">(</span><span class="n">n_nodes</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">N</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span><span class="n">pairwise</span><span class="p">(</span><span class="n">n_nodes</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">)</span> <span class="o">!=</span> <span class="n">M</span> <span class="o">+</span> <span class="n">N</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;Nodes must be distinct in containers m and n&quot;</span><span class="p">)</span>
+
+    <span class="c1"># connect ball to stick</span>
+    <span class="k">if</span> <span class="n">M</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">N</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">m_nodes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">n_nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">G</span></div>
+
+
+<div class="viewcode-block" id="null_graph"><a class="viewcode-back" href="../../../reference/generated/networkx.generators.classic.null_graph.html#networkx.generators.classic.null_graph">[docs]</a><span class="k">def</span> <span class="nf">null_graph</span><span class="p">(</span><span class="n">create_using</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the Null graph with no nodes or edges.</span>
+
+<span class="sd">    See empty_graph for the use of create_using.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">empty_graph</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">create_using</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">G</span></div>
+
+
+<div class="viewcode-block" id="path_graph"><a class="viewcode-back" href="../../../reference/generated/networkx.generators.classic.path_graph.html#networkx.generators.classic.path_graph">[docs]</a><span class="nd">@nodes_or_number</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">path_graph</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">create_using</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the Path graph `P_n` of linearly connected nodes.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n : int or iterable</span>
+<span class="sd">        If an integer, nodes are 0 to n - 1.</span>
+<span class="sd">        If an iterable of nodes, in the order they appear in the path.</span>
+<span class="sd">        Warning: n is not checked for duplicates and if present the</span>
+<span class="sd">        resulting graph may not be as desired. Make sure you have no duplicates.</span>
+<span class="sd">    create_using : NetworkX graph constructor, optional (default=nx.Graph)</span>
+<span class="sd">       Graph type to create. If graph instance, then cleared before populated.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">nodes</span> <span class="o">=</span> <span class="n">n</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">empty_graph</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">create_using</span><span class="p">)</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span><span class="n">pairwise</span><span class="p">(</span><span class="n">nodes</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">G</span></div>
+
+
+<div class="viewcode-block" id="star_graph"><a class="viewcode-back" href="../../../reference/generated/networkx.generators.classic.star_graph.html#networkx.generators.classic.star_graph">[docs]</a><span class="nd">@nodes_or_number</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">star_graph</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">create_using</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the star graph</span>
+
+<span class="sd">    The star graph consists of one center node connected to n outer nodes.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n : int or iterable</span>
+<span class="sd">        If an integer, node labels are 0 to n with center 0.</span>
+<span class="sd">        If an iterable of nodes, the center is the first.</span>
+<span class="sd">        Warning: n is not checked for duplicates and if present the</span>
+<span class="sd">        resulting graph may not be as desired. Make sure you have no duplicates.</span>
+<span class="sd">    create_using : NetworkX graph constructor, optional (default=nx.Graph)</span>
+<span class="sd">       Graph type to create. If graph instance, then cleared before populated.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The graph has n+1 nodes for integer n.</span>
+<span class="sd">    So star_graph(3) is the same as star_graph(range(4)).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n</span><span class="p">,</span> <span class="n">nodes</span> <span class="o">=</span> <span class="n">n</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Integral</span><span class="p">):</span>
+        <span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>  <span class="c1"># there should be n+1 nodes</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">empty_graph</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">create_using</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;Directed Graph not supported&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">hub</span><span class="p">,</span> <span class="o">*</span><span class="n">spokes</span> <span class="o">=</span> <span class="n">nodes</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">((</span><span class="n">hub</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">spokes</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">G</span></div>
+
+
+<div class="viewcode-block" id="trivial_graph"><a class="viewcode-back" href="../../../reference/generated/networkx.generators.classic.trivial_graph.html#networkx.generators.classic.trivial_graph">[docs]</a><span class="k">def</span> <span class="nf">trivial_graph</span><span class="p">(</span><span class="n">create_using</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the Trivial graph with one node (with label 0) and no edges.&quot;&quot;&quot;</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">empty_graph</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">create_using</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">G</span></div>
+
+
+<div class="viewcode-block" id="turan_graph"><a class="viewcode-back" href="../../../reference/generated/networkx.generators.classic.turan_graph.html#networkx.generators.classic.turan_graph">[docs]</a><span class="k">def</span> <span class="nf">turan_graph</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the Turan Graph</span>
+
+<span class="sd">    The Turan Graph is a complete multipartite graph on $n$ nodes</span>
+<span class="sd">    with $r$ disjoint subsets. That is, edges connect each node to</span>
+<span class="sd">    every node not in its subset.</span>
+
+<span class="sd">    Given $n$ and $r$, we create a complete multipartite graph with</span>
+<span class="sd">    $r-(n \mod r)$ partitions of size $n/r$, rounded down, and</span>
+<span class="sd">    $n \mod r$ partitions of size $n/r+1$, rounded down.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n : int</span>
+<span class="sd">        The number of nodes.</span>
+<span class="sd">    r : int</span>
+<span class="sd">        The number of partitions.</span>
+<span class="sd">        Must be less than or equal to n.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Must satisfy $1 &lt;= r &lt;= n$.</span>
+<span class="sd">    The graph has $(r-1)(n^2)/(2r)$ edges, rounded down.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">r</span> <span class="o">&lt;=</span> <span class="n">n</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;Must satisfy 1 &lt;= r &lt;= n&quot;</span><span class="p">)</span>
+
+    <span class="n">partitions</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span> <span class="o">//</span> <span class="n">r</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">r</span> <span class="o">-</span> <span class="p">(</span><span class="n">n</span> <span class="o">%</span> <span class="n">r</span><span class="p">))</span> <span class="o">+</span> <span class="p">[</span><span class="n">n</span> <span class="o">//</span> <span class="n">r</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">n</span> <span class="o">%</span> <span class="n">r</span><span class="p">)</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">complete_multipartite_graph</span><span class="p">(</span><span class="o">*</span><span class="n">partitions</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">G</span></div>
+
+
+<div class="viewcode-block" id="wheel_graph"><a class="viewcode-back" href="../../../reference/generated/networkx.generators.classic.wheel_graph.html#networkx.generators.classic.wheel_graph">[docs]</a><span class="nd">@nodes_or_number</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">wheel_graph</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">create_using</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the wheel graph</span>
+
+<span class="sd">    The wheel graph consists of a hub node connected to a cycle of (n-1) nodes.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n : int or iterable</span>
+<span class="sd">        If an integer, node labels are 0 to n with center 0.</span>
+<span class="sd">        If an iterable of nodes, the center is the first.</span>
+<span class="sd">        Warning: n is not checked for duplicates and if present the</span>
+<span class="sd">        resulting graph may not be as desired. Make sure you have no duplicates.</span>
+<span class="sd">    create_using : NetworkX graph constructor, optional (default=nx.Graph)</span>
+<span class="sd">       Graph type to create. If graph instance, then cleared before populated.</span>
+
+<span class="sd">    Node labels are the integers 0 to n - 1.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">nodes</span> <span class="o">=</span> <span class="n">n</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">empty_graph</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">create_using</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;Directed Graph not supported&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">hub</span><span class="p">,</span> <span class="o">*</span><span class="n">rim</span> <span class="o">=</span> <span class="n">nodes</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">((</span><span class="n">hub</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">rim</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rim</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">G</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span><span class="n">pairwise</span><span class="p">(</span><span class="n">rim</span><span class="p">,</span> <span class="n">cyclic</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">G</span></div>
+
+
+<div class="viewcode-block" id="complete_multipartite_graph"><a class="viewcode-back" href="../../../reference/generated/networkx.generators.classic.complete_multipartite_graph.html#networkx.generators.classic.complete_multipartite_graph">[docs]</a><span class="k">def</span> <span class="nf">complete_multipartite_graph</span><span class="p">(</span><span class="o">*</span><span class="n">subset_sizes</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the complete multipartite graph with the specified subset sizes.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    subset_sizes : tuple of integers or tuple of node iterables</span>
+<span class="sd">       The arguments can either all be integer number of nodes or they</span>
+<span class="sd">       can all be iterables of nodes. If integers, they represent the</span>
+<span class="sd">       number of nodes in each subset of the multipartite graph.</span>
+<span class="sd">       If iterables, each is used to create the nodes for that subset.</span>
+<span class="sd">       The length of subset_sizes is the number of subsets.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    G : NetworkX Graph</span>
+<span class="sd">       Returns the complete multipartite graph with the specified subsets.</span>
+
+<span class="sd">       For each node, the node attribute &#39;subset&#39; is an integer</span>
+<span class="sd">       indicating which subset contains the node.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Creating a complete tripartite graph, with subsets of one, two, and three</span>
+<span class="sd">    nodes, respectively.</span>
+
+<span class="sd">        &gt;&gt;&gt; G = nx.complete_multipartite_graph(1, 2, 3)</span>
+<span class="sd">        &gt;&gt;&gt; [G.nodes[u][&quot;subset&quot;] for u in G]</span>
+<span class="sd">        [0, 1, 1, 2, 2, 2]</span>
+<span class="sd">        &gt;&gt;&gt; list(G.edges(0))</span>
+<span class="sd">        [(0, 1), (0, 2), (0, 3), (0, 4), (0, 5)]</span>
+<span class="sd">        &gt;&gt;&gt; list(G.edges(2))</span>
+<span class="sd">        [(2, 0), (2, 3), (2, 4), (2, 5)]</span>
+<span class="sd">        &gt;&gt;&gt; list(G.edges(4))</span>
+<span class="sd">        [(4, 0), (4, 1), (4, 2)]</span>
+
+<span class="sd">        &gt;&gt;&gt; G = nx.complete_multipartite_graph(&quot;a&quot;, &quot;bc&quot;, &quot;def&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; [G.nodes[u][&quot;subset&quot;] for u in sorted(G)]</span>
+<span class="sd">        [0, 1, 1, 2, 2, 2]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function generalizes several other graph builder functions.</span>
+
+<span class="sd">    - If no subset sizes are given, this returns the null graph.</span>
+<span class="sd">    - If a single subset size `n` is given, this returns the empty graph on</span>
+<span class="sd">      `n` nodes.</span>
+<span class="sd">    - If two subset sizes `m` and `n` are given, this returns the complete</span>
+<span class="sd">      bipartite graph on `m + n` nodes.</span>
+<span class="sd">    - If subset sizes `1` and `n` are given, this returns the star graph on</span>
+<span class="sd">      `n + 1` nodes.</span>
+
+<span class="sd">    See also</span>
+<span class="sd">    --------</span>
+<span class="sd">    complete_bipartite_graph</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># The complete multipartite graph is an undirected simple graph.</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">subset_sizes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">G</span>
+
+    <span class="c1"># set up subsets of nodes</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">extents</span> <span class="o">=</span> <span class="n">pairwise</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">accumulate</span><span class="p">((</span><span class="mi">0</span><span class="p">,)</span> <span class="o">+</span> <span class="n">subset_sizes</span><span class="p">))</span>
+        <span class="n">subsets</span> <span class="o">=</span> <span class="p">[</span><span class="nb">range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span> <span class="k">for</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="ow">in</span> <span class="n">extents</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="n">subsets</span> <span class="o">=</span> <span class="n">subset_sizes</span>
+
+    <span class="c1"># add nodes with subset attribute</span>
+    <span class="c1"># while checking that ints are not mixed with iterables</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">subset</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">subsets</span><span class="p">):</span>
+            <span class="n">G</span><span class="o">.</span><span class="n">add_nodes_from</span><span class="p">(</span><span class="n">subset</span><span class="p">,</span> <span class="n">subset</span><span class="o">=</span><span class="n">i</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;Arguments must be all ints or all iterables&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">err</span>
+
+    <span class="c1"># Across subsets, all nodes should be adjacent.</span>
+    <span class="c1"># We can use itertools.combinations() because undirected.</span>
+    <span class="k">for</span> <span class="n">subset1</span><span class="p">,</span> <span class="n">subset2</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">combinations</span><span class="p">(</span><span class="n">subsets</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">subset1</span><span class="p">,</span> <span class="n">subset2</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">G</span></div>
+</pre></div>
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

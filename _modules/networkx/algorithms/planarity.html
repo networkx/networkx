@@ -1,0 +1,1716 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>networkx.algorithms.planarity &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/algorithms/planarity';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/algorithms/planarity.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../../../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../../../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <h1>Source code for networkx.algorithms.planarity</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;check_planarity&quot;</span><span class="p">,</span> <span class="s2">&quot;is_planar&quot;</span><span class="p">,</span> <span class="s2">&quot;PlanarEmbedding&quot;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="is_planar"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.planarity.is_planar.html#networkx.algorithms.planarity.is_planar">[docs]</a><span class="k">def</span> <span class="nf">is_planar</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns True if and only if `G` is planar.</span>
+
+<span class="sd">    A graph is *planar* iff it can be drawn in a plane without</span>
+<span class="sd">    any edge intersections.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bool</span>
+<span class="sd">       Whether the graph is planar.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.Graph([(0, 1), (0, 2)])</span>
+<span class="sd">    &gt;&gt;&gt; nx.is_planar(G)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; nx.is_planar(nx.complete_graph(5))</span>
+<span class="sd">    False</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    check_planarity :</span>
+<span class="sd">        Check if graph is planar *and* return a `PlanarEmbedding` instance if True.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">check_planarity</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">counterexample</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="check_planarity"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.planarity.check_planarity.html#networkx.algorithms.planarity.check_planarity">[docs]</a><span class="k">def</span> <span class="nf">check_planarity</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">counterexample</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Check if a graph is planar and return a counterexample or an embedding.</span>
+
+<span class="sd">    A graph is planar iff it can be drawn in a plane without</span>
+<span class="sd">    any edge intersections.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+<span class="sd">    counterexample : bool</span>
+<span class="sd">        A Kuratowski subgraph (to proof non planarity) is only returned if set</span>
+<span class="sd">        to true.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    (is_planar, certificate) : (bool, NetworkX graph) tuple</span>
+<span class="sd">        is_planar is true if the graph is planar.</span>
+<span class="sd">        If the graph is planar `certificate` is a PlanarEmbedding</span>
+<span class="sd">        otherwise it is a Kuratowski subgraph.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.Graph([(0, 1), (0, 2)])</span>
+<span class="sd">    &gt;&gt;&gt; is_planar, P = nx.check_planarity(G)</span>
+<span class="sd">    &gt;&gt;&gt; print(is_planar)</span>
+<span class="sd">    True</span>
+
+<span class="sd">    When `G` is planar, a `PlanarEmbedding` instance is returned:</span>
+
+<span class="sd">    &gt;&gt;&gt; P.get_data()</span>
+<span class="sd">    {0: [1, 2], 1: [0], 2: [0]}</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    A (combinatorial) embedding consists of cyclic orderings of the incident</span>
+<span class="sd">    edges at each vertex. Given such an embedding there are multiple approaches</span>
+<span class="sd">    discussed in literature to drawing the graph (subject to various</span>
+<span class="sd">    constraints, e.g. integer coordinates), see e.g. [2].</span>
+
+<span class="sd">    The planarity check algorithm and extraction of the combinatorial embedding</span>
+<span class="sd">    is based on the Left-Right Planarity Test [1].</span>
+
+<span class="sd">    A counterexample is only generated if the corresponding parameter is set,</span>
+<span class="sd">    because the complexity of the counterexample generation is higher.</span>
+
+<span class="sd">    See also</span>
+<span class="sd">    --------</span>
+<span class="sd">    is_planar :</span>
+<span class="sd">        Check for planarity without creating a `PlanarEmbedding` or counterexample.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Ulrik Brandes:</span>
+<span class="sd">        The Left-Right Planarity Test</span>
+<span class="sd">        2009</span>
+<span class="sd">        http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.217.9208</span>
+<span class="sd">    .. [2] Takao Nishizeki, Md Saidur Rahman:</span>
+<span class="sd">        Planar graph drawing</span>
+<span class="sd">        Lecture Notes Series on Computing: Volume 12</span>
+<span class="sd">        2004</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">planarity_state</span> <span class="o">=</span> <span class="n">LRPlanarity</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+    <span class="n">embedding</span> <span class="o">=</span> <span class="n">planarity_state</span><span class="o">.</span><span class="n">lr_planarity</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">embedding</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># graph is not planar</span>
+        <span class="k">if</span> <span class="n">counterexample</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="n">get_counterexample</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># graph is planar</span>
+        <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">embedding</span></div>
+
+
+<span class="k">def</span> <span class="nf">check_planarity_recursive</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">counterexample</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Recursive version of :meth:`check_planarity`.&quot;&quot;&quot;</span>
+    <span class="n">planarity_state</span> <span class="o">=</span> <span class="n">LRPlanarity</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+    <span class="n">embedding</span> <span class="o">=</span> <span class="n">planarity_state</span><span class="o">.</span><span class="n">lr_planarity_recursive</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">embedding</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># graph is not planar</span>
+        <span class="k">if</span> <span class="n">counterexample</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="n">get_counterexample_recursive</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># graph is planar</span>
+        <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">embedding</span>
+
+
+<span class="k">def</span> <span class="nf">get_counterexample</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Obtains a Kuratowski subgraph.</span>
+
+<span class="sd">    Raises nx.NetworkXException if G is planar.</span>
+
+<span class="sd">    The function removes edges such that the graph is still not planar.</span>
+<span class="sd">    At some point the removal of any edge would make the graph planar.</span>
+<span class="sd">    This subgraph must be a Kuratowski subgraph.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    subgraph : NetworkX graph</span>
+<span class="sd">        A Kuratowski subgraph that proves that G is not planar.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># copy graph</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">check_planarity</span><span class="p">(</span><span class="n">G</span><span class="p">)[</span><span class="mi">0</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXException</span><span class="p">(</span><span class="s2">&quot;G is planar - no counter example.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># find Kuratowski subgraph</span>
+    <span class="n">subgraph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">G</span><span class="p">:</span>
+        <span class="n">nbrs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="p">[</span><span class="n">u</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">nbrs</span><span class="p">:</span>
+            <span class="n">G</span><span class="o">.</span><span class="n">remove_edge</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">check_planarity</span><span class="p">(</span><span class="n">G</span><span class="p">)[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+                <span class="n">subgraph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">subgraph</span>
+
+
+<span class="k">def</span> <span class="nf">get_counterexample_recursive</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Recursive version of :meth:`get_counterexample`.&quot;&quot;&quot;</span>
+
+    <span class="c1"># copy graph</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">check_planarity_recursive</span><span class="p">(</span><span class="n">G</span><span class="p">)[</span><span class="mi">0</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXException</span><span class="p">(</span><span class="s2">&quot;G is planar - no counter example.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># find Kuratowski subgraph</span>
+    <span class="n">subgraph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">G</span><span class="p">:</span>
+        <span class="n">nbrs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="p">[</span><span class="n">u</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">nbrs</span><span class="p">:</span>
+            <span class="n">G</span><span class="o">.</span><span class="n">remove_edge</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">check_planarity_recursive</span><span class="p">(</span><span class="n">G</span><span class="p">)[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+                <span class="n">subgraph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">subgraph</span>
+
+
+<span class="k">class</span> <span class="nc">Interval</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Represents a set of return edges.</span>
+
+<span class="sd">    All return edges in an interval induce a same constraint on the contained</span>
+<span class="sd">    edges, which means that all edges must either have a left orientation or</span>
+<span class="sd">    all edges must have a right orientation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">low</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">low</span> <span class="o">=</span> <span class="n">low</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">high</span> <span class="o">=</span> <span class="n">high</span>
+
+    <span class="k">def</span> <span class="nf">empty</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check if the interval is empty&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">low</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">high</span> <span class="ow">is</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns a copy of this interval&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Interval</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">low</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">high</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">conflicting</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">planarity_state</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns True if interval I conflicts with edge b&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">empty</span><span class="p">()</span>
+            <span class="ow">and</span> <span class="n">planarity_state</span><span class="o">.</span><span class="n">lowpt</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">high</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">planarity_state</span><span class="o">.</span><span class="n">lowpt</span><span class="p">[</span><span class="n">b</span><span class="p">]</span>
+        <span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">ConflictPair</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Represents a different constraint between two intervals.</span>
+
+<span class="sd">    The edges in the left interval must have a different orientation than</span>
+<span class="sd">    the one in the right interval.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">left</span><span class="o">=</span><span class="n">Interval</span><span class="p">(),</span> <span class="n">right</span><span class="o">=</span><span class="n">Interval</span><span class="p">()):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">left</span> <span class="o">=</span> <span class="n">left</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">right</span> <span class="o">=</span> <span class="n">right</span>
+
+    <span class="k">def</span> <span class="nf">swap</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Swap left and right intervals&quot;&quot;&quot;</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">left</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">left</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">right</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">right</span> <span class="o">=</span> <span class="n">temp</span>
+
+    <span class="k">def</span> <span class="nf">lowest</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">planarity_state</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the lowest lowpoint of a conflict pair&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">planarity_state</span><span class="o">.</span><span class="n">lowpt</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">low</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">planarity_state</span><span class="o">.</span><span class="n">lowpt</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">low</span><span class="p">]</span>
+        <span class="k">return</span> <span class="nb">min</span><span class="p">(</span>
+            <span class="n">planarity_state</span><span class="o">.</span><span class="n">lowpt</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">low</span><span class="p">],</span> <span class="n">planarity_state</span><span class="o">.</span><span class="n">lowpt</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">low</span><span class="p">]</span>
+        <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">top_of_stack</span><span class="p">(</span><span class="n">l</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the element on top of the stack.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">l</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">l</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+
+<span class="k">class</span> <span class="nc">LRPlanarity</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;A class to maintain the state during planarity check.&quot;&quot;&quot;</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;G&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;roots&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;height&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;lowpt&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;lowpt2&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;nesting_depth&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;parent_edge&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;DG&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;adjs&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ordered_adjs&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ref&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;side&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;S&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;stack_bottom&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;lowpt_edge&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;left_ref&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;right_ref&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;embedding&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">G</span><span class="p">):</span>
+        <span class="c1"># copy G without adding self-loops</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">add_nodes_from</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">roots</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># distance from tree root</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lowpt</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># height of lowest return point of an edge</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lowpt2</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># height of second lowest return point</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nesting_depth</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># for nesting order</span>
+
+        <span class="c1"># None -&gt; missing edge</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent_edge</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="c1"># oriented DFS graph</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">DG</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">DG</span><span class="o">.</span><span class="n">add_nodes_from</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">adjs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ordered_adjs</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ref</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">side</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># stack of conflict pairs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">S</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stack_bottom</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lowpt_edge</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">left_ref</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">right_ref</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">embedding</span> <span class="o">=</span> <span class="n">PlanarEmbedding</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">lr_planarity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Execute the LR planarity test.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        embedding : dict</span>
+<span class="sd">            If the graph is planar an embedding is returned. Otherwise None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">order</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">3</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">order</span><span class="p">()</span> <span class="o">-</span> <span class="mi">6</span><span class="p">:</span>
+            <span class="c1"># graph is not planar</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># make adjacency lists for dfs</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">adjs</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="p">[</span><span class="n">v</span><span class="p">])</span>
+
+        <span class="c1"># orientation of the graph by depth first search traversal</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">roots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dfs_orientation</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+
+        <span class="c1"># Free no longer used variables</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">G</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lowpt2</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">adjs</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># testing</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">DG</span><span class="p">:</span>  <span class="c1"># sort the adjacency lists by nesting depth</span>
+            <span class="c1"># note: this sorting leads to non linear time</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ordered_adjs</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">DG</span><span class="p">[</span><span class="n">v</span><span class="p">],</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">nesting_depth</span><span class="p">[(</span><span class="n">v</span><span class="p">,</span> <span class="n">x</span><span class="p">)]</span>
+            <span class="p">)</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">roots</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">dfs_testing</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># Free no longer used variables</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lowpt</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">S</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stack_bottom</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lowpt_edge</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">DG</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nesting_depth</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">nesting_depth</span><span class="p">[</span><span class="n">e</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">embedding</span><span class="o">.</span><span class="n">add_nodes_from</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">DG</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">DG</span><span class="p">:</span>
+            <span class="c1"># sort the adjacency lists again</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ordered_adjs</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">DG</span><span class="p">[</span><span class="n">v</span><span class="p">],</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">nesting_depth</span><span class="p">[(</span><span class="n">v</span><span class="p">,</span> <span class="n">x</span><span class="p">)]</span>
+            <span class="p">)</span>
+            <span class="c1"># initialize the embedding</span>
+            <span class="n">previous_node</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ordered_adjs</span><span class="p">[</span><span class="n">v</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">embedding</span><span class="o">.</span><span class="n">add_half_edge_cw</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">previous_node</span><span class="p">)</span>
+                <span class="n">previous_node</span> <span class="o">=</span> <span class="n">w</span>
+
+        <span class="c1"># Free no longer used variables</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">DG</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nesting_depth</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ref</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># compute the complete embedding</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">roots</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dfs_embedding</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+
+        <span class="c1"># Free no longer used variables</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">roots</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent_edge</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ordered_adjs</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">left_ref</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">right_ref</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">side</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding</span>
+
+    <span class="k">def</span> <span class="nf">lr_planarity_recursive</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Recursive version of :meth:`lr_planarity`.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">order</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">3</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">order</span><span class="p">()</span> <span class="o">-</span> <span class="mi">6</span><span class="p">:</span>
+            <span class="c1"># graph is not planar</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># orientation of the graph by depth first search traversal</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">roots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dfs_orientation_recursive</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+
+        <span class="c1"># Free no longer used variable</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">G</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># testing</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">DG</span><span class="p">:</span>  <span class="c1"># sort the adjacency lists by nesting depth</span>
+            <span class="c1"># note: this sorting leads to non linear time</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ordered_adjs</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">DG</span><span class="p">[</span><span class="n">v</span><span class="p">],</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">nesting_depth</span><span class="p">[(</span><span class="n">v</span><span class="p">,</span> <span class="n">x</span><span class="p">)]</span>
+            <span class="p">)</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">roots</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">dfs_testing_recursive</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">DG</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nesting_depth</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sign_recursive</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">nesting_depth</span><span class="p">[</span><span class="n">e</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">embedding</span><span class="o">.</span><span class="n">add_nodes_from</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">DG</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">DG</span><span class="p">:</span>
+            <span class="c1"># sort the adjacency lists again</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ordered_adjs</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">DG</span><span class="p">[</span><span class="n">v</span><span class="p">],</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">nesting_depth</span><span class="p">[(</span><span class="n">v</span><span class="p">,</span> <span class="n">x</span><span class="p">)]</span>
+            <span class="p">)</span>
+            <span class="c1"># initialize the embedding</span>
+            <span class="n">previous_node</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ordered_adjs</span><span class="p">[</span><span class="n">v</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">embedding</span><span class="o">.</span><span class="n">add_half_edge_cw</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">previous_node</span><span class="p">)</span>
+                <span class="n">previous_node</span> <span class="o">=</span> <span class="n">w</span>
+
+        <span class="c1"># compute the complete embedding</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">roots</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dfs_embedding_recursive</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding</span>
+
+    <span class="k">def</span> <span class="nf">dfs_orientation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Orient the graph by DFS, compute lowpoints and nesting order.&quot;&quot;&quot;</span>
+        <span class="c1"># the recursion stack</span>
+        <span class="n">dfs_stack</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span><span class="p">]</span>
+        <span class="c1"># index of next edge to handle in adjacency list of each node</span>
+        <span class="n">ind</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="c1"># boolean to indicate whether to skip the initial work for an edge</span>
+        <span class="n">skip_init</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">while</span> <span class="n">dfs_stack</span><span class="p">:</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">dfs_stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="n">e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent_edge</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+
+            <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">adjs</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="n">ind</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="p">:]:</span>
+                <span class="n">vw</span> <span class="o">=</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">skip_init</span><span class="p">[</span><span class="n">vw</span><span class="p">]:</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">DG</span><span class="o">.</span><span class="n">edges</span> <span class="ow">or</span> <span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">DG</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
+                        <span class="n">ind</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+                        <span class="k">continue</span>  <span class="c1"># the edge was already oriented</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">DG</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>  <span class="c1"># orient the edge</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">lowpt</span><span class="p">[</span><span class="n">vw</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">lowpt2</span><span class="p">[</span><span class="n">vw</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">[</span><span class="n">w</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># (v, w) is a tree edge</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">parent_edge</span><span class="p">[</span><span class="n">w</span><span class="p">]</span> <span class="o">=</span> <span class="n">vw</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">[</span><span class="n">w</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+
+                        <span class="n">dfs_stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>  <span class="c1"># revisit v after finishing w</span>
+                        <span class="n">dfs_stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>  <span class="c1"># visit w next</span>
+                        <span class="n">skip_init</span><span class="p">[</span><span class="n">vw</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># don&#39;t redo this block</span>
+                        <span class="k">break</span>  <span class="c1"># handle next node in dfs_stack (i.e. w)</span>
+                    <span class="k">else</span><span class="p">:</span>  <span class="c1"># (v, w) is a back edge</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">lowpt</span><span class="p">[</span><span class="n">vw</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">[</span><span class="n">w</span><span class="p">]</span>
+
+                <span class="c1"># determine nesting graph</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">nesting_depth</span><span class="p">[</span><span class="n">vw</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">lowpt</span><span class="p">[</span><span class="n">vw</span><span class="p">]</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lowpt2</span><span class="p">[</span><span class="n">vw</span><span class="p">]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">[</span><span class="n">v</span><span class="p">]:</span>  <span class="c1"># chordal</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">nesting_depth</span><span class="p">[</span><span class="n">vw</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                <span class="c1"># update lowpoints of parent edge e</span>
+                <span class="k">if</span> <span class="n">e</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lowpt</span><span class="p">[</span><span class="n">vw</span><span class="p">]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">lowpt</span><span class="p">[</span><span class="n">e</span><span class="p">]:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">lowpt2</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lowpt</span><span class="p">[</span><span class="n">e</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">lowpt2</span><span class="p">[</span><span class="n">vw</span><span class="p">])</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">lowpt</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lowpt</span><span class="p">[</span><span class="n">vw</span><span class="p">]</span>
+                    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">lowpt</span><span class="p">[</span><span class="n">vw</span><span class="p">]</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">lowpt</span><span class="p">[</span><span class="n">e</span><span class="p">]:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">lowpt2</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lowpt2</span><span class="p">[</span><span class="n">e</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">lowpt</span><span class="p">[</span><span class="n">vw</span><span class="p">])</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">lowpt2</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lowpt2</span><span class="p">[</span><span class="n">e</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">lowpt2</span><span class="p">[</span><span class="n">vw</span><span class="p">])</span>
+
+                <span class="n">ind</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">dfs_orientation_recursive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Recursive version of :meth:`dfs_orientation`.&quot;&quot;&quot;</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent_edge</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="p">[</span><span class="n">v</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">DG</span><span class="o">.</span><span class="n">edges</span> <span class="ow">or</span> <span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">DG</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
+                <span class="k">continue</span>  <span class="c1"># the edge was already oriented</span>
+            <span class="n">vw</span> <span class="o">=</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">DG</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>  <span class="c1"># orient the edge</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">lowpt</span><span class="p">[</span><span class="n">vw</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lowpt2</span><span class="p">[</span><span class="n">vw</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">[</span><span class="n">w</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># (v, w) is a tree edge</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">parent_edge</span><span class="p">[</span><span class="n">w</span><span class="p">]</span> <span class="o">=</span> <span class="n">vw</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">[</span><span class="n">w</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dfs_orientation_recursive</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># (v, w) is a back edge</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">lowpt</span><span class="p">[</span><span class="n">vw</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">[</span><span class="n">w</span><span class="p">]</span>
+
+            <span class="c1"># determine nesting graph</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nesting_depth</span><span class="p">[</span><span class="n">vw</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">lowpt</span><span class="p">[</span><span class="n">vw</span><span class="p">]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lowpt2</span><span class="p">[</span><span class="n">vw</span><span class="p">]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">[</span><span class="n">v</span><span class="p">]:</span>  <span class="c1"># chordal</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">nesting_depth</span><span class="p">[</span><span class="n">vw</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="c1"># update lowpoints of parent edge e</span>
+            <span class="k">if</span> <span class="n">e</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lowpt</span><span class="p">[</span><span class="n">vw</span><span class="p">]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">lowpt</span><span class="p">[</span><span class="n">e</span><span class="p">]:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">lowpt2</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lowpt</span><span class="p">[</span><span class="n">e</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">lowpt2</span><span class="p">[</span><span class="n">vw</span><span class="p">])</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">lowpt</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lowpt</span><span class="p">[</span><span class="n">vw</span><span class="p">]</span>
+                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">lowpt</span><span class="p">[</span><span class="n">vw</span><span class="p">]</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">lowpt</span><span class="p">[</span><span class="n">e</span><span class="p">]:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">lowpt2</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lowpt2</span><span class="p">[</span><span class="n">e</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">lowpt</span><span class="p">[</span><span class="n">vw</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">lowpt2</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lowpt2</span><span class="p">[</span><span class="n">e</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">lowpt2</span><span class="p">[</span><span class="n">vw</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">dfs_testing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test for LR partition.&quot;&quot;&quot;</span>
+        <span class="c1"># the recursion stack</span>
+        <span class="n">dfs_stack</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span><span class="p">]</span>
+        <span class="c1"># index of next edge to handle in adjacency list of each node</span>
+        <span class="n">ind</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="c1"># boolean to indicate whether to skip the initial work for an edge</span>
+        <span class="n">skip_init</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">while</span> <span class="n">dfs_stack</span><span class="p">:</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">dfs_stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="n">e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent_edge</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+            <span class="c1"># to indicate whether to skip the final block after the for loop</span>
+            <span class="n">skip_final</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ordered_adjs</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="n">ind</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="p">:]:</span>
+                <span class="n">ei</span> <span class="o">=</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">skip_init</span><span class="p">[</span><span class="n">ei</span><span class="p">]:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">stack_bottom</span><span class="p">[</span><span class="n">ei</span><span class="p">]</span> <span class="o">=</span> <span class="n">top_of_stack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">ei</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent_edge</span><span class="p">[</span><span class="n">w</span><span class="p">]:</span>  <span class="c1"># tree edge</span>
+                        <span class="n">dfs_stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>  <span class="c1"># revisit v after finishing w</span>
+                        <span class="n">dfs_stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>  <span class="c1"># visit w next</span>
+                        <span class="n">skip_init</span><span class="p">[</span><span class="n">ei</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># don&#39;t redo this block</span>
+                        <span class="n">skip_final</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># skip final work after breaking</span>
+                        <span class="k">break</span>  <span class="c1"># handle next node in dfs_stack (i.e. w)</span>
+                    <span class="k">else</span><span class="p">:</span>  <span class="c1"># back edge</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">lowpt_edge</span><span class="p">[</span><span class="n">ei</span><span class="p">]</span> <span class="o">=</span> <span class="n">ei</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ConflictPair</span><span class="p">(</span><span class="n">right</span><span class="o">=</span><span class="n">Interval</span><span class="p">(</span><span class="n">ei</span><span class="p">,</span> <span class="n">ei</span><span class="p">)))</span>
+
+                <span class="c1"># integrate new return edges</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lowpt</span><span class="p">[</span><span class="n">ei</span><span class="p">]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">[</span><span class="n">v</span><span class="p">]:</span>
+                    <span class="k">if</span> <span class="n">w</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">ordered_adjs</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>  <span class="c1"># e_i has return edge</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">lowpt_edge</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lowpt_edge</span><span class="p">[</span><span class="n">ei</span><span class="p">]</span>
+                    <span class="k">else</span><span class="p">:</span>  <span class="c1"># add constraints of e_i</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_constraints</span><span class="p">(</span><span class="n">ei</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+                            <span class="c1"># graph is not planar</span>
+                            <span class="k">return</span> <span class="kc">False</span>
+
+                <span class="n">ind</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">skip_final</span><span class="p">:</span>
+                <span class="c1"># remove back edges returning to parent</span>
+                <span class="k">if</span> <span class="n">e</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># v isn&#39;t root</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">remove_back_edges</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">dfs_testing_recursive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Recursive version of :meth:`dfs_testing`.&quot;&quot;&quot;</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent_edge</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ordered_adjs</span><span class="p">[</span><span class="n">v</span><span class="p">]:</span>
+            <span class="n">ei</span> <span class="o">=</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stack_bottom</span><span class="p">[</span><span class="n">ei</span><span class="p">]</span> <span class="o">=</span> <span class="n">top_of_stack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ei</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent_edge</span><span class="p">[</span><span class="n">w</span><span class="p">]:</span>  <span class="c1"># tree edge</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">dfs_testing_recursive</span><span class="p">(</span><span class="n">w</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># back edge</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">lowpt_edge</span><span class="p">[</span><span class="n">ei</span><span class="p">]</span> <span class="o">=</span> <span class="n">ei</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ConflictPair</span><span class="p">(</span><span class="n">right</span><span class="o">=</span><span class="n">Interval</span><span class="p">(</span><span class="n">ei</span><span class="p">,</span> <span class="n">ei</span><span class="p">)))</span>
+
+            <span class="c1"># integrate new return edges</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lowpt</span><span class="p">[</span><span class="n">ei</span><span class="p">]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">[</span><span class="n">v</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">w</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">ordered_adjs</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>  <span class="c1"># e_i has return edge</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">lowpt_edge</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lowpt_edge</span><span class="p">[</span><span class="n">ei</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>  <span class="c1"># add constraints of e_i</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_constraints</span><span class="p">(</span><span class="n">ei</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+                        <span class="c1"># graph is not planar</span>
+                        <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># remove back edges returning to parent</span>
+        <span class="k">if</span> <span class="n">e</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># v isn&#39;t root</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remove_back_edges</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">add_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ei</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+        <span class="n">P</span> <span class="o">=</span> <span class="n">ConflictPair</span><span class="p">()</span>
+        <span class="c1"># merge return edges of e_i into P.right</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">Q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">Q</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
+                <span class="n">Q</span><span class="o">.</span><span class="n">swap</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">Q</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>  <span class="c1"># not planar</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lowpt</span><span class="p">[</span><span class="n">Q</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">low</span><span class="p">]</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">lowpt</span><span class="p">[</span><span class="n">e</span><span class="p">]:</span>
+                <span class="c1"># merge intervals</span>
+                <span class="k">if</span> <span class="n">P</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>  <span class="c1"># topmost interval</span>
+                    <span class="n">P</span><span class="o">.</span><span class="n">right</span> <span class="o">=</span> <span class="n">Q</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">ref</span><span class="p">[</span><span class="n">P</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">low</span><span class="p">]</span> <span class="o">=</span> <span class="n">Q</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">high</span>
+                <span class="n">P</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">low</span> <span class="o">=</span> <span class="n">Q</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">low</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># align</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ref</span><span class="p">[</span><span class="n">Q</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">low</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lowpt_edge</span><span class="p">[</span><span class="n">e</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">top_of_stack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">stack_bottom</span><span class="p">[</span><span class="n">ei</span><span class="p">]:</span>
+                <span class="k">break</span>
+        <span class="c1"># merge conflicting return edges of e_1,...,e_i-1 into P.L</span>
+        <span class="k">while</span> <span class="n">top_of_stack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">)</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">conflicting</span><span class="p">(</span><span class="n">ei</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span> <span class="ow">or</span> <span class="n">top_of_stack</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">S</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">conflicting</span><span class="p">(</span><span class="n">ei</span><span class="p">,</span> <span class="bp">self</span><span class="p">):</span>
+            <span class="n">Q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">Q</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">conflicting</span><span class="p">(</span><span class="n">ei</span><span class="p">,</span> <span class="bp">self</span><span class="p">):</span>
+                <span class="n">Q</span><span class="o">.</span><span class="n">swap</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">Q</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">conflicting</span><span class="p">(</span><span class="n">ei</span><span class="p">,</span> <span class="bp">self</span><span class="p">):</span>  <span class="c1"># not planar</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="c1"># merge interval below lowpt(e_i) into P.R</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ref</span><span class="p">[</span><span class="n">P</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">low</span><span class="p">]</span> <span class="o">=</span> <span class="n">Q</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">high</span>
+            <span class="k">if</span> <span class="n">Q</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">low</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">P</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">low</span> <span class="o">=</span> <span class="n">Q</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">low</span>
+
+            <span class="k">if</span> <span class="n">P</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>  <span class="c1"># topmost interval</span>
+                <span class="n">P</span><span class="o">.</span><span class="n">left</span> <span class="o">=</span> <span class="n">Q</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ref</span><span class="p">[</span><span class="n">P</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">low</span><span class="p">]</span> <span class="o">=</span> <span class="n">Q</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">high</span>
+            <span class="n">P</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">low</span> <span class="o">=</span> <span class="n">Q</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">low</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">empty</span><span class="p">()</span> <span class="ow">and</span> <span class="n">P</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">empty</span><span class="p">()):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">remove_back_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># trim back edges ending at parent u</span>
+        <span class="c1"># drop entire conflict pairs</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span> <span class="ow">and</span> <span class="n">top_of_stack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">)</span><span class="o">.</span><span class="n">lowest</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">[</span><span class="n">u</span><span class="p">]:</span>
+            <span class="n">P</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">P</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">low</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">side</span><span class="p">[</span><span class="n">P</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">low</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">:</span>  <span class="c1"># one more conflict pair to consider</span>
+            <span class="n">P</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="c1"># trim left interval</span>
+            <span class="k">while</span> <span class="n">P</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">high</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">P</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">high</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">u</span><span class="p">:</span>
+                <span class="n">P</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">high</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ref</span><span class="p">[</span><span class="n">P</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">high</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">P</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">high</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">P</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">low</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># just emptied</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ref</span><span class="p">[</span><span class="n">P</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">low</span><span class="p">]</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">low</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">side</span><span class="p">[</span><span class="n">P</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">low</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+                <span class="n">P</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">low</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="c1"># trim right interval</span>
+            <span class="k">while</span> <span class="n">P</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">high</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">P</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">high</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">u</span><span class="p">:</span>
+                <span class="n">P</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">high</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ref</span><span class="p">[</span><span class="n">P</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">high</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">P</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">high</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">P</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">low</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># just emptied</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ref</span><span class="p">[</span><span class="n">P</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">low</span><span class="p">]</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">low</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">side</span><span class="p">[</span><span class="n">P</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">low</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+                <span class="n">P</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">low</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
+
+        <span class="c1"># side of e is side of a highest return edge</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lowpt</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">[</span><span class="n">u</span><span class="p">]:</span>  <span class="c1"># e has return edge</span>
+            <span class="n">hl</span> <span class="o">=</span> <span class="n">top_of_stack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">)</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">high</span>
+            <span class="n">hr</span> <span class="o">=</span> <span class="n">top_of_stack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">)</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">high</span>
+
+            <span class="k">if</span> <span class="n">hl</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span><span class="n">hr</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">lowpt</span><span class="p">[</span><span class="n">hl</span><span class="p">]</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">lowpt</span><span class="p">[</span><span class="n">hr</span><span class="p">]):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ref</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">=</span> <span class="n">hl</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ref</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">=</span> <span class="n">hr</span>
+
+    <span class="k">def</span> <span class="nf">dfs_embedding</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Completes the embedding.&quot;&quot;&quot;</span>
+        <span class="c1"># the recursion stack</span>
+        <span class="n">dfs_stack</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span><span class="p">]</span>
+        <span class="c1"># index of next edge to handle in adjacency list of each node</span>
+        <span class="n">ind</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">while</span> <span class="n">dfs_stack</span><span class="p">:</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">dfs_stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+            <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ordered_adjs</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="n">ind</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="p">:]:</span>
+                <span class="n">ind</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">ei</span> <span class="o">=</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">ei</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent_edge</span><span class="p">[</span><span class="n">w</span><span class="p">]:</span>  <span class="c1"># tree edge</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">embedding</span><span class="o">.</span><span class="n">add_half_edge_first</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">left_ref</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">w</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">right_ref</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">w</span>
+
+                    <span class="n">dfs_stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>  <span class="c1"># revisit v after finishing w</span>
+                    <span class="n">dfs_stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>  <span class="c1"># visit w next</span>
+                    <span class="k">break</span>  <span class="c1"># handle next node in dfs_stack (i.e. w)</span>
+                <span class="k">else</span><span class="p">:</span>  <span class="c1"># back edge</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">side</span><span class="p">[</span><span class="n">ei</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">embedding</span><span class="o">.</span><span class="n">add_half_edge_cw</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">right_ref</span><span class="p">[</span><span class="n">w</span><span class="p">])</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">embedding</span><span class="o">.</span><span class="n">add_half_edge_ccw</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">left_ref</span><span class="p">[</span><span class="n">w</span><span class="p">])</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">left_ref</span><span class="p">[</span><span class="n">w</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+
+    <span class="k">def</span> <span class="nf">dfs_embedding_recursive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Recursive version of :meth:`dfs_embedding`.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ordered_adjs</span><span class="p">[</span><span class="n">v</span><span class="p">]:</span>
+            <span class="n">ei</span> <span class="o">=</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ei</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent_edge</span><span class="p">[</span><span class="n">w</span><span class="p">]:</span>  <span class="c1"># tree edge</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">embedding</span><span class="o">.</span><span class="n">add_half_edge_first</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">left_ref</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">w</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">right_ref</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">w</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dfs_embedding_recursive</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># back edge</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">side</span><span class="p">[</span><span class="n">ei</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="c1"># place v directly after right_ref[w] in embed. list of w</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">embedding</span><span class="o">.</span><span class="n">add_half_edge_cw</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">right_ref</span><span class="p">[</span><span class="n">w</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># place v directly before left_ref[w] in embed. list of w</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">embedding</span><span class="o">.</span><span class="n">add_half_edge_ccw</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">left_ref</span><span class="p">[</span><span class="n">w</span><span class="p">])</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">left_ref</span><span class="p">[</span><span class="n">w</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+
+    <span class="k">def</span> <span class="nf">sign</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Resolve the relative side of an edge to the absolute side.&quot;&quot;&quot;</span>
+        <span class="c1"># the recursion stack</span>
+        <span class="n">dfs_stack</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="p">]</span>
+        <span class="c1"># dict to remember reference edges</span>
+        <span class="n">old_ref</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="k">while</span> <span class="n">dfs_stack</span><span class="p">:</span>
+            <span class="n">e</span> <span class="o">=</span> <span class="n">dfs_stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ref</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">dfs_stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>  <span class="c1"># revisit e after finishing self.ref[e]</span>
+                <span class="n">dfs_stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ref</span><span class="p">[</span><span class="n">e</span><span class="p">])</span>  <span class="c1"># visit self.ref[e] next</span>
+                <span class="n">old_ref</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ref</span><span class="p">[</span><span class="n">e</span><span class="p">]</span>  <span class="c1"># remember value of self.ref[e]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ref</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">side</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">*=</span> <span class="bp">self</span><span class="o">.</span><span class="n">side</span><span class="p">[</span><span class="n">old_ref</span><span class="p">[</span><span class="n">e</span><span class="p">]]</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">side</span><span class="p">[</span><span class="n">e</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">sign_recursive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Recursive version of :meth:`sign`.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ref</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">side</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">side</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">sign_recursive</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ref</span><span class="p">[</span><span class="n">e</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ref</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">side</span><span class="p">[</span><span class="n">e</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="PlanarEmbedding"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.planarity.PlanarEmbedding.html#networkx.algorithms.planarity.PlanarEmbedding">[docs]</a><span class="k">class</span> <span class="nc">PlanarEmbedding</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Represents a planar graph with its planar embedding.</span>
+
+<span class="sd">    The planar embedding is given by a `combinatorial embedding</span>
+<span class="sd">    &lt;https://en.wikipedia.org/wiki/Graph_embedding#Combinatorial_embedding&gt;`_.</span>
+
+<span class="sd">    .. note:: `check_planarity` is the preferred way to check if a graph is planar.</span>
+
+<span class="sd">    **Neighbor ordering:**</span>
+
+<span class="sd">    In comparison to a usual graph structure, the embedding also stores the</span>
+<span class="sd">    order of all neighbors for every vertex.</span>
+<span class="sd">    The order of the neighbors can be given in clockwise (cw) direction or</span>
+<span class="sd">    counterclockwise (ccw) direction. This order is stored as edge attributes</span>
+<span class="sd">    in the underlying directed graph. For the edge (u, v) the edge attribute</span>
+<span class="sd">    &#39;cw&#39; is set to the neighbor of u that follows immediately after v in</span>
+<span class="sd">    clockwise direction.</span>
+
+<span class="sd">    In order for a PlanarEmbedding to be valid it must fulfill multiple</span>
+<span class="sd">    conditions. It is possible to check if these conditions are fulfilled with</span>
+<span class="sd">    the method :meth:`check_structure`.</span>
+<span class="sd">    The conditions are:</span>
+
+<span class="sd">    * Edges must go in both directions (because the edge attributes differ)</span>
+<span class="sd">    * Every edge must have a &#39;cw&#39; and &#39;ccw&#39; attribute which corresponds to a</span>
+<span class="sd">      correct planar embedding.</span>
+<span class="sd">    * A node with non zero degree must have a node attribute &#39;first_nbr&#39;.</span>
+
+<span class="sd">    As long as a PlanarEmbedding is invalid only the following methods should</span>
+<span class="sd">    be called:</span>
+
+<span class="sd">    * :meth:`add_half_edge_ccw`</span>
+<span class="sd">    * :meth:`add_half_edge_cw`</span>
+<span class="sd">    * :meth:`connect_components`</span>
+<span class="sd">    * :meth:`add_half_edge_first`</span>
+
+<span class="sd">    Even though the graph is a subclass of nx.DiGraph, it can still be used</span>
+<span class="sd">    for algorithms that require undirected graphs, because the method</span>
+<span class="sd">    :meth:`is_directed` is overridden. This is possible, because a valid</span>
+<span class="sd">    PlanarGraph must have edges in both directions.</span>
+
+<span class="sd">    **Half edges:**</span>
+
+<span class="sd">    In methods like `add_half_edge_ccw` the term &quot;half-edge&quot; is used, which is</span>
+<span class="sd">    a term that is used in `doubly connected edge lists</span>
+<span class="sd">    &lt;https://en.wikipedia.org/wiki/Doubly_connected_edge_list&gt;`_. It is used</span>
+<span class="sd">    to emphasize that the edge is only in one direction and there exists</span>
+<span class="sd">    another half-edge in the opposite direction.</span>
+<span class="sd">    While conventional edges always have two faces (including outer face) next</span>
+<span class="sd">    to them, it is possible to assign each half-edge *exactly one* face.</span>
+<span class="sd">    For a half-edge (u, v) that is orientated such that u is below v then the</span>
+<span class="sd">    face that belongs to (u, v) is to the right of this half-edge.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    is_planar :</span>
+<span class="sd">        Preferred way to check if an existing graph is planar.</span>
+
+<span class="sd">    check_planarity :</span>
+<span class="sd">        A convenient way to create a `PlanarEmbedding`. If not planar,</span>
+<span class="sd">        it returns a subgraph that shows this.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    Create an embedding of a star graph (compare `nx.star_graph(3)`):</span>
+
+<span class="sd">    &gt;&gt;&gt; G = nx.PlanarEmbedding()</span>
+<span class="sd">    &gt;&gt;&gt; G.add_half_edge_cw(0, 1, None)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_half_edge_cw(0, 2, 1)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_half_edge_cw(0, 3, 2)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_half_edge_cw(1, 0, None)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_half_edge_cw(2, 0, None)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_half_edge_cw(3, 0, None)</span>
+
+<span class="sd">    Alternatively the same embedding can also be defined in counterclockwise</span>
+<span class="sd">    orientation. The following results in exactly the same PlanarEmbedding:</span>
+
+<span class="sd">    &gt;&gt;&gt; G = nx.PlanarEmbedding()</span>
+<span class="sd">    &gt;&gt;&gt; G.add_half_edge_ccw(0, 1, None)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_half_edge_ccw(0, 3, 1)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_half_edge_ccw(0, 2, 3)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_half_edge_ccw(1, 0, None)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_half_edge_ccw(2, 0, None)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_half_edge_ccw(3, 0, None)</span>
+
+<span class="sd">    After creating a graph, it is possible to validate that the PlanarEmbedding</span>
+<span class="sd">    object is correct:</span>
+
+<span class="sd">    &gt;&gt;&gt; G.check_structure()</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="PlanarEmbedding.get_data"><a class="viewcode-back" href="../../../reference/algorithms/generated/generated/networkx.algorithms.planarity.PlanarEmbedding.get_data.html#networkx.algorithms.planarity.PlanarEmbedding.get_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Converts the adjacency structure into a better readable structure.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        embedding : dict</span>
+<span class="sd">            A dict mapping all nodes to a list of neighbors sorted in</span>
+<span class="sd">            clockwise order.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        set_data</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">embedding</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="n">embedding</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">neighbors_cw_order</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">embedding</span></div>
+
+<div class="viewcode-block" id="PlanarEmbedding.set_data"><a class="viewcode-back" href="../../../reference/algorithms/generated/generated/networkx.algorithms.planarity.PlanarEmbedding.set_data.html#networkx.algorithms.planarity.PlanarEmbedding.set_data">[docs]</a>    <span class="k">def</span> <span class="nf">set_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Inserts edges according to given sorted neighbor list.</span>
+
+<span class="sd">        The input format is the same as the output format of get_data().</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data : dict</span>
+<span class="sd">            A dict mapping all nodes to a list of neighbors sorted in</span>
+<span class="sd">            clockwise order.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        get_data</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">v</span><span class="p">]):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_half_edge_first</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PlanarEmbedding.neighbors_cw_order"><a class="viewcode-back" href="../../../reference/algorithms/generated/generated/networkx.algorithms.planarity.PlanarEmbedding.neighbors_cw_order.html#networkx.algorithms.planarity.PlanarEmbedding.neighbors_cw_order">[docs]</a>    <span class="k">def</span> <span class="nf">neighbors_cw_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Generator for the neighbors of v in clockwise order.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        v : node</span>
+
+<span class="sd">        Yields</span>
+<span class="sd">        ------</span>
+<span class="sd">        node</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">v</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># v has no neighbors</span>
+            <span class="k">return</span>
+        <span class="n">start_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="s2">&quot;first_nbr&quot;</span><span class="p">]</span>
+        <span class="k">yield</span> <span class="n">start_node</span>
+        <span class="n">current_node</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="n">start_node</span><span class="p">][</span><span class="s2">&quot;cw&quot;</span><span class="p">]</span>
+        <span class="k">while</span> <span class="n">start_node</span> <span class="o">!=</span> <span class="n">current_node</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">current_node</span>
+            <span class="n">current_node</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="n">current_node</span><span class="p">][</span><span class="s2">&quot;cw&quot;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="PlanarEmbedding.check_structure"><a class="viewcode-back" href="../../../reference/algorithms/generated/generated/networkx.algorithms.planarity.PlanarEmbedding.check_structure.html#networkx.algorithms.planarity.PlanarEmbedding.check_structure">[docs]</a>    <span class="k">def</span> <span class="nf">check_structure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Runs without exceptions if this object is valid.</span>
+
+<span class="sd">        Checks that the following properties are fulfilled:</span>
+
+<span class="sd">        * Edges go in both directions (because the edge attributes differ).</span>
+<span class="sd">        * Every edge has a &#39;cw&#39; and &#39;ccw&#39; attribute which corresponds to a</span>
+<span class="sd">          correct planar embedding.</span>
+<span class="sd">        * A node with a degree larger than 0 has a node attribute &#39;first_nbr&#39;.</span>
+
+<span class="sd">        Running this method verifies that the underlying Graph must be planar.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        NetworkXException</span>
+<span class="sd">            This exception is raised with a short explanation if the</span>
+<span class="sd">            PlanarEmbedding is invalid.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Check fundamental structure</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">sorted_nbrs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">neighbors_cw_order</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Bad embedding. Missing orientation for a neighbor of </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXException</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">err</span>
+
+            <span class="n">unsorted_nbrs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">v</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">sorted_nbrs</span> <span class="o">!=</span> <span class="n">unsorted_nbrs</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Bad embedding. Edge orientations not set correctly.&quot;</span>
+                <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXException</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">[</span><span class="n">v</span><span class="p">]:</span>
+                <span class="c1"># Check if opposite half-edge exists</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_edge</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Bad embedding. Opposite half-edge is missing.&quot;</span>
+                    <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXException</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="c1"># Check planarity</span>
+        <span class="n">counted_half_edges</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="n">nx</span><span class="o">.</span><span class="n">connected_components</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">component</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># Don&#39;t need to check single node component</span>
+                <span class="k">continue</span>
+            <span class="n">num_nodes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">component</span><span class="p">)</span>
+            <span class="n">num_half_edges</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">num_faces</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">component</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">neighbors_cw_order</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+                    <span class="n">num_half_edges</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">counted_half_edges</span><span class="p">:</span>
+                        <span class="c1"># We encountered a new face</span>
+                        <span class="n">num_faces</span> <span class="o">+=</span> <span class="mi">1</span>
+                        <span class="c1"># Mark all half-edges belonging to this face</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">traverse_face</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">counted_half_edges</span><span class="p">)</span>
+            <span class="n">num_edges</span> <span class="o">=</span> <span class="n">num_half_edges</span> <span class="o">//</span> <span class="mi">2</span>  <span class="c1"># num_half_edges is even</span>
+            <span class="k">if</span> <span class="n">num_nodes</span> <span class="o">-</span> <span class="n">num_edges</span> <span class="o">+</span> <span class="n">num_faces</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="c1"># The result does not match Euler&#39;s formula</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Bad embedding. The graph does not match Euler&#39;s formula&quot;</span>
+                <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXException</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PlanarEmbedding.add_half_edge_ccw"><a class="viewcode-back" href="../../../reference/algorithms/generated/generated/networkx.algorithms.planarity.PlanarEmbedding.add_half_edge_ccw.html#networkx.algorithms.planarity.PlanarEmbedding.add_half_edge_ccw">[docs]</a>    <span class="k">def</span> <span class="nf">add_half_edge_ccw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_node</span><span class="p">,</span> <span class="n">end_node</span><span class="p">,</span> <span class="n">reference_neighbor</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Adds a half-edge from start_node to end_node.</span>
+
+<span class="sd">        The half-edge is added counter clockwise next to the existing half-edge</span>
+<span class="sd">        (start_node, reference_neighbor).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        start_node : node</span>
+<span class="sd">            Start node of inserted edge.</span>
+<span class="sd">        end_node : node</span>
+<span class="sd">            End node of inserted edge.</span>
+<span class="sd">        reference_neighbor: node</span>
+<span class="sd">            End node of reference edge.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        NetworkXException</span>
+<span class="sd">            If the reference_neighbor does not exist.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        add_half_edge_cw</span>
+<span class="sd">        connect_components</span>
+<span class="sd">        add_half_edge_first</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">reference_neighbor</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># The start node has no neighbors</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">start_node</span><span class="p">,</span> <span class="n">end_node</span><span class="p">)</span>  <span class="c1"># Add edge to graph</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">start_node</span><span class="p">][</span><span class="n">end_node</span><span class="p">][</span><span class="s2">&quot;cw&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">end_node</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">start_node</span><span class="p">][</span><span class="n">end_node</span><span class="p">][</span><span class="s2">&quot;ccw&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">end_node</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">start_node</span><span class="p">][</span><span class="s2">&quot;first_nbr&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">end_node</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ccw_reference</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">start_node</span><span class="p">][</span><span class="n">reference_neighbor</span><span class="p">][</span><span class="s2">&quot;ccw&quot;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_half_edge_cw</span><span class="p">(</span><span class="n">start_node</span><span class="p">,</span> <span class="n">end_node</span><span class="p">,</span> <span class="n">ccw_reference</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">reference_neighbor</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">start_node</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;first_nbr&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+                <span class="c1"># Update first neighbor</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">start_node</span><span class="p">][</span><span class="s2">&quot;first_nbr&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">end_node</span></div>
+
+<div class="viewcode-block" id="PlanarEmbedding.add_half_edge_cw"><a class="viewcode-back" href="../../../reference/algorithms/generated/generated/networkx.algorithms.planarity.PlanarEmbedding.add_half_edge_cw.html#networkx.algorithms.planarity.PlanarEmbedding.add_half_edge_cw">[docs]</a>    <span class="k">def</span> <span class="nf">add_half_edge_cw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_node</span><span class="p">,</span> <span class="n">end_node</span><span class="p">,</span> <span class="n">reference_neighbor</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Adds a half-edge from start_node to end_node.</span>
+
+<span class="sd">        The half-edge is added clockwise next to the existing half-edge</span>
+<span class="sd">        (start_node, reference_neighbor).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        start_node : node</span>
+<span class="sd">            Start node of inserted edge.</span>
+<span class="sd">        end_node : node</span>
+<span class="sd">            End node of inserted edge.</span>
+<span class="sd">        reference_neighbor: node</span>
+<span class="sd">            End node of reference edge.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        NetworkXException</span>
+<span class="sd">            If the reference_neighbor does not exist.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        add_half_edge_ccw</span>
+<span class="sd">        connect_components</span>
+<span class="sd">        add_half_edge_first</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">start_node</span><span class="p">,</span> <span class="n">end_node</span><span class="p">)</span>  <span class="c1"># Add edge to graph</span>
+
+        <span class="k">if</span> <span class="n">reference_neighbor</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># The start node has no neighbors</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">start_node</span><span class="p">][</span><span class="n">end_node</span><span class="p">][</span><span class="s2">&quot;cw&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">end_node</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">start_node</span><span class="p">][</span><span class="n">end_node</span><span class="p">][</span><span class="s2">&quot;ccw&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">end_node</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">start_node</span><span class="p">][</span><span class="s2">&quot;first_nbr&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">end_node</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">reference_neighbor</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">[</span><span class="n">start_node</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXException</span><span class="p">(</span>
+                <span class="s2">&quot;Cannot add edge. Reference neighbor does not exist&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Get half-edge at the other side</span>
+        <span class="n">cw_reference</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">start_node</span><span class="p">][</span><span class="n">reference_neighbor</span><span class="p">][</span><span class="s2">&quot;cw&quot;</span><span class="p">]</span>
+        <span class="c1"># Alter half-edge data structures</span>
+        <span class="bp">self</span><span class="p">[</span><span class="n">start_node</span><span class="p">][</span><span class="n">reference_neighbor</span><span class="p">][</span><span class="s2">&quot;cw&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">end_node</span>
+        <span class="bp">self</span><span class="p">[</span><span class="n">start_node</span><span class="p">][</span><span class="n">end_node</span><span class="p">][</span><span class="s2">&quot;cw&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cw_reference</span>
+        <span class="bp">self</span><span class="p">[</span><span class="n">start_node</span><span class="p">][</span><span class="n">cw_reference</span><span class="p">][</span><span class="s2">&quot;ccw&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">end_node</span>
+        <span class="bp">self</span><span class="p">[</span><span class="n">start_node</span><span class="p">][</span><span class="n">end_node</span><span class="p">][</span><span class="s2">&quot;ccw&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">reference_neighbor</span></div>
+
+<div class="viewcode-block" id="PlanarEmbedding.connect_components"><a class="viewcode-back" href="../../../reference/algorithms/generated/generated/networkx.algorithms.planarity.PlanarEmbedding.connect_components.html#networkx.algorithms.planarity.PlanarEmbedding.connect_components">[docs]</a>    <span class="k">def</span> <span class="nf">connect_components</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Adds half-edges for (v, w) and (w, v) at some position.</span>
+
+<span class="sd">        This method should only be called if v and w are in different</span>
+<span class="sd">        components, or it might break the embedding.</span>
+<span class="sd">        This especially means that if `connect_components(v, w)`</span>
+<span class="sd">        is called it is not allowed to call `connect_components(w, v)`</span>
+<span class="sd">        afterwards. The neighbor orientations in both directions are</span>
+<span class="sd">        all set correctly after the first call.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        v : node</span>
+<span class="sd">        w : node</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        add_half_edge_ccw</span>
+<span class="sd">        add_half_edge_cw</span>
+<span class="sd">        add_half_edge_first</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_half_edge_first</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_half_edge_first</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PlanarEmbedding.add_half_edge_first"><a class="viewcode-back" href="../../../reference/algorithms/generated/generated/networkx.algorithms.planarity.PlanarEmbedding.add_half_edge_first.html#networkx.algorithms.planarity.PlanarEmbedding.add_half_edge_first">[docs]</a>    <span class="k">def</span> <span class="nf">add_half_edge_first</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_node</span><span class="p">,</span> <span class="n">end_node</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The added half-edge is inserted at the first position in the order.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        start_node : node</span>
+<span class="sd">        end_node : node</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        add_half_edge_ccw</span>
+<span class="sd">        add_half_edge_cw</span>
+<span class="sd">        connect_components</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">start_node</span> <span class="ow">in</span> <span class="bp">self</span> <span class="ow">and</span> <span class="s2">&quot;first_nbr&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">start_node</span><span class="p">]:</span>
+            <span class="n">reference</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">start_node</span><span class="p">][</span><span class="s2">&quot;first_nbr&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">reference</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_half_edge_ccw</span><span class="p">(</span><span class="n">start_node</span><span class="p">,</span> <span class="n">end_node</span><span class="p">,</span> <span class="n">reference</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PlanarEmbedding.next_face_half_edge"><a class="viewcode-back" href="../../../reference/algorithms/generated/generated/networkx.algorithms.planarity.PlanarEmbedding.next_face_half_edge.html#networkx.algorithms.planarity.PlanarEmbedding.next_face_half_edge">[docs]</a>    <span class="k">def</span> <span class="nf">next_face_half_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the following half-edge left of a face.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        v : node</span>
+<span class="sd">        w : node</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        half-edge : tuple</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_node</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">w</span><span class="p">][</span><span class="n">v</span><span class="p">][</span><span class="s2">&quot;ccw&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">w</span><span class="p">,</span> <span class="n">new_node</span></div>
+
+<div class="viewcode-block" id="PlanarEmbedding.traverse_face"><a class="viewcode-back" href="../../../reference/algorithms/generated/generated/networkx.algorithms.planarity.PlanarEmbedding.traverse_face.html#networkx.algorithms.planarity.PlanarEmbedding.traverse_face">[docs]</a>    <span class="k">def</span> <span class="nf">traverse_face</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">mark_half_edges</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns nodes on the face that belong to the half-edge (v, w).</span>
+
+<span class="sd">        The face that is traversed lies to the right of the half-edge (in an</span>
+<span class="sd">        orientation where v is below w).</span>
+
+<span class="sd">        Optionally it is possible to pass a set to which all encountered half</span>
+<span class="sd">        edges are added. Before calling this method, this set must not include</span>
+<span class="sd">        any half-edges that belong to the face.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        v : node</span>
+<span class="sd">            Start node of half-edge.</span>
+<span class="sd">        w : node</span>
+<span class="sd">            End node of half-edge.</span>
+<span class="sd">        mark_half_edges: set, optional</span>
+<span class="sd">            Set to which all encountered half-edges are added.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        face : list</span>
+<span class="sd">            A list of nodes that lie on this face.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">mark_half_edges</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">mark_half_edges</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+        <span class="n">face_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span><span class="p">]</span>
+        <span class="n">mark_half_edges</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">))</span>
+        <span class="n">prev_node</span> <span class="o">=</span> <span class="n">v</span>
+        <span class="n">cur_node</span> <span class="o">=</span> <span class="n">w</span>
+        <span class="c1"># Last half-edge is (incoming_node, v)</span>
+        <span class="n">incoming_node</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="n">w</span><span class="p">][</span><span class="s2">&quot;cw&quot;</span><span class="p">]</span>
+
+        <span class="k">while</span> <span class="n">cur_node</span> <span class="o">!=</span> <span class="n">v</span> <span class="ow">or</span> <span class="n">prev_node</span> <span class="o">!=</span> <span class="n">incoming_node</span><span class="p">:</span>
+            <span class="n">face_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cur_node</span><span class="p">)</span>
+            <span class="n">prev_node</span><span class="p">,</span> <span class="n">cur_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">next_face_half_edge</span><span class="p">(</span><span class="n">prev_node</span><span class="p">,</span> <span class="n">cur_node</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">prev_node</span><span class="p">,</span> <span class="n">cur_node</span><span class="p">)</span> <span class="ow">in</span> <span class="n">mark_half_edges</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXException</span><span class="p">(</span><span class="s2">&quot;Bad planar embedding. Impossible face.&quot;</span><span class="p">)</span>
+            <span class="n">mark_half_edges</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">prev_node</span><span class="p">,</span> <span class="n">cur_node</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">face_nodes</span></div>
+
+<div class="viewcode-block" id="PlanarEmbedding.is_directed"><a class="viewcode-back" href="../../../reference/algorithms/generated/generated/networkx.algorithms.planarity.PlanarEmbedding.is_directed.html#networkx.algorithms.planarity.PlanarEmbedding.is_directed">[docs]</a>    <span class="k">def</span> <span class="nf">is_directed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;A valid PlanarEmbedding is undirected.</span>
+
+<span class="sd">        All reverse edges are contained, i.e. for every existing</span>
+<span class="sd">        half-edge (v, w) the half-edge in the opposite direction (w, v) is also</span>
+<span class="sd">        contained.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">False</span></div></div>
+</pre></div>
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

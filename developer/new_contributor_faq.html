@@ -1,0 +1,729 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>New Contributor FAQ &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'developer/new_contributor_faq';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/developer/new_contributor_faq.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Core Developer Guide" href="core_developer.html" />
+    <link rel="prev" title="Mentored Projects" href="projects.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">
+    Section Navigation
+  </p>
+  <div class="bd-toc-item navbar-nav">
+    <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="about_us.html">About Us</a></li>
+<li class="toctree-l1"><a class="reference internal" href="code_of_conduct.html">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="values.html">Mission and Values</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contribute.html">Contributor Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="projects.html">Mentored Projects</a></li>
+
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">New Contributor FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="core_developer.html">Core Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release.html">Release Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecations.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="roadmap.html">Roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nxeps/index.html">NXEPs</a></li>
+</ul>
+
+  </div>
+</nav>
+    </div>
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <section id="new-contributor-faq">
+<span id="contributing-faq"></span><h1>New Contributor FAQ<a class="headerlink" href="#new-contributor-faq" title="Permalink to this heading">#</a></h1>
+<p>A collection of frequently-asked questions by newcomers to
+open-source development and first-time contributors to NetworkX.</p>
+<section id="q-i-m-new-to-open-source-and-would-like-to-contribute-to-networkx-how-do-i-get-started">
+<h2>Q: I’m new to open source and would like to contribute to NetworkX. How do I get started?<a class="headerlink" href="#q-i-m-new-to-open-source-and-would-like-to-contribute-to-networkx-how-do-i-get-started" title="Permalink to this heading">#</a></h2>
+<p>To contribute to NetworkX, you will need three things:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>The source code</p></li>
+<li><p>A development environment</p></li>
+<li><p>An idea of what you’d like to contribute</p></li>
+</ol>
+</div></blockquote>
+<p>Steps 1 &amp; 2 are covered extensively in <a class="reference internal" href="contribute.html#dev-workflow"><span class="std std-ref">Development Workflow</span></a>.
+There is no generic answer for step 3. There are many ways that NetworkX can
+be improved, from adding new algorithms, improving existing algorithms,
+improving the test suite (e.g. increasing test coverage), and improving the
+documentation.
+The “best” way to find a place to start is to follow your own personal
+interests!
+That said, a few places to check for ideas on where to get started:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference external" href="https://github.com/networkx/networkx/issues">The issue tracker</a> lists
+known bugs and feature requests. Of particular interest for first-time
+contributors are issues that have been tagged with the <a class="reference external" href="https://github.com/networkx/networkx/issues?q=is%3Aopen+is%3Aissue+label%3A%22Good+First+Issue%22">Good First Issue</a>
+or <a class="reference external" href="https://github.com/networkx/networkx/issues?q=is%3Aopen+is%3Aissue+label%3ASprint">Sprint</a> labels.</p></li>
+<li><p>The <a class="reference external" href="https://github.com/networkx/networkx/discussions/categories/algorithms">Algorithms discussion</a> includes a listing of algorithms that users
+would like to have but that are not yet included in NetworkX.</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="q-i-ve-found-an-issue-i-m-interested-in-can-i-have-it-assigned-to-me">
+<h2>Q: I’ve found an issue I’m interested in, can I have it assigned to me?<a class="headerlink" href="#q-i-ve-found-an-issue-i-m-interested-in-can-i-have-it-assigned-to-me" title="Permalink to this heading">#</a></h2>
+<p>NetworkX doesn’t typically assign issues to contributors. If you find an issue
+or feature request on the issue tracker that you’d like to work on, you should
+first check the issue thread to see if there are any linked pull requests.
+If not, then feel free to open a new PR to address the issue - no need
+to ask for permission - and don’t forget to reference the issue number in the PR
+comments so that others know you are now working on it!</p>
+</section>
+<section id="q-how-do-i-contribute-an-example-to-the-gallery">
+<h2>Q: How do I contribute an example to the Gallery?<a class="headerlink" href="#q-how-do-i-contribute-an-example-to-the-gallery" title="Permalink to this heading">#</a></h2>
+<p>The example gallery is great place to contribute, particularly if you have an
+interesting application or visualization that uses NetworkX.
+The gallery is generated using <a class="reference external" href="https://sphinx-gallery.github.io/stable/index.html" title="(in Sphinx-Gallery v0.11.1)"><span class="xref std std-doc">sphinx-gallery</span></a>
+from Python scripts stored in the <code class="docutils literal notranslate"><span class="pre">examples/</span></code> directory.</p>
+<p>For instance, let’s say I’d like to contribute an example of visualizing a
+<a class="reference internal" href="../reference/generated/networkx.generators.classic.complete_graph.html#networkx.generators.classic.complete_graph" title="networkx.generators.classic.complete_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">complete</span> <span class="pre">graph</span></code></a> using a
+<a class="reference internal" href="../reference/generated/networkx.drawing.layout.circular_layout.html#networkx.drawing.layout.circular_layout" title="networkx.drawing.layout.circular_layout"><code class="xref py py-obj docutils literal notranslate"><span class="pre">circular</span> <span class="pre">layout</span></code></a>.
+Assuming you have already followed the procedure for
+<a class="reference internal" href="contribute.html#dev-workflow"><span class="std std-ref">setting up a development environment</span></a>, start by
+creating a new branch:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git checkout -b complete-graph-circular-layout-example
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It’s generally a good idea to give your branch a descriptive name so
+that it’s easy to remember what you are working on.</p>
+</div>
+<p>Now you can begin work on your example. Sticking with the circular layout idea,
+you might create a file in <code class="docutils literal notranslate"><span class="pre">examples/drawing</span></code> called <code class="docutils literal notranslate"><span class="pre">plot_circular_layout.py</span></code>
+with the following contents:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">complete_graph</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>  <span class="c1"># A complete graph with 10 nodes</span>
+<span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">circular_layout</span><span class="p">(</span><span class="n">G</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It may not be clear where exactly an example belongs. Our circular
+layout example is very simple, so perhaps it belongs in <code class="docutils literal notranslate"><span class="pre">examples/basic</span></code>.
+It would also make sense for it to be in <code class="docutils literal notranslate"><span class="pre">examples/drawing</span></code> since it deals
+with visualization. Don’t worry if you’re not sure: questions like this will
+be resolved during the review process.</p>
+</div>
+<p>At this point, your contribution is ready to be reviewed. You can make the
+changes on your <code class="docutils literal notranslate"><span class="pre">complete-graph-circular-layout-example</span></code> branch visible to
+other NetworkX developers by
+<a class="reference external" href="https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request">creating a pull request</a>.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>The <a class="reference internal" href="contribute.html#dev-workflow"><span class="std std-ref">developer guide</span></a> has more details on
+creating pull requests.</p>
+</div>
+</section>
+<section id="q-i-want-to-work-on-a-specific-function-how-do-i-find-it-in-the-source-code">
+<h2>Q: I want to work on a specific function. How do I find it in the source code?<a class="headerlink" href="#q-i-want-to-work-on-a-specific-function-how-do-i-find-it-in-the-source-code" title="Permalink to this heading">#</a></h2>
+<p>Assuming you have followed the instructions for
+<a class="reference internal" href="contribute.html#dev-workflow"><span class="std std-ref">setting up the development workflow</span></a>, there are several
+ways of determining where the in the <strong>source code</strong> a particular function or
+class is defined.</p>
+<p>For example, let’s say you are interested in making a change to the
+<a class="reference internal" href="../reference/generated/networkx.drawing.layout.kamada_kawai_layout.html#networkx.drawing.layout.kamada_kawai_layout" title="networkx.drawing.layout.kamada_kawai_layout"><code class="xref py py-obj docutils literal notranslate"><span class="pre">kamada_kawai_layout</span></code></a> function, so you need to know
+where it is defined. In an IPython terminal, you can use <code class="docutils literal notranslate"><span class="pre">?</span></code> — the source file is
+listed in the <code class="docutils literal notranslate"><span class="pre">File:</span></code> field:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span>In [1]: import networkx as nx
+In [2]: nx.kamada_kawai_layout?
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Signature: &lt;clipped for brevity&gt;
+Docstring: &lt;clipped for brevity&gt;
+File: ~/networkx/networkx/drawing/layout.py
+Type: function
+</pre></div>
+</div>
+<p>Command line utilities like <code class="docutils literal notranslate"><span class="pre">grep</span></code> or <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">grep</span></code> are also very useful.
+For example, from the NetworkX source directory:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ grep -r <span class="s2">&quot;def kamada_kawai_layout&quot;</span> .
+./networkx/drawing/layout.py:def kamada_kawai_layout<span class="o">(</span>
+</pre></div>
+</div>
+</section>
+<section id="q-what-is-the-policy-for-deciding-whether-to-include-a-new-algorithm">
+<h2>Q: What is the policy for deciding whether to include a new algorithm?<a class="headerlink" href="#q-what-is-the-policy-for-deciding-whether-to-include-a-new-algorithm" title="Permalink to this heading">#</a></h2>
+<p>There is no official policy setting explicit inclusion criteria for new
+algorithms in NetworkX. New algorithms are more likely to be included if they
+have been published and are cited by others. More important than number of
+citations is how well proposed additions fit the project <a class="reference internal" href="values.html#mission-and-values"><span class="std std-ref">Mission and Values</span></a>.</p>
+</section>
+</section>
+
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#q-i-m-new-to-open-source-and-would-like-to-contribute-to-networkx-how-do-i-get-started">
+   Q: I’m new to open source and would like to contribute to NetworkX. How do I get started?
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#q-i-ve-found-an-issue-i-m-interested-in-can-i-have-it-assigned-to-me">
+   Q: I’ve found an issue I’m interested in, can I have it assigned to me?
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#q-how-do-i-contribute-an-example-to-the-gallery">
+   Q: How do I contribute an example to the Gallery?
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#q-i-want-to-work-on-a-specific-function-how-do-i-find-it-in-the-source-code">
+   Q: I want to work on a specific function. How do I find it in the source code?
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#q-what-is-the-policy-for-deciding-whether-to-include-a-new-algorithm">
+   Q: What is the policy for deciding whether to include a new algorithm?
+  </a>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

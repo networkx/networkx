@@ -1,0 +1,1145 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>networkx.algorithms.flow.maxflow &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/algorithms/flow/maxflow';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/algorithms/flow/maxflow.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../../../../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../../../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../../../../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <h1>Source code for networkx.algorithms.flow.maxflow</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Maximum flow (and minimum cut) algorithms on capacitated graphs.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+
+<span class="kn">from</span> <span class="nn">.boykovkolmogorov</span> <span class="kn">import</span> <span class="n">boykov_kolmogorov</span>
+<span class="kn">from</span> <span class="nn">.dinitz_alg</span> <span class="kn">import</span> <span class="n">dinitz</span>
+<span class="kn">from</span> <span class="nn">.edmondskarp</span> <span class="kn">import</span> <span class="n">edmonds_karp</span>
+<span class="kn">from</span> <span class="nn">.preflowpush</span> <span class="kn">import</span> <span class="n">preflow_push</span>
+<span class="kn">from</span> <span class="nn">.shortestaugmentingpath</span> <span class="kn">import</span> <span class="n">shortest_augmenting_path</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">build_flow_dict</span>
+
+<span class="c1"># Define the default flow function for computing maximum flow.</span>
+<span class="n">default_flow_func</span> <span class="o">=</span> <span class="n">preflow_push</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;maximum_flow&quot;</span><span class="p">,</span> <span class="s2">&quot;maximum_flow_value&quot;</span><span class="p">,</span> <span class="s2">&quot;minimum_cut&quot;</span><span class="p">,</span> <span class="s2">&quot;minimum_cut_value&quot;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="maximum_flow"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.flow.maximum_flow.html#networkx.algorithms.flow.maximum_flow">[docs]</a><span class="k">def</span> <span class="nf">maximum_flow</span><span class="p">(</span><span class="n">flowG</span><span class="p">,</span> <span class="n">_s</span><span class="p">,</span> <span class="n">_t</span><span class="p">,</span> <span class="n">capacity</span><span class="o">=</span><span class="s2">&quot;capacity&quot;</span><span class="p">,</span> <span class="n">flow_func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Find a maximum single-commodity flow.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    flowG : NetworkX graph</span>
+<span class="sd">        Edges of the graph are expected to have an attribute called</span>
+<span class="sd">        &#39;capacity&#39;. If this attribute is not present, the edge is</span>
+<span class="sd">        considered to have infinite capacity.</span>
+
+<span class="sd">    _s : node</span>
+<span class="sd">        Source node for the flow.</span>
+
+<span class="sd">    _t : node</span>
+<span class="sd">        Sink node for the flow.</span>
+
+<span class="sd">    capacity : string</span>
+<span class="sd">        Edges of the graph G are expected to have an attribute capacity</span>
+<span class="sd">        that indicates how much flow the edge can support. If this</span>
+<span class="sd">        attribute is not present, the edge is considered to have</span>
+<span class="sd">        infinite capacity. Default value: &#39;capacity&#39;.</span>
+
+<span class="sd">    flow_func : function</span>
+<span class="sd">        A function for computing the maximum flow among a pair of nodes</span>
+<span class="sd">        in a capacitated graph. The function has to accept at least three</span>
+<span class="sd">        parameters: a Graph or Digraph, a source node, and a target node.</span>
+<span class="sd">        And return a residual network that follows NetworkX conventions</span>
+<span class="sd">        (see Notes). If flow_func is None, the default maximum</span>
+<span class="sd">        flow function (:meth:`preflow_push`) is used. See below for</span>
+<span class="sd">        alternative algorithms. The choice of the default function may change</span>
+<span class="sd">        from version to version and should not be relied on. Default value:</span>
+<span class="sd">        None.</span>
+
+<span class="sd">    kwargs : Any other keyword parameter is passed to the function that</span>
+<span class="sd">        computes the maximum flow.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    flow_value : integer, float</span>
+<span class="sd">        Value of the maximum flow, i.e., net outflow from the source.</span>
+
+<span class="sd">    flow_dict : dict</span>
+<span class="sd">        A dictionary containing the value of the flow that went through</span>
+<span class="sd">        each edge.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NetworkXError</span>
+<span class="sd">        The algorithm does not support MultiGraph and MultiDiGraph. If</span>
+<span class="sd">        the input graph is an instance of one of these two classes, a</span>
+<span class="sd">        NetworkXError is raised.</span>
+
+<span class="sd">    NetworkXUnbounded</span>
+<span class="sd">        If the graph has a path of infinite capacity, the value of a</span>
+<span class="sd">        feasible flow on the graph is unbounded above and the function</span>
+<span class="sd">        raises a NetworkXUnbounded.</span>
+
+<span class="sd">    See also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :meth:`maximum_flow_value`</span>
+<span class="sd">    :meth:`minimum_cut`</span>
+<span class="sd">    :meth:`minimum_cut_value`</span>
+<span class="sd">    :meth:`edmonds_karp`</span>
+<span class="sd">    :meth:`preflow_push`</span>
+<span class="sd">    :meth:`shortest_augmenting_path`</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The function used in the flow_func parameter has to return a residual</span>
+<span class="sd">    network that follows NetworkX conventions:</span>
+
+<span class="sd">    The residual network :samp:`R` from an input graph :samp:`G` has the</span>
+<span class="sd">    same nodes as :samp:`G`. :samp:`R` is a DiGraph that contains a pair</span>
+<span class="sd">    of edges :samp:`(u, v)` and :samp:`(v, u)` iff :samp:`(u, v)` is not a</span>
+<span class="sd">    self-loop, and at least one of :samp:`(u, v)` and :samp:`(v, u)` exists</span>
+<span class="sd">    in :samp:`G`.</span>
+
+<span class="sd">    For each edge :samp:`(u, v)` in :samp:`R`, :samp:`R[u][v][&#39;capacity&#39;]`</span>
+<span class="sd">    is equal to the capacity of :samp:`(u, v)` in :samp:`G` if it exists</span>
+<span class="sd">    in :samp:`G` or zero otherwise. If the capacity is infinite,</span>
+<span class="sd">    :samp:`R[u][v][&#39;capacity&#39;]` will have a high arbitrary finite value</span>
+<span class="sd">    that does not affect the solution of the problem. This value is stored in</span>
+<span class="sd">    :samp:`R.graph[&#39;inf&#39;]`. For each edge :samp:`(u, v)` in :samp:`R`,</span>
+<span class="sd">    :samp:`R[u][v][&#39;flow&#39;]` represents the flow function of :samp:`(u, v)` and</span>
+<span class="sd">    satisfies :samp:`R[u][v][&#39;flow&#39;] == -R[v][u][&#39;flow&#39;]`.</span>
+
+<span class="sd">    The flow value, defined as the total flow into :samp:`t`, the sink, is</span>
+<span class="sd">    stored in :samp:`R.graph[&#39;flow_value&#39;]`. Reachability to :samp:`t` using</span>
+<span class="sd">    only edges :samp:`(u, v)` such that</span>
+<span class="sd">    :samp:`R[u][v][&#39;flow&#39;] &lt; R[u][v][&#39;capacity&#39;]` induces a minimum</span>
+<span class="sd">    :samp:`s`-:samp:`t` cut.</span>
+
+<span class="sd">    Specific algorithms may store extra data in :samp:`R`.</span>
+
+<span class="sd">    The function should supports an optional boolean parameter value_only. When</span>
+<span class="sd">    True, it can optionally terminate the algorithm as soon as the maximum flow</span>
+<span class="sd">    value and the minimum cut can be determined.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.DiGraph()</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(&quot;x&quot;, &quot;a&quot;, capacity=3.0)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(&quot;x&quot;, &quot;b&quot;, capacity=1.0)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(&quot;a&quot;, &quot;c&quot;, capacity=3.0)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(&quot;b&quot;, &quot;c&quot;, capacity=5.0)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(&quot;b&quot;, &quot;d&quot;, capacity=4.0)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(&quot;d&quot;, &quot;e&quot;, capacity=2.0)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(&quot;c&quot;, &quot;y&quot;, capacity=2.0)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(&quot;e&quot;, &quot;y&quot;, capacity=3.0)</span>
+
+<span class="sd">    maximum_flow returns both the value of the maximum flow and a</span>
+<span class="sd">    dictionary with all flows.</span>
+
+<span class="sd">    &gt;&gt;&gt; flow_value, flow_dict = nx.maximum_flow(G, &quot;x&quot;, &quot;y&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; flow_value</span>
+<span class="sd">    3.0</span>
+<span class="sd">    &gt;&gt;&gt; print(flow_dict[&quot;x&quot;][&quot;b&quot;])</span>
+<span class="sd">    1.0</span>
+
+<span class="sd">    You can also use alternative algorithms for computing the</span>
+<span class="sd">    maximum flow by using the flow_func parameter.</span>
+
+<span class="sd">    &gt;&gt;&gt; from networkx.algorithms.flow import shortest_augmenting_path</span>
+<span class="sd">    &gt;&gt;&gt; flow_value == nx.maximum_flow(G, &quot;x&quot;, &quot;y&quot;, flow_func=shortest_augmenting_path)[</span>
+<span class="sd">    ...     0</span>
+<span class="sd">    ... ]</span>
+<span class="sd">    True</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">flow_func</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span>
+                <span class="s2">&quot;You have to explicitly set a flow_func if&quot;</span>
+                <span class="s2">&quot; you need to pass parameters via kwargs.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">flow_func</span> <span class="o">=</span> <span class="n">default_flow_func</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">callable</span><span class="p">(</span><span class="n">flow_func</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;flow_func has to be callable.&quot;</span><span class="p">)</span>
+
+    <span class="n">R</span> <span class="o">=</span> <span class="n">flow_func</span><span class="p">(</span><span class="n">flowG</span><span class="p">,</span> <span class="n">_s</span><span class="p">,</span> <span class="n">_t</span><span class="p">,</span> <span class="n">capacity</span><span class="o">=</span><span class="n">capacity</span><span class="p">,</span> <span class="n">value_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">flow_dict</span> <span class="o">=</span> <span class="n">build_flow_dict</span><span class="p">(</span><span class="n">flowG</span><span class="p">,</span> <span class="n">R</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">R</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="s2">&quot;flow_value&quot;</span><span class="p">],</span> <span class="n">flow_dict</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="maximum_flow_value"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.flow.maximum_flow_value.html#networkx.algorithms.flow.maximum_flow_value">[docs]</a><span class="k">def</span> <span class="nf">maximum_flow_value</span><span class="p">(</span><span class="n">flowG</span><span class="p">,</span> <span class="n">_s</span><span class="p">,</span> <span class="n">_t</span><span class="p">,</span> <span class="n">capacity</span><span class="o">=</span><span class="s2">&quot;capacity&quot;</span><span class="p">,</span> <span class="n">flow_func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Find the value of maximum single-commodity flow.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    flowG : NetworkX graph</span>
+<span class="sd">        Edges of the graph are expected to have an attribute called</span>
+<span class="sd">        &#39;capacity&#39;. If this attribute is not present, the edge is</span>
+<span class="sd">        considered to have infinite capacity.</span>
+
+<span class="sd">    _s : node</span>
+<span class="sd">        Source node for the flow.</span>
+
+<span class="sd">    _t : node</span>
+<span class="sd">        Sink node for the flow.</span>
+
+<span class="sd">    capacity : string</span>
+<span class="sd">        Edges of the graph G are expected to have an attribute capacity</span>
+<span class="sd">        that indicates how much flow the edge can support. If this</span>
+<span class="sd">        attribute is not present, the edge is considered to have</span>
+<span class="sd">        infinite capacity. Default value: &#39;capacity&#39;.</span>
+
+<span class="sd">    flow_func : function</span>
+<span class="sd">        A function for computing the maximum flow among a pair of nodes</span>
+<span class="sd">        in a capacitated graph. The function has to accept at least three</span>
+<span class="sd">        parameters: a Graph or Digraph, a source node, and a target node.</span>
+<span class="sd">        And return a residual network that follows NetworkX conventions</span>
+<span class="sd">        (see Notes). If flow_func is None, the default maximum</span>
+<span class="sd">        flow function (:meth:`preflow_push`) is used. See below for</span>
+<span class="sd">        alternative algorithms. The choice of the default function may change</span>
+<span class="sd">        from version to version and should not be relied on. Default value:</span>
+<span class="sd">        None.</span>
+
+<span class="sd">    kwargs : Any other keyword parameter is passed to the function that</span>
+<span class="sd">        computes the maximum flow.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    flow_value : integer, float</span>
+<span class="sd">        Value of the maximum flow, i.e., net outflow from the source.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NetworkXError</span>
+<span class="sd">        The algorithm does not support MultiGraph and MultiDiGraph. If</span>
+<span class="sd">        the input graph is an instance of one of these two classes, a</span>
+<span class="sd">        NetworkXError is raised.</span>
+
+<span class="sd">    NetworkXUnbounded</span>
+<span class="sd">        If the graph has a path of infinite capacity, the value of a</span>
+<span class="sd">        feasible flow on the graph is unbounded above and the function</span>
+<span class="sd">        raises a NetworkXUnbounded.</span>
+
+<span class="sd">    See also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :meth:`maximum_flow`</span>
+<span class="sd">    :meth:`minimum_cut`</span>
+<span class="sd">    :meth:`minimum_cut_value`</span>
+<span class="sd">    :meth:`edmonds_karp`</span>
+<span class="sd">    :meth:`preflow_push`</span>
+<span class="sd">    :meth:`shortest_augmenting_path`</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The function used in the flow_func parameter has to return a residual</span>
+<span class="sd">    network that follows NetworkX conventions:</span>
+
+<span class="sd">    The residual network :samp:`R` from an input graph :samp:`G` has the</span>
+<span class="sd">    same nodes as :samp:`G`. :samp:`R` is a DiGraph that contains a pair</span>
+<span class="sd">    of edges :samp:`(u, v)` and :samp:`(v, u)` iff :samp:`(u, v)` is not a</span>
+<span class="sd">    self-loop, and at least one of :samp:`(u, v)` and :samp:`(v, u)` exists</span>
+<span class="sd">    in :samp:`G`.</span>
+
+<span class="sd">    For each edge :samp:`(u, v)` in :samp:`R`, :samp:`R[u][v][&#39;capacity&#39;]`</span>
+<span class="sd">    is equal to the capacity of :samp:`(u, v)` in :samp:`G` if it exists</span>
+<span class="sd">    in :samp:`G` or zero otherwise. If the capacity is infinite,</span>
+<span class="sd">    :samp:`R[u][v][&#39;capacity&#39;]` will have a high arbitrary finite value</span>
+<span class="sd">    that does not affect the solution of the problem. This value is stored in</span>
+<span class="sd">    :samp:`R.graph[&#39;inf&#39;]`. For each edge :samp:`(u, v)` in :samp:`R`,</span>
+<span class="sd">    :samp:`R[u][v][&#39;flow&#39;]` represents the flow function of :samp:`(u, v)` and</span>
+<span class="sd">    satisfies :samp:`R[u][v][&#39;flow&#39;] == -R[v][u][&#39;flow&#39;]`.</span>
+
+<span class="sd">    The flow value, defined as the total flow into :samp:`t`, the sink, is</span>
+<span class="sd">    stored in :samp:`R.graph[&#39;flow_value&#39;]`. Reachability to :samp:`t` using</span>
+<span class="sd">    only edges :samp:`(u, v)` such that</span>
+<span class="sd">    :samp:`R[u][v][&#39;flow&#39;] &lt; R[u][v][&#39;capacity&#39;]` induces a minimum</span>
+<span class="sd">    :samp:`s`-:samp:`t` cut.</span>
+
+<span class="sd">    Specific algorithms may store extra data in :samp:`R`.</span>
+
+<span class="sd">    The function should supports an optional boolean parameter value_only. When</span>
+<span class="sd">    True, it can optionally terminate the algorithm as soon as the maximum flow</span>
+<span class="sd">    value and the minimum cut can be determined.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.DiGraph()</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(&quot;x&quot;, &quot;a&quot;, capacity=3.0)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(&quot;x&quot;, &quot;b&quot;, capacity=1.0)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(&quot;a&quot;, &quot;c&quot;, capacity=3.0)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(&quot;b&quot;, &quot;c&quot;, capacity=5.0)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(&quot;b&quot;, &quot;d&quot;, capacity=4.0)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(&quot;d&quot;, &quot;e&quot;, capacity=2.0)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(&quot;c&quot;, &quot;y&quot;, capacity=2.0)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(&quot;e&quot;, &quot;y&quot;, capacity=3.0)</span>
+
+<span class="sd">    maximum_flow_value computes only the value of the</span>
+<span class="sd">    maximum flow:</span>
+
+<span class="sd">    &gt;&gt;&gt; flow_value = nx.maximum_flow_value(G, &quot;x&quot;, &quot;y&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; flow_value</span>
+<span class="sd">    3.0</span>
+
+<span class="sd">    You can also use alternative algorithms for computing the</span>
+<span class="sd">    maximum flow by using the flow_func parameter.</span>
+
+<span class="sd">    &gt;&gt;&gt; from networkx.algorithms.flow import shortest_augmenting_path</span>
+<span class="sd">    &gt;&gt;&gt; flow_value == nx.maximum_flow_value(</span>
+<span class="sd">    ...     G, &quot;x&quot;, &quot;y&quot;, flow_func=shortest_augmenting_path</span>
+<span class="sd">    ... )</span>
+<span class="sd">    True</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">flow_func</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span>
+                <span class="s2">&quot;You have to explicitly set a flow_func if&quot;</span>
+                <span class="s2">&quot; you need to pass parameters via kwargs.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">flow_func</span> <span class="o">=</span> <span class="n">default_flow_func</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">callable</span><span class="p">(</span><span class="n">flow_func</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;flow_func has to be callable.&quot;</span><span class="p">)</span>
+
+    <span class="n">R</span> <span class="o">=</span> <span class="n">flow_func</span><span class="p">(</span><span class="n">flowG</span><span class="p">,</span> <span class="n">_s</span><span class="p">,</span> <span class="n">_t</span><span class="p">,</span> <span class="n">capacity</span><span class="o">=</span><span class="n">capacity</span><span class="p">,</span> <span class="n">value_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">R</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="s2">&quot;flow_value&quot;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="minimum_cut"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.flow.minimum_cut.html#networkx.algorithms.flow.minimum_cut">[docs]</a><span class="k">def</span> <span class="nf">minimum_cut</span><span class="p">(</span><span class="n">flowG</span><span class="p">,</span> <span class="n">_s</span><span class="p">,</span> <span class="n">_t</span><span class="p">,</span> <span class="n">capacity</span><span class="o">=</span><span class="s2">&quot;capacity&quot;</span><span class="p">,</span> <span class="n">flow_func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Compute the value and the node partition of a minimum (s, t)-cut.</span>
+
+<span class="sd">    Use the max-flow min-cut theorem, i.e., the capacity of a minimum</span>
+<span class="sd">    capacity cut is equal to the flow value of a maximum flow.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    flowG : NetworkX graph</span>
+<span class="sd">        Edges of the graph are expected to have an attribute called</span>
+<span class="sd">        &#39;capacity&#39;. If this attribute is not present, the edge is</span>
+<span class="sd">        considered to have infinite capacity.</span>
+
+<span class="sd">    _s : node</span>
+<span class="sd">        Source node for the flow.</span>
+
+<span class="sd">    _t : node</span>
+<span class="sd">        Sink node for the flow.</span>
+
+<span class="sd">    capacity : string</span>
+<span class="sd">        Edges of the graph G are expected to have an attribute capacity</span>
+<span class="sd">        that indicates how much flow the edge can support. If this</span>
+<span class="sd">        attribute is not present, the edge is considered to have</span>
+<span class="sd">        infinite capacity. Default value: &#39;capacity&#39;.</span>
+
+<span class="sd">    flow_func : function</span>
+<span class="sd">        A function for computing the maximum flow among a pair of nodes</span>
+<span class="sd">        in a capacitated graph. The function has to accept at least three</span>
+<span class="sd">        parameters: a Graph or Digraph, a source node, and a target node.</span>
+<span class="sd">        And return a residual network that follows NetworkX conventions</span>
+<span class="sd">        (see Notes). If flow_func is None, the default maximum</span>
+<span class="sd">        flow function (:meth:`preflow_push`) is used. See below for</span>
+<span class="sd">        alternative algorithms. The choice of the default function may change</span>
+<span class="sd">        from version to version and should not be relied on. Default value:</span>
+<span class="sd">        None.</span>
+
+<span class="sd">    kwargs : Any other keyword parameter is passed to the function that</span>
+<span class="sd">        computes the maximum flow.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    cut_value : integer, float</span>
+<span class="sd">        Value of the minimum cut.</span>
+
+<span class="sd">    partition : pair of node sets</span>
+<span class="sd">        A partitioning of the nodes that defines a minimum cut.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NetworkXUnbounded</span>
+<span class="sd">        If the graph has a path of infinite capacity, all cuts have</span>
+<span class="sd">        infinite capacity and the function raises a NetworkXError.</span>
+
+<span class="sd">    See also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :meth:`maximum_flow`</span>
+<span class="sd">    :meth:`maximum_flow_value`</span>
+<span class="sd">    :meth:`minimum_cut_value`</span>
+<span class="sd">    :meth:`edmonds_karp`</span>
+<span class="sd">    :meth:`preflow_push`</span>
+<span class="sd">    :meth:`shortest_augmenting_path`</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The function used in the flow_func parameter has to return a residual</span>
+<span class="sd">    network that follows NetworkX conventions:</span>
+
+<span class="sd">    The residual network :samp:`R` from an input graph :samp:`G` has the</span>
+<span class="sd">    same nodes as :samp:`G`. :samp:`R` is a DiGraph that contains a pair</span>
+<span class="sd">    of edges :samp:`(u, v)` and :samp:`(v, u)` iff :samp:`(u, v)` is not a</span>
+<span class="sd">    self-loop, and at least one of :samp:`(u, v)` and :samp:`(v, u)` exists</span>
+<span class="sd">    in :samp:`G`.</span>
+
+<span class="sd">    For each edge :samp:`(u, v)` in :samp:`R`, :samp:`R[u][v][&#39;capacity&#39;]`</span>
+<span class="sd">    is equal to the capacity of :samp:`(u, v)` in :samp:`G` if it exists</span>
+<span class="sd">    in :samp:`G` or zero otherwise. If the capacity is infinite,</span>
+<span class="sd">    :samp:`R[u][v][&#39;capacity&#39;]` will have a high arbitrary finite value</span>
+<span class="sd">    that does not affect the solution of the problem. This value is stored in</span>
+<span class="sd">    :samp:`R.graph[&#39;inf&#39;]`. For each edge :samp:`(u, v)` in :samp:`R`,</span>
+<span class="sd">    :samp:`R[u][v][&#39;flow&#39;]` represents the flow function of :samp:`(u, v)` and</span>
+<span class="sd">    satisfies :samp:`R[u][v][&#39;flow&#39;] == -R[v][u][&#39;flow&#39;]`.</span>
+
+<span class="sd">    The flow value, defined as the total flow into :samp:`t`, the sink, is</span>
+<span class="sd">    stored in :samp:`R.graph[&#39;flow_value&#39;]`. Reachability to :samp:`t` using</span>
+<span class="sd">    only edges :samp:`(u, v)` such that</span>
+<span class="sd">    :samp:`R[u][v][&#39;flow&#39;] &lt; R[u][v][&#39;capacity&#39;]` induces a minimum</span>
+<span class="sd">    :samp:`s`-:samp:`t` cut.</span>
+
+<span class="sd">    Specific algorithms may store extra data in :samp:`R`.</span>
+
+<span class="sd">    The function should supports an optional boolean parameter value_only. When</span>
+<span class="sd">    True, it can optionally terminate the algorithm as soon as the maximum flow</span>
+<span class="sd">    value and the minimum cut can be determined.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.DiGraph()</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(&quot;x&quot;, &quot;a&quot;, capacity=3.0)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(&quot;x&quot;, &quot;b&quot;, capacity=1.0)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(&quot;a&quot;, &quot;c&quot;, capacity=3.0)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(&quot;b&quot;, &quot;c&quot;, capacity=5.0)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(&quot;b&quot;, &quot;d&quot;, capacity=4.0)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(&quot;d&quot;, &quot;e&quot;, capacity=2.0)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(&quot;c&quot;, &quot;y&quot;, capacity=2.0)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(&quot;e&quot;, &quot;y&quot;, capacity=3.0)</span>
+
+<span class="sd">    minimum_cut computes both the value of the</span>
+<span class="sd">    minimum cut and the node partition:</span>
+
+<span class="sd">    &gt;&gt;&gt; cut_value, partition = nx.minimum_cut(G, &quot;x&quot;, &quot;y&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; reachable, non_reachable = partition</span>
+
+<span class="sd">    &#39;partition&#39; here is a tuple with the two sets of nodes that define</span>
+<span class="sd">    the minimum cut. You can compute the cut set of edges that induce</span>
+<span class="sd">    the minimum cut as follows:</span>
+
+<span class="sd">    &gt;&gt;&gt; cutset = set()</span>
+<span class="sd">    &gt;&gt;&gt; for u, nbrs in ((n, G[n]) for n in reachable):</span>
+<span class="sd">    ...     cutset.update((u, v) for v in nbrs if v in non_reachable)</span>
+<span class="sd">    &gt;&gt;&gt; print(sorted(cutset))</span>
+<span class="sd">    [(&#39;c&#39;, &#39;y&#39;), (&#39;x&#39;, &#39;b&#39;)]</span>
+<span class="sd">    &gt;&gt;&gt; cut_value == sum(G.edges[u, v][&quot;capacity&quot;] for (u, v) in cutset)</span>
+<span class="sd">    True</span>
+
+<span class="sd">    You can also use alternative algorithms for computing the</span>
+<span class="sd">    minimum cut by using the flow_func parameter.</span>
+
+<span class="sd">    &gt;&gt;&gt; from networkx.algorithms.flow import shortest_augmenting_path</span>
+<span class="sd">    &gt;&gt;&gt; cut_value == nx.minimum_cut(G, &quot;x&quot;, &quot;y&quot;, flow_func=shortest_augmenting_path)[0]</span>
+<span class="sd">    True</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">flow_func</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span>
+                <span class="s2">&quot;You have to explicitly set a flow_func if&quot;</span>
+                <span class="s2">&quot; you need to pass parameters via kwargs.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">flow_func</span> <span class="o">=</span> <span class="n">default_flow_func</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">callable</span><span class="p">(</span><span class="n">flow_func</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;flow_func has to be callable.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cutoff&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">flow_func</span> <span class="ow">is</span> <span class="n">preflow_push</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;cutoff should not be specified.&quot;</span><span class="p">)</span>
+
+    <span class="n">R</span> <span class="o">=</span> <span class="n">flow_func</span><span class="p">(</span><span class="n">flowG</span><span class="p">,</span> <span class="n">_s</span><span class="p">,</span> <span class="n">_t</span><span class="p">,</span> <span class="n">capacity</span><span class="o">=</span><span class="n">capacity</span><span class="p">,</span> <span class="n">value_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="c1"># Remove saturated edges from the residual network</span>
+    <span class="n">cutset</span> <span class="o">=</span> <span class="p">[(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">R</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">if</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;flow&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;capacity&quot;</span><span class="p">]]</span>
+    <span class="n">R</span><span class="o">.</span><span class="n">remove_edges_from</span><span class="p">(</span><span class="n">cutset</span><span class="p">)</span>
+
+    <span class="c1"># Then, reachable and non reachable nodes from source in the</span>
+    <span class="c1"># residual network form the node partition that defines</span>
+    <span class="c1"># the minimum cut.</span>
+    <span class="n">non_reachable</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">shortest_path_length</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">_t</span><span class="p">)))</span>
+    <span class="n">partition</span> <span class="o">=</span> <span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">flowG</span><span class="p">)</span> <span class="o">-</span> <span class="n">non_reachable</span><span class="p">,</span> <span class="n">non_reachable</span><span class="p">)</span>
+    <span class="c1"># Finally add again cutset edges to the residual network to make</span>
+    <span class="c1"># sure that it is reusable.</span>
+    <span class="k">if</span> <span class="n">cutset</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">R</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span><span class="n">cutset</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">R</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="s2">&quot;flow_value&quot;</span><span class="p">],</span> <span class="n">partition</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="minimum_cut_value"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.flow.minimum_cut_value.html#networkx.algorithms.flow.minimum_cut_value">[docs]</a><span class="k">def</span> <span class="nf">minimum_cut_value</span><span class="p">(</span><span class="n">flowG</span><span class="p">,</span> <span class="n">_s</span><span class="p">,</span> <span class="n">_t</span><span class="p">,</span> <span class="n">capacity</span><span class="o">=</span><span class="s2">&quot;capacity&quot;</span><span class="p">,</span> <span class="n">flow_func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Compute the value of a minimum (s, t)-cut.</span>
+
+<span class="sd">    Use the max-flow min-cut theorem, i.e., the capacity of a minimum</span>
+<span class="sd">    capacity cut is equal to the flow value of a maximum flow.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    flowG : NetworkX graph</span>
+<span class="sd">        Edges of the graph are expected to have an attribute called</span>
+<span class="sd">        &#39;capacity&#39;. If this attribute is not present, the edge is</span>
+<span class="sd">        considered to have infinite capacity.</span>
+
+<span class="sd">    _s : node</span>
+<span class="sd">        Source node for the flow.</span>
+
+<span class="sd">    _t : node</span>
+<span class="sd">        Sink node for the flow.</span>
+
+<span class="sd">    capacity : string</span>
+<span class="sd">        Edges of the graph G are expected to have an attribute capacity</span>
+<span class="sd">        that indicates how much flow the edge can support. If this</span>
+<span class="sd">        attribute is not present, the edge is considered to have</span>
+<span class="sd">        infinite capacity. Default value: &#39;capacity&#39;.</span>
+
+<span class="sd">    flow_func : function</span>
+<span class="sd">        A function for computing the maximum flow among a pair of nodes</span>
+<span class="sd">        in a capacitated graph. The function has to accept at least three</span>
+<span class="sd">        parameters: a Graph or Digraph, a source node, and a target node.</span>
+<span class="sd">        And return a residual network that follows NetworkX conventions</span>
+<span class="sd">        (see Notes). If flow_func is None, the default maximum</span>
+<span class="sd">        flow function (:meth:`preflow_push`) is used. See below for</span>
+<span class="sd">        alternative algorithms. The choice of the default function may change</span>
+<span class="sd">        from version to version and should not be relied on. Default value:</span>
+<span class="sd">        None.</span>
+
+<span class="sd">    kwargs : Any other keyword parameter is passed to the function that</span>
+<span class="sd">        computes the maximum flow.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    cut_value : integer, float</span>
+<span class="sd">        Value of the minimum cut.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NetworkXUnbounded</span>
+<span class="sd">        If the graph has a path of infinite capacity, all cuts have</span>
+<span class="sd">        infinite capacity and the function raises a NetworkXError.</span>
+
+<span class="sd">    See also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :meth:`maximum_flow`</span>
+<span class="sd">    :meth:`maximum_flow_value`</span>
+<span class="sd">    :meth:`minimum_cut`</span>
+<span class="sd">    :meth:`edmonds_karp`</span>
+<span class="sd">    :meth:`preflow_push`</span>
+<span class="sd">    :meth:`shortest_augmenting_path`</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The function used in the flow_func parameter has to return a residual</span>
+<span class="sd">    network that follows NetworkX conventions:</span>
+
+<span class="sd">    The residual network :samp:`R` from an input graph :samp:`G` has the</span>
+<span class="sd">    same nodes as :samp:`G`. :samp:`R` is a DiGraph that contains a pair</span>
+<span class="sd">    of edges :samp:`(u, v)` and :samp:`(v, u)` iff :samp:`(u, v)` is not a</span>
+<span class="sd">    self-loop, and at least one of :samp:`(u, v)` and :samp:`(v, u)` exists</span>
+<span class="sd">    in :samp:`G`.</span>
+
+<span class="sd">    For each edge :samp:`(u, v)` in :samp:`R`, :samp:`R[u][v][&#39;capacity&#39;]`</span>
+<span class="sd">    is equal to the capacity of :samp:`(u, v)` in :samp:`G` if it exists</span>
+<span class="sd">    in :samp:`G` or zero otherwise. If the capacity is infinite,</span>
+<span class="sd">    :samp:`R[u][v][&#39;capacity&#39;]` will have a high arbitrary finite value</span>
+<span class="sd">    that does not affect the solution of the problem. This value is stored in</span>
+<span class="sd">    :samp:`R.graph[&#39;inf&#39;]`. For each edge :samp:`(u, v)` in :samp:`R`,</span>
+<span class="sd">    :samp:`R[u][v][&#39;flow&#39;]` represents the flow function of :samp:`(u, v)` and</span>
+<span class="sd">    satisfies :samp:`R[u][v][&#39;flow&#39;] == -R[v][u][&#39;flow&#39;]`.</span>
+
+<span class="sd">    The flow value, defined as the total flow into :samp:`t`, the sink, is</span>
+<span class="sd">    stored in :samp:`R.graph[&#39;flow_value&#39;]`. Reachability to :samp:`t` using</span>
+<span class="sd">    only edges :samp:`(u, v)` such that</span>
+<span class="sd">    :samp:`R[u][v][&#39;flow&#39;] &lt; R[u][v][&#39;capacity&#39;]` induces a minimum</span>
+<span class="sd">    :samp:`s`-:samp:`t` cut.</span>
+
+<span class="sd">    Specific algorithms may store extra data in :samp:`R`.</span>
+
+<span class="sd">    The function should supports an optional boolean parameter value_only. When</span>
+<span class="sd">    True, it can optionally terminate the algorithm as soon as the maximum flow</span>
+<span class="sd">    value and the minimum cut can be determined.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.DiGraph()</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(&quot;x&quot;, &quot;a&quot;, capacity=3.0)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(&quot;x&quot;, &quot;b&quot;, capacity=1.0)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(&quot;a&quot;, &quot;c&quot;, capacity=3.0)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(&quot;b&quot;, &quot;c&quot;, capacity=5.0)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(&quot;b&quot;, &quot;d&quot;, capacity=4.0)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(&quot;d&quot;, &quot;e&quot;, capacity=2.0)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(&quot;c&quot;, &quot;y&quot;, capacity=2.0)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(&quot;e&quot;, &quot;y&quot;, capacity=3.0)</span>
+
+<span class="sd">    minimum_cut_value computes only the value of the</span>
+<span class="sd">    minimum cut:</span>
+
+<span class="sd">    &gt;&gt;&gt; cut_value = nx.minimum_cut_value(G, &quot;x&quot;, &quot;y&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; cut_value</span>
+<span class="sd">    3.0</span>
+
+<span class="sd">    You can also use alternative algorithms for computing the</span>
+<span class="sd">    minimum cut by using the flow_func parameter.</span>
+
+<span class="sd">    &gt;&gt;&gt; from networkx.algorithms.flow import shortest_augmenting_path</span>
+<span class="sd">    &gt;&gt;&gt; cut_value == nx.minimum_cut_value(</span>
+<span class="sd">    ...     G, &quot;x&quot;, &quot;y&quot;, flow_func=shortest_augmenting_path</span>
+<span class="sd">    ... )</span>
+<span class="sd">    True</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">flow_func</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span>
+                <span class="s2">&quot;You have to explicitly set a flow_func if&quot;</span>
+                <span class="s2">&quot; you need to pass parameters via kwargs.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">flow_func</span> <span class="o">=</span> <span class="n">default_flow_func</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">callable</span><span class="p">(</span><span class="n">flow_func</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;flow_func has to be callable.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cutoff&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">flow_func</span> <span class="ow">is</span> <span class="n">preflow_push</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;cutoff should not be specified.&quot;</span><span class="p">)</span>
+
+    <span class="n">R</span> <span class="o">=</span> <span class="n">flow_func</span><span class="p">(</span><span class="n">flowG</span><span class="p">,</span> <span class="n">_s</span><span class="p">,</span> <span class="n">_t</span><span class="p">,</span> <span class="n">capacity</span><span class="o">=</span><span class="n">capacity</span><span class="p">,</span> <span class="n">value_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">R</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="s2">&quot;flow_value&quot;</span><span class="p">]</span></div>
+</pre></div>
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

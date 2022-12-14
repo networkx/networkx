@@ -1,0 +1,2558 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Old Release Log &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'release/old_release_log';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/release/old_release_log.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="NetworkX 0.99" href="api_0.99.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">
+    Section Navigation
+  </p>
+  <div class="bd-toc-item navbar-nav">
+    <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="release_dev.html">NetworkX 3.0 (unreleased)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.8.8.html">NetworkX 2.8.7</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.8.7.html">NetworkX 2.8.7</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.8.6.html">NetworkX 2.8.6</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.8.5.html">NetworkX 2.8.5</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.8.4.html">NetworkX 2.8.4</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.8.3.html">NetworkX 2.8.3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.8.2.html">NetworkX 2.8.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.8.1.html">NetworkX 2.8.1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.8.html">NetworkX 2.8</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.7.1.html">NetworkX 2.7.1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.7.html">NetworkX 2.7</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.6.html">NetworkX 2.6</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.5.html">NetworkX 2.5</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.4.html">NetworkX 2.4</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.3.html">NetworkX 2.3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.2.html">NetworkX 2.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.1.html">NetworkX 2.1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.0.html">NetworkX 2.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_1.11.html">NetworkX 1.11</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_1.10.html">NetworkX 1.10</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_1.9.html">NetworkX 1.9</a></li>
+
+
+<li class="toctree-l1"><a class="reference internal" href="api_1.8.html">NetworkX 1.8</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_1.7.html">NetworkX 1.7</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_1.6.html">NetworkX 1.6</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_1.5.html">NetworkX 1.5</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_1.4.html">NetworkX 1.4</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="api_1.0.html">NetworkX 1.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_0.99.html">NetworkX 0.99</a></li>
+
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Old Release Log</a></li>
+</ul>
+
+  </div>
+</nav>
+    </div>
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <section id="old-release-log">
+<h1>Old Release Log<a class="headerlink" href="#old-release-log" title="Permalink to this heading">#</a></h1>
+<section id="networkx-2-5">
+<h2>NetworkX 2.5<a class="headerlink" href="#networkx-2-5" title="Permalink to this heading">#</a></h2>
+<p>Release date: 22 August 2020</p>
+<p>Supports Python 3.6, 3.7, and 3.8.</p>
+<section id="release-notes">
+<h3>Release notes<a class="headerlink" href="#release-notes" title="Permalink to this heading">#</a></h3>
+<p>See <a class="reference internal" href="release_2.5.html"><span class="doc">NetworkX 2.5</span></a>.</p>
+</section>
+</section>
+<section id="networkx-2-4">
+<h2>NetworkX 2.4<a class="headerlink" href="#networkx-2-4" title="Permalink to this heading">#</a></h2>
+<p>Release date: 16 October 2019</p>
+<p>Supports Python 3.5, 3.6, 3.7, and 3.8.
+This is the last release to support Python 3.5.</p>
+<section id="id1">
+<h3>Release notes<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h3>
+<p>See <a class="reference internal" href="release_2.4.html"><span class="doc">NetworkX 2.4</span></a>.</p>
+</section>
+</section>
+<section id="networkx-2-3">
+<h2>NetworkX 2.3<a class="headerlink" href="#networkx-2-3" title="Permalink to this heading">#</a></h2>
+<p>Release date: 11 April 2019</p>
+<p>Supports Python 3.5, 3.6 and 3.7.
+This is our first Python 3 only release.</p>
+<section id="id2">
+<h3>Release notes<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h3>
+<p>See <a class="reference internal" href="release_2.3.html"><span class="doc">NetworkX 2.3</span></a>.</p>
+</section>
+</section>
+<section id="networkx-2-2">
+<h2>NetworkX 2.2<a class="headerlink" href="#networkx-2-2" title="Permalink to this heading">#</a></h2>
+<p>Release date: 19 September 2018</p>
+<p>Supports Python 2.7, 3.5, 3.6 and 3.7.
+This is the last release to support Python 2.</p>
+<section id="id3">
+<h3>Release notes<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h3>
+<p>See <a class="reference internal" href="release_2.2.html"><span class="doc">NetworkX 2.2</span></a>.</p>
+</section>
+</section>
+<section id="networkx-2-1">
+<h2>NetworkX 2.1<a class="headerlink" href="#networkx-2-1" title="Permalink to this heading">#</a></h2>
+<p>Release date: 22 January 2018</p>
+<p>Supports Python 2.7, 3.4, 3.5, and 3.6.</p>
+<section id="id4">
+<h3>Release notes<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h3>
+<p>See <a class="reference internal" href="release_2.1.html"><span class="doc">NetworkX 2.1</span></a>.</p>
+</section>
+</section>
+<section id="networkx-2-0">
+<h2>NetworkX 2.0<a class="headerlink" href="#networkx-2-0" title="Permalink to this heading">#</a></h2>
+<p>Release date: 20 September 2017</p>
+<p>Support for Python 3.6 added, drop support for Python 3.3.</p>
+<p>See <a class="reference internal" href="migration_guide_from_1.x_to_2.0.html"><span class="doc">Migration guide from 1.X to 2.0</span></a>.</p>
+<section id="id5">
+<h3>Release notes<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h3>
+<p>See <a class="reference internal" href="release_2.0.html"><span class="doc">NetworkX 2.0</span></a>.</p>
+</section>
+</section>
+<section id="networkx-1-11">
+<h2>NetworkX 1.11<a class="headerlink" href="#networkx-1-11" title="Permalink to this heading">#</a></h2>
+<p>Release date: 30 January 2016</p>
+<p>Support for Python 3.5 added, drop support for Python 3.2.</p>
+<section id="highlights">
+<h3>Highlights<a class="headerlink" href="#highlights" title="Permalink to this heading">#</a></h3>
+<p>Pydot features now use pydotplus.
+Fixes installation on some machines and test with appveyor.
+Restores default center and scale of layout routines.
+Fixes various docs including no symbolic links in examples.
+Docs can now build using autosummary on readthedocs.org.</p>
+</section>
+</section>
+<section id="networkx-1-10">
+<h2>NetworkX 1.10<a class="headerlink" href="#networkx-1-10" title="Permalink to this heading">#</a></h2>
+<p>Release date: 2 August 2015</p>
+<p>Support for Python 2.6 is dropped in this release.</p>
+<section id="id6">
+<h3>Highlights<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Connected components now return generators</p></li>
+<li><p>new functions including</p>
+<ul>
+<li><p>enumerate_all_cliques, greedy_coloring, edge_dfs, find_cycle
+immediate_dominators, harmonic_centrality</p></li>
+<li><p>Hopcraft–Karp algorithm for maximum matchings</p></li>
+<li><p>optimum branchings and arborescences.</p></li>
+<li><p>all_simple_paths</p></li>
+</ul>
+</li>
+<li><p>pyparsing dependence removed from GML reader/parser</p></li>
+<li><p>improve flow algorithms</p></li>
+<li><p>new generators related to expander graphs.</p></li>
+<li><p>new generators for multipartite graphs, nonisomorphic trees,
+circulant graphs</p></li>
+<li><p>allow graph subclasses to use dict-like objects in place of dicts</p></li>
+<li><p>added ordered graph subclasses</p></li>
+<li><p>pandas dataframe read/write added.</p></li>
+<li><p>data keyword in G.edges() allows requesting edge attribute directly</p></li>
+<li><p>expanded layout flexibility for node subsets</p></li>
+<li><p>Kanesky’s algorithm for cut sets and k_components</p></li>
+<li><p>power function for graphs</p></li>
+<li><p>approximation of node connectivity</p></li>
+<li><p>transitive closure, triadic census and antichains</p></li>
+<li><p>quotient graphs and minors</p></li>
+<li><p>longest_path for DAGS</p></li>
+<li><p>modularity matrix routines</p></li>
+</ul>
+</section>
+<section id="api-changes">
+<h3>API changes<a class="headerlink" href="#api-changes" title="Permalink to this heading">#</a></h3>
+<p>See <a class="reference internal" href="api_1.10.html"><span class="doc">NetworkX 1.10</span></a>.</p>
+</section>
+</section>
+<section id="networkx-1-9-1">
+<h2>NetworkX 1.9.1<a class="headerlink" href="#networkx-1-9-1" title="Permalink to this heading">#</a></h2>
+<p>Release date: 13 September 2014</p>
+<p>Bugfix release for minor installation and documentation issues.</p>
+</section>
+<section id="networkx-1-9">
+<h2>NetworkX 1.9<a class="headerlink" href="#networkx-1-9" title="Permalink to this heading">#</a></h2>
+<p>Release date: 21 June 2014</p>
+<p>Support for Python 3.1 is dropped in this release.</p>
+<section id="id7">
+<h3>Highlights<a class="headerlink" href="#id7" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Completely rewritten maximum flow and flow-based connectivity algorithms with
+backwards incompatible interfaces</p></li>
+<li><p>Community graph generators</p></li>
+<li><p>Stoer–Wagner minimum cut algorithm</p></li>
+<li><p>Linear-time Eulerian circuit algorithm</p></li>
+<li><p>Linear algebra package changed to use SciPy sparse matrices</p></li>
+<li><p>Algebraic connectivity, Fiedler vector, spectral ordering algorithms</p></li>
+<li><p>Link prediction algorithms</p></li>
+<li><p>Goldberg–Radzik shortest path algorithm</p></li>
+<li><p>Semiconnected graph and tree recognition algorithms</p></li>
+</ul>
+</section>
+<section id="id8">
+<h3>API changes<a class="headerlink" href="#id8" title="Permalink to this heading">#</a></h3>
+<p>See <a class="reference internal" href="api_1.9.html"><span class="doc">NetworkX 1.9</span></a>.</p>
+</section>
+</section>
+<section id="networkx-1-8-1">
+<h2>NetworkX 1.8.1<a class="headerlink" href="#networkx-1-8-1" title="Permalink to this heading">#</a></h2>
+<p>Release date:  4 August 2013</p>
+<p>Bugfix release for missing files in source packaging.</p>
+</section>
+<section id="networkx-1-8">
+<h2>NetworkX 1.8<a class="headerlink" href="#networkx-1-8" title="Permalink to this heading">#</a></h2>
+<p>Release date:  28 July 2013</p>
+<section id="id9">
+<h3>Highlights<a class="headerlink" href="#id9" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Faster (linear-time) graphicality tests and Havel-Hakimi graph generators</p></li>
+<li><p>Directed Laplacian matrix generator</p></li>
+<li><p>Katz centrality algorithm</p></li>
+<li><p>Functions to generate all simple paths</p></li>
+<li><p>Improved shapefile reader</p></li>
+<li><p>More flexible weighted projection of bipartite graphs</p></li>
+<li><p>Faster topological sort, descendants and ancestors of DAGs</p></li>
+<li><p>Scaling parameter for force-directed layout</p></li>
+</ul>
+</section>
+<section id="bug-fixes">
+<h3>Bug fixes<a class="headerlink" href="#bug-fixes" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Error with average weighted connectivity for digraphs, correct normalized laplacian with self-loops, load betweenness for single node graphs, isolated nodes missing from dfs/bfs trees, normalize HITS using l1, handle density of graphs with self loops</p></li>
+<li><p>Cleaner handling of current figure status with Matplotlib, Pajek files now don’t write troublesome header line, default alpha value for GEXF files, read curved edges from yEd GraphML</p></li>
+</ul>
+<p>For full details of the issues closed for this release (added features and bug fixes) see: <a class="github reference external" href="https://github.com/networkx/networkx/issues?milestone=1&amp;page=1&amp;state=closed">networkx/networkx#issues</a></p>
+</section>
+<section id="id10">
+<h3>API changes<a class="headerlink" href="#id10" title="Permalink to this heading">#</a></h3>
+<p>See <a class="reference internal" href="api_1.8.html"><span class="doc">NetworkX 1.8</span></a></p>
+</section>
+</section>
+<section id="networkx-1-7">
+<h2>NetworkX 1.7<a class="headerlink" href="#networkx-1-7" title="Permalink to this heading">#</a></h2>
+<p>Release date:  4 July 2012</p>
+<section id="id11">
+<h3>Highlights<a class="headerlink" href="#id11" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>New functions for k-clique community finding, flow hierarchy,
+union, disjoint union, compose, and intersection operators that work on
+lists of graphs, and creating the biadjacency matrix of a bipartite graph.</p></li>
+<li><p>New approximation algorithms for dominating set, edge dominating set,
+independent set, max clique, and min-weighted vertex cover.</p></li>
+<li><p>Many bug fixes and other improvements.</p></li>
+</ul>
+<p>For full details of the tickets closed for this release (added features and bug fixes) see:
+<a class="reference external" href="https://networkx.lanl.gov/trac/query?status=closed&amp;group=milestone&amp;milestone=networkx-1.7">https://networkx.lanl.gov/trac/query?status=closed&amp;group=milestone&amp;milestone=networkx-1.7</a></p>
+</section>
+<section id="id12">
+<h3>API changes<a class="headerlink" href="#id12" title="Permalink to this heading">#</a></h3>
+<p>See <a class="reference internal" href="api_1.7.html"><span class="doc">NetworkX 1.7</span></a></p>
+</section>
+</section>
+<section id="networkx-1-6">
+<h2>NetworkX 1.6<a class="headerlink" href="#networkx-1-6" title="Permalink to this heading">#</a></h2>
+<p>Release date:  20 November 2011</p>
+<section id="id13">
+<h3>Highlights<a class="headerlink" href="#id13" title="Permalink to this heading">#</a></h3>
+<p>New functions for finding articulation points, generating random bipartite graphs, constructing adjacency matrix representations, forming graph products, computing assortativity coefficients, measuring subgraph centrality and communicability, finding k-clique communities, and writing JSON format output.</p>
+<p>New examples for drawing with D3 Javascript library, and ordering matrices with the Cuthill-McKee algorithm.</p>
+<p>More memory efficient implementation of current-flow betweenness and new approximation algorithms for current-flow betweenness and shortest-path betweenness.</p>
+<p>Simplified handling of “weight” attributes for algorithms that use weights/costs/values.  See <a class="reference internal" href="api_1.6.html"><span class="doc">NetworkX 1.6</span></a>.</p>
+<p>Updated all code to work with the PyPy Python implementation <a class="reference external" href="http://pypy.org">http://pypy.org</a> which produces faster performance on many algorithms.</p>
+<p>For full details of the tickets closed for this release (added features and bug fixes) see:
+<a class="reference external" href="https://networkx.lanl.gov/trac/query?status=closed&amp;group=milestone&amp;milestone=networkx-1.6">https://networkx.lanl.gov/trac/query?status=closed&amp;group=milestone&amp;milestone=networkx-1.6</a></p>
+</section>
+<section id="id14">
+<h3>API changes<a class="headerlink" href="#id14" title="Permalink to this heading">#</a></h3>
+<p>See <a class="reference internal" href="api_1.6.html"><span class="doc">NetworkX 1.6</span></a></p>
+</section>
+</section>
+<section id="networkx-1-5">
+<h2>NetworkX 1.5<a class="headerlink" href="#networkx-1-5" title="Permalink to this heading">#</a></h2>
+<p>Release date:  4 June 2011</p>
+<p>For full details of the tickets closed for this release see:
+<a class="reference external" href="https://networkx.lanl.gov/trac/query?status=closed&amp;group=milestone&amp;milestone=networkx-1.5">https://networkx.lanl.gov/trac/query?status=closed&amp;group=milestone&amp;milestone=networkx-1.5</a></p>
+<section id="id15">
+<h3>Highlights<a class="headerlink" href="#id15" title="Permalink to this heading">#</a></h3>
+</section>
+<section id="new-features">
+<h3>New features<a class="headerlink" href="#new-features" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>Algorithms for <code class="xref py py-mod docutils literal notranslate"><span class="pre">generating</span></code>
+and <a class="reference internal" href="../reference/algorithms/bipartite.html#module-networkx.algorithms.bipartite" title="networkx.algorithms.bipartite"><code class="xref py py-mod docutils literal notranslate"><span class="pre">analyzing</span></code></a> bipartite graphs</p></li>
+<li><p><a class="reference internal" href="../reference/algorithms/mis.html#module-networkx.algorithms.mis" title="networkx.algorithms.mis"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Maximal</span> <span class="pre">independent</span> <span class="pre">set</span></code></a> algorithm</p></li>
+<li><p><a class="reference internal" href="../reference/generators.html#module-networkx.generators.degree_seq" title="networkx.generators.degree_seq"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Erdős-Gallai</span> <span class="pre">graphical</span> <span class="pre">degree</span> <span class="pre">sequence</span> <span class="pre">test</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/algorithms/shortest_paths.html#module-networkx.algorithms.shortest_paths.weighted" title="networkx.algorithms.shortest_paths.weighted"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Negative</span> <span class="pre">edge</span> <span class="pre">cycle</span> <span class="pre">test</span></code></a></p></li>
+<li><p>More memory efficient <a class="reference internal" href="../reference/algorithms/shortest_paths.html#module-networkx.algorithms.shortest_paths.weighted" title="networkx.algorithms.shortest_paths.weighted"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Dijkstra</span> <span class="pre">path</span> <span class="pre">length</span></code></a> with cutoff parameter</p></li>
+<li><p><a class="reference internal" href="../reference/algorithms/clustering.html#module-networkx.algorithms.cluster" title="networkx.algorithms.cluster"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Weighted</span> <span class="pre">clustering</span> <span class="pre">coefficient</span></code></a></p></li>
+<li><p>Read and write version 1.2 of <a class="reference internal" href="../reference/readwrite/gexf.html#module-networkx.readwrite.gexf" title="networkx.readwrite.gexf"><code class="xref py py-mod docutils literal notranslate"><span class="pre">GEXF</span> <span class="pre">reader</span></code></a> format</p></li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">Neighbor</span> <span class="pre">degree</span> <span class="pre">correlation</span></code>
+that handle subsets of nodes</p></li>
+<li><p><a class="reference internal" href="../reference/relabel.html#module-networkx.relabel" title="networkx.relabel"><code class="xref py py-mod docutils literal notranslate"><span class="pre">In-place</span> <span class="pre">node</span> <span class="pre">relabeling</span></code></a></p></li>
+<li><p>Many ‘weighted’ graph algorithms now take optional parameter to use
+specified edge attribute (default=’weight’)
+(ticket <a class="reference external" href="https://networkx.lanl.gov/trac/ticket/509">https://networkx.lanl.gov/trac/ticket/509</a>)</p></li>
+<li><p>Test for <a class="reference internal" href="../reference/algorithms/distance_regular.html#module-networkx.algorithms.distance_regular" title="networkx.algorithms.distance_regular"><code class="xref py py-mod docutils literal notranslate"><span class="pre">distance</span> <span class="pre">regular</span></code></a> graphs</p></li>
+<li><p>Fast <a class="reference internal" href="../reference/generators.html#module-networkx.generators.random_graphs" title="networkx.generators.random_graphs"><code class="xref py py-mod docutils literal notranslate"><span class="pre">directed</span> <span class="pre">Erdős-Renyi</span> <span class="pre">graph</span></code></a> generator</p></li>
+<li><p>Fast <a class="reference internal" href="../reference/generators.html#module-networkx.generators.degree_seq" title="networkx.generators.degree_seq"><code class="xref py py-mod docutils literal notranslate"><span class="pre">expected</span> <span class="pre">degree</span> <span class="pre">graph</span></code></a> generator</p></li>
+<li><p><a class="reference internal" href="../reference/generators.html#module-networkx.generators.geometric" title="networkx.generators.geometric"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Navigable</span> <span class="pre">small</span> <span class="pre">world</span></code></a> generator</p></li>
+<li><p><a class="reference internal" href="../reference/generators.html#module-networkx.generators.geometric" title="networkx.generators.geometric"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Waxman</span> <span class="pre">model</span></code></a> generator</p></li>
+<li><p><a class="reference internal" href="../reference/generators.html#module-networkx.generators.geometric" title="networkx.generators.geometric"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Geographical</span> <span class="pre">threshold</span> <span class="pre">graph</span></code></a> generator</p></li>
+<li><p><a class="reference internal" href="../reference/generators.html#module-networkx.generators.social" title="networkx.generators.social"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Karate</span> <span class="pre">Club,</span> <span class="pre">Florentine</span> <span class="pre">Families,</span> <span class="pre">and</span> <span class="pre">Davis'</span> <span class="pre">Women's</span> <span class="pre">Club</span></code></a> graphs</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id16">
+<h3>API changes<a class="headerlink" href="#id16" title="Permalink to this heading">#</a></h3>
+<p>See <a class="reference internal" href="api_1.5.html"><span class="doc">NetworkX 1.5</span></a></p>
+</section>
+<section id="id17">
+<h3>Bug fixes<a class="headerlink" href="#id17" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>Fix edge handling for multigraphs in networkx/graphviz interface
+(ticket <a class="reference external" href="https://networkx.lanl.gov/trac/ticket/507">https://networkx.lanl.gov/trac/ticket/507</a>)</p></li>
+<li><p>Update networkx/pydot interface for new versions of pydot
+(ticket <a class="reference external" href="https://networkx.lanl.gov/trac/ticket/506">https://networkx.lanl.gov/trac/ticket/506</a>)
+(ticket <a class="reference external" href="https://networkx.lanl.gov/trac/ticket/535">https://networkx.lanl.gov/trac/ticket/535</a>)</p></li>
+<li><p>Fix negative cycle handling in Bellman-Ford
+(ticket <a class="reference external" href="https://networkx.lanl.gov/trac/ticket/502">https://networkx.lanl.gov/trac/ticket/502</a>)</p></li>
+<li><p>Write more attributes with GraphML and GML formats
+(ticket <a class="reference external" href="https://networkx.lanl.gov/trac/ticket/480">https://networkx.lanl.gov/trac/ticket/480</a>)</p></li>
+<li><p>Handle white space better in read_edgelist
+(ticket <a class="reference external" href="https://networkx.lanl.gov/trac/ticket/513">https://networkx.lanl.gov/trac/ticket/513</a>)</p></li>
+<li><p>Better parsing of Pajek format files
+(ticket <a class="reference external" href="https://networkx.lanl.gov/trac/ticket/524">https://networkx.lanl.gov/trac/ticket/524</a>)
+(ticket <a class="reference external" href="https://networkx.lanl.gov/trac/ticket/542">https://networkx.lanl.gov/trac/ticket/542</a>)</p></li>
+<li><p>Isolates functions work with directed graphs
+(ticket <a class="reference external" href="https://networkx.lanl.gov/trac/ticket/526">https://networkx.lanl.gov/trac/ticket/526</a>)</p></li>
+<li><p>Faster conversion to numpy matrices
+(ticket <a class="reference external" href="https://networkx.lanl.gov/trac/ticket/529">https://networkx.lanl.gov/trac/ticket/529</a>)</p></li>
+<li><p>Add graph[‘name’] and use properties to access Graph.name
+(ticket <a class="reference external" href="https://networkx.lanl.gov/trac/ticket/544">https://networkx.lanl.gov/trac/ticket/544</a>)</p></li>
+<li><p>Topological sort confused None and 0
+(ticket <a class="reference external" href="https://networkx.lanl.gov/trac/ticket/546">https://networkx.lanl.gov/trac/ticket/546</a>)</p></li>
+<li><p>GEXF writer mishandled weight=0
+(ticket <a class="reference external" href="https://networkx.lanl.gov/trac/ticket/550">https://networkx.lanl.gov/trac/ticket/550</a>)</p></li>
+<li><p>Speedup in SciPy version of PageRank
+(ticket <a class="reference external" href="https://networkx.lanl.gov/trac/ticket/554">https://networkx.lanl.gov/trac/ticket/554</a>)</p></li>
+<li><p>Numpy PageRank node order incorrect + speedups
+(ticket <a class="reference external" href="https://networkx.lanl.gov/trac/ticket/555">https://networkx.lanl.gov/trac/ticket/555</a>)</p></li>
+</ul>
+</div></blockquote>
+</section>
+</section>
+<section id="networkx-1-4">
+<h2>NetworkX 1.4<a class="headerlink" href="#networkx-1-4" title="Permalink to this heading">#</a></h2>
+<p>Release date:  23 January 2011</p>
+<section id="id18">
+<h3>New features<a class="headerlink" href="#id18" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference internal" href="../reference/algorithms/core.html#module-networkx.algorithms.core" title="networkx.algorithms.core"><code class="xref py py-mod docutils literal notranslate"><span class="pre">k-shell,k-crust,k-corona</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/readwrite/graphml.html#module-networkx.readwrite.graphml" title="networkx.readwrite.graphml"><code class="xref py py-mod docutils literal notranslate"><span class="pre">read</span> <span class="pre">GraphML</span> <span class="pre">files</span> <span class="pre">from</span> <span class="pre">yEd</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/readwrite/gexf.html#module-networkx.readwrite.gexf" title="networkx.readwrite.gexf"><code class="xref py py-mod docutils literal notranslate"><span class="pre">read/write</span> <span class="pre">GEXF</span> <span class="pre">format</span> <span class="pre">files</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/algorithms/cycles.html#module-networkx.algorithms.cycles" title="networkx.algorithms.cycles"><code class="xref py py-mod docutils literal notranslate"><span class="pre">find</span> <span class="pre">cycles</span> <span class="pre">in</span> <span class="pre">a</span> <span class="pre">directed</span> <span class="pre">graph</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/algorithms/traversal.html#module-networkx.algorithms.traversal.depth_first_search" title="networkx.algorithms.traversal.depth_first_search"><code class="xref py py-mod docutils literal notranslate"><span class="pre">DFS</span></code></a> and <a class="reference internal" href="../reference/algorithms/traversal.html#module-networkx.algorithms.traversal.breadth_first_search" title="networkx.algorithms.traversal.breadth_first_search"><code class="xref py py-mod docutils literal notranslate"><span class="pre">BFS</span></code></a> algorithms</p></li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">chordal</span> <span class="pre">graph</span> <span class="pre">functions</span></code></p></li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">Prim's</span> <span class="pre">algorithm</span> <span class="pre">for</span> <span class="pre">minimum</span> <span class="pre">spanning</span> <span class="pre">tree</span></code></p></li>
+<li><p><a class="reference internal" href="../reference/generators.html#module-networkx.generators.classic" title="networkx.generators.classic"><code class="xref py py-mod docutils literal notranslate"><span class="pre">r-ary</span> <span class="pre">tree</span> <span class="pre">generator</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/algorithms/rich_club.html#module-networkx.algorithms.richclub" title="networkx.algorithms.richclub"><code class="xref py py-mod docutils literal notranslate"><span class="pre">rich</span> <span class="pre">club</span> <span class="pre">coefficient</span></code></a></p></li>
+<li><p>NumPy matrix version of <a class="reference internal" href="../reference/algorithms/shortest_paths.html#module-networkx.algorithms.shortest_paths.dense" title="networkx.algorithms.shortest_paths.dense"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Floyd's</span> <span class="pre">algorithm</span> <span class="pre">for</span> <span class="pre">all-pairs</span> <span class="pre">shortest</span> <span class="pre">path</span></code></a></p></li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">read</span> <span class="pre">GIS</span> <span class="pre">shapefiles</span></code></p></li>
+<li><p><a class="reference internal" href="../reference/functions.html#module-networkx.classes.function" title="networkx.classes.function"><code class="xref py py-mod docutils literal notranslate"><span class="pre">functions</span> <span class="pre">to</span> <span class="pre">get</span> <span class="pre">and</span> <span class="pre">set</span> <span class="pre">node</span> <span class="pre">and</span> <span class="pre">edge</span> <span class="pre">attributes</span></code></a></p></li>
+<li><p>and more, see  <a class="reference external" href="https://networkx.lanl.gov/trac/query?status=closed&amp;group=milestone&amp;milestone=networkx-1.4">https://networkx.lanl.gov/trac/query?status=closed&amp;group=milestone&amp;milestone=networkx-1.4</a></p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id19">
+<h3>API changes<a class="headerlink" href="#id19" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference internal" href="../reference/generators.html#module-networkx.generators.random_graphs" title="networkx.generators.random_graphs"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gnp_random_graph()</span></code></a> now takes a
+directed=True|False keyword instead of create_using</p></li>
+<li><p><a class="reference internal" href="../reference/generators.html#module-networkx.generators.random_graphs" title="networkx.generators.random_graphs"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gnm_random_graph()</span></code></a> now takes a
+directed=True|False keyword instead of create_using</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id20">
+<h3>Bug fixes<a class="headerlink" href="#id20" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>see  <a class="reference external" href="https://networkx.lanl.gov/trac/query?status=closed&amp;group=milestone&amp;milestone=networkx-1.4">https://networkx.lanl.gov/trac/query?status=closed&amp;group=milestone&amp;milestone=networkx-1.4</a></p></li>
+</ul>
+</div></blockquote>
+</section>
+</section>
+<section id="networkx-1-3">
+<h2>NetworkX 1.3<a class="headerlink" href="#networkx-1-3" title="Permalink to this heading">#</a></h2>
+<p>Release date:  28 August 2010</p>
+<p>See: <a class="reference external" href="https://networkx.lanl.gov/trac/timeline">https://networkx.lanl.gov/trac/timeline</a></p>
+<section id="id21">
+<h3>New features<a class="headerlink" href="#id21" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>Works with Python versions 2.6, 2.7, 3.1, and 3.2 (but not 2.4 and 2.5).</p></li>
+<li><p><a class="reference internal" href="../reference/algorithms/flow.html#module-networkx.algorithms.flow" title="networkx.algorithms.flow"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Minimum</span> <span class="pre">cost</span> <span class="pre">flow</span> <span class="pre">algorithms</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/algorithms/shortest_paths.html#module-networkx.algorithms.shortest_paths.weighted" title="networkx.algorithms.shortest_paths.weighted"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Bellman-Ford</span> <span class="pre">shortest</span> <span class="pre">paths</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/readwrite/graphml.html#module-networkx.readwrite.graphml" title="networkx.readwrite.graphml"><code class="xref py py-mod docutils literal notranslate"><span class="pre">GraphML</span> <span class="pre">reader</span> <span class="pre">and</span> <span class="pre">writer</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/exceptions.html#module-networkx.exception" title="networkx.exception"><code class="xref py py-mod docutils literal notranslate"><span class="pre">More</span> <span class="pre">exception/error</span> <span class="pre">types</span></code></a></p></li>
+<li><p>Updated many tests to unittest style.  Run with: “import networkx; networkx.test()” (requires nose testing package)</p></li>
+<li><p>and more, see  <a class="reference external" href="https://networkx.lanl.gov/trac/query?status=closed&amp;group=milestone&amp;milestone=networkx-1.3">https://networkx.lanl.gov/trac/query?status=closed&amp;group=milestone&amp;milestone=networkx-1.3</a></p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id22">
+<h3>API changes<a class="headerlink" href="#id22" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">minimum_spanning_tree()</span> <span class="pre">now</span> <span class="pre">returns</span> <span class="pre">a</span> <span class="pre">NetworkX</span> <span class="pre">Graph</span> <span class="pre">(a</span> <span class="pre">tree</span> <span class="pre">or</span> <span class="pre">forest)</span></code></p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id23">
+<h3>Bug fixes<a class="headerlink" href="#id23" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>see  <a class="reference external" href="https://networkx.lanl.gov/trac/query?status=closed&amp;group=milestone&amp;milestone=networkx-1.3">https://networkx.lanl.gov/trac/query?status=closed&amp;group=milestone&amp;milestone=networkx-1.3</a></p></li>
+</ul>
+</div></blockquote>
+</section>
+</section>
+<section id="networkx-1-2">
+<h2>NetworkX 1.2<a class="headerlink" href="#networkx-1-2" title="Permalink to this heading">#</a></h2>
+<p>Release date:  28 July 2010</p>
+<p>See: <a class="reference external" href="https://networkx.lanl.gov/trac/timeline">https://networkx.lanl.gov/trac/timeline</a></p>
+<section id="id24">
+<h3>New features<a class="headerlink" href="#id24" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference internal" href="../reference/algorithms/flow.html#module-networkx.algorithms.flow" title="networkx.algorithms.flow"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Ford-Fulkerson</span> <span class="pre">max</span> <span class="pre">flow</span> <span class="pre">and</span> <span class="pre">min</span> <span class="pre">cut</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/algorithms/vitality.html#module-networkx.algorithms.vitality" title="networkx.algorithms.vitality"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Closeness</span> <span class="pre">vitality</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/algorithms/euler.html#module-networkx.algorithms.euler" title="networkx.algorithms.euler"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Eulerian</span> <span class="pre">circuits</span></code></a></p></li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">Functions</span> <span class="pre">for</span> <span class="pre">isolates</span></code></p></li>
+<li><p><a class="reference internal" href="../reference/generators.html#module-networkx.generators.degree_seq" title="networkx.generators.degree_seq"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Simpler</span> <span class="pre">s_max</span> <span class="pre">generator</span></code></a></p></li>
+<li><p>Compatible with IronPython-2.6</p></li>
+<li><p>Improved testing functionality: import networkx; networkx.test() tests
+entire package and skips tests with missing optional packages</p></li>
+<li><p>All tests work with Python-2.4</p></li>
+<li><p>and more, see  <a class="reference external" href="https://networkx.lanl.gov/trac/query?status=closed&amp;group=milestone&amp;milestone=networkx-1.2">https://networkx.lanl.gov/trac/query?status=closed&amp;group=milestone&amp;milestone=networkx-1.2</a></p></li>
+</ul>
+</div></blockquote>
+</section>
+</section>
+<section id="networkx-1-1">
+<h2>NetworkX 1.1<a class="headerlink" href="#networkx-1-1" title="Permalink to this heading">#</a></h2>
+<p>Release date:  21 April 2010</p>
+<p>See: <a class="reference external" href="https://networkx.lanl.gov/trac/timeline">https://networkx.lanl.gov/trac/timeline</a></p>
+<section id="id25">
+<h3>New features<a class="headerlink" href="#id25" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference internal" href="../reference/algorithms/cycles.html#module-networkx.algorithms.cycles" title="networkx.algorithms.cycles"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Algorithm</span> <span class="pre">for</span> <span class="pre">finding</span> <span class="pre">a</span> <span class="pre">basis</span> <span class="pre">for</span> <span class="pre">graph</span> <span class="pre">cycles</span></code></a></p></li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">Blockmodeling</span></code></p></li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">Assortativity</span> <span class="pre">and</span> <span class="pre">mixing</span> <span class="pre">matrices</span></code></p></li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">in-degree</span> <span class="pre">and</span> <span class="pre">out-degree</span> <span class="pre">centrality</span></code></p></li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">Attracting</span> <span class="pre">components</span></code>
+and  <code class="xref py py-mod docutils literal notranslate"><span class="pre">condensation</span></code>.</p></li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">Weakly</span> <span class="pre">connected</span> <span class="pre">components</span></code></p></li>
+<li><p><a class="reference internal" href="../reference/algorithms/shortest_paths.html#module-networkx.algorithms.shortest_paths.generic" title="networkx.algorithms.shortest_paths.generic"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Simpler</span> <span class="pre">interface</span> <span class="pre">to</span> <span class="pre">shortest</span> <span class="pre">path</span> <span class="pre">algorithms</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/readwrite/edgelist.html#module-networkx.readwrite.edgelist" title="networkx.readwrite.edgelist"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Edgelist</span> <span class="pre">format</span> <span class="pre">to</span> <span class="pre">read</span> <span class="pre">and</span> <span class="pre">write</span> <span class="pre">data</span> <span class="pre">with</span> <span class="pre">attributes</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/linalg.html#module-networkx.linalg.spectrum" title="networkx.linalg.spectrum"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Attribute</span> <span class="pre">matrices</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/readwrite/gml.html#module-networkx.readwrite.gml" title="networkx.readwrite.gml"><code class="xref py py-mod docutils literal notranslate"><span class="pre">GML</span> <span class="pre">reader</span> <span class="pre">for</span> <span class="pre">nested</span> <span class="pre">attributes</span></code></a></p></li>
+<li><p>Current-flow (random walk)
+<code class="xref py py-mod docutils literal notranslate"><span class="pre">betweenness</span></code>
+and
+<code class="xref py py-mod docutils literal notranslate"><span class="pre">closeness</span></code>.</p></li>
+<li><p><a class="reference internal" href="../reference/generators.html#module-networkx.generators.degree_seq" title="networkx.generators.degree_seq"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Directed</span> <span class="pre">configuration</span> <span class="pre">model</span></code></a>,
+and  <a class="reference internal" href="../reference/generators.html#module-networkx.generators.random_graphs" title="networkx.generators.random_graphs"><code class="xref py py-mod docutils literal notranslate"><span class="pre">directed</span> <span class="pre">random</span> <span class="pre">graph</span> <span class="pre">model</span></code></a>.</p></li>
+<li><p>Improved documentation of drawing, shortest paths, and other algorithms</p></li>
+<li><p>Many more tests, can be run with “import networkx; networkx.test()”</p></li>
+<li><p>and much more, see  <a class="reference external" href="https://networkx.lanl.gov/trac/query?status=closed&amp;group=milestone&amp;milestone=networkx-1.1">https://networkx.lanl.gov/trac/query?status=closed&amp;group=milestone&amp;milestone=networkx-1.1</a></p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id26">
+<h3>API changes<a class="headerlink" href="#id26" title="Permalink to this heading">#</a></h3>
+<section id="returning-dictionaries">
+<h4>Returning dictionaries<a class="headerlink" href="#returning-dictionaries" title="Permalink to this heading">#</a></h4>
+<p>Several of the algorithms and the degree() method now return dictionaries
+keyed by node instead of lists.  In some cases there was a with_labels
+keyword which is no longer necessary.  For example,</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">degree</span><span class="p">()</span>  
+<span class="go">{&#39;a&#39;: 1, &#39;b&#39;: 1}</span>
+</pre></div>
+</div>
+<p>Asking for the degree of a single node still returns a single number</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">degree</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">)</span>
+<span class="go">1</span>
+</pre></div>
+</div>
+<p>The following now return dictionaries by default (instead of lists)
+and the with_labels keyword has been removed:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference internal" href="../reference/classes/generated/networkx.Graph.degree.html#networkx.Graph.degree" title="networkx.Graph.degree"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Graph.degree()</span></code></a>,
+<a class="reference internal" href="../reference/classes/generated/networkx.MultiGraph.degree.html#networkx.MultiGraph.degree" title="networkx.MultiGraph.degree"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MultiGraph.degree()</span></code></a>,
+<a class="reference internal" href="../reference/classes/generated/networkx.DiGraph.degree.html#networkx.DiGraph.degree" title="networkx.DiGraph.degree"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DiGraph.degree()</span></code></a>,
+<a class="reference internal" href="../reference/classes/generated/networkx.DiGraph.in_degree.html#networkx.DiGraph.in_degree" title="networkx.DiGraph.in_degree"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DiGraph.in_degree()</span></code></a>,
+<a class="reference internal" href="../reference/classes/generated/networkx.DiGraph.out_degree.html#networkx.DiGraph.out_degree" title="networkx.DiGraph.out_degree"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DiGraph.out_degree()</span></code></a>,
+<a class="reference internal" href="../reference/classes/generated/networkx.MultiDiGraph.degree.html#networkx.MultiDiGraph.degree" title="networkx.MultiDiGraph.degree"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MultiDiGraph.degree()</span></code></a>,
+<a class="reference internal" href="../reference/classes/generated/networkx.MultiDiGraph.in_degree.html#networkx.MultiDiGraph.in_degree" title="networkx.MultiDiGraph.in_degree"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MultiDiGraph.in_degree()</span></code></a>,
+<a class="reference internal" href="../reference/classes/generated/networkx.MultiDiGraph.out_degree.html#networkx.MultiDiGraph.out_degree" title="networkx.MultiDiGraph.out_degree"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MultiDiGraph.out_degree()</span></code></a>.</p></li>
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">clustering()</span></code>,
+<code class="xref py py-func docutils literal notranslate"><span class="pre">triangles()</span></code></p></li>
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">node_clique_number()</span></code>,
+<code class="xref py py-func docutils literal notranslate"><span class="pre">number_of_cliques()</span></code>,
+<code class="xref py py-func docutils literal notranslate"><span class="pre">cliques_containing_node()</span></code></p></li>
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">eccentricity()</span></code></p></li>
+</ul>
+</div></blockquote>
+<p>The following now return dictionaries by default (instead of lists)</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">pagerank()</span></code></p></li>
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">hits()</span></code></p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="adding-nodes">
+<h4>Adding nodes<a class="headerlink" href="#adding-nodes" title="Permalink to this heading">#</a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">add_nodes_from</span></code> now accepts <code class="docutils literal notranslate"><span class="pre">(node,</span> <span class="pre">attrdict)</span></code> two-tuples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_nodes_from</span><span class="p">([(</span><span class="mi">1</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;red&#39;</span><span class="p">})])</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="examples">
+<h3>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference external" href="https://networkx.org/documentation/latest/auto_examples/3d_drawing/mayavi2_spring.html">Mayvi2 drawing</a></p></li>
+<li><p><a class="reference external" href="https://networkx.org/documentation/latest/auto_examples/algorithms/plot_blockmodel.html">Blockmodel</a></p></li>
+<li><p><a class="reference external" href="https://networkx.org/documentation/latest/auto_examples/drawing/plot_sampson.html">Sampson’s monastery</a></p></li>
+<li><p><a class="reference external" href="https://networkx.org/documentation/latest/auto_examples/drawing/plot_ego_graph.html">Ego graph</a></p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id27">
+<h3>Bug fixes<a class="headerlink" href="#id27" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>Support graph attributes with union, intersection, and other graph operations</p></li>
+<li><p>Improve subgraph speed (and related algorithms such as
+connected_components_subgraphs())</p></li>
+<li><p>Handle multigraphs in more operators (e.g. union)</p></li>
+<li><p>Handle double-quoted labels with pydot</p></li>
+<li><p>Normalize betweenness_centrality for undirected graphs correctly</p></li>
+<li><p>Normalize eigenvector_centrality by l2 norm</p></li>
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">read_gml()</span></code> now returns multigraphs</p></li>
+</ul>
+</div></blockquote>
+</section>
+</section>
+<section id="networkx-1-0-1">
+<h2>NetworkX 1.0.1<a class="headerlink" href="#networkx-1-0-1" title="Permalink to this heading">#</a></h2>
+<p>Release date:  11 Jan 2010</p>
+<p>See: <a class="reference external" href="https://networkx.lanl.gov/trac/timeline">https://networkx.lanl.gov/trac/timeline</a></p>
+<p>Bug fix release for missing setup.py in manifest.</p>
+</section>
+<section id="networkx-1-0">
+<h2>NetworkX 1.0<a class="headerlink" href="#networkx-1-0" title="Permalink to this heading">#</a></h2>
+<p>Release date:  8 Jan 2010</p>
+<p>See: <a class="reference external" href="https://networkx.lanl.gov/trac/timeline">https://networkx.lanl.gov/trac/timeline</a></p>
+<section id="id28">
+<h3>New features<a class="headerlink" href="#id28" title="Permalink to this heading">#</a></h3>
+<p>This release has significant changes to parts of the graph API
+to allow graph, node, and edge attributes.
+See <a class="reference external" href="http://networkx.lanl.gov/reference/api_changes.html">http://networkx.lanl.gov/reference/api_changes.html</a></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Update Graph, DiGraph, and MultiGraph classes to allow attributes.</p></li>
+<li><p>Default edge data is now an empty dictionary (was the integer 1)</p></li>
+<li><p>Difference and intersection operators</p></li>
+<li><p>Average shortest path</p></li>
+<li><p>A* (A-Star) algorithm</p></li>
+<li><p>PageRank, HITS, and eigenvector centrality</p></li>
+<li><p>Read Pajek files</p></li>
+<li><p>Line graphs</p></li>
+<li><p>Minimum spanning tree (Kruskal’s algorithm)</p></li>
+<li><p>Dense and sparse Fruchterman-Reingold layout</p></li>
+<li><p>Random clustered graph generator</p></li>
+<li><p>Directed scale-free graph generator</p></li>
+<li><p>Faster random regular graph generator</p></li>
+<li><p>Improved edge color and label drawing with Matplotlib</p></li>
+<li><p>and much more, see  <a class="reference external" href="https://networkx.lanl.gov/trac/query?status=closed&amp;group=milestone&amp;milestone=networkx-1.0">https://networkx.lanl.gov/trac/query?status=closed&amp;group=milestone&amp;milestone=networkx-1.0</a></p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id29">
+<h3>Examples<a class="headerlink" href="#id29" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>Update to work with networkx-1.0 API</p></li>
+<li><p>Graph subclass example</p></li>
+</ul>
+</div></blockquote>
+</section>
+</section>
+<section id="networkx-0-99">
+<h2>NetworkX 0.99<a class="headerlink" href="#networkx-0-99" title="Permalink to this heading">#</a></h2>
+<p>Release date:  18 November 2008</p>
+<p>See: <a class="reference external" href="https://networkx.lanl.gov/trac/timeline">https://networkx.lanl.gov/trac/timeline</a></p>
+<section id="id30">
+<h3>New features<a class="headerlink" href="#id30" title="Permalink to this heading">#</a></h3>
+<p>This release has significant changes to parts of the graph API.
+See <a class="reference external" href="http://networkx.lanl.gov/reference/api_changes.html">http://networkx.lanl.gov/reference/api_changes.html</a></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Update Graph and DiGraph classes to use weighted graphs as default
+Change in API for performance and code simplicity.</p></li>
+<li><p>New MultiGraph and MultiDiGraph classes (replace XGraph and XDiGraph)</p></li>
+<li><p>Update to use Sphinx documentation system <a class="reference external" href="http://networkx.lanl.gov/">http://networkx.lanl.gov/</a></p></li>
+<li><p>Developer site at <a class="reference external" href="https://networkx.lanl.gov/trac/">https://networkx.lanl.gov/trac/</a></p></li>
+<li><p>Experimental LabeledGraph and LabeledDiGraph</p></li>
+<li><p>Moved package and file layout to subdirectories.</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id31">
+<h3>Bug fixes<a class="headerlink" href="#id31" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>handle root= option to draw_graphviz correctly</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id32">
+<h3>Examples<a class="headerlink" href="#id32" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>Update to work with networkx-0.99 API</p></li>
+<li><p>Drawing examples now use matplotlib.pyplot interface</p></li>
+<li><p>Improved drawings in many examples</p></li>
+<li><p>New examples - see <a class="reference external" href="http://networkx.lanl.gov/examples/">http://networkx.lanl.gov/examples/</a></p></li>
+</ul>
+</div></blockquote>
+</section>
+</section>
+<section id="networkx-0-37">
+<h2>NetworkX 0.37<a class="headerlink" href="#networkx-0-37" title="Permalink to this heading">#</a></h2>
+<p>Release date: 17 August 2008</p>
+<p>See: <a class="reference external" href="https://networkx.lanl.gov/trac/timeline">https://networkx.lanl.gov/trac/timeline</a></p>
+<p>NetworkX now requires Python 2.4 or later for full functionality.</p>
+<section id="id33">
+<h3>New features<a class="headerlink" href="#id33" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>Edge coloring and node line widths with Matplotlib drawings</p></li>
+<li><p>Update pydot functions to work with pydot-1.0.2</p></li>
+<li><p>Maximum-weight matching algorithm</p></li>
+<li><p>Ubigraph interface for 3D OpenGL layout and drawing</p></li>
+<li><p>Pajek graph file format reader and writer</p></li>
+<li><p>p2g graph file format reader and writer</p></li>
+<li><p>Secondary sort in topological sort</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id34">
+<h3>Bug fixes<a class="headerlink" href="#id34" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>Better edge data handling with GML writer</p></li>
+<li><p>Edge betweenness fix for XGraph with default data of None</p></li>
+<li><p>Handle Matplotlib version strings (allow “pre”)</p></li>
+<li><p>Interface to PyGraphviz (to_agraph()) now handles parallel edges</p></li>
+<li><p>Fix bug in copy from XGraph to XGraph with multiedges</p></li>
+<li><p>Use SciPy sparse lil matrix format instead of coo format</p></li>
+<li><p>Clear up ambiguous cases for Barabasi-Albert model</p></li>
+<li><p>Better care of color maps with Matplotlib when drawing colored nodes
+and edges</p></li>
+<li><p>Fix error handling in layout.py</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id35">
+<h3>Examples<a class="headerlink" href="#id35" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>Ubigraph examples showing 3D drawing</p></li>
+</ul>
+</div></blockquote>
+</section>
+</section>
+<section id="networkx-0-36">
+<h2>NetworkX 0.36<a class="headerlink" href="#networkx-0-36" title="Permalink to this heading">#</a></h2>
+<p>Release date: 13 January 2008</p>
+<p>See: <a class="reference external" href="https://networkx.lanl.gov/trac/timeline">https://networkx.lanl.gov/trac/timeline</a></p>
+<section id="id36">
+<h3>New features<a class="headerlink" href="#id36" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>GML format graph reader, tests, and example (football.py)</p></li>
+<li><p>edge_betweenness() and load_betweenness()</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id37">
+<h3>Bug fixes<a class="headerlink" href="#id37" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>remove obsolete parts of pygraphviz interface</p></li>
+<li><p>improve handling of Matplotlib version strings</p></li>
+<li><p>write_dot() now writes parallel edges and self loops</p></li>
+<li><p>is_bipartite() and bipartite_color() fixes</p></li>
+<li><p>configuration model speedup using random.shuffle()</p></li>
+<li><p>convert with specified nodelist now works correctly</p></li>
+<li><p>vf2 isomorphism checker updates</p></li>
+</ul>
+</div></blockquote>
+</section>
+</section>
+<section id="networkx-0-35-1">
+<h2>NetworkX 0.35.1<a class="headerlink" href="#networkx-0-35-1" title="Permalink to this heading">#</a></h2>
+<p>Release date: 27 July 2007</p>
+<p>See: <a class="reference external" href="https://networkx.lanl.gov/trac/timeline">https://networkx.lanl.gov/trac/timeline</a></p>
+<p>Small update to fix import readwrite problem and maintain Python2.3
+compatibility.</p>
+</section>
+<section id="networkx-0-35">
+<h2>NetworkX 0.35<a class="headerlink" href="#networkx-0-35" title="Permalink to this heading">#</a></h2>
+<p>Release date: 22 July 2007</p>
+<p>See: <a class="reference external" href="https://networkx.lanl.gov/trac/timeline">https://networkx.lanl.gov/trac/timeline</a></p>
+<section id="id38">
+<h3>New features<a class="headerlink" href="#id38" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>algorithms for strongly connected components.</p></li>
+<li><p>Brandes betweenness centrality algorithm (weighted and unweighted versions)</p></li>
+<li><p>closeness centrality for weighted graphs</p></li>
+<li><p>dfs_preorder, dfs_postorder, dfs_tree, dfs_successor, dfs_predecessor</p></li>
+<li><p>readers for GraphML, LEDA, sparse6, and graph6 formats.</p></li>
+<li><p>allow arguments in graphviz_layout to be passed directly to graphviz</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id39">
+<h3>Bug fixes<a class="headerlink" href="#id39" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>more detailed installation instructions</p></li>
+<li><p>replaced dfs_preorder,dfs_postorder (see search.py)</p></li>
+<li><p>allow initial node positions in spectral_layout</p></li>
+<li><p>report no error on attempting to draw empty graph</p></li>
+<li><p>report errors correctly when using tuples as nodes #114</p></li>
+<li><p>handle conversions from incomplete dict-of-dict data</p></li>
+</ul>
+</div></blockquote>
+</section>
+</section>
+<section id="networkx-0-34">
+<h2>NetworkX 0.34<a class="headerlink" href="#networkx-0-34" title="Permalink to this heading">#</a></h2>
+<p>Release date: 12 April 2007</p>
+<p>See: <a class="reference external" href="https://networkx.lanl.gov/trac/timeline">https://networkx.lanl.gov/trac/timeline</a></p>
+<section id="id40">
+<h3>New features<a class="headerlink" href="#id40" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>benchmarks for graph classes</p></li>
+<li><p>Brandes betweenness centrality algorithm</p></li>
+<li><p>Dijkstra predecessor and distance algorithm</p></li>
+<li><p>xslt to convert DIA graphs to NetworkX</p></li>
+<li><p>number_of_edges(u,v) counts edges between nodes u and v</p></li>
+<li><p>run tests with python setup_egg.py test (needs setuptools)
+else use python -c “import networkx; networkx.test()”</p></li>
+<li><p>is_isomorphic() that uses vf2 algorithm</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id41">
+<h3>Bug fixes<a class="headerlink" href="#id41" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>speedups of neighbors()</p></li>
+<li><p>simplified Dijkstra’s algorithm code</p></li>
+<li><p>better exception handling for shortest paths</p></li>
+<li><p>get_edge(u,v) returns None (instead of exception) if no edge u-v</p></li>
+<li><p>floyd_warshall_array fixes for negative weights</p></li>
+<li><p>bad G467, docs, and unittest fixes for graph atlas</p></li>
+<li><p>don’t put nans in numpy or scipy sparse adjacency matrix</p></li>
+<li><p>handle get_edge() exception (return None if no edge)</p></li>
+<li><p>remove extra kwds arguments in many places</p></li>
+<li><p>no multi counting edges in conversion to dict of lists for multigraphs</p></li>
+<li><p>allow passing tuple to get_edge()</p></li>
+<li><p>bad parameter order in node/edge betweenness</p></li>
+<li><p>edge betweenness doesn’t fail with XGraph</p></li>
+<li><p>don’t throw exceptions for nodes not in graph (silently ignore instead)
+in edges_* and degree_*</p></li>
+</ul>
+</div></blockquote>
+</section>
+</section>
+<section id="networkx-0-33">
+<h2>NetworkX 0.33<a class="headerlink" href="#networkx-0-33" title="Permalink to this heading">#</a></h2>
+<p>Release date: 27 November 2006</p>
+<p>See: <a class="reference external" href="https://networkx.lanl.gov/trac/timeline">https://networkx.lanl.gov/trac/timeline</a></p>
+<section id="id42">
+<h3>New features<a class="headerlink" href="#id42" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul>
+<li><p>draw edges with specified colormap</p></li>
+<li><p>more efficient version of Floyd’s algorithm for all pairs shortest path</p></li>
+<li><p>use numpy only, Numeric is deprecated</p></li>
+<li><p>include tests in source package (networkx/tests)</p></li>
+<li><p>include documentation in source package (doc)</p></li>
+<li><dl>
+<dt>tests can now be run with</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">networkx</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">networkx</span><span class="o">.</span><span class="n">test</span><span class="p">()</span>  
+</pre></div>
+</div>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id43">
+<h3>Bug fixes<a class="headerlink" href="#id43" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>read_gpickle now works correctly with Windows</p></li>
+<li><p>refactored large modules into smaller code files</p></li>
+<li><p>degree(nbunch) now returns degrees in same order as nbunch</p></li>
+<li><p>degree() now works for multiedges=True</p></li>
+<li><p>update node_boundary and edge_boundary for efficiency</p></li>
+<li><p>edited documentation for graph classes, now mostly in info.py</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id44">
+<h3>Examples<a class="headerlink" href="#id44" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>Draw edges with colormap</p></li>
+</ul>
+</div></blockquote>
+</section>
+</section>
+<section id="networkx-0-32">
+<h2>NetworkX 0.32<a class="headerlink" href="#networkx-0-32" title="Permalink to this heading">#</a></h2>
+<p>Release date: 29 September 2006</p>
+<p>See: <a class="reference external" href="https://networkx.lanl.gov/trac/timeline">https://networkx.lanl.gov/trac/timeline</a></p>
+<section id="id45">
+<h3>New features<a class="headerlink" href="#id45" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>Update to work with numpy-1.0x</p></li>
+<li><p>Make egg usage optional: use python setup_egg.py bdist_egg to build egg</p></li>
+<li><p>Generators and functions for bipartite graphs</p></li>
+<li><p>Experimental classes for trees and forests</p></li>
+<li><p>Support for new pygraphviz update (in nx_agraph.py) , see
+<a class="reference external" href="http://networkx.lanl.gov/pygraphviz/">http://networkx.lanl.gov/pygraphviz/</a> for pygraphviz details</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id46">
+<h3>Bug fixes<a class="headerlink" href="#id46" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>Handle special cases correctly in triangles function</p></li>
+<li><p>Typos in documentation</p></li>
+<li><p>Handle special cases in shortest_path and shortest_path_length,
+allow cutoff parameter for maximum depth to search</p></li>
+<li><p>Update examples: erdos_renyi.py, miles.py, roget,py, eigenvalues.py</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id47">
+<h3>Examples<a class="headerlink" href="#id47" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>Expected degree sequence</p></li>
+<li><p>New pygraphviz interface</p></li>
+</ul>
+</div></blockquote>
+</section>
+</section>
+<section id="networkx-0-31">
+<h2>NetworkX 0.31<a class="headerlink" href="#networkx-0-31" title="Permalink to this heading">#</a></h2>
+<p>Release date: 20 July 2006</p>
+<p>See: <a class="reference external" href="https://networkx.lanl.gov/trac/timeline">https://networkx.lanl.gov/trac/timeline</a></p>
+<section id="id48">
+<h3>New features<a class="headerlink" href="#id48" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>arbitrary node relabeling (use relabel_nodes)</p></li>
+<li><p>conversion of NetworkX graphs to/from Python dict/list types,
+numpy matrix or array types, and scipy_sparse_matrix types</p></li>
+<li><p>generator for random graphs with given expected degree sequence</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id49">
+<h3>Bug fixes<a class="headerlink" href="#id49" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>Allow drawing graphs with no edges using pylab</p></li>
+<li><p>Use faster heapq in dijkstra</p></li>
+<li><p>Don’t complain if X windows is not available</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id50">
+<h3>Examples<a class="headerlink" href="#id50" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>update drawing examples</p></li>
+</ul>
+</div></blockquote>
+</section>
+</section>
+<section id="networkx-0-30">
+<h2>NetworkX 0.30<a class="headerlink" href="#networkx-0-30" title="Permalink to this heading">#</a></h2>
+<p>Release date: 23 June 2006</p>
+<p>See: <a class="reference external" href="https://networkx.lanl.gov/trac/timeline">https://networkx.lanl.gov/trac/timeline</a></p>
+<section id="id51">
+<h3>New features<a class="headerlink" href="#id51" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>update to work with Python 2.5</p></li>
+<li><p>bidirectional version of shortest_path and Dijkstra</p></li>
+<li><p>single_source_shortest_path and all_pairs_shortest_path</p></li>
+<li><p>s-metric and experimental code to generate  maximal s-metric graph</p></li>
+<li><p>double_edge_swap and connected_double_edge_swap</p></li>
+<li><p>Floyd’s algorithm for all pairs shortest path</p></li>
+<li><p>read and write unicode graph data to text files</p></li>
+<li><p>read and write YAML format text files, <a class="reference external" href="http://yaml.org">http://yaml.org</a></p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id52">
+<h3>Bug fixes<a class="headerlink" href="#id52" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>speed improvements (faster version of subgraph, is_connected)</p></li>
+<li><p>added cumulative distribution and modified discrete distribution utilities</p></li>
+<li><p>report error if DiGraphs are sent to connected_components routines</p></li>
+<li><p>removed with_labels keywords for many functions where it was
+causing confusion</p></li>
+<li><p>function name changes in shortest_path routines</p></li>
+<li><p>saner internal handling of nbunch (node bunches), raise an
+exception if an nbunch isn’t a node or iterable</p></li>
+<li><p>better keyword handling in io.py allows reading multiple graphs</p></li>
+<li><p>don’t mix Numeric and numpy arrays in graph layouts and drawing</p></li>
+<li><p>avoid automatically rescaling matplotlib axes when redrawing graph layout</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id53">
+<h3>Examples<a class="headerlink" href="#id53" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>unicode node labels</p></li>
+</ul>
+</div></blockquote>
+</section>
+</section>
+<section id="networkx-0-29">
+<h2>NetworkX 0.29<a class="headerlink" href="#networkx-0-29" title="Permalink to this heading">#</a></h2>
+<p>Release date: 28 April 2006</p>
+<p>See: <a class="reference external" href="https://networkx.lanl.gov/trac/timeline">https://networkx.lanl.gov/trac/timeline</a></p>
+<section id="id54">
+<h3>New features<a class="headerlink" href="#id54" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>Algorithms for betweenness, eigenvalues, eigenvectors, and
+spectral projection for threshold graphs</p></li>
+<li><p>Use numpy when available</p></li>
+<li><p>dense_gnm_random_graph generator</p></li>
+<li><p>Generators for some directed graphs: GN, GNR, and GNC by Krapivsky
+and Redner</p></li>
+<li><p>Grid graph generators now label by index tuples.  Helper
+functions for manipulating labels.</p></li>
+<li><p>relabel_nodes_with_function</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id55">
+<h3>Bug fixes<a class="headerlink" href="#id55" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>Betweenness centrality now correctly uses Brandes definition and
+has normalization option outside main loop</p></li>
+<li><p>Empty graph now labeled as empty_graph(n)</p></li>
+<li><p>shortest_path_length used python2.4 generator feature</p></li>
+<li><p>degree_sequence_tree off by one error caused nonconsecutive labeling</p></li>
+<li><p>periodic_grid_2d_graph removed in favor of grid_2d_graph with
+periodic=True</p></li>
+</ul>
+</div></blockquote>
+</section>
+</section>
+<section id="networkx-0-28">
+<h2>NetworkX 0.28<a class="headerlink" href="#networkx-0-28" title="Permalink to this heading">#</a></h2>
+<p>Release date: 13 March 2006</p>
+<p>See: <a class="reference external" href="https://networkx.lanl.gov/trac/timeline">https://networkx.lanl.gov/trac/timeline</a></p>
+<section id="id56">
+<h3>New features<a class="headerlink" href="#id56" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>Option to construct Laplacian with rows and columns in specified order</p></li>
+<li><p>Option in convert_node_labels_to_integers to use sorted order</p></li>
+<li><p>predecessor(G,n) function that returns dictionary of
+nodes with predecessors from breadth-first search of G
+starting at node n.
+<a class="reference external" href="https://networkx.lanl.gov/trac/ticket/26">https://networkx.lanl.gov/trac/ticket/26</a></p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id57">
+<h3>Examples<a class="headerlink" href="#id57" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>Formation of giant component in binomial_graph:</p></li>
+<li><p>Chess masters matches:</p></li>
+<li><p>Gallery <a class="reference external" href="https://networkx.org/documentation/latest/auto_examples/index.html">https://networkx.org/documentation/latest/auto_examples/index.html</a></p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id58">
+<h3>Bug fixes<a class="headerlink" href="#id58" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><dl class="simple">
+<dt>Adjusted names for random graphs.</dt><dd><ul>
+<li><p>erdos_renyi_graph=binomial_graph=gnp_graph: n nodes with
+edge probability p</p></li>
+<li><p>gnm_graph: n nodes and m edges</p></li>
+<li><p>fast_gnp_random_graph: gnp for sparse graphs (small p)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>Documentation contains correct spelling of Barabási, Bollobás,
+Erdős, and Rényi in UTF-8 encoding</p></li>
+<li><p>Increased speed of connected_components and related functions
+by using faster BFS algorithm in networkx.paths
+<a class="reference external" href="https://networkx.lanl.gov/trac/ticket/27">https://networkx.lanl.gov/trac/ticket/27</a></p></li>
+<li><p>XGraph and XDiGraph with multiedges=True produced error on delete_edge</p></li>
+<li><p>Cleaned up docstring errors</p></li>
+<li><p>Normalize names of some graphs to produce strings that represent
+calling sequence</p></li>
+</ul>
+</div></blockquote>
+</section>
+</section>
+<section id="networkx-0-27">
+<h2>NetworkX 0.27<a class="headerlink" href="#networkx-0-27" title="Permalink to this heading">#</a></h2>
+<p>Release date: 5 February 2006</p>
+<p>See: <a class="reference external" href="https://networkx.lanl.gov/trac/timeline">https://networkx.lanl.gov/trac/timeline</a></p>
+<section id="id59">
+<h3>New features<a class="headerlink" href="#id59" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>sparse_binomial_graph: faster graph generator for sparse random graphs</p></li>
+<li><p>read/write routines in io.py now handle XGraph() type and
+gzip and bzip2 files</p></li>
+<li><p>optional mapping of type for read/write routine to allow
+on-the-fly conversion of node and edge datatype on read</p></li>
+<li><p>Substantial changes related to digraphs and definitions of
+neighbors() and edges().  For digraphs edges=out_edges.
+Neighbors now returns a list of neighboring nodes with
+possible duplicates for graphs with parallel edges
+See <a class="reference external" href="https://networkx.lanl.gov/trac/ticket/24">https://networkx.lanl.gov/trac/ticket/24</a></p></li>
+<li><p>Addition of out_edges, in_edges and corresponding out_neighbors
+and in_neighbors for digraphs.  For digraphs edges=out_edges.</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id60">
+<h3>Examples<a class="headerlink" href="#id60" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>Minard’s data for Napoleon’s Russian campaign</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id61">
+<h3>Bug fixes<a class="headerlink" href="#id61" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>XGraph(multiedges=True) returns a copy of the list of edges
+for get_edge()</p></li>
+</ul>
+</div></blockquote>
+</section>
+</section>
+<section id="networkx-0-26">
+<h2>NetworkX 0.26<a class="headerlink" href="#networkx-0-26" title="Permalink to this heading">#</a></h2>
+<p>Release date: 6 January 2006</p>
+<section id="id62">
+<h3>New features<a class="headerlink" href="#id62" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>Simpler interface to drawing with pylab</p></li>
+<li><p>G.info(node=None) function returns short information about graph
+or node</p></li>
+<li><p>adj_matrix now takes optional nodelist to force ordering of
+rows/columns in matrix</p></li>
+<li><p>optional pygraphviz and pydot interface to graphviz is now callable as
+“graphviz” with pygraphviz preferred.  Use draw_graphviz(G).</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id63">
+<h3>Examples<a class="headerlink" href="#id63" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>Several new examples showing how draw to graphs with various
+properties of nodes, edges, and labels</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id64">
+<h3>Bug fixes<a class="headerlink" href="#id64" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>Default data type for all graphs is now None (was the integer 1)</p></li>
+<li><p>add_nodes_from now won’t delete edges if nodes added already exist</p></li>
+<li><p>Added missing names to generated graphs</p></li>
+<li><p>Indexes for nodes in graphs start at zero by default (was 1)</p></li>
+</ul>
+</div></blockquote>
+</section>
+</section>
+<section id="networkx-0-25">
+<h2>NetworkX 0.25<a class="headerlink" href="#networkx-0-25" title="Permalink to this heading">#</a></h2>
+<p>Release date: 5 December 2005</p>
+<section id="id65">
+<h3>New features<a class="headerlink" href="#id65" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>Uses setuptools for installation <a class="reference external" href="http://peak.telecommunity.com/DevCenter/setuptools">http://peak.telecommunity.com/DevCenter/setuptools</a></p></li>
+<li><p>Improved testing infrastructure, can now run python setup.py test</p></li>
+<li><p>Added interface to draw graphs with pygraphviz
+<a class="reference external" href="https://networkx.lanl.gov/pygraphviz/">https://networkx.lanl.gov/pygraphviz/</a></p></li>
+<li><p>is_directed() function call</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id66">
+<h3>Examples<a class="headerlink" href="#id66" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>Email example shows how to use XDiGraph with Python objects as
+edge data</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="documentation">
+<h3>Documentation<a class="headerlink" href="#documentation" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>Reformat menu, minor changes to Readme, better stylesheet</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id67">
+<h3>Bug fixes<a class="headerlink" href="#id67" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>use create_using= instead of result= keywords for graph types
+in all cases</p></li>
+<li><p>missing weights for degree 0 and 1 nodes in clustering</p></li>
+<li><p>configuration model now uses XGraph, returns graph with identical
+degree sequence as input sequence</p></li>
+<li><p>fixed Dijkstra priority queue</p></li>
+<li><p>fixed non-recursive toposort and is_directed_acyclic graph</p></li>
+</ul>
+</div></blockquote>
+</section>
+</section>
+<section id="networkx-0-24">
+<h2>NetworkX 0.24<a class="headerlink" href="#networkx-0-24" title="Permalink to this heading">#</a></h2>
+<p>Release date: 20 August 2005</p>
+<section id="id68">
+<h3>Bug fixes<a class="headerlink" href="#id68" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>Update of Dijkstra algorithm code</p></li>
+<li><p>dfs_successor now calls proper search method</p></li>
+<li><p>Changed to list comprehension in DiGraph.reverse() for python2.3
+compatibility</p></li>
+<li><p>Barabasi-Albert graph generator fixed</p></li>
+<li><p>Attempt to add self loop should add node even if parallel edges not
+allowed</p></li>
+</ul>
+</div></blockquote>
+</section>
+</section>
+<section id="networkx-0-23">
+<h2>NetworkX 0.23<a class="headerlink" href="#networkx-0-23" title="Permalink to this heading">#</a></h2>
+<p>Release date: 14 July 2005</p>
+<p>The NetworkX web locations have changed:</p>
+<p><a class="reference external" href="http://networkx.lanl.gov/">http://networkx.lanl.gov/</a>     - main documentation site
+<a class="reference external" href="http://networkx.lanl.gov/svn/">http://networkx.lanl.gov/svn/</a>  - subversion source code repository
+<a class="reference external" href="https://networkx.lanl.gov/trac/">https://networkx.lanl.gov/trac/</a> - bug tracking and info</p>
+<section id="important-change">
+<h3>Important Change<a class="headerlink" href="#important-change" title="Permalink to this heading">#</a></h3>
+<p>The naming conventions in NetworkX have changed.
+The package name “NX” is now “networkx”.</p>
+<p>The suggested ways to import the NetworkX package are</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>import networkx</p></li>
+<li><p>import networkx as NX</p></li>
+<li><p>from networkx import *</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id69">
+<h3>New features<a class="headerlink" href="#id69" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>DiGraph reverse</p></li>
+<li><dl class="simple">
+<dt>Graph generators</dt><dd><ul>
+<li><p>watts_strogatz_graph now does rewiring method</p></li>
+<li><p>old watts_strogatz_graph-&gt;newman_watts_strogatz_graph</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id70">
+<h3>Examples<a class="headerlink" href="#id70" title="Permalink to this heading">#</a></h3>
+</section>
+<section id="id71">
+<h3>Documentation<a class="headerlink" href="#id71" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>Changed to reflect NX-networkx change</p></li>
+<li><p>main site is now <a class="reference external" href="https://networkx.lanl.gov/">https://networkx.lanl.gov/</a></p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id72">
+<h3>Bug fixes<a class="headerlink" href="#id72" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>Fixed logic in io.py for reading DiGraphs.</p></li>
+<li><p>Path based centrality measures (betweenness, closeness)
+modified so they work on graphs that are not connected and
+produce the same result as if each connected component were
+considered separately.</p></li>
+</ul>
+</div></blockquote>
+</section>
+</section>
+<section id="networkx-0-22">
+<h2>NetworkX 0.22<a class="headerlink" href="#networkx-0-22" title="Permalink to this heading">#</a></h2>
+<p>Release date: 17 June 2005</p>
+<section id="id73">
+<h3>New features<a class="headerlink" href="#id73" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>Topological sort, testing for directed acyclic graphs (DAGs)</p></li>
+<li><p>Dijkstra’s algorithm for shortest paths in weighted graphs</p></li>
+<li><p>Multidimensional layout with dim=n for drawing</p></li>
+<li><p>3d rendering demonstration with vtk</p></li>
+<li><dl class="simple">
+<dt>Graph generators</dt><dd><ul>
+<li><p>random_powerlaw_tree</p></li>
+<li><p>dorogovtsev_goltsev_mendes_graph</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id74">
+<h3>Examples<a class="headerlink" href="#id74" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>Kevin Bacon movie actor graph: Examples/kevin_bacon.py</p></li>
+<li><p>Compute eigenvalues of graph Laplacian: Examples/eigenvalues.py</p></li>
+<li><p>Atlas of small graphs: Examples/atlas.py</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id75">
+<h3>Documentation<a class="headerlink" href="#id75" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>Rewrite of setup scripts to install documentation and
+tests in documentation directory specified</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id76">
+<h3>Bug fixes<a class="headerlink" href="#id76" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>Handle calls to edges() with non-node, non-iterable items.</p></li>
+<li><p>truncated_tetrahedral_graph was just plain wrong</p></li>
+<li><p>Speedup of betweenness_centrality code</p></li>
+<li><p>bfs_path_length now returns correct lengths</p></li>
+<li><p>Catch error if target of search not in connected component of source</p></li>
+<li><p>Code cleanup to label internal functions with _name</p></li>
+<li><p>Changed import statement lines to always use “import NX” to
+protect name-spaces</p></li>
+<li><p>Other minor bug-fixes and testing added</p></li>
+</ul>
+</div></blockquote>
+</section>
+</section>
+</section>
+
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx-2-5">
+   NetworkX 2.5
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#release-notes">
+     Release notes
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx-2-4">
+   NetworkX 2.4
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id1">
+     Release notes
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx-2-3">
+   NetworkX 2.3
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id2">
+     Release notes
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx-2-2">
+   NetworkX 2.2
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id3">
+     Release notes
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx-2-1">
+   NetworkX 2.1
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id4">
+     Release notes
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx-2-0">
+   NetworkX 2.0
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id5">
+     Release notes
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx-1-11">
+   NetworkX 1.11
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#highlights">
+     Highlights
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx-1-10">
+   NetworkX 1.10
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id6">
+     Highlights
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#api-changes">
+     API changes
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx-1-9-1">
+   NetworkX 1.9.1
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx-1-9">
+   NetworkX 1.9
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id7">
+     Highlights
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id8">
+     API changes
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx-1-8-1">
+   NetworkX 1.8.1
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx-1-8">
+   NetworkX 1.8
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id9">
+     Highlights
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#bug-fixes">
+     Bug fixes
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id10">
+     API changes
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx-1-7">
+   NetworkX 1.7
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id11">
+     Highlights
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id12">
+     API changes
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx-1-6">
+   NetworkX 1.6
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id13">
+     Highlights
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id14">
+     API changes
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx-1-5">
+   NetworkX 1.5
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id15">
+     Highlights
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#new-features">
+     New features
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id16">
+     API changes
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id17">
+     Bug fixes
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx-1-4">
+   NetworkX 1.4
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id18">
+     New features
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id19">
+     API changes
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id20">
+     Bug fixes
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx-1-3">
+   NetworkX 1.3
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id21">
+     New features
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id22">
+     API changes
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id23">
+     Bug fixes
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx-1-2">
+   NetworkX 1.2
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id24">
+     New features
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx-1-1">
+   NetworkX 1.1
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id25">
+     New features
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id26">
+     API changes
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#returning-dictionaries">
+       Returning dictionaries
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#adding-nodes">
+       Adding nodes
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#examples">
+     Examples
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id27">
+     Bug fixes
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx-1-0-1">
+   NetworkX 1.0.1
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx-1-0">
+   NetworkX 1.0
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id28">
+     New features
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id29">
+     Examples
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx-0-99">
+   NetworkX 0.99
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id30">
+     New features
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id31">
+     Bug fixes
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id32">
+     Examples
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx-0-37">
+   NetworkX 0.37
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id33">
+     New features
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id34">
+     Bug fixes
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id35">
+     Examples
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx-0-36">
+   NetworkX 0.36
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id36">
+     New features
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id37">
+     Bug fixes
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx-0-35-1">
+   NetworkX 0.35.1
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx-0-35">
+   NetworkX 0.35
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id38">
+     New features
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id39">
+     Bug fixes
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx-0-34">
+   NetworkX 0.34
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id40">
+     New features
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id41">
+     Bug fixes
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx-0-33">
+   NetworkX 0.33
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id42">
+     New features
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id43">
+     Bug fixes
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id44">
+     Examples
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx-0-32">
+   NetworkX 0.32
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id45">
+     New features
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id46">
+     Bug fixes
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id47">
+     Examples
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx-0-31">
+   NetworkX 0.31
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id48">
+     New features
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id49">
+     Bug fixes
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id50">
+     Examples
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx-0-30">
+   NetworkX 0.30
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id51">
+     New features
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id52">
+     Bug fixes
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id53">
+     Examples
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx-0-29">
+   NetworkX 0.29
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id54">
+     New features
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id55">
+     Bug fixes
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx-0-28">
+   NetworkX 0.28
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id56">
+     New features
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id57">
+     Examples
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id58">
+     Bug fixes
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx-0-27">
+   NetworkX 0.27
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id59">
+     New features
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id60">
+     Examples
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id61">
+     Bug fixes
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx-0-26">
+   NetworkX 0.26
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id62">
+     New features
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id63">
+     Examples
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id64">
+     Bug fixes
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx-0-25">
+   NetworkX 0.25
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id65">
+     New features
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id66">
+     Examples
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#documentation">
+     Documentation
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id67">
+     Bug fixes
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx-0-24">
+   NetworkX 0.24
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id68">
+     Bug fixes
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx-0-23">
+   NetworkX 0.23
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#important-change">
+     Important Change
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id69">
+     New features
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id70">
+     Examples
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id71">
+     Documentation
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id72">
+     Bug fixes
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx-0-22">
+   NetworkX 0.22
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id73">
+     New features
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id74">
+     Examples
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id75">
+     Documentation
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id76">
+     Bug fixes
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

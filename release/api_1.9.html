@@ -1,0 +1,857 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>NetworkX 1.9 &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'release/api_1.9';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/release/api_1.9.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="NetworkX 1.8" href="api_1.8.html" />
+    <link rel="prev" title="NetworkX 1.10" href="api_1.10.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">
+    Section Navigation
+  </p>
+  <div class="bd-toc-item navbar-nav">
+    <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="release_dev.html">NetworkX 3.0 (unreleased)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.8.8.html">NetworkX 2.8.7</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.8.7.html">NetworkX 2.8.7</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.8.6.html">NetworkX 2.8.6</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.8.5.html">NetworkX 2.8.5</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.8.4.html">NetworkX 2.8.4</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.8.3.html">NetworkX 2.8.3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.8.2.html">NetworkX 2.8.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.8.1.html">NetworkX 2.8.1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.8.html">NetworkX 2.8</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.7.1.html">NetworkX 2.7.1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.7.html">NetworkX 2.7</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.6.html">NetworkX 2.6</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.5.html">NetworkX 2.5</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.4.html">NetworkX 2.4</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.3.html">NetworkX 2.3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.2.html">NetworkX 2.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.1.html">NetworkX 2.1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.0.html">NetworkX 2.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_1.11.html">NetworkX 1.11</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_1.10.html">NetworkX 1.10</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">NetworkX 1.9</a></li>
+
+
+<li class="toctree-l1"><a class="reference internal" href="api_1.8.html">NetworkX 1.8</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_1.7.html">NetworkX 1.7</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_1.6.html">NetworkX 1.6</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_1.5.html">NetworkX 1.5</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_1.4.html">NetworkX 1.4</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="api_1.0.html">NetworkX 1.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_0.99.html">NetworkX 0.99</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="old_release_log.html">Old Release Log</a></li>
+</ul>
+
+  </div>
+</nav>
+    </div>
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <section id="networkx-1-9">
+<h1>NetworkX 1.9<a class="headerlink" href="#networkx-1-9" title="Permalink to this heading">#</a></h1>
+<p>Release date: 21 June 2014</p>
+<p>Support for Python 3.1 is dropped in this release.</p>
+<section id="highlights">
+<h2>Highlights<a class="headerlink" href="#highlights" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Completely rewritten maximum flow and flow-based connectivity algorithms with
+backwards incompatible interfaces</p></li>
+<li><p>Community graph generators</p></li>
+<li><p>Stoer–Wagner minimum cut algorithm</p></li>
+<li><p>Linear-time Eulerian circuit algorithm</p></li>
+<li><p>Linear algebra package changed to use SciPy sparse matrices</p></li>
+<li><p>Algebraic connectivity, Fiedler vector, spectral ordering algorithms</p></li>
+<li><p>Link prediction algorithms</p></li>
+<li><p>Goldberg–Radzik shortest path algorithm</p></li>
+<li><p>Semiconnected graph and tree recognition algorithms</p></li>
+</ul>
+</section>
+<section id="flow-package">
+<h2>Flow package<a class="headerlink" href="#flow-package" title="Permalink to this heading">#</a></h2>
+<p>The flow package (<code class="samp docutils literal notranslate"><span class="pre">networkx.algorithms.flow</span></code>) is completely rewritten
+with backward <em>incompatible</em> changes. It introduces a new interface to flow
+algorithms. Existing code that uses the flow package will not work unmodified
+with NetworkX 1.9.</p>
+</section>
+</section>
+<section id="main-changes">
+<h1>Main changes<a class="headerlink" href="#main-changes" title="Permalink to this heading">#</a></h1>
+<ol class="arabic simple">
+<li><p>We added two new maximum flow algorithms (<code class="samp docutils literal notranslate"><span class="pre">preflow_push</span></code> and
+<code class="samp docutils literal notranslate"><span class="pre">shortest_augmenting_path</span></code>) and rewrote the Edmonds–Karp algorithm in
+<code class="samp docutils literal notranslate"><span class="pre">flow_fulkerson</span></code> which is now in <code class="samp docutils literal notranslate"><span class="pre">edmonds_karp</span></code>.
+<a class="reference external" href="https://github.com/ysitu">&#64;ysitu</a> contributed implementations of all new
+maximum flow algorithms. The legacy Edmonds–Karp algorithm implementation in
+<code class="samp docutils literal notranslate"><span class="pre">ford_fulkerson</span></code> is still available but will be removed in the next
+release.</p></li>
+<li><p>All maximum flow algorithm implementations (including the legacy
+<code class="samp docutils literal notranslate"><span class="pre">ford_fulkerson</span></code>) output now a residual network (i.e., a
+<code class="samp docutils literal notranslate"><span class="pre">DiGraph</span></code>) after computing the maximum flow. See <code class="samp docutils literal notranslate"><span class="pre">maximum_flow</span></code>
+documentation for the details on the conventions that NetworkX uses for
+defining a residual network.</p></li>
+<li><p>We removed the old <code class="samp docutils literal notranslate"><span class="pre">max_flow</span></code> and <code class="samp docutils literal notranslate"><span class="pre">min_cut</span></code> functions. The main
+entry points to flow algorithms are now the functions <code class="samp docutils literal notranslate"><span class="pre">maximum_flow</span></code>,
+<code class="samp docutils literal notranslate"><span class="pre">maximum_flow_value</span></code>, <code class="samp docutils literal notranslate"><span class="pre">minimum_cut</span></code> and
+<code class="samp docutils literal notranslate"><span class="pre">minimum_cut_value</span></code>, which have new parameters that control maximum
+flow computation: <code class="samp docutils literal notranslate"><span class="pre">flow_func</span></code> for specifying the algorithm that will
+do the actual computation (it accepts a function as argument that implements
+a maximum flow algorithm), <code class="samp docutils literal notranslate"><span class="pre">cutoff</span></code> for suggesting a maximum flow
+value at which the algorithm stops, <code class="samp docutils literal notranslate"><span class="pre">value_only</span></code> for stopping the
+computation as soon as we have the value of the flow, and <code class="samp docutils literal notranslate"><span class="pre">residual</span></code>
+that accepts as argument a residual network to be reused in repeated maximum
+flow computation.</p></li>
+<li><p>All flow algorithms are required to accept arguments for these parameters
+but may selectively ignored the inapplicable ones. For instance,
+<code class="samp docutils literal notranslate"><span class="pre">preflow_push</span></code> algorithm can stop after the preflow phase without
+computing a maximum flow if we only need the flow value, but both
+<code class="samp docutils literal notranslate"><span class="pre">edmonds_karp</span></code> and <code class="samp docutils literal notranslate"><span class="pre">shortest_augmenting_path</span></code> always compute a
+maximum flow to obtain the flow value.</p></li>
+<li><p>The new function <code class="samp docutils literal notranslate"><span class="pre">minimum_cut</span></code> returns the cut value and a node
+partition that defines the minimum cut. The function
+<code class="samp docutils literal notranslate"><span class="pre">minimum_cut_value</span></code> returns only the value of the cut, which is what
+the removed <code class="samp docutils literal notranslate"><span class="pre">min_cut</span></code> function used to return before 1.9.</p></li>
+<li><p>The functions that implement flow algorithms (i.e., <code class="samp docutils literal notranslate"><span class="pre">preflow_push</span></code>,
+<code class="samp docutils literal notranslate"><span class="pre">edmonds_karp</span></code>, <code class="samp docutils literal notranslate"><span class="pre">shortest_augmenting_path</span></code> and
+<code class="samp docutils literal notranslate"><span class="pre">ford_fulkerson</span></code>) are not imported to the base NetworkX namespace. You
+have to explicitly import them from the flow package:</p></li>
+</ol>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">networkx.algorithms.flow</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ford_fulkerson</span><span class="p">,</span> <span class="n">preflow_push</span><span class="p">,</span>
+<span class="gp">... </span>       <span class="n">edmonds_karp</span><span class="p">,</span> <span class="n">shortest_augmenting_path</span><span class="p">)</span>  
+</pre></div>
+</div>
+<ol class="arabic simple" start="7">
+<li><p>We also added a capacity-scaling minimum cost flow algorithm:
+<code class="samp docutils literal notranslate"><span class="pre">capacity_scaling</span></code>. It supports <code class="samp docutils literal notranslate"><span class="pre">MultiDiGraph</span></code> and disconnected
+networks.</p></li>
+</ol>
+</section>
+<section id="examples">
+<h1>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">#</a></h1>
+<p>Below are some small examples illustrating how to obtain the same output than in
+NetworkX 1.8.1 using the new interface to flow algorithms introduced in 1.9:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">icosahedral_graph</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nx</span><span class="o">.</span><span class="n">set_edge_attributes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="s1">&#39;capacity&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>With NetworkX 1.8:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">flow_value</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">max_flow</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>  
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cut_value</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">min_cut</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>  
+<span class="gp">&gt;&gt;&gt; </span><span class="n">flow_value</span> <span class="o">==</span> <span class="n">cut_value</span>  
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">flow_value</span><span class="p">,</span> <span class="n">flow_dict</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">ford_fulkerson</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>  
+</pre></div>
+</div>
+<p>With NetworkX 1.9:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">networkx.algorithms.flow</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ford_fulkerson</span><span class="p">,</span> <span class="n">preflow_push</span><span class="p">,</span>
+<span class="gp">... </span>       <span class="n">edmonds_karp</span><span class="p">,</span> <span class="n">shortest_augmenting_path</span><span class="p">)</span>  
+<span class="gp">&gt;&gt;&gt; </span><span class="n">flow_value</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">maximum_flow_value</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>  
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cut_value</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">minimum_cut_value</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>  
+<span class="gp">&gt;&gt;&gt; </span><span class="n">flow_value</span> <span class="o">==</span> <span class="n">cut_value</span>  
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Legacy: this returns the exact same output than ford_fulkerson in 1.8.1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">flow_value</span><span class="p">,</span> <span class="n">flow_dict</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">maximum_flow</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="n">flow_func</span><span class="o">=</span><span class="n">ford_fulkerson</span><span class="p">)</span>  
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># We strongly recommend to use the new algorithms:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">flow_value</span><span class="p">,</span> <span class="n">flow_dict</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">maximum_flow</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>  
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># If no flow_func is passed as argument, the default flow_func</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># (preflow-push) is used. Therefore this is the same than:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">flow_value</span><span class="p">,</span> <span class="n">flow_dict</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">maximum_flow</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="n">flow_func</span><span class="o">=</span><span class="n">preflow_push</span><span class="p">)</span>  
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># You can also use alternative maximum flow algorithms:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">flow_value</span><span class="p">,</span> <span class="n">flow_dict</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">maximum_flow</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="n">flow_func</span><span class="o">=</span><span class="n">shortest_augmenting_path</span><span class="p">)</span>  
+<span class="gp">&gt;&gt;&gt; </span><span class="n">flow_value</span><span class="p">,</span> <span class="n">flow_dict</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">maximum_flow</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="n">flow_func</span><span class="o">=</span><span class="n">edmonds_karp</span><span class="p">)</span>  
+</pre></div>
+</div>
+<section id="connectivity-package">
+<h2>Connectivity package<a class="headerlink" href="#connectivity-package" title="Permalink to this heading">#</a></h2>
+<p>The flow-based connecitivity and cut algorithms from the connectivity
+package (<code class="samp docutils literal notranslate"><span class="pre">networkx.algorithms.connectivity</span></code>) are adapted to take
+advantage of the new interface to flow algorithms. As a result, flow-based
+connectivity algorithms are up to 10x faster than in NetworkX 1.8 for some
+problems, such as sparse networks with highly skewed degree distributions.
+A few backwards <em>incompatible</em> changes were introduced.</p>
+<ul class="simple">
+<li><p>The functions for local connectivity and cuts accept now
+arguments for the new parameters defined for the flow interface:
+<code class="samp docutils literal notranslate"><span class="pre">flow_func</span></code> for defining the algorithm that will perform the
+underlying maximum flow computations, <code class="samp docutils literal notranslate"><span class="pre">residual</span></code> that accepts
+as argument a residual network to be reused in repeated maximum
+flow computations, and <code class="samp docutils literal notranslate"><span class="pre">cutoff</span></code> for defining a maximum flow
+value at which the underlying maximum flow algorithm stops. The big
+speed improvement with respect to 1.8 comes mainly from the reuse
+of the residual network and the use of <code class="samp docutils literal notranslate"><span class="pre">cutoff</span></code>.</p></li>
+<li><p>We removed the flow-based local connectivity and cut functions from
+the base namespace. Now they have to be explicitly imported from the
+connectivity package. The main entry point to flow-based connectivity
+and cut functions are the functions <code class="samp docutils literal notranslate"><span class="pre">edge_connectivity</span></code>,
+<code class="samp docutils literal notranslate"><span class="pre">node_connectivity</span></code>, <code class="samp docutils literal notranslate"><span class="pre">minimum_edge_cut</span></code>, and
+<code class="samp docutils literal notranslate"><span class="pre">minimum_node_cut</span></code>. All these functions accept a couple of nodes
+as optional arguments for computing local connectivity and cuts.</p></li>
+<li><p>We improved the auxiliary network for connectivity functions: The node
+mapping dict needed for node connectivity and minimum node cuts is now a
+graph attribute of the auxiliary network. Thus we removed the
+<code class="samp docutils literal notranslate"><span class="pre">mapping</span></code> parameter from the local versions of connectivity and cut
+functions. We also changed the parameter name for the auxuliary digraph
+from <code class="samp docutils literal notranslate"><span class="pre">aux_digraph</span></code> to <code class="samp docutils literal notranslate"><span class="pre">auxiliary</span></code>.</p></li>
+<li><p>We changed the name of the function <code class="samp docutils literal notranslate"><span class="pre">all_pairs_node_connectiviy_matrix</span></code>
+to <code class="samp docutils literal notranslate"><span class="pre">all_pairs_node_connectivity</span></code>. This function now returns a dictionary
+instead of a NumPy 2D array. We added a new parameter <code class="samp docutils literal notranslate"><span class="pre">nbunch</span></code> for
+computing node connectivity only among pairs of nodes in <code class="samp docutils literal notranslate"><span class="pre">nbunch</span></code>.</p></li>
+<li><p>A <code class="samp docutils literal notranslate"><span class="pre">stoer_wagner</span></code> function is added to the connectivity package
+for computing the weighted minimum cuts of undirected graphs using
+the Stoer–Wagner algorithm. This algorithm is not based on maximum flows.
+Several heap implementations are also added in the utility package
+(<code class="samp docutils literal notranslate"><span class="pre">networkx.utils</span></code>) for use in this function.
+<code class="xref py py-class docutils literal notranslate"><span class="pre">BinaryHeap</span></code> is recommended over <code class="xref py py-class docutils literal notranslate"><span class="pre">PairingHeap</span></code> for Python
+implementations without optimized attribute accesses (e.g., CPython)
+despite a slower asymptotic running time. For Python implementations
+with optimized attribute accesses (e.g., PyPy), <code class="xref py py-class docutils literal notranslate"><span class="pre">PairingHeap</span></code>
+provides better performance.</p></li>
+</ul>
+</section>
+<section id="other-new-functionalities">
+<h2>Other new functionalities<a class="headerlink" href="#other-new-functionalities" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>A <code class="samp docutils literal notranslate"><span class="pre">disperson</span></code> function is added in the centrality package
+(<code class="samp docutils literal notranslate"><span class="pre">networkx.algorithms.centrality</span></code>) for computing the dispersion of
+graphs.</p></li>
+<li><p>A community package (<code class="samp docutils literal notranslate"><span class="pre">networkx.generators.community</span></code>) is added for
+generating community graphs.</p></li>
+<li><p>An <code class="samp docutils literal notranslate"><span class="pre">is_semiconnected</span></code> function is added in the connectivity package
+(<code class="samp docutils literal notranslate"><span class="pre">networkx.algorithms.connectivity</span></code>) for recognizing semiconnected
+graphs.</p></li>
+<li><p>The <code class="samp docutils literal notranslate"><span class="pre">eulerian_circuit</span></code> function in the Euler package
+(<code class="samp docutils literal notranslate"><span class="pre">networkx.algorithm.euler</span></code>) is changed to use a linear-time algorithm.</p></li>
+<li><p>A <code class="samp docutils literal notranslate"><span class="pre">non_edges</span></code> function in added in the function package
+(<code class="samp docutils literal notranslate"><span class="pre">networkx.functions</span></code>) for enumerating nonexistent edges between
+existing nodes of graphs.</p></li>
+<li><p>The linear algebra package (<code class="samp docutils literal notranslate"><span class="pre">networkx.linalg</span></code>) is changed to use SciPy
+sparse matrices.</p></li>
+<li><p>Functions <code class="samp docutils literal notranslate"><span class="pre">algebraic_connectivity</span></code>, <code class="samp docutils literal notranslate"><span class="pre">fiedler_vector</span></code> and
+<code class="samp docutils literal notranslate"><span class="pre">spectral_ordering</span></code> are added in the linear algebra package
+(<code class="samp docutils literal notranslate"><span class="pre">networkx.linalg</span></code>) for computing the algebraic connectivity, Fiedler
+vectors and spectral orderings of undirected graphs.</p></li>
+<li><p>A link prediction package (<code class="samp docutils literal notranslate"><span class="pre">networkx.algorithms.link_prediction</span></code>) is
+added to provide link prediction-related functionalities.</p></li>
+<li><p>Write Support for the graph6 and sparse6 formats is added in the read/write
+package (<code class="samp docutils literal notranslate"><span class="pre">networkx.readwrite</span></code>).</p></li>
+<li><p>A <code class="samp docutils literal notranslate"><span class="pre">goldberg_radzik</span></code> function is added in the shortest path package
+(<code class="samp docutils literal notranslate"><span class="pre">networkx.algorithms.shortest_paths</span></code>) for computing shortest paths
+using the Goldberg–Radzik algorithm.</p></li>
+<li><p>A tree package (<code class="samp docutils literal notranslate"><span class="pre">networkx.tree</span></code>) is added to provide tree recognition
+functionalities.</p></li>
+<li><p>A context manager <code class="samp docutils literal notranslate"><span class="pre">reversed</span></code> is added in the utility package
+(<code class="samp docutils literal notranslate"><span class="pre">networkx.utils</span></code>) for temporary in-place reversal of graphs.</p></li>
+</ul>
+</section>
+<section id="miscellaneous-changes">
+<h2>Miscellaneous changes<a class="headerlink" href="#miscellaneous-changes" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>The functions in the components package
+(<code class="samp docutils literal notranslate"><span class="pre">networkx.algorithms.components</span></code>) such as <code class="samp docutils literal notranslate"><span class="pre">connected_components</span></code>,
+<code class="samp docutils literal notranslate"><span class="pre">connected_components_subgraph</span></code> now return generators instead of lists.
+To recover the earlier behavior, use <code class="samp docutils literal notranslate"><span class="pre">list(connected_components(G))</span></code>.</p></li>
+<li><p>JSON helpers in the JSON graph package (<code class="samp docutils literal notranslate"><span class="pre">networkx.readwrite.json_graph</span></code>)
+are removed. Use functions from the standard library (e.g.,
+<code class="samp docutils literal notranslate"><span class="pre">json.dumps</span></code>) instead.</p></li>
+<li><p>Support for Python 3.1 is dropped. Basic support is added for Jython 2.7 and
+IronPython 2.7, although they remain not officially supported.</p></li>
+<li><p>Numerous reported issues are fixed.</p></li>
+</ul>
+</section>
+</section>
+
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#">
+   NetworkX 1.9
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#highlights">
+     Highlights
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#flow-package">
+     Flow package
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#main-changes">
+   Main changes
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#examples">
+   Examples
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#connectivity-package">
+     Connectivity package
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#other-new-functionalities">
+     Other new functionalities
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#miscellaneous-changes">
+     Miscellaneous changes
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

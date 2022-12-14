@@ -1,0 +1,983 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>networkx.algorithms.d_separation &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/algorithms/d_separation';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/algorithms/d_separation.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../../../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../../../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <h1>Source code for networkx.algorithms.d_separation</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Algorithm for testing d-separation in DAGs.</span>
+
+<span class="sd">*d-separation* is a test for conditional independence in probability</span>
+<span class="sd">distributions that can be factorized using DAGs.  It is a purely</span>
+<span class="sd">graphical test that uses the underlying graph and makes no reference</span>
+<span class="sd">to the actual distribution parameters.  See [1]_ for a formal</span>
+<span class="sd">definition.</span>
+
+<span class="sd">The implementation is based on the conceptually simple linear time</span>
+<span class="sd">algorithm presented in [2]_.  Refer to [3]_, [4]_ for a couple of</span>
+<span class="sd">alternative algorithms.</span>
+
+<span class="sd">Here, we provide a brief overview of d-separation and related concepts that</span>
+<span class="sd">are relevant for understanding it:</span>
+
+<span class="sd">Blocking paths</span>
+<span class="sd">--------------</span>
+
+<span class="sd">Before we overview, we introduce the following terminology to describe paths:</span>
+
+<span class="sd">- &quot;open&quot; path: A path between two nodes that can be traversed</span>
+<span class="sd">- &quot;blocked&quot; path: A path between two nodes that cannot be traversed</span>
+
+<span class="sd">A **collider** is a triplet of nodes along a path that is like the following:</span>
+<span class="sd">``... u -&gt; c &lt;- v ...``), where &#39;c&#39; is a common successor of ``u`` and ``v``. A path</span>
+<span class="sd">through a collider is considered &quot;blocked&quot;. When</span>
+<span class="sd">a node that is a collider, or a descendant of a collider is included in</span>
+<span class="sd">the d-separating set, then the path through that collider node is &quot;open&quot;. If the</span>
+<span class="sd">path through the collider node is open, then we will call this node an open collider.</span>
+
+<span class="sd">The d-separation set blocks the paths between ``u`` and ``v``. If you include colliders,</span>
+<span class="sd">or their descendant nodes in the d-separation set, then those colliders will open up,</span>
+<span class="sd">enabling a path to be traversed if it is not blocked some other way.</span>
+
+<span class="sd">Illustration of D-separation with examples</span>
+<span class="sd">------------------------------------------</span>
+
+<span class="sd">For a pair of two nodes, ``u`` and ``v``, all paths are considered open if</span>
+<span class="sd">there is a path between ``u`` and ``v`` that is not blocked. That means, there is an open</span>
+<span class="sd">path between ``u`` and ``v`` that does not encounter a collider, or a variable in the</span>
+<span class="sd">d-separating set.</span>
+
+<span class="sd">For example, if the d-separating set is the empty set, then the following paths are</span>
+<span class="sd">unblocked between ``u`` and ``v``:</span>
+
+<span class="sd">- u &lt;- z -&gt; v</span>
+<span class="sd">- u -&gt; w -&gt; ... -&gt; z -&gt; v</span>
+
+<span class="sd">If for example, &#39;z&#39; is in the d-separating set, then &#39;z&#39; blocks those paths</span>
+<span class="sd">between ``u`` and ``v``.</span>
+
+<span class="sd">Colliders block a path by default if they and their descendants are not included</span>
+<span class="sd">in the d-separating set. An example of a path that is blocked when the d-separating</span>
+<span class="sd">set is empty is:</span>
+
+<span class="sd">- u -&gt; w -&gt; ... -&gt; z &lt;- v</span>
+
+<span class="sd">because &#39;z&#39; is a collider in this path and &#39;z&#39; is not in the d-separating set. However,</span>
+<span class="sd">if &#39;z&#39; or a descendant of &#39;z&#39; is included in the d-separating set, then the path through</span>
+<span class="sd">the collider at &#39;z&#39; (... -&gt; z &lt;- ...) is now &quot;open&quot;. </span>
+
+<span class="sd">D-separation is concerned with blocking all paths between u and v. Therefore, a</span>
+<span class="sd">d-separating set between ``u`` and ``v`` is one where all paths are blocked.</span>
+
+<span class="sd">D-separation and its applications in probability</span>
+<span class="sd">------------------------------------------------</span>
+
+<span class="sd">D-separation is commonly used in probabilistic graphical models. D-separation</span>
+<span class="sd">connects the idea of probabilistic &quot;dependence&quot; with separation in a graph. If</span>
+<span class="sd">one assumes the causal Markov condition [5]_, then d-separation implies conditional</span>
+<span class="sd">independence in probability distributions.</span>
+
+<span class="sd">Examples</span>
+<span class="sd">--------</span>
+
+<span class="sd">&gt;&gt;&gt;</span>
+<span class="sd">&gt;&gt;&gt; # HMM graph with five states and observation nodes</span>
+<span class="sd">... g = nx.DiGraph()</span>
+<span class="sd">&gt;&gt;&gt; g.add_edges_from(</span>
+<span class="sd">...     [</span>
+<span class="sd">...         (&quot;S1&quot;, &quot;S2&quot;),</span>
+<span class="sd">...         (&quot;S2&quot;, &quot;S3&quot;),</span>
+<span class="sd">...         (&quot;S3&quot;, &quot;S4&quot;),</span>
+<span class="sd">...         (&quot;S4&quot;, &quot;S5&quot;),</span>
+<span class="sd">...         (&quot;S1&quot;, &quot;O1&quot;),</span>
+<span class="sd">...         (&quot;S2&quot;, &quot;O2&quot;),</span>
+<span class="sd">...         (&quot;S3&quot;, &quot;O3&quot;),</span>
+<span class="sd">...         (&quot;S4&quot;, &quot;O4&quot;),</span>
+<span class="sd">...         (&quot;S5&quot;, &quot;O5&quot;),</span>
+<span class="sd">...     ]</span>
+<span class="sd">... )</span>
+<span class="sd">&gt;&gt;&gt;</span>
+<span class="sd">&gt;&gt;&gt; # states/obs before &#39;S3&#39; are d-separated from states/obs after &#39;S3&#39;</span>
+<span class="sd">... nx.d_separated(g, {&quot;S1&quot;, &quot;S2&quot;, &quot;O1&quot;, &quot;O2&quot;}, {&quot;S4&quot;, &quot;S5&quot;, &quot;O4&quot;, &quot;O5&quot;}, {&quot;S3&quot;})</span>
+<span class="sd">True</span>
+
+
+<span class="sd">References</span>
+<span class="sd">----------</span>
+
+<span class="sd">.. [1] Pearl, J.  (2009).  Causality.  Cambridge: Cambridge University Press.</span>
+
+<span class="sd">.. [2] Darwiche, A.  (2009).  Modeling and reasoning with Bayesian networks. </span>
+<span class="sd">   Cambridge: Cambridge University Press.</span>
+
+<span class="sd">.. [3] Shachter, R.  D.  (1998).</span>
+<span class="sd">   Bayes-ball: rational pastime (for determining irrelevance and requisite</span>
+<span class="sd">   information in belief networks and influence diagrams).</span>
+<span class="sd">   In , Proceedings of the Fourteenth Conference on Uncertainty in Artificial</span>
+<span class="sd">   Intelligence (pp.  480–487).</span>
+<span class="sd">   San Francisco, CA, USA: Morgan Kaufmann Publishers Inc.</span>
+
+<span class="sd">.. [4] Koller, D., &amp; Friedman, N. (2009).</span>
+<span class="sd">   Probabilistic graphical models: principles and techniques. The MIT Press.</span>
+
+<span class="sd">.. [5] https://en.wikipedia.org/wiki/Causal_Markov_condition</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">deque</span>
+
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">from</span> <span class="nn">networkx.utils</span> <span class="kn">import</span> <span class="n">UnionFind</span><span class="p">,</span> <span class="n">not_implemented_for</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;d_separated&quot;</span><span class="p">,</span> <span class="s2">&quot;minimal_d_separator&quot;</span><span class="p">,</span> <span class="s2">&quot;is_minimal_d_separator&quot;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="d_separated"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.d_separation.d_separated.html#networkx.algorithms.d_separation.d_separated">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;undirected&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">d_separated</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return whether node sets ``x`` and ``y`` are d-separated by ``z``.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : graph</span>
+<span class="sd">        A NetworkX DAG.</span>
+
+<span class="sd">    x : set</span>
+<span class="sd">        First set of nodes in ``G``.</span>
+
+<span class="sd">    y : set</span>
+<span class="sd">        Second set of nodes in ``G``.</span>
+
+<span class="sd">    z : set</span>
+<span class="sd">        Set of conditioning nodes in ``G``. Can be empty set.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    b : bool</span>
+<span class="sd">        A boolean that is true if ``x`` is d-separated from ``y`` given ``z`` in ``G``.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NetworkXError</span>
+<span class="sd">        The *d-separation* test is commonly used with directed</span>
+<span class="sd">        graphical models which are acyclic.  Accordingly, the algorithm</span>
+<span class="sd">        raises a :exc:`NetworkXError` if the input graph is not a DAG.</span>
+
+<span class="sd">    NodeNotFound</span>
+<span class="sd">        If any of the input nodes are not found in the graph,</span>
+<span class="sd">        a :exc:`NodeNotFound` exception is raised.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    A d-separating set in a DAG is a set of nodes that</span>
+<span class="sd">    blocks all paths between the two sets. Nodes in `z`</span>
+<span class="sd">    block a path if they are part of the path and are not a collider,</span>
+<span class="sd">    or a descendant of a collider. A collider structure along a path</span>
+<span class="sd">    is ``... -&gt; c &lt;- ...`` where ``c`` is the collider node.</span>
+
+<span class="sd">    https://en.wikipedia.org/wiki/Bayesian_network#d-separation</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">nx</span><span class="o">.</span><span class="n">is_directed_acyclic_graph</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;graph should be directed acyclic&quot;</span><span class="p">)</span>
+
+    <span class="n">union_xyz</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">n</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">union_xyz</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NodeNotFound</span><span class="p">(</span><span class="s2">&quot;one or more specified nodes not found in the graph&quot;</span><span class="p">)</span>
+
+    <span class="n">G_copy</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="c1"># transform the graph by removing leaves that are not in x | y | z</span>
+    <span class="c1"># until no more leaves can be removed.</span>
+    <span class="n">leaves</span> <span class="o">=</span> <span class="n">deque</span><span class="p">([</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">G_copy</span><span class="o">.</span><span class="n">nodes</span> <span class="k">if</span> <span class="n">G_copy</span><span class="o">.</span><span class="n">out_degree</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">])</span>
+    <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">leaves</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">leaf</span> <span class="o">=</span> <span class="n">leaves</span><span class="o">.</span><span class="n">popleft</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">leaf</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">union_xyz</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">G_copy</span><span class="o">.</span><span class="n">predecessors</span><span class="p">(</span><span class="n">leaf</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">G_copy</span><span class="o">.</span><span class="n">out_degree</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">leaves</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+            <span class="n">G_copy</span><span class="o">.</span><span class="n">remove_node</span><span class="p">(</span><span class="n">leaf</span><span class="p">)</span>
+
+    <span class="c1"># transform the graph by removing outgoing edges from the</span>
+    <span class="c1"># conditioning set.</span>
+    <span class="n">edges_to_remove</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">G_copy</span><span class="o">.</span><span class="n">out_edges</span><span class="p">(</span><span class="n">z</span><span class="p">))</span>
+    <span class="n">G_copy</span><span class="o">.</span><span class="n">remove_edges_from</span><span class="p">(</span><span class="n">edges_to_remove</span><span class="p">)</span>
+
+    <span class="c1"># use disjoint-set data structure to check if any node in `x`</span>
+    <span class="c1"># occurs in the same weakly connected component as a node in `y`.</span>
+    <span class="n">disjoint_set</span> <span class="o">=</span> <span class="n">UnionFind</span><span class="p">(</span><span class="n">G_copy</span><span class="o">.</span><span class="n">nodes</span><span class="p">())</span>
+    <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="n">nx</span><span class="o">.</span><span class="n">weakly_connected_components</span><span class="p">(</span><span class="n">G_copy</span><span class="p">):</span>
+        <span class="n">disjoint_set</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="o">*</span><span class="n">component</span><span class="p">)</span>
+    <span class="n">disjoint_set</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="o">*</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">disjoint_set</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="o">*</span><span class="n">y</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">x</span> <span class="ow">and</span> <span class="n">y</span> <span class="ow">and</span> <span class="n">disjoint_set</span><span class="p">[</span><span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">x</span><span class="p">))]</span> <span class="o">==</span> <span class="n">disjoint_set</span><span class="p">[</span><span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">y</span><span class="p">))]:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;undirected&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">minimal_d_separator</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Compute a minimal d-separating set between &#39;u&#39; and &#39;v&#39;.</span>
+
+<span class="sd">    A d-separating set in a DAG is a set of nodes that blocks all paths</span>
+<span class="sd">    between the two nodes, &#39;u&#39; and &#39;v&#39;. This function</span>
+<span class="sd">    constructs a d-separating set that is &quot;minimal&quot;, meaning it is the smallest</span>
+<span class="sd">    d-separating set for &#39;u&#39; and &#39;v&#39;. This is not necessarily</span>
+<span class="sd">    unique. For more details, see Notes.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : graph</span>
+<span class="sd">        A networkx DAG.</span>
+<span class="sd">    u : node</span>
+<span class="sd">        A node in the graph, G.</span>
+<span class="sd">    v : node</span>
+<span class="sd">        A node in the graph, G.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NetworkXError</span>
+<span class="sd">        Raises a :exc:`NetworkXError` if the input graph is not a DAG.</span>
+
+<span class="sd">    NodeNotFound</span>
+<span class="sd">        If any of the input nodes are not found in the graph,</span>
+<span class="sd">        a :exc:`NodeNotFound` exception is raised.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Tian, J., &amp; Paz, A. (1998). Finding Minimal D-separators.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function only finds ``a`` minimal d-separator. It does not guarantee</span>
+<span class="sd">    uniqueness, since in a DAG there may be more than one minimal d-separator</span>
+<span class="sd">    between two nodes. Moreover, this only checks for minimal separators</span>
+<span class="sd">    between two nodes, not two sets. Finding minimal d-separators between</span>
+<span class="sd">    two sets of nodes is not supported.</span>
+
+<span class="sd">    Uses the algorithm presented in [1]_. The complexity of the algorithm</span>
+<span class="sd">    is :math:`O(|E_{An}^m|)`, where :math:`|E_{An}^m|` stands for the</span>
+<span class="sd">    number of edges in the moralized graph of the sub-graph consisting</span>
+<span class="sd">    of only the ancestors of &#39;u&#39; and &#39;v&#39;. For full details, see [1]_.</span>
+
+<span class="sd">    The algorithm works by constructing the moral graph consisting of just</span>
+<span class="sd">    the ancestors of `u` and `v`. Then it constructs a candidate for</span>
+<span class="sd">    a separating set  ``Z&#39;`` from the predecessors of `u` and `v`.</span>
+<span class="sd">    Then BFS is run starting from `u` and marking nodes</span>
+<span class="sd">    found from ``Z&#39;`` and calling those nodes ``Z&#39;&#39;``.</span>
+<span class="sd">    Then BFS is run again starting from `v` and marking nodes if they are</span>
+<span class="sd">    present in ``Z&#39;&#39;``. Those marked nodes are the returned minimal</span>
+<span class="sd">    d-separating set.</span>
+
+<span class="sd">    https://en.wikipedia.org/wiki/Bayesian_network#d-separation</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">nx</span><span class="o">.</span><span class="n">is_directed_acyclic_graph</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;graph should be directed acyclic&quot;</span><span class="p">)</span>
+
+    <span class="n">union_uv</span> <span class="o">=</span> <span class="p">{</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">}</span>
+
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">n</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">union_uv</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NodeNotFound</span><span class="p">(</span><span class="s2">&quot;one or more specified nodes not found in the graph&quot;</span><span class="p">)</span>
+
+    <span class="c1"># first construct the set of ancestors of X and Y</span>
+    <span class="n">x_anc</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">ancestors</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span>
+    <span class="n">y_anc</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">ancestors</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+    <span class="n">D_anc_xy</span> <span class="o">=</span> <span class="n">x_anc</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">y_anc</span><span class="p">)</span>
+    <span class="n">D_anc_xy</span><span class="o">.</span><span class="n">update</span><span class="p">((</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>
+
+    <span class="c1"># second, construct the moralization of the subgraph of Anc(X,Y)</span>
+    <span class="n">moral_G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">moral_graph</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">subgraph</span><span class="p">(</span><span class="n">D_anc_xy</span><span class="p">))</span>
+
+    <span class="c1"># find a separating set Z&#39; in moral_G</span>
+    <span class="n">Z_prime</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">predecessors</span><span class="p">(</span><span class="n">u</span><span class="p">))</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">predecessors</span><span class="p">(</span><span class="n">v</span><span class="p">)))</span>
+
+    <span class="c1"># perform BFS on the graph from &#39;x&#39; to mark</span>
+    <span class="n">Z_dprime</span> <span class="o">=</span> <span class="n">_bfs_with_marks</span><span class="p">(</span><span class="n">moral_G</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">Z_prime</span><span class="p">)</span>
+    <span class="n">Z</span> <span class="o">=</span> <span class="n">_bfs_with_marks</span><span class="p">(</span><span class="n">moral_G</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">Z_dprime</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Z</span>
+
+
+<span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;undirected&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">is_minimal_d_separator</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Determine if a d-separating set is minimal.</span>
+
+<span class="sd">    A d-separating set, `z`, in a DAG is a set of nodes that blocks</span>
+<span class="sd">    all paths between the two nodes, `u` and `v`. This function</span>
+<span class="sd">    verifies that a set is &quot;minimal&quot;, meaning there is no smaller</span>
+<span class="sd">    d-separating set between the two nodes.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : nx.DiGraph</span>
+<span class="sd">        The graph.</span>
+<span class="sd">    u : node</span>
+<span class="sd">        A node in the graph.</span>
+<span class="sd">    v : node</span>
+<span class="sd">        A node in the graph.</span>
+<span class="sd">    z : Set of nodes</span>
+<span class="sd">        The set of nodes to check if it is a minimal d-separating set.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bool</span>
+<span class="sd">        Whether or not the `z` separating set is minimal.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NetworkXError</span>
+<span class="sd">        Raises a :exc:`NetworkXError` if the input graph is not a DAG.</span>
+
+<span class="sd">    NodeNotFound</span>
+<span class="sd">        If any of the input nodes are not found in the graph,</span>
+<span class="sd">        a :exc:`NodeNotFound` exception is raised.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Tian, J., &amp; Paz, A. (1998). Finding Minimal D-separators.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function only works on verifying a d-separating set is minimal</span>
+<span class="sd">    between two nodes. To verify that a d-separating set is minimal between</span>
+<span class="sd">    two sets of nodes is not supported.</span>
+
+<span class="sd">    Uses algorithm 2 presented in [1]_. The complexity of the algorithm</span>
+<span class="sd">    is :math:`O(|E_{An}^m|)`, where :math:`|E_{An}^m|` stands for the</span>
+<span class="sd">    number of edges in the moralized graph of the sub-graph consisting</span>
+<span class="sd">    of only the ancestors of ``u`` and ``v``.</span>
+
+<span class="sd">    The algorithm works by constructing the moral graph consisting of just</span>
+<span class="sd">    the ancestors of `u` and `v`. First, it performs BFS on the moral graph</span>
+<span class="sd">    starting from `u` and marking any nodes it encounters that are part of</span>
+<span class="sd">    the separating set, `z`. If a node is marked, then it does not continue</span>
+<span class="sd">    along that path. In the second stage, BFS with markings is repeated on the</span>
+<span class="sd">    moral graph starting from `v`. If at any stage, any node in `z` is</span>
+<span class="sd">    not marked, then `z` is considered not minimal. If the end of the algorithm</span>
+<span class="sd">    is reached, then `z` is minimal.</span>
+
+<span class="sd">    For full details, see [1]_.</span>
+
+<span class="sd">    https://en.wikipedia.org/wiki/Bayesian_network#d-separation</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">nx</span><span class="o">.</span><span class="n">is_directed_acyclic_graph</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;graph should be directed acyclic&quot;</span><span class="p">)</span>
+
+    <span class="n">union_uv</span> <span class="o">=</span> <span class="p">{</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">}</span>
+    <span class="n">union_uv</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">n</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">union_uv</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NodeNotFound</span><span class="p">(</span><span class="s2">&quot;one or more specified nodes not found in the graph&quot;</span><span class="p">)</span>
+
+    <span class="n">x_anc</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">ancestors</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span>
+    <span class="n">y_anc</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">ancestors</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+    <span class="n">xy_anc</span> <span class="o">=</span> <span class="n">x_anc</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">y_anc</span><span class="p">)</span>
+
+    <span class="c1"># if Z contains any node which is not in ancestors of X or Y</span>
+    <span class="c1"># then it is definitely not minimal</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">node</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">xy_anc</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">z</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="n">D_anc_xy</span> <span class="o">=</span> <span class="n">x_anc</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">y_anc</span><span class="p">)</span>
+    <span class="n">D_anc_xy</span><span class="o">.</span><span class="n">update</span><span class="p">((</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>
+
+    <span class="c1"># second, construct the moralization of the subgraph</span>
+    <span class="n">moral_G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">moral_graph</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">subgraph</span><span class="p">(</span><span class="n">D_anc_xy</span><span class="p">))</span>
+
+    <span class="c1"># start BFS from X</span>
+    <span class="n">marks</span> <span class="o">=</span> <span class="n">_bfs_with_marks</span><span class="p">(</span><span class="n">moral_G</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+
+    <span class="c1"># if not all the Z is marked, then the set is not minimal</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">node</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">marks</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">z</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="c1"># similarly, start BFS from Y and check the marks</span>
+    <span class="n">marks</span> <span class="o">=</span> <span class="n">_bfs_with_marks</span><span class="p">(</span><span class="n">moral_G</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+    <span class="c1"># if not all the Z is marked, then the set is not minimal</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">node</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">marks</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">z</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">return</span> <span class="kc">True</span>
+
+
+<span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;directed&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">_bfs_with_marks</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">start_node</span><span class="p">,</span> <span class="n">check_set</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Breadth-first-search with markings.</span>
+
+<span class="sd">    Performs BFS starting from ``start_node`` and whenever a node</span>
+<span class="sd">    inside ``check_set`` is met, it is &quot;marked&quot;. Once a node is marked,</span>
+<span class="sd">    BFS does not continue along that path. The resulting marked nodes</span>
+<span class="sd">    are returned.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : nx.Graph</span>
+<span class="sd">        An undirected graph.</span>
+<span class="sd">    start_node : node</span>
+<span class="sd">        The start of the BFS.</span>
+<span class="sd">    check_set : set</span>
+<span class="sd">        The set of nodes to check against.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    marked : set</span>
+<span class="sd">        A set of nodes that were marked.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">visited</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="n">marked</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="n">queue</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">visited</span><span class="p">[</span><span class="n">start_node</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">start_node</span><span class="p">)</span>
+    <span class="k">while</span> <span class="n">queue</span><span class="p">:</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">nbr</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">nbr</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span>
+                <span class="c1"># memoize where we visited so far</span>
+                <span class="n">visited</span><span class="p">[</span><span class="n">nbr</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+                <span class="c1"># mark the node in Z&#39; and do not continue along that path</span>
+                <span class="k">if</span> <span class="n">nbr</span> <span class="ow">in</span> <span class="n">check_set</span><span class="p">:</span>
+                    <span class="n">marked</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">nbr</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nbr</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">marked</span>
+</pre></div>
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

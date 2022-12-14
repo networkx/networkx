@@ -1,0 +1,741 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Code of Conduct &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'developer/code_of_conduct';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/developer/code_of_conduct.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Mission and Values" href="values.html" />
+    <link rel="prev" title="About Us" href="about_us.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">
+    Section Navigation
+  </p>
+  <div class="bd-toc-item navbar-nav">
+    <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="about_us.html">About Us</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="values.html">Mission and Values</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contribute.html">Contributor Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="projects.html">Mentored Projects</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="new_contributor_faq.html">New Contributor FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="core_developer.html">Core Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release.html">Release Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecations.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="roadmap.html">Roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nxeps/index.html">NXEPs</a></li>
+</ul>
+
+  </div>
+</nav>
+    </div>
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <section id="code-of-conduct">
+<span id="id1"></span><h1>Code of Conduct<a class="headerlink" href="#code-of-conduct" title="Permalink to this heading">#</a></h1>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading">#</a></h2>
+<p>This code of conduct applies to all spaces managed by the NetworkX project,
+including all public and private mailing lists, issue trackers, wikis, and
+any other communication channel used by our community.</p>
+<p>This code of conduct should be honored by everyone who participates in
+the NetworkX community formally or informally, or claims any affiliation with the
+project, in any project-related activities and especially when representing the
+project, in any role.</p>
+<p>This code is not exhaustive or complete. It serves to distill our common
+understanding of a collaborative, shared environment and goals. Please try to
+follow this code in spirit as much as in letter, to create a friendly and
+productive environment that enriches the surrounding community.</p>
+</section>
+<section id="specific-guidelines">
+<h2>Specific Guidelines<a class="headerlink" href="#specific-guidelines" title="Permalink to this heading">#</a></h2>
+<p>We strive to:</p>
+<ol class="arabic">
+<li><p>Be open. We invite anyone to participate in our community. We prefer to use
+public methods of communication for project-related messages, unless
+discussing something sensitive. This applies to messages for help or
+project-related support, too; not only is a public support request much more
+likely to result in an answer to a question, it also ensures that any
+inadvertent mistakes in answering are more easily detected and corrected.</p></li>
+<li><p>Be empathetic, welcoming, friendly, and patient. We work together to resolve
+conflict, and assume good intentions. We may all experience some frustration
+from time to time, but we do not allow frustration to turn into a personal
+attack. A community where people feel uncomfortable or threatened is not a
+productive one.</p></li>
+<li><p>Be collaborative. Our work will be used by other people, and in turn we will
+depend on the work of others. When we make something for the benefit of the
+project, we are willing to explain to others how it works, so that they can
+build on the work to make it even better. Any decision we make will affect
+users and colleagues, and we take those consequences seriously when making
+decisions.</p></li>
+<li><p>Be inquisitive. Nobody knows everything! Asking questions early avoids many
+problems later, so we encourage questions, although we may direct them to
+the appropriate forum. We will try hard to be responsive and helpful.</p></li>
+<li><p>Be careful in the words that we choose.  We are careful and respectful in
+our communication and we take responsibility for our own speech. Be kind to
+others. Do not insult or put down other participants.  We will not accept
+harassment or other exclusionary behaviour, such as:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Violent threats or language directed against another person.</p></li>
+<li><p>Sexist, racist, or otherwise discriminatory jokes and language.</p></li>
+<li><p>Posting sexually explicit or violent material.</p></li>
+<li><p>Posting (or threatening to post) other people’s personally identifying information (“doxing”).</p></li>
+<li><p>Sharing private content, such as emails sent privately or non-publicly,
+or unlogged forums such as IRC channel history, without the sender’s consent.</p></li>
+<li><p>Personal insults, especially those using racist or sexist terms.</p></li>
+<li><p>Unwelcome sexual attention.</p></li>
+<li><p>Excessive profanity. Please avoid swearwords; people differ greatly in their sensitivity to swearing.</p></li>
+<li><p>Repeated harassment of others. In general, if someone asks you to stop, then stop.</p></li>
+<li><p>Advocating for, or encouraging, any of the above behaviour.</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ol>
+</section>
+<section id="diversity-statement">
+<h2>Diversity Statement<a class="headerlink" href="#diversity-statement" title="Permalink to this heading">#</a></h2>
+<p>The NetworkX project welcomes and encourages participation by everyone. We are
+committed to being a community that everyone enjoys being part of. Although
+we may not always be able to accommodate each individual’s preferences, we try
+our best to treat everyone kindly.</p>
+<p>No matter how you identify yourself or how others perceive you: we welcome you.
+Though no list can hope to be comprehensive, we explicitly honour diversity in:
+age, culture, ethnicity, genotype, gender identity or expression, language,
+national origin, neurotype, phenotype, political beliefs, profession, race,
+religion, sexual orientation, socioeconomic status, subculture and technical
+ability.</p>
+<p>Though we welcome people fluent in all languages, NetworkX development is
+conducted in English.</p>
+<p>Standards for behaviour in the NetworkX community are detailed in the Code of
+Conduct above. Participants in our community should uphold these standards
+in all their interactions and help others to do so as well (see next section).</p>
+</section>
+<section id="reporting-guidelines">
+<h2>Reporting Guidelines<a class="headerlink" href="#reporting-guidelines" title="Permalink to this heading">#</a></h2>
+<p>We know that it is painfully common for internet communication to start at or
+devolve into obvious and flagrant abuse.  We also recognize that sometimes
+people may have a bad day, or be unaware of some of the guidelines in this Code
+of Conduct. Please keep this in mind when deciding on how to respond to a
+breach of this Code.</p>
+<p>For clearly intentional breaches, report those to the NetworkX Steering Council
+(see below). For possibly unintentional breaches, you may reply to the person
+and point out this code of conduct (either in public or in private, whatever is
+most appropriate). If you would prefer not to do that, please feel free to
+report to the NetworkX Steering Council directly, or ask the Council for
+advice, in confidence.</p>
+<p>You can report issues to the
+<a class="reference external" href="https://github.com/orgs/networkx/teams/steering-council/members">NetworkX Steering Council</a>,
+at <a class="reference external" href="mailto:networkx-conduct&#37;&#52;&#48;groups&#46;io">networkx-conduct<span>&#64;</span>groups<span>&#46;</span>io</a>.</p>
+<p>If your report involves any members of the Council, or if they feel they have
+a conflict of interest in handling it, then they will recuse themselves from
+considering your report. Alternatively, if for any reason you feel
+uncomfortable making a report to the Council, then you can also contact:</p>
+<ul class="simple">
+<li><p>Senior <a class="reference external" href="https://numfocus.org/code-of-conduct#persons-responsible">NumFOCUS staff</a>: <a class="reference external" href="mailto:conduct&#37;&#52;&#48;numfocus&#46;org">conduct<span>&#64;</span>numfocus<span>&#46;</span>org</a>.</p></li>
+</ul>
+</section>
+<section id="incident-reporting-resolution-code-of-conduct-enforcement">
+<h2>Incident reporting resolution &amp; Code of Conduct enforcement<a class="headerlink" href="#incident-reporting-resolution-code-of-conduct-enforcement" title="Permalink to this heading">#</a></h2>
+<p>We will investigate and respond to all complaints. The NetworkX Steering Council
+will protect the identity of the reporter, and treat the content of
+complaints as confidential (unless the reporter agrees otherwise).</p>
+<p>In case of severe and obvious breaches, e.g., personal threat or violent, sexist
+or racist language, we will immediately disconnect the originator from NetworkX
+communication channels.</p>
+<p>In cases not involving clear severe and obvious breaches of this code of
+conduct, the process for acting on any received code of conduct violation
+report will be:</p>
+<ol class="arabic simple">
+<li><p>acknowledge report is received</p></li>
+<li><p>reasonable discussion/feedback</p></li>
+<li><p>mediation (if feedback didn’t help, and only if both reporter and reportee agree to this)</p></li>
+<li><p>enforcement via transparent decision by the NetworkX Steering Council</p></li>
+</ol>
+<p>The Council will respond to any report as soon as possible, and at most
+within 72 hours.</p>
+</section>
+<section id="endnotes">
+<h2>Endnotes<a class="headerlink" href="#endnotes" title="Permalink to this heading">#</a></h2>
+<p>This document is adapted from:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="http://scipy.github.io/devdocs/dev/conduct/code_of_conduct.html">SciPy Code of Conduct</a></p></li>
+</ul>
+</section>
+</section>
+
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#introduction">
+   Introduction
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#specific-guidelines">
+   Specific Guidelines
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#diversity-statement">
+   Diversity Statement
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#reporting-guidelines">
+   Reporting Guidelines
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#incident-reporting-resolution-code-of-conduct-enforcement">
+   Incident reporting resolution &amp; Code of Conduct enforcement
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#endnotes">
+   Endnotes
+  </a>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

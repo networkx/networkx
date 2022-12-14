@@ -1,0 +1,1019 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>About Us &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'developer/about_us';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/developer/about_us.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Code of Conduct" href="code_of_conduct.html" />
+    <link rel="prev" title="Developer" href="index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">
+    Section Navigation
+  </p>
+  <div class="bd-toc-item navbar-nav">
+    <ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">About Us</a></li>
+<li class="toctree-l1"><a class="reference internal" href="code_of_conduct.html">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="values.html">Mission and Values</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contribute.html">Contributor Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="projects.html">Mentored Projects</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="new_contributor_faq.html">New Contributor FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="core_developer.html">Core Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release.html">Release Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecations.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="roadmap.html">Roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nxeps/index.html">NXEPs</a></li>
+</ul>
+
+  </div>
+</nav>
+    </div>
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <section id="about-us">
+<h1>About Us<a class="headerlink" href="#about-us" title="Permalink to this heading">#</a></h1>
+<p>NetworkX was originally written by Aric Hagberg, Dan Schult, and Pieter Swart,
+and has been developed with the help of many others. Thanks to everyone who has
+improved NetworkX by contributing code, bug reports (and fixes), documentation,
+and input on design, features, and the future of NetworkX.</p>
+<section id="core-developers">
+<h2>Core Developers<a class="headerlink" href="#core-developers" title="Permalink to this heading">#</a></h2>
+<p>NetworkX development is guided by the following core team:</p>
+<div class="team-member">
+  <a href="https://github.com/boothby" class="team-member-name">
+     <div class="team-member-photo">
+        <img
+          src="https://avatars.githubusercontent.com/u/569654?u=c29b79275293c22fa3c56a06ed04e004465ef331&v=4&s=40"
+          loading="lazy"
+          alt="Avatar picture of @boothby"
+        />
+     </div>
+     Kelly Boothby
+  </a>
+  <div class="team-member-handle">@boothby</div>
+</div><div class="team-member">
+  <a href="https://github.com/camillescott" class="team-member-name">
+     <div class="team-member-photo">
+        <img
+          src="https://avatars.githubusercontent.com/u/2896301?u=bd57c546510c131f4f7f41e3999fb8e6e33a2298&v=4&s=40"
+          loading="lazy"
+          alt="Avatar picture of @camillescott"
+        />
+     </div>
+     Camille Scott
+  </a>
+  <div class="team-member-handle">@camillescott</div>
+</div><div class="team-member">
+  <a href="https://github.com/dschult" class="team-member-name">
+     <div class="team-member-photo">
+        <img
+          src="https://avatars.githubusercontent.com/u/915037?u=6a27f396c666c5c2172a1cfc7b0d4bbcd0069eed&v=4&s=40"
+          loading="lazy"
+          alt="Avatar picture of @dschult"
+        />
+     </div>
+     Dan Schult
+  </a>
+  <div class="team-member-handle">@dschult</div>
+</div><div class="team-member">
+  <a href="https://github.com/ericmjl" class="team-member-name">
+     <div class="team-member-photo">
+        <img
+          src="https://avatars.githubusercontent.com/u/2631566?u=c5d73d769c251a862d7d4bbf1119297d8085c34c&v=4&s=40"
+          loading="lazy"
+          alt="Avatar picture of @ericmjl"
+        />
+     </div>
+     Eric Ma
+  </a>
+  <div class="team-member-handle">@ericmjl</div>
+</div><div class="team-member">
+  <a href="https://github.com/hagberg" class="team-member-name">
+     <div class="team-member-photo">
+        <img
+          src="https://avatars.githubusercontent.com/u/187875?v=4&s=40"
+          loading="lazy"
+          alt="Avatar picture of @hagberg"
+        />
+     </div>
+     Aric Hagberg
+  </a>
+  <div class="team-member-handle">@hagberg</div>
+</div><div class="team-member">
+  <a href="https://github.com/harshal-dupare" class="team-member-name">
+     <div class="team-member-photo">
+        <img
+          src="https://avatars.githubusercontent.com/u/52428908?u=cb974ff050563c3610f377b7dbbf4982df6a1b90&v=4&s=40"
+          loading="lazy"
+          alt="Avatar picture of @harshal-dupare"
+        />
+     </div>
+     Harshal Dupare
+  </a>
+  <div class="team-member-handle">@harshal-dupare</div>
+</div><div class="team-member">
+  <a href="https://github.com/jarrodmillman" class="team-member-name">
+     <div class="team-member-photo">
+        <img
+          src="https://avatars.githubusercontent.com/u/123428?v=4&s=40"
+          loading="lazy"
+          alt="Avatar picture of @jarrodmillman"
+        />
+     </div>
+     Jarrod Millman
+  </a>
+  <div class="team-member-handle">@jarrodmillman</div>
+</div><div class="team-member">
+  <a href="https://github.com/mjschwenne" class="team-member-name">
+     <div class="team-member-photo">
+        <img
+          src="https://avatars.githubusercontent.com/u/19698215?u=96f60d2e90261aa7487fffcc2ebad1158028ecd5&v=4&s=40"
+          loading="lazy"
+          alt="Avatar picture of @mjschwenne"
+        />
+     </div>
+     Matt Schwennesen
+  </a>
+  <div class="team-member-handle">@mjschwenne</div>
+</div><div class="team-member">
+  <a href="https://github.com/MridulS" class="team-member-name">
+     <div class="team-member-photo">
+        <img
+          src="https://avatars.githubusercontent.com/u/5363860?u=ce5c6e9388d2fd153ebf8b0bb521c928b0813608&v=4&s=40"
+          loading="lazy"
+          alt="Avatar picture of @MridulS"
+        />
+     </div>
+     Mridul Seth
+  </a>
+  <div class="team-member-handle">@MridulS</div>
+</div><div class="team-member">
+  <a href="https://github.com/rossbar" class="team-member-name">
+     <div class="team-member-photo">
+        <img
+          src="https://avatars.githubusercontent.com/u/1268991?u=974707b96081a9705f3a239c0773320f353ee02f&v=4&s=40"
+          loading="lazy"
+          alt="Avatar picture of @rossbar"
+        />
+     </div>
+     Ross Barnowski
+  </a>
+  <div class="team-member-handle">@rossbar</div>
+</div><div class="team-member">
+  <a href="https://github.com/stefanv" class="team-member-name">
+     <div class="team-member-photo">
+        <img
+          src="https://avatars.githubusercontent.com/u/45071?u=c779b5e06448fbc638bc987cdfe305c7f9a7175e&v=4&s=40"
+          loading="lazy"
+          alt="Avatar picture of @stefanv"
+        />
+     </div>
+     Stefan van der Walt
+  </a>
+  <div class="team-member-handle">@stefanv</div>
+</div><div class="team-member">
+  <a href="https://github.com/vdshk" class="team-member-name">
+     <div class="team-member-photo">
+        <img
+          src="https://avatars.githubusercontent.com/u/43042296?u=01411ddb7d394274117007e8d29019e091a8e00a&v=4&s=40"
+          loading="lazy"
+          alt="Avatar picture of @vdshk"
+        />
+     </div>
+     Vadim Abzalov
+  </a>
+  <div class="team-member-handle">@vdshk</div>
+</div><div class="team-member">
+  <a href="https://github.com/z3y50n" class="team-member-name">
+     <div class="team-member-photo">
+        <img
+          src="https://avatars.githubusercontent.com/u/33282622?u=66483bb152faad7fcdb80cb9d1f8b6d391e448bc&v=4&s=40"
+          loading="lazy"
+          alt="Avatar picture of @z3y50n"
+        />
+     </div>
+     Dimitrios Papageorgiou
+  </a>
+  <div class="team-member-handle">@z3y50n</div>
+</div></section>
+<section id="emeritus-developers">
+<h2>Emeritus Developers<a class="headerlink" href="#emeritus-developers" title="Permalink to this heading">#</a></h2>
+<p>We thank these previously-active core developers for their contributions to NetworkX.</p>
+<div class="team-member">
+  <a href="https://github.com/bjedwards" class="team-member-name">
+     <div class="team-member-photo">
+        <img
+          src="https://avatars.githubusercontent.com/u/726274?u=e493f38cb65425f6de7a9568ee3802a183deaa8e&v=4&s=40"
+          loading="lazy"
+          alt="Avatar picture of @bjedwards"
+        />
+     </div>
+     Benjamin Edwards
+  </a>
+  <div class="team-member-handle">@bjedwards</div>
+</div><div class="team-member">
+  <a href="https://github.com/chebee7i" class="team-member-name">
+     <div class="team-member-photo">
+        <img
+          src="https://avatars.githubusercontent.com/u/326005?u=a5a33cadf55b2fbdd8b033517f97f763563aa72a&v=4&s=40"
+          loading="lazy"
+          alt="Avatar picture of @chebee7i"
+        />
+     </div>
+     @chebee7i
+  </a>
+  <div class="team-member-handle">@chebee7i</div>
+</div><div class="team-member">
+  <a href="https://github.com/jfinkels" class="team-member-name">
+     <div class="team-member-photo">
+        <img
+          src="https://avatars.githubusercontent.com/u/121755?v=4&s=40"
+          loading="lazy"
+          alt="Avatar picture of @jfinkels"
+        />
+     </div>
+     @jfinkels
+  </a>
+  <div class="team-member-handle">@jfinkels</div>
+</div><div class="team-member">
+  <a href="https://github.com/jtorrents" class="team-member-name">
+     <div class="team-member-photo">
+        <img
+          src="https://avatars.githubusercontent.com/u/1184374?v=4&s=40"
+          loading="lazy"
+          alt="Avatar picture of @jtorrents"
+        />
+     </div>
+     Jordi Torrents
+  </a>
+  <div class="team-member-handle">@jtorrents</div>
+</div><div class="team-member">
+  <a href="https://github.com/loicseguin" class="team-member-name">
+     <div class="team-member-photo">
+        <img
+          src="https://avatars.githubusercontent.com/u/812562?v=4&s=40"
+          loading="lazy"
+          alt="Avatar picture of @loicseguin"
+        />
+     </div>
+     Loïc Séguin-Charbonneau
+  </a>
+  <div class="team-member-handle">@loicseguin</div>
+</div><div class="team-member">
+  <a href="https://github.com/ysitu" class="team-member-name">
+     <div class="team-member-photo">
+        <img
+          src="https://avatars.githubusercontent.com/u/7018196?v=4&s=40"
+          loading="lazy"
+          alt="Avatar picture of @ysitu"
+        />
+     </div>
+     @ysitu
+  </a>
+  <div class="team-member-handle">@ysitu</div>
+</div></section>
+<section id="contributors">
+<h2>Contributors<a class="headerlink" href="#contributors" title="Permalink to this heading">#</a></h2>
+<p>If you are a NetworkX contributor, please feel free to
+open an <a class="reference external" href="https://github.com/networkx/networkx/issues/new">issue</a> or
+submit a <a class="reference external" href="https://github.com/networkx/networkx/compare/">pull request</a>
+to add your name to the bottom of the list.</p>
+<ul class="simple">
+<li><p>Aric Hagberg, GitHub: <a class="reference external" href="https://github.com/hagberg">hagberg</a></p></li>
+<li><p>Dan Schult, GitHub: <a class="reference external" href="https://github.com/dschult">dschult</a></p></li>
+<li><p>Pieter Swart</p></li>
+<li><p>Katy Bold</p></li>
+<li><p>Hernan Rozenfeld</p></li>
+<li><p>Brendt Wohlberg</p></li>
+<li><p>Jim Bagrow</p></li>
+<li><p>Holly Johnsen</p></li>
+<li><p>Arnar Flatberg</p></li>
+<li><p>Chris Myers</p></li>
+<li><p>Joel Miller</p></li>
+<li><p>Keith Briggs</p></li>
+<li><p>Ignacio Rozada</p></li>
+<li><p>Phillipp Pagel</p></li>
+<li><p>Sverre Sundsdal</p></li>
+<li><p>Ross M. Richardson</p></li>
+<li><p>Eben Kenah</p></li>
+<li><p>Sasha Gutfriend</p></li>
+<li><p>Udi Weinsberg</p></li>
+<li><p>Matteo Dell’Amico</p></li>
+<li><p>Andrew Conway</p></li>
+<li><p>Raf Guns</p></li>
+<li><p>Salim Fadhley</p></li>
+<li><p>Fabrice Desclaux</p></li>
+<li><p>Arpad Horvath</p></li>
+<li><p>Minh Van Nguyen</p></li>
+<li><p>Willem Ligtenberg</p></li>
+<li><p>Loïc Séguin-C.</p></li>
+<li><p>Paul McGuire</p></li>
+<li><p>Jesus Cerquides</p></li>
+<li><p>Ben Edwards</p></li>
+<li><p>Jon Olav Vik</p></li>
+<li><p>Hugh Brown</p></li>
+<li><p>Ben Reilly</p></li>
+<li><p>Leo Lopes</p></li>
+<li><p>Jordi Torrents, GitHub: <a class="reference external" href="https://github.com/jtorrents">jtorrents</a></p></li>
+<li><p>Dheeraj M R</p></li>
+<li><p>Franck Kalala</p></li>
+<li><p>Simon Knight</p></li>
+<li><p>Conrad Lee</p></li>
+<li><p>Sérgio Nery Simões</p></li>
+<li><p>Robert King</p></li>
+<li><p>Nick Mancuso</p></li>
+<li><p>Brian Cloteaux</p></li>
+<li><p>Alejandro Weinstein</p></li>
+<li><p>Dustin Smith</p></li>
+<li><p>Mathieu Larose</p></li>
+<li><p>Romain Fontugne</p></li>
+<li><p>Vincent Gauthier</p></li>
+<li><p>chebee7i, GitHub: <a class="reference external" href="https://github.com/chebee7i">chebee7i</a></p></li>
+<li><p>Jeffrey Finkelstein</p></li>
+<li><p>Jean-Gabriel Young, Github: <a class="reference external" href="https://github.com/jgyou">jg-you</a></p></li>
+<li><p>Andrey Paramonov, <a class="reference external" href="http://aparamon.msk.ru">http://aparamon.msk.ru</a></p></li>
+<li><p>Mridul Seth, GitHub: <a class="reference external" href="https://github.com/MridulS">MridulS</a></p></li>
+<li><p>Thodoris Sotiropoulos, GitHub: <a class="reference external" href="https://github.com/theosotr">theosotr</a></p></li>
+<li><p>Konstantinos Karakatsanis, GitHub: <a class="reference external" href="https://github.com/k-karakatsanis">k-karakatsanis</a></p></li>
+<li><p>Ryan Nelson, GitHub: <a class="reference external" href="https://github.com/rnelsonchem">rnelsonchem</a></p></li>
+<li><p>Niels van Adrichem, GitHub: <a class="reference external" href="https://github.com/NvanAdrichem">NvanAdrichem</a></p></li>
+<li><p>Michael E. Rose, GitHub: <a class="reference external" href="https://github.com/Michael-E-Rose">Michael-E-Rose</a></p></li>
+<li><p>Jarrod Millman, GitHub: <a class="reference external" href="https://github.com/jarrodmillman">jarrodmillman</a></p></li>
+<li><p>Andre Weltsch</p></li>
+<li><p>Lewis Robbins</p></li>
+<li><p>Mads Jensen, Github: <a class="reference external" href="https://github.com/atombrella">atombrella</a></p></li>
+<li><p>Edward L. Platt, <a class="reference external" href="https://elplatt.com">elplatt</a></p></li>
+<li><p>James Owen, Github: <a class="reference external" href="https://github.com/leamingrad">leamingrad</a></p></li>
+<li><p>Robert Gmyr, Github: <a class="reference external" href="https://github.com/gmyr">gmyr</a></p></li>
+<li><p>Mike Trenfield</p></li>
+<li><p>Jon Crall, Github: <a class="reference external" href="https://github.com/Erotemic">Erotemic</a></p></li>
+<li><p>Issa Moradnejad, Github: <a class="reference external" href="https://github.com/Moradnejad">Moradnejad</a>, LinkedIn: <a class="reference external" href="https://linkedin.com/in/moradnejad/">Issa Moradnejad</a></p></li>
+<li><p>Brian Kiefer, Github: <a class="reference external" href="https://github.com/bkief">bkief</a></p></li>
+<li><p>Julien Klaus</p></li>
+<li><p>Peter C. Kroon, Github: <a class="reference external" href="https://github.com/pckroon">pckroon</a></p></li>
+<li><p>Weisheng Si, Github: <a class="reference external" href="https://github.com/ws4u">ws4u</a></p></li>
+<li><p>Haakon H. Rød, Gitlab: <a class="reference external" href="https://gitlab.com/haakonhr">haakonhr</a>, <a class="reference external" href="https://haakonhr.gitlab.io">https://haakonhr.gitlab.io</a></p></li>
+<li><p>Efraim Rodrigues, GitHub: <a class="reference external" href="https://github.com/efraimrodrigues">efraimrodrigues</a>, LinkedIn: <a class="reference external" href="https://linkedin.com/in/efraim-rodrigues/">efraim-rodrigues</a></p></li>
+<li><p>Erwan Le Merrer</p></li>
+<li><p>Søren Fuglede Jørgensen, GitHub: <a class="reference external" href="https://github.com/fuglede">fuglede</a></p></li>
+<li><p>Salim BELHADDAD, LinkedIn: <a class="reference external" href="https://www.linkedin.com/in/salymdotme/">salymdotme</a></p></li>
+<li><p>Jangwon Yie, GitHub: <a class="reference external" href="https://github.com/jangwon-yie">jangwon-yie</a>, LinkedIn: <a class="reference external" href="https://www.linkedin.com/in/jangwon-yie-a7960065/">jangwon-yie-a7960065</a></p></li>
+<li><p>ysitu</p></li>
+<li><p>Tomas Gavenciak</p></li>
+<li><p>Luca Baldesi</p></li>
+<li><p>Yuto Yamaguchi</p></li>
+<li><p>James Clough</p></li>
+<li><p>Minas Gjoka</p></li>
+<li><p>Drew Conway</p></li>
+<li><p>Alex Levenson</p></li>
+<li><p>Haochen Wu</p></li>
+<li><p>Erwan  Le Merrer</p></li>
+<li><p>Alex Roper</p></li>
+<li><p>P C Kroon</p></li>
+<li><p>Christopher Ellison</p></li>
+<li><ol class="upperalpha simple" start="4">
+<li><p>Eppstein</p></li>
+</ol>
+</li>
+<li><p>Federico Rosato</p></li>
+<li><p>Aitor Almeida</p></li>
+<li><p>Ferran Parés</p></li>
+<li><p>Christian Olsson</p></li>
+<li><p>Fredrik Erlandsson</p></li>
+<li><p>Nanda H Krishna</p></li>
+<li><p>Nicholas Mancuso</p></li>
+<li><p>Fred Morstatter</p></li>
+<li><p>Ollie Glass</p></li>
+<li><p>Rodrigo Dorantes-Gilardi</p></li>
+<li><p>Pranay Kanwar</p></li>
+<li><p>Balint Tillman</p></li>
+<li><p>Diederik van Liere</p></li>
+<li><p>Ferdinando Papale</p></li>
+<li><p>Miguel Sozinho Ramalho</p></li>
+<li><p>Brandon Liu</p></li>
+<li><p>Nima Mohammadi</p></li>
+<li><p>Jason Grout</p></li>
+<li><p>Jan Aagaard Meier</p></li>
+<li><p>Henrik Haugbølle</p></li>
+<li><p>Piotr Brodka</p></li>
+<li><p>Sasha Gutfraind</p></li>
+<li><p>Alessandro Luongo</p></li>
+<li><p>Huston Hedinger</p></li>
+<li><p>Oleguer Sagarra</p></li>
+<li><p>Kazimierz Wojciechowski, Github: <a class="reference external" href="https://github.com/kazimierz-256">kazimierz-256</a>, LinkedIn: <a class="reference external" href="https://linkedin.com/in/wojciechowski-kazimierz/">wojciechowski-kazimierz</a></p></li>
+<li><p>Gaetano Pietro Paolo Carpinato, Github: <a class="reference external" href="https://github.com/Carghaez">Carghaez</a>, LinkedIn: <a class="reference external" href="https://linkedin.com/in/gaetanocarpinato/">gaetanocarpinato</a></p></li>
+<li><p>Arun Nampally, Github: <a class="reference external" href="https://github.com/arunwise">arunwise</a>, LinkedIn: <a class="reference external" href="https://www.linkedin.com/in/arun-nampally-b57845b7/">arun-nampally-b57845b7</a></p></li>
+<li><p>Ryan Duve</p></li>
+<li><p>Shashi Prakash Tripathi, Github: <a class="reference external" href="https://github.com/itsshavar">itsshavar</a>, LinkedIn: <a class="reference external" href="https://www.linkedin.com/in/itsshashitripathi/">itsshashitripathi</a></p></li>
+<li><p>Danny Niquette</p></li>
+<li><p>James Trimble, Github: <a class="reference external" href="https://github.com/jamestrimble">jamestrimble</a></p></li>
+<li><p>Matthias Bruhns, Github: <a class="reference external" href="https://github.com/mbruhns">mbruhns</a></p></li>
+<li><p>Philip Boalch</p></li>
+<li><p>Matt Schwennesen, Github: <a class="reference external" href="https://github.com/mjschwenne">mjschwenne</a></p></li>
+<li><p>Andrew Knyazev, Github: <a class="reference external" href="https://github.com/lobpcg">lobpcg</a>, LinkedIn: <a class="reference external" href="https://www.linkedin.com/in/andrew-knyazev">andrew-knyazev</a></p></li>
+<li><p>Sultan Orazbayev, GitHub: <a class="reference external" href="https://github.com/SultanOrazbayev">link</a>, LinkedIn: <a class="reference external" href="https://www.linkedin.com/in/sultan-orazbayev/">link</a></p></li>
+</ul>
+<p>A supplementary (but still incomplete) list of contributors is given by the
+list of names that have commits in <code class="docutils literal notranslate"><span class="pre">networkx</span></code>’s
+<a class="reference external" href="http://git-scm.com">git</a> repository. This can be obtained via:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">log</span> <span class="o">--</span><span class="n">raw</span> <span class="o">|</span> <span class="n">grep</span> <span class="s2">&quot;^Author: &quot;</span> <span class="o">|</span> <span class="n">sort</span> <span class="o">|</span> <span class="n">uniq</span>
+</pre></div>
+</div>
+<p>A historical, partial listing of contributors and their contributions to some
+of the earlier versions of NetworkX can be found
+<a class="reference external" href="https://github.com/networkx/networkx/blob/886e790437bcf30e9f58368829d483efef7a2acc/doc/source/reference/credits_old.rst">here</a>.</p>
+</section>
+<section id="support">
+<h2>Support<a class="headerlink" href="#support" title="Permalink to this heading">#</a></h2>
+<p>NetworkX acknowledges support from the following research groups:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="http://cnls.lanl.gov">Center for Nonlinear Studies</a>, Los Alamos National
+Laboratory, PI: Aric Hagberg</p></li>
+<li><p><a class="reference external" href="https://developers.google.com/open-source/">Open Source Programs Office</a>,
+Google</p></li>
+<li><p><a class="reference external" href="http://csc.ucdavis.edu/">Complexity Sciences Center</a>, Department of
+Physics, University of California-Davis, PI: James P. Crutchfield</p></li>
+<li><p><a class="reference external" href="http://c4.discovery.wisc.edu">Center for Complexity and Collective Computation</a>,
+Wisconsin Institute for Discovery, University of Wisconsin-Madison,
+PIs: Jessica C. Flack and David C. Krakauer</p></li>
+</ul>
+<p>NetworkX acknowledges the following financial support:</p>
+<ul class="simple">
+<li><p>Google Summer of Code via Python Software Foundation</p></li>
+<li><p>U.S. Army Research Office grant W911NF-12-1-0288</p></li>
+<li><p>DARPA Physical Intelligence Subcontract No. 9060-000709</p></li>
+<li><p>NSF Grant No. PHY-0748828</p></li>
+<li><p>John Templeton Foundation through a grant to the Santa Fe Institute to
+study complexity</p></li>
+<li><p>U.S. Army Research Laboratory and the U.S. Army Research Office under
+contract number W911NF-13-1-0340</p></li>
+</ul>
+</section>
+</section>
+
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#core-developers">
+   Core Developers
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#emeritus-developers">
+   Emeritus Developers
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#contributors">
+   Contributors
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#support">
+   Support
+  </a>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

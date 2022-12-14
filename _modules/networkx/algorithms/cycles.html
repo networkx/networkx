@@ -1,0 +1,1159 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>networkx.algorithms.cycles &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/algorithms/cycles';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/algorithms/cycles.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../../../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../../../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <h1>Source code for networkx.algorithms.cycles</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">========================</span>
+<span class="sd">Cycle finding algorithms</span>
+<span class="sd">========================</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">from</span> <span class="nn">networkx.utils</span> <span class="kn">import</span> <span class="n">not_implemented_for</span><span class="p">,</span> <span class="n">pairwise</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;cycle_basis&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;simple_cycles&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;recursive_simple_cycles&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;find_cycle&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;minimum_cycle_basis&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="cycle_basis"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.cycles.cycle_basis.html#networkx.algorithms.cycles.cycle_basis">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;directed&quot;</span><span class="p">)</span>
+<span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;multigraph&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">cycle_basis</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns a list of cycles which form a basis for cycles of G.</span>
+
+<span class="sd">    A basis for cycles of a network is a minimal collection of</span>
+<span class="sd">    cycles such that any cycle in the network can be written</span>
+<span class="sd">    as a sum of cycles in the basis.  Here summation of cycles</span>
+<span class="sd">    is defined as &quot;exclusive or&quot; of the edges. Cycle bases are</span>
+<span class="sd">    useful, e.g. when deriving equations for electric circuits</span>
+<span class="sd">    using Kirchhoff&#39;s Laws.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX Graph</span>
+<span class="sd">    root : node, optional</span>
+<span class="sd">       Specify starting node for basis.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    A list of cycle lists.  Each cycle list is a list of nodes</span>
+<span class="sd">    which forms a cycle (loop) in G.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.Graph()</span>
+<span class="sd">    &gt;&gt;&gt; nx.add_cycle(G, [0, 1, 2, 3])</span>
+<span class="sd">    &gt;&gt;&gt; nx.add_cycle(G, [0, 3, 4, 5])</span>
+<span class="sd">    &gt;&gt;&gt; print(nx.cycle_basis(G, 0))</span>
+<span class="sd">    [[3, 4, 5, 0], [1, 2, 3, 0]]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This is adapted from algorithm CACM 491 [1]_.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Paton, K. An algorithm for finding a fundamental set of</span>
+<span class="sd">       cycles of a graph. Comm. ACM 12, 9 (Sept 1969), 514-518.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    simple_cycles</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">gnodes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">())</span>
+    <span class="n">cycles</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">while</span> <span class="n">gnodes</span><span class="p">:</span>  <span class="c1"># loop over connected components</span>
+        <span class="k">if</span> <span class="n">root</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">root</span> <span class="o">=</span> <span class="n">gnodes</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="n">stack</span> <span class="o">=</span> <span class="p">[</span><span class="n">root</span><span class="p">]</span>
+        <span class="n">pred</span> <span class="o">=</span> <span class="p">{</span><span class="n">root</span><span class="p">:</span> <span class="n">root</span><span class="p">}</span>
+        <span class="n">used</span> <span class="o">=</span> <span class="p">{</span><span class="n">root</span><span class="p">:</span> <span class="nb">set</span><span class="p">()}</span>
+        <span class="k">while</span> <span class="n">stack</span><span class="p">:</span>  <span class="c1"># walk the spanning tree finding cycles</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="n">stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>  <span class="c1"># use last-in so cycles easier to find</span>
+            <span class="n">zused</span> <span class="o">=</span> <span class="n">used</span><span class="p">[</span><span class="n">z</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">nbr</span> <span class="ow">in</span> <span class="n">G</span><span class="p">[</span><span class="n">z</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">nbr</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">used</span><span class="p">:</span>  <span class="c1"># new node</span>
+                    <span class="n">pred</span><span class="p">[</span><span class="n">nbr</span><span class="p">]</span> <span class="o">=</span> <span class="n">z</span>
+                    <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nbr</span><span class="p">)</span>
+                    <span class="n">used</span><span class="p">[</span><span class="n">nbr</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">z</span><span class="p">}</span>
+                <span class="k">elif</span> <span class="n">nbr</span> <span class="o">==</span> <span class="n">z</span><span class="p">:</span>  <span class="c1"># self loops</span>
+                    <span class="n">cycles</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">z</span><span class="p">])</span>
+                <span class="k">elif</span> <span class="n">nbr</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">zused</span><span class="p">:</span>  <span class="c1"># found a cycle</span>
+                    <span class="n">pn</span> <span class="o">=</span> <span class="n">used</span><span class="p">[</span><span class="n">nbr</span><span class="p">]</span>
+                    <span class="n">cycle</span> <span class="o">=</span> <span class="p">[</span><span class="n">nbr</span><span class="p">,</span> <span class="n">z</span><span class="p">]</span>
+                    <span class="n">p</span> <span class="o">=</span> <span class="n">pred</span><span class="p">[</span><span class="n">z</span><span class="p">]</span>
+                    <span class="k">while</span> <span class="n">p</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">pn</span><span class="p">:</span>
+                        <span class="n">cycle</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+                        <span class="n">p</span> <span class="o">=</span> <span class="n">pred</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
+                    <span class="n">cycle</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+                    <span class="n">cycles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cycle</span><span class="p">)</span>
+                    <span class="n">used</span><span class="p">[</span><span class="n">nbr</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+        <span class="n">gnodes</span> <span class="o">-=</span> <span class="nb">set</span><span class="p">(</span><span class="n">pred</span><span class="p">)</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">cycles</span></div>
+
+
+<div class="viewcode-block" id="simple_cycles"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.cycles.simple_cycles.html#networkx.algorithms.cycles.simple_cycles">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;undirected&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">simple_cycles</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Find simple cycles (elementary circuits) of a directed graph.</span>
+
+<span class="sd">    A `simple cycle`, or `elementary circuit`, is a closed path where</span>
+<span class="sd">    no node appears twice. Two elementary circuits are distinct if they</span>
+<span class="sd">    are not cyclic permutations of each other.</span>
+
+<span class="sd">    This is a nonrecursive, iterator/generator version of Johnson&#39;s</span>
+<span class="sd">    algorithm [1]_.  There may be better algorithms for some cases [2]_ [3]_.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX DiGraph</span>
+<span class="sd">       A directed graph</span>
+
+<span class="sd">    Yields</span>
+<span class="sd">    ------</span>
+<span class="sd">    list of nodes</span>
+<span class="sd">       Each cycle is represented by a list of nodes along the cycle.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; edges = [(0, 0), (0, 1), (0, 2), (1, 2), (2, 0), (2, 1), (2, 2)]</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.DiGraph(edges)</span>
+<span class="sd">    &gt;&gt;&gt; sorted(nx.simple_cycles(G))</span>
+<span class="sd">    [[0], [0, 1, 2], [0, 2], [1, 2], [2]]</span>
+
+<span class="sd">    To filter the cycles so that they don&#39;t include certain nodes or edges,</span>
+<span class="sd">    copy your graph and eliminate those nodes or edges before calling.</span>
+<span class="sd">    For example, to exclude self-loops from the above example:</span>
+
+<span class="sd">    &gt;&gt;&gt; H = G.copy()</span>
+<span class="sd">    &gt;&gt;&gt; H.remove_edges_from(nx.selfloop_edges(G))</span>
+<span class="sd">    &gt;&gt;&gt; sorted(nx.simple_cycles(H))</span>
+<span class="sd">    [[0, 1, 2], [0, 2], [1, 2]]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The implementation follows pp. 79-80 in [1]_.</span>
+
+<span class="sd">    The time complexity is $O((n+e)(c+1))$ for $n$ nodes, $e$ edges and $c$</span>
+<span class="sd">    elementary circuits.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Finding all the elementary circuits of a directed graph.</span>
+<span class="sd">       D. B. Johnson, SIAM Journal on Computing 4, no. 1, 77-84, 1975.</span>
+<span class="sd">       https://doi.org/10.1137/0204007</span>
+<span class="sd">    .. [2] Enumerating the cycles of a digraph: a new preprocessing strategy.</span>
+<span class="sd">       G. Loizou and P. Thanish, Information Sciences, v. 27, 163-182, 1982.</span>
+<span class="sd">    .. [3] A search strategy for the elementary cycles of a directed graph.</span>
+<span class="sd">       J.L. Szwarcfiter and P.E. Lauer, BIT NUMERICAL MATHEMATICS,</span>
+<span class="sd">       v. 16, no. 2, 192-204, 1976.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    cycle_basis</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_unblock</span><span class="p">(</span><span class="n">thisnode</span><span class="p">,</span> <span class="n">blocked</span><span class="p">,</span> <span class="n">B</span><span class="p">):</span>
+        <span class="n">stack</span> <span class="o">=</span> <span class="p">{</span><span class="n">thisnode</span><span class="p">}</span>
+        <span class="k">while</span> <span class="n">stack</span><span class="p">:</span>
+            <span class="n">node</span> <span class="o">=</span> <span class="n">stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">blocked</span><span class="p">:</span>
+                <span class="n">blocked</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+                <span class="n">stack</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">B</span><span class="p">[</span><span class="n">node</span><span class="p">])</span>
+                <span class="n">B</span><span class="p">[</span><span class="n">node</span><span class="p">]</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+    <span class="c1"># Johnson&#39;s algorithm requires some ordering of the nodes.</span>
+    <span class="c1"># We assign the arbitrary ordering given by the strongly connected comps</span>
+    <span class="c1"># There is no need to track the ordering as each node removed as processed.</span>
+    <span class="c1"># Also we save the actual graph so we can mutate it. We only take the</span>
+    <span class="c1"># edges because we do not want to copy edge and node attributes here.</span>
+    <span class="n">subG</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">G</span><span class="p">)(</span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">())</span>
+    <span class="n">sccs</span> <span class="o">=</span> <span class="p">[</span><span class="n">scc</span> <span class="k">for</span> <span class="n">scc</span> <span class="ow">in</span> <span class="n">nx</span><span class="o">.</span><span class="n">strongly_connected_components</span><span class="p">(</span><span class="n">subG</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">scc</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># Johnson&#39;s algorithm exclude self cycle edges like (v, v)</span>
+    <span class="c1"># To be backward compatible, we record those cycles in advance</span>
+    <span class="c1"># and then remove from subG</span>
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">subG</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">subG</span><span class="o">.</span><span class="n">has_edge</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+            <span class="k">yield</span> <span class="p">[</span><span class="n">v</span><span class="p">]</span>
+            <span class="n">subG</span><span class="o">.</span><span class="n">remove_edge</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+
+    <span class="k">while</span> <span class="n">sccs</span><span class="p">:</span>
+        <span class="n">scc</span> <span class="o">=</span> <span class="n">sccs</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="n">sccG</span> <span class="o">=</span> <span class="n">subG</span><span class="o">.</span><span class="n">subgraph</span><span class="p">(</span><span class="n">scc</span><span class="p">)</span>
+        <span class="c1"># order of scc determines ordering of nodes</span>
+        <span class="n">startnode</span> <span class="o">=</span> <span class="n">scc</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="c1"># Processing node runs &quot;circuit&quot; routine from recursive version</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="p">[</span><span class="n">startnode</span><span class="p">]</span>
+        <span class="n">blocked</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>  <span class="c1"># vertex: blocked from search?</span>
+        <span class="n">closed</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>  <span class="c1"># nodes involved in a cycle</span>
+        <span class="n">blocked</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">startnode</span><span class="p">)</span>
+        <span class="n">B</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>  <span class="c1"># graph portions that yield no elementary circuit</span>
+        <span class="n">stack</span> <span class="o">=</span> <span class="p">[(</span><span class="n">startnode</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">sccG</span><span class="p">[</span><span class="n">startnode</span><span class="p">]))]</span>  <span class="c1"># sccG gives comp nbrs</span>
+        <span class="k">while</span> <span class="n">stack</span><span class="p">:</span>
+            <span class="n">thisnode</span><span class="p">,</span> <span class="n">nbrs</span> <span class="o">=</span> <span class="n">stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">nbrs</span><span class="p">:</span>
+                <span class="n">nextnode</span> <span class="o">=</span> <span class="n">nbrs</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">nextnode</span> <span class="o">==</span> <span class="n">startnode</span><span class="p">:</span>
+                    <span class="k">yield</span> <span class="n">path</span><span class="p">[:]</span>
+                    <span class="n">closed</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+                <span class="c1">#                        print &quot;Found a cycle&quot;, path, closed</span>
+                <span class="k">elif</span> <span class="n">nextnode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">blocked</span><span class="p">:</span>
+                    <span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nextnode</span><span class="p">)</span>
+                    <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">nextnode</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">sccG</span><span class="p">[</span><span class="n">nextnode</span><span class="p">])))</span>
+                    <span class="n">closed</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">nextnode</span><span class="p">)</span>
+                    <span class="n">blocked</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">nextnode</span><span class="p">)</span>
+                    <span class="k">continue</span>
+            <span class="c1"># done with nextnode... look for more neighbors</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">nbrs</span><span class="p">:</span>  <span class="c1"># no more nbrs</span>
+                <span class="k">if</span> <span class="n">thisnode</span> <span class="ow">in</span> <span class="n">closed</span><span class="p">:</span>
+                    <span class="n">_unblock</span><span class="p">(</span><span class="n">thisnode</span><span class="p">,</span> <span class="n">blocked</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">nbr</span> <span class="ow">in</span> <span class="n">sccG</span><span class="p">[</span><span class="n">thisnode</span><span class="p">]:</span>
+                        <span class="k">if</span> <span class="n">thisnode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">B</span><span class="p">[</span><span class="n">nbr</span><span class="p">]:</span>
+                            <span class="n">B</span><span class="p">[</span><span class="n">nbr</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">thisnode</span><span class="p">)</span>
+                <span class="n">stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+                <span class="c1">#                assert path[-1] == thisnode</span>
+                <span class="n">path</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="c1"># done processing this node</span>
+        <span class="n">H</span> <span class="o">=</span> <span class="n">subG</span><span class="o">.</span><span class="n">subgraph</span><span class="p">(</span><span class="n">scc</span><span class="p">)</span>  <span class="c1"># make smaller to avoid work in SCC routine</span>
+        <span class="n">sccs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">scc</span> <span class="k">for</span> <span class="n">scc</span> <span class="ow">in</span> <span class="n">nx</span><span class="o">.</span><span class="n">strongly_connected_components</span><span class="p">(</span><span class="n">H</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">scc</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="recursive_simple_cycles"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.cycles.recursive_simple_cycles.html#networkx.algorithms.cycles.recursive_simple_cycles">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;undirected&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">recursive_simple_cycles</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Find simple cycles (elementary circuits) of a directed graph.</span>
+
+<span class="sd">    A `simple cycle`, or `elementary circuit`, is a closed path where</span>
+<span class="sd">    no node appears twice. Two elementary circuits are distinct if they</span>
+<span class="sd">    are not cyclic permutations of each other.</span>
+
+<span class="sd">    This version uses a recursive algorithm to build a list of cycles.</span>
+<span class="sd">    You should probably use the iterator version called simple_cycles().</span>
+<span class="sd">    Warning: This recursive version uses lots of RAM!</span>
+<span class="sd">    It appears in NetworkX for pedagogical value.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX DiGraph</span>
+<span class="sd">       A directed graph</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    A list of cycles, where each cycle is represented by a list of nodes</span>
+<span class="sd">    along the cycle.</span>
+
+<span class="sd">    Example:</span>
+
+<span class="sd">    &gt;&gt;&gt; edges = [(0, 0), (0, 1), (0, 2), (1, 2), (2, 0), (2, 1), (2, 2)]</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.DiGraph(edges)</span>
+<span class="sd">    &gt;&gt;&gt; nx.recursive_simple_cycles(G)</span>
+<span class="sd">    [[0], [2], [0, 1, 2], [0, 2], [1, 2]]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The implementation follows pp. 79-80 in [1]_.</span>
+
+<span class="sd">    The time complexity is $O((n+e)(c+1))$ for $n$ nodes, $e$ edges and $c$</span>
+<span class="sd">    elementary circuits.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Finding all the elementary circuits of a directed graph.</span>
+<span class="sd">       D. B. Johnson, SIAM Journal on Computing 4, no. 1, 77-84, 1975.</span>
+<span class="sd">       https://doi.org/10.1137/0204007</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    simple_cycles, cycle_basis</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Jon Olav Vik, 2010-08-09</span>
+    <span class="k">def</span> <span class="nf">_unblock</span><span class="p">(</span><span class="n">thisnode</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Recursively unblock and remove nodes from B[thisnode].&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">blocked</span><span class="p">[</span><span class="n">thisnode</span><span class="p">]:</span>
+            <span class="n">blocked</span><span class="p">[</span><span class="n">thisnode</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">while</span> <span class="n">B</span><span class="p">[</span><span class="n">thisnode</span><span class="p">]:</span>
+                <span class="n">_unblock</span><span class="p">(</span><span class="n">B</span><span class="p">[</span><span class="n">thisnode</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">circuit</span><span class="p">(</span><span class="n">thisnode</span><span class="p">,</span> <span class="n">startnode</span><span class="p">,</span> <span class="n">component</span><span class="p">):</span>
+        <span class="n">closed</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># set to True if elementary path is closed</span>
+        <span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">thisnode</span><span class="p">)</span>
+        <span class="n">blocked</span><span class="p">[</span><span class="n">thisnode</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">for</span> <span class="n">nextnode</span> <span class="ow">in</span> <span class="n">component</span><span class="p">[</span><span class="n">thisnode</span><span class="p">]:</span>  <span class="c1"># direct successors of thisnode</span>
+            <span class="k">if</span> <span class="n">nextnode</span> <span class="o">==</span> <span class="n">startnode</span><span class="p">:</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">[:])</span>
+                <span class="n">closed</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="n">blocked</span><span class="p">[</span><span class="n">nextnode</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">circuit</span><span class="p">(</span><span class="n">nextnode</span><span class="p">,</span> <span class="n">startnode</span><span class="p">,</span> <span class="n">component</span><span class="p">):</span>
+                    <span class="n">closed</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">closed</span><span class="p">:</span>
+            <span class="n">_unblock</span><span class="p">(</span><span class="n">thisnode</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">nextnode</span> <span class="ow">in</span> <span class="n">component</span><span class="p">[</span><span class="n">thisnode</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">thisnode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">B</span><span class="p">[</span><span class="n">nextnode</span><span class="p">]:</span>  <span class="c1"># TODO: use set for speedup?</span>
+                    <span class="n">B</span><span class="p">[</span><span class="n">nextnode</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">thisnode</span><span class="p">)</span>
+        <span class="n">path</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>  <span class="c1"># remove thisnode from path</span>
+        <span class="k">return</span> <span class="n">closed</span>
+
+    <span class="n">path</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># stack of nodes in current path</span>
+    <span class="n">blocked</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>  <span class="c1"># vertex: blocked from search?</span>
+    <span class="n">B</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>  <span class="c1"># graph portions that yield no elementary circuit</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># list to accumulate the circuits found</span>
+
+    <span class="c1"># Johnson&#39;s algorithm exclude self cycle edges like (v, v)</span>
+    <span class="c1"># To be backward compatible, we record those cycles in advance</span>
+    <span class="c1"># and then remove from subG</span>
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">has_edge</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">v</span><span class="p">])</span>
+            <span class="n">G</span><span class="o">.</span><span class="n">remove_edge</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+
+    <span class="c1"># Johnson&#39;s algorithm requires some ordering of the nodes.</span>
+    <span class="c1"># They might not be sortable so we assign an arbitrary ordering.</span>
+    <span class="n">ordering</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">))))</span>
+    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">ordering</span><span class="p">:</span>
+        <span class="c1"># Build the subgraph induced by s and following nodes in the ordering</span>
+        <span class="n">subgraph</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">subgraph</span><span class="p">(</span><span class="n">node</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">G</span> <span class="k">if</span> <span class="n">ordering</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">ordering</span><span class="p">[</span><span class="n">s</span><span class="p">])</span>
+        <span class="c1"># Find the strongly connected component in the subgraph</span>
+        <span class="c1"># that contains the least node according to the ordering</span>
+        <span class="n">strongcomp</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">strongly_connected_components</span><span class="p">(</span><span class="n">subgraph</span><span class="p">)</span>
+        <span class="n">mincomp</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">strongcomp</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">ns</span><span class="p">:</span> <span class="nb">min</span><span class="p">(</span><span class="n">ordering</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">ns</span><span class="p">))</span>
+        <span class="n">component</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">subgraph</span><span class="p">(</span><span class="n">mincomp</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">component</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># smallest node in the component according to the ordering</span>
+            <span class="n">startnode</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">ordering</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">component</span><span class="p">:</span>
+                <span class="n">blocked</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">B</span><span class="p">[</span><span class="n">node</span><span class="p">][:]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">dummy</span> <span class="o">=</span> <span class="n">circuit</span><span class="p">(</span><span class="n">startnode</span><span class="p">,</span> <span class="n">startnode</span><span class="p">,</span> <span class="n">component</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="find_cycle"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.cycles.find_cycle.html#networkx.algorithms.cycles.find_cycle">[docs]</a><span class="k">def</span> <span class="nf">find_cycle</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">orientation</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns a cycle found via depth-first traversal.</span>
+
+<span class="sd">    The cycle is a list of edges indicating the cyclic path.</span>
+<span class="sd">    Orientation of directed edges is controlled by `orientation`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : graph</span>
+<span class="sd">        A directed/undirected graph/multigraph.</span>
+
+<span class="sd">    source : node, list of nodes</span>
+<span class="sd">        The node from which the traversal begins. If None, then a source</span>
+<span class="sd">        is chosen arbitrarily and repeatedly until all edges from each node in</span>
+<span class="sd">        the graph are searched.</span>
+
+<span class="sd">    orientation : None | &#39;original&#39; | &#39;reverse&#39; | &#39;ignore&#39; (default: None)</span>
+<span class="sd">        For directed graphs and directed multigraphs, edge traversals need not</span>
+<span class="sd">        respect the original orientation of the edges.</span>
+<span class="sd">        When set to &#39;reverse&#39; every edge is traversed in the reverse direction.</span>
+<span class="sd">        When set to &#39;ignore&#39;, every edge is treated as undirected.</span>
+<span class="sd">        When set to &#39;original&#39;, every edge is treated as directed.</span>
+<span class="sd">        In all three cases, the yielded edge tuples add a last entry to</span>
+<span class="sd">        indicate the direction in which that edge was traversed.</span>
+<span class="sd">        If orientation is None, the yielded edge has no direction indicated.</span>
+<span class="sd">        The direction is respected, but not reported.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    edges : directed edges</span>
+<span class="sd">        A list of directed edges indicating the path taken for the loop.</span>
+<span class="sd">        If no cycle is found, then an exception is raised.</span>
+<span class="sd">        For graphs, an edge is of the form `(u, v)` where `u` and `v`</span>
+<span class="sd">        are the tail and head of the edge as determined by the traversal.</span>
+<span class="sd">        For multigraphs, an edge is of the form `(u, v, key)`, where `key` is</span>
+<span class="sd">        the key of the edge. When the graph is directed, then `u` and `v`</span>
+<span class="sd">        are always in the order of the actual directed edge.</span>
+<span class="sd">        If orientation is not None then the edge tuple is extended to include</span>
+<span class="sd">        the direction of traversal (&#39;forward&#39; or &#39;reverse&#39;) on that edge.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NetworkXNoCycle</span>
+<span class="sd">        If no cycle was found.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    In this example, we construct a DAG and find, in the first call, that there</span>
+<span class="sd">    are no directed cycles, and so an exception is raised. In the second call,</span>
+<span class="sd">    we ignore edge orientations and find that there is an undirected cycle.</span>
+<span class="sd">    Note that the second call finds a directed cycle while effectively</span>
+<span class="sd">    traversing an undirected graph, and so, we found an &quot;undirected cycle&quot;.</span>
+<span class="sd">    This means that this DAG structure does not form a directed tree (which</span>
+<span class="sd">    is also known as a polytree).</span>
+
+<span class="sd">    &gt;&gt;&gt; G = nx.DiGraph([(0, 1), (0, 2), (1, 2)])</span>
+<span class="sd">    &gt;&gt;&gt; nx.find_cycle(G, orientation=&quot;original&quot;)</span>
+<span class="sd">    Traceback (most recent call last):</span>
+<span class="sd">        ...</span>
+<span class="sd">    networkx.exception.NetworkXNoCycle: No cycle found.</span>
+<span class="sd">    &gt;&gt;&gt; list(nx.find_cycle(G, orientation=&quot;ignore&quot;))</span>
+<span class="sd">    [(0, 1, &#39;forward&#39;), (1, 2, &#39;forward&#39;), (0, 2, &#39;reverse&#39;)]</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    simple_cycles</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">G</span><span class="o">.</span><span class="n">is_directed</span><span class="p">()</span> <span class="ow">or</span> <span class="n">orientation</span> <span class="ow">in</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;original&quot;</span><span class="p">):</span>
+
+        <span class="k">def</span> <span class="nf">tailhead</span><span class="p">(</span><span class="n">edge</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">edge</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
+
+    <span class="k">elif</span> <span class="n">orientation</span> <span class="o">==</span> <span class="s2">&quot;reverse&quot;</span><span class="p">:</span>
+
+        <span class="k">def</span> <span class="nf">tailhead</span><span class="p">(</span><span class="n">edge</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">edge</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">edge</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">elif</span> <span class="n">orientation</span> <span class="o">==</span> <span class="s2">&quot;ignore&quot;</span><span class="p">:</span>
+
+        <span class="k">def</span> <span class="nf">tailhead</span><span class="p">(</span><span class="n">edge</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">edge</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;reverse&quot;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">edge</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">edge</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">edge</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
+
+    <span class="n">explored</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="n">cycle</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">final_node</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">for</span> <span class="n">start_node</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nbunch_iter</span><span class="p">(</span><span class="n">source</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">start_node</span> <span class="ow">in</span> <span class="n">explored</span><span class="p">:</span>
+            <span class="c1"># No loop is possible.</span>
+            <span class="k">continue</span>
+
+        <span class="n">edges</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># All nodes seen in this iteration of edge_dfs</span>
+        <span class="n">seen</span> <span class="o">=</span> <span class="p">{</span><span class="n">start_node</span><span class="p">}</span>
+        <span class="c1"># Nodes in active path.</span>
+        <span class="n">active_nodes</span> <span class="o">=</span> <span class="p">{</span><span class="n">start_node</span><span class="p">}</span>
+        <span class="n">previous_head</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">nx</span><span class="o">.</span><span class="n">edge_dfs</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">start_node</span><span class="p">,</span> <span class="n">orientation</span><span class="p">):</span>
+            <span class="c1"># Determine if this edge is a continuation of the active path.</span>
+            <span class="n">tail</span><span class="p">,</span> <span class="n">head</span> <span class="o">=</span> <span class="n">tailhead</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">head</span> <span class="ow">in</span> <span class="n">explored</span><span class="p">:</span>
+                <span class="c1"># Then we&#39;ve already explored it. No loop is possible.</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">previous_head</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">tail</span> <span class="o">!=</span> <span class="n">previous_head</span><span class="p">:</span>
+                <span class="c1"># This edge results from backtracking.</span>
+                <span class="c1"># Pop until we get a node whose head equals the current tail.</span>
+                <span class="c1"># So for example, we might have:</span>
+                <span class="c1">#  (0, 1), (1, 2), (2, 3), (1, 4)</span>
+                <span class="c1"># which must become:</span>
+                <span class="c1">#  (0, 1), (1, 4)</span>
+                <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">popped_edge</span> <span class="o">=</span> <span class="n">edges</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+                    <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                        <span class="n">edges</span> <span class="o">=</span> <span class="p">[]</span>
+                        <span class="n">active_nodes</span> <span class="o">=</span> <span class="p">{</span><span class="n">tail</span><span class="p">}</span>
+                        <span class="k">break</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">popped_head</span> <span class="o">=</span> <span class="n">tailhead</span><span class="p">(</span><span class="n">popped_edge</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+                        <span class="n">active_nodes</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">popped_head</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">edges</span><span class="p">:</span>
+                        <span class="n">last_head</span> <span class="o">=</span> <span class="n">tailhead</span><span class="p">(</span><span class="n">edges</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])[</span><span class="mi">1</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="n">tail</span> <span class="o">==</span> <span class="n">last_head</span><span class="p">:</span>
+                            <span class="k">break</span>
+            <span class="n">edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">head</span> <span class="ow">in</span> <span class="n">active_nodes</span><span class="p">:</span>
+                <span class="c1"># We have a loop!</span>
+                <span class="n">cycle</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">edges</span><span class="p">)</span>
+                <span class="n">final_node</span> <span class="o">=</span> <span class="n">head</span>
+                <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">seen</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">head</span><span class="p">)</span>
+                <span class="n">active_nodes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">head</span><span class="p">)</span>
+                <span class="n">previous_head</span> <span class="o">=</span> <span class="n">head</span>
+
+        <span class="k">if</span> <span class="n">cycle</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">explored</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">seen</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">cycle</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">exception</span><span class="o">.</span><span class="n">NetworkXNoCycle</span><span class="p">(</span><span class="s2">&quot;No cycle found.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># We now have a list of edges which ends on a cycle.</span>
+    <span class="c1"># So we need to remove from the beginning edges that are not relevant.</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">edge</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">cycle</span><span class="p">):</span>
+        <span class="n">tail</span><span class="p">,</span> <span class="n">head</span> <span class="o">=</span> <span class="n">tailhead</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">tail</span> <span class="o">==</span> <span class="n">final_node</span><span class="p">:</span>
+            <span class="k">break</span>
+
+    <span class="k">return</span> <span class="n">cycle</span><span class="p">[</span><span class="n">i</span><span class="p">:]</span></div>
+
+
+<div class="viewcode-block" id="minimum_cycle_basis"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.cycles.minimum_cycle_basis.html#networkx.algorithms.cycles.minimum_cycle_basis">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;directed&quot;</span><span class="p">)</span>
+<span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;multigraph&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">minimum_cycle_basis</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns a minimum weight cycle basis for G</span>
+
+<span class="sd">    Minimum weight means a cycle basis for which the total weight</span>
+<span class="sd">    (length for unweighted graphs) of all the cycles is minimum.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX Graph</span>
+<span class="sd">    weight: string</span>
+<span class="sd">        name of the edge attribute to use for edge weights</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    A list of cycle lists.  Each cycle list is a list of nodes</span>
+<span class="sd">    which forms a cycle (loop) in G. Note that the nodes are not</span>
+<span class="sd">    necessarily returned in a order by which they appear in the cycle</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.Graph()</span>
+<span class="sd">    &gt;&gt;&gt; nx.add_cycle(G, [0, 1, 2, 3])</span>
+<span class="sd">    &gt;&gt;&gt; nx.add_cycle(G, [0, 3, 4, 5])</span>
+<span class="sd">    &gt;&gt;&gt; print([sorted(c) for c in nx.minimum_cycle_basis(G)])</span>
+<span class="sd">    [[0, 1, 2, 3], [0, 3, 4, 5]]</span>
+
+<span class="sd">    References:</span>
+<span class="sd">        [1] Kavitha, Telikepalli, et al. &quot;An O(m^2n) Algorithm for</span>
+<span class="sd">        Minimum Cycle Basis of Graphs.&quot;</span>
+<span class="sd">        http://link.springer.com/article/10.1007/s00453-007-9064-z</span>
+<span class="sd">        [2] de Pina, J. 1995. Applications of shortest path methods.</span>
+<span class="sd">        Ph.D. thesis, University of Amsterdam, Netherlands</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    simple_cycles, cycle_basis</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># We first split the graph in commected subgraphs</span>
+    <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span>
+        <span class="p">(</span><span class="n">_min_cycle_basis</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">subgraph</span><span class="p">(</span><span class="n">c</span><span class="p">),</span> <span class="n">weight</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">nx</span><span class="o">.</span><span class="n">connected_components</span><span class="p">(</span><span class="n">G</span><span class="p">)),</span>
+        <span class="p">[],</span>
+    <span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">_min_cycle_basis</span><span class="p">(</span><span class="n">comp</span><span class="p">,</span> <span class="n">weight</span><span class="p">):</span>
+    <span class="n">cb</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1"># We  extract the edges not in a spanning tree. We do not really need a</span>
+    <span class="c1"># *minimum* spanning tree. That is why we call the next function with</span>
+    <span class="c1"># weight=None. Depending on implementation, it may be faster as well</span>
+    <span class="n">spanning_tree_edges</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">minimum_spanning_edges</span><span class="p">(</span><span class="n">comp</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+    <span class="n">edges_excl</span> <span class="o">=</span> <span class="p">[</span><span class="nb">frozenset</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">comp</span><span class="o">.</span><span class="n">edges</span><span class="p">()</span> <span class="k">if</span> <span class="n">e</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">spanning_tree_edges</span><span class="p">]</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">edges_excl</span><span class="p">)</span>
+
+    <span class="c1"># We maintain a set of vectors orthogonal to sofar found cycles</span>
+    <span class="n">set_orth</span> <span class="o">=</span> <span class="p">[{</span><span class="n">edge</span><span class="p">}</span> <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">edges_excl</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+        <span class="c1"># kth cycle is &quot;parallel&quot; to kth vector in set_orth</span>
+        <span class="n">new_cycle</span> <span class="o">=</span> <span class="n">_min_cycle</span><span class="p">(</span><span class="n">comp</span><span class="p">,</span> <span class="n">set_orth</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">)</span>
+        <span class="n">cb</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">()</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="o">*</span><span class="n">new_cycle</span><span class="p">)))</span>
+        <span class="c1"># now update set_orth so that k+1,k+2... th elements are</span>
+        <span class="c1"># orthogonal to the newly found cycle, as per [p. 336, 1]</span>
+        <span class="n">base</span> <span class="o">=</span> <span class="n">set_orth</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+        <span class="n">set_orth</span><span class="p">[</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">orth</span> <span class="o">^</span> <span class="n">base</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">orth</span> <span class="o">&amp;</span> <span class="n">new_cycle</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">orth</span>
+            <span class="k">for</span> <span class="n">orth</span> <span class="ow">in</span> <span class="n">set_orth</span><span class="p">[</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span>
+        <span class="p">]</span>
+    <span class="k">return</span> <span class="n">cb</span>
+
+
+<span class="k">def</span> <span class="nf">_min_cycle</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">orth</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the minimum weight cycle in G,</span>
+<span class="sd">    orthogonal to the vector orth as per [p. 338, 1]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+
+    <span class="n">nodes_idx</span> <span class="o">=</span> <span class="p">{</span><span class="n">node</span><span class="p">:</span> <span class="n">idx</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">())}</span>
+    <span class="n">idx_nodes</span> <span class="o">=</span> <span class="p">{</span><span class="n">idx</span><span class="p">:</span> <span class="n">node</span> <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">nodes_idx</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+    <span class="n">nnodes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes_idx</span><span class="p">)</span>
+
+    <span class="c1"># Add 2 copies of each edge in G to T. If edge is in orth, add cross edge;</span>
+    <span class="c1"># otherwise in-plane edge</span>
+    <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="n">uidx</span><span class="p">,</span> <span class="n">vidx</span> <span class="o">=</span> <span class="n">nodes_idx</span><span class="p">[</span><span class="n">u</span><span class="p">],</span> <span class="n">nodes_idx</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+        <span class="n">edge_w</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">weight</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">frozenset</span><span class="p">((</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span> <span class="ow">in</span> <span class="n">orth</span><span class="p">:</span>
+            <span class="n">T</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span>
+                <span class="p">[(</span><span class="n">uidx</span><span class="p">,</span> <span class="n">nnodes</span> <span class="o">+</span> <span class="n">vidx</span><span class="p">),</span> <span class="p">(</span><span class="n">nnodes</span> <span class="o">+</span> <span class="n">uidx</span><span class="p">,</span> <span class="n">vidx</span><span class="p">)],</span> <span class="n">weight</span><span class="o">=</span><span class="n">edge_w</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">T</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span>
+                <span class="p">[(</span><span class="n">uidx</span><span class="p">,</span> <span class="n">vidx</span><span class="p">),</span> <span class="p">(</span><span class="n">nnodes</span> <span class="o">+</span> <span class="n">uidx</span><span class="p">,</span> <span class="n">nnodes</span> <span class="o">+</span> <span class="n">vidx</span><span class="p">)],</span> <span class="n">weight</span><span class="o">=</span><span class="n">edge_w</span>
+            <span class="p">)</span>
+
+    <span class="n">all_shortest_pathlens</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">shortest_path_length</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">))</span>
+    <span class="n">cross_paths_w_lens</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">n</span><span class="p">:</span> <span class="n">all_shortest_pathlens</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="n">nnodes</span> <span class="o">+</span> <span class="n">n</span><span class="p">]</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nnodes</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="c1"># Now compute shortest paths in T, which translates to cyles in G</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">cross_paths_w_lens</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">cross_paths_w_lens</span><span class="o">.</span><span class="n">get</span><span class="p">)</span>
+    <span class="n">end</span> <span class="o">=</span> <span class="n">nnodes</span> <span class="o">+</span> <span class="n">start</span>
+    <span class="n">min_path</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">shortest_path</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">end</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Now we obtain the actual path, re-map nodes in T to those in G</span>
+    <span class="n">min_path_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">node</span> <span class="k">if</span> <span class="n">node</span> <span class="o">&lt;</span> <span class="n">nnodes</span> <span class="k">else</span> <span class="n">node</span> <span class="o">-</span> <span class="n">nnodes</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">min_path</span><span class="p">]</span>
+    <span class="c1"># Now remove the edges that occur two times</span>
+    <span class="n">mcycle_pruned</span> <span class="o">=</span> <span class="n">_path_to_cycle</span><span class="p">(</span><span class="n">min_path_nodes</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">{</span><span class="nb">frozenset</span><span class="p">((</span><span class="n">idx_nodes</span><span class="p">[</span><span class="n">u</span><span class="p">],</span> <span class="n">idx_nodes</span><span class="p">[</span><span class="n">v</span><span class="p">]))</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">mcycle_pruned</span><span class="p">}</span>
+
+
+<span class="k">def</span> <span class="nf">_path_to_cycle</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Removes the edges from path that occur even number of times.</span>
+<span class="sd">    Returns a set of edges</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">edges</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">pairwise</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="c1"># Toggle whether to keep the current edge.</span>
+        <span class="n">edges</span> <span class="o">^=</span> <span class="p">{</span><span class="n">edge</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">edges</span>
+</pre></div>
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

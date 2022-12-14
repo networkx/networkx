@@ -1,0 +1,1123 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>networkx.algorithms.connectivity.edge_kcomponents &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/algorithms/connectivity/edge_kcomponents';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/algorithms/connectivity/edge_kcomponents.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../../../../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../../../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../../../../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <h1>Source code for networkx.algorithms.connectivity.edge_kcomponents</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Algorithms for finding k-edge-connected components and subgraphs.</span>
+
+<span class="sd">A k-edge-connected component (k-edge-cc) is a maximal set of nodes in G, such</span>
+<span class="sd">that all pairs of node have an edge-connectivity of at least k.</span>
+
+<span class="sd">A k-edge-connected subgraph (k-edge-subgraph) is a maximal set of nodes in G,</span>
+<span class="sd">such that the subgraph of G defined by the nodes has an edge-connectivity at</span>
+<span class="sd">least k.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">itertools</span> <span class="k">as</span> <span class="nn">it</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">from</span> <span class="nn">networkx.algorithms</span> <span class="kn">import</span> <span class="n">bridges</span>
+<span class="kn">from</span> <span class="nn">networkx.utils</span> <span class="kn">import</span> <span class="n">arbitrary_element</span><span class="p">,</span> <span class="n">not_implemented_for</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;k_edge_components&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;k_edge_subgraphs&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bridge_components&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;EdgeComponentAuxGraph&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="k_edge_components"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.connectivity.edge_kcomponents.k_edge_components.html#networkx.algorithms.connectivity.edge_kcomponents.k_edge_components">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;multigraph&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">k_edge_components</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Generates nodes in each maximal k-edge-connected component in G.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+
+<span class="sd">    k : Integer</span>
+<span class="sd">        Desired edge connectivity</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    k_edge_components : a generator of k-edge-ccs. Each set of returned nodes</span>
+<span class="sd">       will have k-edge-connectivity in the graph G.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :func:`local_edge_connectivity`</span>
+<span class="sd">    :func:`k_edge_subgraphs` : similar to this function, but the subgraph</span>
+<span class="sd">        defined by the nodes must also have k-edge-connectivity.</span>
+<span class="sd">    :func:`k_components` : similar to this function, but uses node-connectivity</span>
+<span class="sd">        instead of edge-connectivity</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NetworkXNotImplemented</span>
+<span class="sd">        If the input graph is a multigraph.</span>
+
+<span class="sd">    ValueError:</span>
+<span class="sd">        If k is less than 1</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Attempts to use the most efficient implementation available based on k.</span>
+<span class="sd">    If k=1, this is simply connected components for directed graphs and</span>
+<span class="sd">    connected components for undirected graphs.</span>
+<span class="sd">    If k=2 on an efficient bridge connected component algorithm from _[1] is</span>
+<span class="sd">    run based on the chain decomposition.</span>
+<span class="sd">    Otherwise, the algorithm from _[2] is used.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import itertools as it</span>
+<span class="sd">    &gt;&gt;&gt; from networkx.utils import pairwise</span>
+<span class="sd">    &gt;&gt;&gt; paths = [</span>
+<span class="sd">    ...     (1, 2, 4, 3, 1, 4),</span>
+<span class="sd">    ...     (5, 6, 7, 8, 5, 7, 8, 6),</span>
+<span class="sd">    ... ]</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.Graph()</span>
+<span class="sd">    &gt;&gt;&gt; G.add_nodes_from(it.chain(*paths))</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edges_from(it.chain(*[pairwise(path) for path in paths]))</span>
+<span class="sd">    &gt;&gt;&gt; # note this returns {1, 4} unlike k_edge_subgraphs</span>
+<span class="sd">    &gt;&gt;&gt; sorted(map(sorted, nx.k_edge_components(G, k=3)))</span>
+<span class="sd">    [[1, 4], [2], [3], [5, 6, 7, 8]]</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] https://en.wikipedia.org/wiki/Bridge_%28graph_theory%29</span>
+<span class="sd">    .. [2] Wang, Tianhao, et al. (2015) A simple algorithm for finding all</span>
+<span class="sd">        k-edge-connected components.</span>
+<span class="sd">        http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0136264</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Compute k-edge-ccs using the most efficient algorithms available.</span>
+    <span class="k">if</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;k cannot be less than 1&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">nx</span><span class="o">.</span><span class="n">strongly_connected_components</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># TODO: investigate https://arxiv.org/abs/1412.6466 for k=2</span>
+            <span class="n">aux_graph</span> <span class="o">=</span> <span class="n">EdgeComponentAuxGraph</span><span class="o">.</span><span class="n">construct</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">aux_graph</span><span class="o">.</span><span class="n">k_edge_components</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">nx</span><span class="o">.</span><span class="n">connected_components</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">k</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">bridge_components</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">aux_graph</span> <span class="o">=</span> <span class="n">EdgeComponentAuxGraph</span><span class="o">.</span><span class="n">construct</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">aux_graph</span><span class="o">.</span><span class="n">k_edge_components</span><span class="p">(</span><span class="n">k</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="k_edge_subgraphs"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.connectivity.edge_kcomponents.k_edge_subgraphs.html#networkx.algorithms.connectivity.edge_kcomponents.k_edge_subgraphs">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;multigraph&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">k_edge_subgraphs</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Generates nodes in each maximal k-edge-connected subgraph in G.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+
+<span class="sd">    k : Integer</span>
+<span class="sd">        Desired edge connectivity</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    k_edge_subgraphs : a generator of k-edge-subgraphs</span>
+<span class="sd">        Each k-edge-subgraph is a maximal set of nodes that defines a subgraph</span>
+<span class="sd">        of G that is k-edge-connected.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :func:`edge_connectivity`</span>
+<span class="sd">    :func:`k_edge_components` : similar to this function, but nodes only</span>
+<span class="sd">        need to have k-edge-connctivity within the graph G and the subgraphs</span>
+<span class="sd">        might not be k-edge-connected.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NetworkXNotImplemented</span>
+<span class="sd">        If the input graph is a multigraph.</span>
+
+<span class="sd">    ValueError:</span>
+<span class="sd">        If k is less than 1</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Attempts to use the most efficient implementation available based on k.</span>
+<span class="sd">    If k=1, or k=2 and the graph is undirected, then this simply calls</span>
+<span class="sd">    `k_edge_components`.  Otherwise the algorithm from _[1] is used.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import itertools as it</span>
+<span class="sd">    &gt;&gt;&gt; from networkx.utils import pairwise</span>
+<span class="sd">    &gt;&gt;&gt; paths = [</span>
+<span class="sd">    ...     (1, 2, 4, 3, 1, 4),</span>
+<span class="sd">    ...     (5, 6, 7, 8, 5, 7, 8, 6),</span>
+<span class="sd">    ... ]</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.Graph()</span>
+<span class="sd">    &gt;&gt;&gt; G.add_nodes_from(it.chain(*paths))</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edges_from(it.chain(*[pairwise(path) for path in paths]))</span>
+<span class="sd">    &gt;&gt;&gt; # note this does not return {1, 4} unlike k_edge_components</span>
+<span class="sd">    &gt;&gt;&gt; sorted(map(sorted, nx.k_edge_subgraphs(G, k=3)))</span>
+<span class="sd">    [[1], [2], [3], [4], [5, 6, 7, 8]]</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Zhou, Liu, et al. (2012) Finding maximal k-edge-connected subgraphs</span>
+<span class="sd">        from a large graph.  ACM International Conference on Extending Database</span>
+<span class="sd">        Technology 2012 480-–491.</span>
+<span class="sd">        https://openproceedings.org/2012/conf/edbt/ZhouLYLCL12.pdf</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;k cannot be less than 1&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># For directed graphs ,</span>
+            <span class="c1"># When k == 1, k-edge-ccs and k-edge-subgraphs are the same</span>
+            <span class="k">return</span> <span class="n">k_edge_components</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_k_edge_subgraphs_nodes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="c1"># For undirected graphs,</span>
+            <span class="c1"># when k &lt;= 2, k-edge-ccs and k-edge-subgraphs are the same</span>
+            <span class="k">return</span> <span class="n">k_edge_components</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_k_edge_subgraphs_nodes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">_k_edge_subgraphs_nodes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Helper to get the nodes from the subgraphs.</span>
+
+<span class="sd">    This allows k_edge_subgraphs to return a generator.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">C</span> <span class="ow">in</span> <span class="n">general_k_edge_subgraphs</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+        <span class="k">yield</span> <span class="nb">set</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">nodes</span><span class="p">())</span>
+
+
+<div class="viewcode-block" id="bridge_components"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.connectivity.edge_kcomponents.bridge_components.html#networkx.algorithms.connectivity.edge_kcomponents.bridge_components">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;directed&quot;</span><span class="p">)</span>
+<span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;multigraph&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">bridge_components</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Finds all bridge-connected components G.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX undirected graph</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bridge_components : a generator of 2-edge-connected components</span>
+
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :func:`k_edge_subgraphs` : this function is a special case for an</span>
+<span class="sd">        undirected graph where k=2.</span>
+<span class="sd">    :func:`biconnected_components` : similar to this function, but is defined</span>
+<span class="sd">        using 2-node-connectivity instead of 2-edge-connectivity.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NetworkXNotImplemented</span>
+<span class="sd">        If the input graph is directed or a multigraph.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Bridge-connected components are also known as 2-edge-connected components.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; # The barbell graph with parameter zero has a single bridge</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.barbell_graph(5, 0)</span>
+<span class="sd">    &gt;&gt;&gt; from networkx.algorithms.connectivity.edge_kcomponents import bridge_components</span>
+<span class="sd">    &gt;&gt;&gt; sorted(map(sorted, bridge_components(G)))</span>
+<span class="sd">    [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">H</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">H</span><span class="o">.</span><span class="n">remove_edges_from</span><span class="p">(</span><span class="n">bridges</span><span class="p">(</span><span class="n">G</span><span class="p">))</span>
+    <span class="k">yield from</span> <span class="n">nx</span><span class="o">.</span><span class="n">connected_components</span><span class="p">(</span><span class="n">H</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="EdgeComponentAuxGraph"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.connectivity.edge_kcomponents.EdgeComponentAuxGraph.html#networkx.algorithms.connectivity.edge_kcomponents.EdgeComponentAuxGraph">[docs]</a><span class="k">class</span> <span class="nc">EdgeComponentAuxGraph</span><span class="p">:</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;A simple algorithm to find all k-edge-connected components in a graph.</span>
+
+<span class="sd">    Constructing the AuxillaryGraph (which may take some time) allows for the</span>
+<span class="sd">    k-edge-ccs to be found in linear time for arbitrary k.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This implementation is based on [1]_. The idea is to construct an auxiliary</span>
+<span class="sd">    graph from which the k-edge-ccs can be extracted in linear time. The</span>
+<span class="sd">    auxiliary graph is constructed in $O(|V|\cdot F)$ operations, where F is the</span>
+<span class="sd">    complexity of max flow. Querying the components takes an additional $O(|V|)$</span>
+<span class="sd">    operations. This algorithm can be slow for large graphs, but it handles an</span>
+<span class="sd">    arbitrary k and works for both directed and undirected inputs.</span>
+
+<span class="sd">    The undirected case for k=1 is exactly connected components.</span>
+<span class="sd">    The undirected case for k=2 is exactly bridge connected components.</span>
+<span class="sd">    The directed case for k=1 is exactly strongly connected components.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Wang, Tianhao, et al. (2015) A simple algorithm for finding all</span>
+<span class="sd">        k-edge-connected components.</span>
+<span class="sd">        http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0136264</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import itertools as it</span>
+<span class="sd">    &gt;&gt;&gt; from networkx.utils import pairwise</span>
+<span class="sd">    &gt;&gt;&gt; from networkx.algorithms.connectivity import EdgeComponentAuxGraph</span>
+<span class="sd">    &gt;&gt;&gt; # Build an interesting graph with multiple levels of k-edge-ccs</span>
+<span class="sd">    &gt;&gt;&gt; paths = [</span>
+<span class="sd">    ...     (1, 2, 3, 4, 1, 3, 4, 2),  # a 3-edge-cc (a 4 clique)</span>
+<span class="sd">    ...     (5, 6, 7, 5),  # a 2-edge-cc (a 3 clique)</span>
+<span class="sd">    ...     (1, 5),  # combine first two ccs into a 1-edge-cc</span>
+<span class="sd">    ...     (0,),  # add an additional disconnected 1-edge-cc</span>
+<span class="sd">    ... ]</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.Graph()</span>
+<span class="sd">    &gt;&gt;&gt; G.add_nodes_from(it.chain(*paths))</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edges_from(it.chain(*[pairwise(path) for path in paths]))</span>
+<span class="sd">    &gt;&gt;&gt; # Constructing the AuxGraph takes about O(n ** 4)</span>
+<span class="sd">    &gt;&gt;&gt; aux_graph = EdgeComponentAuxGraph.construct(G)</span>
+<span class="sd">    &gt;&gt;&gt; # Once constructed, querying takes O(n)</span>
+<span class="sd">    &gt;&gt;&gt; sorted(map(sorted, aux_graph.k_edge_components(k=1)))</span>
+<span class="sd">    [[0], [1, 2, 3, 4, 5, 6, 7]]</span>
+<span class="sd">    &gt;&gt;&gt; sorted(map(sorted, aux_graph.k_edge_components(k=2)))</span>
+<span class="sd">    [[0], [1, 2, 3, 4], [5, 6, 7]]</span>
+<span class="sd">    &gt;&gt;&gt; sorted(map(sorted, aux_graph.k_edge_components(k=3)))</span>
+<span class="sd">    [[0], [1, 2, 3, 4], [5], [6], [7]]</span>
+<span class="sd">    &gt;&gt;&gt; sorted(map(sorted, aux_graph.k_edge_components(k=4)))</span>
+<span class="sd">    [[0], [1], [2], [3], [4], [5], [6], [7]]</span>
+
+<span class="sd">    The auxiliary graph is primarilly used for k-edge-ccs but it</span>
+<span class="sd">    can also speed up the queries of k-edge-subgraphs by refining the</span>
+<span class="sd">    search space.</span>
+
+<span class="sd">    &gt;&gt;&gt; import itertools as it</span>
+<span class="sd">    &gt;&gt;&gt; from networkx.utils import pairwise</span>
+<span class="sd">    &gt;&gt;&gt; from networkx.algorithms.connectivity import EdgeComponentAuxGraph</span>
+<span class="sd">    &gt;&gt;&gt; paths = [</span>
+<span class="sd">    ...     (1, 2, 4, 3, 1, 4),</span>
+<span class="sd">    ... ]</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.Graph()</span>
+<span class="sd">    &gt;&gt;&gt; G.add_nodes_from(it.chain(*paths))</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edges_from(it.chain(*[pairwise(path) for path in paths]))</span>
+<span class="sd">    &gt;&gt;&gt; aux_graph = EdgeComponentAuxGraph.construct(G)</span>
+<span class="sd">    &gt;&gt;&gt; sorted(map(sorted, aux_graph.k_edge_subgraphs(k=3)))</span>
+<span class="sd">    [[1], [2], [3], [4]]</span>
+<span class="sd">    &gt;&gt;&gt; sorted(map(sorted, aux_graph.k_edge_components(k=3)))</span>
+<span class="sd">    [[1, 4], [2], [3]]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># @not_implemented_for(&#39;multigraph&#39;)  # TODO: fix decor for classmethods</span>
+<div class="viewcode-block" id="EdgeComponentAuxGraph.construct"><a class="viewcode-back" href="../../../../reference/algorithms/generated/generated/networkx.algorithms.connectivity.edge_kcomponents.EdgeComponentAuxGraph.construct.html#networkx.algorithms.connectivity.edge_kcomponents.EdgeComponentAuxGraph.construct">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">construct</span><span class="p">(</span><span class="n">EdgeComponentAuxGraph</span><span class="p">,</span> <span class="n">G</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Builds an auxiliary graph encoding edge-connectivity between nodes.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Given G=(V, E), initialize an empty auxiliary graph A.</span>
+<span class="sd">        Choose an arbitrary source node s.  Initialize a set N of available</span>
+<span class="sd">        nodes (that can be used as the sink). The algorithm picks an</span>
+<span class="sd">        arbitrary node t from N - {s}, and then computes the minimum st-cut</span>
+<span class="sd">        (S, T) with value w. If G is directed the minimum of the st-cut or</span>
+<span class="sd">        the ts-cut is used instead. Then, the edge (s, t) is added to the</span>
+<span class="sd">        auxiliary graph with weight w. The algorithm is called recursively</span>
+<span class="sd">        first using S as the available nodes and s as the source, and then</span>
+<span class="sd">        using T and t. Recursion stops when the source is the only available</span>
+<span class="sd">        node.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        G : NetworkX graph</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># workaround for classmethod decorator</span>
+        <span class="n">not_implemented_for</span><span class="p">(</span><span class="s2">&quot;multigraph&quot;</span><span class="p">)(</span><span class="k">lambda</span> <span class="n">G</span><span class="p">:</span> <span class="n">G</span><span class="p">)(</span><span class="n">G</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">_recursive_build</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">avail</span><span class="p">):</span>
+            <span class="c1"># Terminate once the flow has been compute to every node.</span>
+            <span class="k">if</span> <span class="p">{</span><span class="n">source</span><span class="p">}</span> <span class="o">==</span> <span class="n">avail</span><span class="p">:</span>
+                <span class="k">return</span>
+            <span class="c1"># pick an arbitrary node as the sink</span>
+            <span class="n">sink</span> <span class="o">=</span> <span class="n">arbitrary_element</span><span class="p">(</span><span class="n">avail</span> <span class="o">-</span> <span class="p">{</span><span class="n">source</span><span class="p">})</span>
+            <span class="c1"># find the minimum cut and its weight</span>
+            <span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">minimum_cut</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">sink</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">H</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+                <span class="c1"># check if the reverse direction has a smaller cut</span>
+                <span class="n">value_</span><span class="p">,</span> <span class="p">(</span><span class="n">T_</span><span class="p">,</span> <span class="n">S_</span><span class="p">)</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">minimum_cut</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">sink</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">value_</span> <span class="o">&lt;</span> <span class="n">value</span><span class="p">:</span>
+                    <span class="n">value</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">T</span> <span class="o">=</span> <span class="n">value_</span><span class="p">,</span> <span class="n">S_</span><span class="p">,</span> <span class="n">T_</span>
+            <span class="c1"># add edge with weight of cut to the aux graph</span>
+            <span class="n">A</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">sink</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
+            <span class="c1"># recursively call until all but one node is used</span>
+            <span class="n">_recursive_build</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">avail</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">S</span><span class="p">))</span>
+            <span class="n">_recursive_build</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">sink</span><span class="p">,</span> <span class="n">avail</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">T</span><span class="p">))</span>
+
+        <span class="c1"># Copy input to ensure all edges have unit capacity</span>
+        <span class="n">H</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
+        <span class="n">H</span><span class="o">.</span><span class="n">add_nodes_from</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">())</span>
+        <span class="n">H</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(),</span> <span class="n">capacity</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># A is the auxiliary graph to be constructed</span>
+        <span class="c1"># It is a weighted undirected tree</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+
+        <span class="c1"># Pick an arbitrary node as the source</span>
+        <span class="k">if</span> <span class="n">H</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">source</span> <span class="o">=</span> <span class="n">arbitrary_element</span><span class="p">(</span><span class="n">H</span><span class="o">.</span><span class="n">nodes</span><span class="p">())</span>
+            <span class="c1"># Initialize a set of elements that can be chosen as the sink</span>
+            <span class="n">avail</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">H</span><span class="o">.</span><span class="n">nodes</span><span class="p">())</span>
+
+            <span class="c1"># This constructs A</span>
+            <span class="n">_recursive_build</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">avail</span><span class="p">)</span>
+
+        <span class="c1"># This class is a container the holds the auxiliary graph A and</span>
+        <span class="c1"># provides access the k_edge_components function.</span>
+        <span class="bp">self</span> <span class="o">=</span> <span class="n">EdgeComponentAuxGraph</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">A</span> <span class="o">=</span> <span class="n">A</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">H</span> <span class="o">=</span> <span class="n">H</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="EdgeComponentAuxGraph.k_edge_components"><a class="viewcode-back" href="../../../../reference/algorithms/generated/generated/networkx.algorithms.connectivity.edge_kcomponents.EdgeComponentAuxGraph.k_edge_components.html#networkx.algorithms.connectivity.edge_kcomponents.EdgeComponentAuxGraph.k_edge_components">[docs]</a>    <span class="k">def</span> <span class="nf">k_edge_components</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Queries the auxiliary graph for k-edge-connected components.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        k : Integer</span>
+<span class="sd">            Desired edge connectivity</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        k_edge_components : a generator of k-edge-ccs</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Given the auxiliary graph, the k-edge-connected components can be</span>
+<span class="sd">        determined in linear time by removing all edges with weights less than</span>
+<span class="sd">        k from the auxiliary graph.  The resulting connected components are the</span>
+<span class="sd">        k-edge-ccs in the original graph.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;k cannot be less than 1&quot;</span><span class="p">)</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">A</span>
+        <span class="c1"># &quot;traverse the auxiliary graph A and delete all edges with weights less</span>
+        <span class="c1"># than k&quot;</span>
+        <span class="n">aux_weights</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">get_edge_attributes</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="s2">&quot;weight&quot;</span><span class="p">)</span>
+        <span class="c1"># Create a relevant graph with the auxiliary edges with weights &gt;= k</span>
+        <span class="n">R</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+        <span class="n">R</span><span class="o">.</span><span class="n">add_nodes_from</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">nodes</span><span class="p">())</span>
+        <span class="n">R</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">aux_weights</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">w</span> <span class="o">&gt;=</span> <span class="n">k</span><span class="p">)</span>
+
+        <span class="c1"># Return the nodes that are k-edge-connected in the original graph</span>
+        <span class="k">yield from</span> <span class="n">nx</span><span class="o">.</span><span class="n">connected_components</span><span class="p">(</span><span class="n">R</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EdgeComponentAuxGraph.k_edge_subgraphs"><a class="viewcode-back" href="../../../../reference/algorithms/generated/generated/networkx.algorithms.connectivity.edge_kcomponents.EdgeComponentAuxGraph.k_edge_subgraphs.html#networkx.algorithms.connectivity.edge_kcomponents.EdgeComponentAuxGraph.k_edge_subgraphs">[docs]</a>    <span class="k">def</span> <span class="nf">k_edge_subgraphs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Queries the auxiliary graph for k-edge-connected subgraphs.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        k : Integer</span>
+<span class="sd">            Desired edge connectivity</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        k_edge_subgraphs : a generator of k-edge-subgraphs</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Refines the k-edge-ccs into k-edge-subgraphs. The running time is more</span>
+<span class="sd">        than $O(|V|)$.</span>
+
+<span class="sd">        For single values of k it is faster to use `nx.k_edge_subgraphs`.</span>
+<span class="sd">        But for multiple values of k, it can be faster to build AuxGraph and</span>
+<span class="sd">        then use this method.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;k cannot be less than 1&quot;</span><span class="p">)</span>
+        <span class="n">H</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">H</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">A</span>
+        <span class="c1"># &quot;traverse the auxiliary graph A and delete all edges with weights less</span>
+        <span class="c1"># than k&quot;</span>
+        <span class="n">aux_weights</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">get_edge_attributes</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="s2">&quot;weight&quot;</span><span class="p">)</span>
+        <span class="c1"># Create a relevant graph with the auxiliary edges with weights &gt;= k</span>
+        <span class="n">R</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+        <span class="n">R</span><span class="o">.</span><span class="n">add_nodes_from</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">nodes</span><span class="p">())</span>
+        <span class="n">R</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">aux_weights</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">w</span> <span class="o">&gt;=</span> <span class="n">k</span><span class="p">)</span>
+
+        <span class="c1"># Return the components whose subgraphs are k-edge-connected</span>
+        <span class="k">for</span> <span class="n">cc</span> <span class="ow">in</span> <span class="n">nx</span><span class="o">.</span><span class="n">connected_components</span><span class="p">(</span><span class="n">R</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cc</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">k</span><span class="p">:</span>
+                <span class="c1"># Early return optimization</span>
+                <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">cc</span><span class="p">:</span>
+                    <span class="k">yield</span> <span class="p">{</span><span class="n">node</span><span class="p">}</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Call subgraph solution to refine the results</span>
+                <span class="n">C</span> <span class="o">=</span> <span class="n">H</span><span class="o">.</span><span class="n">subgraph</span><span class="p">(</span><span class="n">cc</span><span class="p">)</span>
+                <span class="k">yield from</span> <span class="n">k_edge_subgraphs</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span></div></div>
+
+
+<span class="k">def</span> <span class="nf">_low_degree_nodes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">nbunch</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Helper for finding nodes with degree less than k.&quot;&quot;&quot;</span>
+    <span class="c1"># Nodes with degree less than k cannot be k-edge-connected.</span>
+    <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+        <span class="c1"># Consider both in and out degree in the directed case</span>
+        <span class="n">seen</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="n">degree</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">out_degree</span><span class="p">(</span><span class="n">nbunch</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">degree</span> <span class="o">&lt;</span> <span class="n">k</span><span class="p">:</span>
+                <span class="n">seen</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+                <span class="k">yield</span> <span class="n">node</span>
+        <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="n">degree</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">in_degree</span><span class="p">(</span><span class="n">nbunch</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">node</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">seen</span> <span class="ow">and</span> <span class="n">degree</span> <span class="o">&lt;</span> <span class="n">k</span><span class="p">:</span>
+                <span class="n">seen</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+                <span class="k">yield</span> <span class="n">node</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Only the degree matters in the undirected case</span>
+        <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="n">degree</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">degree</span><span class="p">(</span><span class="n">nbunch</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">degree</span> <span class="o">&lt;</span> <span class="n">k</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="n">node</span>
+
+
+<span class="k">def</span> <span class="nf">_high_degree_components</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Helper for filtering components that can&#39;t be k-edge-connected.</span>
+
+<span class="sd">    Removes and generates each node with degree less than k.  Then generates</span>
+<span class="sd">    remaining components where all nodes have degree at least k.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Iteravely remove parts of the graph that are not k-edge-connected</span>
+    <span class="n">H</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">singletons</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">_low_degree_nodes</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span>
+    <span class="k">while</span> <span class="n">singletons</span><span class="p">:</span>
+        <span class="c1"># Only search neighbors of removed nodes</span>
+        <span class="n">nbunch</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">it</span><span class="o">.</span><span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">H</span><span class="o">.</span><span class="n">neighbors</span><span class="p">,</span> <span class="n">singletons</span><span class="p">)))</span>
+        <span class="n">nbunch</span><span class="o">.</span><span class="n">difference_update</span><span class="p">(</span><span class="n">singletons</span><span class="p">)</span>
+        <span class="n">H</span><span class="o">.</span><span class="n">remove_nodes_from</span><span class="p">(</span><span class="n">singletons</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">singletons</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="p">{</span><span class="n">node</span><span class="p">}</span>
+        <span class="n">singletons</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">_low_degree_nodes</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">nbunch</span><span class="p">))</span>
+
+    <span class="c1"># Note: remaining connected components may not be k-edge-connected</span>
+    <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+        <span class="k">yield from</span> <span class="n">nx</span><span class="o">.</span><span class="n">strongly_connected_components</span><span class="p">(</span><span class="n">H</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">yield from</span> <span class="n">nx</span><span class="o">.</span><span class="n">connected_components</span><span class="p">(</span><span class="n">H</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">general_k_edge_subgraphs</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;General algorithm to find all maximal k-edge-connected subgraphs in G.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    k_edge_subgraphs : a generator of nx.Graphs that are k-edge-subgraphs</span>
+<span class="sd">        Each k-edge-subgraph is a maximal set of nodes that defines a subgraph</span>
+<span class="sd">        of G that is k-edge-connected.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Implementation of the basic algorithm from _[1].  The basic idea is to find</span>
+<span class="sd">    a global minimum cut of the graph. If the cut value is at least k, then the</span>
+<span class="sd">    graph is a k-edge-connected subgraph and can be added to the results.</span>
+<span class="sd">    Otherwise, the cut is used to split the graph in two and the procedure is</span>
+<span class="sd">    applied recursively. If the graph is just a single node, then it is also</span>
+<span class="sd">    added to the results. At the end, each result is either guaranteed to be</span>
+<span class="sd">    a single node or a subgraph of G that is k-edge-connected.</span>
+
+<span class="sd">    This implementation contains optimizations for reducing the number of calls</span>
+<span class="sd">    to max-flow, but there are other optimizations in _[1] that could be</span>
+<span class="sd">    implemented.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Zhou, Liu, et al. (2012) Finding maximal k-edge-connected subgraphs</span>
+<span class="sd">        from a large graph.  ACM International Conference on Extending Database</span>
+<span class="sd">        Technology 2012 480-–491.</span>
+<span class="sd">        https://openproceedings.org/2012/conf/edbt/ZhouLYLCL12.pdf</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from networkx.utils import pairwise</span>
+<span class="sd">    &gt;&gt;&gt; paths = [</span>
+<span class="sd">    ...     (11, 12, 13, 14, 11, 13, 14, 12),  # a 4-clique</span>
+<span class="sd">    ...     (21, 22, 23, 24, 21, 23, 24, 22),  # another 4-clique</span>
+<span class="sd">    ...     # connect the cliques with high degree but low connectivity</span>
+<span class="sd">    ...     (50, 13),</span>
+<span class="sd">    ...     (12, 50, 22),</span>
+<span class="sd">    ...     (13, 102, 23),</span>
+<span class="sd">    ...     (14, 101, 24),</span>
+<span class="sd">    ... ]</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.Graph(it.chain(*[pairwise(path) for path in paths]))</span>
+<span class="sd">    &gt;&gt;&gt; sorted(map(len, k_edge_subgraphs(G, k=3)))</span>
+<span class="sd">    [1, 1, 1, 4, 4]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;k cannot be less than 1&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Node pruning optimization (incorporates early return)</span>
+    <span class="c1"># find_ccs is either connected_components/strongly_connected_components</span>
+    <span class="n">find_ccs</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">_high_degree_components</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">)</span>
+
+    <span class="c1"># Quick return optimization</span>
+    <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">k</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
+            <span class="k">yield</span> <span class="n">G</span><span class="o">.</span><span class="n">subgraph</span><span class="p">([</span><span class="n">node</span><span class="p">])</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">return</span>
+
+    <span class="c1"># Intermediate results</span>
+    <span class="n">R0</span> <span class="o">=</span> <span class="p">{</span><span class="n">G</span><span class="o">.</span><span class="n">subgraph</span><span class="p">(</span><span class="n">cc</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">for</span> <span class="n">cc</span> <span class="ow">in</span> <span class="n">find_ccs</span><span class="p">(</span><span class="n">G</span><span class="p">)}</span>
+    <span class="c1"># Subdivide CCs in the intermediate results until they are k-conn</span>
+    <span class="k">while</span> <span class="n">R0</span><span class="p">:</span>
+        <span class="n">G1</span> <span class="o">=</span> <span class="n">R0</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">G1</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">G1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Find a global minimum cut</span>
+            <span class="n">cut_edges</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">minimum_edge_cut</span><span class="p">(</span><span class="n">G1</span><span class="p">)</span>
+            <span class="n">cut_value</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">cut_edges</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">cut_value</span> <span class="o">&lt;</span> <span class="n">k</span><span class="p">:</span>
+                <span class="c1"># G1 is not k-edge-connected, so subdivide it</span>
+                <span class="n">G1</span><span class="o">.</span><span class="n">remove_edges_from</span><span class="p">(</span><span class="n">cut_edges</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">cc</span> <span class="ow">in</span> <span class="n">find_ccs</span><span class="p">(</span><span class="n">G1</span><span class="p">):</span>
+                    <span class="n">R0</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">G1</span><span class="o">.</span><span class="n">subgraph</span><span class="p">(</span><span class="n">cc</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Otherwise we found a k-edge-connected subgraph</span>
+                <span class="k">yield</span> <span class="n">G1</span>
+</pre></div>
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

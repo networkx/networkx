@@ -1,0 +1,769 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>networkx.algorithms.community.lukes &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/algorithms/community/lukes';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/algorithms/community/lukes.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../../../../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../../../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../../../../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <h1>Source code for networkx.algorithms.community.lukes</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Lukes Algorithm for exact optimal weighted tree partitioning.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">lru_cache</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">choice</span>
+
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">from</span> <span class="nn">networkx.utils</span> <span class="kn">import</span> <span class="n">not_implemented_for</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;lukes_partitioning&quot;</span><span class="p">]</span>
+
+<span class="n">D_EDGE_W</span> <span class="o">=</span> <span class="s2">&quot;weight&quot;</span>
+<span class="n">D_EDGE_VALUE</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">D_NODE_W</span> <span class="o">=</span> <span class="s2">&quot;weight&quot;</span>
+<span class="n">D_NODE_VALUE</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">PKEY</span> <span class="o">=</span> <span class="s2">&quot;partitions&quot;</span>
+<span class="n">CLUSTER_EVAL_CACHE_SIZE</span> <span class="o">=</span> <span class="mi">2048</span>
+
+
+<span class="k">def</span> <span class="nf">_split_n_from</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">min_size_of_first_part</span><span class="p">):</span>
+    <span class="c1"># splits j in two parts of which the first is at least</span>
+    <span class="c1"># the second argument</span>
+    <span class="k">assert</span> <span class="n">n</span> <span class="o">&gt;=</span> <span class="n">min_size_of_first_part</span>
+    <span class="k">for</span> <span class="n">p1</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">min_size_of_first_part</span><span class="p">,</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">yield</span> <span class="n">p1</span><span class="p">,</span> <span class="n">n</span> <span class="o">-</span> <span class="n">p1</span>
+
+
+<div class="viewcode-block" id="lukes_partitioning"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.community.lukes.lukes_partitioning.html#networkx.algorithms.community.lukes.lukes_partitioning">[docs]</a><span class="k">def</span> <span class="nf">lukes_partitioning</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">max_size</span><span class="p">,</span> <span class="n">node_weight</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">edge_weight</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;Optimal partitioning of a weighted tree using the Lukes algorithm.</span>
+
+<span class="sd">    This algorithm partitions a connected, acyclic graph featuring integer</span>
+<span class="sd">    node weights and float edge weights. The resulting clusters are such</span>
+<span class="sd">    that the total weight of the nodes in each cluster does not exceed</span>
+<span class="sd">    max_size and that the weight of the edges that are cut by the partition</span>
+<span class="sd">    is minimum. The algorithm is based on LUKES[1].</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : graph</span>
+
+<span class="sd">    max_size : int</span>
+<span class="sd">        Maximum weight a partition can have in terms of sum of</span>
+<span class="sd">        node_weight for all nodes in the partition</span>
+
+<span class="sd">    edge_weight : key</span>
+<span class="sd">        Edge data key to use as weight. If None, the weights are all</span>
+<span class="sd">        set to one.</span>
+
+<span class="sd">    node_weight : key</span>
+<span class="sd">        Node data key to use as weight. If None, the weights are all</span>
+<span class="sd">        set to one. The data must be int.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    partition : list</span>
+<span class="sd">        A list of sets of nodes representing the clusters of the</span>
+<span class="sd">        partition.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NotATree</span>
+<span class="sd">        If G is not a tree.</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        If any of the values of node_weight is not int.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. Lukes, J. A. (1974).</span>
+<span class="sd">       &quot;Efficient Algorithm for the Partitioning of Trees.&quot;</span>
+<span class="sd">       IBM Journal of Research and Development, 18(3), 217–224.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># First sanity check and tree preparation</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">nx</span><span class="o">.</span><span class="n">is_tree</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NotATree</span><span class="p">(</span><span class="s2">&quot;lukes_partitioning works only on trees&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">nx</span><span class="o">.</span><span class="n">is_directed</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+            <span class="n">root</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">in_degree</span><span class="p">()</span> <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span>
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">root</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+            <span class="n">root</span> <span class="o">=</span> <span class="n">root</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">t_G</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">root</span> <span class="o">=</span> <span class="n">choice</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">))</span>
+            <span class="c1"># this has the desirable side effect of not inheriting attributes</span>
+            <span class="n">t_G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">dfs_tree</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">root</span><span class="p">)</span>
+
+    <span class="c1"># Since we do not want to screw up the original graph,</span>
+    <span class="c1"># if we have a blank attribute, we make a deepcopy</span>
+    <span class="k">if</span> <span class="n">edge_weight</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">node_weight</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">safe_G</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">edge_weight</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">nx</span><span class="o">.</span><span class="n">set_edge_attributes</span><span class="p">(</span><span class="n">safe_G</span><span class="p">,</span> <span class="n">D_EDGE_VALUE</span><span class="p">,</span> <span class="n">D_EDGE_W</span><span class="p">)</span>
+            <span class="n">edge_weight</span> <span class="o">=</span> <span class="n">D_EDGE_W</span>
+        <span class="k">if</span> <span class="n">node_weight</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">nx</span><span class="o">.</span><span class="n">set_node_attributes</span><span class="p">(</span><span class="n">safe_G</span><span class="p">,</span> <span class="n">D_NODE_VALUE</span><span class="p">,</span> <span class="n">D_NODE_W</span><span class="p">)</span>
+            <span class="n">node_weight</span> <span class="o">=</span> <span class="n">D_NODE_W</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">safe_G</span> <span class="o">=</span> <span class="n">G</span>
+
+    <span class="c1"># Second sanity check</span>
+    <span class="c1"># The values of node_weight MUST BE int.</span>
+    <span class="c1"># I cannot see any room for duck typing without incurring serious</span>
+    <span class="c1"># danger of subtle bugs.</span>
+    <span class="n">all_n_attr</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">get_node_attributes</span><span class="p">(</span><span class="n">safe_G</span><span class="p">,</span> <span class="n">node_weight</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">all_n_attr</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;lukes_partitioning needs integer &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;values for node_weight (</span><span class="si">{</span><span class="n">node_weight</span><span class="si">}</span><span class="s2">)&quot;</span>
+            <span class="p">)</span>
+
+    <span class="c1"># SUBROUTINES -----------------------</span>
+    <span class="c1"># these functions are defined here for two reasons:</span>
+    <span class="c1"># - brevity: we can leverage global &quot;safe_G&quot;</span>
+    <span class="c1"># - caching: signatures are hashable</span>
+
+    <span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;undirected&quot;</span><span class="p">)</span>
+    <span class="c1"># this is intended to be called only on t_G</span>
+    <span class="k">def</span> <span class="nf">_leaves</span><span class="p">(</span><span class="n">gr</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">gr</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">nx</span><span class="o">.</span><span class="n">descendants</span><span class="p">(</span><span class="n">gr</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+                <span class="k">yield</span> <span class="n">x</span>
+
+    <span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;undirected&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_a_parent_of_leaves_only</span><span class="p">(</span><span class="n">gr</span><span class="p">):</span>
+        <span class="n">tleaves</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">_leaves</span><span class="p">(</span><span class="n">gr</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">gr</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span> <span class="o">-</span> <span class="n">tleaves</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="n">x</span> <span class="ow">in</span> <span class="n">tleaves</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">nx</span><span class="o">.</span><span class="n">descendants</span><span class="p">(</span><span class="n">gr</span><span class="p">,</span> <span class="n">n</span><span class="p">)]):</span>
+                <span class="k">return</span> <span class="n">n</span>
+
+    <span class="nd">@lru_cache</span><span class="p">(</span><span class="n">CLUSTER_EVAL_CACHE_SIZE</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_value_of_cluster</span><span class="p">(</span><span class="n">cluster</span><span class="p">):</span>
+        <span class="n">valid_edges</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">safe_G</span><span class="o">.</span><span class="n">edges</span> <span class="k">if</span> <span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">cluster</span> <span class="ow">and</span> <span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="n">cluster</span><span class="p">]</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">safe_G</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">e</span><span class="p">][</span><span class="n">edge_weight</span><span class="p">]</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">valid_edges</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_value_of_partition</span><span class="p">(</span><span class="n">partition</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">_value_of_cluster</span><span class="p">(</span><span class="nb">frozenset</span><span class="p">(</span><span class="n">c</span><span class="p">))</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">partition</span><span class="p">)</span>
+
+    <span class="nd">@lru_cache</span><span class="p">(</span><span class="n">CLUSTER_EVAL_CACHE_SIZE</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_weight_of_cluster</span><span class="p">(</span><span class="n">cluster</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">safe_G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="n">node_weight</span><span class="p">]</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">cluster</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_pivot</span><span class="p">(</span><span class="n">partition</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="n">ccx</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">partition</span> <span class="k">if</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">c</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">ccx</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">ccx</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_concatenate_or_merge</span><span class="p">(</span><span class="n">partition_1</span><span class="p">,</span> <span class="n">partition_2</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">ref_weigth</span><span class="p">):</span>
+
+        <span class="n">ccx</span> <span class="o">=</span> <span class="n">_pivot</span><span class="p">(</span><span class="n">partition_1</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+        <span class="n">cci</span> <span class="o">=</span> <span class="n">_pivot</span><span class="p">(</span><span class="n">partition_2</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+        <span class="n">merged_xi</span> <span class="o">=</span> <span class="n">ccx</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">cci</span><span class="p">)</span>
+
+        <span class="c1"># We first check if we can do the merge.</span>
+        <span class="c1"># If so, we do the actual calculations, otherwise we concatenate</span>
+        <span class="k">if</span> <span class="n">_weight_of_cluster</span><span class="p">(</span><span class="nb">frozenset</span><span class="p">(</span><span class="n">merged_xi</span><span class="p">))</span> <span class="o">&lt;=</span> <span class="n">ref_weigth</span><span class="p">:</span>
+            <span class="n">cp1</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">!=</span> <span class="n">ccx</span><span class="p">,</span> <span class="n">partition_1</span><span class="p">))</span>
+            <span class="n">cp2</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">!=</span> <span class="n">cci</span><span class="p">,</span> <span class="n">partition_2</span><span class="p">))</span>
+
+            <span class="n">option_2</span> <span class="o">=</span> <span class="p">[</span><span class="n">merged_xi</span><span class="p">]</span> <span class="o">+</span> <span class="n">cp1</span> <span class="o">+</span> <span class="n">cp2</span>
+            <span class="k">return</span> <span class="n">option_2</span><span class="p">,</span> <span class="n">_value_of_partition</span><span class="p">(</span><span class="n">option_2</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">option_1</span> <span class="o">=</span> <span class="n">partition_1</span> <span class="o">+</span> <span class="n">partition_2</span>
+            <span class="k">return</span> <span class="n">option_1</span><span class="p">,</span> <span class="n">_value_of_partition</span><span class="p">(</span><span class="n">option_1</span><span class="p">)</span>
+
+    <span class="c1"># INITIALIZATION -----------------------</span>
+    <span class="n">leaves</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">_leaves</span><span class="p">(</span><span class="n">t_G</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">lv</span> <span class="ow">in</span> <span class="n">leaves</span><span class="p">:</span>
+        <span class="n">t_G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">lv</span><span class="p">][</span><span class="n">PKEY</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">slot</span> <span class="o">=</span> <span class="n">safe_G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">lv</span><span class="p">][</span><span class="n">node_weight</span><span class="p">]</span>
+        <span class="n">t_G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">lv</span><span class="p">][</span><span class="n">PKEY</span><span class="p">][</span><span class="n">slot</span><span class="p">]</span> <span class="o">=</span> <span class="p">[{</span><span class="n">lv</span><span class="p">}]</span>
+        <span class="n">t_G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">lv</span><span class="p">][</span><span class="n">PKEY</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">[{</span><span class="n">lv</span><span class="p">}]</span>
+
+    <span class="k">for</span> <span class="n">inner</span> <span class="ow">in</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">t_G</span><span class="o">.</span><span class="n">nodes</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">leaves</span><span class="p">]:</span>
+        <span class="n">t_G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">inner</span><span class="p">][</span><span class="n">PKEY</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">slot</span> <span class="o">=</span> <span class="n">safe_G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">inner</span><span class="p">][</span><span class="n">node_weight</span><span class="p">]</span>
+        <span class="n">t_G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">inner</span><span class="p">][</span><span class="n">PKEY</span><span class="p">][</span><span class="n">slot</span><span class="p">]</span> <span class="o">=</span> <span class="p">[{</span><span class="n">inner</span><span class="p">}]</span>
+
+    <span class="c1"># CORE ALGORITHM -----------------------</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">x_node</span> <span class="o">=</span> <span class="n">_a_parent_of_leaves_only</span><span class="p">(</span><span class="n">t_G</span><span class="p">)</span>
+        <span class="n">weight_of_x</span> <span class="o">=</span> <span class="n">safe_G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">x_node</span><span class="p">][</span><span class="n">node_weight</span><span class="p">]</span>
+        <span class="n">best_value</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">best_partition</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">bp_buffer</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">x_descendants</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">descendants</span><span class="p">(</span><span class="n">t_G</span><span class="p">,</span> <span class="n">x_node</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i_node</span> <span class="ow">in</span> <span class="n">x_descendants</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">weight_of_x</span><span class="p">,</span> <span class="n">max_size</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">_split_n_from</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">weight_of_x</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="p">(</span>
+                        <span class="n">a</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">t_G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">x_node</span><span class="p">][</span><span class="n">PKEY</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+                        <span class="ow">or</span> <span class="n">b</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">t_G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">i_node</span><span class="p">][</span><span class="n">PKEY</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+                    <span class="p">):</span>
+                        <span class="c1"># it&#39;s not possible to form this particular weight sum</span>
+                        <span class="k">continue</span>
+
+                    <span class="n">part1</span> <span class="o">=</span> <span class="n">t_G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">x_node</span><span class="p">][</span><span class="n">PKEY</span><span class="p">][</span><span class="n">a</span><span class="p">]</span>
+                    <span class="n">part2</span> <span class="o">=</span> <span class="n">t_G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">i_node</span><span class="p">][</span><span class="n">PKEY</span><span class="p">][</span><span class="n">b</span><span class="p">]</span>
+                    <span class="n">part</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">_concatenate_or_merge</span><span class="p">(</span><span class="n">part1</span><span class="p">,</span> <span class="n">part2</span><span class="p">,</span> <span class="n">x_node</span><span class="p">,</span> <span class="n">i_node</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">j</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">bp_buffer</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">or</span> <span class="n">bp_buffer</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">value</span><span class="p">:</span>
+                        <span class="c1"># we annotate in the buffer the best partition for j</span>
+                        <span class="n">bp_buffer</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">part</span><span class="p">,</span> <span class="n">value</span>
+
+                    <span class="c1"># we also keep track of the overall best partition</span>
+                    <span class="k">if</span> <span class="n">best_value</span> <span class="o">&lt;=</span> <span class="n">value</span><span class="p">:</span>
+                        <span class="n">best_value</span> <span class="o">=</span> <span class="n">value</span>
+                        <span class="n">best_partition</span> <span class="o">=</span> <span class="n">part</span>
+
+            <span class="c1"># as illustrated in Lukes, once we finished a child, we can</span>
+            <span class="c1"># discharge the partitions we found into the graph</span>
+            <span class="c1"># (the key phrase is make all x == x&#39;)</span>
+            <span class="c1"># so that they are used by the subsequent children</span>
+            <span class="k">for</span> <span class="n">w</span><span class="p">,</span> <span class="p">(</span><span class="n">best_part_for_vl</span><span class="p">,</span> <span class="n">vl</span><span class="p">)</span> <span class="ow">in</span> <span class="n">bp_buffer</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">t_G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">x_node</span><span class="p">][</span><span class="n">PKEY</span><span class="p">][</span><span class="n">w</span><span class="p">]</span> <span class="o">=</span> <span class="n">best_part_for_vl</span>
+            <span class="n">bp_buffer</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+        <span class="c1"># the absolute best partition for this node</span>
+        <span class="c1"># across all weights has to be stored at 0</span>
+        <span class="n">t_G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">x_node</span><span class="p">][</span><span class="n">PKEY</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">best_partition</span>
+        <span class="n">t_G</span><span class="o">.</span><span class="n">remove_nodes_from</span><span class="p">(</span><span class="n">x_descendants</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">x_node</span> <span class="o">==</span> <span class="n">root</span><span class="p">:</span>
+            <span class="c1"># the 0-labeled partition of root</span>
+            <span class="c1"># is the optimal one for the whole tree</span>
+            <span class="k">return</span> <span class="n">t_G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">root</span><span class="p">][</span><span class="n">PKEY</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span></div>
+</pre></div>
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,1650 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>networkx.algorithms.matching &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/algorithms/matching';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/algorithms/matching.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../../../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../../../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <h1>Source code for networkx.algorithms.matching</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Functions for computing and verifying matchings in a graph.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">combinations</span><span class="p">,</span> <span class="n">repeat</span>
+
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">from</span> <span class="nn">networkx.utils</span> <span class="kn">import</span> <span class="n">not_implemented_for</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;is_matching&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;is_maximal_matching&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;is_perfect_matching&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;max_weight_matching&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;min_weight_matching&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;maximal_matching&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="maximal_matching"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.matching.maximal_matching.html#networkx.algorithms.matching.maximal_matching">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;multigraph&quot;</span><span class="p">)</span>
+<span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;directed&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">maximal_matching</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Find a maximal matching in the graph.</span>
+
+<span class="sd">    A matching is a subset of edges in which no node occurs more than once.</span>
+<span class="sd">    A maximal matching cannot add more edges and still be a matching.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+<span class="sd">        Undirected graph</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    matching : set</span>
+<span class="sd">        A maximal matching of the graph.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.Graph([(1, 2), (1, 3), (2, 3), (2, 4), (3, 5), (4, 5)])</span>
+<span class="sd">    &gt;&gt;&gt; sorted(nx.maximal_matching(G))</span>
+<span class="sd">    [(1, 2), (3, 5)]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The algorithm greedily selects a maximal matching M of the graph G</span>
+<span class="sd">    (i.e. no superset of M exists). It runs in $O(|E|)$ time.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">matching</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">():</span>
+        <span class="c1"># If the edge isn&#39;t covered, add it to the matching</span>
+        <span class="c1"># then remove neighborhood of u and v from consideration.</span>
+        <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">edge</span>
+        <span class="k">if</span> <span class="n">u</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">nodes</span> <span class="ow">and</span> <span class="n">v</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">nodes</span> <span class="ow">and</span> <span class="n">u</span> <span class="o">!=</span> <span class="n">v</span><span class="p">:</span>
+            <span class="n">matching</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
+            <span class="n">nodes</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">matching</span></div>
+
+
+<span class="k">def</span> <span class="nf">matching_dict_to_set</span><span class="p">(</span><span class="n">matching</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Converts matching dict format to matching set format</span>
+
+<span class="sd">    Converts a dictionary representing a matching (as returned by</span>
+<span class="sd">    :func:`max_weight_matching`) to a set representing a matching (as</span>
+<span class="sd">    returned by :func:`maximal_matching`).</span>
+
+<span class="sd">    In the definition of maximal matching adopted by NetworkX,</span>
+<span class="sd">    self-loops are not allowed, so the provided dictionary is expected</span>
+<span class="sd">    to never have any mapping from a key to itself. However, the</span>
+<span class="sd">    dictionary is expected to have mirrored key/value pairs, for</span>
+<span class="sd">    example, key ``u`` with value ``v`` and key ``v`` with value ``u``.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">edges</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">matching</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">edge</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span> <span class="ow">in</span> <span class="n">edges</span> <span class="ow">or</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">u</span> <span class="o">==</span> <span class="n">v</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Selfloops cannot appear in matchings </span><span class="si">{</span><span class="n">edge</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">edges</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">edges</span>
+
+
+<div class="viewcode-block" id="is_matching"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.matching.is_matching.html#networkx.algorithms.matching.is_matching">[docs]</a><span class="k">def</span> <span class="nf">is_matching</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">matching</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return True if ``matching`` is a valid matching of ``G``</span>
+
+<span class="sd">    A *matching* in a graph is a set of edges in which no two distinct</span>
+<span class="sd">    edges share a common endpoint. Each node is incident to at most one</span>
+<span class="sd">    edge in the matching. The edges are said to be independent.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+
+<span class="sd">    matching : dict or set</span>
+<span class="sd">        A dictionary or set representing a matching. If a dictionary, it</span>
+<span class="sd">        must have ``matching[u] == v`` and ``matching[v] == u`` for each</span>
+<span class="sd">        edge ``(u, v)`` in the matching. If a set, it must have elements</span>
+<span class="sd">        of the form ``(u, v)``, where ``(u, v)`` is an edge in the</span>
+<span class="sd">        matching.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bool</span>
+<span class="sd">        Whether the given set or dictionary represents a valid matching</span>
+<span class="sd">        in the graph.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NetworkXError</span>
+<span class="sd">        If the proposed matching has an edge to a node not in G.</span>
+<span class="sd">        Or if the matching is not a collection of 2-tuple edges.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.Graph([(1, 2), (1, 3), (2, 3), (2, 4), (3, 5), (4, 5)])</span>
+<span class="sd">    &gt;&gt;&gt; nx.is_maximal_matching(G, {1: 3, 2: 4})  # using dict to represent matching</span>
+<span class="sd">    True</span>
+
+<span class="sd">    &gt;&gt;&gt; nx.is_matching(G, {(1, 3), (2, 4)})  # using set to represent matching</span>
+<span class="sd">    True</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">matching</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">matching</span> <span class="o">=</span> <span class="n">matching_dict_to_set</span><span class="p">(</span><span class="n">matching</span><span class="p">)</span>
+
+    <span class="n">nodes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">matching</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;matching has non-2-tuple edge </span><span class="si">{</span><span class="n">edge</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">edge</span>
+        <span class="k">if</span> <span class="n">u</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">G</span> <span class="ow">or</span> <span class="n">v</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">G</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;matching contains edge </span><span class="si">{</span><span class="n">edge</span><span class="si">}</span><span class="s2"> with node not in G&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">u</span> <span class="o">==</span> <span class="n">v</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">G</span><span class="o">.</span><span class="n">has_edge</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">nodes</span> <span class="ow">or</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="n">nodes</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="is_maximal_matching"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.matching.is_maximal_matching.html#networkx.algorithms.matching.is_maximal_matching">[docs]</a><span class="k">def</span> <span class="nf">is_maximal_matching</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">matching</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return True if ``matching`` is a maximal matching of ``G``</span>
+
+<span class="sd">    A *maximal matching* in a graph is a matching in which adding any</span>
+<span class="sd">    edge would cause the set to no longer be a valid matching.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+
+<span class="sd">    matching : dict or set</span>
+<span class="sd">        A dictionary or set representing a matching. If a dictionary, it</span>
+<span class="sd">        must have ``matching[u] == v`` and ``matching[v] == u`` for each</span>
+<span class="sd">        edge ``(u, v)`` in the matching. If a set, it must have elements</span>
+<span class="sd">        of the form ``(u, v)``, where ``(u, v)`` is an edge in the</span>
+<span class="sd">        matching.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bool</span>
+<span class="sd">        Whether the given set or dictionary represents a valid maximal</span>
+<span class="sd">        matching in the graph.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.Graph([(1, 2), (1, 3), (2, 3), (3, 4), (3, 5)])</span>
+<span class="sd">    &gt;&gt;&gt; nx.is_maximal_matching(G, {(1, 2), (3, 4)})</span>
+<span class="sd">    True</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">matching</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">matching</span> <span class="o">=</span> <span class="n">matching_dict_to_set</span><span class="p">(</span><span class="n">matching</span><span class="p">)</span>
+    <span class="c1"># If the given set is not a matching, then it is not a maximal matching.</span>
+    <span class="n">edges</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">matching</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;matching has non-2-tuple edge </span><span class="si">{</span><span class="n">edge</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">edge</span>
+        <span class="k">if</span> <span class="n">u</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">G</span> <span class="ow">or</span> <span class="n">v</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">G</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;matching contains edge </span><span class="si">{</span><span class="n">edge</span><span class="si">}</span><span class="s2"> with node not in G&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">u</span> <span class="o">==</span> <span class="n">v</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">G</span><span class="o">.</span><span class="n">has_edge</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">nodes</span> <span class="ow">or</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="n">nodes</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
+        <span class="n">edges</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
+        <span class="n">edges</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">v</span><span class="p">,</span> <span class="n">u</span><span class="p">))</span>
+    <span class="c1"># A matching is maximal if adding any new edge from G to it</span>
+    <span class="c1"># causes the resulting set to match some node twice.</span>
+    <span class="c1"># Be careful to check for adding selfloops</span>
+    <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">:</span>
+            <span class="c1"># could add edge (u, v) to edges and have a bigger matching</span>
+            <span class="k">if</span> <span class="n">u</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">nodes</span> <span class="ow">and</span> <span class="n">v</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">nodes</span> <span class="ow">and</span> <span class="n">u</span> <span class="o">!=</span> <span class="n">v</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="is_perfect_matching"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.matching.is_perfect_matching.html#networkx.algorithms.matching.is_perfect_matching">[docs]</a><span class="k">def</span> <span class="nf">is_perfect_matching</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">matching</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return True if ``matching`` is a perfect matching for ``G``</span>
+
+<span class="sd">    A *perfect matching* in a graph is a matching in which exactly one edge</span>
+<span class="sd">    is incident upon each vertex.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+
+<span class="sd">    matching : dict or set</span>
+<span class="sd">        A dictionary or set representing a matching. If a dictionary, it</span>
+<span class="sd">        must have ``matching[u] == v`` and ``matching[v] == u`` for each</span>
+<span class="sd">        edge ``(u, v)`` in the matching. If a set, it must have elements</span>
+<span class="sd">        of the form ``(u, v)``, where ``(u, v)`` is an edge in the</span>
+<span class="sd">        matching.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bool</span>
+<span class="sd">        Whether the given set or dictionary represents a valid perfect</span>
+<span class="sd">        matching in the graph.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.Graph([(1, 2), (1, 3), (2, 3), (2, 4), (3, 5), (4, 5), (4, 6)])</span>
+<span class="sd">    &gt;&gt;&gt; my_match = {1: 2, 3: 5, 4: 6}</span>
+<span class="sd">    &gt;&gt;&gt; nx.is_perfect_matching(G, my_match)</span>
+<span class="sd">    True</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">matching</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">matching</span> <span class="o">=</span> <span class="n">matching_dict_to_set</span><span class="p">(</span><span class="n">matching</span><span class="p">)</span>
+
+    <span class="n">nodes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">matching</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;matching has non-2-tuple edge </span><span class="si">{</span><span class="n">edge</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">edge</span>
+        <span class="k">if</span> <span class="n">u</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">G</span> <span class="ow">or</span> <span class="n">v</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">G</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;matching contains edge </span><span class="si">{</span><span class="n">edge</span><span class="si">}</span><span class="s2"> with node not in G&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">u</span> <span class="o">==</span> <span class="n">v</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">G</span><span class="o">.</span><span class="n">has_edge</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">nodes</span> <span class="ow">or</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="n">nodes</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="min_weight_matching"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.matching.min_weight_matching.html#networkx.algorithms.matching.min_weight_matching">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;multigraph&quot;</span><span class="p">)</span>
+<span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;directed&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">min_weight_matching</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Computing a minimum-weight maximal matching of G.</span>
+
+<span class="sd">    Use the maximum-weight algorithm with edge weights subtracted</span>
+<span class="sd">    from the maximum weight of all edges.</span>
+
+<span class="sd">    A matching is a subset of edges in which no node occurs more than once.</span>
+<span class="sd">    The weight of a matching is the sum of the weights of its edges.</span>
+<span class="sd">    A maximal matching cannot add more edges and still be a matching.</span>
+<span class="sd">    The cardinality of a matching is the number of matched edges.</span>
+
+<span class="sd">    This method replaces the edge weights with 1 plus the maximum edge weight</span>
+<span class="sd">    minus the original edge weight.</span>
+
+<span class="sd">    new_weight = (max_weight + 1) - edge_weight</span>
+
+<span class="sd">    then runs :func:`max_weight_matching` with the new weights.</span>
+<span class="sd">    The max weight matching with these new weights corresponds</span>
+<span class="sd">    to the min weight matching using the original weights.</span>
+<span class="sd">    Adding 1 to the max edge weight keeps all edge weights positive</span>
+<span class="sd">    and as integers if they started as integers.</span>
+
+<span class="sd">    You might worry that adding 1 to each weight would make the algorithm</span>
+<span class="sd">    favor matchings with more edges. But we use the parameter</span>
+<span class="sd">    `maxcardinality=True` in `max_weight_matching` to ensure that the</span>
+<span class="sd">    number of edges in the competing matchings are the same and thus</span>
+<span class="sd">    the optimum does not change due to changes in the number of edges.</span>
+
+<span class="sd">    Read the documentation of `max_weight_matching` for more information.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+<span class="sd">      Undirected graph</span>
+
+<span class="sd">    weight: string, optional (default=&#39;weight&#39;)</span>
+<span class="sd">       Edge data key corresponding to the edge weight.</span>
+<span class="sd">       If key not found, uses 1 as weight.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    matching : set</span>
+<span class="sd">        A minimal weight matching of the graph.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    max_weight_matching</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">max_weight_matching</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">maxcardinality</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">)</span>
+    <span class="n">G_edges</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">weight</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">max_weight</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="nb">max</span><span class="p">(</span><span class="n">w</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">G_edges</span><span class="p">)</span>
+    <span class="n">InvG</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+    <span class="n">edges</span> <span class="o">=</span> <span class="p">((</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">max_weight</span> <span class="o">-</span> <span class="n">w</span><span class="p">)</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">G_edges</span><span class="p">)</span>
+    <span class="n">InvG</span><span class="o">.</span><span class="n">add_weighted_edges_from</span><span class="p">(</span><span class="n">edges</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">max_weight_matching</span><span class="p">(</span><span class="n">InvG</span><span class="p">,</span> <span class="n">maxcardinality</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="max_weight_matching"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.matching.max_weight_matching.html#networkx.algorithms.matching.max_weight_matching">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;multigraph&quot;</span><span class="p">)</span>
+<span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;directed&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">max_weight_matching</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">maxcardinality</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Compute a maximum-weighted matching of G.</span>
+
+<span class="sd">    A matching is a subset of edges in which no node occurs more than once.</span>
+<span class="sd">    The weight of a matching is the sum of the weights of its edges.</span>
+<span class="sd">    A maximal matching cannot add more edges and still be a matching.</span>
+<span class="sd">    The cardinality of a matching is the number of matched edges.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+<span class="sd">      Undirected graph</span>
+
+<span class="sd">    maxcardinality: bool, optional (default=False)</span>
+<span class="sd">       If maxcardinality is True, compute the maximum-cardinality matching</span>
+<span class="sd">       with maximum weight among all maximum-cardinality matchings.</span>
+
+<span class="sd">    weight: string, optional (default=&#39;weight&#39;)</span>
+<span class="sd">       Edge data key corresponding to the edge weight.</span>
+<span class="sd">       If key not found, uses 1 as weight.</span>
+
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    matching : set</span>
+<span class="sd">        A maximal matching of the graph.</span>
+
+<span class="sd">     Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.Graph()</span>
+<span class="sd">    &gt;&gt;&gt; edges = [(1, 2, 6), (1, 3, 2), (2, 3, 1), (2, 4, 7), (3, 5, 9), (4, 5, 3)]</span>
+<span class="sd">    &gt;&gt;&gt; G.add_weighted_edges_from(edges)</span>
+<span class="sd">    &gt;&gt;&gt; sorted(nx.max_weight_matching(G))</span>
+<span class="sd">    [(2, 4), (5, 3)]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    If G has edges with weight attributes the edge data are used as</span>
+<span class="sd">    weight values else the weights are assumed to be 1.</span>
+
+<span class="sd">    This function takes time O(number_of_nodes ** 3).</span>
+
+<span class="sd">    If all edge weights are integers, the algorithm uses only integer</span>
+<span class="sd">    computations.  If floating point weights are used, the algorithm</span>
+<span class="sd">    could return a slightly suboptimal matching due to numeric</span>
+<span class="sd">    precision errors.</span>
+
+<span class="sd">    This method is based on the &quot;blossom&quot; method for finding augmenting</span>
+<span class="sd">    paths and the &quot;primal-dual&quot; method for finding a matching of maximum</span>
+<span class="sd">    weight, both methods invented by Jack Edmonds [1]_.</span>
+
+<span class="sd">    Bipartite graphs can also be matched using the functions present in</span>
+<span class="sd">    :mod:`networkx.algorithms.bipartite.matching`.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] &quot;Efficient Algorithms for Finding Maximum Matching in Graphs&quot;,</span>
+<span class="sd">       Zvi Galil, ACM Computing Surveys, 1986.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1">#</span>
+    <span class="c1"># The algorithm is taken from &quot;Efficient Algorithms for Finding Maximum</span>
+    <span class="c1"># Matching in Graphs&quot; by Zvi Galil, ACM Computing Surveys, 1986.</span>
+    <span class="c1"># It is based on the &quot;blossom&quot; method for finding augmenting paths and</span>
+    <span class="c1"># the &quot;primal-dual&quot; method for finding a matching of maximum weight, both</span>
+    <span class="c1"># methods invented by Jack Edmonds.</span>
+    <span class="c1">#</span>
+    <span class="c1"># A C program for maximum weight matching by Ed Rothberg was used</span>
+    <span class="c1"># extensively to validate this new code.</span>
+    <span class="c1">#</span>
+    <span class="c1"># Many terms used in the code comments are explained in the paper</span>
+    <span class="c1"># by Galil. You will probably need the paper to make sense of this code.</span>
+    <span class="c1">#</span>
+
+    <span class="k">class</span> <span class="nc">NoNode</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Dummy value which is different from any node.&quot;&quot;&quot;</span>
+
+        <span class="k">pass</span>
+
+    <span class="k">class</span> <span class="nc">Blossom</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Representation of a non-trivial blossom or sub-blossom.&quot;&quot;&quot;</span>
+
+        <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;childs&quot;</span><span class="p">,</span> <span class="s2">&quot;edges&quot;</span><span class="p">,</span> <span class="s2">&quot;mybestedges&quot;</span><span class="p">]</span>
+
+        <span class="c1"># b.childs is an ordered list of b&#39;s sub-blossoms, starting with</span>
+        <span class="c1"># the base and going round the blossom.</span>
+
+        <span class="c1"># b.edges is the list of b&#39;s connecting edges, such that</span>
+        <span class="c1"># b.edges[i] = (v, w) where v is a vertex in b.childs[i]</span>
+        <span class="c1"># and w is a vertex in b.childs[wrap(i+1)].</span>
+
+        <span class="c1"># If b is a top-level S-blossom,</span>
+        <span class="c1"># b.mybestedges is a list of least-slack edges to neighbouring</span>
+        <span class="c1"># S-blossoms, or None if no such list has been computed yet.</span>
+        <span class="c1"># This is used for efficient computation of delta3.</span>
+
+        <span class="c1"># Generate the blossom&#39;s leaf vertices.</span>
+        <span class="k">def</span> <span class="nf">leaves</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">childs</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">Blossom</span><span class="p">):</span>
+                    <span class="k">yield from</span> <span class="n">t</span><span class="o">.</span><span class="n">leaves</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">yield</span> <span class="n">t</span>
+
+    <span class="c1"># Get a list of vertices.</span>
+    <span class="n">gnodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">gnodes</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">set</span><span class="p">()</span>  <span class="c1"># don&#39;t bother with empty graphs</span>
+
+    <span class="c1"># Find the maximum edge weight.</span>
+    <span class="n">maxweight</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">allinteger</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="n">wt</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">weight</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">j</span> <span class="ow">and</span> <span class="n">wt</span> <span class="o">&gt;</span> <span class="n">maxweight</span><span class="p">:</span>
+            <span class="n">maxweight</span> <span class="o">=</span> <span class="n">wt</span>
+        <span class="n">allinteger</span> <span class="o">=</span> <span class="n">allinteger</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">wt</span><span class="p">))</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;&#39;&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;int&quot;</span><span class="p">,</span> <span class="s2">&quot;long&quot;</span><span class="p">))</span>
+
+    <span class="c1"># If v is a matched vertex, mate[v] is its partner vertex.</span>
+    <span class="c1"># If v is a single vertex, v does not occur as a key in mate.</span>
+    <span class="c1"># Initially all vertices are single; updated during augmentation.</span>
+    <span class="n">mate</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># If b is a top-level blossom,</span>
+    <span class="c1"># label.get(b) is None if b is unlabeled (free),</span>
+    <span class="c1">#                 1 if b is an S-blossom,</span>
+    <span class="c1">#                 2 if b is a T-blossom.</span>
+    <span class="c1"># The label of a vertex is found by looking at the label of its top-level</span>
+    <span class="c1"># containing blossom.</span>
+    <span class="c1"># If v is a vertex inside a T-blossom, label[v] is 2 iff v is reachable</span>
+    <span class="c1"># from an S-vertex outside the blossom.</span>
+    <span class="c1"># Labels are assigned during a stage and reset after each augmentation.</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># If b is a labeled top-level blossom,</span>
+    <span class="c1"># labeledge[b] = (v, w) is the edge through which b obtained its label</span>
+    <span class="c1"># such that w is a vertex in b, or None if b&#39;s base vertex is single.</span>
+    <span class="c1"># If w is a vertex inside a T-blossom and label[w] == 2,</span>
+    <span class="c1"># labeledge[w] = (v, w) is an edge through which w is reachable from</span>
+    <span class="c1"># outside the blossom.</span>
+    <span class="n">labeledge</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># If v is a vertex, inblossom[v] is the top-level blossom to which v</span>
+    <span class="c1"># belongs.</span>
+    <span class="c1"># If v is a top-level vertex, inblossom[v] == v since v is itself</span>
+    <span class="c1"># a (trivial) top-level blossom.</span>
+    <span class="c1"># Initially all vertices are top-level trivial blossoms.</span>
+    <span class="n">inblossom</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">gnodes</span><span class="p">,</span> <span class="n">gnodes</span><span class="p">))</span>
+
+    <span class="c1"># If b is a sub-blossom,</span>
+    <span class="c1"># blossomparent[b] is its immediate parent (sub-)blossom.</span>
+    <span class="c1"># If b is a top-level blossom, blossomparent[b] is None.</span>
+    <span class="n">blossomparent</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">gnodes</span><span class="p">,</span> <span class="n">repeat</span><span class="p">(</span><span class="kc">None</span><span class="p">)))</span>
+
+    <span class="c1"># If b is a (sub-)blossom,</span>
+    <span class="c1"># blossombase[b] is its base VERTEX (i.e. recursive sub-blossom).</span>
+    <span class="n">blossombase</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">gnodes</span><span class="p">,</span> <span class="n">gnodes</span><span class="p">))</span>
+
+    <span class="c1"># If w is a free vertex (or an unreached vertex inside a T-blossom),</span>
+    <span class="c1"># bestedge[w] = (v, w) is the least-slack edge from an S-vertex,</span>
+    <span class="c1"># or None if there is no such edge.</span>
+    <span class="c1"># If b is a (possibly trivial) top-level S-blossom,</span>
+    <span class="c1"># bestedge[b] = (v, w) is the least-slack edge to a different S-blossom</span>
+    <span class="c1"># (v inside b), or None if there is no such edge.</span>
+    <span class="c1"># This is used for efficient computation of delta2 and delta3.</span>
+    <span class="n">bestedge</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># If v is a vertex,</span>
+    <span class="c1"># dualvar[v] = 2 * u(v) where u(v) is the v&#39;s variable in the dual</span>
+    <span class="c1"># optimization problem (if all edge weights are integers, multiplication</span>
+    <span class="c1"># by two ensures that all values remain integers throughout the algorithm).</span>
+    <span class="c1"># Initially, u(v) = maxweight / 2.</span>
+    <span class="n">dualvar</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">gnodes</span><span class="p">,</span> <span class="n">repeat</span><span class="p">(</span><span class="n">maxweight</span><span class="p">)))</span>
+
+    <span class="c1"># If b is a non-trivial blossom,</span>
+    <span class="c1"># blossomdual[b] = z(b) where z(b) is b&#39;s variable in the dual</span>
+    <span class="c1"># optimization problem.</span>
+    <span class="n">blossomdual</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># If (v, w) in allowedge or (w, v) in allowedg, then the edge</span>
+    <span class="c1"># (v, w) is known to have zero slack in the optimization problem;</span>
+    <span class="c1"># otherwise the edge may or may not have zero slack.</span>
+    <span class="n">allowedge</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># Queue of newly discovered S-vertices.</span>
+    <span class="n">queue</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># Return 2 * slack of edge (v, w) (does not work inside blossoms).</span>
+    <span class="k">def</span> <span class="nf">slack</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">dualvar</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">+</span> <span class="n">dualvar</span><span class="p">[</span><span class="n">w</span><span class="p">]</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">G</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="n">w</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">weight</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># Assign label t to the top-level blossom containing vertex w,</span>
+    <span class="c1"># coming through an edge from vertex v.</span>
+    <span class="k">def</span> <span class="nf">assignLabel</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">inblossom</span><span class="p">[</span><span class="n">w</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="n">label</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">label</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="n">label</span><span class="p">[</span><span class="n">w</span><span class="p">]</span> <span class="o">=</span> <span class="n">label</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="o">=</span> <span class="n">t</span>
+        <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">labeledge</span><span class="p">[</span><span class="n">w</span><span class="p">]</span> <span class="o">=</span> <span class="n">labeledge</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">labeledge</span><span class="p">[</span><span class="n">w</span><span class="p">]</span> <span class="o">=</span> <span class="n">labeledge</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">bestedge</span><span class="p">[</span><span class="n">w</span><span class="p">]</span> <span class="o">=</span> <span class="n">bestedge</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># b became an S-vertex/blossom; add it(s vertices) to the queue.</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">Blossom</span><span class="p">):</span>
+                <span class="n">queue</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">leaves</span><span class="p">())</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">t</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="c1"># b became a T-vertex/blossom; assign label S to its mate.</span>
+            <span class="c1"># (If b is a non-trivial blossom, its base is the only vertex</span>
+            <span class="c1"># with an external mate.)</span>
+            <span class="n">base</span> <span class="o">=</span> <span class="n">blossombase</span><span class="p">[</span><span class="n">b</span><span class="p">]</span>
+            <span class="n">assignLabel</span><span class="p">(</span><span class="n">mate</span><span class="p">[</span><span class="n">base</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="n">base</span><span class="p">)</span>
+
+    <span class="c1"># Trace back from vertices v and w to discover either a new blossom</span>
+    <span class="c1"># or an augmenting path. Return the base vertex of the new blossom,</span>
+    <span class="c1"># or NoNode if an augmenting path was found.</span>
+    <span class="k">def</span> <span class="nf">scanBlossom</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">):</span>
+        <span class="c1"># Trace back from v and w, placing breadcrumbs as we go.</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">base</span> <span class="o">=</span> <span class="n">NoNode</span>
+        <span class="k">while</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">NoNode</span><span class="p">:</span>
+            <span class="c1"># Look for a breadcrumb in v&#39;s blossom or put a new breadcrumb.</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="n">inblossom</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">label</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="o">&amp;</span> <span class="mi">4</span><span class="p">:</span>
+                <span class="n">base</span> <span class="o">=</span> <span class="n">blossombase</span><span class="p">[</span><span class="n">b</span><span class="p">]</span>
+                <span class="k">break</span>
+            <span class="k">assert</span> <span class="n">label</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span>
+            <span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+            <span class="n">label</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="o">=</span> <span class="mi">5</span>
+            <span class="c1"># Trace one step back.</span>
+            <span class="k">if</span> <span class="n">labeledge</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># The base of blossom b is single; stop tracing this path.</span>
+                <span class="k">assert</span> <span class="n">blossombase</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mate</span>
+                <span class="n">v</span> <span class="o">=</span> <span class="n">NoNode</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="n">labeledge</span><span class="p">[</span><span class="n">b</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">mate</span><span class="p">[</span><span class="n">blossombase</span><span class="p">[</span><span class="n">b</span><span class="p">]]</span>
+                <span class="n">v</span> <span class="o">=</span> <span class="n">labeledge</span><span class="p">[</span><span class="n">b</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">b</span> <span class="o">=</span> <span class="n">inblossom</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+                <span class="k">assert</span> <span class="n">label</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span>
+                <span class="c1"># b is a T-blossom; trace one more step back.</span>
+                <span class="n">v</span> <span class="o">=</span> <span class="n">labeledge</span><span class="p">[</span><span class="n">b</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="c1"># Swap v and w so that we alternate between both paths.</span>
+            <span class="k">if</span> <span class="n">w</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">NoNode</span><span class="p">:</span>
+                <span class="n">v</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="n">w</span><span class="p">,</span> <span class="n">v</span>
+        <span class="c1"># Remove breadcrumbs.</span>
+        <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">path</span><span class="p">:</span>
+            <span class="n">label</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="c1"># Return base vertex, if we found one.</span>
+        <span class="k">return</span> <span class="n">base</span>
+
+    <span class="c1"># Construct a new blossom with given base, through S-vertices v and w.</span>
+    <span class="c1"># Label the new blossom as S; set its dual variable to zero;</span>
+    <span class="c1"># relabel its T-vertices to S and add them to the queue.</span>
+    <span class="k">def</span> <span class="nf">addBlossom</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">):</span>
+        <span class="n">bb</span> <span class="o">=</span> <span class="n">inblossom</span><span class="p">[</span><span class="n">base</span><span class="p">]</span>
+        <span class="n">bv</span> <span class="o">=</span> <span class="n">inblossom</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+        <span class="n">bw</span> <span class="o">=</span> <span class="n">inblossom</span><span class="p">[</span><span class="n">w</span><span class="p">]</span>
+        <span class="c1"># Create blossom.</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">Blossom</span><span class="p">()</span>
+        <span class="n">blossombase</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="o">=</span> <span class="n">base</span>
+        <span class="n">blossomparent</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">blossomparent</span><span class="p">[</span><span class="n">bb</span><span class="p">]</span> <span class="o">=</span> <span class="n">b</span>
+        <span class="c1"># Make list of sub-blossoms and their interconnecting edge endpoints.</span>
+        <span class="n">b</span><span class="o">.</span><span class="n">childs</span> <span class="o">=</span> <span class="n">path</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">b</span><span class="o">.</span><span class="n">edges</span> <span class="o">=</span> <span class="n">edgs</span> <span class="o">=</span> <span class="p">[(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">)]</span>
+        <span class="c1"># Trace back from v to base.</span>
+        <span class="k">while</span> <span class="n">bv</span> <span class="o">!=</span> <span class="n">bb</span><span class="p">:</span>
+            <span class="c1"># Add bv to the new blossom.</span>
+            <span class="n">blossomparent</span><span class="p">[</span><span class="n">bv</span><span class="p">]</span> <span class="o">=</span> <span class="n">b</span>
+            <span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bv</span><span class="p">)</span>
+            <span class="n">edgs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">labeledge</span><span class="p">[</span><span class="n">bv</span><span class="p">])</span>
+            <span class="k">assert</span> <span class="n">label</span><span class="p">[</span><span class="n">bv</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">or</span> <span class="p">(</span>
+                <span class="n">label</span><span class="p">[</span><span class="n">bv</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">labeledge</span><span class="p">[</span><span class="n">bv</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">mate</span><span class="p">[</span><span class="n">blossombase</span><span class="p">[</span><span class="n">bv</span><span class="p">]]</span>
+            <span class="p">)</span>
+            <span class="c1"># Trace one step back.</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">labeledge</span><span class="p">[</span><span class="n">bv</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">bv</span> <span class="o">=</span> <span class="n">inblossom</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+        <span class="c1"># Add base sub-blossom; reverse lists.</span>
+        <span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bb</span><span class="p">)</span>
+        <span class="n">path</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+        <span class="n">edgs</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+        <span class="c1"># Trace back from w to base.</span>
+        <span class="k">while</span> <span class="n">bw</span> <span class="o">!=</span> <span class="n">bb</span><span class="p">:</span>
+            <span class="c1"># Add bw to the new blossom.</span>
+            <span class="n">blossomparent</span><span class="p">[</span><span class="n">bw</span><span class="p">]</span> <span class="o">=</span> <span class="n">b</span>
+            <span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bw</span><span class="p">)</span>
+            <span class="n">edgs</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">labeledge</span><span class="p">[</span><span class="n">bw</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">labeledge</span><span class="p">[</span><span class="n">bw</span><span class="p">][</span><span class="mi">0</span><span class="p">]))</span>
+            <span class="k">assert</span> <span class="n">label</span><span class="p">[</span><span class="n">bw</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">or</span> <span class="p">(</span>
+                <span class="n">label</span><span class="p">[</span><span class="n">bw</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">labeledge</span><span class="p">[</span><span class="n">bw</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">mate</span><span class="p">[</span><span class="n">blossombase</span><span class="p">[</span><span class="n">bw</span><span class="p">]]</span>
+            <span class="p">)</span>
+            <span class="c1"># Trace one step back.</span>
+            <span class="n">w</span> <span class="o">=</span> <span class="n">labeledge</span><span class="p">[</span><span class="n">bw</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">bw</span> <span class="o">=</span> <span class="n">inblossom</span><span class="p">[</span><span class="n">w</span><span class="p">]</span>
+        <span class="c1"># Set label to S.</span>
+        <span class="k">assert</span> <span class="n">label</span><span class="p">[</span><span class="n">bb</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="n">label</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">labeledge</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="o">=</span> <span class="n">labeledge</span><span class="p">[</span><span class="n">bb</span><span class="p">]</span>
+        <span class="c1"># Set dual variable to zero.</span>
+        <span class="n">blossomdual</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1"># Relabel vertices.</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">b</span><span class="o">.</span><span class="n">leaves</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">label</span><span class="p">[</span><span class="n">inblossom</span><span class="p">[</span><span class="n">v</span><span class="p">]]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="c1"># This T-vertex now turns into an S-vertex because it becomes</span>
+                <span class="c1"># part of an S-blossom; add it to the queue.</span>
+                <span class="n">queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+            <span class="n">inblossom</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">b</span>
+        <span class="c1"># Compute b.mybestedges.</span>
+        <span class="n">bestedgeto</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">bv</span> <span class="ow">in</span> <span class="n">path</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bv</span><span class="p">,</span> <span class="n">Blossom</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">bv</span><span class="o">.</span><span class="n">mybestedges</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="c1"># Walk this subblossom&#39;s least-slack edges.</span>
+                    <span class="n">nblist</span> <span class="o">=</span> <span class="n">bv</span><span class="o">.</span><span class="n">mybestedges</span>
+                    <span class="c1"># The sub-blossom won&#39;t need this data again.</span>
+                    <span class="n">bv</span><span class="o">.</span><span class="n">mybestedges</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># This subblossom does not have a list of least-slack</span>
+                    <span class="c1"># edges; get the information from the vertices.</span>
+                    <span class="n">nblist</span> <span class="o">=</span> <span class="p">[</span>
+                        <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">bv</span><span class="o">.</span><span class="n">leaves</span><span class="p">()</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">if</span> <span class="n">v</span> <span class="o">!=</span> <span class="n">w</span>
+                    <span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">nblist</span> <span class="o">=</span> <span class="p">[(</span><span class="n">bv</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="n">bv</span><span class="p">)</span> <span class="k">if</span> <span class="n">bv</span> <span class="o">!=</span> <span class="n">w</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">nblist</span><span class="p">:</span>
+                <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="o">=</span> <span class="n">k</span>
+                <span class="k">if</span> <span class="n">inblossom</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="n">b</span><span class="p">:</span>
+                    <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">j</span><span class="p">,</span> <span class="n">i</span>
+                <span class="n">bj</span> <span class="o">=</span> <span class="n">inblossom</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">bj</span> <span class="o">!=</span> <span class="n">b</span>
+                    <span class="ow">and</span> <span class="n">label</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bj</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+                    <span class="ow">and</span> <span class="p">((</span><span class="n">bj</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">bestedgeto</span><span class="p">)</span> <span class="ow">or</span> <span class="n">slack</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">slack</span><span class="p">(</span><span class="o">*</span><span class="n">bestedgeto</span><span class="p">[</span><span class="n">bj</span><span class="p">]))</span>
+                <span class="p">):</span>
+                    <span class="n">bestedgeto</span><span class="p">[</span><span class="n">bj</span><span class="p">]</span> <span class="o">=</span> <span class="n">k</span>
+            <span class="c1"># Forget about least-slack edge of the subblossom.</span>
+            <span class="n">bestedge</span><span class="p">[</span><span class="n">bv</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">b</span><span class="o">.</span><span class="n">mybestedges</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">bestedgeto</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="c1"># Select bestedge[b].</span>
+        <span class="n">mybestedge</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">bestedge</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">b</span><span class="o">.</span><span class="n">mybestedges</span><span class="p">:</span>
+            <span class="n">kslack</span> <span class="o">=</span> <span class="n">slack</span><span class="p">(</span><span class="o">*</span><span class="n">k</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">mybestedge</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">kslack</span> <span class="o">&lt;</span> <span class="n">mybestslack</span><span class="p">:</span>
+                <span class="n">mybestedge</span> <span class="o">=</span> <span class="n">k</span>
+                <span class="n">mybestslack</span> <span class="o">=</span> <span class="n">kslack</span>
+        <span class="n">bestedge</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="o">=</span> <span class="n">mybestedge</span>
+
+    <span class="c1"># Expand the given top-level blossom.</span>
+    <span class="k">def</span> <span class="nf">expandBlossom</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">endstage</span><span class="p">):</span>
+        <span class="c1"># Convert sub-blossoms into top-level blossoms.</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">b</span><span class="o">.</span><span class="n">childs</span><span class="p">:</span>
+            <span class="n">blossomparent</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">Blossom</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">endstage</span> <span class="ow">and</span> <span class="n">blossomdual</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="c1"># Recursively expand this sub-blossom.</span>
+                    <span class="n">expandBlossom</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">endstage</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">leaves</span><span class="p">():</span>
+                        <span class="n">inblossom</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">inblossom</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span>
+        <span class="c1"># If we expand a T-blossom during a stage, its sub-blossoms must be</span>
+        <span class="c1"># relabeled.</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">endstage</span><span class="p">)</span> <span class="ow">and</span> <span class="n">label</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="c1"># Start at the sub-blossom through which the expanding</span>
+            <span class="c1"># blossom obtained its label, and relabel sub-blossoms untili</span>
+            <span class="c1"># we reach the base.</span>
+            <span class="c1"># Figure out through which sub-blossom the expanding blossom</span>
+            <span class="c1"># obtained its label initially.</span>
+            <span class="n">entrychild</span> <span class="o">=</span> <span class="n">inblossom</span><span class="p">[</span><span class="n">labeledge</span><span class="p">[</span><span class="n">b</span><span class="p">][</span><span class="mi">1</span><span class="p">]]</span>
+            <span class="c1"># Decide in which direction we will go round the blossom.</span>
+            <span class="n">j</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">childs</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">entrychild</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">j</span> <span class="o">&amp;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># Start index is odd; go forward and wrap.</span>
+                <span class="n">j</span> <span class="o">-=</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">childs</span><span class="p">)</span>
+                <span class="n">jstep</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Start index is even; go backward.</span>
+                <span class="n">jstep</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="c1"># Move along the blossom until we get to the base.</span>
+            <span class="n">v</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="n">labeledge</span><span class="p">[</span><span class="n">b</span><span class="p">]</span>
+            <span class="k">while</span> <span class="n">j</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># Relabel the T-sub-blossom.</span>
+                <span class="k">if</span> <span class="n">jstep</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">p</span><span class="p">,</span> <span class="n">q</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">q</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">j</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="n">label</span><span class="p">[</span><span class="n">w</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">label</span><span class="p">[</span><span class="n">q</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">assignLabel</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+                <span class="c1"># Step to the next S-sub-blossom and note its forward edge.</span>
+                <span class="n">allowedge</span><span class="p">[(</span><span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">)]</span> <span class="o">=</span> <span class="n">allowedge</span><span class="p">[(</span><span class="n">q</span><span class="p">,</span> <span class="n">p</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">j</span> <span class="o">+=</span> <span class="n">jstep</span>
+                <span class="k">if</span> <span class="n">jstep</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">v</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">w</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">j</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="c1"># Step to the next T-sub-blossom.</span>
+                <span class="n">allowedge</span><span class="p">[(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">)]</span> <span class="o">=</span> <span class="n">allowedge</span><span class="p">[(</span><span class="n">w</span><span class="p">,</span> <span class="n">v</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">j</span> <span class="o">+=</span> <span class="n">jstep</span>
+            <span class="c1"># Relabel the base T-sub-blossom WITHOUT stepping through to</span>
+            <span class="c1"># its mate (so don&#39;t call assignLabel).</span>
+            <span class="n">bw</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">childs</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+            <span class="n">label</span><span class="p">[</span><span class="n">w</span><span class="p">]</span> <span class="o">=</span> <span class="n">label</span><span class="p">[</span><span class="n">bw</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+            <span class="n">labeledge</span><span class="p">[</span><span class="n">w</span><span class="p">]</span> <span class="o">=</span> <span class="n">labeledge</span><span class="p">[</span><span class="n">bw</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+            <span class="n">bestedge</span><span class="p">[</span><span class="n">bw</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="c1"># Continue along the blossom until we get back to entrychild.</span>
+            <span class="n">j</span> <span class="o">+=</span> <span class="n">jstep</span>
+            <span class="k">while</span> <span class="n">b</span><span class="o">.</span><span class="n">childs</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">!=</span> <span class="n">entrychild</span><span class="p">:</span>
+                <span class="c1"># Examine the vertices of the sub-blossom to see whether</span>
+                <span class="c1"># it is reachable from a neighbouring S-vertex outside the</span>
+                <span class="c1"># expanding blossom.</span>
+                <span class="n">bv</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">childs</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">label</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bv</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="c1"># This sub-blossom just got label S through one of its</span>
+                    <span class="c1"># neighbours; leave it be.</span>
+                    <span class="n">j</span> <span class="o">+=</span> <span class="n">jstep</span>
+                    <span class="k">continue</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bv</span><span class="p">,</span> <span class="n">Blossom</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">bv</span><span class="o">.</span><span class="n">leaves</span><span class="p">():</span>
+                        <span class="k">if</span> <span class="n">label</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+                            <span class="k">break</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">v</span> <span class="o">=</span> <span class="n">bv</span>
+                <span class="c1"># If the sub-blossom contains a reachable vertex, assign</span>
+                <span class="c1"># label T to the sub-blossom.</span>
+                <span class="k">if</span> <span class="n">label</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+                    <span class="k">assert</span> <span class="n">label</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span>
+                    <span class="k">assert</span> <span class="n">inblossom</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">==</span> <span class="n">bv</span>
+                    <span class="n">label</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+                    <span class="n">label</span><span class="p">[</span><span class="n">mate</span><span class="p">[</span><span class="n">blossombase</span><span class="p">[</span><span class="n">bv</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
+                    <span class="n">assignLabel</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">labeledge</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">j</span> <span class="o">+=</span> <span class="n">jstep</span>
+        <span class="c1"># Remove the expanded blossom entirely.</span>
+        <span class="n">label</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">labeledge</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">bestedge</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">del</span> <span class="n">blossomparent</span><span class="p">[</span><span class="n">b</span><span class="p">]</span>
+        <span class="k">del</span> <span class="n">blossombase</span><span class="p">[</span><span class="n">b</span><span class="p">]</span>
+        <span class="k">del</span> <span class="n">blossomdual</span><span class="p">[</span><span class="n">b</span><span class="p">]</span>
+
+    <span class="c1"># Swap matched/unmatched edges over an alternating path through blossom b</span>
+    <span class="c1"># between vertex v and the base vertex. Keep blossom bookkeeping</span>
+    <span class="c1"># consistent.</span>
+    <span class="k">def</span> <span class="nf">augmentBlossom</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="c1"># Bubble up through the blossom tree from vertex v to an immediate</span>
+        <span class="c1"># sub-blossom of b.</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">v</span>
+        <span class="k">while</span> <span class="n">blossomparent</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">!=</span> <span class="n">b</span><span class="p">:</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">blossomparent</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+        <span class="c1"># Recursively deal with the first sub-blossom.</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">Blossom</span><span class="p">):</span>
+            <span class="n">augmentBlossom</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+        <span class="c1"># Decide in which direction we will go round the blossom.</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="n">j</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">childs</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">&amp;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># Start index is odd; go forward and wrap.</span>
+            <span class="n">j</span> <span class="o">-=</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">childs</span><span class="p">)</span>
+            <span class="n">jstep</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Start index is even; go backward.</span>
+            <span class="n">jstep</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="c1"># Move along the blossom until we get to the base.</span>
+        <span class="k">while</span> <span class="n">j</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># Step to the next sub-blossom and augment it recursively.</span>
+            <span class="n">j</span> <span class="o">+=</span> <span class="n">jstep</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">childs</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">jstep</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">w</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">x</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">j</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">Blossom</span><span class="p">):</span>
+                <span class="n">augmentBlossom</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+            <span class="c1"># Step to the next sub-blossom and augment it recursively.</span>
+            <span class="n">j</span> <span class="o">+=</span> <span class="n">jstep</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">childs</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">Blossom</span><span class="p">):</span>
+                <span class="n">augmentBlossom</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+            <span class="c1"># Match the edge connecting those sub-blossoms.</span>
+            <span class="n">mate</span><span class="p">[</span><span class="n">w</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span>
+            <span class="n">mate</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="n">w</span>
+        <span class="c1"># Rotate the list of sub-blossoms to put the new base at the front.</span>
+        <span class="n">b</span><span class="o">.</span><span class="n">childs</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">childs</span><span class="p">[</span><span class="n">i</span><span class="p">:]</span> <span class="o">+</span> <span class="n">b</span><span class="o">.</span><span class="n">childs</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">b</span><span class="o">.</span><span class="n">edges</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">i</span><span class="p">:]</span> <span class="o">+</span> <span class="n">b</span><span class="o">.</span><span class="n">edges</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">blossombase</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="o">=</span> <span class="n">blossombase</span><span class="p">[</span><span class="n">b</span><span class="o">.</span><span class="n">childs</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+        <span class="k">assert</span> <span class="n">blossombase</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="o">==</span> <span class="n">v</span>
+
+    <span class="c1"># Swap matched/unmatched edges over an alternating path between two</span>
+    <span class="c1"># single vertices. The augmenting path runs through S-vertices v and w.</span>
+    <span class="k">def</span> <span class="nf">augmentMatching</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">):</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="ow">in</span> <span class="p">((</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">),</span> <span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">v</span><span class="p">)):</span>
+            <span class="c1"># Match vertex s to vertex j. Then trace back from s</span>
+            <span class="c1"># until we find a single vertex, swapping matched and unmatched</span>
+            <span class="c1"># edges as we go.</span>
+            <span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">bs</span> <span class="o">=</span> <span class="n">inblossom</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
+                <span class="k">assert</span> <span class="n">label</span><span class="p">[</span><span class="n">bs</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span>
+                <span class="k">assert</span> <span class="p">(</span><span class="n">labeledge</span><span class="p">[</span><span class="n">bs</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">blossombase</span><span class="p">[</span><span class="n">bs</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mate</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+                    <span class="n">labeledge</span><span class="p">[</span><span class="n">bs</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">mate</span><span class="p">[</span><span class="n">blossombase</span><span class="p">[</span><span class="n">bs</span><span class="p">]]</span>
+                <span class="p">)</span>
+                <span class="c1"># Augment through the S-blossom from s to base.</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bs</span><span class="p">,</span> <span class="n">Blossom</span><span class="p">):</span>
+                    <span class="n">augmentBlossom</span><span class="p">(</span><span class="n">bs</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+                <span class="c1"># Update mate[s]</span>
+                <span class="n">mate</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">j</span>
+                <span class="c1"># Trace one step back.</span>
+                <span class="k">if</span> <span class="n">labeledge</span><span class="p">[</span><span class="n">bs</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="c1"># Reached single vertex; stop.</span>
+                    <span class="k">break</span>
+                <span class="n">t</span> <span class="o">=</span> <span class="n">labeledge</span><span class="p">[</span><span class="n">bs</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">bt</span> <span class="o">=</span> <span class="n">inblossom</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+                <span class="k">assert</span> <span class="n">label</span><span class="p">[</span><span class="n">bt</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span>
+                <span class="c1"># Trace one more step back.</span>
+                <span class="n">s</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">labeledge</span><span class="p">[</span><span class="n">bt</span><span class="p">]</span>
+                <span class="c1"># Augment through the T-blossom from j to base.</span>
+                <span class="k">assert</span> <span class="n">blossombase</span><span class="p">[</span><span class="n">bt</span><span class="p">]</span> <span class="o">==</span> <span class="n">t</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bt</span><span class="p">,</span> <span class="n">Blossom</span><span class="p">):</span>
+                    <span class="n">augmentBlossom</span><span class="p">(</span><span class="n">bt</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span>
+                <span class="c1"># Update mate[j]</span>
+                <span class="n">mate</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span>
+
+    <span class="c1"># Verify that the optimum solution has been reached.</span>
+    <span class="k">def</span> <span class="nf">verifyOptimum</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">maxcardinality</span><span class="p">:</span>
+            <span class="c1"># Vertices may have negative dual;</span>
+            <span class="c1"># find a constant non-negative number to add to all vertex duals.</span>
+            <span class="n">vdualoffset</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="nb">min</span><span class="p">(</span><span class="n">dualvar</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">vdualoffset</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1"># 0. all dual variables are non-negative</span>
+        <span class="k">assert</span> <span class="nb">min</span><span class="p">(</span><span class="n">dualvar</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">+</span> <span class="n">vdualoffset</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">blossomdual</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="nb">min</span><span class="p">(</span><span class="n">blossomdual</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+        <span class="c1"># 0. all edges have non-negative slack and</span>
+        <span class="c1"># 1. all matched edges have zero slack;</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="n">wt</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">weight</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">j</span><span class="p">:</span>
+                <span class="k">continue</span>  <span class="c1"># ignore self-loops</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">dualvar</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">dualvar</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">wt</span>
+            <span class="n">iblossoms</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">jblossoms</span> <span class="o">=</span> <span class="p">[</span><span class="n">j</span><span class="p">]</span>
+            <span class="k">while</span> <span class="n">blossomparent</span><span class="p">[</span><span class="n">iblossoms</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">iblossoms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">blossomparent</span><span class="p">[</span><span class="n">iblossoms</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
+            <span class="k">while</span> <span class="n">blossomparent</span><span class="p">[</span><span class="n">jblossoms</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">jblossoms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">blossomparent</span><span class="p">[</span><span class="n">jblossoms</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
+            <span class="n">iblossoms</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+            <span class="n">jblossoms</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+            <span class="k">for</span> <span class="p">(</span><span class="n">bi</span><span class="p">,</span> <span class="n">bj</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">iblossoms</span><span class="p">,</span> <span class="n">jblossoms</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">bi</span> <span class="o">!=</span> <span class="n">bj</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="n">s</span> <span class="o">+=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">blossomdual</span><span class="p">[</span><span class="n">bi</span><span class="p">]</span>
+            <span class="k">assert</span> <span class="n">s</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="n">mate</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">==</span> <span class="n">j</span> <span class="ow">or</span> <span class="n">mate</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="n">i</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="n">mate</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">j</span> <span class="ow">and</span> <span class="n">mate</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="n">i</span>
+                <span class="k">assert</span> <span class="n">s</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="c1"># 2. all single vertices have zero dual value;</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">gnodes</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="p">(</span><span class="n">v</span> <span class="ow">in</span> <span class="n">mate</span><span class="p">)</span> <span class="ow">or</span> <span class="n">dualvar</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">+</span> <span class="n">vdualoffset</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="c1"># 3. all blossoms with positive dual value are full.</span>
+        <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">blossomdual</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">blossomdual</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span>
+                <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="ow">in</span> <span class="n">b</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]:</span>
+                    <span class="k">assert</span> <span class="n">mate</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">j</span> <span class="ow">and</span> <span class="n">mate</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="n">i</span>
+        <span class="c1"># Ok.</span>
+
+    <span class="c1"># Main loop: continue until no further improvement is possible.</span>
+    <span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
+
+        <span class="c1"># Each iteration of this loop is a &quot;stage&quot;.</span>
+        <span class="c1"># A stage finds an augmenting path and uses that to improve</span>
+        <span class="c1"># the matching.</span>
+
+        <span class="c1"># Remove labels from top-level blossoms/vertices.</span>
+        <span class="n">label</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="n">labeledge</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+        <span class="c1"># Forget all about least-slack edges.</span>
+        <span class="n">bestedge</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">blossomdual</span><span class="p">:</span>
+            <span class="n">b</span><span class="o">.</span><span class="n">mybestedges</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Loss of labeling means that we can not be sure that currently</span>
+        <span class="c1"># allowable edges remain allowable throughout this stage.</span>
+        <span class="n">allowedge</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+        <span class="c1"># Make queue empty.</span>
+        <span class="n">queue</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Label single blossoms/vertices with S and put them in the queue.</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">gnodes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">v</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mate</span><span class="p">)</span> <span class="ow">and</span> <span class="n">label</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">inblossom</span><span class="p">[</span><span class="n">v</span><span class="p">])</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">assignLabel</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="c1"># Loop until we succeed in augmenting the matching.</span>
+        <span class="n">augmented</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
+
+            <span class="c1"># Each iteration of this loop is a &quot;substage&quot;.</span>
+            <span class="c1"># A substage tries to find an augmenting path;</span>
+            <span class="c1"># if found, the path is used to improve the matching and</span>
+            <span class="c1"># the stage ends. If there is no augmenting path, the</span>
+            <span class="c1"># primal-dual method is used to pump some slack out of</span>
+            <span class="c1"># the dual variables.</span>
+
+            <span class="c1"># Continue labeling until all vertices which are reachable</span>
+            <span class="c1"># through an alternating path have got a label.</span>
+            <span class="k">while</span> <span class="n">queue</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">augmented</span><span class="p">:</span>
+
+                <span class="c1"># Take an S vertex from the queue.</span>
+                <span class="n">v</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+                <span class="k">assert</span> <span class="n">label</span><span class="p">[</span><span class="n">inblossom</span><span class="p">[</span><span class="n">v</span><span class="p">]]</span> <span class="o">==</span> <span class="mi">1</span>
+
+                <span class="c1"># Scan its neighbours:</span>
+                <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">w</span> <span class="o">==</span> <span class="n">v</span><span class="p">:</span>
+                        <span class="k">continue</span>  <span class="c1"># ignore self-loops</span>
+                    <span class="c1"># w is a neighbour to v</span>
+                    <span class="n">bv</span> <span class="o">=</span> <span class="n">inblossom</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+                    <span class="n">bw</span> <span class="o">=</span> <span class="n">inblossom</span><span class="p">[</span><span class="n">w</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">bv</span> <span class="o">==</span> <span class="n">bw</span><span class="p">:</span>
+                        <span class="c1"># this edge is internal to a blossom; ignore it</span>
+                        <span class="k">continue</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">allowedge</span><span class="p">:</span>
+                        <span class="n">kslack</span> <span class="o">=</span> <span class="n">slack</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">kslack</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="c1"># edge k has zero slack =&gt; it is allowable</span>
+                            <span class="n">allowedge</span><span class="p">[(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">)]</span> <span class="o">=</span> <span class="n">allowedge</span><span class="p">[(</span><span class="n">w</span><span class="p">,</span> <span class="n">v</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span> <span class="ow">in</span> <span class="n">allowedge</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">label</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bw</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                            <span class="c1"># (C1) w is a free vertex;</span>
+                            <span class="c1"># label w with T and label its mate with S (R12).</span>
+                            <span class="n">assignLabel</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+                        <span class="k">elif</span> <span class="n">label</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bw</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                            <span class="c1"># (C2) w is an S-vertex (not in the same blossom);</span>
+                            <span class="c1"># follow back-links to discover either an</span>
+                            <span class="c1"># augmenting path or a new blossom.</span>
+                            <span class="n">base</span> <span class="o">=</span> <span class="n">scanBlossom</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="n">base</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">NoNode</span><span class="p">:</span>
+                                <span class="c1"># Found a new blossom; add it to the blossom</span>
+                                <span class="c1"># bookkeeping and turn it into an S-blossom.</span>
+                                <span class="n">addBlossom</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="c1"># Found an augmenting path; augment the</span>
+                                <span class="c1"># matching and end this stage.</span>
+                                <span class="n">augmentMatching</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+                                <span class="n">augmented</span> <span class="o">=</span> <span class="mi">1</span>
+                                <span class="k">break</span>
+                        <span class="k">elif</span> <span class="n">label</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                            <span class="c1"># w is inside a T-blossom, but w itself has not</span>
+                            <span class="c1"># yet been reached from outside the blossom;</span>
+                            <span class="c1"># mark it as reached (we need this to relabel</span>
+                            <span class="c1"># during T-blossom expansion).</span>
+                            <span class="k">assert</span> <span class="n">label</span><span class="p">[</span><span class="n">bw</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span>
+                            <span class="n">label</span><span class="p">[</span><span class="n">w</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+                            <span class="n">labeledge</span><span class="p">[</span><span class="n">w</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">label</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bw</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="c1"># keep track of the least-slack non-allowable edge to</span>
+                        <span class="c1"># a different S-blossom.</span>
+                        <span class="k">if</span> <span class="n">bestedge</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bv</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">kslack</span> <span class="o">&lt;</span> <span class="n">slack</span><span class="p">(</span><span class="o">*</span><span class="n">bestedge</span><span class="p">[</span><span class="n">bv</span><span class="p">]):</span>
+                            <span class="n">bestedge</span><span class="p">[</span><span class="n">bv</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">label</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="c1"># w is a free vertex (or an unreached vertex inside</span>
+                        <span class="c1"># a T-blossom) but we can not reach it yet;</span>
+                        <span class="c1"># keep track of the least-slack edge that reaches w.</span>
+                        <span class="k">if</span> <span class="n">bestedge</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">kslack</span> <span class="o">&lt;</span> <span class="n">slack</span><span class="p">(</span><span class="o">*</span><span class="n">bestedge</span><span class="p">[</span><span class="n">w</span><span class="p">]):</span>
+                            <span class="n">bestedge</span><span class="p">[</span><span class="n">w</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">augmented</span><span class="p">:</span>
+                <span class="k">break</span>
+
+            <span class="c1"># There is no augmenting path under these constraints;</span>
+            <span class="c1"># compute delta and reduce slack in the optimization problem.</span>
+            <span class="c1"># (Note that our vertex dual variables, edge slacks and delta&#39;s</span>
+            <span class="c1"># are pre-multiplied by two.)</span>
+            <span class="n">deltatype</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="n">delta</span> <span class="o">=</span> <span class="n">deltaedge</span> <span class="o">=</span> <span class="n">deltablossom</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="c1"># Compute delta1: the minimum value of any vertex dual.</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">maxcardinality</span><span class="p">:</span>
+                <span class="n">deltatype</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="n">delta</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">dualvar</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+            <span class="c1"># Compute delta2: the minimum slack on any edge between</span>
+            <span class="c1"># an S-vertex and a free vertex.</span>
+            <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">label</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">inblossom</span><span class="p">[</span><span class="n">v</span><span class="p">])</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">bestedge</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">d</span> <span class="o">=</span> <span class="n">slack</span><span class="p">(</span><span class="o">*</span><span class="n">bestedge</span><span class="p">[</span><span class="n">v</span><span class="p">])</span>
+                    <span class="k">if</span> <span class="n">deltatype</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">or</span> <span class="n">d</span> <span class="o">&lt;</span> <span class="n">delta</span><span class="p">:</span>
+                        <span class="n">delta</span> <span class="o">=</span> <span class="n">d</span>
+                        <span class="n">deltatype</span> <span class="o">=</span> <span class="mi">2</span>
+                        <span class="n">deltaedge</span> <span class="o">=</span> <span class="n">bestedge</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+
+            <span class="c1"># Compute delta3: half the minimum slack on any edge between</span>
+            <span class="c1"># a pair of S-blossoms.</span>
+            <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">blossomparent</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">blossomparent</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span>
+                    <span class="ow">and</span> <span class="n">label</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+                    <span class="ow">and</span> <span class="n">bestedge</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="p">):</span>
+                    <span class="n">kslack</span> <span class="o">=</span> <span class="n">slack</span><span class="p">(</span><span class="o">*</span><span class="n">bestedge</span><span class="p">[</span><span class="n">b</span><span class="p">])</span>
+                    <span class="k">if</span> <span class="n">allinteger</span><span class="p">:</span>
+                        <span class="k">assert</span> <span class="p">(</span><span class="n">kslack</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+                        <span class="n">d</span> <span class="o">=</span> <span class="n">kslack</span> <span class="o">//</span> <span class="mi">2</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">d</span> <span class="o">=</span> <span class="n">kslack</span> <span class="o">/</span> <span class="mf">2.0</span>
+                    <span class="k">if</span> <span class="n">deltatype</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">or</span> <span class="n">d</span> <span class="o">&lt;</span> <span class="n">delta</span><span class="p">:</span>
+                        <span class="n">delta</span> <span class="o">=</span> <span class="n">d</span>
+                        <span class="n">deltatype</span> <span class="o">=</span> <span class="mi">3</span>
+                        <span class="n">deltaedge</span> <span class="o">=</span> <span class="n">bestedge</span><span class="p">[</span><span class="n">b</span><span class="p">]</span>
+
+            <span class="c1"># Compute delta4: minimum z variable of any T-blossom.</span>
+            <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">blossomdual</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">blossomparent</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span>
+                    <span class="ow">and</span> <span class="n">label</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+                    <span class="ow">and</span> <span class="p">(</span><span class="n">deltatype</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">or</span> <span class="n">blossomdual</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">delta</span><span class="p">)</span>
+                <span class="p">):</span>
+                    <span class="n">delta</span> <span class="o">=</span> <span class="n">blossomdual</span><span class="p">[</span><span class="n">b</span><span class="p">]</span>
+                    <span class="n">deltatype</span> <span class="o">=</span> <span class="mi">4</span>
+                    <span class="n">deltablossom</span> <span class="o">=</span> <span class="n">b</span>
+
+            <span class="k">if</span> <span class="n">deltatype</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># No further improvement possible; max-cardinality optimum</span>
+                <span class="c1"># reached. Do a final delta update to make the optimum</span>
+                <span class="c1"># verifyable.</span>
+                <span class="k">assert</span> <span class="n">maxcardinality</span>
+                <span class="n">deltatype</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="n">delta</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">dualvar</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+
+            <span class="c1"># Update dual variables according to delta.</span>
+            <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">gnodes</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">label</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">inblossom</span><span class="p">[</span><span class="n">v</span><span class="p">])</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="c1"># S-vertex: 2*u = 2*u - 2*delta</span>
+                    <span class="n">dualvar</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">-=</span> <span class="n">delta</span>
+                <span class="k">elif</span> <span class="n">label</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">inblossom</span><span class="p">[</span><span class="n">v</span><span class="p">])</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="c1"># T-vertex: 2*u = 2*u + 2*delta</span>
+                    <span class="n">dualvar</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">+=</span> <span class="n">delta</span>
+            <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">blossomdual</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">blossomparent</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">label</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="c1"># top-level S-blossom: z = z + 2*delta</span>
+                        <span class="n">blossomdual</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="o">+=</span> <span class="n">delta</span>
+                    <span class="k">elif</span> <span class="n">label</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                        <span class="c1"># top-level T-blossom: z = z - 2*delta</span>
+                        <span class="n">blossomdual</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="o">-=</span> <span class="n">delta</span>
+
+            <span class="c1"># Take action at the point where minimum delta occurred.</span>
+            <span class="k">if</span> <span class="n">deltatype</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># No further improvement possible; optimum reached.</span>
+                <span class="k">break</span>
+            <span class="k">elif</span> <span class="n">deltatype</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="c1"># Use the least-slack edge to continue the search.</span>
+                <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span> <span class="o">=</span> <span class="n">deltaedge</span>
+                <span class="k">assert</span> <span class="n">label</span><span class="p">[</span><span class="n">inblossom</span><span class="p">[</span><span class="n">v</span><span class="p">]]</span> <span class="o">==</span> <span class="mi">1</span>
+                <span class="n">allowedge</span><span class="p">[(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">)]</span> <span class="o">=</span> <span class="n">allowedge</span><span class="p">[(</span><span class="n">w</span><span class="p">,</span> <span class="n">v</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">deltatype</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="c1"># Use the least-slack edge to continue the search.</span>
+                <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span> <span class="o">=</span> <span class="n">deltaedge</span>
+                <span class="n">allowedge</span><span class="p">[(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">)]</span> <span class="o">=</span> <span class="n">allowedge</span><span class="p">[(</span><span class="n">w</span><span class="p">,</span> <span class="n">v</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">assert</span> <span class="n">label</span><span class="p">[</span><span class="n">inblossom</span><span class="p">[</span><span class="n">v</span><span class="p">]]</span> <span class="o">==</span> <span class="mi">1</span>
+                <span class="n">queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">deltatype</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+                <span class="c1"># Expand the least-z blossom.</span>
+                <span class="n">expandBlossom</span><span class="p">(</span><span class="n">deltablossom</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+            <span class="c1"># End of a this substage.</span>
+
+        <span class="c1"># Paranoia check that the matching is symmetric.</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">mate</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">mate</span><span class="p">[</span><span class="n">mate</span><span class="p">[</span><span class="n">v</span><span class="p">]]</span> <span class="o">==</span> <span class="n">v</span>
+
+        <span class="c1"># Stop when no more augmenting path can be found.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">augmented</span><span class="p">:</span>
+            <span class="k">break</span>
+
+        <span class="c1"># End of a stage; expand all S-blossoms which have zero dual.</span>
+        <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">blossomdual</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="k">if</span> <span class="n">b</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">blossomdual</span><span class="p">:</span>
+                <span class="k">continue</span>  <span class="c1"># already expanded</span>
+            <span class="k">if</span> <span class="n">blossomparent</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">label</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">blossomdual</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">expandBlossom</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Verify that we reached the optimum solution (only for integer weights).</span>
+    <span class="k">if</span> <span class="n">allinteger</span><span class="p">:</span>
+        <span class="n">verifyOptimum</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">matching_dict_to_set</span><span class="p">(</span><span class="n">mate</span><span class="p">)</span></div>
+</pre></div>
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

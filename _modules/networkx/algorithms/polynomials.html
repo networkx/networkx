@@ -1,0 +1,845 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>networkx.algorithms.polynomials &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/algorithms/polynomials';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/algorithms/polynomials.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../../../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../../../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <h1>Source code for networkx.algorithms.polynomials</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Provides algorithms supporting the computation of graph polynomials.</span>
+
+<span class="sd">Graph polynomials are polynomial-valued graph invariants that encode a wide</span>
+<span class="sd">variety of structural information. Examples include the Tutte polynomial,</span>
+<span class="sd">chromatic polynomial, characteristic polynomial, and matching polynomial. An</span>
+<span class="sd">extensive treatment is provided in [1]_.</span>
+
+<span class="sd">For a simple example, the `~sympy.matrices.matrices.MatrixDeterminant.charpoly`</span>
+<span class="sd">method can be used to compute the characteristic polynomial from the adjacency</span>
+<span class="sd">matrix of a graph. Consider the complete graph ``K_4``:</span>
+
+<span class="sd">&gt;&gt;&gt; import sympy</span>
+<span class="sd">&gt;&gt;&gt; x = sympy.Symbol(&quot;x&quot;)</span>
+<span class="sd">&gt;&gt;&gt; G = nx.complete_graph(4)</span>
+<span class="sd">&gt;&gt;&gt; A = nx.adjacency_matrix(G)</span>
+<span class="sd">&gt;&gt;&gt; M = sympy.SparseMatrix(A.todense())</span>
+<span class="sd">&gt;&gt;&gt; M.charpoly(x).as_expr()</span>
+<span class="sd">x**4 - 6*x**2 - 8*x - 3</span>
+
+
+<span class="sd">.. [1] Y. Shi, M. Dehmer, X. Li, I. Gutman,</span>
+<span class="sd">   &quot;Graph Polynomials&quot;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">deque</span>
+
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">from</span> <span class="nn">networkx.utils</span> <span class="kn">import</span> <span class="n">not_implemented_for</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;tutte_polynomial&quot;</span><span class="p">,</span> <span class="s2">&quot;chromatic_polynomial&quot;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="tutte_polynomial"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.polynomials.tutte_polynomial.html#networkx.algorithms.polynomials.tutte_polynomial">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;directed&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">tutte_polynomial</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns the Tutte polynomial of `G`</span>
+
+<span class="sd">    This function computes the Tutte polynomial via an iterative version of</span>
+<span class="sd">    the deletion-contraction algorithm.</span>
+
+<span class="sd">    The Tutte polynomial `T_G(x, y)` is a fundamental graph polynomial invariant in</span>
+<span class="sd">    two variables. It encodes a wide array of information related to the</span>
+<span class="sd">    edge-connectivity of a graph; &quot;Many problems about graphs can be reduced to</span>
+<span class="sd">    problems of finding and evaluating the Tutte polynomial at certain values&quot; [1]_.</span>
+<span class="sd">    In fact, every deletion-contraction-expressible feature of a graph is a</span>
+<span class="sd">    specialization of the Tutte polynomial [2]_ (see Notes for examples).</span>
+
+<span class="sd">    There are several equivalent definitions; here are three:</span>
+
+<span class="sd">    Def 1 (rank-nullity expansion): For `G` an undirected graph, `n(G)` the</span>
+<span class="sd">    number of vertices of `G`, `E` the edge set of `G`, `V` the vertex set of</span>
+<span class="sd">    `G`, and `c(A)` the number of connected components of the graph with vertex</span>
+<span class="sd">    set `V` and edge set `A` [3]_:</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        T_G(x, y) = \sum_{A \in E} (x-1)^{c(A) - c(E)} (y-1)^{c(A) + |A| - n(G)}</span>
+
+<span class="sd">    Def 2 (spanning tree expansion): Let `G` be an undirected graph, `T` a spanning</span>
+<span class="sd">    tree of `G`, and `E` the edge set of `G`. Let `E` have an arbitrary strict</span>
+<span class="sd">    linear order `L`. Let `B_e` be the unique minimal nonempty edge cut of</span>
+<span class="sd">    $E \setminus T \cup {e}$. An edge `e` is internally active with respect to</span>
+<span class="sd">    `T` and `L` if `e` is the least edge in `B_e` according to the linear order</span>
+<span class="sd">    `L`. The internal activity of `T` (denoted `i(T)`) is the number of edges</span>
+<span class="sd">    in $E \setminus T$ that are internally active with respect to `T` and `L`.</span>
+<span class="sd">    Let `P_e` be the unique path in $T \cup {e}$ whose source and target vertex</span>
+<span class="sd">    are the same. An edge `e` is externally active with respect to `T` and `L`</span>
+<span class="sd">    if `e` is the least edge in `P_e` according to the linear order `L`. The</span>
+<span class="sd">    external activity of `T` (denoted `e(T)`) is the number of edges in</span>
+<span class="sd">    $E \setminus T$ that are externally active with respect to `T` and `L`.</span>
+<span class="sd">    Then [4]_ [5]_:</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        T_G(x, y) = \sum_{T \text{ a spanning tree of } G} x^{i(T)} y^{e(T)}</span>
+
+<span class="sd">    Def 3 (deletion-contraction recurrence): For `G` an undirected graph, `G-e`</span>
+<span class="sd">    the graph obtained from `G` by deleting edge `e`, `G/e` the graph obtained</span>
+<span class="sd">    from `G` by contracting edge `e`, `k(G)` the number of cut-edges of `G`,</span>
+<span class="sd">    and `l(G)` the number of self-loops of `G`:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        T_G(x, y) = \begin{cases}</span>
+<span class="sd">    	   x^{k(G)} y^{l(G)}, &amp; \text{if all edges are cut-edges or self-loops} \\</span>
+<span class="sd">           T_{G-e}(x, y) + T_{G/e}(x, y), &amp; \text{otherwise, for an arbitrary edge $e$ not a cut-edge or loop}</span>
+<span class="sd">        \end{cases}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    instance of `sympy.core.add.Add`</span>
+<span class="sd">        A Sympy expression representing the Tutte polynomial for `G`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; C = nx.cycle_graph(5)</span>
+<span class="sd">    &gt;&gt;&gt; nx.tutte_polynomial(C)</span>
+<span class="sd">    x**4 + x**3 + x**2 + x + y</span>
+
+<span class="sd">    &gt;&gt;&gt; D = nx.diamond_graph()</span>
+<span class="sd">    &gt;&gt;&gt; nx.tutte_polynomial(D)</span>
+<span class="sd">    x**3 + 2*x**2 + 2*x*y + x + y**2 + y</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Some specializations of the Tutte polynomial:</span>
+
+<span class="sd">    - `T_G(1, 1)` counts the number of spanning trees of `G`</span>
+<span class="sd">    - `T_G(1, 2)` counts the number of connected spanning subgraphs of `G`</span>
+<span class="sd">    - `T_G(2, 1)` counts the number of spanning forests in `G`</span>
+<span class="sd">    - `T_G(0, 2)` counts the number of strong orientations of `G`</span>
+<span class="sd">    - `T_G(2, 0)` counts the number of acyclic orientations of `G`</span>
+
+<span class="sd">    Edge contraction is defined and deletion-contraction is introduced in [6]_.</span>
+<span class="sd">    Combinatorial meaning of the coefficients is introduced in [7]_.</span>
+<span class="sd">    Universality, properties, and applications are discussed in [8]_.</span>
+
+<span class="sd">    Practically, up-front computation of the Tutte polynomial may be useful when</span>
+<span class="sd">    users wish to repeatedly calculate edge-connectivity-related information</span>
+<span class="sd">    about one or more graphs.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] M. Brandt,</span>
+<span class="sd">       &quot;The Tutte Polynomial.&quot;</span>
+<span class="sd">       Talking About Combinatorial Objects Seminar, 2015</span>
+<span class="sd">       https://math.berkeley.edu/~brandtm/talks/tutte.pdf</span>
+<span class="sd">    .. [2] A. Björklund, T. Husfeldt, P. Kaski, M. Koivisto,</span>
+<span class="sd">       &quot;Computing the Tutte polynomial in vertex-exponential time&quot;</span>
+<span class="sd">       49th Annual IEEE Symposium on Foundations of Computer Science, 2008</span>
+<span class="sd">       https://ieeexplore.ieee.org/abstract/document/4691000</span>
+<span class="sd">    .. [3] Y. Shi, M. Dehmer, X. Li, I. Gutman,</span>
+<span class="sd">       &quot;Graph Polynomials,&quot; p. 14</span>
+<span class="sd">    .. [4] Y. Shi, M. Dehmer, X. Li, I. Gutman,</span>
+<span class="sd">       &quot;Graph Polynomials,&quot; p. 46</span>
+<span class="sd">    .. [5] A. Nešetril, J. Goodall,</span>
+<span class="sd">       &quot;Graph invariants, homomorphisms, and the Tutte polynomial&quot;</span>
+<span class="sd">       https://iuuk.mff.cuni.cz/~andrew/Tutte.pdf</span>
+<span class="sd">    .. [6] D. B. West,</span>
+<span class="sd">       &quot;Introduction to Graph Theory,&quot; p. 84</span>
+<span class="sd">    .. [7] G. Coutinho,</span>
+<span class="sd">       &quot;A brief introduction to the Tutte polynomial&quot;</span>
+<span class="sd">       Structural Analysis of Complex Networks, 2011</span>
+<span class="sd">       https://homepages.dcc.ufmg.br/~gabriel/seminars/coutinho_tuttepolynomial_seminar.pdf</span>
+<span class="sd">    .. [8] J. A. Ellis-Monaghan, C. Merino,</span>
+<span class="sd">       &quot;Graph polynomials and their applications I: The Tutte polynomial&quot;</span>
+<span class="sd">       Structural Analysis of Complex Networks, 2011</span>
+<span class="sd">       https://arxiv.org/pdf/0803.3079.pdf</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">sympy</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="n">sympy</span><span class="o">.</span><span class="n">Symbol</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">sympy</span><span class="o">.</span><span class="n">Symbol</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
+    <span class="n">stack</span> <span class="o">=</span> <span class="n">deque</span><span class="p">()</span>
+    <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">MultiGraph</span><span class="p">(</span><span class="n">G</span><span class="p">))</span>
+
+    <span class="n">polynomial</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="n">stack</span><span class="p">:</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="n">stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="n">bridges</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">bridges</span><span class="p">(</span><span class="n">G</span><span class="p">))</span>
+
+        <span class="n">e</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">bridges</span> <span class="ow">and</span> <span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="n">e</span> <span class="o">=</span> <span class="n">i</span>
+                <span class="k">break</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">loops</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">selfloop_edges</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+            <span class="n">polynomial</span> <span class="o">+=</span> <span class="n">x</span> <span class="o">**</span> <span class="nb">len</span><span class="p">(</span><span class="n">bridges</span><span class="p">)</span> <span class="o">*</span> <span class="n">y</span> <span class="o">**</span> <span class="nb">len</span><span class="p">(</span><span class="n">loops</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># deletion-contraction</span>
+            <span class="n">C</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">contracted_edge</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">self_loops</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">C</span><span class="o">.</span><span class="n">remove_edge</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">G</span><span class="o">.</span><span class="n">remove_edge</span><span class="p">(</span><span class="o">*</span><span class="n">e</span><span class="p">)</span>
+            <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+            <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">C</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">sympy</span><span class="o">.</span><span class="n">simplify</span><span class="p">(</span><span class="n">polynomial</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="chromatic_polynomial"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.polynomials.chromatic_polynomial.html#networkx.algorithms.polynomials.chromatic_polynomial">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;directed&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">chromatic_polynomial</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns the chromatic polynomial of `G`</span>
+
+<span class="sd">    This function computes the chromatic polynomial via an iterative version of</span>
+<span class="sd">    the deletion-contraction algorithm.</span>
+
+<span class="sd">    The chromatic polynomial `X_G(x)` is a fundamental graph polynomial</span>
+<span class="sd">    invariant in one variable. Evaluating `X_G(k)` for an natural number `k`</span>
+<span class="sd">    enumerates the proper k-colorings of `G`.</span>
+
+<span class="sd">    There are several equivalent definitions; here are three:</span>
+
+<span class="sd">    Def 1 (explicit formula):</span>
+<span class="sd">    For `G` an undirected graph, `c(G)` the number of connected components of</span>
+<span class="sd">    `G`, `E` the edge set of `G`, and `G(S)` the spanning subgraph of `G` with</span>
+<span class="sd">    edge set `S` [1]_:</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        X_G(x) = \sum_{S \subseteq E} (-1)^{|S|} x^{c(G(S))}</span>
+
+
+<span class="sd">    Def 2 (interpolating polynomial):</span>
+<span class="sd">    For `G` an undirected graph, `n(G)` the number of vertices of `G`, `k_0 = 0`,</span>
+<span class="sd">    and `k_i` the number of distinct ways to color the vertices of `G` with `i`</span>
+<span class="sd">    unique colors (for `i` a natural number at most `n(G)`), `X_G(x)` is the</span>
+<span class="sd">    unique Lagrange interpolating polynomial of degree `n(G)` through the points</span>
+<span class="sd">    `(0, k_0), (1, k_1), \dots, (n(G), k_{n(G)})` [2]_.</span>
+
+
+<span class="sd">    Def 3 (chromatic recurrence):</span>
+<span class="sd">    For `G` an undirected graph, `G-e` the graph obtained from `G` by deleting</span>
+<span class="sd">    edge `e`, `G/e` the graph obtained from `G` by contracting edge `e`, `n(G)`</span>
+<span class="sd">    the number of vertices of `G`, and `e(G)` the number of edges of `G` [3]_:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        X_G(x) = \begin{cases}</span>
+<span class="sd">    	   x^{n(G)}, &amp; \text{if $e(G)=0$} \\</span>
+<span class="sd">           X_{G-e}(x) - X_{G/e}(x), &amp; \text{otherwise, for an arbitrary edge $e$}</span>
+<span class="sd">        \end{cases}</span>
+
+<span class="sd">    This formulation is also known as the Fundamental Reduction Theorem [4]_.</span>
+
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    instance of `sympy.core.add.Add`</span>
+<span class="sd">        A Sympy expression representing the chromatic polynomial for `G`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; C = nx.cycle_graph(5)</span>
+<span class="sd">    &gt;&gt;&gt; nx.chromatic_polynomial(C)</span>
+<span class="sd">    x**5 - 5*x**4 + 10*x**3 - 10*x**2 + 4*x</span>
+
+<span class="sd">    &gt;&gt;&gt; G = nx.complete_graph(4)</span>
+<span class="sd">    &gt;&gt;&gt; nx.chromatic_polynomial(G)</span>
+<span class="sd">    x**4 - 6*x**3 + 11*x**2 - 6*x</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Interpretation of the coefficients is discussed in [5]_. Several special</span>
+<span class="sd">    cases are listed in [2]_.</span>
+
+<span class="sd">    The chromatic polynomial is a specialization of the Tutte polynomial; in</span>
+<span class="sd">    particular, `X_G(x) = `T_G(x, 0)` [6]_.</span>
+
+<span class="sd">    The chromatic polynomial may take negative arguments, though evaluations</span>
+<span class="sd">    may not have chromatic interpretations. For instance, `X_G(-1)` enumerates</span>
+<span class="sd">    the acyclic orientations of `G` [7]_.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] D. B. West,</span>
+<span class="sd">       &quot;Introduction to Graph Theory,&quot; p. 222</span>
+<span class="sd">    .. [2] E. W. Weisstein</span>
+<span class="sd">       &quot;Chromatic Polynomial&quot;</span>
+<span class="sd">       MathWorld--A Wolfram Web Resource</span>
+<span class="sd">       https://mathworld.wolfram.com/ChromaticPolynomial.html</span>
+<span class="sd">    .. [3] D. B. West,</span>
+<span class="sd">       &quot;Introduction to Graph Theory,&quot; p. 221</span>
+<span class="sd">    .. [4] J. Zhang, J. Goodall,</span>
+<span class="sd">       &quot;An Introduction to Chromatic Polynomials&quot;</span>
+<span class="sd">       https://math.mit.edu/~apost/courses/18.204_2018/Julie_Zhang_paper.pdf</span>
+<span class="sd">    .. [5] R. C. Read,</span>
+<span class="sd">       &quot;An Introduction to Chromatic Polynomials&quot;</span>
+<span class="sd">       Journal of Combinatorial Theory, 1968</span>
+<span class="sd">       https://math.berkeley.edu/~mrklug/ReadChromatic.pdf</span>
+<span class="sd">    .. [6] W. T. Tutte,</span>
+<span class="sd">       &quot;Graph-polynomials&quot;</span>
+<span class="sd">       Advances in Applied Mathematics, 2004</span>
+<span class="sd">       https://www.sciencedirect.com/science/article/pii/S0196885803000411</span>
+<span class="sd">    .. [7] R. P. Stanley,</span>
+<span class="sd">       &quot;Acyclic orientations of graphs&quot;</span>
+<span class="sd">       Discrete Mathematics, 2006</span>
+<span class="sd">       https://math.mit.edu/~rstan/pubs/pubfiles/18.pdf</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">sympy</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="n">sympy</span><span class="o">.</span><span class="n">Symbol</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
+    <span class="n">stack</span> <span class="o">=</span> <span class="n">deque</span><span class="p">()</span>
+    <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">MultiGraph</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">contraction_idx</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+
+    <span class="n">polynomial</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="n">stack</span><span class="p">:</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="n">stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="n">edges</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">edges</span><span class="p">:</span>
+            <span class="n">polynomial</span> <span class="o">+=</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">**</span> <span class="n">G</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="s2">&quot;contraction_idx&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span> <span class="o">**</span> <span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">e</span> <span class="o">=</span> <span class="n">edges</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">C</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">contracted_edge</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">self_loops</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">C</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="s2">&quot;contraction_idx&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="s2">&quot;contraction_idx&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">C</span><span class="o">.</span><span class="n">remove_edge</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">G</span><span class="o">.</span><span class="n">remove_edge</span><span class="p">(</span><span class="o">*</span><span class="n">e</span><span class="p">)</span>
+            <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+            <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">C</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">polynomial</span></div>
+</pre></div>
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

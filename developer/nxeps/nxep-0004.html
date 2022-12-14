@@ -1,0 +1,926 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>NXEP 4 — Adopting numpy.random.Generator as default random interface &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'developer/nxeps/nxep-0004';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/developer/nxeps/nxep-0004.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="NXEP X — Template and Instructions" href="nxep-template.html" />
+    <link rel="prev" title="NXEP 3 — Graph Builders" href="nxep-0003.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">
+    Section Navigation
+  </p>
+  <div class="bd-toc-item navbar-nav">
+    <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../about_us.html">About Us</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code_of_conduct.html">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../values.html">Mission and Values</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contributor Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../projects.html">Mentored Projects</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="../new_contributor_faq.html">New Contributor FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../core_developer.html">Core Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../release.html">Release Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecations.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../roadmap.html">Roadmap</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">NXEPs</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="nxep-0000.html">NXEP 0 — Purpose and Process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nxep-0001.html">NXEP 1 — Governance and Decision Making</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nxep-0002.html">NXEP 2 — API design of view slices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nxep-0003.html">NXEP 3 — Graph Builders</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">NXEP 4 — Adopting <code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.Generator</span></code> as default random interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nxep-template.html">NXEP X — Template and Instructions</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+</nav>
+    </div>
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <section id="nxep-4-adopting-numpy-random-generator-as-default-random-interface">
+<span id="nxep4"></span><h1>NXEP 4 — Adopting <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.Generator" title="(in NumPy v1.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.Generator</span></code></a> as default random interface<a class="headerlink" href="#nxep-4-adopting-numpy-random-generator-as-default-random-interface" title="Permalink to this heading">#</a></h1>
+<dl class="field-list simple">
+<dt class="field-odd">Author<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Ross Barnowski (<a class="reference external" href="mailto:rossbar&#37;&#52;&#48;berkeley&#46;edu">rossbar<span>&#64;</span>berkeley<span>&#46;</span>edu</a>)</p>
+</dd>
+<dt class="field-even">Status<span class="colon">:</span></dt>
+<dd class="field-even"><p>Draft</p>
+</dd>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Standards Track</p>
+</dd>
+<dt class="field-even">Created<span class="colon">:</span></dt>
+<dd class="field-even"><p>2022-02-24</p>
+</dd>
+</dl>
+<section id="abstract">
+<h2>Abstract<a class="headerlink" href="#abstract" title="Permalink to this heading">#</a></h2>
+<p>Pseudo-random numbers play an important role in many graph and network analysis
+algorithms in NetworkX.
+NetworkX provides a <a class="reference internal" href="../../reference/randomness.html#randomness"><span class="std std-ref">standard interface to random number generators</span></a>
+that includes support for <a class="reference external" href="https://numpy.org/doc/stable/reference/random/index.html#module-numpy.random" title="(in NumPy v1.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random</span></code></a> and the Python built-in <a class="reference external" href="https://docs.python.org/3/library/random.html#module-random" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random</span></code></a> module.
+<a class="reference external" href="https://numpy.org/doc/stable/reference/random/index.html#module-numpy.random" title="(in NumPy v1.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random</span></code></a> is used extensively within NetworkX and in several cases is the
+preferred package for random number generation.
+NumPy introduced a new interface in the <a class="reference external" href="https://numpy.org/doc/stable/reference/random/index.html#module-numpy.random" title="(in NumPy v1.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random</span></code></a> package in NumPy version
+1.17.
+According to <span class="xref std std-doc">NEP19</span>, the new interface based on
+<a class="reference external" href="https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.Generator" title="(in NumPy v1.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.Generator</span></code></a>
+is recommended over the legacy <a class="reference external" href="https://numpy.org/doc/stable/reference/random/legacy.html#numpy.random.RandomState" title="(in NumPy v1.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.RandomState</span></code></a> as the former has
+<a class="reference external" href="https://www.pcg-random.org/index.html">better statistical properties</a>,
+<span class="xref std std-doc">more features</span>,
+and <span class="xref std std-doc">improved performance</span>.
+This NXEP proposes a strategy for adopting <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.Generator" title="(in NumPy v1.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.Generator</span></code></a> as the
+<strong>default</strong> interface for random number generation within NetworkX.</p>
+</section>
+<section id="motivation-and-scope">
+<h2>Motivation and Scope<a class="headerlink" href="#motivation-and-scope" title="Permalink to this heading">#</a></h2>
+<p>The primary motivation for adopting <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.Generator" title="(in NumPy v1.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.Generator</span></code></a> as the default
+random number generation engine in NetworkX is to allow users to benefit from
+the improvements in <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.Generator" title="(in NumPy v1.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.Generator</span></code></a>, including:
+- Advances in statistical quality of modern pRNG’s
+- Improved performance
+- Additional features</p>
+<p>The <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.Generator" title="(in NumPy v1.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.Generator</span></code></a> API is very similar to the <a class="reference external" href="https://numpy.org/doc/stable/reference/random/legacy.html#numpy.random.RandomState" title="(in NumPy v1.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.RandomState</span></code></a>
+API, so users can benefit from these improvements without any additional changes
+<a class="footnote-reference brackets" href="#f1" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> to their existing NetworkX code.</p>
+<p>In principle this change would impact NetworkX users that use any of the
+functions decorated by <a class="reference internal" href="../../reference/generated/networkx.utils.decorators.np_random_state.html#networkx.utils.decorators.np_random_state" title="networkx.utils.decorators.np_random_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np_random_state</span></code></a>
+or <a class="reference internal" href="../../reference/generated/networkx.utils.decorators.py_random_state.html#networkx.utils.decorators.py_random_state" title="networkx.utils.decorators.py_random_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">py_random_state</span></code></a> (when the <code class="docutils literal notranslate"><span class="pre">random_state</span></code> argument
+involves <code class="docutils literal notranslate"><span class="pre">numpy</span></code>).
+See the next section for details.</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="f1" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>See note about the compatibility layer in the <a class="reference internal" href="#implementation"><span class="std std-ref">Implementation section</span></a></p>
+</aside>
+</aside>
+</section>
+<section id="usage-and-impact">
+<h2>Usage and Impact<a class="headerlink" href="#usage-and-impact" title="Permalink to this heading">#</a></h2>
+<p>In NetworkX, random number generators are typically created via a decorator:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">networkx.utils</span> <span class="kn">import</span> <span class="n">np_random_state</span>
+
+<span class="nd">@np_random_state</span><span class="p">(</span><span class="s2">&quot;seed&quot;</span><span class="p">)</span>  <span class="c1"># Or could be the arg position, i.e. 0</span>
+<span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">seed</span>
+</pre></div>
+</div>
+<p>The decorator is responsible for mapping various different inputs into an
+instance of a random number generator within the function.
+Currently, the random number generator instance that is returned is a
+<a class="reference external" href="https://numpy.org/doc/stable/reference/random/legacy.html#numpy.random.RandomState" title="(in NumPy v1.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.RandomState</span></code></a> object:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">foo</span><span class="p">(</span><span class="kc">None</span><span class="p">))</span>
+<span class="go">numpy.random.mtrand.RandomState</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">foo</span><span class="p">(</span><span class="mi">12345</span><span class="p">))</span>
+<span class="go">numpy.random.mtrand.RandomState</span>
+</pre></div>
+</div>
+<p>The only way to get a <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.Generator" title="(in NumPy v1.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.Generator</span></code></a> instance from the random state
+decorators is to pass the instance in directly:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">foo</span><span class="p">(</span><span class="n">rng</span><span class="p">))</span>
+<span class="go">numpy.random._generator.Generator</span>
+</pre></div>
+</div>
+<p>This NXEP proposes to change the behavior so that when e.g. and integer or
+<a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a> is given for the <code class="docutils literal notranslate"><span class="pre">seed</span></code> parameter, a <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.Generator" title="(in NumPy v1.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.Generator</span></code></a> instance
+is returned instead, i.e.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">foo</span><span class="p">(</span><span class="kc">None</span><span class="p">))</span>
+<span class="go">numpy.random._generator.Generator</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">foo</span><span class="p">(</span><span class="mi">12345</span><span class="p">))</span>
+<span class="go">numpy.random._generator.Generator</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="https://numpy.org/doc/stable/reference/random/legacy.html#numpy.random.RandomState" title="(in NumPy v1.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.RandomState</span></code></a> instances can still be used as <code class="docutils literal notranslate"><span class="pre">seed</span></code>, but they
+must be explicitly passed in:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">rs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="mi">12345</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">foo</span><span class="p">(</span><span class="n">rs</span><span class="p">))</span>
+<span class="go">numpy.random.mtrand.RandomState</span>
+</pre></div>
+</div>
+</section>
+<section id="backward-compatibility">
+<h2>Backward compatibility<a class="headerlink" href="#backward-compatibility" title="Permalink to this heading">#</a></h2>
+<p>There are three main concerns:</p>
+<ol class="arabic simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">Generator</span></code> interface is not stream-compatible with <code class="docutils literal notranslate"><span class="pre">RandomState</span></code>,
+thus the results of the <code class="docutils literal notranslate"><span class="pre">Generator</span></code> methods will not be exactly the same
+as the corresponding <code class="docutils literal notranslate"><span class="pre">RandomState</span></code> methods.</p></li>
+<li><p>There are a few slight differences in method names and availability between
+the <code class="docutils literal notranslate"><span class="pre">RandomState</span></code> and <code class="docutils literal notranslate"><span class="pre">Generator</span></code> APIs.</p></li>
+<li><p>There is no global <code class="docutils literal notranslate"><span class="pre">Generator</span></code> instance internal to <a class="reference external" href="https://numpy.org/doc/stable/reference/random/index.html#module-numpy.random" title="(in NumPy v1.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random</span></code></a> as is
+the case for <a class="reference external" href="https://numpy.org/doc/stable/reference/random/legacy.html#numpy.random.RandomState" title="(in NumPy v1.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.RandomState</span></code></a>.</p></li>
+</ol>
+<p>The <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.Generator" title="(in NumPy v1.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.Generator</span></code></a> interface breaks the stream-compatibility
+guarantee that <a class="reference external" href="https://numpy.org/doc/stable/reference/random/legacy.html#numpy.random.RandomState" title="(in NumPy v1.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.RandomState</span></code></a> upheld of exact reproducibility of
+values.
+Switching the default random number generator from <code class="docutils literal notranslate"><span class="pre">RandomState</span></code> to
+<code class="docutils literal notranslate"><span class="pre">Generator</span></code> would mean functions decorated with <code class="docutils literal notranslate"><span class="pre">np_random_state</span></code> would
+produce different results when a value <em>other than an instantiated rng</em> is used
+as the seed.
+For example, let’s take the following function:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@np_random_state</span><span class="p">(</span><span class="s2">&quot;seed&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">bar</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return an array of `num` uniform random numbers.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">seed</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">num</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>With the current implementation of <code class="docutils literal notranslate"><span class="pre">np_random_state</span></code>, a user can pass in an
+integer value to <code class="docutils literal notranslate"><span class="pre">seed</span></code> which will be used to seed a new <code class="docutils literal notranslate"><span class="pre">RandomState</span></code>
+instance.
+Using the same seed value guarantees the output is always exactly reproducible:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bar</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span>
+<span class="go">array([0.92961609, 0.31637555, 0.18391881, 0.20456028, 0.56772503,</span>
+<span class="go">       0.5955447 , 0.96451452, 0.6531771 , 0.74890664, 0.65356987])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bar</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span>
+<span class="go">array([0.92961609, 0.31637555, 0.18391881, 0.20456028, 0.56772503,</span>
+<span class="go">       0.5955447 , 0.96451452, 0.6531771 , 0.74890664, 0.65356987])</span>
+</pre></div>
+</div>
+<p>However, after changing the default rng returned by <code class="docutils literal notranslate"><span class="pre">np_random_state</span></code> to
+a <code class="docutils literal notranslate"><span class="pre">Generator</span></code> instance, the values produced by the decorated <code class="docutils literal notranslate"><span class="pre">bar</span></code> function
+for integer seeds would no longer be identical:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bar</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span>
+<span class="go">array([0.22733602, 0.31675834, 0.79736546, 0.67625467, 0.39110955,</span>
+<span class="go">       0.33281393, 0.59830875, 0.18673419, 0.67275604, 0.94180287])</span>
+</pre></div>
+</div>
+<p>In order to recover exact reproducibility of the original results, a seeded
+<code class="docutils literal notranslate"><span class="pre">RandomState</span></code> instance would need to be explicitly created and passed in
+via <code class="docutils literal notranslate"><span class="pre">seed</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="mi">12345</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bar</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">rng</span><span class="p">)</span>
+<span class="go">array([0.92961609, 0.31637555, 0.18391881, 0.20456028, 0.56772503,</span>
+<span class="go">       0.5955447 , 0.96451452, 0.6531771 , 0.74890664, 0.65356987])</span>
+</pre></div>
+</div>
+<p>Because the streams would no longer be compatible, it is proposed in this NXEP
+that switching the default random number generator only be considered for a
+major release, e.g. the transition from NetworkX 2.X to NetworkX 3.0.</p>
+<p>The second point is only a concern for users who are using
+<a class="reference internal" href="../../reference/generated/networkx.utils.misc.create_random_state.html#networkx.utils.misc.create_random_state" title="networkx.utils.misc.create_random_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_random_state</span></code></a> and the corresponding decorator
+<a class="reference internal" href="../../reference/generated/networkx.utils.decorators.np_random_state.html#networkx.utils.decorators.np_random_state" title="networkx.utils.decorators.np_random_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np_random_state</span></code></a> in their own libraries.
+For example, the <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.RandomState.randint.html#numpy.random.RandomState.randint" title="(in NumPy v1.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.RandomState.randint</span></code></a> method has been replaced
+by <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.integers.html#numpy.random.Generator.integers" title="(in NumPy v1.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.Generator.integers</span></code></a>.
+Thus any code that uses <code class="xref py py-obj docutils literal notranslate"><span class="pre">create_random_state</span></code> or <code class="xref py py-obj docutils literal notranslate"><span class="pre">create_py_random_state</span></code> and
+relies on the <code class="docutils literal notranslate"><span class="pre">randint</span></code> method of the returned rng would result in an
+<a class="reference external" href="https://docs.python.org/3/library/exceptions.html#AttributeError" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AttributeError</span></code></a>.
+This can be addressed with a compatiblity class similar to the
+<code class="xref py py-obj docutils literal notranslate"><span class="pre">networkx.utils.misc.PythonRandomInterface</span></code> class, which provides a compatibility
+layer between <a class="reference external" href="https://docs.python.org/3/library/random.html#module-random" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random</span></code></a> and <a class="reference external" href="https://numpy.org/doc/stable/reference/random/legacy.html#numpy.random.RandomState" title="(in NumPy v1.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.RandomState</span></code></a>.</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_random_state</span></code> currently returns the global <code class="docutils literal notranslate"><span class="pre">numpy.random.mtrand._rand</span></code>
+<code class="xref py py-obj docutils literal notranslate"><span class="pre">RandomState</span></code> instance when the input is <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a> or the <code class="docutils literal notranslate"><span class="pre">numpy.random</span></code> module.
+By switching to <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.Generator" title="(in NumPy v1.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.Generator</span></code></a>, this will no longer be possible as
+there is no global, internal <code class="xref py py-obj docutils literal notranslate"><span class="pre">Generator</span></code> instance in the <a class="reference external" href="https://numpy.org/doc/stable/reference/random/index.html#module-numpy.random" title="(in NumPy v1.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random</span></code></a> module.
+This should have no effect on users, as <code class="docutils literal notranslate"><span class="pre">seed=None</span></code> currently does not
+guarantee reproducible results.</p>
+</section>
+<section id="detailed-description">
+<h2>Detailed description<a class="headerlink" href="#detailed-description" title="Permalink to this heading">#</a></h2>
+<p>This NXEP proposes to change the default random number generator produced by
+the <a class="reference internal" href="../../reference/generated/networkx.utils.misc.create_random_state.html#networkx.utils.misc.create_random_state" title="networkx.utils.misc.create_random_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_random_state</span></code></a> function (and the related
+decorator <a class="reference internal" href="../../reference/generated/networkx.utils.decorators.np_random_state.html#networkx.utils.decorators.np_random_state" title="networkx.utils.decorators.np_random_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np_random_state</span></code></a>) from a <a class="reference external" href="https://numpy.org/doc/stable/reference/random/legacy.html#numpy.random.RandomState" title="(in NumPy v1.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.RandomState</span></code></a>
+instance to a <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.Generator" title="(in NumPy v1.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.Generator</span></code></a> instance when the input to the
+function is either an integer or <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>.</p>
+</section>
+<section id="related-work">
+<h2>Related Work<a class="headerlink" href="#related-work" title="Permalink to this heading">#</a></h2>
+<p>Scikit-learn has a similar pattern for imposing determinism on functions that
+depend on randomness.
+For example, many functions in <code class="docutils literal notranslate"><span class="pre">scikit-learn</span></code> have a <code class="docutils literal notranslate"><span class="pre">random_state</span></code> argument
+that functions similarly to how <code class="docutils literal notranslate"><span class="pre">seed</span></code> behaves in many NetworkX function
+signatures.
+One difference between <code class="docutils literal notranslate"><span class="pre">scikit-learn</span></code> and <code class="docutils literal notranslate"><span class="pre">networkx</span></code> is that scikit-learn
+<strong>only</strong> supports <code class="docutils literal notranslate"><span class="pre">RandomState</span></code> via the <code class="docutils literal notranslate"><span class="pre">random_state</span></code> keyword argument,
+whereas NetworkX implicitly supports both the built-in <a class="reference external" href="https://docs.python.org/3/library/random.html#module-random" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random</span></code></a> module, as well
+as both the numpy <code class="docutils literal notranslate"><span class="pre">RandomState</span></code> and <code class="docutils literal notranslate"><span class="pre">Generator</span></code> instances (depending on
+the type of <code class="docutils literal notranslate"><span class="pre">seed</span></code>).
+This is reflected in the name of the keyword argument as <code class="docutils literal notranslate"><span class="pre">random_state</span></code>
+(used by scikit-learn) is les ambiguous than <code class="docutils literal notranslate"><span class="pre">seed</span></code> (used by NetworkX).</p>
+<p>There are multiple relevant discussions in the scikit-learn community about
+potential approaches to supporting the new NumPy random interface:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="sklearn16988">scikit-learn/scikit-learn#16988</a> covers strategies and concerns
+related to enabling users to use the <code class="docutils literal notranslate"><span class="pre">Generator</span></code>-based random number generators.</p></li>
+<li><p><a class="reference external" href="sklearn14042">scikit-learn/scikit-learn#14042</a> is a higher-level discussion
+that includes additional information about the design considerations and constraints
+related to scikit-learn’s <code class="docutils literal notranslate"><span class="pre">random_state</span></code>.</p></li>
+<li><p>There is also a releated <a class="reference external" href="slep011">SLEP</a>.</p></li>
+</ul>
+</section>
+<section id="implementation">
+<span id="id2"></span><h2>Implementation<a class="headerlink" href="#implementation" title="Permalink to this heading">#</a></h2>
+<p>The implementation itself is quite simple. The logic that determines how
+inputs are mapped to random number generators is encapsulated in the
+<a class="reference internal" href="../../reference/generated/networkx.utils.misc.create_random_state.html#networkx.utils.misc.create_random_state" title="networkx.utils.misc.create_random_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_random_state</span></code></a> function (and the related
+<a class="reference internal" href="../../reference/generated/networkx.utils.misc.create_py_random_state.html#networkx.utils.misc.create_py_random_state" title="networkx.utils.misc.create_py_random_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_py_random_state</span></code></a>).
+Currently (i.e. NetworkX &lt;= 2.X), this function maps inputs like <code class="docutils literal notranslate"><span class="pre">None</span></code>,
+<code class="docutils literal notranslate"><span class="pre">numpy.random</span></code>, and integers to <code class="docutils literal notranslate"><span class="pre">RandomState</span></code> instances:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">create_random_state</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">random_state</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">random_state</span> <span class="ow">is</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">mtrand</span><span class="o">.</span><span class="n">_rand</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">random_state</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">random_state</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">random_state</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="n">random_state</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">random_state</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">Generator</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">random_state</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">random_state</span><span class="si">}</span><span class="s2"> cannot be used to create a numpy.random.RandomState or</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="s2">&quot;numpy.random.Generator instance&quot;</span>
+    <span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This NXEP proposes to modify the function to produce <code class="docutils literal notranslate"><span class="pre">Generator</span></code> instances
+for these inputs. An example implementation might look something like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">create_random_state</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">random_state</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">random_state</span> <span class="ow">is</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">random_state</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">Generator</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="n">random_state</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">random_state</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">random_state</span><span class="p">)</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">random_state</span><span class="si">}</span><span class="s2"> cannot be used to create a numpy.random.RandomState or</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="s2">&quot;numpy.random.Generator instance&quot;</span>
+    <span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The above captures the essential change in logic, though implementation details
+may differ.
+Most of the work related implementing this change will be associated with
+improved/reorganized tests; including adding tests rng-stream reproducibility.</p>
+</section>
+<section id="alternatives">
+<h2>Alternatives<a class="headerlink" href="#alternatives" title="Permalink to this heading">#</a></h2>
+<p>The status quo, i.e. using <code class="docutils literal notranslate"><span class="pre">RandomState</span></code> by default, is a completely
+acceptable alternative.
+<code class="docutils literal notranslate"><span class="pre">RandomState</span></code> is not deprecated, and is expected to maintain its stream-compatibility
+guarantee in perpetuity.</p>
+<p>Another possible alternative would be to provide a package-level toggle that
+users could use to switch the behavior the <code class="docutils literal notranslate"><span class="pre">seed</span></code> kwarg for all functions
+decorated by <code class="docutils literal notranslate"><span class="pre">np_random_state</span></code> or <code class="docutils literal notranslate"><span class="pre">py_random_state</span></code>.
+To illustrate (ignoring implementation details):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">networkx.utils.misc</span> <span class="kn">import</span> <span class="n">create_random_state</span>
+
+<span class="go"># NetworkX 2.X behavior: RandomState by default</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">create_random_state</span><span class="p">(</span><span class="mi">12345</span><span class="p">))</span>
+<span class="go">numpy.random.mtrand.RandomState</span>
+
+<span class="go"># Change random backend by setting pkg attr</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nx</span><span class="o">.</span><span class="n">_random_backend</span> <span class="o">=</span> <span class="s2">&quot;Generator&quot;</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">create_random_state</span><span class="p">(</span><span class="mi">12345</span><span class="p">))</span>
+<span class="go">numpy.random._generator.Generator</span>
+</pre></div>
+</div>
+</section>
+<section id="discussion">
+<h2>Discussion<a class="headerlink" href="#discussion" title="Permalink to this heading">#</a></h2>
+<p>This section may just be a bullet list including links to any discussions
+regarding the NXEP:</p>
+<ul class="simple">
+<li><p>This includes links to mailing list threads or relevant GitHub issues.</p></li>
+</ul>
+</section>
+</section>
+
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#abstract">
+   Abstract
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#motivation-and-scope">
+   Motivation and Scope
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#usage-and-impact">
+   Usage and Impact
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#backward-compatibility">
+   Backward compatibility
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#detailed-description">
+   Detailed description
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#related-work">
+   Related Work
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#implementation">
+   Implementation
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#alternatives">
+   Alternatives
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#discussion">
+   Discussion
+  </a>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

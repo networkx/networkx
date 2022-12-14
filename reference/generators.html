@@ -1,0 +1,1653 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Graph generators &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'reference/generators';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/reference/generators.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="graph_atlas" href="generated/networkx.generators.atlas.graph_atlas.html" />
+    <link rel="prev" title="is_frozen" href="generated/networkx.classes.function.is_frozen.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">
+    Section Navigation
+  </p>
+  <div class="bd-toc-item navbar-nav">
+    <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="classes/index.html">Graph types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="algorithms/index.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="functions.html">Functions</a></li>
+<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">Graph generators</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.atlas.graph_atlas.html">graph_atlas</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.atlas.graph_atlas_g.html">graph_atlas_g</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.classic.balanced_tree.html">balanced_tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.classic.barbell_graph.html">barbell_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.classic.binomial_tree.html">binomial_tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.classic.complete_graph.html">complete_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.classic.complete_multipartite_graph.html">complete_multipartite_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.classic.circular_ladder_graph.html">circular_ladder_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.classic.circulant_graph.html">circulant_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.classic.cycle_graph.html">cycle_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.classic.dorogovtsev_goltsev_mendes_graph.html">dorogovtsev_goltsev_mendes_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.classic.empty_graph.html">empty_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.classic.full_rary_tree.html">full_rary_tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.classic.ladder_graph.html">ladder_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.classic.lollipop_graph.html">lollipop_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.classic.null_graph.html">null_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.classic.path_graph.html">path_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.classic.star_graph.html">star_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.classic.trivial_graph.html">trivial_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.classic.turan_graph.html">turan_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.classic.wheel_graph.html">wheel_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.expanders.margulis_gabber_galil_graph.html">margulis_gabber_galil_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.expanders.chordal_cycle_graph.html">chordal_cycle_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.expanders.paley_graph.html">paley_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.lattice.grid_2d_graph.html">grid_2d_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.lattice.grid_graph.html">grid_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.lattice.hexagonal_lattice_graph.html">hexagonal_lattice_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.lattice.hypercube_graph.html">hypercube_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.lattice.triangular_lattice_graph.html">triangular_lattice_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.small.LCF_graph.html">LCF_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.small.bull_graph.html">bull_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.small.chvatal_graph.html">chvatal_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.small.cubical_graph.html">cubical_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.small.desargues_graph.html">desargues_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.small.diamond_graph.html">diamond_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.small.dodecahedral_graph.html">dodecahedral_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.small.frucht_graph.html">frucht_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.small.heawood_graph.html">heawood_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.small.hoffman_singleton_graph.html">hoffman_singleton_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.small.house_graph.html">house_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.small.house_x_graph.html">house_x_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.small.icosahedral_graph.html">icosahedral_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.small.krackhardt_kite_graph.html">krackhardt_kite_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.small.moebius_kantor_graph.html">moebius_kantor_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.small.octahedral_graph.html">octahedral_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.small.pappus_graph.html">pappus_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.small.petersen_graph.html">petersen_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.small.sedgewick_maze_graph.html">sedgewick_maze_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.small.tetrahedral_graph.html">tetrahedral_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.small.truncated_cube_graph.html">truncated_cube_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.small.truncated_tetrahedron_graph.html">truncated_tetrahedron_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.small.tutte_graph.html">tutte_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.random_graphs.fast_gnp_random_graph.html">fast_gnp_random_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.random_graphs.gnp_random_graph.html">gnp_random_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.random_graphs.dense_gnm_random_graph.html">dense_gnm_random_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.random_graphs.gnm_random_graph.html">gnm_random_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.random_graphs.erdos_renyi_graph.html">erdos_renyi_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.random_graphs.binomial_graph.html">binomial_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.random_graphs.newman_watts_strogatz_graph.html">newman_watts_strogatz_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.random_graphs.watts_strogatz_graph.html">watts_strogatz_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.random_graphs.connected_watts_strogatz_graph.html">connected_watts_strogatz_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.random_graphs.random_regular_graph.html">random_regular_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.random_graphs.barabasi_albert_graph.html">barabasi_albert_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.random_graphs.dual_barabasi_albert_graph.html">dual_barabasi_albert_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.random_graphs.extended_barabasi_albert_graph.html">extended_barabasi_albert_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.random_graphs.powerlaw_cluster_graph.html">powerlaw_cluster_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.random_graphs.random_kernel_graph.html">random_kernel_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.random_graphs.random_lobster.html">random_lobster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.random_graphs.random_shell_graph.html">random_shell_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.random_graphs.random_powerlaw_tree.html">random_powerlaw_tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.random_graphs.random_powerlaw_tree_sequence.html">random_powerlaw_tree_sequence</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.random_graphs.random_kernel_graph.html">random_kernel_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.duplication.duplication_divergence_graph.html">duplication_divergence_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.duplication.partial_duplication_graph.html">partial_duplication_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.degree_seq.configuration_model.html">configuration_model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.degree_seq.directed_configuration_model.html">directed_configuration_model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.degree_seq.expected_degree_graph.html">expected_degree_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.degree_seq.havel_hakimi_graph.html">havel_hakimi_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.degree_seq.directed_havel_hakimi_graph.html">directed_havel_hakimi_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.degree_seq.degree_sequence_tree.html">degree_sequence_tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.degree_seq.random_degree_sequence_graph.html">random_degree_sequence_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.random_clustered.random_clustered_graph.html">random_clustered_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.directed.gn_graph.html">gn_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.directed.gnr_graph.html">gnr_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.directed.gnc_graph.html">gnc_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.directed.random_k_out_graph.html">random_k_out_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.directed.scale_free_graph.html">scale_free_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.geometric.geometric_edges.html">geometric_edges</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.geometric.geographical_threshold_graph.html">geographical_threshold_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.geometric.navigable_small_world_graph.html">navigable_small_world_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.geometric.random_geometric_graph.html">random_geometric_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.geometric.soft_random_geometric_graph.html">soft_random_geometric_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.geometric.thresholded_random_geometric_graph.html">thresholded_random_geometric_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.geometric.waxman_graph.html">waxman_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.line.line_graph.html">line_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.line.inverse_line_graph.html">inverse_line_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.ego.ego_graph.html">ego_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.stochastic.stochastic_graph.html">stochastic_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.internet_as_graphs.random_internet_as_graph.html">random_internet_as_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.intersection.uniform_random_intersection_graph.html">uniform_random_intersection_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.intersection.k_random_intersection_graph.html">k_random_intersection_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.intersection.general_random_intersection_graph.html">general_random_intersection_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.social.karate_club_graph.html">karate_club_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.social.davis_southern_women_graph.html">davis_southern_women_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.social.florentine_families_graph.html">florentine_families_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.social.les_miserables_graph.html">les_miserables_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.community.caveman_graph.html">caveman_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.community.connected_caveman_graph.html">connected_caveman_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.community.gaussian_random_partition_graph.html">gaussian_random_partition_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.community.LFR_benchmark_graph.html">LFR_benchmark_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.community.planted_partition_graph.html">planted_partition_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.community.random_partition_graph.html">random_partition_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.community.relaxed_caveman_graph.html">relaxed_caveman_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.community.ring_of_cliques.html">ring_of_cliques</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.community.stochastic_block_model.html">stochastic_block_model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.community.windmill_graph.html">windmill_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.spectral_graph_forge.spectral_graph_forge.html">spectral_graph_forge</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.trees.random_tree.html">random_tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.trees.prefix_tree.html">prefix_tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.nonisomorphic_trees.nonisomorphic_trees.html">nonisomorphic_trees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.nonisomorphic_trees.number_of_nonisomorphic_trees.html">number_of_nonisomorphic_trees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.triads.triad_graph.html">triad_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.joint_degree_seq.is_valid_joint_degree.html">is_valid_joint_degree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.joint_degree_seq.joint_degree_graph.html">joint_degree_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.joint_degree_seq.is_valid_directed_joint_degree.html">is_valid_directed_joint_degree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.joint_degree_seq.directed_joint_degree_graph.html">directed_joint_degree_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.mycielski.mycielskian.html">mycielskian</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.mycielski.mycielski_graph.html">mycielski_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.harary_graph.hnm_harary_graph.html">hnm_harary_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.harary_graph.hkn_harary_graph.html">hkn_harary_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.cographs.random_cograph.html">random_cograph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.interval_graph.interval_graph.html">interval_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.generators.sudoku.sudoku_graph.html">sudoku_graph</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="linalg.html">Linear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="convert.html">Converting to and from other data formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="relabel.html">Relabeling nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="readwrite/index.html">Reading and writing graphs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="drawing.html">Drawing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="randomness.html">Randomness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exceptions.html">Exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+
+  </div>
+</nav>
+    </div>
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <section id="graph-generators">
+<span id="generators"></span><h1>Graph generators<a class="headerlink" href="#graph-generators" title="Permalink to this heading">#</a></h1>
+<section id="module-networkx.generators.atlas">
+<span id="atlas"></span><h2>Atlas<a class="headerlink" href="#module-networkx.generators.atlas" title="Permalink to this heading">#</a></h2>
+<p>Generators for the small graph atlas.</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.atlas.graph_atlas.html#networkx.generators.atlas.graph_atlas" title="networkx.generators.atlas.graph_atlas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">graph_atlas</span></code></a>(i)</p></td>
+<td><p>Returns graph number <code class="xref py py-obj docutils literal notranslate"><span class="pre">i</span></code> from the Graph Atlas.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.atlas.graph_atlas_g.html#networkx.generators.atlas.graph_atlas_g" title="networkx.generators.atlas.graph_atlas_g"><code class="xref py py-obj docutils literal notranslate"><span class="pre">graph_atlas_g</span></code></a>()</p></td>
+<td><p>Returns the list of all graphs with up to seven nodes named in the Graph Atlas.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-networkx.generators.classic">
+<span id="classic"></span><h2>Classic<a class="headerlink" href="#module-networkx.generators.classic" title="Permalink to this heading">#</a></h2>
+<p>Generators for some classic graphs.</p>
+<p>The typical graph builder function is called as follows:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">complete_graph</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>returning the complete graph on n nodes labeled 0, .., 99
+as a simple graph. Except for <a class="reference internal" href="generated/networkx.generators.classic.empty_graph.html#networkx.generators.classic.empty_graph" title="networkx.generators.classic.empty_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">empty_graph</span></code></a>, all the functions
+in this module return a Graph class (i.e. a simple, undirected graph).</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.classic.balanced_tree.html#networkx.generators.classic.balanced_tree" title="networkx.generators.classic.balanced_tree"><code class="xref py py-obj docutils literal notranslate"><span class="pre">balanced_tree</span></code></a>(r, h[, create_using])</p></td>
+<td><p>Returns the perfectly balanced <code class="xref py py-obj docutils literal notranslate"><span class="pre">r</span></code>-ary tree of height <code class="xref py py-obj docutils literal notranslate"><span class="pre">h</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.classic.barbell_graph.html#networkx.generators.classic.barbell_graph" title="networkx.generators.classic.barbell_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">barbell_graph</span></code></a>(m1, m2[, create_using])</p></td>
+<td><p>Returns the Barbell Graph: two complete graphs connected by a path.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.classic.binomial_tree.html#networkx.generators.classic.binomial_tree" title="networkx.generators.classic.binomial_tree"><code class="xref py py-obj docutils literal notranslate"><span class="pre">binomial_tree</span></code></a>(n[, create_using])</p></td>
+<td><p>Returns the Binomial Tree of order n.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.classic.complete_graph.html#networkx.generators.classic.complete_graph" title="networkx.generators.classic.complete_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">complete_graph</span></code></a>(n[, create_using])</p></td>
+<td><p>Return the complete graph <code class="xref py py-obj docutils literal notranslate"><span class="pre">K_n</span></code> with n nodes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.classic.complete_multipartite_graph.html#networkx.generators.classic.complete_multipartite_graph" title="networkx.generators.classic.complete_multipartite_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">complete_multipartite_graph</span></code></a>(*subset_sizes)</p></td>
+<td><p>Returns the complete multipartite graph with the specified subset sizes.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.classic.circular_ladder_graph.html#networkx.generators.classic.circular_ladder_graph" title="networkx.generators.classic.circular_ladder_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">circular_ladder_graph</span></code></a>(n[, create_using])</p></td>
+<td><p>Returns the circular ladder graph <span class="math notranslate nohighlight">\(CL_n\)</span> of length n.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.classic.circulant_graph.html#networkx.generators.classic.circulant_graph" title="networkx.generators.classic.circulant_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">circulant_graph</span></code></a>(n, offsets[, create_using])</p></td>
+<td><p>Returns the circulant graph <span class="math notranslate nohighlight">\(Ci_n(x_1, x_2, ..., x_m)\)</span> with <span class="math notranslate nohighlight">\(n\)</span> nodes.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.classic.cycle_graph.html#networkx.generators.classic.cycle_graph" title="networkx.generators.classic.cycle_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cycle_graph</span></code></a>(n[, create_using])</p></td>
+<td><p>Returns the cycle graph <span class="math notranslate nohighlight">\(C_n\)</span> of cyclically connected nodes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.classic.dorogovtsev_goltsev_mendes_graph.html#networkx.generators.classic.dorogovtsev_goltsev_mendes_graph" title="networkx.generators.classic.dorogovtsev_goltsev_mendes_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dorogovtsev_goltsev_mendes_graph</span></code></a>(n[, ...])</p></td>
+<td><p>Returns the hierarchically constructed Dorogovtsev-Goltsev-Mendes graph.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.classic.empty_graph.html#networkx.generators.classic.empty_graph" title="networkx.generators.classic.empty_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">empty_graph</span></code></a>([n, create_using, default])</p></td>
+<td><p>Returns the empty graph with n nodes and zero edges.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.classic.full_rary_tree.html#networkx.generators.classic.full_rary_tree" title="networkx.generators.classic.full_rary_tree"><code class="xref py py-obj docutils literal notranslate"><span class="pre">full_rary_tree</span></code></a>(r, n[, create_using])</p></td>
+<td><p>Creates a full r-ary tree of <code class="xref py py-obj docutils literal notranslate"><span class="pre">n</span></code> nodes.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.classic.ladder_graph.html#networkx.generators.classic.ladder_graph" title="networkx.generators.classic.ladder_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ladder_graph</span></code></a>(n[, create_using])</p></td>
+<td><p>Returns the Ladder graph of length n.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.classic.lollipop_graph.html#networkx.generators.classic.lollipop_graph" title="networkx.generators.classic.lollipop_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lollipop_graph</span></code></a>(m, n[, create_using])</p></td>
+<td><p>Returns the Lollipop Graph; <code class="xref py py-obj docutils literal notranslate"><span class="pre">K_m</span></code> connected to <code class="xref py py-obj docutils literal notranslate"><span class="pre">P_n</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.classic.null_graph.html#networkx.generators.classic.null_graph" title="networkx.generators.classic.null_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">null_graph</span></code></a>([create_using])</p></td>
+<td><p>Returns the Null graph with no nodes or edges.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.classic.path_graph.html#networkx.generators.classic.path_graph" title="networkx.generators.classic.path_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">path_graph</span></code></a>(n[, create_using])</p></td>
+<td><p>Returns the Path graph <code class="xref py py-obj docutils literal notranslate"><span class="pre">P_n</span></code> of linearly connected nodes.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.classic.star_graph.html#networkx.generators.classic.star_graph" title="networkx.generators.classic.star_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">star_graph</span></code></a>(n[, create_using])</p></td>
+<td><p>Return the star graph</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.classic.trivial_graph.html#networkx.generators.classic.trivial_graph" title="networkx.generators.classic.trivial_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trivial_graph</span></code></a>([create_using])</p></td>
+<td><p>Return the Trivial graph with one node (with label 0) and no edges.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.classic.turan_graph.html#networkx.generators.classic.turan_graph" title="networkx.generators.classic.turan_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">turan_graph</span></code></a>(n, r)</p></td>
+<td><p>Return the Turan Graph</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.classic.wheel_graph.html#networkx.generators.classic.wheel_graph" title="networkx.generators.classic.wheel_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wheel_graph</span></code></a>(n[, create_using])</p></td>
+<td><p>Return the wheel graph</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-networkx.generators.expanders">
+<span id="expanders"></span><h2>Expanders<a class="headerlink" href="#module-networkx.generators.expanders" title="Permalink to this heading">#</a></h2>
+<p>Provides explicit constructions of expander graphs.</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.expanders.margulis_gabber_galil_graph.html#networkx.generators.expanders.margulis_gabber_galil_graph" title="networkx.generators.expanders.margulis_gabber_galil_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">margulis_gabber_galil_graph</span></code></a>(n[, create_using])</p></td>
+<td><p>Returns the Margulis-Gabber-Galil undirected MultiGraph on <code class="xref py py-obj docutils literal notranslate"><span class="pre">n^2</span></code> nodes.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.expanders.chordal_cycle_graph.html#networkx.generators.expanders.chordal_cycle_graph" title="networkx.generators.expanders.chordal_cycle_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">chordal_cycle_graph</span></code></a>(p[, create_using])</p></td>
+<td><p>Returns the chordal cycle graph on <code class="xref py py-obj docutils literal notranslate"><span class="pre">p</span></code> nodes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.expanders.paley_graph.html#networkx.generators.expanders.paley_graph" title="networkx.generators.expanders.paley_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">paley_graph</span></code></a>(p[, create_using])</p></td>
+<td><p>Returns the Paley (p-1)/2-regular graph on p nodes.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-networkx.generators.lattice">
+<span id="lattice"></span><h2>Lattice<a class="headerlink" href="#module-networkx.generators.lattice" title="Permalink to this heading">#</a></h2>
+<p>Functions for generating grid graphs and lattices</p>
+<p>The <a class="reference internal" href="generated/networkx.generators.lattice.grid_2d_graph.html#networkx.generators.lattice.grid_2d_graph" title="networkx.generators.lattice.grid_2d_graph"><code class="xref py py-func docutils literal notranslate"><span class="pre">grid_2d_graph()</span></code></a>, <a class="reference internal" href="generated/networkx.generators.lattice.triangular_lattice_graph.html#networkx.generators.lattice.triangular_lattice_graph" title="networkx.generators.lattice.triangular_lattice_graph"><code class="xref py py-func docutils literal notranslate"><span class="pre">triangular_lattice_graph()</span></code></a>, and
+<a class="reference internal" href="generated/networkx.generators.lattice.hexagonal_lattice_graph.html#networkx.generators.lattice.hexagonal_lattice_graph" title="networkx.generators.lattice.hexagonal_lattice_graph"><code class="xref py py-func docutils literal notranslate"><span class="pre">hexagonal_lattice_graph()</span></code></a> functions correspond to the three
+<a class="reference external" href="https://en.wikipedia.org/wiki/List_of_regular_polytopes_and_compounds#Euclidean_tilings">regular tilings of the plane</a>, the square, triangular, and hexagonal
+tilings, respectively. <a class="reference internal" href="generated/networkx.generators.lattice.grid_graph.html#networkx.generators.lattice.grid_graph" title="networkx.generators.lattice.grid_graph"><code class="xref py py-func docutils literal notranslate"><span class="pre">grid_graph()</span></code></a> and <a class="reference internal" href="generated/networkx.generators.lattice.hypercube_graph.html#networkx.generators.lattice.hypercube_graph" title="networkx.generators.lattice.hypercube_graph"><code class="xref py py-func docutils literal notranslate"><span class="pre">hypercube_graph()</span></code></a>
+are similar for arbitrary dimensions. Useful relevant discussion can
+be found about <a class="reference external" href="https://en.wikipedia.org/wiki/Triangular_tiling">Triangular Tiling</a>, and <a class="reference external" href="http://www-cs-students.stanford.edu/~amitp/game-programming/grids/">Square, Hex and Triangle Grids</a></p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.lattice.grid_2d_graph.html#networkx.generators.lattice.grid_2d_graph" title="networkx.generators.lattice.grid_2d_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">grid_2d_graph</span></code></a>(m, n[, periodic, create_using])</p></td>
+<td><p>Returns the two-dimensional grid graph.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.lattice.grid_graph.html#networkx.generators.lattice.grid_graph" title="networkx.generators.lattice.grid_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">grid_graph</span></code></a>(dim[, periodic])</p></td>
+<td><p>Returns the <em>n</em>-dimensional grid graph.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.lattice.hexagonal_lattice_graph.html#networkx.generators.lattice.hexagonal_lattice_graph" title="networkx.generators.lattice.hexagonal_lattice_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hexagonal_lattice_graph</span></code></a>(m, n[, periodic, ...])</p></td>
+<td><p>Returns an <code class="xref py py-obj docutils literal notranslate"><span class="pre">m</span></code> by <code class="xref py py-obj docutils literal notranslate"><span class="pre">n</span></code> hexagonal lattice graph.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.lattice.hypercube_graph.html#networkx.generators.lattice.hypercube_graph" title="networkx.generators.lattice.hypercube_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hypercube_graph</span></code></a>(n)</p></td>
+<td><p>Returns the <em>n</em>-dimensional hypercube graph.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.lattice.triangular_lattice_graph.html#networkx.generators.lattice.triangular_lattice_graph" title="networkx.generators.lattice.triangular_lattice_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">triangular_lattice_graph</span></code></a>(m, n[, periodic, ...])</p></td>
+<td><p>Returns the <span class="math notranslate nohighlight">\(m\)</span> by <span class="math notranslate nohighlight">\(n\)</span> triangular lattice graph.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-networkx.generators.small">
+<span id="small"></span><h2>Small<a class="headerlink" href="#module-networkx.generators.small" title="Permalink to this heading">#</a></h2>
+<p>Various small and named graphs, together with some compact generators.</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.small.LCF_graph.html#networkx.generators.small.LCF_graph" title="networkx.generators.small.LCF_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LCF_graph</span></code></a>(n, shift_list, repeats[, create_using])</p></td>
+<td><p>Return the cubic graph specified in LCF notation.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.small.bull_graph.html#networkx.generators.small.bull_graph" title="networkx.generators.small.bull_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bull_graph</span></code></a>([create_using])</p></td>
+<td><p>Returns the Bull Graph</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.small.chvatal_graph.html#networkx.generators.small.chvatal_graph" title="networkx.generators.small.chvatal_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">chvatal_graph</span></code></a>([create_using])</p></td>
+<td><p>Returns the Chvátal Graph</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.small.cubical_graph.html#networkx.generators.small.cubical_graph" title="networkx.generators.small.cubical_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cubical_graph</span></code></a>([create_using])</p></td>
+<td><p>Returns the 3-regular Platonic Cubical Graph</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.small.desargues_graph.html#networkx.generators.small.desargues_graph" title="networkx.generators.small.desargues_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">desargues_graph</span></code></a>([create_using])</p></td>
+<td><p>Returns the Desargues Graph</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.small.diamond_graph.html#networkx.generators.small.diamond_graph" title="networkx.generators.small.diamond_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">diamond_graph</span></code></a>([create_using])</p></td>
+<td><p>Returns the Diamond graph</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.small.dodecahedral_graph.html#networkx.generators.small.dodecahedral_graph" title="networkx.generators.small.dodecahedral_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dodecahedral_graph</span></code></a>([create_using])</p></td>
+<td><p>Returns the Platonic Dodecahedral graph.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.small.frucht_graph.html#networkx.generators.small.frucht_graph" title="networkx.generators.small.frucht_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">frucht_graph</span></code></a>([create_using])</p></td>
+<td><p>Returns the Frucht Graph.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.small.heawood_graph.html#networkx.generators.small.heawood_graph" title="networkx.generators.small.heawood_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">heawood_graph</span></code></a>([create_using])</p></td>
+<td><p>Returns the Heawood Graph, a (3,6) cage.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.small.hoffman_singleton_graph.html#networkx.generators.small.hoffman_singleton_graph" title="networkx.generators.small.hoffman_singleton_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hoffman_singleton_graph</span></code></a>()</p></td>
+<td><p>Returns the Hoffman-Singleton Graph.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.small.house_graph.html#networkx.generators.small.house_graph" title="networkx.generators.small.house_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">house_graph</span></code></a>([create_using])</p></td>
+<td><p>Returns the House graph (square with triangle on top)</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.small.house_x_graph.html#networkx.generators.small.house_x_graph" title="networkx.generators.small.house_x_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">house_x_graph</span></code></a>([create_using])</p></td>
+<td><p>Returns the House graph with a cross inside the house square.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.small.icosahedral_graph.html#networkx.generators.small.icosahedral_graph" title="networkx.generators.small.icosahedral_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">icosahedral_graph</span></code></a>([create_using])</p></td>
+<td><p>Returns the Platonic Icosahedral graph.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.small.krackhardt_kite_graph.html#networkx.generators.small.krackhardt_kite_graph" title="networkx.generators.small.krackhardt_kite_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">krackhardt_kite_graph</span></code></a>([create_using])</p></td>
+<td><p>Returns the Krackhardt Kite Social Network.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.small.moebius_kantor_graph.html#networkx.generators.small.moebius_kantor_graph" title="networkx.generators.small.moebius_kantor_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">moebius_kantor_graph</span></code></a>([create_using])</p></td>
+<td><p>Returns the Moebius-Kantor graph.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.small.octahedral_graph.html#networkx.generators.small.octahedral_graph" title="networkx.generators.small.octahedral_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">octahedral_graph</span></code></a>([create_using])</p></td>
+<td><p>Returns the Platonic Octahedral graph.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.small.pappus_graph.html#networkx.generators.small.pappus_graph" title="networkx.generators.small.pappus_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pappus_graph</span></code></a>()</p></td>
+<td><p>Returns the Pappus graph.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.small.petersen_graph.html#networkx.generators.small.petersen_graph" title="networkx.generators.small.petersen_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">petersen_graph</span></code></a>([create_using])</p></td>
+<td><p>Returns the Petersen graph.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.small.sedgewick_maze_graph.html#networkx.generators.small.sedgewick_maze_graph" title="networkx.generators.small.sedgewick_maze_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sedgewick_maze_graph</span></code></a>([create_using])</p></td>
+<td><p>Return a small maze with a cycle.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.small.tetrahedral_graph.html#networkx.generators.small.tetrahedral_graph" title="networkx.generators.small.tetrahedral_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tetrahedral_graph</span></code></a>([create_using])</p></td>
+<td><p>Returns the 3-regular Platonic Tetrahedral graph.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.small.truncated_cube_graph.html#networkx.generators.small.truncated_cube_graph" title="networkx.generators.small.truncated_cube_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">truncated_cube_graph</span></code></a>([create_using])</p></td>
+<td><p>Returns the skeleton of the truncated cube.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.small.truncated_tetrahedron_graph.html#networkx.generators.small.truncated_tetrahedron_graph" title="networkx.generators.small.truncated_tetrahedron_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">truncated_tetrahedron_graph</span></code></a>([create_using])</p></td>
+<td><p>Returns the skeleton of the truncated Platonic tetrahedron.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.small.tutte_graph.html#networkx.generators.small.tutte_graph" title="networkx.generators.small.tutte_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tutte_graph</span></code></a>([create_using])</p></td>
+<td><p>Returns the Tutte graph.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-networkx.generators.random_graphs">
+<span id="random-graphs"></span><h2>Random Graphs<a class="headerlink" href="#module-networkx.generators.random_graphs" title="Permalink to this heading">#</a></h2>
+<p>Generators for random graphs.</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.random_graphs.fast_gnp_random_graph.html#networkx.generators.random_graphs.fast_gnp_random_graph" title="networkx.generators.random_graphs.fast_gnp_random_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fast_gnp_random_graph</span></code></a>(n, p[, seed, directed])</p></td>
+<td><p>Returns a <span class="math notranslate nohighlight">\(G_{n,p}\)</span> random graph, also known as an Erdős-Rényi graph or a binomial graph.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.random_graphs.gnp_random_graph.html#networkx.generators.random_graphs.gnp_random_graph" title="networkx.generators.random_graphs.gnp_random_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gnp_random_graph</span></code></a>(n, p[, seed, directed])</p></td>
+<td><p>Returns a <span class="math notranslate nohighlight">\(G_{n,p}\)</span> random graph, also known as an Erdős-Rényi graph or a binomial graph.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.random_graphs.dense_gnm_random_graph.html#networkx.generators.random_graphs.dense_gnm_random_graph" title="networkx.generators.random_graphs.dense_gnm_random_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dense_gnm_random_graph</span></code></a>(n, m[, seed])</p></td>
+<td><p>Returns a <span class="math notranslate nohighlight">\(G_{n,m}\)</span> random graph.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.random_graphs.gnm_random_graph.html#networkx.generators.random_graphs.gnm_random_graph" title="networkx.generators.random_graphs.gnm_random_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gnm_random_graph</span></code></a>(n, m[, seed, directed])</p></td>
+<td><p>Returns a <span class="math notranslate nohighlight">\(G_{n,m}\)</span> random graph.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.random_graphs.erdos_renyi_graph.html#networkx.generators.random_graphs.erdos_renyi_graph" title="networkx.generators.random_graphs.erdos_renyi_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">erdos_renyi_graph</span></code></a>(n, p[, seed, directed])</p></td>
+<td><p>Returns a <span class="math notranslate nohighlight">\(G_{n,p}\)</span> random graph, also known as an Erdős-Rényi graph or a binomial graph.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.random_graphs.binomial_graph.html#networkx.generators.random_graphs.binomial_graph" title="networkx.generators.random_graphs.binomial_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">binomial_graph</span></code></a>(n, p[, seed, directed])</p></td>
+<td><p>Returns a <span class="math notranslate nohighlight">\(G_{n,p}\)</span> random graph, also known as an Erdős-Rényi graph or a binomial graph.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.random_graphs.newman_watts_strogatz_graph.html#networkx.generators.random_graphs.newman_watts_strogatz_graph" title="networkx.generators.random_graphs.newman_watts_strogatz_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">newman_watts_strogatz_graph</span></code></a>(n, k, p[, seed])</p></td>
+<td><p>Returns a Newman–Watts–Strogatz small-world graph.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.random_graphs.watts_strogatz_graph.html#networkx.generators.random_graphs.watts_strogatz_graph" title="networkx.generators.random_graphs.watts_strogatz_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">watts_strogatz_graph</span></code></a>(n, k, p[, seed])</p></td>
+<td><p>Returns a Watts–Strogatz small-world graph.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.random_graphs.connected_watts_strogatz_graph.html#networkx.generators.random_graphs.connected_watts_strogatz_graph" title="networkx.generators.random_graphs.connected_watts_strogatz_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">connected_watts_strogatz_graph</span></code></a>(n, k, p[, ...])</p></td>
+<td><p>Returns a connected Watts–Strogatz small-world graph.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.random_graphs.random_regular_graph.html#networkx.generators.random_graphs.random_regular_graph" title="networkx.generators.random_graphs.random_regular_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_regular_graph</span></code></a>(d, n[, seed])</p></td>
+<td><p>Returns a random <span class="math notranslate nohighlight">\(d\)</span>-regular graph on <span class="math notranslate nohighlight">\(n\)</span> nodes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.random_graphs.barabasi_albert_graph.html#networkx.generators.random_graphs.barabasi_albert_graph" title="networkx.generators.random_graphs.barabasi_albert_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">barabasi_albert_graph</span></code></a>(n, m[, seed, ...])</p></td>
+<td><p>Returns a random graph using Barabási–Albert preferential attachment</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.random_graphs.dual_barabasi_albert_graph.html#networkx.generators.random_graphs.dual_barabasi_albert_graph" title="networkx.generators.random_graphs.dual_barabasi_albert_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dual_barabasi_albert_graph</span></code></a>(n, m1, m2, p[, ...])</p></td>
+<td><p>Returns a random graph using dual Barabási–Albert preferential attachment</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.random_graphs.extended_barabasi_albert_graph.html#networkx.generators.random_graphs.extended_barabasi_albert_graph" title="networkx.generators.random_graphs.extended_barabasi_albert_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extended_barabasi_albert_graph</span></code></a>(n, m, p, q[, ...])</p></td>
+<td><p>Returns an extended Barabási–Albert model graph.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.random_graphs.powerlaw_cluster_graph.html#networkx.generators.random_graphs.powerlaw_cluster_graph" title="networkx.generators.random_graphs.powerlaw_cluster_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">powerlaw_cluster_graph</span></code></a>(n, m, p[, seed])</p></td>
+<td><p>Holme and Kim algorithm for growing graphs with powerlaw degree distribution and approximate average clustering.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.random_graphs.random_kernel_graph.html#networkx.generators.random_graphs.random_kernel_graph" title="networkx.generators.random_graphs.random_kernel_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_kernel_graph</span></code></a>(n, kernel_integral[, ...])</p></td>
+<td><p>Returns an random graph based on the specified kernel.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.random_graphs.random_lobster.html#networkx.generators.random_graphs.random_lobster" title="networkx.generators.random_graphs.random_lobster"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_lobster</span></code></a>(n, p1, p2[, seed])</p></td>
+<td><p>Returns a random lobster graph.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.random_graphs.random_shell_graph.html#networkx.generators.random_graphs.random_shell_graph" title="networkx.generators.random_graphs.random_shell_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_shell_graph</span></code></a>(constructor[, seed])</p></td>
+<td><p>Returns a random shell graph for the constructor given.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.random_graphs.random_powerlaw_tree.html#networkx.generators.random_graphs.random_powerlaw_tree" title="networkx.generators.random_graphs.random_powerlaw_tree"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_powerlaw_tree</span></code></a>(n[, gamma, seed, tries])</p></td>
+<td><p>Returns a tree with a power law degree distribution.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.random_graphs.random_powerlaw_tree_sequence.html#networkx.generators.random_graphs.random_powerlaw_tree_sequence" title="networkx.generators.random_graphs.random_powerlaw_tree_sequence"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_powerlaw_tree_sequence</span></code></a>(n[, gamma, ...])</p></td>
+<td><p>Returns a degree sequence for a tree with a power law distribution.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.random_graphs.random_kernel_graph.html#networkx.generators.random_graphs.random_kernel_graph" title="networkx.generators.random_graphs.random_kernel_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_kernel_graph</span></code></a>(n, kernel_integral[, ...])</p></td>
+<td><p>Returns an random graph based on the specified kernel.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-networkx.generators.duplication">
+<span id="duplication-divergence"></span><h2>Duplication Divergence<a class="headerlink" href="#module-networkx.generators.duplication" title="Permalink to this heading">#</a></h2>
+<p>Functions for generating graphs based on the “duplication” method.</p>
+<p>These graph generators start with a small initial graph then duplicate
+nodes and (partially) duplicate their edges. These functions are
+generally inspired by biological networks.</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.duplication.duplication_divergence_graph.html#networkx.generators.duplication.duplication_divergence_graph" title="networkx.generators.duplication.duplication_divergence_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">duplication_divergence_graph</span></code></a>(n, p[, seed])</p></td>
+<td><p>Returns an undirected graph using the duplication-divergence model.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.duplication.partial_duplication_graph.html#networkx.generators.duplication.partial_duplication_graph" title="networkx.generators.duplication.partial_duplication_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">partial_duplication_graph</span></code></a>(N, n, p, q[, seed])</p></td>
+<td><p>Returns a random graph using the partial duplication model.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-networkx.generators.degree_seq">
+<span id="degree-sequence"></span><h2>Degree Sequence<a class="headerlink" href="#module-networkx.generators.degree_seq" title="Permalink to this heading">#</a></h2>
+<p>Generate graphs with a given degree sequence or expected degree sequence.</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.degree_seq.configuration_model.html#networkx.generators.degree_seq.configuration_model" title="networkx.generators.degree_seq.configuration_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">configuration_model</span></code></a>(deg_sequence[, ...])</p></td>
+<td><p>Returns a random graph with the given degree sequence.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.degree_seq.directed_configuration_model.html#networkx.generators.degree_seq.directed_configuration_model" title="networkx.generators.degree_seq.directed_configuration_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">directed_configuration_model</span></code></a>(...[, ...])</p></td>
+<td><p>Returns a directed_random graph with the given degree sequences.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.degree_seq.expected_degree_graph.html#networkx.generators.degree_seq.expected_degree_graph" title="networkx.generators.degree_seq.expected_degree_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">expected_degree_graph</span></code></a>(w[, seed, selfloops])</p></td>
+<td><p>Returns a random graph with given expected degrees.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.degree_seq.havel_hakimi_graph.html#networkx.generators.degree_seq.havel_hakimi_graph" title="networkx.generators.degree_seq.havel_hakimi_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">havel_hakimi_graph</span></code></a>(deg_sequence[, create_using])</p></td>
+<td><p>Returns a simple graph with given degree sequence constructed using the Havel-Hakimi algorithm.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.degree_seq.directed_havel_hakimi_graph.html#networkx.generators.degree_seq.directed_havel_hakimi_graph" title="networkx.generators.degree_seq.directed_havel_hakimi_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">directed_havel_hakimi_graph</span></code></a>(in_deg_sequence, ...)</p></td>
+<td><p>Returns a directed graph with the given degree sequences.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.degree_seq.degree_sequence_tree.html#networkx.generators.degree_seq.degree_sequence_tree" title="networkx.generators.degree_seq.degree_sequence_tree"><code class="xref py py-obj docutils literal notranslate"><span class="pre">degree_sequence_tree</span></code></a>(deg_sequence[, ...])</p></td>
+<td><p>Make a tree for the given degree sequence.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.degree_seq.random_degree_sequence_graph.html#networkx.generators.degree_seq.random_degree_sequence_graph" title="networkx.generators.degree_seq.random_degree_sequence_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_degree_sequence_graph</span></code></a>(sequence[, ...])</p></td>
+<td><p>Returns a simple random graph with the given degree sequence.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-networkx.generators.random_clustered">
+<span id="random-clustered"></span><h2>Random Clustered<a class="headerlink" href="#module-networkx.generators.random_clustered" title="Permalink to this heading">#</a></h2>
+<p>Generate graphs with given degree and triangle sequence.</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.random_clustered.random_clustered_graph.html#networkx.generators.random_clustered.random_clustered_graph" title="networkx.generators.random_clustered.random_clustered_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_clustered_graph</span></code></a>(joint_degree_sequence)</p></td>
+<td><p>Generate a random graph with the given joint independent edge degree and triangle degree sequence.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-networkx.generators.directed">
+<span id="directed"></span><h2>Directed<a class="headerlink" href="#module-networkx.generators.directed" title="Permalink to this heading">#</a></h2>
+<p>Generators for some directed graphs, including growing network (GN) graphs and
+scale-free graphs.</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.directed.gn_graph.html#networkx.generators.directed.gn_graph" title="networkx.generators.directed.gn_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gn_graph</span></code></a>(n[, kernel, create_using, seed])</p></td>
+<td><p>Returns the growing network (GN) digraph with <code class="xref py py-obj docutils literal notranslate"><span class="pre">n</span></code> nodes.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.directed.gnr_graph.html#networkx.generators.directed.gnr_graph" title="networkx.generators.directed.gnr_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gnr_graph</span></code></a>(n, p[, create_using, seed])</p></td>
+<td><p>Returns the growing network with redirection (GNR) digraph with <code class="xref py py-obj docutils literal notranslate"><span class="pre">n</span></code> nodes and redirection probability <code class="xref py py-obj docutils literal notranslate"><span class="pre">p</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.directed.gnc_graph.html#networkx.generators.directed.gnc_graph" title="networkx.generators.directed.gnc_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gnc_graph</span></code></a>(n[, create_using, seed])</p></td>
+<td><p>Returns the growing network with copying (GNC) digraph with <code class="xref py py-obj docutils literal notranslate"><span class="pre">n</span></code> nodes.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.directed.random_k_out_graph.html#networkx.generators.directed.random_k_out_graph" title="networkx.generators.directed.random_k_out_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_k_out_graph</span></code></a>(n, k, alpha[, ...])</p></td>
+<td><p>Returns a random <code class="xref py py-obj docutils literal notranslate"><span class="pre">k</span></code>-out graph with preferential attachment.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.directed.scale_free_graph.html#networkx.generators.directed.scale_free_graph" title="networkx.generators.directed.scale_free_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scale_free_graph</span></code></a>(n[, alpha, beta, gamma, ...])</p></td>
+<td><p>Returns a scale-free directed graph.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-networkx.generators.geometric">
+<span id="geometric"></span><h2>Geometric<a class="headerlink" href="#module-networkx.generators.geometric" title="Permalink to this heading">#</a></h2>
+<p>Generators for geometric graphs.</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.geometric.geometric_edges.html#networkx.generators.geometric.geometric_edges" title="networkx.generators.geometric.geometric_edges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">geometric_edges</span></code></a>(G, radius[, p])</p></td>
+<td><p>Returns edge list of node pairs within <code class="xref py py-obj docutils literal notranslate"><span class="pre">radius</span></code> of each other.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.geometric.geographical_threshold_graph.html#networkx.generators.geometric.geographical_threshold_graph" title="networkx.generators.geometric.geographical_threshold_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">geographical_threshold_graph</span></code></a>(n, theta[, ...])</p></td>
+<td><p>Returns a geographical threshold graph.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.geometric.navigable_small_world_graph.html#networkx.generators.geometric.navigable_small_world_graph" title="networkx.generators.geometric.navigable_small_world_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">navigable_small_world_graph</span></code></a>(n[, p, q, r, ...])</p></td>
+<td><p>Returns a navigable small-world graph.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.geometric.random_geometric_graph.html#networkx.generators.geometric.random_geometric_graph" title="networkx.generators.geometric.random_geometric_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_geometric_graph</span></code></a>(n, radius[, dim, ...])</p></td>
+<td><p>Returns a random geometric graph in the unit cube of dimensions <code class="xref py py-obj docutils literal notranslate"><span class="pre">dim</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.geometric.soft_random_geometric_graph.html#networkx.generators.geometric.soft_random_geometric_graph" title="networkx.generators.geometric.soft_random_geometric_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">soft_random_geometric_graph</span></code></a>(n, radius[, ...])</p></td>
+<td><p>Returns a soft random geometric graph in the unit cube.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.geometric.thresholded_random_geometric_graph.html#networkx.generators.geometric.thresholded_random_geometric_graph" title="networkx.generators.geometric.thresholded_random_geometric_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">thresholded_random_geometric_graph</span></code></a>(n, ...[, ...])</p></td>
+<td><p>Returns a thresholded random geometric graph in the unit cube.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.geometric.waxman_graph.html#networkx.generators.geometric.waxman_graph" title="networkx.generators.geometric.waxman_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">waxman_graph</span></code></a>(n[, beta, alpha, L, domain, ...])</p></td>
+<td><p>Returns a Waxman random graph.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-networkx.generators.line">
+<span id="line-graph"></span><h2>Line Graph<a class="headerlink" href="#module-networkx.generators.line" title="Permalink to this heading">#</a></h2>
+<p>Functions for generating line graphs.</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.line.line_graph.html#networkx.generators.line.line_graph" title="networkx.generators.line.line_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">line_graph</span></code></a>(G[, create_using])</p></td>
+<td><p>Returns the line graph of the graph or digraph <code class="xref py py-obj docutils literal notranslate"><span class="pre">G</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.line.inverse_line_graph.html#networkx.generators.line.inverse_line_graph" title="networkx.generators.line.inverse_line_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">inverse_line_graph</span></code></a>(G)</p></td>
+<td><p>Returns the inverse line graph of graph G.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-networkx.generators.ego">
+<span id="ego-graph"></span><h2>Ego Graph<a class="headerlink" href="#module-networkx.generators.ego" title="Permalink to this heading">#</a></h2>
+<p>Ego graph.</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.ego.ego_graph.html#networkx.generators.ego.ego_graph" title="networkx.generators.ego.ego_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ego_graph</span></code></a>(G, n[, radius, center, ...])</p></td>
+<td><p>Returns induced subgraph of neighbors centered at node n within a given radius.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-networkx.generators.stochastic">
+<span id="stochastic"></span><h2>Stochastic<a class="headerlink" href="#module-networkx.generators.stochastic" title="Permalink to this heading">#</a></h2>
+<p>Functions for generating stochastic graphs from a given weighted directed
+graph.</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.stochastic.stochastic_graph.html#networkx.generators.stochastic.stochastic_graph" title="networkx.generators.stochastic.stochastic_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stochastic_graph</span></code></a>(G[, copy, weight])</p></td>
+<td><p>Returns a right-stochastic representation of directed graph <code class="xref py py-obj docutils literal notranslate"><span class="pre">G</span></code>.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-networkx.generators.internet_as_graphs">
+<span id="as-graph"></span><h2>AS graph<a class="headerlink" href="#module-networkx.generators.internet_as_graphs" title="Permalink to this heading">#</a></h2>
+<p>Generates graphs resembling the Internet Autonomous System network</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.internet_as_graphs.random_internet_as_graph.html#networkx.generators.internet_as_graphs.random_internet_as_graph" title="networkx.generators.internet_as_graphs.random_internet_as_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_internet_as_graph</span></code></a>(n[, seed])</p></td>
+<td><p>Generates a random undirected graph resembling the Internet AS network</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-networkx.generators.intersection">
+<span id="intersection"></span><h2>Intersection<a class="headerlink" href="#module-networkx.generators.intersection" title="Permalink to this heading">#</a></h2>
+<p>Generators for random intersection graphs.</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.intersection.uniform_random_intersection_graph.html#networkx.generators.intersection.uniform_random_intersection_graph" title="networkx.generators.intersection.uniform_random_intersection_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uniform_random_intersection_graph</span></code></a>(n, m, p[, ...])</p></td>
+<td><p>Returns a uniform random intersection graph.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.intersection.k_random_intersection_graph.html#networkx.generators.intersection.k_random_intersection_graph" title="networkx.generators.intersection.k_random_intersection_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">k_random_intersection_graph</span></code></a>(n, m, k[, seed])</p></td>
+<td><p>Returns a intersection graph with randomly chosen attribute sets for each node that are of equal size (k).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.intersection.general_random_intersection_graph.html#networkx.generators.intersection.general_random_intersection_graph" title="networkx.generators.intersection.general_random_intersection_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">general_random_intersection_graph</span></code></a>(n, m, p[, ...])</p></td>
+<td><p>Returns a random intersection graph with independent probabilities for connections between node and attribute sets.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-networkx.generators.social">
+<span id="social-networks"></span><h2>Social Networks<a class="headerlink" href="#module-networkx.generators.social" title="Permalink to this heading">#</a></h2>
+<p>Famous social networks.</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.social.karate_club_graph.html#networkx.generators.social.karate_club_graph" title="networkx.generators.social.karate_club_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">karate_club_graph</span></code></a>()</p></td>
+<td><p>Returns Zachary's Karate Club graph.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.social.davis_southern_women_graph.html#networkx.generators.social.davis_southern_women_graph" title="networkx.generators.social.davis_southern_women_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">davis_southern_women_graph</span></code></a>()</p></td>
+<td><p>Returns Davis Southern women social network.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.social.florentine_families_graph.html#networkx.generators.social.florentine_families_graph" title="networkx.generators.social.florentine_families_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">florentine_families_graph</span></code></a>()</p></td>
+<td><p>Returns Florentine families graph.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.social.les_miserables_graph.html#networkx.generators.social.les_miserables_graph" title="networkx.generators.social.les_miserables_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">les_miserables_graph</span></code></a>()</p></td>
+<td><p>Returns coappearance network of characters in the novel Les Miserables.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-networkx.generators.community">
+<span id="community"></span><h2>Community<a class="headerlink" href="#module-networkx.generators.community" title="Permalink to this heading">#</a></h2>
+<p>Generators for classes of graphs used in studying social networks.</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.community.caveman_graph.html#networkx.generators.community.caveman_graph" title="networkx.generators.community.caveman_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">caveman_graph</span></code></a>(l, k)</p></td>
+<td><p>Returns a caveman graph of <code class="xref py py-obj docutils literal notranslate"><span class="pre">l</span></code> cliques of size <code class="xref py py-obj docutils literal notranslate"><span class="pre">k</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.community.connected_caveman_graph.html#networkx.generators.community.connected_caveman_graph" title="networkx.generators.community.connected_caveman_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">connected_caveman_graph</span></code></a>(l, k)</p></td>
+<td><p>Returns a connected caveman graph of <code class="xref py py-obj docutils literal notranslate"><span class="pre">l</span></code> cliques of size <code class="xref py py-obj docutils literal notranslate"><span class="pre">k</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.community.gaussian_random_partition_graph.html#networkx.generators.community.gaussian_random_partition_graph" title="networkx.generators.community.gaussian_random_partition_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gaussian_random_partition_graph</span></code></a>(n, s, v, ...)</p></td>
+<td><p>Generate a Gaussian random partition graph.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.community.LFR_benchmark_graph.html#networkx.generators.community.LFR_benchmark_graph" title="networkx.generators.community.LFR_benchmark_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LFR_benchmark_graph</span></code></a>(n, tau1, tau2, mu[, ...])</p></td>
+<td><p>Returns the LFR benchmark graph.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.community.planted_partition_graph.html#networkx.generators.community.planted_partition_graph" title="networkx.generators.community.planted_partition_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">planted_partition_graph</span></code></a>(l, k, p_in, p_out[, ...])</p></td>
+<td><p>Returns the planted l-partition graph.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.community.random_partition_graph.html#networkx.generators.community.random_partition_graph" title="networkx.generators.community.random_partition_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_partition_graph</span></code></a>(sizes, p_in, p_out[, ...])</p></td>
+<td><p>Returns the random partition graph with a partition of sizes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.community.relaxed_caveman_graph.html#networkx.generators.community.relaxed_caveman_graph" title="networkx.generators.community.relaxed_caveman_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">relaxed_caveman_graph</span></code></a>(l, k, p[, seed])</p></td>
+<td><p>Returns a relaxed caveman graph.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.community.ring_of_cliques.html#networkx.generators.community.ring_of_cliques" title="networkx.generators.community.ring_of_cliques"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ring_of_cliques</span></code></a>(num_cliques, clique_size)</p></td>
+<td><p>Defines a &quot;ring of cliques&quot; graph.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.community.stochastic_block_model.html#networkx.generators.community.stochastic_block_model" title="networkx.generators.community.stochastic_block_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stochastic_block_model</span></code></a>(sizes, p[, nodelist, ...])</p></td>
+<td><p>Returns a stochastic block model graph.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.community.windmill_graph.html#networkx.generators.community.windmill_graph" title="networkx.generators.community.windmill_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">windmill_graph</span></code></a>(n, k)</p></td>
+<td><p>Generate a windmill graph.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-networkx.generators.spectral_graph_forge">
+<span id="spectral"></span><h2>Spectral<a class="headerlink" href="#module-networkx.generators.spectral_graph_forge" title="Permalink to this heading">#</a></h2>
+<p>Generates graphs with a given eigenvector structure</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.spectral_graph_forge.spectral_graph_forge.html#networkx.generators.spectral_graph_forge.spectral_graph_forge" title="networkx.generators.spectral_graph_forge.spectral_graph_forge"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spectral_graph_forge</span></code></a>(G, alpha[, ...])</p></td>
+<td><p>Returns a random simple graph with spectrum resembling that of <code class="xref py py-obj docutils literal notranslate"><span class="pre">G</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-networkx.generators.trees">
+<span id="trees"></span><h2>Trees<a class="headerlink" href="#module-networkx.generators.trees" title="Permalink to this heading">#</a></h2>
+<p>Functions for generating trees.</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.trees.random_tree.html#networkx.generators.trees.random_tree" title="networkx.generators.trees.random_tree"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_tree</span></code></a>(n[, seed, create_using])</p></td>
+<td><p>Returns a uniformly random tree on <code class="xref py py-obj docutils literal notranslate"><span class="pre">n</span></code> nodes.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.trees.prefix_tree.html#networkx.generators.trees.prefix_tree" title="networkx.generators.trees.prefix_tree"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prefix_tree</span></code></a>(paths)</p></td>
+<td><p>Creates a directed prefix tree from a list of paths.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-networkx.generators.nonisomorphic_trees">
+<span id="non-isomorphic-trees"></span><h2>Non Isomorphic Trees<a class="headerlink" href="#module-networkx.generators.nonisomorphic_trees" title="Permalink to this heading">#</a></h2>
+<p>Implementation of the Wright, Richmond, Odlyzko and McKay (WROM)
+algorithm for the enumeration of all non-isomorphic free trees of a
+given order.  Rooted trees are represented by level sequences, i.e.,
+lists in which the i-th element specifies the distance of vertex i to
+the root.</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.nonisomorphic_trees.nonisomorphic_trees.html#networkx.generators.nonisomorphic_trees.nonisomorphic_trees" title="networkx.generators.nonisomorphic_trees.nonisomorphic_trees"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nonisomorphic_trees</span></code></a>(order[, create])</p></td>
+<td><p>Returns a list of nonisomporphic trees</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.nonisomorphic_trees.number_of_nonisomorphic_trees.html#networkx.generators.nonisomorphic_trees.number_of_nonisomorphic_trees" title="networkx.generators.nonisomorphic_trees.number_of_nonisomorphic_trees"><code class="xref py py-obj docutils literal notranslate"><span class="pre">number_of_nonisomorphic_trees</span></code></a>(order)</p></td>
+<td><p>Returns the number of nonisomorphic trees</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-networkx.generators.triads">
+<span id="triads"></span><h2>Triads<a class="headerlink" href="#module-networkx.generators.triads" title="Permalink to this heading">#</a></h2>
+<p>Functions that generate the triad graphs, that is, the possible
+digraphs on three nodes.</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.triads.triad_graph.html#networkx.generators.triads.triad_graph" title="networkx.generators.triads.triad_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">triad_graph</span></code></a>(triad_name)</p></td>
+<td><p>Returns the triad graph with the given name.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-networkx.generators.joint_degree_seq">
+<span id="joint-degree-sequence"></span><h2>Joint Degree Sequence<a class="headerlink" href="#module-networkx.generators.joint_degree_seq" title="Permalink to this heading">#</a></h2>
+<p>Generate graphs with a given joint degree and directed joint degree</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.joint_degree_seq.is_valid_joint_degree.html#networkx.generators.joint_degree_seq.is_valid_joint_degree" title="networkx.generators.joint_degree_seq.is_valid_joint_degree"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_valid_joint_degree</span></code></a>(joint_degrees)</p></td>
+<td><p>Checks whether the given joint degree dictionary is realizable.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.joint_degree_seq.joint_degree_graph.html#networkx.generators.joint_degree_seq.joint_degree_graph" title="networkx.generators.joint_degree_seq.joint_degree_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">joint_degree_graph</span></code></a>(joint_degrees[, seed])</p></td>
+<td><p>Generates a random simple graph with the given joint degree dictionary.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.joint_degree_seq.is_valid_directed_joint_degree.html#networkx.generators.joint_degree_seq.is_valid_directed_joint_degree" title="networkx.generators.joint_degree_seq.is_valid_directed_joint_degree"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_valid_directed_joint_degree</span></code></a>(in_degrees, ...)</p></td>
+<td><p>Checks whether the given directed joint degree input is realizable</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.joint_degree_seq.directed_joint_degree_graph.html#networkx.generators.joint_degree_seq.directed_joint_degree_graph" title="networkx.generators.joint_degree_seq.directed_joint_degree_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">directed_joint_degree_graph</span></code></a>(in_degrees, ...)</p></td>
+<td><p>Generates a random simple directed graph with the joint degree.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-networkx.generators.mycielski">
+<span id="mycielski"></span><h2>Mycielski<a class="headerlink" href="#module-networkx.generators.mycielski" title="Permalink to this heading">#</a></h2>
+<p>Functions related to the Mycielski Operation and the Mycielskian family
+of graphs.</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.mycielski.mycielskian.html#networkx.generators.mycielski.mycielskian" title="networkx.generators.mycielski.mycielskian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mycielskian</span></code></a>(G[, iterations])</p></td>
+<td><p>Returns the Mycielskian of a simple, undirected graph G</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.mycielski.mycielski_graph.html#networkx.generators.mycielski.mycielski_graph" title="networkx.generators.mycielski.mycielski_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mycielski_graph</span></code></a>(n)</p></td>
+<td><p>Generator for the n_th Mycielski Graph.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-networkx.generators.harary_graph">
+<span id="harary-graph"></span><h2>Harary Graph<a class="headerlink" href="#module-networkx.generators.harary_graph" title="Permalink to this heading">#</a></h2>
+<p>Generators for Harary graphs</p>
+<p>This module gives two generators for the Harary graph, which was
+introduced by the famous mathematician Frank Harary in his 1962 work <a class="reference internal" href="#re9eb9bbc2cf6-h" id="id1">[H]</a>.
+The first generator gives the Harary graph that maximizes the node
+connectivity with given number of nodes and given number of edges.
+The second generator gives the Harary graph that minimizes
+the number of edges in the graph with given node connectivity and
+number of nodes.</p>
+<section id="references">
+<h3>References<a class="headerlink" href="#references" title="Permalink to this heading">#</a></h3>
+<div role="list" class="citation-list">
+<div class="citation" id="re9eb9bbc2cf6-h" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">H</a><span class="fn-bracket">]</span></span>
+<p>Harary, F. “The Maximum Connectivity of a Graph.”
+Proc. Nat. Acad. Sci. USA 48, 1142-1146, 1962.</p>
+</div>
+</div>
+</section>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.harary_graph.hnm_harary_graph.html#networkx.generators.harary_graph.hnm_harary_graph" title="networkx.generators.harary_graph.hnm_harary_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hnm_harary_graph</span></code></a>(n, m[, create_using])</p></td>
+<td><p>Returns the Harary graph with given numbers of nodes and edges.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.generators.harary_graph.hkn_harary_graph.html#networkx.generators.harary_graph.hkn_harary_graph" title="networkx.generators.harary_graph.hkn_harary_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hkn_harary_graph</span></code></a>(k, n[, create_using])</p></td>
+<td><p>Returns the Harary graph with given node connectivity and node number.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-networkx.generators.cographs">
+<span id="cographs"></span><h2>Cographs<a class="headerlink" href="#module-networkx.generators.cographs" title="Permalink to this heading">#</a></h2>
+<p>Generators for cographs</p>
+<p>A cograph is a graph containing no path on four vertices.
+Cographs or <span class="math notranslate nohighlight">\(P_4\)</span>-free graphs can be obtained from a single vertex
+by disjoint union and complementation operations.</p>
+<section id="id2">
+<h3>References<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h3>
+<div role="list" class="citation-list">
+<div class="citation" id="r52617dc28692-0" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>0<span class="fn-bracket">]</span></span>
+<p>D.G. Corneil, H. Lerchs, L.Stewart Burlingham,
+“Complement reducible graphs”,
+Discrete Applied Mathematics, Volume 3, Issue 3, 1981, Pages 163-174,
+ISSN 0166-218X.</p>
+</div>
+</div>
+</section>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.cographs.random_cograph.html#networkx.generators.cographs.random_cograph" title="networkx.generators.cographs.random_cograph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_cograph</span></code></a>(n[, seed])</p></td>
+<td><p>Returns a random cograph with <span class="math notranslate nohighlight">\(2 ^ n\)</span> nodes.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-networkx.generators.interval_graph">
+<span id="interval-graph"></span><h2>Interval Graph<a class="headerlink" href="#module-networkx.generators.interval_graph" title="Permalink to this heading">#</a></h2>
+<p>Generators for interval graph.</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.interval_graph.interval_graph.html#networkx.generators.interval_graph.interval_graph" title="networkx.generators.interval_graph.interval_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">interval_graph</span></code></a>(intervals)</p></td>
+<td><p>Generates an interval graph for a list of intervals given.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-networkx.generators.sudoku">
+<span id="sudoku"></span><h2>Sudoku<a class="headerlink" href="#module-networkx.generators.sudoku" title="Permalink to this heading">#</a></h2>
+<p>Generator for Sudoku graphs</p>
+<p>This module gives a generator for n-Sudoku graphs. It can be used to develop
+algorithms for solving or generating Sudoku puzzles.</p>
+<p>A completed Sudoku grid is a 9x9 array of integers between 1 and 9, with no
+number appearing twice in the same row, column, or 3x3 box.</p>
+<table class="table">
+<tbody>
+<tr class="row-odd"><td><div class="line-block">
+<div class="line">8 6 4</div>
+<div class="line">3 2 5</div>
+<div class="line">9 7 1</div>
+</div>
+</td>
+<td><div class="line-block">
+<div class="line">3 7 1</div>
+<div class="line">8 4 9</div>
+<div class="line">2 6 5</div>
+</div>
+</td>
+<td><div class="line-block">
+<div class="line">2 5 9</div>
+<div class="line">7 6 1</div>
+<div class="line">8 4 3</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><div class="line-block">
+<div class="line">4 3 6</div>
+<div class="line">1 9 8</div>
+<div class="line">2 5 7</div>
+</div>
+</td>
+<td><div class="line-block">
+<div class="line">1 9 2</div>
+<div class="line">6 5 7</div>
+<div class="line">4 8 3</div>
+</div>
+</td>
+<td><div class="line-block">
+<div class="line">5 8 7</div>
+<div class="line">4 3 2</div>
+<div class="line">9 1 6</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="line-block">
+<div class="line">6 8 9</div>
+<div class="line">7 1 3</div>
+<div class="line">5 4 2</div>
+</div>
+</td>
+<td><div class="line-block">
+<div class="line">7 3 4</div>
+<div class="line">5 2 8</div>
+<div class="line">9 1 6</div>
+</div>
+</td>
+<td><div class="line-block">
+<div class="line">1 2 5</div>
+<div class="line">6 9 4</div>
+<div class="line">3 7 8</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The Sudoku graph is an undirected graph with 81 vertices, corresponding to
+the cells of a Sudoku grid. It is a regular graph of degree 20. Two distinct
+vertices are adjacent if and only if the corresponding cells belong to the
+same row, column, or box. A completed Sudoku grid corresponds to a vertex
+coloring of the Sudoku graph with nine colors.</p>
+<p>More generally, the n-Sudoku graph is a graph with n^4 vertices, corresponding
+to the cells of an n^2 by n^2 grid. Two distinct vertices are adjacent if and
+only if they belong to the same row, column, or n by n box.</p>
+<section id="id3">
+<h3>References<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h3>
+<div role="list" class="citation-list">
+<div class="citation" id="re1a1f6aab033-1" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
+<p>Herzberg, A. M., &amp; Murty, M. R. (2007). Sudoku squares and chromatic
+polynomials. Notices of the AMS, 54(6), 708-717.</p>
+</div>
+<div class="citation" id="re1a1f6aab033-2" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></span>
+<p>Sander, Torsten (2009), “Sudoku graphs are integral”,
+Electronic Journal of Combinatorics, 16 (1): Note 25, 7pp, MR 2529816</p>
+</div>
+<div class="citation" id="re1a1f6aab033-3" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></span>
+<p>Wikipedia contributors. “Glossary of Sudoku.” Wikipedia, The Free
+Encyclopedia, 3 Dec. 2019. Web. 22 Dec. 2019.</p>
+</div>
+</div>
+</section>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.generators.sudoku.sudoku_graph.html#networkx.generators.sudoku.sudoku_graph" title="networkx.generators.sudoku.sudoku_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sudoku_graph</span></code></a>([n])</p></td>
+<td><p>Returns the n-Sudoku graph.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-networkx.generators.atlas">
+   Atlas
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-networkx.generators.classic">
+   Classic
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-networkx.generators.expanders">
+   Expanders
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-networkx.generators.lattice">
+   Lattice
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-networkx.generators.small">
+   Small
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-networkx.generators.random_graphs">
+   Random Graphs
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-networkx.generators.duplication">
+   Duplication Divergence
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-networkx.generators.degree_seq">
+   Degree Sequence
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-networkx.generators.random_clustered">
+   Random Clustered
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-networkx.generators.directed">
+   Directed
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-networkx.generators.geometric">
+   Geometric
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-networkx.generators.line">
+   Line Graph
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-networkx.generators.ego">
+   Ego Graph
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-networkx.generators.stochastic">
+   Stochastic
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-networkx.generators.internet_as_graphs">
+   AS graph
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-networkx.generators.intersection">
+   Intersection
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-networkx.generators.social">
+   Social Networks
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-networkx.generators.community">
+   Community
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-networkx.generators.spectral_graph_forge">
+   Spectral
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-networkx.generators.trees">
+   Trees
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-networkx.generators.nonisomorphic_trees">
+   Non Isomorphic Trees
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-networkx.generators.triads">
+   Triads
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-networkx.generators.joint_degree_seq">
+   Joint Degree Sequence
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-networkx.generators.mycielski">
+   Mycielski
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-networkx.generators.harary_graph">
+   Harary Graph
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#references">
+     References
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-networkx.generators.cographs">
+   Cographs
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id2">
+     References
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-networkx.generators.interval_graph">
+   Interval Graph
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-networkx.generators.sudoku">
+   Sudoku
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id3">
+     References
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

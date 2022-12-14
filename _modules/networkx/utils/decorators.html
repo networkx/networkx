@@ -1,0 +1,1751 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>networkx.utils.decorators &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/utils/decorators';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/utils/decorators.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../../../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../../../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <h1>Source code for networkx.utils.decorators</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">bz2</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">gzip</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">splitext</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">from</span> <span class="nn">networkx.utils</span> <span class="kn">import</span> <span class="n">create_py_random_state</span><span class="p">,</span> <span class="n">create_random_state</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;not_implemented_for&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;open_file&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;nodes_or_number&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;np_random_state&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;py_random_state&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;argmap&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="not_implemented_for"><a class="viewcode-back" href="../../../reference/generated/networkx.utils.decorators.not_implemented_for.html#networkx.utils.decorators.not_implemented_for">[docs]</a><span class="k">def</span> <span class="nf">not_implemented_for</span><span class="p">(</span><span class="o">*</span><span class="n">graph_types</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Decorator to mark algorithms as not implemented</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    graph_types : container of strings</span>
+<span class="sd">        Entries must be one of &quot;directed&quot;, &quot;undirected&quot;, &quot;multigraph&quot;, or &quot;graph&quot;.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    _require : function</span>
+<span class="sd">        The decorated function.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NetworkXNotImplemented</span>
+<span class="sd">    If any of the packages cannot be imported</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Multiple types are joined logically with &quot;and&quot;.</span>
+<span class="sd">    For &quot;or&quot; use multiple @not_implemented_for() lines.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Decorate functions like this::</span>
+
+<span class="sd">       @not_implemented_for(&quot;directed&quot;)</span>
+<span class="sd">       def sp_function(G):</span>
+<span class="sd">           pass</span>
+
+<span class="sd">       # rule out MultiDiGraph</span>
+<span class="sd">       @not_implemented_for(&quot;directed&quot;,&quot;multigraph&quot;)</span>
+<span class="sd">       def sp_np_function(G):</span>
+<span class="sd">           pass</span>
+
+<span class="sd">       # rule out all except DiGraph</span>
+<span class="sd">       @not_implemented_for(&quot;undirected&quot;)</span>
+<span class="sd">       @not_implemented_for(&quot;multigraph&quot;)</span>
+<span class="sd">       def sp_np_function(G):</span>
+<span class="sd">           pass</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;directed&quot;</span> <span class="ow">in</span> <span class="n">graph_types</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="s2">&quot;undirected&quot;</span> <span class="ow">in</span> <span class="n">graph_types</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Function not implemented on directed AND undirected graphs?&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;multigraph&quot;</span> <span class="ow">in</span> <span class="n">graph_types</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="s2">&quot;graph&quot;</span> <span class="ow">in</span> <span class="n">graph_types</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Function not implemented on graph AND multigraphs?&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">set</span><span class="p">(</span><span class="n">graph_types</span><span class="p">)</span> <span class="o">&lt;</span> <span class="p">{</span><span class="s2">&quot;directed&quot;</span><span class="p">,</span> <span class="s2">&quot;undirected&quot;</span><span class="p">,</span> <span class="s2">&quot;multigraph&quot;</span><span class="p">,</span> <span class="s2">&quot;graph&quot;</span><span class="p">}:</span>
+        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
+            <span class="s2">&quot;use one or more of directed, undirected, multigraph, graph.  &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;You used </span><span class="si">{</span><span class="n">graph_types</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># 3-way logic: True if &quot;directed&quot; input, False if &quot;undirected&quot; input, else None</span>
+    <span class="n">dval</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;directed&quot;</span> <span class="ow">in</span> <span class="n">graph_types</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="p">(</span><span class="s2">&quot;undirected&quot;</span> <span class="ow">in</span> <span class="n">graph_types</span><span class="p">)</span> <span class="ow">and</span> <span class="kc">None</span>
+    <span class="n">mval</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;multigraph&quot;</span> <span class="ow">in</span> <span class="n">graph_types</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="p">(</span><span class="s2">&quot;graph&quot;</span> <span class="ow">in</span> <span class="n">graph_types</span><span class="p">)</span> <span class="ow">and</span> <span class="kc">None</span>
+    <span class="n">errmsg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;not implemented for </span><span class="si">{</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">graph_types</span><span class="p">)</span><span class="si">}</span><span class="s2"> type&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_not_implemented_for</span><span class="p">(</span><span class="n">g</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">mval</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">mval</span> <span class="o">==</span> <span class="n">g</span><span class="o">.</span><span class="n">is_multigraph</span><span class="p">())</span> <span class="ow">and</span> <span class="p">(</span>
+            <span class="n">dval</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">dval</span> <span class="o">==</span> <span class="n">g</span><span class="o">.</span><span class="n">is_directed</span><span class="p">()</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXNotImplemented</span><span class="p">(</span><span class="n">errmsg</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">g</span>
+
+    <span class="k">return</span> <span class="n">argmap</span><span class="p">(</span><span class="n">_not_implemented_for</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span></div>
+
+
+<span class="c1"># To handle new extensions, define a function accepting a `path` and `mode`.</span>
+<span class="c1"># Then add the extension to _dispatch_dict.</span>
+<span class="n">fopeners</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;.gz&quot;</span><span class="p">:</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">,</span>
+    <span class="s2">&quot;.gzip&quot;</span><span class="p">:</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">,</span>
+    <span class="s2">&quot;.bz2&quot;</span><span class="p">:</span> <span class="n">bz2</span><span class="o">.</span><span class="n">BZ2File</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="n">_dispatch_dict</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="nb">open</span><span class="p">,</span> <span class="o">**</span><span class="n">fopeners</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+
+
+<div class="viewcode-block" id="open_file"><a class="viewcode-back" href="../../../reference/generated/networkx.utils.decorators.open_file.html#networkx.utils.decorators.open_file">[docs]</a><span class="k">def</span> <span class="nf">open_file</span><span class="p">(</span><span class="n">path_arg</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Decorator to ensure clean opening and closing of files.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    path_arg : string or int</span>
+<span class="sd">        Name or index of the argument that is a path.</span>
+
+<span class="sd">    mode : str</span>
+<span class="sd">        String for opening mode.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    _open_file : function</span>
+<span class="sd">        Function which cleanly executes the io.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Decorate functions like this::</span>
+
+<span class="sd">       @open_file(0,&quot;r&quot;)</span>
+<span class="sd">       def read_function(pathname):</span>
+<span class="sd">           pass</span>
+
+<span class="sd">       @open_file(1,&quot;w&quot;)</span>
+<span class="sd">       def write_function(G, pathname):</span>
+<span class="sd">           pass</span>
+
+<span class="sd">       @open_file(1,&quot;w&quot;)</span>
+<span class="sd">       def write_function(G, pathname=&quot;graph.dot&quot;):</span>
+<span class="sd">           pass</span>
+
+<span class="sd">       @open_file(&quot;pathname&quot;,&quot;w&quot;)</span>
+<span class="sd">       def write_function(G, pathname=&quot;graph.dot&quot;):</span>
+<span class="sd">           pass</span>
+
+<span class="sd">       @open_file(&quot;path&quot;, &quot;w+&quot;)</span>
+<span class="sd">       def another_function(arg, **kwargs):</span>
+<span class="sd">           path = kwargs[&quot;path&quot;]</span>
+<span class="sd">           pass</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Note that this decorator solves the problem when a path argument is</span>
+<span class="sd">    specified as a string, but it does not handle the situation when the</span>
+<span class="sd">    function wants to accept a default of None (and then handle it).</span>
+
+<span class="sd">    Here is an example of how to handle this case::</span>
+
+<span class="sd">      @open_file(&quot;path&quot;)</span>
+<span class="sd">      def some_function(arg1, arg2, path=None):</span>
+<span class="sd">         if path is None:</span>
+<span class="sd">             fobj = tempfile.NamedTemporaryFile(delete=False)</span>
+<span class="sd">         else:</span>
+<span class="sd">             # `path` could have been a string or file object or something</span>
+<span class="sd">             # similar. In any event, the decorator has given us a file object</span>
+<span class="sd">             # and it will close it for us, if it should.</span>
+<span class="sd">             fobj = path</span>
+
+<span class="sd">         try:</span>
+<span class="sd">             fobj.write(&quot;blah&quot;)</span>
+<span class="sd">         finally:</span>
+<span class="sd">             if path is None:</span>
+<span class="sd">                 fobj.close()</span>
+
+<span class="sd">    Normally, we&#39;d want to use &quot;with&quot; to ensure that fobj gets closed.</span>
+<span class="sd">    However, the decorator will make `path` a file object for us,</span>
+<span class="sd">    and using &quot;with&quot; would undesirably close that file object.</span>
+<span class="sd">    Instead, we use a try block, as shown above.</span>
+<span class="sd">    When we exit the function, fobj will be closed, if it should be, by the decorator.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_open_file</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="c1"># Now we have the path_arg. There are two types of input to consider:</span>
+        <span class="c1">#   1) string representing a path that should be opened</span>
+        <span class="c1">#   2) an already opened file object</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">ext</span> <span class="o">=</span> <span class="n">splitext</span><span class="p">(</span><span class="n">path</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
+            <span class="c1"># path is a pathlib reference to a filename</span>
+            <span class="n">ext</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">suffix</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># could be None, or a file handle, in which case the algorithm will deal with it</span>
+            <span class="k">return</span> <span class="n">path</span><span class="p">,</span> <span class="k">lambda</span><span class="p">:</span> <span class="kc">None</span>
+
+        <span class="n">fobj</span> <span class="o">=</span> <span class="n">_dispatch_dict</span><span class="p">[</span><span class="n">ext</span><span class="p">](</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">fobj</span><span class="p">,</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">fobj</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">argmap</span><span class="p">(</span><span class="n">_open_file</span><span class="p">,</span> <span class="n">path_arg</span><span class="p">,</span> <span class="n">try_finally</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="nodes_or_number"><a class="viewcode-back" href="../../../reference/generated/networkx.utils.decorators.nodes_or_number.html#networkx.utils.decorators.nodes_or_number">[docs]</a><span class="k">def</span> <span class="nf">nodes_or_number</span><span class="p">(</span><span class="n">which_args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Decorator to allow number of nodes or container of nodes.</span>
+
+<span class="sd">    With this decorator, the specified argument can be either a number or a container</span>
+<span class="sd">    of nodes. If it is a number, the nodes used are `range(n)`.</span>
+<span class="sd">    This allows `nx.complete_graph(50)` in place of `nx.complete_graph(list(range(50)))`.</span>
+<span class="sd">    And it also allows `nx.complete_graph(any_list_of_nodes)`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    which_args : string or int or sequence of strings or ints</span>
+<span class="sd">        If string, the name of the argument to be treated.</span>
+<span class="sd">        If int, the index of the argument to be treated.</span>
+<span class="sd">        If more than one node argument is allowed, can be a list of locations.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    _nodes_or_numbers : function</span>
+<span class="sd">        Function which replaces int args with ranges.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Decorate functions like this::</span>
+
+<span class="sd">       @nodes_or_number(&quot;nodes&quot;)</span>
+<span class="sd">       def empty_graph(nodes):</span>
+<span class="sd">           # nodes is converted to a list of nodes</span>
+
+<span class="sd">       @nodes_or_number(0)</span>
+<span class="sd">       def empty_graph(nodes):</span>
+<span class="sd">           # nodes is converted to a list of nodes</span>
+
+<span class="sd">       @nodes_or_number([&quot;m1&quot;, &quot;m2&quot;])</span>
+<span class="sd">       def grid_2d_graph(m1, m2, periodic=False):</span>
+<span class="sd">           # m1 and m2 are each converted to a list of nodes</span>
+
+<span class="sd">       @nodes_or_number([0, 1])</span>
+<span class="sd">       def grid_2d_graph(m1, m2, periodic=False):</span>
+<span class="sd">           # m1 and m2 are each converted to a list of nodes</span>
+
+<span class="sd">       @nodes_or_number(1)</span>
+<span class="sd">       def full_rary_tree(r, n)</span>
+<span class="sd">           # presumably r is a number. It is not handled by this decorator.</span>
+<span class="sd">           # n is converted to a list of nodes</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_nodes_or_number</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">nodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="n">nodes</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Negative number of nodes not valid: </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">nodes</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">iter_wa</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">which_args</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="n">iter_wa</span> <span class="o">=</span> <span class="p">(</span><span class="n">which_args</span><span class="p">,)</span>
+
+    <span class="k">return</span> <span class="n">argmap</span><span class="p">(</span><span class="n">_nodes_or_number</span><span class="p">,</span> <span class="o">*</span><span class="n">iter_wa</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="np_random_state"><a class="viewcode-back" href="../../../reference/generated/networkx.utils.decorators.np_random_state.html#networkx.utils.decorators.np_random_state">[docs]</a><span class="k">def</span> <span class="nf">np_random_state</span><span class="p">(</span><span class="n">random_state_argument</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Decorator to generate a `numpy.random.RandomState` instance.</span>
+
+<span class="sd">    The decorator processes the argument indicated by `random_state_argument`</span>
+<span class="sd">    using :func:`nx.utils.create_random_state`.</span>
+<span class="sd">    The argument value can be a seed (integer), or a `numpy.random.RandomState`</span>
+<span class="sd">    instance or (`None` or `numpy.random`). The latter options use the glocal</span>
+<span class="sd">    random number generator used by `numpy.random`.</span>
+<span class="sd">    The result is a `numpy.random.RandomState` instance.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    random_state_argument : string or int</span>
+<span class="sd">        The name or index of the argument to be converted</span>
+<span class="sd">        to a `numpy.random.RandomState` instance.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    _random_state : function</span>
+<span class="sd">        Function whose random_state keyword argument is a RandomState instance.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Decorate functions like this::</span>
+
+<span class="sd">       @np_random_state(&quot;seed&quot;)</span>
+<span class="sd">       def random_float(seed=None):</span>
+<span class="sd">           return seed.rand()</span>
+
+<span class="sd">       @np_random_state(0)</span>
+<span class="sd">       def random_float(rng=None):</span>
+<span class="sd">           return rng.rand()</span>
+
+<span class="sd">       @np_random_state(1)</span>
+<span class="sd">       def random_array(dims, random_state=1):</span>
+<span class="sd">           return random_state.rand(*dims)</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    py_random_state</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">argmap</span><span class="p">(</span><span class="n">create_random_state</span><span class="p">,</span> <span class="n">random_state_argument</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="py_random_state"><a class="viewcode-back" href="../../../reference/generated/networkx.utils.decorators.py_random_state.html#networkx.utils.decorators.py_random_state">[docs]</a><span class="k">def</span> <span class="nf">py_random_state</span><span class="p">(</span><span class="n">random_state_argument</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Decorator to generate a random.Random instance (or equiv).</span>
+
+<span class="sd">    The decorator processes the argument indicated by `random_state_argument`</span>
+<span class="sd">    using :func:`nx.utils.create_py_random_state`.</span>
+<span class="sd">    The argument value can be a seed (integer), or a random number generator::</span>
+
+<span class="sd">        If int, return a random.Random instance set with seed=int.</span>
+<span class="sd">        If random.Random instance, return it.</span>
+<span class="sd">        If None or the `random` package, return the global random number</span>
+<span class="sd">        generator used by `random`.</span>
+<span class="sd">        If np.random package, return the global numpy random number</span>
+<span class="sd">        generator wrapped in a PythonRandomInterface class.</span>
+<span class="sd">        If np.random.RandomState instance, return it wrapped in</span>
+<span class="sd">        PythonRandomInterface</span>
+<span class="sd">        If a PythonRandomInterface instance, return it</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    random_state_argument : string or int</span>
+<span class="sd">        The name of the argument or the index of the argument in args that is</span>
+<span class="sd">        to be converted to the random.Random instance or numpy.random.RandomState</span>
+<span class="sd">        instance that mimics basic methods of random.Random.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    _random_state : function</span>
+<span class="sd">        Function whose random_state_argument is converted to a Random instance.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Decorate functions like this::</span>
+
+<span class="sd">       @py_random_state(&quot;random_state&quot;)</span>
+<span class="sd">       def random_float(random_state=None):</span>
+<span class="sd">           return random_state.rand()</span>
+
+<span class="sd">       @py_random_state(0)</span>
+<span class="sd">       def random_float(rng=None):</span>
+<span class="sd">           return rng.rand()</span>
+
+<span class="sd">       @py_random_state(1)</span>
+<span class="sd">       def random_array(dims, seed=12345):</span>
+<span class="sd">           return seed.rand(*dims)</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    np_random_state</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">argmap</span><span class="p">(</span><span class="n">create_py_random_state</span><span class="p">,</span> <span class="n">random_state_argument</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="argmap"><a class="viewcode-back" href="../../../reference/generated/networkx.utils.decorators.argmap.html#networkx.utils.decorators.argmap">[docs]</a><span class="k">class</span> <span class="nc">argmap</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;A decorator to apply a map to arguments before calling the function</span>
+
+<span class="sd">    This class provides a decorator that maps (transforms) arguments of the function</span>
+<span class="sd">    before the function is called. Thus for example, we have similar code</span>
+<span class="sd">    in many functions to determine whether an argument is the number of nodes</span>
+<span class="sd">    to be created, or a list of nodes to be handled. The decorator provides</span>
+<span class="sd">    the code to accept either -- transforming the indicated argument into a</span>
+<span class="sd">    list of nodes before the actual function is called.</span>
+
+<span class="sd">    This decorator class allows us to process single or multiple arguments.</span>
+<span class="sd">    The arguments to be processed can be specified by string, naming the argument,</span>
+<span class="sd">    or by index, specifying the item in the args list.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    func : callable</span>
+<span class="sd">        The function to apply to arguments</span>
+
+<span class="sd">    *args : iterable of (int, str or tuple)</span>
+<span class="sd">        A list of parameters, specified either as strings (their names), ints</span>
+<span class="sd">        (numerical indices) or tuples, which may contain ints, strings, and</span>
+<span class="sd">        (recursively) tuples. Each indicates which parameters the decorator</span>
+<span class="sd">        should map. Tuples indicate that the map function takes (and returns)</span>
+<span class="sd">        multiple parameters in the same order and nested structure as indicated</span>
+<span class="sd">        here.</span>
+
+<span class="sd">    try_finally : bool (default: False)</span>
+<span class="sd">        When True, wrap the function call in a try-finally block with code</span>
+<span class="sd">        for the finally block created by `func`. This is used when the map</span>
+<span class="sd">        function constructs an object (like a file handle) that requires</span>
+<span class="sd">        post-processing (like closing).</span>
+
+<span class="sd">        Note: try_finally decorators cannot be used to decorate generator</span>
+<span class="sd">        functions.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Most of these examples use `@argmap(...)` to apply the decorator to</span>
+<span class="sd">    the function defined on the next line.</span>
+<span class="sd">    In the NetworkX codebase however, `argmap` is used within a function to</span>
+<span class="sd">    construct a decorator. That is, the decorator defines a mapping function</span>
+<span class="sd">    and then uses `argmap` to build and return a decorated function.</span>
+<span class="sd">    A simple example is a decorator that specifies which currency to report money.</span>
+<span class="sd">    The decorator (named `convert_to`) would be used like::</span>
+
+<span class="sd">        @convert_to(&quot;US_Dollars&quot;, &quot;income&quot;)</span>
+<span class="sd">        def show_me_the_money(name, income):</span>
+<span class="sd">            print(f&quot;{name} : {income}&quot;)</span>
+
+<span class="sd">    And the code to create the decorator might be::</span>
+
+<span class="sd">        def convert_to(currency, which_arg):</span>
+<span class="sd">            def _convert(amount):</span>
+<span class="sd">                if amount.currency != currency:</span>
+<span class="sd">                    amount = amount.to_currency(currency)</span>
+<span class="sd">                return amount</span>
+<span class="sd">            return argmap(_convert, which_arg)</span>
+
+<span class="sd">    Despite this common idiom for argmap, most of the following examples</span>
+<span class="sd">    use the `@argmap(...)` idiom to save space.</span>
+
+<span class="sd">    Here&#39;s an example use of argmap to sum the elements of two of the functions</span>
+<span class="sd">    arguments. The decorated function::</span>
+
+<span class="sd">        @argmap(sum, &quot;xlist&quot;, &quot;zlist&quot;)</span>
+<span class="sd">        def foo(xlist, y, zlist):</span>
+<span class="sd">            return xlist - y + zlist</span>
+
+<span class="sd">    is syntactic sugar for::</span>
+
+<span class="sd">        def foo(xlist, y, zlist):</span>
+<span class="sd">            x = sum(xlist)</span>
+<span class="sd">            z = sum(zlist)</span>
+<span class="sd">            return x - y + z</span>
+
+<span class="sd">    and is equivalent to (using argument indexes)::</span>
+
+<span class="sd">        @argmap(sum, &quot;xlist&quot;, 2)</span>
+<span class="sd">        def foo(xlist, y, zlist):</span>
+<span class="sd">            return xlist - y + zlist</span>
+
+<span class="sd">    or::</span>
+
+<span class="sd">        @argmap(sum, &quot;zlist&quot;, 0)</span>
+<span class="sd">        def foo(xlist, y, zlist):</span>
+<span class="sd">            return xlist - y + zlist</span>
+
+<span class="sd">    Transforming functions can be applied to multiple arguments, such as::</span>
+
+<span class="sd">        def swap(x, y):</span>
+<span class="sd">            return y, x</span>
+
+<span class="sd">        # the 2-tuple tells argmap that the map `swap` has 2 inputs/outputs.</span>
+<span class="sd">        @argmap(swap, (&quot;a&quot;, &quot;b&quot;)):</span>
+<span class="sd">        def foo(a, b, c):</span>
+<span class="sd">            return a / b * c</span>
+
+<span class="sd">    is equivalent to::</span>
+
+<span class="sd">        def foo(a, b, c):</span>
+<span class="sd">            a, b = swap(a, b)</span>
+<span class="sd">            return a / b * c</span>
+
+<span class="sd">    More generally, the applied arguments can be nested tuples of strings or ints.</span>
+<span class="sd">    The syntax `@argmap(some_func, (&quot;a&quot;, (&quot;b&quot;, &quot;c&quot;)))` would expect `some_func` to</span>
+<span class="sd">    accept 2 inputs with the second expected to be a 2-tuple. It should then return</span>
+<span class="sd">    2 outputs with the second a 2-tuple. The returns values would replace input &quot;a&quot;</span>
+<span class="sd">    &quot;b&quot; and &quot;c&quot; respectively. Similarly for `@argmap(some_func, (0, (&quot;b&quot;, 2)))`.</span>
+
+<span class="sd">    Also, note that an index larger than the number of named parameters is allowed</span>
+<span class="sd">    for variadic functions. For example::</span>
+
+<span class="sd">        def double(a):</span>
+<span class="sd">            return 2 * a</span>
+
+<span class="sd">        @argmap(double, 3)</span>
+<span class="sd">        def overflow(a, *args):</span>
+<span class="sd">            return a, args</span>
+
+<span class="sd">        print(overflow(1, 2, 3, 4, 5, 6))  # output is 1, (2, 3, 8, 5, 6)</span>
+
+<span class="sd">    **Try Finally**</span>
+
+<span class="sd">    Additionally, this `argmap` class can be used to create a decorator that</span>
+<span class="sd">    initiates a try...finally block. The decorator must be written to return</span>
+<span class="sd">    both the transformed argument and a closing function.</span>
+<span class="sd">    This feature was included to enable the `open_file` decorator which might</span>
+<span class="sd">    need to close the file or not depending on whether it had to open that file.</span>
+<span class="sd">    This feature uses the keyword-only `try_finally` argument to `@argmap`.</span>
+
+<span class="sd">    For example this map opens a file and then makes sure it is closed::</span>
+
+<span class="sd">        def open_file(fn):</span>
+<span class="sd">            f = open(fn)</span>
+<span class="sd">            return f, lambda: f.close()</span>
+
+<span class="sd">    The decorator applies that to the function `foo`::</span>
+
+<span class="sd">        @argmap(open_file, &quot;file&quot;, try_finally=True)</span>
+<span class="sd">        def foo(file):</span>
+<span class="sd">            print(file.read())</span>
+
+<span class="sd">    is syntactic sugar for::</span>
+
+<span class="sd">        def foo(file):</span>
+<span class="sd">            file, close_file = open_file(file)</span>
+<span class="sd">            try:</span>
+<span class="sd">                print(file.read())</span>
+<span class="sd">            finally:</span>
+<span class="sd">                close_file()</span>
+
+<span class="sd">    and is equivalent to (using indexes)::</span>
+
+<span class="sd">        @argmap(open_file, 0, try_finally=True)</span>
+<span class="sd">        def foo(file):</span>
+<span class="sd">            print(file.read())</span>
+
+<span class="sd">    Here&#39;s an example of the try_finally feature used to create a decorator::</span>
+
+<span class="sd">        def my_closing_decorator(which_arg):</span>
+<span class="sd">            def _opener(path):</span>
+<span class="sd">                if path is None:</span>
+<span class="sd">                    path = open(path)</span>
+<span class="sd">                    fclose = path.close</span>
+<span class="sd">                else:</span>
+<span class="sd">                    # assume `path` handles the closing</span>
+<span class="sd">                    fclose = lambda: None</span>
+<span class="sd">                return path, fclose</span>
+<span class="sd">            return argmap(_opener, which_arg, try_finally=True)</span>
+
+<span class="sd">    which can then be used as::</span>
+
+<span class="sd">        @my_closing_decorator(&quot;file&quot;)</span>
+<span class="sd">        def fancy_reader(file=None):</span>
+<span class="sd">            # this code doesn&#39;t need to worry about closing the file</span>
+<span class="sd">            print(file.read())</span>
+
+<span class="sd">    Decorators with try_finally = True cannot be used with generator functions,</span>
+<span class="sd">    because the `finally` block is evaluated before the generator is exhausted::</span>
+
+<span class="sd">        @argmap(open_file, &quot;file&quot;, try_finally=True)</span>
+<span class="sd">        def file_to_lines(file):</span>
+<span class="sd">            for line in file.readlines():</span>
+<span class="sd">                yield line</span>
+
+<span class="sd">    is equivalent to::</span>
+
+<span class="sd">        def file_to_lines_wrapped(file):</span>
+<span class="sd">            for line in file.readlines():</span>
+<span class="sd">                yield line</span>
+
+<span class="sd">        def file_to_lines_wrapper(file):</span>
+<span class="sd">            try:</span>
+<span class="sd">                file = open_file(file)</span>
+<span class="sd">                return file_to_lines_wrapped(file)</span>
+<span class="sd">            finally:</span>
+<span class="sd">                file.close()</span>
+
+<span class="sd">    which behaves similarly to::</span>
+
+<span class="sd">        def file_to_lines_whoops(file):</span>
+<span class="sd">            file = open_file(file)</span>
+<span class="sd">            file.close()</span>
+<span class="sd">            for line in file.readlines():</span>
+<span class="sd">                yield line</span>
+
+<span class="sd">    because the `finally` block of `file_to_lines_wrapper` is executed before</span>
+<span class="sd">    the caller has a chance to exhaust the iterator.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    An object of this class is callable and intended to be used when</span>
+<span class="sd">    defining a decorator. Generally, a decorator takes a function as input</span>
+<span class="sd">    and constructs a function as output. Specifically, an `argmap` object</span>
+<span class="sd">    returns the input function decorated/wrapped so that specified arguments</span>
+<span class="sd">    are mapped (transformed) to new values before the decorated function is called.</span>
+
+<span class="sd">    As an overview, the argmap object returns a new function with all the</span>
+<span class="sd">    dunder values of the original function (like `__doc__`, `__name__`, etc).</span>
+<span class="sd">    Code for this decorated function is built based on the original function&#39;s</span>
+<span class="sd">    signature. It starts by mapping the input arguments to potentially new</span>
+<span class="sd">    values. Then it calls the decorated function with these new values in place</span>
+<span class="sd">    of the indicated arguments that have been mapped. The return value of the</span>
+<span class="sd">    original function is then returned. This new function is the function that</span>
+<span class="sd">    is actually called by the user.</span>
+
+<span class="sd">    Three additional features are provided.</span>
+<span class="sd">        1) The code is lazily compiled. That is, the new function is returned</span>
+<span class="sd">        as an object without the code compiled, but with all information</span>
+<span class="sd">        needed so it can be compiled upon it&#39;s first invocation. This saves</span>
+<span class="sd">        time on import at the cost of additional time on the first call of</span>
+<span class="sd">        the function. Subsequent calls are then just as fast as normal.</span>
+
+<span class="sd">        2) If the &quot;try_finally&quot; keyword-only argument is True, a try block</span>
+<span class="sd">        follows each mapped argument, matched on the other side of the wrapped</span>
+<span class="sd">        call, by a finally block closing that mapping.  We expect func to return</span>
+<span class="sd">        a 2-tuple: the mapped value and a function to be called in the finally</span>
+<span class="sd">        clause.  This feature was included so the `open_file` decorator could</span>
+<span class="sd">        provide a file handle to the decorated function and close the file handle</span>
+<span class="sd">        after the function call. It even keeps track of whether to close the file</span>
+<span class="sd">        handle or not based on whether it had to open the file or the input was</span>
+<span class="sd">        already open. So, the decorated function does not need to include any</span>
+<span class="sd">        code to open or close files.</span>
+
+<span class="sd">        3) The maps applied can process multiple arguments. For example,</span>
+<span class="sd">        you could swap two arguments using a mapping, or transform</span>
+<span class="sd">        them to their sum and their difference. This was included to allow</span>
+<span class="sd">        a decorator in the `quality.py` module that checks that an input</span>
+<span class="sd">        `partition` is a valid partition of the nodes of the input graph `G`.</span>
+<span class="sd">        In this example, the map has inputs `(G, partition)`. After checking</span>
+<span class="sd">        for a valid partition, the map either raises an exception or leaves</span>
+<span class="sd">        the inputs unchanged. Thus many functions that make this check can</span>
+<span class="sd">        use the decorator rather than copy the checking code into each function.</span>
+<span class="sd">        More complicated nested argument structures are described below.</span>
+
+<span class="sd">    The remaining notes describe the code structure and methods for this</span>
+<span class="sd">    class in broad terms to aid in understanding how to use it.</span>
+
+<span class="sd">    Instantiating an `argmap` object simply stores the mapping function and</span>
+<span class="sd">    the input identifiers of which arguments to map. The resulting decorator</span>
+<span class="sd">    is ready to use this map to decorate any function. Calling that object</span>
+<span class="sd">    (`argmap.__call__`, but usually done via `@my_decorator`) a lazily</span>
+<span class="sd">    compiled thin wrapper of the decorated function is constructed,</span>
+<span class="sd">    wrapped with the necessary function dunder attributes like `__doc__`</span>
+<span class="sd">    and `__name__`. That thinly wrapped function is returned as the</span>
+<span class="sd">    decorated function. When that decorated function is called, the thin</span>
+<span class="sd">    wrapper of code calls `argmap._lazy_compile` which compiles the decorated</span>
+<span class="sd">    function (using `argmap.compile`) and replaces the code of the thin</span>
+<span class="sd">    wrapper with the newly compiled code. This saves the compilation step</span>
+<span class="sd">    every import of networkx, at the cost of compiling upon the first call</span>
+<span class="sd">    to the decorated function.</span>
+
+<span class="sd">    When the decorated function is compiled, the code is recursively assembled</span>
+<span class="sd">    using the `argmap.assemble` method. The recursive nature is needed in</span>
+<span class="sd">    case of nested decorators. The result of the assembly is a number of</span>
+<span class="sd">    useful objects.</span>
+
+<span class="sd">      sig : the function signature of the original decorated function as</span>
+<span class="sd">          constructed by :func:`argmap.signature`. This is constructed</span>
+<span class="sd">          using `inspect.signature` but enhanced with attribute</span>
+<span class="sd">          strings `sig_def` and `sig_call`, and other information</span>
+<span class="sd">          specific to mapping arguments of this function.</span>
+<span class="sd">          This information is used to construct a string of code defining</span>
+<span class="sd">          the new decorated function.</span>
+
+<span class="sd">      wrapped_name : a unique internally used name constructed by argmap</span>
+<span class="sd">          for the decorated function.</span>
+
+<span class="sd">      functions : a dict of the functions used inside the code of this</span>
+<span class="sd">          decorated function, to be used as `globals` in `exec`.</span>
+<span class="sd">          This dict is recursively updated to allow for nested decorating.</span>
+
+<span class="sd">      mapblock : code (as a list of strings) to map the incoming argument</span>
+<span class="sd">          values to their mapped values.</span>
+
+<span class="sd">      finallys : code (as a list of strings) to provide the possibly nested</span>
+<span class="sd">          set of finally clauses if needed.</span>
+
+<span class="sd">      mutable_args : a bool indicating whether the `sig.args` tuple should be</span>
+<span class="sd">          converted to a list so mutation can occur.</span>
+
+<span class="sd">    After this recursive assembly process, the `argmap.compile` method</span>
+<span class="sd">    constructs code (as strings) to convert the tuple `sig.args` to a list</span>
+<span class="sd">    if needed. It joins the defining code with appropriate indents and</span>
+<span class="sd">    compiles the result.  Finally, this code is evaluated and the original</span>
+<span class="sd">    wrapper&#39;s implementation is replaced with the compiled version (see</span>
+<span class="sd">    `argmap._lazy_compile` for more details).</span>
+
+<span class="sd">    Other `argmap` methods include `_name` and `_count` which allow internally</span>
+<span class="sd">    generated names to be unique within a python session.</span>
+<span class="sd">    The methods `_flatten` and `_indent` process the nested lists of strings</span>
+<span class="sd">    into properly indented python code ready to be compiled.</span>
+
+<span class="sd">    More complicated nested tuples of arguments also allowed though</span>
+<span class="sd">    usually not used. For the simple 2 argument case, the argmap</span>
+<span class="sd">    input (&quot;a&quot;, &quot;b&quot;) implies the mapping function will take 2 arguments</span>
+<span class="sd">    and return a 2-tuple of mapped values. A more complicated example</span>
+<span class="sd">    with argmap input `(&quot;a&quot;, (&quot;b&quot;, &quot;c&quot;))` requires the mapping function</span>
+<span class="sd">    take 2 inputs, with the second being a 2-tuple. It then must output</span>
+<span class="sd">    the 3 mapped values in the same nested structure `(newa, (newb, newc))`.</span>
+<span class="sd">    This level of generality is not often needed, but was convenient</span>
+<span class="sd">    to implement when handling the multiple arguments.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    not_implemented_for</span>
+<span class="sd">    open_file</span>
+<span class="sd">    nodes_or_number</span>
+<span class="sd">    random_state</span>
+<span class="sd">    py_random_state</span>
+<span class="sd">    networkx.community.quality.require_partition</span>
+<span class="sd">    require_partition</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="argmap.__init__"><a class="viewcode-back" href="../../../reference/generated/networkx.utils.decorators.argmap.html#networkx.utils.decorators.argmap.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">try_finally</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_func</span> <span class="o">=</span> <span class="n">func</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_args</span> <span class="o">=</span> <span class="n">args</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_finally</span> <span class="o">=</span> <span class="n">try_finally</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_lazy_compile</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compile the source of a wrapped function</span>
+
+<span class="sd">        Assemble and compile the decorated function, and intrusively replace its</span>
+<span class="sd">        code with the compiled version&#39;s.  The thinly wrapped function becomes</span>
+<span class="sd">        the decorated function.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        func : callable</span>
+<span class="sd">            A function returned by argmap.__call__ which is in the process</span>
+<span class="sd">            of being called for the first time.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        func : callable</span>
+<span class="sd">            The same function, with a new __code__ object.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        It was observed in NetworkX issue #4732 [1] that the import time of</span>
+<span class="sd">        NetworkX was significantly bloated by the use of decorators: over half</span>
+<span class="sd">        of the import time was being spent decorating functions.  This was</span>
+<span class="sd">        somewhat improved by a change made to the `decorator` library, at the</span>
+<span class="sd">        cost of a relatively heavy-weight call to `inspect.Signature.bind`</span>
+<span class="sd">        for each call to the decorated function.</span>
+
+<span class="sd">        The workaround we arrived at is to do minimal work at the time of</span>
+<span class="sd">        decoration.  When the decorated function is called for the first time,</span>
+<span class="sd">        we compile a function with the same function signature as the wrapped</span>
+<span class="sd">        function.  The resulting decorated function is faster than one made by</span>
+<span class="sd">        the `decorator` library, so that the overhead of the first call is</span>
+<span class="sd">        &#39;paid off&#39; after a small number of calls.</span>
+
+<span class="sd">        References</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        [1] https://github.com/networkx/networkx/issues/4732</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">real_func</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="n">__argmap__</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">__wrapped__</span><span class="p">)</span>
+        <span class="n">func</span><span class="o">.</span><span class="vm">__code__</span> <span class="o">=</span> <span class="n">real_func</span><span class="o">.</span><span class="vm">__code__</span>
+        <span class="n">func</span><span class="o">.</span><span class="vm">__globals__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">real_func</span><span class="o">.</span><span class="vm">__globals__</span><span class="p">)</span>
+        <span class="n">func</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">real_func</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">func</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Construct a lazily decorated wrapper of f.</span>
+
+<span class="sd">        The decorated function will be compiled when it is called for the first time,</span>
+<span class="sd">        and it will replace its own __code__ object so subsequent calls are fast.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        f : callable</span>
+<span class="sd">            A function to be decorated.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        func : callable</span>
+<span class="sd">            The decorated function.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        argmap._lazy_compile</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">__wrapper</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">argmap</span><span class="o">.</span><span class="n">_lazy_compile</span><span class="p">(</span><span class="n">__wrapper</span><span class="p">)(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># standard function-wrapping stuff</span>
+        <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="n">func</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="vm">__doc__</span>
+        <span class="n">func</span><span class="o">.</span><span class="vm">__defaults__</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="vm">__defaults__</span>
+        <span class="n">func</span><span class="o">.</span><span class="vm">__kwdefaults__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="vm">__kwdefaults__</span> <span class="ow">or</span> <span class="p">{})</span>
+        <span class="n">func</span><span class="o">.</span><span class="vm">__module__</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="vm">__module__</span>
+        <span class="n">func</span><span class="o">.</span><span class="vm">__qualname__</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="vm">__qualname__</span>
+        <span class="n">func</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
+        <span class="n">func</span><span class="o">.</span><span class="n">__wrapped__</span> <span class="o">=</span> <span class="n">f</span>
+
+        <span class="c1"># now that we&#39;ve wrapped f, we may have picked up some __dict__ or</span>
+        <span class="c1"># __kwdefaults__ items that were set by a previous argmap.  Thus, we set</span>
+        <span class="c1"># these values after those update() calls.</span>
+
+        <span class="c1"># If we attempt to access func from within itself, that happens through</span>
+        <span class="c1"># a closure -- which trips an error when we replace func.__code__.  The</span>
+        <span class="c1"># standard workaround for functions which can&#39;t see themselves is to use</span>
+        <span class="c1"># a Y-combinator, as we do here.</span>
+        <span class="n">func</span><span class="o">.</span><span class="vm">__kwdefaults__</span><span class="p">[</span><span class="s2">&quot;_argmap__wrapper&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">func</span>
+
+        <span class="c1"># this self-reference is here because functools.wraps preserves</span>
+        <span class="c1"># everything in __dict__, and we don&#39;t want to mistake a non-argmap</span>
+        <span class="c1"># wrapper for an argmap wrapper</span>
+        <span class="n">func</span><span class="o">.</span><span class="vm">__self__</span> <span class="o">=</span> <span class="n">func</span>
+
+        <span class="c1"># this is used to variously call self.assemble and self.compile</span>
+        <span class="n">func</span><span class="o">.</span><span class="n">__argmap__</span> <span class="o">=</span> <span class="bp">self</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s2">&quot;__argmap__&quot;</span><span class="p">):</span>
+            <span class="n">func</span><span class="o">.</span><span class="n">__is_generator</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">__is_generator</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">func</span><span class="o">.</span><span class="n">__is_generator</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isgeneratorfunction</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_finally</span> <span class="ow">and</span> <span class="n">func</span><span class="o">.</span><span class="n">__is_generator</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;argmap cannot decorate generators with try_finally&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">func</span>
+
+    <span class="n">__count</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_count</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Maintain a globally-unique identifier for function names and &quot;file&quot; names</span>
+
+<span class="sd">        Note that this counter is a class method reporting a class variable</span>
+<span class="sd">        so the count is unique within a Python session. It could differ from</span>
+<span class="sd">        session to session for a specific decorator depending on the order</span>
+<span class="sd">        that the decorators are created. But that doesn&#39;t disrupt `argmap`.</span>
+
+<span class="sd">        This is used in two places: to construct unique variable names</span>
+<span class="sd">        in the `_name` method and to construct unique fictitious filenames</span>
+<span class="sd">        in the `_compile` method.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        count : int</span>
+<span class="sd">            An integer unique to this Python session (simply counts from zero)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">__count</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__count</span>
+
+    <span class="n">_bad_chars</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">&quot;[^a-zA-Z0-9_]&quot;</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Mangle the name of a function to be unique but somewhat human-readable</span>
+
+<span class="sd">        The names are unique within a Python session and set using `_count`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        f : str or object</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        name : str</span>
+<span class="sd">            The mangled version of `f.__name__` (if `f.__name__` exists) or `f`</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="vm">__name__</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s2">&quot;__name__&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">f</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_bad_chars</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;argmap_</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="n">_count</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+
+<div class="viewcode-block" id="argmap.compile"><a class="viewcode-back" href="../../../reference/generated/generated/networkx.utils.decorators.argmap.compile.html#networkx.utils.decorators.argmap.compile">[docs]</a>    <span class="k">def</span> <span class="nf">compile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compile the decorated function.</span>
+
+<span class="sd">        Called once for a given decorated function -- collects the code from all</span>
+<span class="sd">        argmap decorators in the stack, and compiles the decorated function.</span>
+
+<span class="sd">        Much of the work done here uses the `assemble` method to allow recursive</span>
+<span class="sd">        treatment of multiple argmap decorators on a single decorated function.</span>
+<span class="sd">        That flattens the argmap decorators, collects the source code to construct</span>
+<span class="sd">        a single decorated function, then compiles/executes/returns that function.</span>
+
+<span class="sd">        The source code for the decorated function is stored as an attribute</span>
+<span class="sd">        `_code` on the function object itself.</span>
+
+<span class="sd">        Note that Python&#39;s `compile` function requires a filename, but this</span>
+<span class="sd">        code is constructed without a file, so a fictitious filename is used</span>
+<span class="sd">        to describe where the function comes from. The name is something like:</span>
+<span class="sd">        &quot;argmap compilation 4&quot;.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        f : callable</span>
+<span class="sd">            The function to be decorated</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        func : callable</span>
+<span class="sd">            The decorated file</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sig</span><span class="p">,</span> <span class="n">wrapped_name</span><span class="p">,</span> <span class="n">functions</span><span class="p">,</span> <span class="n">mapblock</span><span class="p">,</span> <span class="n">finallys</span><span class="p">,</span> <span class="n">mutable_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">assemble</span><span class="p">(</span>
+            <span class="n">f</span>
+        <span class="p">)</span>
+
+        <span class="n">call</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sig</span><span class="o">.</span><span class="n">call_sig</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">wrapped_name</span><span class="p">)</span><span class="si">}</span><span class="s2">#&quot;</span>
+        <span class="n">mut_args</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sig</span><span class="o">.</span><span class="n">args</span><span class="si">}</span><span class="s2"> = list(</span><span class="si">{</span><span class="n">sig</span><span class="o">.</span><span class="n">args</span><span class="si">}</span><span class="s2">)&quot;</span> <span class="k">if</span> <span class="n">mutable_args</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">body</span> <span class="o">=</span> <span class="n">argmap</span><span class="o">.</span><span class="n">_indent</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">def_sig</span><span class="p">,</span> <span class="n">mut_args</span><span class="p">,</span> <span class="n">mapblock</span><span class="p">,</span> <span class="n">call</span><span class="p">,</span> <span class="n">finallys</span><span class="p">)</span>
+        <span class="n">code</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>
+
+        <span class="n">locl</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">globl</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">functions</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="si">}</span><span class="s2"> compilation </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_count</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">compiled</span> <span class="o">=</span> <span class="nb">compile</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;exec&quot;</span><span class="p">)</span>
+        <span class="n">exec</span><span class="p">(</span><span class="n">compiled</span><span class="p">,</span> <span class="n">globl</span><span class="p">,</span> <span class="n">locl</span><span class="p">)</span>
+        <span class="n">func</span> <span class="o">=</span> <span class="n">locl</span><span class="p">[</span><span class="n">sig</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+        <span class="n">func</span><span class="o">.</span><span class="n">_code</span> <span class="o">=</span> <span class="n">code</span>
+        <span class="k">return</span> <span class="n">func</span></div>
+
+<div class="viewcode-block" id="argmap.assemble"><a class="viewcode-back" href="../../../reference/generated/generated/networkx.utils.decorators.argmap.assemble.html#networkx.utils.decorators.argmap.assemble">[docs]</a>    <span class="k">def</span> <span class="nf">assemble</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Collects components of the source for the decorated function wrapping f.</span>
+
+<span class="sd">        If `f` has multiple argmap decorators, we recursively assemble the stack of</span>
+<span class="sd">        decorators into a single flattened function.</span>
+
+<span class="sd">        This method is part of the `compile` method&#39;s process yet separated</span>
+<span class="sd">        from that method to allow recursive processing. The outputs are</span>
+<span class="sd">        strings, dictionaries and lists that collect needed info to</span>
+<span class="sd">        flatten any nested argmap-decoration.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        f : callable</span>
+<span class="sd">            The function to be decorated.  If f is argmapped, we assemble it.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        sig : argmap.Signature</span>
+<span class="sd">            The function signature as an `argmap.Signature` object.</span>
+<span class="sd">        wrapped_name : str</span>
+<span class="sd">            The mangled name used to represent the wrapped function in the code</span>
+<span class="sd">            being assembled.</span>
+<span class="sd">        functions : dict</span>
+<span class="sd">            A dictionary mapping id(g) -&gt; (mangled_name(g), g) for functions g</span>
+<span class="sd">            referred to in the code being assembled. These need to be present</span>
+<span class="sd">            in the ``globals`` scope of ``exec`` when defining the decorated</span>
+<span class="sd">            function.</span>
+<span class="sd">        mapblock : list of lists and/or strings</span>
+<span class="sd">            Code that implements mapping of parameters including any try blocks</span>
+<span class="sd">            if needed. This code will precede the decorated function call.</span>
+<span class="sd">        finallys : list of lists and/or strings</span>
+<span class="sd">            Code that implements the finally blocks to post-process the</span>
+<span class="sd">            arguments (usually close any files if needed) after the</span>
+<span class="sd">            decorated function is called.</span>
+<span class="sd">        mutable_args : bool</span>
+<span class="sd">            True if the decorator needs to modify positional arguments</span>
+<span class="sd">            via their indices. The compile method then turns the argument</span>
+<span class="sd">            tuple into a list so that the arguments can be modified.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># first, we check if f is already argmapped -- if that&#39;s the case,</span>
+        <span class="c1"># build up the function recursively.</span>
+        <span class="c1"># &gt; mapblock is generally a list of function calls of the sort</span>
+        <span class="c1">#     arg = func(arg)</span>
+        <span class="c1"># in addition to some try-blocks if needed.</span>
+        <span class="c1"># &gt; finallys is a recursive list of finally blocks of the sort</span>
+        <span class="c1">#         finally:</span>
+        <span class="c1">#             close_func_1()</span>
+        <span class="c1">#     finally:</span>
+        <span class="c1">#         close_func_2()</span>
+        <span class="c1"># &gt; functions is a dict of functions used in the scope of our decorated</span>
+        <span class="c1"># function. It will be used to construct globals used in compilation.</span>
+        <span class="c1"># We make functions[id(f)] = name_of_f, f to ensure that a given</span>
+        <span class="c1"># function is stored and named exactly once even if called by</span>
+        <span class="c1"># nested decorators.</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s2">&quot;__argmap__&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">f</span><span class="o">.</span><span class="vm">__self__</span> <span class="ow">is</span> <span class="n">f</span><span class="p">:</span>
+            <span class="p">(</span>
+                <span class="n">sig</span><span class="p">,</span>
+                <span class="n">wrapped_name</span><span class="p">,</span>
+                <span class="n">functions</span><span class="p">,</span>
+                <span class="n">mapblock</span><span class="p">,</span>
+                <span class="n">finallys</span><span class="p">,</span>
+                <span class="n">mutable_args</span><span class="p">,</span>
+            <span class="p">)</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">__argmap__</span><span class="o">.</span><span class="n">assemble</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">__wrapped__</span><span class="p">)</span>
+            <span class="n">functions</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">functions</span><span class="p">)</span>  <span class="c1"># shallow-copy just in case</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">sig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+            <span class="n">wrapped_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+            <span class="n">mapblock</span><span class="p">,</span> <span class="n">finallys</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+            <span class="n">functions</span> <span class="o">=</span> <span class="p">{</span><span class="nb">id</span><span class="p">(</span><span class="n">f</span><span class="p">):</span> <span class="p">(</span><span class="n">wrapped_name</span><span class="p">,</span> <span class="n">f</span><span class="p">)}</span>
+            <span class="n">mutable_args</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_func</span><span class="p">)</span> <span class="ow">in</span> <span class="n">functions</span><span class="p">:</span>
+            <span class="n">fname</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">functions</span><span class="p">[</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_func</span><span class="p">)]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">fname</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">functions</span><span class="p">[</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_func</span><span class="p">)]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_func</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_func</span>
+
+        <span class="c1"># this is a bit complicated -- we can call functions with a variety of</span>
+        <span class="c1"># nested arguments, so long as their input and output are tuples with</span>
+        <span class="c1"># the same nested structure. e.g. (&quot;a&quot;, &quot;b&quot;) maps arguments a and b.</span>
+        <span class="c1"># A more complicated nesting like (0, (3, 4)) maps arguments 0, 3, 4</span>
+        <span class="c1"># expecting the mapping to output new values in the same nested shape.</span>
+        <span class="c1"># The ability to argmap multiple arguments was necessary for</span>
+        <span class="c1"># the decorator `nx.algorithms.community.quality.require_partition`, and</span>
+        <span class="c1"># while we&#39;re not taking full advantage of the ability to handle</span>
+        <span class="c1"># multiply-nested tuples, it was convenient to implement this in</span>
+        <span class="c1"># generality because the recursive call to `get_name` is necessary in</span>
+        <span class="c1"># any case.</span>
+        <span class="n">applied</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+        <span class="k">def</span> <span class="nf">get_name</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">first</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="k">nonlocal</span> <span class="n">mutable_args</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_name</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">arg</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">name</span> <span class="k">if</span> <span class="n">first</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">)&quot;</span>
+            <span class="k">if</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">applied</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;argument </span><span class="si">{</span><span class="n">arg</span><span class="si">}</span><span class="s2"> is specified multiple times&quot;</span><span class="p">)</span>
+            <span class="n">applied</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">sig</span><span class="o">.</span><span class="n">names</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">sig</span><span class="o">.</span><span class="n">names</span><span class="p">[</span><span class="n">arg</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">sig</span><span class="o">.</span><span class="n">kwargs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;name </span><span class="si">{</span><span class="n">arg</span><span class="si">}</span><span class="s2"> is not a named parameter and this function doesn&#39;t have kwargs&quot;</span>
+                    <span class="p">)</span>
+                <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sig</span><span class="o">.</span><span class="n">kwargs</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">arg</span><span class="si">!r}</span><span class="s2">]&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">sig</span><span class="o">.</span><span class="n">args</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;index </span><span class="si">{</span><span class="n">arg</span><span class="si">}</span><span class="s2"> not a parameter index and this function doesn&#39;t have args&quot;</span>
+                    <span class="p">)</span>
+                <span class="n">mutable_args</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sig</span><span class="o">.</span><span class="n">args</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">arg</span> <span class="o">-</span> <span class="n">sig</span><span class="o">.</span><span class="n">n_positional</span><span class="si">}</span><span class="s2">]&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_finally</span><span class="p">:</span>
+            <span class="c1"># here&#39;s where we handle try_finally decorators.  Such a decorator</span>
+            <span class="c1"># returns a mapped argument and a function to be called in a</span>
+            <span class="c1"># finally block.  This feature was required by the open_file</span>
+            <span class="c1"># decorator.  The below generates the code</span>
+            <span class="c1">#</span>
+            <span class="c1"># name, final = func(name)                   #&lt;--append to mapblock</span>
+            <span class="c1"># try:                                       #&lt;--append to mapblock</span>
+            <span class="c1">#     ... more argmapping and try blocks</span>
+            <span class="c1">#     return WRAPPED_FUNCTION(...)</span>
+            <span class="c1">#     ... more finally blocks</span>
+            <span class="c1"># finally:                                   #&lt;--prepend to finallys</span>
+            <span class="c1">#     final()                                #&lt;--prepend to finallys</span>
+            <span class="c1">#</span>
+            <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_args</span><span class="p">:</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="n">get_name</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+                <span class="n">final</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+                <span class="n">mapblock</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">final</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+                <span class="n">mapblock</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;try:&quot;</span><span class="p">)</span>
+                <span class="n">finallys</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;finally:&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">final</span><span class="si">}</span><span class="s2">()#&quot;</span><span class="p">,</span> <span class="s2">&quot;#&quot;</span><span class="p">,</span> <span class="n">finallys</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mapblock</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">)&quot;</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">map</span><span class="p">(</span><span class="n">get_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_args</span><span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">sig</span><span class="p">,</span> <span class="n">wrapped_name</span><span class="p">,</span> <span class="n">functions</span><span class="p">,</span> <span class="n">mapblock</span><span class="p">,</span> <span class="n">finallys</span><span class="p">,</span> <span class="n">mutable_args</span></div>
+
+<div class="viewcode-block" id="argmap.signature"><a class="viewcode-back" href="../../../reference/generated/generated/networkx.utils.decorators.argmap.signature.html#networkx.utils.decorators.argmap.signature">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">signature</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Construct a Signature object describing `f`</span>
+
+<span class="sd">        Compute a Signature so that we can write a function wrapping f with</span>
+<span class="sd">        the same signature and call-type.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        f : callable</span>
+<span class="sd">            A function to be decorated</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        sig : argmap.Signature</span>
+<span class="sd">            The Signature of f</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        The Signature is a namedtuple with names:</span>
+
+<span class="sd">            name : a unique version of the name of the decorated function</span>
+<span class="sd">            signature : the inspect.signature of the decorated function</span>
+<span class="sd">            def_sig : a string used as code to define the new function</span>
+<span class="sd">            call_sig : a string used as code to call the decorated function</span>
+<span class="sd">            names : a dict keyed by argument name and index to the argument&#39;s name</span>
+<span class="sd">            n_positional : the number of positional arguments in the signature</span>
+<span class="sd">            args : the name of the VAR_POSITIONAL argument if any, i.e. \*theseargs</span>
+<span class="sd">            kwargs : the name of the VAR_KEYWORDS argument if any, i.e. \*\*kwargs</span>
+
+<span class="sd">        These named attributes of the signature are used in `assemble` and `compile`</span>
+<span class="sd">        to construct a string of source code for the decorated function.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sig</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">follow_wrapped</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">def_sig</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">call_sig</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">kind</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">npos</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+            <span class="c1"># parameters can be position-only, keyword-or-position, keyword-only</span>
+            <span class="c1"># in any combination, but only in the order as above.  we do edge</span>
+            <span class="c1"># detection to add the appropriate punctuation</span>
+            <span class="n">prev</span> <span class="o">=</span> <span class="n">kind</span>
+            <span class="n">kind</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">kind</span>
+            <span class="k">if</span> <span class="n">prev</span> <span class="o">==</span> <span class="n">param</span><span class="o">.</span><span class="n">POSITIONAL_ONLY</span> <span class="o">!=</span> <span class="n">kind</span><span class="p">:</span>
+                <span class="c1"># the last token was position-only, but this one isn&#39;t</span>
+                <span class="n">def_sig</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">prev</span> <span class="o">!=</span> <span class="n">param</span><span class="o">.</span><span class="n">KEYWORD_ONLY</span> <span class="o">==</span> <span class="n">kind</span> <span class="o">!=</span> <span class="n">param</span><span class="o">.</span><span class="n">VAR_POSITIONAL</span><span class="p">:</span>
+                <span class="c1"># param is the first keyword-only arg and isn&#39;t starred</span>
+                <span class="n">def_sig</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">)</span>
+
+            <span class="c1"># star arguments as appropriate</span>
+            <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="n">param</span><span class="o">.</span><span class="n">VAR_POSITIONAL</span><span class="p">:</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;*&quot;</span> <span class="o">+</span> <span class="n">param</span><span class="o">.</span><span class="n">name</span>
+                <span class="n">args</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">name</span>
+                <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">elif</span> <span class="n">kind</span> <span class="o">==</span> <span class="n">param</span><span class="o">.</span><span class="n">VAR_KEYWORD</span><span class="p">:</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;**&quot;</span> <span class="o">+</span> <span class="n">param</span><span class="o">.</span><span class="n">name</span>
+                <span class="n">kwargs</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">name</span>
+                <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">names</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">names</span><span class="p">[</span><span class="n">param</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">name</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">name</span>
+                <span class="n">count</span> <span class="o">=</span> <span class="mi">1</span>
+
+            <span class="c1"># assign to keyword-only args in the function call</span>
+            <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="n">param</span><span class="o">.</span><span class="n">KEYWORD_ONLY</span><span class="p">:</span>
+                <span class="n">call_sig</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">npos</span> <span class="o">+=</span> <span class="n">count</span>
+                <span class="n">call_sig</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+            <span class="n">def_sig</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="n">fname</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_name</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="n">def_sig</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;def </span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s1">(</span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">def_sig</span><span class="p">)</span><span class="si">}</span><span class="s1">):&#39;</span>
+
+        <span class="n">call_sig</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;return </span><span class="se">{{}}</span><span class="s2">(</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">call_sig</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">Signature</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="n">def_sig</span><span class="p">,</span> <span class="n">call_sig</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">npos</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span></div>
+
+    <span class="n">Signature</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span>
+        <span class="s2">&quot;Signature&quot;</span><span class="p">,</span>
+        <span class="p">[</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;signature&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;def_sig&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;call_sig&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;names&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;n_positional&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;args&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;kwargs&quot;</span><span class="p">,</span>
+        <span class="p">],</span>
+    <span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_flatten</span><span class="p">(</span><span class="n">nestlist</span><span class="p">,</span> <span class="n">visited</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;flattens a recursive list of lists that doesn&#39;t have cyclic references</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        nestlist : iterable</span>
+<span class="sd">            A recursive list of objects to be flattened into a single iterable</span>
+
+<span class="sd">        visited : set</span>
+<span class="sd">            A set of object ids which have been walked -- initialize with an</span>
+<span class="sd">            empty set</span>
+
+<span class="sd">        Yields</span>
+<span class="sd">        ------</span>
+<span class="sd">        Non-list objects contained in nestlist</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">thing</span> <span class="ow">in</span> <span class="n">nestlist</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">thing</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">id</span><span class="p">(</span><span class="n">thing</span><span class="p">)</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;A cycle was found in nestlist.  Be a tree.&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">visited</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="n">thing</span><span class="p">))</span>
+                <span class="k">yield from</span> <span class="n">argmap</span><span class="o">.</span><span class="n">_flatten</span><span class="p">(</span><span class="n">thing</span><span class="p">,</span> <span class="n">visited</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="n">thing</span>
+
+    <span class="n">_tabs</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="mi">64</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_indent</span><span class="p">(</span><span class="o">*</span><span class="n">lines</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Indent list of code lines to make executable Python code</span>
+
+<span class="sd">        Indents a tree-recursive list of strings, following the rule that one</span>
+<span class="sd">        space is added to the tab after a line that ends in a colon, and one is</span>
+<span class="sd">        removed after a line that ends in an hashmark.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        *lines : lists and/or strings</span>
+<span class="sd">            A recursive list of strings to be assembled into properly indented</span>
+<span class="sd">            code.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        code : str</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">            argmap._indent(*[&quot;try:&quot;, &quot;try:&quot;, &quot;pass#&quot;, &quot;finally:&quot;, &quot;pass#&quot;, &quot;#&quot;,</span>
+<span class="sd">                             &quot;finally:&quot;, &quot;pass#&quot;])</span>
+
+<span class="sd">        renders to</span>
+
+<span class="sd">            &#39;&#39;&#39;try:</span>
+<span class="sd">             try:</span>
+<span class="sd">              pass#</span>
+<span class="sd">             finally:</span>
+<span class="sd">              pass#</span>
+<span class="sd">             #</span>
+<span class="sd">            finally:</span>
+<span class="sd">             pass#&#39;&#39;&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">depth</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">argmap</span><span class="o">.</span><span class="n">_flatten</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="nb">set</span><span class="p">()):</span>
+            <span class="k">yield</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">argmap</span><span class="o">.</span><span class="n">_tabs</span><span class="p">[:</span><span class="n">depth</span><span class="p">]</span><span class="si">}{</span><span class="n">line</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">depth</span> <span class="o">+=</span> <span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:]</span> <span class="o">==</span> <span class="s2">&quot;:&quot;</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:]</span> <span class="o">==</span> <span class="s2">&quot;#&quot;</span><span class="p">)</span></div>
+</pre></div>
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

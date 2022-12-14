@@ -1,0 +1,1505 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>networkx.classes.multidigraph &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/classes/multidigraph';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/classes/multidigraph.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../../../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../../../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <h1>Source code for networkx.classes.multidigraph</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Base class for MultiDiGraph.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">cached_property</span>
+
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">import</span> <span class="nn">networkx.convert</span> <span class="k">as</span> <span class="nn">convert</span>
+<span class="kn">from</span> <span class="nn">networkx.classes.coreviews</span> <span class="kn">import</span> <span class="n">MultiAdjacencyView</span>
+<span class="kn">from</span> <span class="nn">networkx.classes.digraph</span> <span class="kn">import</span> <span class="n">DiGraph</span>
+<span class="kn">from</span> <span class="nn">networkx.classes.multigraph</span> <span class="kn">import</span> <span class="n">MultiGraph</span>
+<span class="kn">from</span> <span class="nn">networkx.classes.reportviews</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">DiMultiDegreeView</span><span class="p">,</span>
+    <span class="n">InMultiDegreeView</span><span class="p">,</span>
+    <span class="n">InMultiEdgeView</span><span class="p">,</span>
+    <span class="n">OutMultiDegreeView</span><span class="p">,</span>
+    <span class="n">OutMultiEdgeView</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">networkx.exception</span> <span class="kn">import</span> <span class="n">NetworkXError</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;MultiDiGraph&quot;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="MultiDiGraph"><a class="viewcode-back" href="../../../reference/classes/multidigraph.html#networkx.MultiDiGraph">[docs]</a><span class="k">class</span> <span class="nc">MultiDiGraph</span><span class="p">(</span><span class="n">MultiGraph</span><span class="p">,</span> <span class="n">DiGraph</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A directed graph class that can store multiedges.</span>
+
+<span class="sd">    Multiedges are multiple edges between two nodes.  Each edge</span>
+<span class="sd">    can hold optional data or attributes.</span>
+
+<span class="sd">    A MultiDiGraph holds directed edges.  Self loops are allowed.</span>
+
+<span class="sd">    Nodes can be arbitrary (hashable) Python objects with optional</span>
+<span class="sd">    key/value attributes. By convention `None` is not used as a node.</span>
+
+<span class="sd">    Edges are represented as links between nodes with optional</span>
+<span class="sd">    key/value attributes.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    incoming_graph_data : input graph (optional, default: None)</span>
+<span class="sd">        Data to initialize graph. If None (default) an empty</span>
+<span class="sd">        graph is created.  The data can be any format that is supported</span>
+<span class="sd">        by the to_networkx_graph() function, currently including edge list,</span>
+<span class="sd">        dict of dicts, dict of lists, NetworkX graph, 2D NumPy array, SciPy</span>
+<span class="sd">        sparse matrix, or PyGraphviz graph.</span>
+
+<span class="sd">    multigraph_input : bool or None (default None)</span>
+<span class="sd">        Note: Only used when `incoming_graph_data` is a dict.</span>
+<span class="sd">        If True, `incoming_graph_data` is assumed to be a</span>
+<span class="sd">        dict-of-dict-of-dict-of-dict structure keyed by</span>
+<span class="sd">        node to neighbor to edge keys to edge data for multi-edges.</span>
+<span class="sd">        A NetworkXError is raised if this is not the case.</span>
+<span class="sd">        If False, :func:`to_networkx_graph` is used to try to determine</span>
+<span class="sd">        the dict&#39;s graph data structure as either a dict-of-dict-of-dict</span>
+<span class="sd">        keyed by node to neighbor to edge data, or a dict-of-iterable</span>
+<span class="sd">        keyed by node to neighbors.</span>
+<span class="sd">        If None, the treatment for True is tried, but if it fails,</span>
+<span class="sd">        the treatment for False is tried.</span>
+
+<span class="sd">    attr : keyword arguments, optional (default= no attributes)</span>
+<span class="sd">        Attributes to add to graph as key=value pairs.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    Graph</span>
+<span class="sd">    DiGraph</span>
+<span class="sd">    MultiGraph</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Create an empty graph structure (a &quot;null graph&quot;) with no nodes and</span>
+<span class="sd">    no edges.</span>
+
+<span class="sd">    &gt;&gt;&gt; G = nx.MultiDiGraph()</span>
+
+<span class="sd">    G can be grown in several ways.</span>
+
+<span class="sd">    **Nodes:**</span>
+
+<span class="sd">    Add one node at a time:</span>
+
+<span class="sd">    &gt;&gt;&gt; G.add_node(1)</span>
+
+<span class="sd">    Add the nodes from any container (a list, dict, set or</span>
+<span class="sd">    even the lines from a file or the nodes from another graph).</span>
+
+<span class="sd">    &gt;&gt;&gt; G.add_nodes_from([2, 3])</span>
+<span class="sd">    &gt;&gt;&gt; G.add_nodes_from(range(100, 110))</span>
+<span class="sd">    &gt;&gt;&gt; H = nx.path_graph(10)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_nodes_from(H)</span>
+
+<span class="sd">    In addition to strings and integers any hashable Python object</span>
+<span class="sd">    (except None) can represent a node, e.g. a customized node object,</span>
+<span class="sd">    or even another Graph.</span>
+
+<span class="sd">    &gt;&gt;&gt; G.add_node(H)</span>
+
+<span class="sd">    **Edges:**</span>
+
+<span class="sd">    G can also be grown by adding edges.</span>
+
+<span class="sd">    Add one edge,</span>
+
+<span class="sd">    &gt;&gt;&gt; key = G.add_edge(1, 2)</span>
+
+<span class="sd">    a list of edges,</span>
+
+<span class="sd">    &gt;&gt;&gt; keys = G.add_edges_from([(1, 2), (1, 3)])</span>
+
+<span class="sd">    or a collection of edges,</span>
+
+<span class="sd">    &gt;&gt;&gt; keys = G.add_edges_from(H.edges)</span>
+
+<span class="sd">    If some edges connect nodes not yet in the graph, the nodes</span>
+<span class="sd">    are added automatically.  If an edge already exists, an additional</span>
+<span class="sd">    edge is created and stored using a key to identify the edge.</span>
+<span class="sd">    By default the key is the lowest unused integer.</span>
+
+<span class="sd">    &gt;&gt;&gt; keys = G.add_edges_from([(4, 5, dict(route=282)), (4, 5, dict(route=37))])</span>
+<span class="sd">    &gt;&gt;&gt; G[4]</span>
+<span class="sd">    AdjacencyView({5: {0: {}, 1: {&#39;route&#39;: 282}, 2: {&#39;route&#39;: 37}}})</span>
+
+<span class="sd">    **Attributes:**</span>
+
+<span class="sd">    Each graph, node, and edge can hold key/value attribute pairs</span>
+<span class="sd">    in an associated attribute dictionary (the keys must be hashable).</span>
+<span class="sd">    By default these are empty, but can be added or changed using</span>
+<span class="sd">    add_edge, add_node or direct manipulation of the attribute</span>
+<span class="sd">    dictionaries named graph, node and edge respectively.</span>
+
+<span class="sd">    &gt;&gt;&gt; G = nx.MultiDiGraph(day=&quot;Friday&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; G.graph</span>
+<span class="sd">    {&#39;day&#39;: &#39;Friday&#39;}</span>
+
+<span class="sd">    Add node attributes using add_node(), add_nodes_from() or G.nodes</span>
+
+<span class="sd">    &gt;&gt;&gt; G.add_node(1, time=&quot;5pm&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_nodes_from([3], time=&quot;2pm&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; G.nodes[1]</span>
+<span class="sd">    {&#39;time&#39;: &#39;5pm&#39;}</span>
+<span class="sd">    &gt;&gt;&gt; G.nodes[1][&quot;room&quot;] = 714</span>
+<span class="sd">    &gt;&gt;&gt; del G.nodes[1][&quot;room&quot;]  # remove attribute</span>
+<span class="sd">    &gt;&gt;&gt; list(G.nodes(data=True))</span>
+<span class="sd">    [(1, {&#39;time&#39;: &#39;5pm&#39;}), (3, {&#39;time&#39;: &#39;2pm&#39;})]</span>
+
+<span class="sd">    Add edge attributes using add_edge(), add_edges_from(), subscript</span>
+<span class="sd">    notation, or G.edges.</span>
+
+<span class="sd">    &gt;&gt;&gt; key = G.add_edge(1, 2, weight=4.7)</span>
+<span class="sd">    &gt;&gt;&gt; keys = G.add_edges_from([(3, 4), (4, 5)], color=&quot;red&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; keys = G.add_edges_from([(1, 2, {&quot;color&quot;: &quot;blue&quot;}), (2, 3, {&quot;weight&quot;: 8})])</span>
+<span class="sd">    &gt;&gt;&gt; G[1][2][0][&quot;weight&quot;] = 4.7</span>
+<span class="sd">    &gt;&gt;&gt; G.edges[1, 2, 0][&quot;weight&quot;] = 4</span>
+
+<span class="sd">    Warning: we protect the graph data structure by making `G.edges[1,</span>
+<span class="sd">    2, 0]` a read-only dict-like structure. However, you can assign to</span>
+<span class="sd">    attributes in e.g. `G.edges[1, 2, 0]`. Thus, use 2 sets of brackets</span>
+<span class="sd">    to add/change data attributes: `G.edges[1, 2, 0][&#39;weight&#39;] = 4`</span>
+<span class="sd">    (for multigraphs the edge key is required: `MG.edges[u, v,</span>
+<span class="sd">    key][name] = value`).</span>
+
+<span class="sd">    **Shortcuts:**</span>
+
+<span class="sd">    Many common graph features allow python syntax to speed reporting.</span>
+
+<span class="sd">    &gt;&gt;&gt; 1 in G  # check if node in graph</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; [n for n in G if n &lt; 3]  # iterate through nodes</span>
+<span class="sd">    [1, 2]</span>
+<span class="sd">    &gt;&gt;&gt; len(G)  # number of nodes in graph</span>
+<span class="sd">    5</span>
+<span class="sd">    &gt;&gt;&gt; G[1]  # adjacency dict-like view mapping neighbor -&gt; edge key -&gt; edge attributes</span>
+<span class="sd">    AdjacencyView({2: {0: {&#39;weight&#39;: 4}, 1: {&#39;color&#39;: &#39;blue&#39;}}})</span>
+
+<span class="sd">    Often the best way to traverse all edges of a graph is via the neighbors.</span>
+<span class="sd">    The neighbors are available as an adjacency-view `G.adj` object or via</span>
+<span class="sd">    the method `G.adjacency()`.</span>
+
+<span class="sd">    &gt;&gt;&gt; for n, nbrsdict in G.adjacency():</span>
+<span class="sd">    ...     for nbr, keydict in nbrsdict.items():</span>
+<span class="sd">    ...         for key, eattr in keydict.items():</span>
+<span class="sd">    ...             if &quot;weight&quot; in eattr:</span>
+<span class="sd">    ...                 # Do something useful with the edges</span>
+<span class="sd">    ...                 pass</span>
+
+<span class="sd">    But the edges() method is often more convenient:</span>
+
+<span class="sd">    &gt;&gt;&gt; for u, v, keys, weight in G.edges(data=&quot;weight&quot;, keys=True):</span>
+<span class="sd">    ...     if weight is not None:</span>
+<span class="sd">    ...         # Do something useful with the edges</span>
+<span class="sd">    ...         pass</span>
+
+<span class="sd">    **Reporting:**</span>
+
+<span class="sd">    Simple graph information is obtained using methods and object-attributes.</span>
+<span class="sd">    Reporting usually provides views instead of containers to reduce memory</span>
+<span class="sd">    usage. The views update as the graph is updated similarly to dict-views.</span>
+<span class="sd">    The objects `nodes`, `edges` and `adj` provide access to data attributes</span>
+<span class="sd">    via lookup (e.g. `nodes[n]`, `edges[u, v, k]`, `adj[u][v]`) and iteration</span>
+<span class="sd">    (e.g. `nodes.items()`, `nodes.data(&#39;color&#39;)`,</span>
+<span class="sd">    `nodes.data(&#39;color&#39;, default=&#39;blue&#39;)` and similarly for `edges`)</span>
+<span class="sd">    Views exist for `nodes`, `edges`, `neighbors()`/`adj` and `degree`.</span>
+
+<span class="sd">    For details on these and other miscellaneous methods, see below.</span>
+
+<span class="sd">    **Subclasses (Advanced):**</span>
+
+<span class="sd">    The MultiDiGraph class uses a dict-of-dict-of-dict-of-dict structure.</span>
+<span class="sd">    The outer dict (node_dict) holds adjacency information keyed by node.</span>
+<span class="sd">    The next dict (adjlist_dict) represents the adjacency information</span>
+<span class="sd">    and holds edge_key dicts keyed by neighbor. The edge_key dict holds</span>
+<span class="sd">    each edge_attr dict keyed by edge key. The inner dict</span>
+<span class="sd">    (edge_attr_dict) represents the edge data and holds edge attribute</span>
+<span class="sd">    values keyed by attribute names.</span>
+
+<span class="sd">    Each of these four dicts in the dict-of-dict-of-dict-of-dict</span>
+<span class="sd">    structure can be replaced by a user defined dict-like object.</span>
+<span class="sd">    In general, the dict-like features should be maintained but</span>
+<span class="sd">    extra features can be added. To replace one of the dicts create</span>
+<span class="sd">    a new graph class by changing the class(!) variable holding the</span>
+<span class="sd">    factory for that dict-like structure. The variable names are</span>
+<span class="sd">    node_dict_factory, node_attr_dict_factory, adjlist_inner_dict_factory,</span>
+<span class="sd">    adjlist_outer_dict_factory, edge_key_dict_factory, edge_attr_dict_factory</span>
+<span class="sd">    and graph_attr_dict_factory.</span>
+
+<span class="sd">    node_dict_factory : function, (default: dict)</span>
+<span class="sd">        Factory function to be used to create the dict containing node</span>
+<span class="sd">        attributes, keyed by node id.</span>
+<span class="sd">        It should require no arguments and return a dict-like object</span>
+
+<span class="sd">    node_attr_dict_factory: function, (default: dict)</span>
+<span class="sd">        Factory function to be used to create the node attribute</span>
+<span class="sd">        dict which holds attribute values keyed by attribute name.</span>
+<span class="sd">        It should require no arguments and return a dict-like object</span>
+
+<span class="sd">    adjlist_outer_dict_factory : function, (default: dict)</span>
+<span class="sd">        Factory function to be used to create the outer-most dict</span>
+<span class="sd">        in the data structure that holds adjacency info keyed by node.</span>
+<span class="sd">        It should require no arguments and return a dict-like object.</span>
+
+<span class="sd">    adjlist_inner_dict_factory : function, (default: dict)</span>
+<span class="sd">        Factory function to be used to create the adjacency list</span>
+<span class="sd">        dict which holds multiedge key dicts keyed by neighbor.</span>
+<span class="sd">        It should require no arguments and return a dict-like object.</span>
+
+<span class="sd">    edge_key_dict_factory : function, (default: dict)</span>
+<span class="sd">        Factory function to be used to create the edge key dict</span>
+<span class="sd">        which holds edge data keyed by edge key.</span>
+<span class="sd">        It should require no arguments and return a dict-like object.</span>
+
+<span class="sd">    edge_attr_dict_factory : function, (default: dict)</span>
+<span class="sd">        Factory function to be used to create the edge attribute</span>
+<span class="sd">        dict which holds attribute values keyed by attribute name.</span>
+<span class="sd">        It should require no arguments and return a dict-like object.</span>
+
+<span class="sd">    graph_attr_dict_factory : function, (default: dict)</span>
+<span class="sd">        Factory function to be used to create the graph attribute</span>
+<span class="sd">        dict which holds attribute values keyed by attribute name.</span>
+<span class="sd">        It should require no arguments and return a dict-like object.</span>
+
+<span class="sd">    Typically, if your extension doesn&#39;t impact the data structure all</span>
+<span class="sd">    methods will inherited without issue except: `to_directed/to_undirected`.</span>
+<span class="sd">    By default these methods create a DiGraph/Graph class and you probably</span>
+<span class="sd">    want them to create your extension of a DiGraph/Graph. To facilitate</span>
+<span class="sd">    this we define two class variables that you can set in your subclass.</span>
+
+<span class="sd">    to_directed_class : callable, (default: DiGraph or MultiDiGraph)</span>
+<span class="sd">        Class to create a new graph structure in the `to_directed` method.</span>
+<span class="sd">        If `None`, a NetworkX class (DiGraph or MultiDiGraph) is used.</span>
+
+<span class="sd">    to_undirected_class : callable, (default: Graph or MultiGraph)</span>
+<span class="sd">        Class to create a new graph structure in the `to_undirected` method.</span>
+<span class="sd">        If `None`, a NetworkX class (Graph or MultiGraph) is used.</span>
+
+<span class="sd">    **Subclassing Example**</span>
+
+<span class="sd">    Create a low memory graph class that effectively disallows edge</span>
+<span class="sd">    attributes by using a single attribute dict for all edges.</span>
+<span class="sd">    This reduces the memory used, but you lose edge attributes.</span>
+
+<span class="sd">    &gt;&gt;&gt; class ThinGraph(nx.Graph):</span>
+<span class="sd">    ...     all_edge_dict = {&quot;weight&quot;: 1}</span>
+<span class="sd">    ...</span>
+<span class="sd">    ...     def single_edge_dict(self):</span>
+<span class="sd">    ...         return self.all_edge_dict</span>
+<span class="sd">    ...</span>
+<span class="sd">    ...     edge_attr_dict_factory = single_edge_dict</span>
+<span class="sd">    &gt;&gt;&gt; G = ThinGraph()</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(2, 1)</span>
+<span class="sd">    &gt;&gt;&gt; G[2][1]</span>
+<span class="sd">    {&#39;weight&#39;: 1}</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(2, 2)</span>
+<span class="sd">    &gt;&gt;&gt; G[2][1] is G[2][2]</span>
+<span class="sd">    True</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># node_dict_factory = dict    # already assigned in Graph</span>
+    <span class="c1"># adjlist_outer_dict_factory = dict</span>
+    <span class="c1"># adjlist_inner_dict_factory = dict</span>
+    <span class="n">edge_key_dict_factory</span> <span class="o">=</span> <span class="nb">dict</span>
+    <span class="c1"># edge_attr_dict_factory = dict</span>
+
+<div class="viewcode-block" id="MultiDiGraph.__init__"><a class="viewcode-back" href="../../../reference/classes/generated/networkx.MultiDiGraph.__init__.html#networkx.MultiDiGraph.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">incoming_graph_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">multigraph_input</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">attr</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize a graph with edges, name, or graph attributes.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        incoming_graph_data : input graph</span>
+<span class="sd">            Data to initialize graph.  If incoming_graph_data=None (default)</span>
+<span class="sd">            an empty graph is created.  The data can be an edge list, or any</span>
+<span class="sd">            NetworkX graph object.  If the corresponding optional Python</span>
+<span class="sd">            packages are installed the data can also be a 2D NumPy array, a</span>
+<span class="sd">            SciPy sparse array, or a PyGraphviz graph.</span>
+
+<span class="sd">        multigraph_input : bool or None (default None)</span>
+<span class="sd">            Note: Only used when `incoming_graph_data` is a dict.</span>
+<span class="sd">            If True, `incoming_graph_data` is assumed to be a</span>
+<span class="sd">            dict-of-dict-of-dict-of-dict structure keyed by</span>
+<span class="sd">            node to neighbor to edge keys to edge data for multi-edges.</span>
+<span class="sd">            A NetworkXError is raised if this is not the case.</span>
+<span class="sd">            If False, :func:`to_networkx_graph` is used to try to determine</span>
+<span class="sd">            the dict&#39;s graph data structure as either a dict-of-dict-of-dict</span>
+<span class="sd">            keyed by node to neighbor to edge data, or a dict-of-iterable</span>
+<span class="sd">            keyed by node to neighbors.</span>
+<span class="sd">            If None, the treatment for True is tried, but if it fails,</span>
+<span class="sd">            the treatment for False is tried.</span>
+
+<span class="sd">        attr : keyword arguments, optional (default= no attributes)</span>
+<span class="sd">            Attributes to add to graph as key=value pairs.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        convert</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; G = nx.Graph()  # or DiGraph, MultiGraph, MultiDiGraph, etc</span>
+<span class="sd">        &gt;&gt;&gt; G = nx.Graph(name=&quot;my graph&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; e = [(1, 2), (2, 3), (3, 4)]  # list of edges</span>
+<span class="sd">        &gt;&gt;&gt; G = nx.Graph(e)</span>
+
+<span class="sd">        Arbitrary graph attribute pairs (key=value) may be assigned</span>
+
+<span class="sd">        &gt;&gt;&gt; G = nx.Graph(e, day=&quot;Friday&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; G.graph</span>
+<span class="sd">        {&#39;day&#39;: &#39;Friday&#39;}</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># multigraph_input can be None/True/False. So check &quot;is not False&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">incoming_graph_data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="n">multigraph_input</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="n">DiGraph</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">convert</span><span class="o">.</span><span class="n">from_dict_of_dicts</span><span class="p">(</span>
+                    <span class="n">incoming_graph_data</span><span class="p">,</span> <span class="n">create_using</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">multigraph_input</span><span class="o">=</span><span class="kc">True</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">multigraph_input</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;converting multigraph_input raised:</span><span class="se">\n</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">err</span><span class="p">)</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+                <span class="n">DiGraph</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">incoming_graph_data</span><span class="p">,</span> <span class="o">**</span><span class="n">attr</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">DiGraph</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">incoming_graph_data</span><span class="p">,</span> <span class="o">**</span><span class="n">attr</span><span class="p">)</span></div>
+
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span> <span class="nf">adj</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Graph adjacency object holding the neighbors of each node.</span>
+
+<span class="sd">        This object is a read-only dict-like structure with node keys</span>
+<span class="sd">        and neighbor-dict values.  The neighbor-dict is keyed by neighbor</span>
+<span class="sd">        to the edgekey-dict.  So `G.adj[3][2][0][&#39;color&#39;] = &#39;blue&#39;` sets</span>
+<span class="sd">        the color of the edge `(3, 2, 0)` to `&quot;blue&quot;`.</span>
+
+<span class="sd">        Iterating over G.adj behaves like a dict. Useful idioms include</span>
+<span class="sd">        `for nbr, datadict in G.adj[n].items():`.</span>
+
+<span class="sd">        The neighbor information is also provided by subscripting the graph.</span>
+<span class="sd">        So `for nbr, foovalue in G[node].data(&#39;foo&#39;, default=1):` works.</span>
+
+<span class="sd">        For directed graphs, `G.adj` holds outgoing (successor) info.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">MultiAdjacencyView</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_succ</span><span class="p">)</span>
+
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span> <span class="nf">succ</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Graph adjacency object holding the successors of each node.</span>
+
+<span class="sd">        This object is a read-only dict-like structure with node keys</span>
+<span class="sd">        and neighbor-dict values.  The neighbor-dict is keyed by neighbor</span>
+<span class="sd">        to the edgekey-dict.  So `G.adj[3][2][0][&#39;color&#39;] = &#39;blue&#39;` sets</span>
+<span class="sd">        the color of the edge `(3, 2, 0)` to `&quot;blue&quot;`.</span>
+
+<span class="sd">        Iterating over G.adj behaves like a dict. Useful idioms include</span>
+<span class="sd">        `for nbr, datadict in G.adj[n].items():`.</span>
+
+<span class="sd">        The neighbor information is also provided by subscripting the graph.</span>
+<span class="sd">        So `for nbr, foovalue in G[node].data(&#39;foo&#39;, default=1):` works.</span>
+
+<span class="sd">        For directed graphs, `G.succ` is identical to `G.adj`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">MultiAdjacencyView</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_succ</span><span class="p">)</span>
+
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span> <span class="nf">pred</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Graph adjacency object holding the predecessors of each node.</span>
+
+<span class="sd">        This object is a read-only dict-like structure with node keys</span>
+<span class="sd">        and neighbor-dict values.  The neighbor-dict is keyed by neighbor</span>
+<span class="sd">        to the edgekey-dict.  So `G.adj[3][2][0][&#39;color&#39;] = &#39;blue&#39;` sets</span>
+<span class="sd">        the color of the edge `(3, 2, 0)` to `&quot;blue&quot;`.</span>
+
+<span class="sd">        Iterating over G.adj behaves like a dict. Useful idioms include</span>
+<span class="sd">        `for nbr, datadict in G.adj[n].items():`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">MultiAdjacencyView</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pred</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MultiDiGraph.add_edge"><a class="viewcode-back" href="../../../reference/classes/generated/networkx.MultiDiGraph.add_edge.html#networkx.MultiDiGraph.add_edge">[docs]</a>    <span class="k">def</span> <span class="nf">add_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u_for_edge</span><span class="p">,</span> <span class="n">v_for_edge</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">attr</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add an edge between u and v.</span>
+
+<span class="sd">        The nodes u and v will be automatically added if they are</span>
+<span class="sd">        not already in the graph.</span>
+
+<span class="sd">        Edge attributes can be specified with keywords or by directly</span>
+<span class="sd">        accessing the edge&#39;s attribute dictionary. See examples below.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        u_for_edge, v_for_edge : nodes</span>
+<span class="sd">            Nodes can be, for example, strings or numbers.</span>
+<span class="sd">            Nodes must be hashable (and not None) Python objects.</span>
+<span class="sd">        key : hashable identifier, optional (default=lowest unused integer)</span>
+<span class="sd">            Used to distinguish multiedges between a pair of nodes.</span>
+<span class="sd">        attr : keyword arguments, optional</span>
+<span class="sd">            Edge data (or labels or objects) can be assigned using</span>
+<span class="sd">            keyword arguments.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        The edge key assigned to the edge.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        add_edges_from : add a collection of edges</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        To replace/update edge data, use the optional key argument</span>
+<span class="sd">        to identify a unique edge.  Otherwise a new edge will be created.</span>
+
+<span class="sd">        NetworkX algorithms designed for weighted graphs cannot use</span>
+<span class="sd">        multigraphs directly because it is not clear how to handle</span>
+<span class="sd">        multiedge weights.  Convert to Graph using edge attribute</span>
+<span class="sd">        &#39;weight&#39; to enable weighted graph algorithms.</span>
+
+<span class="sd">        Default keys are generated using the method `new_edge_key()`.</span>
+<span class="sd">        This method can be overridden by subclassing the base class and</span>
+<span class="sd">        providing a custom `new_edge_key()` method.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        The following all add the edge e=(1, 2) to graph G:</span>
+
+<span class="sd">        &gt;&gt;&gt; G = nx.MultiDiGraph()</span>
+<span class="sd">        &gt;&gt;&gt; e = (1, 2)</span>
+<span class="sd">        &gt;&gt;&gt; key = G.add_edge(1, 2)  # explicit two-node form</span>
+<span class="sd">        &gt;&gt;&gt; G.add_edge(*e)  # single edge as tuple of two nodes</span>
+<span class="sd">        1</span>
+<span class="sd">        &gt;&gt;&gt; G.add_edges_from([(1, 2)])  # add edges from iterable container</span>
+<span class="sd">        [2]</span>
+
+<span class="sd">        Associate data to edges using keywords:</span>
+
+<span class="sd">        &gt;&gt;&gt; key = G.add_edge(1, 2, weight=3)</span>
+<span class="sd">        &gt;&gt;&gt; key = G.add_edge(1, 2, key=0, weight=4)  # update data for key=0</span>
+<span class="sd">        &gt;&gt;&gt; key = G.add_edge(1, 3, weight=7, capacity=15, length=342.7)</span>
+
+<span class="sd">        For non-string attribute keys, use subscript notation.</span>
+
+<span class="sd">        &gt;&gt;&gt; ekey = G.add_edge(1, 2)</span>
+<span class="sd">        &gt;&gt;&gt; G[1][2][0].update({0: 5})</span>
+<span class="sd">        &gt;&gt;&gt; G.edges[1, 2, 0].update({0: 5})</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">u_for_edge</span><span class="p">,</span> <span class="n">v_for_edge</span>
+        <span class="c1"># add nodes</span>
+        <span class="k">if</span> <span class="n">u</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_succ</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">u</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;None cannot be a node&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_succ</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adjlist_inner_dict_factory</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pred</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adjlist_inner_dict_factory</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_attr_dict_factory</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">v</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_succ</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;None cannot be a node&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_succ</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adjlist_inner_dict_factory</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pred</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adjlist_inner_dict_factory</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_attr_dict_factory</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_edge_key</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_succ</span><span class="p">[</span><span class="n">u</span><span class="p">]:</span>
+            <span class="n">keydict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_adj</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">]</span>
+            <span class="n">datadict</span> <span class="o">=</span> <span class="n">keydict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_attr_dict_factory</span><span class="p">())</span>
+            <span class="n">datadict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
+            <span class="n">keydict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">datadict</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># selfloops work this way without special treatment</span>
+            <span class="n">datadict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_attr_dict_factory</span><span class="p">()</span>
+            <span class="n">datadict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
+            <span class="n">keydict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_key_dict_factory</span><span class="p">()</span>
+            <span class="n">keydict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">datadict</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_succ</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">keydict</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pred</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="n">u</span><span class="p">]</span> <span class="o">=</span> <span class="n">keydict</span>
+        <span class="k">return</span> <span class="n">key</span></div>
+
+<div class="viewcode-block" id="MultiDiGraph.remove_edge"><a class="viewcode-back" href="../../../reference/classes/generated/networkx.MultiDiGraph.remove_edge.html#networkx.MultiDiGraph.remove_edge">[docs]</a>    <span class="k">def</span> <span class="nf">remove_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Remove an edge between u and v.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        u, v : nodes</span>
+<span class="sd">            Remove an edge between nodes u and v.</span>
+<span class="sd">        key : hashable identifier, optional (default=None)</span>
+<span class="sd">            Used to distinguish multiple edges between a pair of nodes.</span>
+<span class="sd">            If None, remove a single edge between u and v. If there are</span>
+<span class="sd">            multiple edges, removes the last edge added in terms of</span>
+<span class="sd">            insertion order.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        NetworkXError</span>
+<span class="sd">            If there is not an edge between u and v, or</span>
+<span class="sd">            if there is no edge with the specified key.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        remove_edges_from : remove a collection of edges</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; G = nx.MultiDiGraph()</span>
+<span class="sd">        &gt;&gt;&gt; nx.add_path(G, [0, 1, 2, 3])</span>
+<span class="sd">        &gt;&gt;&gt; G.remove_edge(0, 1)</span>
+<span class="sd">        &gt;&gt;&gt; e = (1, 2)</span>
+<span class="sd">        &gt;&gt;&gt; G.remove_edge(*e)  # unpacks e from an edge tuple</span>
+
+<span class="sd">        For multiple edges</span>
+
+<span class="sd">        &gt;&gt;&gt; G = nx.MultiDiGraph()</span>
+<span class="sd">        &gt;&gt;&gt; G.add_edges_from([(1, 2), (1, 2), (1, 2)])  # key_list returned</span>
+<span class="sd">        [0, 1, 2]</span>
+
+<span class="sd">        When ``key=None`` (the default), edges are removed in the opposite</span>
+<span class="sd">        order that they were added:</span>
+
+<span class="sd">        &gt;&gt;&gt; G.remove_edge(1, 2)</span>
+<span class="sd">        &gt;&gt;&gt; G.edges(keys=True)</span>
+<span class="sd">        OutMultiEdgeView([(1, 2, 0), (1, 2, 1)])</span>
+
+<span class="sd">        For edges with keys</span>
+
+<span class="sd">        &gt;&gt;&gt; G = nx.MultiDiGraph()</span>
+<span class="sd">        &gt;&gt;&gt; G.add_edge(1, 2, key=&quot;first&quot;)</span>
+<span class="sd">        &#39;first&#39;</span>
+<span class="sd">        &gt;&gt;&gt; G.add_edge(1, 2, key=&quot;second&quot;)</span>
+<span class="sd">        &#39;second&#39;</span>
+<span class="sd">        &gt;&gt;&gt; G.remove_edge(1, 2, key=&quot;first&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; G.edges(keys=True)</span>
+<span class="sd">        OutMultiEdgeView([(1, 2, &#39;second&#39;)])</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_adj</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">NetworkXError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The edge </span><span class="si">{</span><span class="n">u</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2"> is not in the graph.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">err</span>
+        <span class="c1"># remove the edge with specified data</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">popitem</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;The edge </span><span class="si">{</span><span class="n">u</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2"> with key </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> is not in the graph.&quot;</span>
+                <span class="k">raise</span> <span class="n">NetworkXError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">err</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># remove the key entries if last edge</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_succ</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">]</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pred</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="n">u</span><span class="p">]</span></div>
+
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span> <span class="nf">edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;An OutMultiEdgeView of the Graph as G.edges or G.edges().</span>
+
+<span class="sd">        edges(self, nbunch=None, data=False, keys=False, default=None)</span>
+
+<span class="sd">        The OutMultiEdgeView provides set-like operations on the edge-tuples</span>
+<span class="sd">        as well as edge attribute lookup. When called, it also provides</span>
+<span class="sd">        an EdgeDataView object which allows control of access to edge</span>
+<span class="sd">        attributes (but does not provide set-like operations).</span>
+<span class="sd">        Hence, ``G.edges[u, v, k][&#39;color&#39;]`` provides the value of the color</span>
+<span class="sd">        attribute for the edge from ``u`` to ``v`` with key ``k`` while</span>
+<span class="sd">        ``for (u, v, k, c) in G.edges(data=&#39;color&#39;, default=&#39;red&#39;, keys=True):``</span>
+<span class="sd">        iterates through all the edges yielding the color attribute with</span>
+<span class="sd">        default `&#39;red&#39;` if no color attribute exists.</span>
+
+<span class="sd">        Edges are returned as tuples with optional data and keys</span>
+<span class="sd">        in the order (node, neighbor, key, data). If ``keys=True`` is not</span>
+<span class="sd">        provided, the tuples will just be (node, neighbor, data), but</span>
+<span class="sd">        multiple tuples with the same node and neighbor will be</span>
+<span class="sd">        generated when multiple edges between two nodes exist.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        nbunch : single node, container, or all nodes (default= all nodes)</span>
+<span class="sd">            The view will only report edges from these nodes.</span>
+<span class="sd">        data : string or bool, optional (default=False)</span>
+<span class="sd">            The edge attribute returned in 3-tuple (u, v, ddict[data]).</span>
+<span class="sd">            If True, return edge attribute dict in 3-tuple (u, v, ddict).</span>
+<span class="sd">            If False, return 2-tuple (u, v).</span>
+<span class="sd">        keys : bool, optional (default=False)</span>
+<span class="sd">            If True, return edge keys with each edge, creating (u, v, k,</span>
+<span class="sd">            d) tuples when data is also requested (the default) and (u,</span>
+<span class="sd">            v, k) tuples when data is not requested.</span>
+<span class="sd">        default : value, optional (default=None)</span>
+<span class="sd">            Value used for edges that don&#39;t have the requested attribute.</span>
+<span class="sd">            Only relevant if data is not True or False.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        edges : OutMultiEdgeView</span>
+<span class="sd">            A view of edge attributes, usually it iterates over (u, v)</span>
+<span class="sd">            (u, v, k) or (u, v, k, d) tuples of edges, but can also be</span>
+<span class="sd">            used for attribute lookup as ``edges[u, v, k][&#39;foo&#39;]``.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Nodes in nbunch that are not in the graph will be (quietly) ignored.</span>
+<span class="sd">        For directed graphs this returns the out-edges.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; G = nx.MultiDiGraph()</span>
+<span class="sd">        &gt;&gt;&gt; nx.add_path(G, [0, 1, 2])</span>
+<span class="sd">        &gt;&gt;&gt; key = G.add_edge(2, 3, weight=5)</span>
+<span class="sd">        &gt;&gt;&gt; key2 = G.add_edge(1, 2) # second edge between these nodes</span>
+<span class="sd">        &gt;&gt;&gt; [e for e in G.edges()]</span>
+<span class="sd">        [(0, 1), (1, 2), (1, 2), (2, 3)]</span>
+<span class="sd">        &gt;&gt;&gt; list(G.edges(data=True))  # default data is {} (empty dict)</span>
+<span class="sd">        [(0, 1, {}), (1, 2, {}), (1, 2, {}), (2, 3, {&#39;weight&#39;: 5})]</span>
+<span class="sd">        &gt;&gt;&gt; list(G.edges(data=&quot;weight&quot;, default=1))</span>
+<span class="sd">        [(0, 1, 1), (1, 2, 1), (1, 2, 1), (2, 3, 5)]</span>
+<span class="sd">        &gt;&gt;&gt; list(G.edges(keys=True))  # default keys are integers</span>
+<span class="sd">        [(0, 1, 0), (1, 2, 0), (1, 2, 1), (2, 3, 0)]</span>
+<span class="sd">        &gt;&gt;&gt; list(G.edges(data=True, keys=True))</span>
+<span class="sd">        [(0, 1, 0, {}), (1, 2, 0, {}), (1, 2, 1, {}), (2, 3, 0, {&#39;weight&#39;: 5})]</span>
+<span class="sd">        &gt;&gt;&gt; list(G.edges(data=&quot;weight&quot;, default=1, keys=True))</span>
+<span class="sd">        [(0, 1, 0, 1), (1, 2, 0, 1), (1, 2, 1, 1), (2, 3, 0, 5)]</span>
+<span class="sd">        &gt;&gt;&gt; list(G.edges([0, 2]))</span>
+<span class="sd">        [(0, 1), (2, 3)]</span>
+<span class="sd">        &gt;&gt;&gt; list(G.edges(0))</span>
+<span class="sd">        [(0, 1)]</span>
+<span class="sd">        &gt;&gt;&gt; list(G.edges(1))</span>
+<span class="sd">        [(1, 2), (1, 2)]</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        in_edges, out_edges</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">OutMultiEdgeView</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="c1"># alias out_edges to edges</span>
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span> <span class="nf">out_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">OutMultiEdgeView</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="n">out_edges</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">edges</span><span class="o">.</span><span class="vm">__doc__</span>
+
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span> <span class="nf">in_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;A view of the in edges of the graph as G.in_edges or G.in_edges().</span>
+
+<span class="sd">        in_edges(self, nbunch=None, data=False, keys=False, default=None)</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        nbunch : single node, container, or all nodes (default= all nodes)</span>
+<span class="sd">            The view will only report edges incident to these nodes.</span>
+<span class="sd">        data : string or bool, optional (default=False)</span>
+<span class="sd">            The edge attribute returned in 3-tuple (u, v, ddict[data]).</span>
+<span class="sd">            If True, return edge attribute dict in 3-tuple (u, v, ddict).</span>
+<span class="sd">            If False, return 2-tuple (u, v).</span>
+<span class="sd">        keys : bool, optional (default=False)</span>
+<span class="sd">            If True, return edge keys with each edge, creating 3-tuples</span>
+<span class="sd">            (u, v, k) or with data, 4-tuples (u, v, k, d).</span>
+<span class="sd">        default : value, optional (default=None)</span>
+<span class="sd">            Value used for edges that don&#39;t have the requested attribute.</span>
+<span class="sd">            Only relevant if data is not True or False.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        in_edges : InMultiEdgeView or InMultiEdgeDataView</span>
+<span class="sd">            A view of edge attributes, usually it iterates over (u, v)</span>
+<span class="sd">            or (u, v, k) or (u, v, k, d) tuples of edges, but can also be</span>
+<span class="sd">            used for attribute lookup as `edges[u, v, k][&#39;foo&#39;]`.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        edges</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">InMultiEdgeView</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span> <span class="nf">degree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;A DegreeView for the Graph as G.degree or G.degree().</span>
+
+<span class="sd">        The node degree is the number of edges adjacent to the node.</span>
+<span class="sd">        The weighted node degree is the sum of the edge weights for</span>
+<span class="sd">        edges incident to that node.</span>
+
+<span class="sd">        This object provides an iterator for (node, degree) as well as</span>
+<span class="sd">        lookup for the degree for a single node.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        nbunch : single node, container, or all nodes (default= all nodes)</span>
+<span class="sd">            The view will only report edges incident to these nodes.</span>
+
+<span class="sd">        weight : string or None, optional (default=None)</span>
+<span class="sd">           The name of an edge attribute that holds the numerical value used</span>
+<span class="sd">           as a weight.  If None, then each edge has weight 1.</span>
+<span class="sd">           The degree is the sum of the edge weights adjacent to the node.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        DiMultiDegreeView or int</span>
+<span class="sd">            If multiple nodes are requested (the default), returns a `DiMultiDegreeView`</span>
+<span class="sd">            mapping nodes to their degree.</span>
+<span class="sd">            If a single node is requested, returns the degree of the node as an integer.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        out_degree, in_degree</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; G = nx.MultiDiGraph()</span>
+<span class="sd">        &gt;&gt;&gt; nx.add_path(G, [0, 1, 2, 3])</span>
+<span class="sd">        &gt;&gt;&gt; G.degree(0)  # node 0 with degree 1</span>
+<span class="sd">        1</span>
+<span class="sd">        &gt;&gt;&gt; list(G.degree([0, 1, 2]))</span>
+<span class="sd">        [(0, 1), (1, 2), (2, 2)]</span>
+<span class="sd">        &gt;&gt;&gt; G.add_edge(0, 1) # parallel edge</span>
+<span class="sd">        1</span>
+<span class="sd">        &gt;&gt;&gt; list(G.degree([0, 1, 2])) # parallel edges are counted</span>
+<span class="sd">        [(0, 2), (1, 3), (2, 2)]</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">DiMultiDegreeView</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span> <span class="nf">in_degree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;A DegreeView for (node, in_degree) or in_degree for single node.</span>
+
+<span class="sd">        The node in-degree is the number of edges pointing in to the node.</span>
+<span class="sd">        The weighted node degree is the sum of the edge weights for</span>
+<span class="sd">        edges incident to that node.</span>
+
+<span class="sd">        This object provides an iterator for (node, degree) as well as</span>
+<span class="sd">        lookup for the degree for a single node.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        nbunch : single node, container, or all nodes (default= all nodes)</span>
+<span class="sd">            The view will only report edges incident to these nodes.</span>
+
+<span class="sd">        weight : string or None, optional (default=None)</span>
+<span class="sd">           The edge attribute that holds the numerical value used</span>
+<span class="sd">           as a weight.  If None, then each edge has weight 1.</span>
+<span class="sd">           The degree is the sum of the edge weights adjacent to the node.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        If a single node is requested</span>
+<span class="sd">        deg : int</span>
+<span class="sd">            Degree of the node</span>
+
+<span class="sd">        OR if multiple nodes are requested</span>
+<span class="sd">        nd_iter : iterator</span>
+<span class="sd">            The iterator returns two-tuples of (node, in-degree).</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        degree, out_degree</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; G = nx.MultiDiGraph()</span>
+<span class="sd">        &gt;&gt;&gt; nx.add_path(G, [0, 1, 2, 3])</span>
+<span class="sd">        &gt;&gt;&gt; G.in_degree(0)  # node 0 with degree 0</span>
+<span class="sd">        0</span>
+<span class="sd">        &gt;&gt;&gt; list(G.in_degree([0, 1, 2]))</span>
+<span class="sd">        [(0, 0), (1, 1), (2, 1)]</span>
+<span class="sd">        &gt;&gt;&gt; G.add_edge(0, 1) # parallel edge</span>
+<span class="sd">        1</span>
+<span class="sd">        &gt;&gt;&gt; list(G.in_degree([0, 1, 2])) # parallel edges counted</span>
+<span class="sd">        [(0, 0), (1, 2), (2, 1)]</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">InMultiDegreeView</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span> <span class="nf">out_degree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns an iterator for (node, out-degree) or out-degree for single node.</span>
+
+<span class="sd">        out_degree(self, nbunch=None, weight=None)</span>
+
+<span class="sd">        The node out-degree is the number of edges pointing out of the node.</span>
+<span class="sd">        This function returns the out-degree for a single node or an iterator</span>
+<span class="sd">        for a bunch of nodes or if nothing is passed as argument.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        nbunch : single node, container, or all nodes (default= all nodes)</span>
+<span class="sd">            The view will only report edges incident to these nodes.</span>
+
+<span class="sd">        weight : string or None, optional (default=None)</span>
+<span class="sd">           The edge attribute that holds the numerical value used</span>
+<span class="sd">           as a weight.  If None, then each edge has weight 1.</span>
+<span class="sd">           The degree is the sum of the edge weights.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        If a single node is requested</span>
+<span class="sd">        deg : int</span>
+<span class="sd">            Degree of the node</span>
+
+<span class="sd">        OR if multiple nodes are requested</span>
+<span class="sd">        nd_iter : iterator</span>
+<span class="sd">            The iterator returns two-tuples of (node, out-degree).</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        degree, in_degree</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; G = nx.MultiDiGraph()</span>
+<span class="sd">        &gt;&gt;&gt; nx.add_path(G, [0, 1, 2, 3])</span>
+<span class="sd">        &gt;&gt;&gt; G.out_degree(0)  # node 0 with degree 1</span>
+<span class="sd">        1</span>
+<span class="sd">        &gt;&gt;&gt; list(G.out_degree([0, 1, 2]))</span>
+<span class="sd">        [(0, 1), (1, 1), (2, 1)]</span>
+<span class="sd">        &gt;&gt;&gt; G.add_edge(0, 1) # parallel edge</span>
+<span class="sd">        1</span>
+<span class="sd">        &gt;&gt;&gt; list(G.out_degree([0, 1, 2])) # counts parallel edges</span>
+<span class="sd">        [(0, 2), (1, 1), (2, 1)]</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">OutMultiDegreeView</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">is_multigraph</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns True if graph is a multigraph, False otherwise.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">is_directed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns True if graph is directed, False otherwise.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="MultiDiGraph.to_undirected"><a class="viewcode-back" href="../../../reference/classes/generated/networkx.MultiDiGraph.to_undirected.html#networkx.MultiDiGraph.to_undirected">[docs]</a>    <span class="k">def</span> <span class="nf">to_undirected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reciprocal</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">as_view</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns an undirected representation of the digraph.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        reciprocal : bool (optional)</span>
+<span class="sd">          If True only keep edges that appear in both directions</span>
+<span class="sd">          in the original digraph.</span>
+<span class="sd">        as_view : bool (optional, default=False)</span>
+<span class="sd">          If True return an undirected view of the original directed graph.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        G : MultiGraph</span>
+<span class="sd">            An undirected graph with the same name and nodes and</span>
+<span class="sd">            with edge (u, v, data) if either (u, v, data) or (v, u, data)</span>
+<span class="sd">            is in the digraph.  If both edges exist in digraph and</span>
+<span class="sd">            their edge data is different, only one edge is created</span>
+<span class="sd">            with an arbitrary choice of which edge data to use.</span>
+<span class="sd">            You must check and correct for this manually if desired.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        MultiGraph, copy, add_edge, add_edges_from</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        This returns a &quot;deepcopy&quot; of the edge, node, and</span>
+<span class="sd">        graph attributes which attempts to completely copy</span>
+<span class="sd">        all of the data and references.</span>
+
+<span class="sd">        This is in contrast to the similar D=MultiDiGraph(G) which</span>
+<span class="sd">        returns a shallow copy of the data.</span>
+
+<span class="sd">        See the Python copy module for more information on shallow</span>
+<span class="sd">        and deep copies, https://docs.python.org/3/library/copy.html.</span>
+
+<span class="sd">        Warning: If you have subclassed MultiDiGraph to use dict-like</span>
+<span class="sd">        objects in the data structure, those changes do not transfer</span>
+<span class="sd">        to the MultiGraph created by this method.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; G = nx.path_graph(2)  # or MultiGraph, etc</span>
+<span class="sd">        &gt;&gt;&gt; H = G.to_directed()</span>
+<span class="sd">        &gt;&gt;&gt; list(H.edges)</span>
+<span class="sd">        [(0, 1), (1, 0)]</span>
+<span class="sd">        &gt;&gt;&gt; G2 = H.to_undirected()</span>
+<span class="sd">        &gt;&gt;&gt; list(G2.edges)</span>
+<span class="sd">        [(0, 1)]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">graph_class</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_undirected_class</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">as_view</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">nx</span><span class="o">.</span><span class="n">graphviews</span><span class="o">.</span><span class="n">generic_graph_view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph_class</span><span class="p">)</span>
+        <span class="c1"># deepcopy when not a view</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="n">graph_class</span><span class="p">()</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">))</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">add_nodes_from</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">d</span><span class="p">))</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">reciprocal</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">G</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">nbrs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_adj</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">v</span><span class="p">,</span> <span class="n">keydict</span> <span class="ow">in</span> <span class="n">nbrs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">keydict</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pred</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="ow">and</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pred</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">]</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">G</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">nbrs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_adj</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">v</span><span class="p">,</span> <span class="n">keydict</span> <span class="ow">in</span> <span class="n">nbrs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">keydict</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">G</span></div>
+
+<div class="viewcode-block" id="MultiDiGraph.reverse"><a class="viewcode-back" href="../../../reference/classes/generated/networkx.MultiDiGraph.reverse.html#networkx.MultiDiGraph.reverse">[docs]</a>    <span class="k">def</span> <span class="nf">reverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the reverse of the graph.</span>
+
+<span class="sd">        The reverse is a graph with the same nodes and edges</span>
+<span class="sd">        but with the directions of the edges reversed.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        copy : bool optional (default=True)</span>
+<span class="sd">            If True, return a new DiGraph holding the reversed edges.</span>
+<span class="sd">            If False, the reverse graph is created using a view of</span>
+<span class="sd">            the original graph.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">copy</span><span class="p">:</span>
+            <span class="n">H</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
+            <span class="n">H</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">))</span>
+            <span class="n">H</span><span class="o">.</span><span class="n">add_nodes_from</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">d</span><span class="p">))</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+            <span class="n">H</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">keys</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">H</span>
+        <span class="k">return</span> <span class="n">nx</span><span class="o">.</span><span class="n">graphviews</span><span class="o">.</span><span class="n">reverse_view</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div></div>
+</pre></div>
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

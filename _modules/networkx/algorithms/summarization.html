@@ -1,0 +1,1098 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>networkx.algorithms.summarization &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/algorithms/summarization';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/algorithms/summarization.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../../../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../../../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <h1>Source code for networkx.algorithms.summarization</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Graph summarization finds smaller representations of graphs resulting in faster</span>
+<span class="sd">runtime of algorithms, reduced storage needs, and noise reduction.</span>
+<span class="sd">Summarization has applications in areas such as visualization, pattern mining,</span>
+<span class="sd">clustering and community detection, and more.  Core graph summarization</span>
+<span class="sd">techniques are grouping/aggregation, bit-compression,</span>
+<span class="sd">simplification/sparsification, and influence based. Graph summarization</span>
+<span class="sd">algorithms often produce either summary graphs in the form of supergraphs or</span>
+<span class="sd">sparsified graphs, or a list of independent structures. Supergraphs are the</span>
+<span class="sd">most common product, which consist of supernodes and original nodes and are</span>
+<span class="sd">connected by edges and superedges, which represent aggregate edges between</span>
+<span class="sd">nodes and supernodes.</span>
+
+<span class="sd">Grouping/aggregation based techniques compress graphs by representing</span>
+<span class="sd">close/connected nodes and edges in a graph by a single node/edge in a</span>
+<span class="sd">supergraph. Nodes can be grouped together into supernodes based on their</span>
+<span class="sd">structural similarities or proximity within a graph to reduce the total number</span>
+<span class="sd">of nodes in a graph. Edge-grouping techniques group edges into lossy/lossless</span>
+<span class="sd">nodes called compressor or virtual nodes to reduce the total number of edges in</span>
+<span class="sd">a graph. Edge-grouping techniques can be lossless, meaning that they can be</span>
+<span class="sd">used to re-create the original graph, or techniques can be lossy, requiring</span>
+<span class="sd">less space to store the summary graph, but at the expense of lower</span>
+<span class="sd">recontruction accuracy of the original graph.</span>
+
+<span class="sd">Bit-compression techniques minimize the amount of information needed to</span>
+<span class="sd">describe the original graph, while revealing structural patterns in the</span>
+<span class="sd">original graph.  The two-part minimum description length (MDL) is often used to</span>
+<span class="sd">represent the model and the original graph in terms of the model.  A key</span>
+<span class="sd">difference between graph compression and graph summarization is that graph</span>
+<span class="sd">summarization focuses on finding structural patterns within the original graph,</span>
+<span class="sd">whereas graph compression focuses on compressions the original graph to be as</span>
+<span class="sd">small as possible.  **NOTE**: Some bit-compression methods exist solely to</span>
+<span class="sd">compress a graph without creating a summary graph or finding comprehensible</span>
+<span class="sd">structural patterns.</span>
+
+<span class="sd">Simplification/Sparsification techniques attempt to create a sparse</span>
+<span class="sd">representation of a graph by removing unimportant nodes and edges from the</span>
+<span class="sd">graph.  Sparsified graphs differ from supergraphs created by</span>
+<span class="sd">grouping/aggregation by only containing a subset of the original nodes and</span>
+<span class="sd">edges of the original graph.</span>
+
+<span class="sd">Influence based techniques aim to find a high-level description of influence</span>
+<span class="sd">propagation in a large graph.  These methods are scarce and have been mostly</span>
+<span class="sd">applied to social graphs.</span>
+
+<span class="sd">*dedensification* is a grouping/aggregation based technique to compress the</span>
+<span class="sd">neighborhoods around high-degree nodes in unweighted graphs by adding</span>
+<span class="sd">compressor nodes that summarize multiple edges of the same type to</span>
+<span class="sd">high-degree nodes (nodes with a degree greater than a given threshold).</span>
+<span class="sd">Dedensification was developed for the purpose of increasing performance of</span>
+<span class="sd">query processing around high-degree nodes in graph databases and enables direct</span>
+<span class="sd">operations on the compressed graph.  The structural patterns surrounding</span>
+<span class="sd">high-degree nodes in the original is preserved while using fewer edges and</span>
+<span class="sd">adding a small number of compressor nodes.  The degree of nodes present in the</span>
+<span class="sd">original graph is also preserved. The current implementation of dedensification</span>
+<span class="sd">supports graphs with one edge type.</span>
+
+<span class="sd">For more information on graph summarization, see `Graph Summarization Methods</span>
+<span class="sd">and Applications: A Survey &lt;https://dl.acm.org/doi/abs/10.1145/3186727&gt;`_</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span><span class="p">,</span> <span class="n">defaultdict</span>
+
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;dedensify&quot;</span><span class="p">,</span> <span class="s2">&quot;snap_aggregation&quot;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="dedensify"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.summarization.dedensify.html#networkx.algorithms.summarization.dedensify">[docs]</a><span class="k">def</span> <span class="nf">dedensify</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">threshold</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Compresses neighborhoods around high-degree nodes</span>
+
+<span class="sd">    Reduces the number of edges to high-degree nodes by adding compressor nodes</span>
+<span class="sd">    that summarize multiple edges of the same type to high-degree nodes (nodes</span>
+<span class="sd">    with a degree greater than a given threshold).  Dedensification also has</span>
+<span class="sd">    the added benefit of reducing the number of edges around high-degree nodes.</span>
+<span class="sd">    The implementation currently supports graphs with a single edge type.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G: graph</span>
+<span class="sd">       A networkx graph</span>
+<span class="sd">    threshold: int</span>
+<span class="sd">       Minimum degree threshold of a node to be considered a high degree node.</span>
+<span class="sd">       The threshold must be greater than or equal to 2.</span>
+<span class="sd">    prefix: str or None, optional (default: None)</span>
+<span class="sd">       An optional prefix for denoting compressor nodes</span>
+<span class="sd">    copy: bool, optional (default: True)</span>
+<span class="sd">       Indicates if dedensification should be done inplace</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dedensified networkx graph : (graph, set)</span>
+<span class="sd">        2-tuple of the dedensified graph and set of compressor nodes</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    According to the algorithm in [1]_, removes edges in a graph by</span>
+<span class="sd">    compressing/decompressing the neighborhoods around high degree nodes by</span>
+<span class="sd">    adding compressor nodes that summarize multiple edges of the same type</span>
+<span class="sd">    to high-degree nodes.  Dedensification will only add a compressor node when</span>
+<span class="sd">    doing so will reduce the total number of edges in the given graph. This</span>
+<span class="sd">    implementation currently supports graphs with a single edge type.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Dedensification will only add compressor nodes when doing so would result</span>
+<span class="sd">    in fewer edges::</span>
+
+<span class="sd">        &gt;&gt;&gt; original_graph = nx.DiGraph()</span>
+<span class="sd">        &gt;&gt;&gt; original_graph.add_nodes_from(</span>
+<span class="sd">        ...     [&quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;4&quot;, &quot;5&quot;, &quot;6&quot;, &quot;A&quot;, &quot;B&quot;, &quot;C&quot;]</span>
+<span class="sd">        ... )</span>
+<span class="sd">        &gt;&gt;&gt; original_graph.add_edges_from(</span>
+<span class="sd">        ...     [</span>
+<span class="sd">        ...         (&quot;1&quot;, &quot;C&quot;), (&quot;1&quot;, &quot;B&quot;),</span>
+<span class="sd">        ...         (&quot;2&quot;, &quot;C&quot;), (&quot;2&quot;, &quot;B&quot;), (&quot;2&quot;, &quot;A&quot;),</span>
+<span class="sd">        ...         (&quot;3&quot;, &quot;B&quot;), (&quot;3&quot;, &quot;A&quot;), (&quot;3&quot;, &quot;6&quot;),</span>
+<span class="sd">        ...         (&quot;4&quot;, &quot;C&quot;), (&quot;4&quot;, &quot;B&quot;), (&quot;4&quot;, &quot;A&quot;),</span>
+<span class="sd">        ...         (&quot;5&quot;, &quot;B&quot;), (&quot;5&quot;, &quot;A&quot;),</span>
+<span class="sd">        ...         (&quot;6&quot;, &quot;5&quot;),</span>
+<span class="sd">        ...         (&quot;A&quot;, &quot;6&quot;)</span>
+<span class="sd">        ...     ]</span>
+<span class="sd">        ... )</span>
+<span class="sd">        &gt;&gt;&gt; c_graph, c_nodes = nx.dedensify(original_graph, threshold=2)</span>
+<span class="sd">        &gt;&gt;&gt; original_graph.number_of_edges()</span>
+<span class="sd">        15</span>
+<span class="sd">        &gt;&gt;&gt; c_graph.number_of_edges()</span>
+<span class="sd">        14</span>
+
+<span class="sd">    A dedensified, directed graph can be &quot;densified&quot; to reconstruct the</span>
+<span class="sd">    original graph::</span>
+
+<span class="sd">        &gt;&gt;&gt; original_graph = nx.DiGraph()</span>
+<span class="sd">        &gt;&gt;&gt; original_graph.add_nodes_from(</span>
+<span class="sd">        ...     [&quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;4&quot;, &quot;5&quot;, &quot;6&quot;, &quot;A&quot;, &quot;B&quot;, &quot;C&quot;]</span>
+<span class="sd">        ... )</span>
+<span class="sd">        &gt;&gt;&gt; original_graph.add_edges_from(</span>
+<span class="sd">        ...     [</span>
+<span class="sd">        ...         (&quot;1&quot;, &quot;C&quot;), (&quot;1&quot;, &quot;B&quot;),</span>
+<span class="sd">        ...         (&quot;2&quot;, &quot;C&quot;), (&quot;2&quot;, &quot;B&quot;), (&quot;2&quot;, &quot;A&quot;),</span>
+<span class="sd">        ...         (&quot;3&quot;, &quot;B&quot;), (&quot;3&quot;, &quot;A&quot;), (&quot;3&quot;, &quot;6&quot;),</span>
+<span class="sd">        ...         (&quot;4&quot;, &quot;C&quot;), (&quot;4&quot;, &quot;B&quot;), (&quot;4&quot;, &quot;A&quot;),</span>
+<span class="sd">        ...         (&quot;5&quot;, &quot;B&quot;), (&quot;5&quot;, &quot;A&quot;),</span>
+<span class="sd">        ...         (&quot;6&quot;, &quot;5&quot;),</span>
+<span class="sd">        ...         (&quot;A&quot;, &quot;6&quot;)</span>
+<span class="sd">        ...     ]</span>
+<span class="sd">        ... )</span>
+<span class="sd">        &gt;&gt;&gt; c_graph, c_nodes = nx.dedensify(original_graph, threshold=2)</span>
+<span class="sd">        &gt;&gt;&gt; # re-densifies the compressed graph into the original graph</span>
+<span class="sd">        &gt;&gt;&gt; for c_node in c_nodes:</span>
+<span class="sd">        ...     all_neighbors = set(nx.all_neighbors(c_graph, c_node))</span>
+<span class="sd">        ...     out_neighbors = set(c_graph.neighbors(c_node))</span>
+<span class="sd">        ...     for out_neighbor in out_neighbors:</span>
+<span class="sd">        ...         c_graph.remove_edge(c_node, out_neighbor)</span>
+<span class="sd">        ...     in_neighbors = all_neighbors - out_neighbors</span>
+<span class="sd">        ...     for in_neighbor in in_neighbors:</span>
+<span class="sd">        ...         c_graph.remove_edge(in_neighbor, c_node)</span>
+<span class="sd">        ...         for out_neighbor in out_neighbors:</span>
+<span class="sd">        ...             c_graph.add_edge(in_neighbor, out_neighbor)</span>
+<span class="sd">        ...     c_graph.remove_node(c_node)</span>
+<span class="sd">        ...</span>
+<span class="sd">        &gt;&gt;&gt; nx.is_isomorphic(original_graph, c_graph)</span>
+<span class="sd">        True</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Maccioni, A., &amp; Abadi, D. J. (2016, August).</span>
+<span class="sd">       Scalable pattern matching over compressed graphs via dedensification.</span>
+<span class="sd">       In Proceedings of the 22nd ACM SIGKDD International Conference on</span>
+<span class="sd">       Knowledge Discovery and Data Mining (pp. 1755-1764).</span>
+<span class="sd">       http://www.cs.umd.edu/~abadi/papers/graph-dedense.pdf</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">threshold</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;The degree threshold must be &gt;= 2&quot;</span><span class="p">)</span>
+
+    <span class="n">degrees</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">in_degree</span> <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">is_directed</span><span class="p">()</span> <span class="k">else</span> <span class="n">G</span><span class="o">.</span><span class="n">degree</span>
+    <span class="c1"># Group nodes based on degree threshold</span>
+    <span class="n">high_degree_nodes</span> <span class="o">=</span> <span class="p">{</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">degrees</span> <span class="k">if</span> <span class="n">d</span> <span class="o">&gt;</span> <span class="n">threshold</span><span class="p">}</span>
+    <span class="n">low_degree_nodes</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">()</span> <span class="o">-</span> <span class="n">high_degree_nodes</span>
+
+    <span class="n">auxillary</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">G</span><span class="p">:</span>
+        <span class="n">high_degree_neighbors</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span><span class="n">high_degree_nodes</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">G</span><span class="p">[</span><span class="n">node</span><span class="p">]))</span>
+        <span class="k">if</span> <span class="n">high_degree_neighbors</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">high_degree_neighbors</span> <span class="ow">in</span> <span class="n">auxillary</span><span class="p">:</span>
+                <span class="n">auxillary</span><span class="p">[</span><span class="n">high_degree_neighbors</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">auxillary</span><span class="p">[</span><span class="n">high_degree_neighbors</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">node</span><span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">copy</span><span class="p">:</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="n">compressor_nodes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="p">(</span><span class="n">high_degree_nodes</span><span class="p">,</span> <span class="n">low_degree_nodes</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">auxillary</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+        <span class="n">low_degree_node_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">low_degree_nodes</span><span class="p">)</span>
+        <span class="n">high_degree_node_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">high_degree_nodes</span><span class="p">)</span>
+        <span class="n">old_edges</span> <span class="o">=</span> <span class="n">high_degree_node_count</span> <span class="o">*</span> <span class="n">low_degree_node_count</span>
+        <span class="n">new_edges</span> <span class="o">=</span> <span class="n">high_degree_node_count</span> <span class="o">+</span> <span class="n">low_degree_node_count</span>
+        <span class="k">if</span> <span class="n">old_edges</span> <span class="o">&lt;=</span> <span class="n">new_edges</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">compression_node</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">node</span><span class="p">)</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">high_degree_nodes</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">prefix</span><span class="p">:</span>
+            <span class="n">compression_node</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span> <span class="o">+</span> <span class="n">compression_node</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">low_degree_nodes</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">high_node</span> <span class="ow">in</span> <span class="n">high_degree_nodes</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">has_edge</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">high_node</span><span class="p">):</span>
+                    <span class="n">G</span><span class="o">.</span><span class="n">remove_edge</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">high_node</span><span class="p">)</span>
+
+            <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">compression_node</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">high_degree_nodes</span><span class="p">:</span>
+            <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">compression_node</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+        <span class="n">compressor_nodes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">compression_node</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">G</span><span class="p">,</span> <span class="n">compressor_nodes</span></div>
+
+
+<span class="k">def</span> <span class="nf">_snap_build_graph</span><span class="p">(</span>
+    <span class="n">G</span><span class="p">,</span>
+    <span class="n">groups</span><span class="p">,</span>
+    <span class="n">node_attributes</span><span class="p">,</span>
+    <span class="n">edge_attributes</span><span class="p">,</span>
+    <span class="n">neighbor_info</span><span class="p">,</span>
+    <span class="n">edge_types</span><span class="p">,</span>
+    <span class="n">prefix</span><span class="p">,</span>
+    <span class="n">supernode_attribute</span><span class="p">,</span>
+    <span class="n">superedge_attribute</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Build the summary graph from the data structures produced in the SNAP aggregation algorithm</span>
+
+<span class="sd">    Used in the SNAP aggregation algorithm to build the output summary graph and supernode</span>
+<span class="sd">    lookup dictionary.  This process uses the original graph and the data structures to</span>
+<span class="sd">    create the supernodes with the correct node attributes, and the superedges with the correct</span>
+<span class="sd">    edge attributes</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G: networkx.Graph</span>
+<span class="sd">        the original graph to be summarized</span>
+<span class="sd">    groups: dict</span>
+<span class="sd">        A dictionary of unique group IDs and their corresponding node groups</span>
+<span class="sd">    node_attributes: iterable</span>
+<span class="sd">        An iterable of the node attributes considered in the summarization process</span>
+<span class="sd">    edge_attributes: iterable</span>
+<span class="sd">        An iterable of the edge attributes considered in the summarization process</span>
+<span class="sd">    neighbor_info: dict</span>
+<span class="sd">        A data structure indicating the number of edges a node has with the</span>
+<span class="sd">        groups in the current summarization of each edge type</span>
+<span class="sd">    edge_types: dict</span>
+<span class="sd">        dictionary of edges in the graph and their corresponding attributes recognized</span>
+<span class="sd">        in the summarization</span>
+<span class="sd">    prefix: string</span>
+<span class="sd">        The prefix to be added to all supernodes</span>
+<span class="sd">    supernode_attribute: str</span>
+<span class="sd">        The node attribute for recording the supernode groupings of nodes</span>
+<span class="sd">    superedge_attribute: str</span>
+<span class="sd">        The edge attribute for recording the edge types represented by superedges</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    summary graph: Networkx graph</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
+    <span class="n">node_label_lookup</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">group_id</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">groups</span><span class="p">):</span>
+        <span class="n">group_set</span> <span class="o">=</span> <span class="n">groups</span><span class="p">[</span><span class="n">group_id</span><span class="p">]</span>
+        <span class="n">supernode</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}{</span><span class="n">index</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">node_label_lookup</span><span class="p">[</span><span class="n">group_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">supernode</span>
+        <span class="n">supernode_attributes</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">attr</span><span class="p">:</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">group_set</span><span class="p">))][</span><span class="n">attr</span><span class="p">]</span> <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">node_attributes</span>
+        <span class="p">}</span>
+        <span class="n">supernode_attributes</span><span class="p">[</span><span class="n">supernode_attribute</span><span class="p">]</span> <span class="o">=</span> <span class="n">group_set</span>
+        <span class="n">output</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">supernode</span><span class="p">,</span> <span class="o">**</span><span class="n">supernode_attributes</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">group_id</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">:</span>
+        <span class="n">group_set</span> <span class="o">=</span> <span class="n">groups</span><span class="p">[</span><span class="n">group_id</span><span class="p">]</span>
+        <span class="n">source_supernode</span> <span class="o">=</span> <span class="n">node_label_lookup</span><span class="p">[</span><span class="n">group_id</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">other_group</span><span class="p">,</span> <span class="n">group_edge_types</span> <span class="ow">in</span> <span class="n">neighbor_info</span><span class="p">[</span>
+            <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">group_set</span><span class="p">))</span>
+        <span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">group_edge_types</span><span class="p">:</span>
+                <span class="n">target_supernode</span> <span class="o">=</span> <span class="n">node_label_lookup</span><span class="p">[</span><span class="n">other_group</span><span class="p">]</span>
+                <span class="n">summary_graph_edge</span> <span class="o">=</span> <span class="p">(</span><span class="n">source_supernode</span><span class="p">,</span> <span class="n">target_supernode</span><span class="p">)</span>
+
+                <span class="n">edge_types</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">edge_attributes</span><span class="p">,</span> <span class="n">edge_type</span><span class="p">))</span>
+                    <span class="k">for</span> <span class="n">edge_type</span> <span class="ow">in</span> <span class="n">group_edge_types</span>
+                <span class="p">]</span>
+
+                <span class="n">has_edge</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">has_edge</span><span class="p">(</span><span class="o">*</span><span class="n">summary_graph_edge</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">output</span><span class="o">.</span><span class="n">is_multigraph</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">has_edge</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">edge_type</span> <span class="ow">in</span> <span class="n">edge_types</span><span class="p">:</span>
+                            <span class="n">output</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="o">*</span><span class="n">summary_graph_edge</span><span class="p">,</span> <span class="o">**</span><span class="n">edge_type</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="ow">not</span> <span class="n">output</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+                        <span class="n">existing_edge_data</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">get_edge_data</span><span class="p">(</span><span class="o">*</span><span class="n">summary_graph_edge</span><span class="p">)</span>
+                        <span class="k">for</span> <span class="n">edge_type</span> <span class="ow">in</span> <span class="n">edge_types</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">edge_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">existing_edge_data</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                                <span class="n">output</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="o">*</span><span class="n">summary_graph_edge</span><span class="p">,</span> <span class="o">**</span><span class="n">edge_type</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">superedge_attributes</span> <span class="o">=</span> <span class="p">{</span><span class="n">superedge_attribute</span><span class="p">:</span> <span class="n">edge_types</span><span class="p">}</span>
+                    <span class="n">output</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="o">*</span><span class="n">summary_graph_edge</span><span class="p">,</span> <span class="o">**</span><span class="n">superedge_attributes</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">output</span>
+
+
+<span class="k">def</span> <span class="nf">_snap_eligible_group</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">group_lookup</span><span class="p">,</span> <span class="n">edge_types</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Determines if a group is eligible to be split.</span>
+
+<span class="sd">    A group is eligible to be split if all nodes in the group have edges of the same type(s)</span>
+<span class="sd">    with the same other groups.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G: graph</span>
+<span class="sd">        graph to be summarized</span>
+<span class="sd">    groups: dict</span>
+<span class="sd">        A dictionary of unique group IDs and their corresponding node groups</span>
+<span class="sd">    group_lookup: dict</span>
+<span class="sd">        dictionary of nodes and their current corresponding group ID</span>
+<span class="sd">    edge_types: dict</span>
+<span class="sd">        dictionary of edges in the graph and their corresponding attributes recognized</span>
+<span class="sd">        in the summarization</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tuple: group ID to split, and neighbor-groups participation_counts data structure</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">neighbor_info</span> <span class="o">=</span> <span class="p">{</span><span class="n">node</span><span class="p">:</span> <span class="p">{</span><span class="n">gid</span><span class="p">:</span> <span class="n">Counter</span><span class="p">()</span> <span class="k">for</span> <span class="n">gid</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">}</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">group_lookup</span><span class="p">}</span>
+    <span class="k">for</span> <span class="n">group_id</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">:</span>
+        <span class="n">current_group</span> <span class="o">=</span> <span class="n">groups</span><span class="p">[</span><span class="n">group_id</span><span class="p">]</span>
+
+        <span class="c1"># build neighbor_info for nodes in group</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">current_group</span><span class="p">:</span>
+            <span class="n">neighbor_info</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">group_id</span><span class="p">:</span> <span class="n">Counter</span><span class="p">()</span> <span class="k">for</span> <span class="n">group_id</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">}</span>
+            <span class="n">edges</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">is_multigraph</span><span class="p">()</span> <span class="k">else</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">:</span>
+                <span class="n">neighbor</span> <span class="o">=</span> <span class="n">edge</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">edge_type</span> <span class="o">=</span> <span class="n">edge_types</span><span class="p">[</span><span class="n">edge</span><span class="p">]</span>
+                <span class="n">neighbor_group_id</span> <span class="o">=</span> <span class="n">group_lookup</span><span class="p">[</span><span class="n">neighbor</span><span class="p">]</span>
+                <span class="n">neighbor_info</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="n">neighbor_group_id</span><span class="p">][</span><span class="n">edge_type</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="c1"># check if group_id is eligible to be split</span>
+        <span class="n">group_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">current_group</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">other_group_id</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">:</span>
+            <span class="n">edge_counts</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">current_group</span><span class="p">:</span>
+                <span class="n">edge_counts</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">neighbor_info</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="n">other_group_id</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">count</span> <span class="o">==</span> <span class="n">group_size</span> <span class="k">for</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">edge_counts</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+                <span class="c1"># only the neighbor_info of the returned group_id is required for handling group splits</span>
+                <span class="k">return</span> <span class="n">group_id</span><span class="p">,</span> <span class="n">neighbor_info</span>
+
+    <span class="c1"># if no eligible groups, complete neighbor_info is calculated</span>
+    <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="n">neighbor_info</span>
+
+
+<span class="k">def</span> <span class="nf">_snap_split</span><span class="p">(</span><span class="n">groups</span><span class="p">,</span> <span class="n">neighbor_info</span><span class="p">,</span> <span class="n">group_lookup</span><span class="p">,</span> <span class="n">group_id</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Splits a group based on edge types and updates the groups accordingly</span>
+
+<span class="sd">    Splits the group with the given group_id based on the edge types</span>
+<span class="sd">    of the nodes so that each new grouping will all have the same</span>
+<span class="sd">    edges with other nodes.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    groups: dict</span>
+<span class="sd">        A dictionary of unique group IDs and their corresponding node groups</span>
+<span class="sd">    neighbor_info: dict</span>
+<span class="sd">        A data structure indicating the number of edges a node has with the</span>
+<span class="sd">        groups in the current summarization of each edge type</span>
+<span class="sd">    edge_types: dict</span>
+<span class="sd">        dictionary of edges in the graph and their corresponding attributes recognized</span>
+<span class="sd">        in the summarization</span>
+<span class="sd">    group_lookup: dict</span>
+<span class="sd">        dictionary of nodes and their current corresponding group ID</span>
+<span class="sd">    group_id: object</span>
+<span class="sd">        ID of group to be split</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+<span class="sd">        The updated groups based on the split</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">new_group_mappings</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">[</span><span class="n">group_id</span><span class="p">]:</span>
+        <span class="n">signature</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+            <span class="nb">frozenset</span><span class="p">(</span><span class="n">edge_types</span><span class="p">)</span> <span class="k">for</span> <span class="n">edge_types</span> <span class="ow">in</span> <span class="n">neighbor_info</span><span class="p">[</span><span class="n">node</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="n">new_group_mappings</span><span class="p">[</span><span class="n">signature</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+    <span class="c1"># leave the biggest new_group as the original group</span>
+    <span class="n">new_groups</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">new_group_mappings</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">new_group</span> <span class="ow">in</span> <span class="n">new_groups</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="c1"># Assign unused integer as the new_group_id</span>
+        <span class="c1"># ids are tuples, so will not interact with the original group_ids</span>
+        <span class="n">new_group_id</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">groups</span><span class="p">)</span>
+        <span class="n">groups</span><span class="p">[</span><span class="n">new_group_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_group</span>
+        <span class="n">groups</span><span class="p">[</span><span class="n">group_id</span><span class="p">]</span> <span class="o">-=</span> <span class="n">new_group</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">new_group</span><span class="p">:</span>
+            <span class="n">group_lookup</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_group_id</span>
+
+    <span class="k">return</span> <span class="n">groups</span>
+
+
+<div class="viewcode-block" id="snap_aggregation"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.summarization.snap_aggregation.html#networkx.algorithms.summarization.snap_aggregation">[docs]</a><span class="k">def</span> <span class="nf">snap_aggregation</span><span class="p">(</span>
+    <span class="n">G</span><span class="p">,</span>
+    <span class="n">node_attributes</span><span class="p">,</span>
+    <span class="n">edge_attributes</span><span class="o">=</span><span class="p">(),</span>
+    <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;Supernode-&quot;</span><span class="p">,</span>
+    <span class="n">supernode_attribute</span><span class="o">=</span><span class="s2">&quot;group&quot;</span><span class="p">,</span>
+    <span class="n">superedge_attribute</span><span class="o">=</span><span class="s2">&quot;types&quot;</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Creates a summary graph based on attributes and connectivity.</span>
+
+<span class="sd">    This function uses the Summarization by Grouping Nodes on Attributes</span>
+<span class="sd">    and Pairwise edges (SNAP) algorithm for summarizing a given</span>
+<span class="sd">    graph by grouping nodes by node attributes and their edge attributes</span>
+<span class="sd">    into supernodes in a summary graph.  This name SNAP should not be</span>
+<span class="sd">    confused with the Stanford Network Analysis Project (SNAP).</span>
+
+<span class="sd">    Here is a high-level view of how this algorithm works:</span>
+
+<span class="sd">    1) Group nodes by node attribute values.</span>
+
+<span class="sd">    2) Iteratively split groups until all nodes in each group have edges</span>
+<span class="sd">    to nodes in the same groups. That is, until all the groups are homogeneous</span>
+<span class="sd">    in their member nodes&#39; edges to other groups.  For example,</span>
+<span class="sd">    if all the nodes in group A only have edge to nodes in group B, then the</span>
+<span class="sd">    group is homogeneous and does not need to be split. If all nodes in group B</span>
+<span class="sd">    have edges with nodes in groups {A, C}, but some also have edges with other</span>
+<span class="sd">    nodes in B, then group B is not homogeneous and needs to be split into</span>
+<span class="sd">    groups have edges with {A, C} and a group of nodes having</span>
+<span class="sd">    edges with {A, B, C}.  This way, viewers of the summary graph can</span>
+<span class="sd">    assume that all nodes in the group have the exact same node attributes and</span>
+<span class="sd">    the exact same edges.</span>
+
+<span class="sd">    3) Build the output summary graph, where the groups are represented by</span>
+<span class="sd">    super-nodes. Edges represent the edges shared between all the nodes in each</span>
+<span class="sd">    respective groups.</span>
+
+<span class="sd">    A SNAP summary graph can be used to visualize graphs that are too large to display</span>
+<span class="sd">    or visually analyze, or to efficiently identify sets of similar nodes with similar connectivity</span>
+<span class="sd">    patterns to other sets of similar nodes based on specified node and/or edge attributes in a graph.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G: graph</span>
+<span class="sd">        Networkx Graph to be summarized</span>
+<span class="sd">    edge_attributes: iterable, optional</span>
+<span class="sd">        An iterable of the edge attributes considered in the summarization process.  If provided, unique</span>
+<span class="sd">        combinations of the attribute values found in the graph are used to</span>
+<span class="sd">        determine the edge types in the graph.  If not provided, all edges</span>
+<span class="sd">        are considered to be of the same type.</span>
+<span class="sd">    prefix: str</span>
+<span class="sd">        The prefix used to denote supernodes in the summary graph. Defaults to &#39;Supernode-&#39;.</span>
+<span class="sd">    supernode_attribute: str</span>
+<span class="sd">        The node attribute for recording the supernode groupings of nodes. Defaults to &#39;group&#39;.</span>
+<span class="sd">    superedge_attribute: str</span>
+<span class="sd">        The edge attribute for recording the edge types of multiple edges. Defaults to &#39;types&#39;.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    networkx.Graph: summary graph</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    SNAP aggregation takes a graph and summarizes it in the context of user-provided</span>
+<span class="sd">    node and edge attributes such that a viewer can more easily extract and</span>
+<span class="sd">    analyze the information represented by the graph</span>
+
+<span class="sd">    &gt;&gt;&gt; nodes = {</span>
+<span class="sd">    ...     &quot;A&quot;: dict(color=&quot;Red&quot;),</span>
+<span class="sd">    ...     &quot;B&quot;: dict(color=&quot;Red&quot;),</span>
+<span class="sd">    ...     &quot;C&quot;: dict(color=&quot;Red&quot;),</span>
+<span class="sd">    ...     &quot;D&quot;: dict(color=&quot;Red&quot;),</span>
+<span class="sd">    ...     &quot;E&quot;: dict(color=&quot;Blue&quot;),</span>
+<span class="sd">    ...     &quot;F&quot;: dict(color=&quot;Blue&quot;),</span>
+<span class="sd">    ... }</span>
+<span class="sd">    &gt;&gt;&gt; edges = [</span>
+<span class="sd">    ...     (&quot;A&quot;, &quot;E&quot;, &quot;Strong&quot;),</span>
+<span class="sd">    ...     (&quot;B&quot;, &quot;F&quot;, &quot;Strong&quot;),</span>
+<span class="sd">    ...     (&quot;C&quot;, &quot;E&quot;, &quot;Weak&quot;),</span>
+<span class="sd">    ...     (&quot;D&quot;, &quot;F&quot;, &quot;Weak&quot;),</span>
+<span class="sd">    ... ]</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.Graph()</span>
+<span class="sd">    &gt;&gt;&gt; for node in nodes:</span>
+<span class="sd">    ...     attributes = nodes[node]</span>
+<span class="sd">    ...     G.add_node(node, **attributes)</span>
+<span class="sd">    ...</span>
+<span class="sd">    &gt;&gt;&gt; for source, target, type in edges:</span>
+<span class="sd">    ...     G.add_edge(source, target, type=type)</span>
+<span class="sd">    ...</span>
+<span class="sd">    &gt;&gt;&gt; node_attributes = (&#39;color&#39;, )</span>
+<span class="sd">    &gt;&gt;&gt; edge_attributes = (&#39;type&#39;, )</span>
+<span class="sd">    &gt;&gt;&gt; summary_graph = nx.snap_aggregation(G, node_attributes=node_attributes, edge_attributes=edge_attributes)</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The summary graph produced is called a maximum Attribute-edge</span>
+<span class="sd">    compatible (AR-compatible) grouping.  According to [1]_, an</span>
+<span class="sd">    AR-compatible grouping means that all nodes in each group have the same</span>
+<span class="sd">    exact node attribute values and the same exact edges and</span>
+<span class="sd">    edge types to one or more nodes in the same groups.  The maximal</span>
+<span class="sd">    AR-compatible grouping is the grouping with the minimal cardinality.</span>
+
+<span class="sd">    The AR-compatible grouping is the most detailed grouping provided by</span>
+<span class="sd">    any of the SNAP algorithms.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Y. Tian, R. A. Hankins, and J. M. Patel. Efficient aggregation</span>
+<span class="sd">       for graph summarization. In Proc. 2008 ACM-SIGMOD Int. Conf.</span>
+<span class="sd">       Management of Data (SIGMOD’08), pages 567–580, Vancouver, Canada,</span>
+<span class="sd">       June 2008.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">edge_types</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">edge</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span> <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">edge_attributes</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">edge</span><span class="p">,</span> <span class="n">attrs</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">G</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">is_multigraph</span><span class="p">():</span>
+            <span class="c1"># list is needed to avoid mutating while iterating</span>
+            <span class="n">edges</span> <span class="o">=</span> <span class="p">[((</span><span class="n">v</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">k</span><span class="p">),</span> <span class="n">etype</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">k</span><span class="p">),</span> <span class="n">etype</span> <span class="ow">in</span> <span class="n">edge_types</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># list is needed to avoid mutating while iterating</span>
+            <span class="n">edges</span> <span class="o">=</span> <span class="p">[((</span><span class="n">v</span><span class="p">,</span> <span class="n">u</span><span class="p">),</span> <span class="n">etype</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">),</span> <span class="n">etype</span> <span class="ow">in</span> <span class="n">edge_types</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
+        <span class="n">edge_types</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">edges</span><span class="p">)</span>
+
+    <span class="n">group_lookup</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">node</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">attrs</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">node_attributes</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="n">attrs</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+    <span class="p">}</span>
+    <span class="n">groups</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="n">node_type</span> <span class="ow">in</span> <span class="n">group_lookup</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">groups</span><span class="p">[</span><span class="n">node_type</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+    <span class="n">eligible_group_id</span><span class="p">,</span> <span class="n">neighbor_info</span> <span class="o">=</span> <span class="n">_snap_eligible_group</span><span class="p">(</span>
+        <span class="n">G</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">group_lookup</span><span class="p">,</span> <span class="n">edge_types</span>
+    <span class="p">)</span>
+    <span class="k">while</span> <span class="n">eligible_group_id</span><span class="p">:</span>
+        <span class="n">groups</span> <span class="o">=</span> <span class="n">_snap_split</span><span class="p">(</span><span class="n">groups</span><span class="p">,</span> <span class="n">neighbor_info</span><span class="p">,</span> <span class="n">group_lookup</span><span class="p">,</span> <span class="n">eligible_group_id</span><span class="p">)</span>
+        <span class="n">eligible_group_id</span><span class="p">,</span> <span class="n">neighbor_info</span> <span class="o">=</span> <span class="n">_snap_eligible_group</span><span class="p">(</span>
+            <span class="n">G</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">group_lookup</span><span class="p">,</span> <span class="n">edge_types</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">_snap_build_graph</span><span class="p">(</span>
+        <span class="n">G</span><span class="p">,</span>
+        <span class="n">groups</span><span class="p">,</span>
+        <span class="n">node_attributes</span><span class="p">,</span>
+        <span class="n">edge_attributes</span><span class="p">,</span>
+        <span class="n">neighbor_info</span><span class="p">,</span>
+        <span class="n">edge_types</span><span class="p">,</span>
+        <span class="n">prefix</span><span class="p">,</span>
+        <span class="n">supernode_attribute</span><span class="p">,</span>
+        <span class="n">superedge_attribute</span><span class="p">,</span>
+    <span class="p">)</span></div>
+</pre></div>
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

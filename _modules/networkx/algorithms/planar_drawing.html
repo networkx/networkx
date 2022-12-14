@@ -1,0 +1,1006 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>networkx.algorithms.planar_drawing &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/algorithms/planar_drawing';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/algorithms/planar_drawing.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../../../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../../../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <h1>Source code for networkx.algorithms.planar_drawing</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;combinatorial_embedding_to_pos&quot;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="combinatorial_embedding_to_pos"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.planar_drawing.combinatorial_embedding_to_pos.html#networkx.algorithms.planar_drawing.combinatorial_embedding_to_pos">[docs]</a><span class="k">def</span> <span class="nf">combinatorial_embedding_to_pos</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="n">fully_triangulate</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Assigns every node a (x, y) position based on the given embedding</span>
+
+<span class="sd">    The algorithm iteratively inserts nodes of the input graph in a certain</span>
+<span class="sd">    order and rearranges previously inserted nodes so that the planar drawing</span>
+<span class="sd">    stays valid. This is done efficiently by only maintaining relative</span>
+<span class="sd">    positions during the node placements and calculating the absolute positions</span>
+<span class="sd">    at the end. For more information see [1]_.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    embedding : nx.PlanarEmbedding</span>
+<span class="sd">        This defines the order of the edges</span>
+
+<span class="sd">    fully_triangulate : bool</span>
+<span class="sd">        If set to True the algorithm adds edges to a copy of the input</span>
+<span class="sd">        embedding and makes it chordal.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pos : dict</span>
+<span class="sd">        Maps each node to a tuple that defines the (x, y) position</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] M. Chrobak and T.H. Payne:</span>
+<span class="sd">        A Linear-time Algorithm for Drawing a Planar Graph on a Grid 1989</span>
+<span class="sd">        http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.51.6677</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">embedding</span><span class="o">.</span><span class="n">nodes</span><span class="p">())</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">:</span>
+        <span class="c1"># Position the node in any triangle</span>
+        <span class="n">default_positions</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">embedding</span><span class="o">.</span><span class="n">nodes</span><span class="p">()):</span>
+            <span class="n">pos</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">default_positions</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">pos</span>
+
+    <span class="n">embedding</span><span class="p">,</span> <span class="n">outer_face</span> <span class="o">=</span> <span class="n">triangulate_embedding</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="n">fully_triangulate</span><span class="p">)</span>
+
+    <span class="c1"># The following dicts map a node to another node</span>
+    <span class="c1"># If a node is not in the key set it means that the node is not yet in G_k</span>
+    <span class="c1"># If a node maps to None then the corresponding subtree does not exist</span>
+    <span class="n">left_t_child</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">right_t_child</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># The following dicts map a node to an integer</span>
+    <span class="n">delta_x</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">y_coordinate</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="n">node_list</span> <span class="o">=</span> <span class="n">get_canonical_ordering</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="n">outer_face</span><span class="p">)</span>
+
+    <span class="c1"># 1. Phase: Compute relative positions</span>
+
+    <span class="c1"># Initialization</span>
+    <span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">v3</span> <span class="o">=</span> <span class="n">node_list</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">node_list</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">node_list</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">delta_x</span><span class="p">[</span><span class="n">v1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">y_coordinate</span><span class="p">[</span><span class="n">v1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">right_t_child</span><span class="p">[</span><span class="n">v1</span><span class="p">]</span> <span class="o">=</span> <span class="n">v3</span>
+    <span class="n">left_t_child</span><span class="p">[</span><span class="n">v1</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">delta_x</span><span class="p">[</span><span class="n">v2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">y_coordinate</span><span class="p">[</span><span class="n">v2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">right_t_child</span><span class="p">[</span><span class="n">v2</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">left_t_child</span><span class="p">[</span><span class="n">v2</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">delta_x</span><span class="p">[</span><span class="n">v3</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">y_coordinate</span><span class="p">[</span><span class="n">v3</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">right_t_child</span><span class="p">[</span><span class="n">v3</span><span class="p">]</span> <span class="o">=</span> <span class="n">v2</span>
+    <span class="n">left_t_child</span><span class="p">[</span><span class="n">v3</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">node_list</span><span class="p">)):</span>
+        <span class="n">vk</span><span class="p">,</span> <span class="n">contour_neighbors</span> <span class="o">=</span> <span class="n">node_list</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+        <span class="n">wp</span> <span class="o">=</span> <span class="n">contour_neighbors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">wp1</span> <span class="o">=</span> <span class="n">contour_neighbors</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">wq</span> <span class="o">=</span> <span class="n">contour_neighbors</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">wq1</span> <span class="o">=</span> <span class="n">contour_neighbors</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">adds_mult_tri</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">contour_neighbors</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span>
+
+        <span class="c1"># Stretch gaps:</span>
+        <span class="n">delta_x</span><span class="p">[</span><span class="n">wp1</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">delta_x</span><span class="p">[</span><span class="n">wq</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="n">delta_x_wp_wq</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">delta_x</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">contour_neighbors</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+
+        <span class="c1"># Adjust offsets</span>
+        <span class="n">delta_x</span><span class="p">[</span><span class="n">vk</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="n">y_coordinate</span><span class="p">[</span><span class="n">wp</span><span class="p">]</span> <span class="o">+</span> <span class="n">delta_x_wp_wq</span> <span class="o">+</span> <span class="n">y_coordinate</span><span class="p">[</span><span class="n">wq</span><span class="p">])</span> <span class="o">//</span> <span class="mi">2</span>
+        <span class="n">y_coordinate</span><span class="p">[</span><span class="n">vk</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">y_coordinate</span><span class="p">[</span><span class="n">wp</span><span class="p">]</span> <span class="o">+</span> <span class="n">delta_x_wp_wq</span> <span class="o">+</span> <span class="n">y_coordinate</span><span class="p">[</span><span class="n">wq</span><span class="p">])</span> <span class="o">//</span> <span class="mi">2</span>
+        <span class="n">delta_x</span><span class="p">[</span><span class="n">wq</span><span class="p">]</span> <span class="o">=</span> <span class="n">delta_x_wp_wq</span> <span class="o">-</span> <span class="n">delta_x</span><span class="p">[</span><span class="n">vk</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">adds_mult_tri</span><span class="p">:</span>
+            <span class="n">delta_x</span><span class="p">[</span><span class="n">wp1</span><span class="p">]</span> <span class="o">-=</span> <span class="n">delta_x</span><span class="p">[</span><span class="n">vk</span><span class="p">]</span>
+
+        <span class="c1"># Install v_k:</span>
+        <span class="n">right_t_child</span><span class="p">[</span><span class="n">wp</span><span class="p">]</span> <span class="o">=</span> <span class="n">vk</span>
+        <span class="n">right_t_child</span><span class="p">[</span><span class="n">vk</span><span class="p">]</span> <span class="o">=</span> <span class="n">wq</span>
+        <span class="k">if</span> <span class="n">adds_mult_tri</span><span class="p">:</span>
+            <span class="n">left_t_child</span><span class="p">[</span><span class="n">vk</span><span class="p">]</span> <span class="o">=</span> <span class="n">wp1</span>
+            <span class="n">right_t_child</span><span class="p">[</span><span class="n">wq1</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">left_t_child</span><span class="p">[</span><span class="n">vk</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># 2. Phase: Set absolute positions</span>
+    <span class="n">pos</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="n">pos</span><span class="p">[</span><span class="n">v1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">y_coordinate</span><span class="p">[</span><span class="n">v1</span><span class="p">])</span>
+    <span class="n">remaining_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">v1</span><span class="p">]</span>
+    <span class="k">while</span> <span class="n">remaining_nodes</span><span class="p">:</span>
+        <span class="n">parent_node</span> <span class="o">=</span> <span class="n">remaining_nodes</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+        <span class="c1"># Calculate position for left child</span>
+        <span class="n">set_position</span><span class="p">(</span>
+            <span class="n">parent_node</span><span class="p">,</span> <span class="n">left_t_child</span><span class="p">,</span> <span class="n">remaining_nodes</span><span class="p">,</span> <span class="n">delta_x</span><span class="p">,</span> <span class="n">y_coordinate</span><span class="p">,</span> <span class="n">pos</span>
+        <span class="p">)</span>
+        <span class="c1"># Calculate position for right child</span>
+        <span class="n">set_position</span><span class="p">(</span>
+            <span class="n">parent_node</span><span class="p">,</span> <span class="n">right_t_child</span><span class="p">,</span> <span class="n">remaining_nodes</span><span class="p">,</span> <span class="n">delta_x</span><span class="p">,</span> <span class="n">y_coordinate</span><span class="p">,</span> <span class="n">pos</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">pos</span></div>
+
+
+<span class="k">def</span> <span class="nf">set_position</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">tree</span><span class="p">,</span> <span class="n">remaining_nodes</span><span class="p">,</span> <span class="n">delta_x</span><span class="p">,</span> <span class="n">y_coordinate</span><span class="p">,</span> <span class="n">pos</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Helper method to calculate the absolute position of nodes.&quot;&quot;&quot;</span>
+    <span class="n">child</span> <span class="o">=</span> <span class="n">tree</span><span class="p">[</span><span class="n">parent</span><span class="p">]</span>
+    <span class="n">parent_node_x</span> <span class="o">=</span> <span class="n">pos</span><span class="p">[</span><span class="n">parent</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">child</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Calculate pos of child</span>
+        <span class="n">child_x</span> <span class="o">=</span> <span class="n">parent_node_x</span> <span class="o">+</span> <span class="n">delta_x</span><span class="p">[</span><span class="n">child</span><span class="p">]</span>
+        <span class="n">pos</span><span class="p">[</span><span class="n">child</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">child_x</span><span class="p">,</span> <span class="n">y_coordinate</span><span class="p">[</span><span class="n">child</span><span class="p">])</span>
+        <span class="c1"># Remember to calculate pos of its children</span>
+        <span class="n">remaining_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">get_canonical_ordering</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="n">outer_face</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns a canonical ordering of the nodes</span>
+
+<span class="sd">    The canonical ordering of nodes (v1, ..., vn) must fulfill the following</span>
+<span class="sd">    conditions:</span>
+<span class="sd">    (See Lemma 1 in [2]_)</span>
+
+<span class="sd">    - For the subgraph G_k of the input graph induced by v1, ..., vk it holds:</span>
+<span class="sd">        - 2-connected</span>
+<span class="sd">        - internally triangulated</span>
+<span class="sd">        - the edge (v1, v2) is part of the outer face</span>
+<span class="sd">    - For a node v(k+1) the following holds:</span>
+<span class="sd">        - The node v(k+1) is part of the outer face of G_k</span>
+<span class="sd">        - It has at least two neighbors in G_k</span>
+<span class="sd">        - All neighbors of v(k+1) in G_k lie consecutively on the outer face of</span>
+<span class="sd">          G_k (excluding the edge (v1, v2)).</span>
+
+<span class="sd">    The algorithm used here starts with G_n (containing all nodes). It first</span>
+<span class="sd">    selects the nodes v1 and v2. And then tries to find the order of the other</span>
+<span class="sd">    nodes by checking which node can be removed in order to fulfill the</span>
+<span class="sd">    conditions mentioned above. This is done by calculating the number of</span>
+<span class="sd">    chords of nodes on the outer face. For more information see [1]_.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    embedding : nx.PlanarEmbedding</span>
+<span class="sd">        The embedding must be triangulated</span>
+<span class="sd">    outer_face : list</span>
+<span class="sd">        The nodes on the outer face of the graph</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ordering : list</span>
+<span class="sd">        A list of tuples `(vk, wp_wq)`. Here `vk` is the node at this position</span>
+<span class="sd">        in the canonical ordering. The element `wp_wq` is a list of nodes that</span>
+<span class="sd">        make up the outer face of G_k.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Steven Chaplick.</span>
+<span class="sd">        Canonical Orders of Planar Graphs and (some of) Their Applications 2015</span>
+<span class="sd">        https://wuecampus2.uni-wuerzburg.de/moodle/pluginfile.php/545727/mod_resource/content/0/vg-ss15-vl03-canonical-orders-druckversion.pdf</span>
+<span class="sd">    .. [2] M. Chrobak and T.H. Payne:</span>
+<span class="sd">        A Linear-time Algorithm for Drawing a Planar Graph on a Grid 1989</span>
+<span class="sd">        http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.51.6677</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">v1</span> <span class="o">=</span> <span class="n">outer_face</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">v2</span> <span class="o">=</span> <span class="n">outer_face</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">chords</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>  <span class="c1"># Maps nodes to the number of their chords</span>
+    <span class="n">marked_nodes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="n">ready_to_pick</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">outer_face</span><span class="p">)</span>
+
+    <span class="c1"># Initialize outer_face_ccw_nbr (do not include v1 -&gt; v2)</span>
+    <span class="n">outer_face_ccw_nbr</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">prev_nbr</span> <span class="o">=</span> <span class="n">v2</span>
+    <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">outer_face</span><span class="p">)):</span>
+        <span class="n">outer_face_ccw_nbr</span><span class="p">[</span><span class="n">prev_nbr</span><span class="p">]</span> <span class="o">=</span> <span class="n">outer_face</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        <span class="n">prev_nbr</span> <span class="o">=</span> <span class="n">outer_face</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+    <span class="n">outer_face_ccw_nbr</span><span class="p">[</span><span class="n">prev_nbr</span><span class="p">]</span> <span class="o">=</span> <span class="n">v1</span>
+
+    <span class="c1"># Initialize outer_face_cw_nbr (do not include v2 -&gt; v1)</span>
+    <span class="n">outer_face_cw_nbr</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">prev_nbr</span> <span class="o">=</span> <span class="n">v1</span>
+    <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">outer_face</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">outer_face_cw_nbr</span><span class="p">[</span><span class="n">prev_nbr</span><span class="p">]</span> <span class="o">=</span> <span class="n">outer_face</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        <span class="n">prev_nbr</span> <span class="o">=</span> <span class="n">outer_face</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">is_outer_face_nbr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">x</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">outer_face_ccw_nbr</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">outer_face_cw_nbr</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">==</span> <span class="n">y</span>
+        <span class="k">if</span> <span class="n">x</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">outer_face_cw_nbr</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">outer_face_ccw_nbr</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">==</span> <span class="n">y</span>
+        <span class="k">return</span> <span class="n">outer_face_ccw_nbr</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">==</span> <span class="n">y</span> <span class="ow">or</span> <span class="n">outer_face_cw_nbr</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">==</span> <span class="n">y</span>
+
+    <span class="k">def</span> <span class="nf">is_on_outer_face</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">x</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">marked_nodes</span> <span class="ow">and</span> <span class="p">(</span><span class="n">x</span> <span class="ow">in</span> <span class="n">outer_face_ccw_nbr</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">or</span> <span class="n">x</span> <span class="o">==</span> <span class="n">v1</span><span class="p">)</span>
+
+    <span class="c1"># Initialize number of chords</span>
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">outer_face</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">nbr</span> <span class="ow">in</span> <span class="n">embedding</span><span class="o">.</span><span class="n">neighbors_cw_order</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">is_on_outer_face</span><span class="p">(</span><span class="n">nbr</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_outer_face_nbr</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">nbr</span><span class="p">):</span>
+                <span class="n">chords</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">ready_to_pick</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+
+    <span class="c1"># Initialize canonical_ordering</span>
+    <span class="n">canonical_ordering</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">embedding</span><span class="o">.</span><span class="n">nodes</span><span class="p">())</span>  <span class="c1"># type: list</span>
+    <span class="n">canonical_ordering</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="p">[])</span>
+    <span class="n">canonical_ordering</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">v2</span><span class="p">,</span> <span class="p">[])</span>
+    <span class="n">ready_to_pick</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">v1</span><span class="p">)</span>
+    <span class="n">ready_to_pick</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">v2</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">embedding</span><span class="o">.</span><span class="n">nodes</span><span class="p">())</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="c1"># 1. Pick v from ready_to_pick</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">ready_to_pick</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="n">marked_nodes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+
+        <span class="c1"># v has exactly two neighbors on the outer face (wp and wq)</span>
+        <span class="n">wp</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">wq</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># Iterate over neighbors of v to find wp and wq</span>
+        <span class="n">nbr_iterator</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">embedding</span><span class="o">.</span><span class="n">neighbors_cw_order</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">nbr</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">nbr_iterator</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">nbr</span> <span class="ow">in</span> <span class="n">marked_nodes</span><span class="p">:</span>
+                <span class="c1"># Only consider nodes that are not yet removed</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">is_on_outer_face</span><span class="p">(</span><span class="n">nbr</span><span class="p">):</span>
+                <span class="c1"># nbr is either wp or wq</span>
+                <span class="k">if</span> <span class="n">nbr</span> <span class="o">==</span> <span class="n">v1</span><span class="p">:</span>
+                    <span class="n">wp</span> <span class="o">=</span> <span class="n">v1</span>
+                <span class="k">elif</span> <span class="n">nbr</span> <span class="o">==</span> <span class="n">v2</span><span class="p">:</span>
+                    <span class="n">wq</span> <span class="o">=</span> <span class="n">v2</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">outer_face_cw_nbr</span><span class="p">[</span><span class="n">nbr</span><span class="p">]</span> <span class="o">==</span> <span class="n">v</span><span class="p">:</span>
+                        <span class="c1"># nbr is wp</span>
+                        <span class="n">wp</span> <span class="o">=</span> <span class="n">nbr</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="c1"># nbr is wq</span>
+                        <span class="n">wq</span> <span class="o">=</span> <span class="n">nbr</span>
+            <span class="k">if</span> <span class="n">wp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">wq</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># We don&#39;t need to iterate any further</span>
+                <span class="k">break</span>
+
+        <span class="c1"># Obtain new nodes on outer face (neighbors of v from wp to wq)</span>
+        <span class="n">wp_wq</span> <span class="o">=</span> <span class="p">[</span><span class="n">wp</span><span class="p">]</span>
+        <span class="n">nbr</span> <span class="o">=</span> <span class="n">wp</span>
+        <span class="k">while</span> <span class="n">nbr</span> <span class="o">!=</span> <span class="n">wq</span><span class="p">:</span>
+            <span class="c1"># Get next neighbor (clockwise on the outer face)</span>
+            <span class="n">next_nbr</span> <span class="o">=</span> <span class="n">embedding</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="n">nbr</span><span class="p">][</span><span class="s2">&quot;ccw&quot;</span><span class="p">]</span>
+            <span class="n">wp_wq</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">next_nbr</span><span class="p">)</span>
+            <span class="c1"># Update outer face</span>
+            <span class="n">outer_face_cw_nbr</span><span class="p">[</span><span class="n">nbr</span><span class="p">]</span> <span class="o">=</span> <span class="n">next_nbr</span>
+            <span class="n">outer_face_ccw_nbr</span><span class="p">[</span><span class="n">next_nbr</span><span class="p">]</span> <span class="o">=</span> <span class="n">nbr</span>
+            <span class="c1"># Move to next neighbor of v</span>
+            <span class="n">nbr</span> <span class="o">=</span> <span class="n">next_nbr</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">wp_wq</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="c1"># There was a chord between wp and wq, decrease number of chords</span>
+            <span class="n">chords</span><span class="p">[</span><span class="n">wp</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">chords</span><span class="p">[</span><span class="n">wp</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">ready_to_pick</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span>
+            <span class="n">chords</span><span class="p">[</span><span class="n">wq</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">chords</span><span class="p">[</span><span class="n">wq</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">ready_to_pick</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">wq</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Update all chords involving w_(p+1) to w_(q-1)</span>
+            <span class="n">new_face_nodes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">wp_wq</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">new_face_nodes</span><span class="p">:</span>
+                <span class="c1"># If we do not find a chord for w later we can pick it next</span>
+                <span class="n">ready_to_pick</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">nbr</span> <span class="ow">in</span> <span class="n">embedding</span><span class="o">.</span><span class="n">neighbors_cw_order</span><span class="p">(</span><span class="n">w</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">is_on_outer_face</span><span class="p">(</span><span class="n">nbr</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_outer_face_nbr</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">nbr</span><span class="p">):</span>
+                        <span class="c1"># There is a chord involving w</span>
+                        <span class="n">chords</span><span class="p">[</span><span class="n">w</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+                        <span class="n">ready_to_pick</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">nbr</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">new_face_nodes</span><span class="p">:</span>
+                            <span class="c1"># Also increase chord for the neighbor</span>
+                            <span class="c1"># We only iterator over new_face_nodes</span>
+                            <span class="n">chords</span><span class="p">[</span><span class="n">nbr</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+                            <span class="n">ready_to_pick</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">nbr</span><span class="p">)</span>
+        <span class="c1"># Set the canonical ordering node and the list of contour neighbors</span>
+        <span class="n">canonical_ordering</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">wp_wq</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">canonical_ordering</span>
+
+
+<span class="k">def</span> <span class="nf">triangulate_face</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Triangulates the face given by half edge (v, w)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    embedding : nx.PlanarEmbedding</span>
+<span class="sd">    v1 : node</span>
+<span class="sd">        The half-edge (v1, v2) belongs to the face that gets triangulated</span>
+<span class="sd">    v2 : node</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">v3</span> <span class="o">=</span> <span class="n">embedding</span><span class="o">.</span><span class="n">next_face_half_edge</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">)</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">v4</span> <span class="o">=</span> <span class="n">embedding</span><span class="o">.</span><span class="n">next_face_half_edge</span><span class="p">(</span><span class="n">v2</span><span class="p">,</span> <span class="n">v3</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">v1</span> <span class="o">==</span> <span class="n">v2</span> <span class="ow">or</span> <span class="n">v1</span> <span class="o">==</span> <span class="n">v3</span><span class="p">:</span>
+        <span class="c1"># The component has less than 3 nodes</span>
+        <span class="k">return</span>
+    <span class="k">while</span> <span class="n">v1</span> <span class="o">!=</span> <span class="n">v4</span><span class="p">:</span>
+        <span class="c1"># Add edge if not already present on other side</span>
+        <span class="k">if</span> <span class="n">embedding</span><span class="o">.</span><span class="n">has_edge</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v3</span><span class="p">):</span>
+            <span class="c1"># Cannot triangulate at this position</span>
+            <span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">v3</span> <span class="o">=</span> <span class="n">v2</span><span class="p">,</span> <span class="n">v3</span><span class="p">,</span> <span class="n">v4</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Add edge for triangulation</span>
+            <span class="n">embedding</span><span class="o">.</span><span class="n">add_half_edge_cw</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v3</span><span class="p">,</span> <span class="n">v2</span><span class="p">)</span>
+            <span class="n">embedding</span><span class="o">.</span><span class="n">add_half_edge_ccw</span><span class="p">(</span><span class="n">v3</span><span class="p">,</span> <span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">)</span>
+            <span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">v3</span> <span class="o">=</span> <span class="n">v1</span><span class="p">,</span> <span class="n">v3</span><span class="p">,</span> <span class="n">v4</span>
+        <span class="c1"># Get next node</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">v4</span> <span class="o">=</span> <span class="n">embedding</span><span class="o">.</span><span class="n">next_face_half_edge</span><span class="p">(</span><span class="n">v2</span><span class="p">,</span> <span class="n">v3</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">triangulate_embedding</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="n">fully_triangulate</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Triangulates the embedding.</span>
+
+<span class="sd">    Traverses faces of the embedding and adds edges to a copy of the</span>
+<span class="sd">    embedding to triangulate it.</span>
+<span class="sd">    The method also ensures that the resulting graph is 2-connected by adding</span>
+<span class="sd">    edges if the same vertex is contained twice on a path around a face.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    embedding : nx.PlanarEmbedding</span>
+<span class="sd">        The input graph must contain at least 3 nodes.</span>
+
+<span class="sd">    fully_triangulate : bool</span>
+<span class="sd">        If set to False the face with the most nodes is chooses as outer face.</span>
+<span class="sd">        This outer face does not get triangulated.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    (embedding, outer_face) : (nx.PlanarEmbedding, list) tuple</span>
+<span class="sd">        The element `embedding` is a new embedding containing all edges from</span>
+<span class="sd">        the input embedding and the additional edges to triangulate the graph.</span>
+<span class="sd">        The element `outer_face` is a list of nodes that lie on the outer face.</span>
+<span class="sd">        If the graph is fully triangulated these are three arbitrary connected</span>
+<span class="sd">        nodes.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">embedding</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">embedding</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">embedding</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
+    <span class="n">embedding</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">PlanarEmbedding</span><span class="p">(</span><span class="n">embedding</span><span class="p">)</span>
+
+    <span class="c1"># Get a list with a node for each connected component</span>
+    <span class="n">component_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">nx</span><span class="o">.</span><span class="n">connected_components</span><span class="p">(</span><span class="n">embedding</span><span class="p">)]</span>
+
+    <span class="c1"># 1. Make graph a single component (add edge between components)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">component_nodes</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">v1</span> <span class="o">=</span> <span class="n">component_nodes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">v2</span> <span class="o">=</span> <span class="n">component_nodes</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">embedding</span><span class="o">.</span><span class="n">connect_components</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">)</span>
+
+    <span class="c1"># 2. Calculate faces, ensure 2-connectedness and determine outer face</span>
+    <span class="n">outer_face</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># A face with the most number of nodes</span>
+    <span class="n">face_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">edges_visited</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>  <span class="c1"># Used to keep track of already visited faces</span>
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">embedding</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">embedding</span><span class="o">.</span><span class="n">neighbors_cw_order</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+            <span class="n">new_face</span> <span class="o">=</span> <span class="n">make_bi_connected</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">edges_visited</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">new_face</span><span class="p">:</span>
+                <span class="c1"># Found a new face</span>
+                <span class="n">face_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_face</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_face</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">outer_face</span><span class="p">):</span>
+                    <span class="c1"># The face is a candidate to be the outer face</span>
+                    <span class="n">outer_face</span> <span class="o">=</span> <span class="n">new_face</span>
+
+    <span class="c1"># 3. Triangulate (internal) faces</span>
+    <span class="k">for</span> <span class="n">face</span> <span class="ow">in</span> <span class="n">face_list</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">face</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">outer_face</span> <span class="ow">or</span> <span class="n">fully_triangulate</span><span class="p">:</span>
+            <span class="c1"># Triangulate this face</span>
+            <span class="n">triangulate_face</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="n">face</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">face</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">fully_triangulate</span><span class="p">:</span>
+        <span class="n">v1</span> <span class="o">=</span> <span class="n">outer_face</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">v2</span> <span class="o">=</span> <span class="n">outer_face</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">v3</span> <span class="o">=</span> <span class="n">embedding</span><span class="p">[</span><span class="n">v2</span><span class="p">][</span><span class="n">v1</span><span class="p">][</span><span class="s2">&quot;ccw&quot;</span><span class="p">]</span>
+        <span class="n">outer_face</span> <span class="o">=</span> <span class="p">[</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">v3</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">embedding</span><span class="p">,</span> <span class="n">outer_face</span>
+
+
+<span class="k">def</span> <span class="nf">make_bi_connected</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="n">starting_node</span><span class="p">,</span> <span class="n">outgoing_node</span><span class="p">,</span> <span class="n">edges_counted</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Triangulate a face and make it 2-connected</span>
+
+<span class="sd">    This method also adds all edges on the face to `edges_counted`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    embedding: nx.PlanarEmbedding</span>
+<span class="sd">        The embedding that defines the faces</span>
+<span class="sd">    starting_node : node</span>
+<span class="sd">        A node on the face</span>
+<span class="sd">    outgoing_node : node</span>
+<span class="sd">        A node such that the half edge (starting_node, outgoing_node) belongs</span>
+<span class="sd">        to the face</span>
+<span class="sd">    edges_counted: set</span>
+<span class="sd">        Set of all half-edges that belong to a face that have been visited</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    face_nodes: list</span>
+<span class="sd">        A list of all nodes at the border of this face</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Check if the face has already been calculated</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">starting_node</span><span class="p">,</span> <span class="n">outgoing_node</span><span class="p">)</span> <span class="ow">in</span> <span class="n">edges_counted</span><span class="p">:</span>
+        <span class="c1"># This face was already counted</span>
+        <span class="k">return</span> <span class="p">[]</span>
+    <span class="n">edges_counted</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">starting_node</span><span class="p">,</span> <span class="n">outgoing_node</span><span class="p">))</span>
+
+    <span class="c1"># Add all edges to edges_counted which have this face to their left</span>
+    <span class="n">v1</span> <span class="o">=</span> <span class="n">starting_node</span>
+    <span class="n">v2</span> <span class="o">=</span> <span class="n">outgoing_node</span>
+    <span class="n">face_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">starting_node</span><span class="p">]</span>  <span class="c1"># List of nodes around the face</span>
+    <span class="n">face_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">face_list</span><span class="p">)</span>  <span class="c1"># Set for faster queries</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">v3</span> <span class="o">=</span> <span class="n">embedding</span><span class="o">.</span><span class="n">next_face_half_edge</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">)</span>
+
+    <span class="c1"># Move the nodes v1, v2, v3 around the face:</span>
+    <span class="k">while</span> <span class="n">v2</span> <span class="o">!=</span> <span class="n">starting_node</span> <span class="ow">or</span> <span class="n">v3</span> <span class="o">!=</span> <span class="n">outgoing_node</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">v1</span> <span class="o">==</span> <span class="n">v2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXException</span><span class="p">(</span><span class="s2">&quot;Invalid half-edge&quot;</span><span class="p">)</span>
+        <span class="c1"># cycle is not completed yet</span>
+        <span class="k">if</span> <span class="n">v2</span> <span class="ow">in</span> <span class="n">face_set</span><span class="p">:</span>
+            <span class="c1"># v2 encountered twice: Add edge to ensure 2-connectedness</span>
+            <span class="n">embedding</span><span class="o">.</span><span class="n">add_half_edge_cw</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v3</span><span class="p">,</span> <span class="n">v2</span><span class="p">)</span>
+            <span class="n">embedding</span><span class="o">.</span><span class="n">add_half_edge_ccw</span><span class="p">(</span><span class="n">v3</span><span class="p">,</span> <span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">)</span>
+            <span class="n">edges_counted</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">v2</span><span class="p">,</span> <span class="n">v3</span><span class="p">))</span>
+            <span class="n">edges_counted</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">v3</span><span class="p">,</span> <span class="n">v1</span><span class="p">))</span>
+            <span class="n">v2</span> <span class="o">=</span> <span class="n">v1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">face_set</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">v2</span><span class="p">)</span>
+            <span class="n">face_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v2</span><span class="p">)</span>
+
+        <span class="c1"># set next edge</span>
+        <span class="n">v1</span> <span class="o">=</span> <span class="n">v2</span>
+        <span class="n">v2</span><span class="p">,</span> <span class="n">v3</span> <span class="o">=</span> <span class="n">embedding</span><span class="o">.</span><span class="n">next_face_half_edge</span><span class="p">(</span><span class="n">v2</span><span class="p">,</span> <span class="n">v3</span><span class="p">)</span>
+
+        <span class="c1"># remember that this edge has been counted</span>
+        <span class="n">edges_counted</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">face_list</span>
+</pre></div>
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

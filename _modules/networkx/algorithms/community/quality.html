@@ -1,0 +1,884 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>networkx.algorithms.community.quality &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/algorithms/community/quality';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/algorithms/community/quality.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../../../../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../../../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../../../../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <h1>Source code for networkx.algorithms.community.quality</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Functions for measuring the quality of a partition (into</span>
+<span class="sd">communities).</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">combinations</span>
+
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">from</span> <span class="nn">networkx</span> <span class="kn">import</span> <span class="n">NetworkXError</span>
+<span class="kn">from</span> <span class="nn">networkx.algorithms.community.community_utils</span> <span class="kn">import</span> <span class="n">is_partition</span>
+<span class="kn">from</span> <span class="nn">networkx.utils</span> <span class="kn">import</span> <span class="n">not_implemented_for</span>
+<span class="kn">from</span> <span class="nn">networkx.utils.decorators</span> <span class="kn">import</span> <span class="n">argmap</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;modularity&quot;</span><span class="p">,</span> <span class="s2">&quot;partition_quality&quot;</span><span class="p">]</span>
+
+
+<span class="k">class</span> <span class="nc">NotAPartition</span><span class="p">(</span><span class="n">NetworkXError</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Raised if a given collection is not a partition.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">collection</span><span class="p">):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">collection</span><span class="si">}</span><span class="s2"> is not a valid partition of the graph </span><span class="si">{</span><span class="n">G</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_require_partition</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">partition</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Decorator to check that a valid partition is input to a function</span>
+
+<span class="sd">    Raises :exc:`networkx.NetworkXError` if the partition is not valid.</span>
+
+<span class="sd">    This decorator should be used on functions whose first two arguments</span>
+<span class="sd">    are a graph and a partition of the nodes of that graph (in that</span>
+<span class="sd">    order)::</span>
+
+<span class="sd">        &gt;&gt;&gt; @require_partition</span>
+<span class="sd">        ... def foo(G, partition):</span>
+<span class="sd">        ...     print(&quot;partition is valid!&quot;)</span>
+<span class="sd">        ...</span>
+<span class="sd">        &gt;&gt;&gt; G = nx.complete_graph(5)</span>
+<span class="sd">        &gt;&gt;&gt; partition = [{0, 1}, {2, 3}, {4}]</span>
+<span class="sd">        &gt;&gt;&gt; foo(G, partition)</span>
+<span class="sd">        partition is valid!</span>
+<span class="sd">        &gt;&gt;&gt; partition = [{0}, {2, 3}, {4}]</span>
+<span class="sd">        &gt;&gt;&gt; foo(G, partition)</span>
+<span class="sd">        Traceback (most recent call last):</span>
+<span class="sd">          ...</span>
+<span class="sd">        networkx.exception.NetworkXError: `partition` is not a valid partition of the nodes of G</span>
+<span class="sd">        &gt;&gt;&gt; partition = [{0, 1}, {1, 2, 3}, {4}]</span>
+<span class="sd">        &gt;&gt;&gt; foo(G, partition)</span>
+<span class="sd">        Traceback (most recent call last):</span>
+<span class="sd">          ...</span>
+<span class="sd">        networkx.exception.NetworkXError: `partition` is not a valid partition of the nodes of G</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">is_partition</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">partition</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">G</span><span class="p">,</span> <span class="n">partition</span>
+    <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;`partition` is not a valid partition of the nodes of G&quot;</span><span class="p">)</span>
+
+
+<span class="n">require_partition</span> <span class="o">=</span> <span class="n">argmap</span><span class="p">(</span><span class="n">_require_partition</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+
+<span class="nd">@nx</span><span class="o">.</span><span class="n">_dispatch</span>
+<span class="k">def</span> <span class="nf">intra_community_edges</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">partition</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the number of intra-community edges for a partition of `G`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph.</span>
+
+<span class="sd">    partition : iterable of sets of nodes</span>
+<span class="sd">        This must be a partition of the nodes of `G`.</span>
+
+<span class="sd">    The &quot;intra-community edges&quot; are those edges joining a pair of nodes</span>
+<span class="sd">    in the same block of the partition.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">subgraph</span><span class="p">(</span><span class="n">block</span><span class="p">)</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="k">for</span> <span class="n">block</span> <span class="ow">in</span> <span class="n">partition</span><span class="p">)</span>
+
+
+<span class="nd">@nx</span><span class="o">.</span><span class="n">_dispatch</span>
+<span class="k">def</span> <span class="nf">inter_community_edges</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">partition</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the number of inter-community edges for a partition of `G`.</span>
+<span class="sd">    according to the given</span>
+<span class="sd">    partition of the nodes of `G`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph.</span>
+
+<span class="sd">    partition : iterable of sets of nodes</span>
+<span class="sd">        This must be a partition of the nodes of `G`.</span>
+
+<span class="sd">    The *inter-community edges* are those edges joining a pair of nodes</span>
+<span class="sd">    in different blocks of the partition.</span>
+
+<span class="sd">    Implementation note: this function creates an intermediate graph</span>
+<span class="sd">    that may require the same amount of memory as that of `G`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Alternate implementation that does not require constructing a new</span>
+    <span class="c1"># graph object (but does require constructing an affiliation</span>
+    <span class="c1"># dictionary):</span>
+    <span class="c1">#</span>
+    <span class="c1">#     aff = dict(chain.from_iterable(((v, block) for v in block)</span>
+    <span class="c1">#                                    for block in partition))</span>
+    <span class="c1">#     return sum(1 for u, v in G.edges() if aff[u] != aff[v])</span>
+    <span class="c1">#</span>
+    <span class="n">MG</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">MultiDiGraph</span> <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">is_directed</span><span class="p">()</span> <span class="k">else</span> <span class="n">nx</span><span class="o">.</span><span class="n">MultiGraph</span>
+    <span class="k">return</span> <span class="n">nx</span><span class="o">.</span><span class="n">quotient_graph</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">partition</span><span class="p">,</span> <span class="n">create_using</span><span class="o">=</span><span class="n">MG</span><span class="p">)</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">inter_community_non_edges</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">partition</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the number of inter-community non-edges according to the</span>
+<span class="sd">    given partition of the nodes of `G`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph.</span>
+
+<span class="sd">    partition : iterable of sets of nodes</span>
+<span class="sd">        This must be a partition of the nodes of `G`.</span>
+
+<span class="sd">    A *non-edge* is a pair of nodes (undirected if `G` is undirected)</span>
+<span class="sd">    that are not adjacent in `G`. The *inter-community non-edges* are</span>
+<span class="sd">    those non-edges on a pair of nodes in different blocks of the</span>
+<span class="sd">    partition.</span>
+
+<span class="sd">    Implementation note: this function creates two intermediate graphs,</span>
+<span class="sd">    which may require up to twice the amount of memory as required to</span>
+<span class="sd">    store `G`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Alternate implementation that does not require constructing two</span>
+    <span class="c1"># new graph objects (but does require constructing an affiliation</span>
+    <span class="c1"># dictionary):</span>
+    <span class="c1">#</span>
+    <span class="c1">#     aff = dict(chain.from_iterable(((v, block) for v in block)</span>
+    <span class="c1">#                                    for block in partition))</span>
+    <span class="c1">#     return sum(1 for u, v in nx.non_edges(G) if aff[u] != aff[v])</span>
+    <span class="c1">#</span>
+    <span class="k">return</span> <span class="n">inter_community_edges</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">complement</span><span class="p">(</span><span class="n">G</span><span class="p">),</span> <span class="n">partition</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="modularity"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.community.quality.modularity.html#networkx.algorithms.community.quality.modularity">[docs]</a><span class="k">def</span> <span class="nf">modularity</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">communities</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns the modularity of the given partition of the graph.</span>
+
+<span class="sd">    Modularity is defined in [1]_ as</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Q = \frac{1}{2m} \sum_{ij} \left( A_{ij} - \gamma\frac{k_ik_j}{2m}\right)</span>
+<span class="sd">            \delta(c_i,c_j)</span>
+
+<span class="sd">    where $m$ is the number of edges, $A$ is the adjacency matrix of `G`,</span>
+<span class="sd">    $k_i$ is the degree of $i$, $\gamma$ is the resolution parameter,</span>
+<span class="sd">    and $\delta(c_i, c_j)$ is 1 if $i$ and $j$ are in the same community else 0.</span>
+
+<span class="sd">    According to [2]_ (and verified by some algebra) this can be reduced to</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       Q = \sum_{c=1}^{n}</span>
+<span class="sd">       \left[ \frac{L_c}{m} - \gamma\left( \frac{k_c}{2m} \right) ^2 \right]</span>
+
+<span class="sd">    where the sum iterates over all communities $c$, $m$ is the number of edges,</span>
+<span class="sd">    $L_c$ is the number of intra-community links for community $c$,</span>
+<span class="sd">    $k_c$ is the sum of degrees of the nodes in community $c$,</span>
+<span class="sd">    and $\gamma$ is the resolution parameter.</span>
+
+<span class="sd">    The resolution parameter sets an arbitrary tradeoff between intra-group</span>
+<span class="sd">    edges and inter-group edges. More complex grouping patterns can be</span>
+<span class="sd">    discovered by analyzing the same network with multiple values of gamma</span>
+<span class="sd">    and then combining the results [3]_. That said, it is very common to</span>
+<span class="sd">    simply use gamma=1. More on the choice of gamma is in [4]_.</span>
+
+<span class="sd">    The second formula is the one actually used in calculation of the modularity.</span>
+<span class="sd">    For directed graphs the second formula replaces $k_c$ with $k^{in}_c k^{out}_c$.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX Graph</span>
+
+<span class="sd">    communities : list or iterable of set of nodes</span>
+<span class="sd">        These node sets must represent a partition of G&#39;s nodes.</span>
+
+<span class="sd">    weight : string or None, optional (default=&quot;weight&quot;)</span>
+<span class="sd">        The edge attribute that holds the numerical value used</span>
+<span class="sd">        as a weight. If None or an edge does not have that attribute,</span>
+<span class="sd">        then that edge has weight 1.</span>
+
+<span class="sd">    resolution : float (default=1)</span>
+<span class="sd">        If resolution is less than 1, modularity favors larger communities.</span>
+<span class="sd">        Greater than 1 favors smaller communities.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Q : float</span>
+<span class="sd">        The modularity of the paritition.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NotAPartition</span>
+<span class="sd">        If `communities` is not a partition of the nodes of `G`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import networkx.algorithms.community as nx_comm</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.barbell_graph(3, 0)</span>
+<span class="sd">    &gt;&gt;&gt; nx_comm.modularity(G, [{0, 1, 2}, {3, 4, 5}])</span>
+<span class="sd">    0.35714285714285715</span>
+<span class="sd">    &gt;&gt;&gt; nx_comm.modularity(G, nx_comm.label_propagation_communities(G))</span>
+<span class="sd">    0.35714285714285715</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] M. E. J. Newman &quot;Networks: An Introduction&quot;, page 224.</span>
+<span class="sd">       Oxford University Press, 2011.</span>
+<span class="sd">    .. [2] Clauset, Aaron, Mark EJ Newman, and Cristopher Moore.</span>
+<span class="sd">       &quot;Finding community structure in very large networks.&quot;</span>
+<span class="sd">       Phys. Rev. E 70.6 (2004). &lt;https://arxiv.org/abs/cond-mat/0408187&gt;</span>
+<span class="sd">    .. [3] Reichardt and Bornholdt &quot;Statistical Mechanics of Community Detection&quot;</span>
+<span class="sd">       Phys. Rev. E 74, 016110, 2006. https://doi.org/10.1103/PhysRevE.74.016110</span>
+<span class="sd">    .. [4] M. E. J. Newman, &quot;Equivalence between modularity optimization and</span>
+<span class="sd">       maximum likelihood methods for community detection&quot;</span>
+<span class="sd">       Phys. Rev. E 94, 052315, 2016. https://doi.org/10.1103/PhysRevE.94.052315</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">communities</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="n">communities</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">communities</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">is_partition</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">communities</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">NotAPartition</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">communities</span><span class="p">)</span>
+
+    <span class="n">directed</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">is_directed</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">directed</span><span class="p">:</span>
+        <span class="n">out_degree</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">out_degree</span><span class="p">(</span><span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">))</span>
+        <span class="n">in_degree</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">in_degree</span><span class="p">(</span><span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">))</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">out_degree</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="n">norm</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">m</span><span class="o">**</span><span class="mi">2</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">out_degree</span> <span class="o">=</span> <span class="n">in_degree</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">degree</span><span class="p">(</span><span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">))</span>
+        <span class="n">deg_sum</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">out_degree</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">deg_sum</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="n">norm</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">deg_sum</span><span class="o">**</span><span class="mi">2</span>
+
+    <span class="k">def</span> <span class="nf">community_contribution</span><span class="p">(</span><span class="n">community</span><span class="p">):</span>
+        <span class="n">comm</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">community</span><span class="p">)</span>
+        <span class="n">L_c</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">wt</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">wt</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">weight</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">comm</span><span class="p">)</span>
+
+        <span class="n">out_degree_sum</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">out_degree</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">comm</span><span class="p">)</span>
+        <span class="n">in_degree_sum</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">in_degree</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">comm</span><span class="p">)</span> <span class="k">if</span> <span class="n">directed</span> <span class="k">else</span> <span class="n">out_degree_sum</span>
+
+        <span class="k">return</span> <span class="n">L_c</span> <span class="o">/</span> <span class="n">m</span> <span class="o">-</span> <span class="n">resolution</span> <span class="o">*</span> <span class="n">out_degree_sum</span> <span class="o">*</span> <span class="n">in_degree_sum</span> <span class="o">*</span> <span class="n">norm</span>
+
+    <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">community_contribution</span><span class="p">,</span> <span class="n">communities</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="partition_quality"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.community.quality.partition_quality.html#networkx.algorithms.community.quality.partition_quality">[docs]</a><span class="nd">@require_partition</span>
+<span class="k">def</span> <span class="nf">partition_quality</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">partition</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the coverage and performance of a partition of G.</span>
+
+<span class="sd">    The *coverage* of a partition is the ratio of the number of</span>
+<span class="sd">    intra-community edges to the total number of edges in the graph.</span>
+
+<span class="sd">    The *performance* of a partition is the number of</span>
+<span class="sd">    intra-community edges plus inter-community non-edges divided by the total</span>
+<span class="sd">    number of potential edges.</span>
+
+<span class="sd">    This algorithm has complexity $O(C^2 + L)$ where C is the number of communities and L is the number of links.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+
+<span class="sd">    partition : sequence</span>
+<span class="sd">        Partition of the nodes of `G`, represented as a sequence of</span>
+<span class="sd">        sets of nodes (blocks). Each block of the partition represents a</span>
+<span class="sd">        community.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    (float, float)</span>
+<span class="sd">        The (coverage, performance) tuple of the partition, as defined above.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NetworkXError</span>
+<span class="sd">        If `partition` is not a valid partition of the nodes of `G`.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    If `G` is a multigraph;</span>
+<span class="sd">        - for coverage, the multiplicity of edges is counted</span>
+<span class="sd">        - for performance, the result is -1 (total number of possible edges is not defined)</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Santo Fortunato.</span>
+<span class="sd">           &quot;Community Detection in Graphs&quot;.</span>
+<span class="sd">           *Physical Reports*, Volume 486, Issue 3--5 pp. 75--174</span>
+<span class="sd">           &lt;https://arxiv.org/abs/0906.0612&gt;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">node_community</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">community</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">partition</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">community</span><span class="p">:</span>
+            <span class="n">node_community</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+
+    <span class="c1"># `performance` is not defined for multigraphs</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">G</span><span class="o">.</span><span class="n">is_multigraph</span><span class="p">():</span>
+        <span class="c1"># Iterate over the communities, quadratic, to calculate `possible_inter_community_edges`</span>
+        <span class="n">possible_inter_community_edges</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="n">p1</span><span class="p">)</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">p2</span><span class="p">)</span> <span class="k">for</span> <span class="n">p1</span><span class="p">,</span> <span class="n">p2</span> <span class="ow">in</span> <span class="n">combinations</span><span class="p">(</span><span class="n">partition</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+            <span class="n">possible_inter_community_edges</span> <span class="o">*=</span> <span class="mi">2</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">possible_inter_community_edges</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># Compute the number of edges in the complete graph -- `n` nodes,</span>
+    <span class="c1"># directed or undirected, depending on `G`</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+    <span class="n">total_pairs</span> <span class="o">=</span> <span class="n">n</span> <span class="o">*</span> <span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">G</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+        <span class="n">total_pairs</span> <span class="o">//=</span> <span class="mi">2</span>
+
+    <span class="n">intra_community_edges</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">inter_community_non_edges</span> <span class="o">=</span> <span class="n">possible_inter_community_edges</span>
+
+    <span class="c1"># Iterate over the links to count `intra_community_edges` and `inter_community_non_edges`</span>
+    <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">node_community</span><span class="p">[</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">==</span> <span class="n">node_community</span><span class="p">[</span><span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">]]:</span>
+            <span class="n">intra_community_edges</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">inter_community_non_edges</span> <span class="o">-=</span> <span class="mi">1</span>
+
+    <span class="n">coverage</span> <span class="o">=</span> <span class="n">intra_community_edges</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">is_multigraph</span><span class="p">():</span>
+        <span class="n">performance</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">performance</span> <span class="o">=</span> <span class="p">(</span><span class="n">intra_community_edges</span> <span class="o">+</span> <span class="n">inter_community_non_edges</span><span class="p">)</span> <span class="o">/</span> <span class="n">total_pairs</span>
+
+    <span class="k">return</span> <span class="n">coverage</span><span class="p">,</span> <span class="n">performance</span></div>
+</pre></div>
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

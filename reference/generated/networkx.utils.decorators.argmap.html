@@ -1,0 +1,971 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>networkx.utils.decorators.argmap &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'reference/generated/networkx.utils.decorators.argmap';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/reference/generated/networkx.utils.decorators.argmap.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="argmap.assemble" href="generated/networkx.utils.decorators.argmap.assemble.html" />
+    <link rel="prev" title="py_random_state" href="networkx.utils.decorators.py_random_state.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">
+    Section Navigation
+  </p>
+  <div class="bd-toc-item navbar-nav">
+    <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../classes/index.html">Graph types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../algorithms/index.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../functions.html">Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../generators.html">Graph generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../linalg.html">Linear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../convert.html">Converting to and from other data formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../relabel.html">Relabeling nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../readwrite/index.html">Reading and writing graphs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../drawing.html">Drawing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../randomness.html">Randomness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../exceptions.html">Exceptions</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../utils.html">Utilities</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="networkx.utils.misc.arbitrary_element.html">arbitrary_element</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.utils.misc.flatten.html">flatten</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.utils.misc.make_list_of_ints.html">make_list_of_ints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.utils.misc.dict_to_numpy_array.html">dict_to_numpy_array</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.utils.misc.pairwise.html">pairwise</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.utils.misc.groups.html">groups</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.utils.misc.create_random_state.html">create_random_state</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.utils.misc.create_py_random_state.html">create_py_random_state</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.utils.misc.nodes_equal.html">nodes_equal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.utils.misc.edges_equal.html">edges_equal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.utils.misc.graphs_equal.html">graphs_equal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.utils.union_find.UnionFind.union.html">UnionFind.union</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.utils.random_sequence.powerlaw_sequence.html">powerlaw_sequence</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.utils.random_sequence.cumulative_distribution.html">cumulative_distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.utils.random_sequence.discrete_sequence.html">discrete_sequence</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.utils.random_sequence.zipf_rv.html">zipf_rv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.utils.random_sequence.random_weighted_sample.html">random_weighted_sample</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.utils.random_sequence.weighted_choice.html">weighted_choice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.utils.decorators.open_file.html">open_file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.utils.decorators.not_implemented_for.html">not_implemented_for</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.utils.decorators.nodes_or_number.html">nodes_or_number</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.utils.decorators.np_random_state.html">np_random_state</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.utils.decorators.py_random_state.html">py_random_state</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">networkx.utils.decorators.argmap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.utils.rcm.cuthill_mckee_ordering.html">cuthill_mckee_ordering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.utils.rcm.reverse_cuthill_mckee_ordering.html">reverse_cuthill_mckee_ordering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.utils.mapped_queue.MappedQueue.html">networkx.utils.mapped_queue.MappedQueue</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../glossary.html">Glossary</a></li>
+</ul>
+
+  </div>
+</nav>
+    </div>
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <section id="networkx-utils-decorators-argmap">
+<h1>networkx.utils.decorators.argmap<a class="headerlink" href="#networkx-utils-decorators-argmap" title="Permalink to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="networkx.utils.decorators.argmap">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">argmap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">try_finally</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/networkx/utils/decorators.html#argmap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#networkx.utils.decorators.argmap" title="Permalink to this definition">#</a></dt>
+<dd><p>A decorator to apply a map to arguments before calling the function</p>
+<p>This class provides a decorator that maps (transforms) arguments of the function
+before the function is called. Thus for example, we have similar code
+in many functions to determine whether an argument is the number of nodes
+to be created, or a list of nodes to be handled. The decorator provides
+the code to accept either – transforming the indicated argument into a
+list of nodes before the actual function is called.</p>
+<p>This decorator class allows us to process single or multiple arguments.
+The arguments to be processed can be specified by string, naming the argument,
+or by index, specifying the item in the args list.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>func</strong><span class="classifier">callable</span></dt><dd><p>The function to apply to arguments</p>
+</dd>
+<dt><strong>*args</strong><span class="classifier">iterable of (int, str or tuple)</span></dt><dd><p>A list of parameters, specified either as strings (their names), ints
+(numerical indices) or tuples, which may contain ints, strings, and
+(recursively) tuples. Each indicates which parameters the decorator
+should map. Tuples indicate that the map function takes (and returns)
+multiple parameters in the same order and nested structure as indicated
+here.</p>
+</dd>
+<dt><strong>try_finally</strong><span class="classifier">bool (default: False)</span></dt><dd><p>When True, wrap the function call in a try-finally block with code
+for the finally block created by <code class="xref py py-obj docutils literal notranslate"><span class="pre">func</span></code>. This is used when the map
+function constructs an object (like a file handle) that requires
+post-processing (like closing).</p>
+<p>Note: try_finally decorators cannot be used to decorate generator
+functions.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="networkx.utils.decorators.not_implemented_for.html#networkx.utils.decorators.not_implemented_for" title="networkx.utils.decorators.not_implemented_for"><code class="xref py py-obj docutils literal notranslate"><span class="pre">not_implemented_for</span></code></a></dt><dd></dd>
+<dt><a class="reference internal" href="networkx.utils.decorators.open_file.html#networkx.utils.decorators.open_file" title="networkx.utils.decorators.open_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">open_file</span></code></a></dt><dd></dd>
+<dt><a class="reference internal" href="networkx.utils.decorators.nodes_or_number.html#networkx.utils.decorators.nodes_or_number" title="networkx.utils.decorators.nodes_or_number"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nodes_or_number</span></code></a></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_state</span></code></dt><dd></dd>
+<dt><a class="reference internal" href="networkx.utils.decorators.py_random_state.html#networkx.utils.decorators.py_random_state" title="networkx.utils.decorators.py_random_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">py_random_state</span></code></a></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">networkx.community.quality.require_partition</span></code></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">require_partition</span></code></dt><dd></dd>
+</dl>
+</div>
+<p class="rubric">Notes</p>
+<p>An object of this class is callable and intended to be used when
+defining a decorator. Generally, a decorator takes a function as input
+and constructs a function as output. Specifically, an <a class="reference internal" href="#networkx.utils.decorators.argmap" title="networkx.utils.decorators.argmap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">argmap</span></code></a> object
+returns the input function decorated/wrapped so that specified arguments
+are mapped (transformed) to new values before the decorated function is called.</p>
+<p>As an overview, the argmap object returns a new function with all the
+dunder values of the original function (like <code class="xref py py-obj docutils literal notranslate"><span class="pre">__doc__</span></code>, <a class="reference external" href="https://docs.python.org/3/reference/import.html#name__" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__name__</span></code></a>, etc).
+Code for this decorated function is built based on the original function’s
+signature. It starts by mapping the input arguments to potentially new
+values. Then it calls the decorated function with these new values in place
+of the indicated arguments that have been mapped. The return value of the
+original function is then returned. This new function is the function that
+is actually called by the user.</p>
+<dl>
+<dt>Three additional features are provided.</dt><dd><p>1) The code is lazily compiled. That is, the new function is returned
+as an object without the code compiled, but with all information
+needed so it can be compiled upon it’s first invocation. This saves
+time on import at the cost of additional time on the first call of
+the function. Subsequent calls are then just as fast as normal.</p>
+<p>2) If the “try_finally” keyword-only argument is True, a try block
+follows each mapped argument, matched on the other side of the wrapped
+call, by a finally block closing that mapping.  We expect func to return
+a 2-tuple: the mapped value and a function to be called in the finally
+clause.  This feature was included so the <a class="reference internal" href="networkx.utils.decorators.open_file.html#networkx.utils.decorators.open_file" title="networkx.utils.decorators.open_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">open_file</span></code></a> decorator could
+provide a file handle to the decorated function and close the file handle
+after the function call. It even keeps track of whether to close the file
+handle or not based on whether it had to open the file or the input was
+already open. So, the decorated function does not need to include any
+code to open or close files.</p>
+<p>3) The maps applied can process multiple arguments. For example,
+you could swap two arguments using a mapping, or transform
+them to their sum and their difference. This was included to allow
+a decorator in the <code class="xref py py-obj docutils literal notranslate"><span class="pre">quality.py</span></code> module that checks that an input
+<code class="xref py py-obj docutils literal notranslate"><span class="pre">partition</span></code> is a valid partition of the nodes of the input graph <code class="xref py py-obj docutils literal notranslate"><span class="pre">G</span></code>.
+In this example, the map has inputs <code class="xref py py-obj docutils literal notranslate"><span class="pre">(G,</span> <span class="pre">partition)</span></code>. After checking
+for a valid partition, the map either raises an exception or leaves
+the inputs unchanged. Thus many functions that make this check can
+use the decorator rather than copy the checking code into each function.
+More complicated nested argument structures are described below.</p>
+</dd>
+</dl>
+<p>The remaining notes describe the code structure and methods for this
+class in broad terms to aid in understanding how to use it.</p>
+<p>Instantiating an <a class="reference internal" href="#networkx.utils.decorators.argmap" title="networkx.utils.decorators.argmap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">argmap</span></code></a> object simply stores the mapping function and
+the input identifiers of which arguments to map. The resulting decorator
+is ready to use this map to decorate any function. Calling that object
+(<code class="xref py py-obj docutils literal notranslate"><span class="pre">argmap.__call__</span></code>, but usually done via <code class="xref py py-obj docutils literal notranslate"><span class="pre">&#64;my_decorator</span></code>) a lazily
+compiled thin wrapper of the decorated function is constructed,
+wrapped with the necessary function dunder attributes like <code class="xref py py-obj docutils literal notranslate"><span class="pre">__doc__</span></code>
+and <a class="reference external" href="https://docs.python.org/3/reference/import.html#name__" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__name__</span></code></a>. That thinly wrapped function is returned as the
+decorated function. When that decorated function is called, the thin
+wrapper of code calls <code class="xref py py-obj docutils literal notranslate"><span class="pre">argmap._lazy_compile</span></code> which compiles the decorated
+function (using <a class="reference internal" href="generated/networkx.utils.decorators.argmap.compile.html#networkx.utils.decorators.argmap.compile" title="networkx.utils.decorators.argmap.compile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">argmap.compile</span></code></a>) and replaces the code of the thin
+wrapper with the newly compiled code. This saves the compilation step
+every import of networkx, at the cost of compiling upon the first call
+to the decorated function.</p>
+<p>When the decorated function is compiled, the code is recursively assembled
+using the <a class="reference internal" href="generated/networkx.utils.decorators.argmap.assemble.html#networkx.utils.decorators.argmap.assemble" title="networkx.utils.decorators.argmap.assemble"><code class="xref py py-obj docutils literal notranslate"><span class="pre">argmap.assemble</span></code></a> method. The recursive nature is needed in
+case of nested decorators. The result of the assembly is a number of
+useful objects.</p>
+<blockquote>
+<div><dl>
+<dt>sig<span class="classifier">the function signature of the original decorated function as</span></dt><dd><p>constructed by <a class="reference internal" href="generated/networkx.utils.decorators.argmap.signature.html#networkx.utils.decorators.argmap.signature" title="networkx.utils.decorators.argmap.signature"><code class="xref py py-func docutils literal notranslate"><span class="pre">argmap.signature()</span></code></a>. This is constructed
+using <a class="reference external" href="https://docs.python.org/3/library/inspect.html#inspect.signature" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">inspect.signature</span></code></a> but enhanced with attribute
+strings <code class="xref py py-obj docutils literal notranslate"><span class="pre">sig_def</span></code> and <code class="xref py py-obj docutils literal notranslate"><span class="pre">sig_call</span></code>, and other information
+specific to mapping arguments of this function.
+This information is used to construct a string of code defining
+the new decorated function.</p>
+</dd>
+<dt>wrapped_name<span class="classifier">a unique internally used name constructed by argmap</span></dt><dd><p>for the decorated function.</p>
+</dd>
+<dt>functions<span class="classifier">a dict of the functions used inside the code of this</span></dt><dd><p>decorated function, to be used as <a class="reference external" href="https://docs.python.org/3/library/functions.html#globals" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">globals</span></code></a> in <a class="reference external" href="https://docs.python.org/3/library/functions.html#exec" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">exec</span></code></a>.
+This dict is recursively updated to allow for nested decorating.</p>
+</dd>
+<dt>mapblock<span class="classifier">code (as a list of strings) to map the incoming argument</span></dt><dd><p>values to their mapped values.</p>
+</dd>
+<dt>finallys<span class="classifier">code (as a list of strings) to provide the possibly nested</span></dt><dd><p>set of finally clauses if needed.</p>
+</dd>
+<dt>mutable_args<span class="classifier">a bool indicating whether the <code class="xref py py-obj docutils literal notranslate"><span class="pre">sig.args</span></code> tuple should be</span></dt><dd><p>converted to a list so mutation can occur.</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>After this recursive assembly process, the <a class="reference internal" href="generated/networkx.utils.decorators.argmap.compile.html#networkx.utils.decorators.argmap.compile" title="networkx.utils.decorators.argmap.compile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">argmap.compile</span></code></a> method
+constructs code (as strings) to convert the tuple <code class="xref py py-obj docutils literal notranslate"><span class="pre">sig.args</span></code> to a list
+if needed. It joins the defining code with appropriate indents and
+compiles the result.  Finally, this code is evaluated and the original
+wrapper’s implementation is replaced with the compiled version (see
+<code class="xref py py-obj docutils literal notranslate"><span class="pre">argmap._lazy_compile</span></code> for more details).</p>
+<p>Other <a class="reference internal" href="#networkx.utils.decorators.argmap" title="networkx.utils.decorators.argmap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">argmap</span></code></a> methods include <code class="xref py py-obj docutils literal notranslate"><span class="pre">_name</span></code> and <code class="xref py py-obj docutils literal notranslate"><span class="pre">_count</span></code> which allow internally
+generated names to be unique within a python session.
+The methods <code class="xref py py-obj docutils literal notranslate"><span class="pre">_flatten</span></code> and <code class="xref py py-obj docutils literal notranslate"><span class="pre">_indent</span></code> process the nested lists of strings
+into properly indented python code ready to be compiled.</p>
+<p>More complicated nested tuples of arguments also allowed though
+usually not used. For the simple 2 argument case, the argmap
+input (“a”, “b”) implies the mapping function will take 2 arguments
+and return a 2-tuple of mapped values. A more complicated example
+with argmap input <code class="xref py py-obj docutils literal notranslate"><span class="pre">(&quot;a&quot;,</span> <span class="pre">(&quot;b&quot;,</span> <span class="pre">&quot;c&quot;))</span></code> requires the mapping function
+take 2 inputs, with the second being a 2-tuple. It then must output
+the 3 mapped values in the same nested structure <code class="xref py py-obj docutils literal notranslate"><span class="pre">(newa,</span> <span class="pre">(newb,</span> <span class="pre">newc))</span></code>.
+This level of generality is not often needed, but was convenient
+to implement when handling the multiple arguments.</p>
+<p class="rubric">Examples</p>
+<p>Most of these examples use <code class="xref py py-obj docutils literal notranslate"><span class="pre">&#64;argmap(...)</span></code> to apply the decorator to
+the function defined on the next line.
+In the NetworkX codebase however, <a class="reference internal" href="#networkx.utils.decorators.argmap" title="networkx.utils.decorators.argmap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">argmap</span></code></a> is used within a function to
+construct a decorator. That is, the decorator defines a mapping function
+and then uses <a class="reference internal" href="#networkx.utils.decorators.argmap" title="networkx.utils.decorators.argmap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">argmap</span></code></a> to build and return a decorated function.
+A simple example is a decorator that specifies which currency to report money.
+The decorator (named <code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_to</span></code>) would be used like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@convert_to</span><span class="p">(</span><span class="s2">&quot;US_Dollars&quot;</span><span class="p">,</span> <span class="s2">&quot;income&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">show_me_the_money</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">income</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> : </span><span class="si">{</span><span class="n">income</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>And the code to create the decorator might be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">convert_to</span><span class="p">(</span><span class="n">currency</span><span class="p">,</span> <span class="n">which_arg</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_convert</span><span class="p">(</span><span class="n">amount</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">amount</span><span class="o">.</span><span class="n">currency</span> <span class="o">!=</span> <span class="n">currency</span><span class="p">:</span>
+            <span class="n">amount</span> <span class="o">=</span> <span class="n">amount</span><span class="o">.</span><span class="n">to_currency</span><span class="p">(</span><span class="n">currency</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">amount</span>
+    <span class="k">return</span> <span class="n">argmap</span><span class="p">(</span><span class="n">_convert</span><span class="p">,</span> <span class="n">which_arg</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Despite this common idiom for argmap, most of the following examples
+use the <code class="xref py py-obj docutils literal notranslate"><span class="pre">&#64;argmap(...)</span></code> idiom to save space.</p>
+<p>Here’s an example use of argmap to sum the elements of two of the functions
+arguments. The decorated function:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@argmap</span><span class="p">(</span><span class="nb">sum</span><span class="p">,</span> <span class="s2">&quot;xlist&quot;</span><span class="p">,</span> <span class="s2">&quot;zlist&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">xlist</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">zlist</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">xlist</span> <span class="o">-</span> <span class="n">y</span> <span class="o">+</span> <span class="n">zlist</span>
+</pre></div>
+</div>
+<p>is syntactic sugar for:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">xlist</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">zlist</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">xlist</span><span class="p">)</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">zlist</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">-</span> <span class="n">y</span> <span class="o">+</span> <span class="n">z</span>
+</pre></div>
+</div>
+<p>and is equivalent to (using argument indexes):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@argmap</span><span class="p">(</span><span class="nb">sum</span><span class="p">,</span> <span class="s2">&quot;xlist&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">xlist</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">zlist</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">xlist</span> <span class="o">-</span> <span class="n">y</span> <span class="o">+</span> <span class="n">zlist</span>
+</pre></div>
+</div>
+<p>or:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@argmap</span><span class="p">(</span><span class="nb">sum</span><span class="p">,</span> <span class="s2">&quot;zlist&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">xlist</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">zlist</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">xlist</span> <span class="o">-</span> <span class="n">y</span> <span class="o">+</span> <span class="n">zlist</span>
+</pre></div>
+</div>
+<p>Transforming functions can be applied to multiple arguments, such as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">swap</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span>
+
+<span class="c1"># the 2-tuple tells argmap that the map `swap` has 2 inputs/outputs.</span>
+<span class="nd">@argmap</span><span class="p">(</span><span class="n">swap</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">)):</span>
+<span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">/</span> <span class="n">b</span> <span class="o">*</span> <span class="n">c</span>
+</pre></div>
+</div>
+<p>is equivalent to:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+    <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">swap</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">/</span> <span class="n">b</span> <span class="o">*</span> <span class="n">c</span>
+</pre></div>
+</div>
+<p>More generally, the applied arguments can be nested tuples of strings or ints.
+The syntax <code class="xref py py-obj docutils literal notranslate"><span class="pre">&#64;argmap(some_func,</span> <span class="pre">(&quot;a&quot;,</span> <span class="pre">(&quot;b&quot;,</span> <span class="pre">&quot;c&quot;)))</span></code> would expect <code class="xref py py-obj docutils literal notranslate"><span class="pre">some_func</span></code> to
+accept 2 inputs with the second expected to be a 2-tuple. It should then return
+2 outputs with the second a 2-tuple. The returns values would replace input “a”
+“b” and “c” respectively. Similarly for <code class="xref py py-obj docutils literal notranslate"><span class="pre">&#64;argmap(some_func,</span> <span class="pre">(0,</span> <span class="pre">(&quot;b&quot;,</span> <span class="pre">2)))</span></code>.</p>
+<p>Also, note that an index larger than the number of named parameters is allowed
+for variadic functions. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">double</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+    <span class="k">return</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">a</span>
+
+<span class="nd">@argmap</span><span class="p">(</span><span class="n">double</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">overflow</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">a</span><span class="p">,</span> <span class="n">args</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">overflow</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>  <span class="c1"># output is 1, (2, 3, 8, 5, 6)</span>
+</pre></div>
+</div>
+<p><strong>Try Finally</strong></p>
+<p>Additionally, this <a class="reference internal" href="#networkx.utils.decorators.argmap" title="networkx.utils.decorators.argmap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">argmap</span></code></a> class can be used to create a decorator that
+initiates a try…finally block. The decorator must be written to return
+both the transformed argument and a closing function.
+This feature was included to enable the <a class="reference internal" href="networkx.utils.decorators.open_file.html#networkx.utils.decorators.open_file" title="networkx.utils.decorators.open_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">open_file</span></code></a> decorator which might
+need to close the file or not depending on whether it had to open that file.
+This feature uses the keyword-only <code class="xref py py-obj docutils literal notranslate"><span class="pre">try_finally</span></code> argument to <code class="xref py py-obj docutils literal notranslate"><span class="pre">&#64;argmap</span></code>.</p>
+<p>For example this map opens a file and then makes sure it is closed:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">open_file</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">f</span><span class="p">,</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The decorator applies that to the function <code class="xref py py-obj docutils literal notranslate"><span class="pre">foo</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@argmap</span><span class="p">(</span><span class="n">open_file</span><span class="p">,</span> <span class="s2">&quot;file&quot;</span><span class="p">,</span> <span class="n">try_finally</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">file</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>is syntactic sugar for:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">file</span><span class="p">):</span>
+    <span class="n">file</span><span class="p">,</span> <span class="n">close_file</span> <span class="o">=</span> <span class="n">open_file</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">close_file</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>and is equivalent to (using indexes):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@argmap</span><span class="p">(</span><span class="n">open_file</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">try_finally</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">file</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>Here’s an example of the try_finally feature used to create a decorator:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">my_closing_decorator</span><span class="p">(</span><span class="n">which_arg</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_opener</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+            <span class="n">fclose</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">close</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># assume `path` handles the closing</span>
+            <span class="n">fclose</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">path</span><span class="p">,</span> <span class="n">fclose</span>
+    <span class="k">return</span> <span class="n">argmap</span><span class="p">(</span><span class="n">_opener</span><span class="p">,</span> <span class="n">which_arg</span><span class="p">,</span> <span class="n">try_finally</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>which can then be used as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@my_closing_decorator</span><span class="p">(</span><span class="s2">&quot;file&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">fancy_reader</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="c1"># this code doesn&#39;t need to worry about closing the file</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>Decorators with try_finally = True cannot be used with generator functions,
+because the <code class="xref py py-obj docutils literal notranslate"><span class="pre">finally</span></code> block is evaluated before the generator is exhausted:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@argmap</span><span class="p">(</span><span class="n">open_file</span><span class="p">,</span> <span class="s2">&quot;file&quot;</span><span class="p">,</span> <span class="n">try_finally</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">file_to_lines</span><span class="p">(</span><span class="n">file</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">file</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
+        <span class="k">yield</span> <span class="n">line</span>
+</pre></div>
+</div>
+<p>is equivalent to:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">file_to_lines_wrapped</span><span class="p">(</span><span class="n">file</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">file</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
+        <span class="k">yield</span> <span class="n">line</span>
+
+<span class="k">def</span> <span class="nf">file_to_lines_wrapper</span><span class="p">(</span><span class="n">file</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">file</span> <span class="o">=</span> <span class="n">open_file</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">file_to_lines_wrapped</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>which behaves similarly to:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">file_to_lines_whoops</span><span class="p">(</span><span class="n">file</span><span class="p">):</span>
+    <span class="n">file</span> <span class="o">=</span> <span class="n">open_file</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+    <span class="n">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">file</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
+        <span class="k">yield</span> <span class="n">line</span>
+</pre></div>
+</div>
+<p>because the <code class="xref py py-obj docutils literal notranslate"><span class="pre">finally</span></code> block of <code class="xref py py-obj docutils literal notranslate"><span class="pre">file_to_lines_wrapper</span></code> is executed before
+the caller has a chance to exhaust the iterator.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="networkx.utils.decorators.argmap.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">try_finally</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/networkx/utils/decorators.html#argmap.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#networkx.utils.decorators.argmap.__init__" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.utils.decorators.argmap.assemble.html#networkx.utils.decorators.argmap.assemble" title="networkx.utils.decorators.argmap.assemble"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assemble</span></code></a>(f)</p></td>
+<td><p>Collects components of the source for the decorated function wrapping f.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.utils.decorators.argmap.compile.html#networkx.utils.decorators.argmap.compile" title="networkx.utils.decorators.argmap.compile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compile</span></code></a>(f)</p></td>
+<td><p>Compile the decorated function.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.utils.decorators.argmap.signature.html#networkx.utils.decorators.argmap.signature" title="networkx.utils.decorators.argmap.signature"><code class="xref py py-obj docutils literal notranslate"><span class="pre">signature</span></code></a>(f)</p></td>
+<td><p>Construct a Signature object describing <code class="xref py py-obj docutils literal notranslate"><span class="pre">f</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</section>
+
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx.utils.decorators.argmap">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     argmap
+    </span>
+   </code>
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#networkx.utils.decorators.argmap.__init__">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       argmap.__init__()
+      </span>
+     </code>
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

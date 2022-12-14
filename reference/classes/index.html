@@ -1,0 +1,923 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Graph types &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'reference/classes/index';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/reference/classes/index.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Graph—Undirected graphs with self loops" href="graph.html" />
+    <link rel="prev" title="Introduction" href="../introduction.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">
+    Section Navigation
+  </p>
+  <div class="bd-toc-item navbar-nav">
+    <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">Graph types</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="graph.html">Graph—Undirected graphs with self loops</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digraph.html">DiGraph—Directed graphs with self loops</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multigraph.html">MultiGraph—Undirected graphs with self loops and parallel edges</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multidigraph.html">MultiDiGraph—Directed graphs with self loops and parallel edges</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.classes.graphviews.generic_graph_view.html">generic_graph_view</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.classes.graphviews.subgraph_view.html">subgraph_view</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.classes.graphviews.reverse_view.html">reverse_view</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.classes.coreviews.AtlasView.html">networkx.classes.coreviews.AtlasView</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.classes.coreviews.AdjacencyView.html">networkx.classes.coreviews.AdjacencyView</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.classes.coreviews.MultiAdjacencyView.html">networkx.classes.coreviews.MultiAdjacencyView</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.classes.coreviews.UnionAtlas.html">networkx.classes.coreviews.UnionAtlas</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.classes.coreviews.UnionAdjacency.html">networkx.classes.coreviews.UnionAdjacency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.classes.coreviews.UnionMultiInner.html">networkx.classes.coreviews.UnionMultiInner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.classes.coreviews.UnionMultiAdjacency.html">networkx.classes.coreviews.UnionMultiAdjacency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.classes.coreviews.FilterAtlas.html">networkx.classes.coreviews.FilterAtlas</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.classes.coreviews.FilterAdjacency.html">networkx.classes.coreviews.FilterAdjacency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.classes.coreviews.FilterMultiInner.html">networkx.classes.coreviews.FilterMultiInner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.classes.coreviews.FilterMultiAdjacency.html">networkx.classes.coreviews.FilterMultiAdjacency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.classes.filters.no_filter.html">no_filter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.classes.filters.hide_nodes.html">hide_nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.classes.filters.hide_edges.html">hide_edges</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.classes.filters.hide_diedges.html">hide_diedges</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.classes.filters.hide_multidiedges.html">hide_multidiedges</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.classes.filters.hide_multiedges.html">hide_multiedges</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.classes.filters.show_nodes.html">networkx.classes.filters.show_nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.classes.filters.show_edges.html">show_edges</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.classes.filters.show_diedges.html">show_diedges</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.classes.filters.show_multidiedges.html">show_multidiedges</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.classes.filters.show_multiedges.html">show_multiedges</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.classes.backends._dispatch.html">_dispatch</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../algorithms/index.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../functions.html">Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../generators.html">Graph generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../linalg.html">Linear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../convert.html">Converting to and from other data formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../relabel.html">Relabeling nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../readwrite/index.html">Reading and writing graphs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../drawing.html">Drawing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../randomness.html">Randomness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../exceptions.html">Exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils.html">Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../glossary.html">Glossary</a></li>
+</ul>
+
+  </div>
+</nav>
+    </div>
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <section id="graph-types">
+<span id="classes"></span><h1>Graph types<a class="headerlink" href="#graph-types" title="Permalink to this heading">#</a></h1>
+<p>NetworkX provides data structures and methods for storing graphs.</p>
+<p>All NetworkX graph classes allow (hashable) Python objects as nodes
+and any Python object can be assigned as an edge attribute.</p>
+<p>The choice of graph class depends on the structure of the
+graph you want to represent.</p>
+<section id="which-graph-class-should-i-use">
+<h2>Which graph class should I use?<a class="headerlink" href="#which-graph-class-should-i-use" title="Permalink to this heading">#</a></h2>
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Networkx Class</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Self-loops allowed</p></th>
+<th class="head"><p>Parallel edges allowed</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Graph</p></td>
+<td><p>undirected</p></td>
+<td><p>Yes</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p>DiGraph</p></td>
+<td><p>directed</p></td>
+<td><p>Yes</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-even"><td><p>MultiGraph</p></td>
+<td><p>undirected</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-odd"><td><p>MultiDiGraph</p></td>
+<td><p>directed</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="basic-graph-types">
+<h2>Basic graph types<a class="headerlink" href="#basic-graph-types" title="Permalink to this heading">#</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="graph.html">Graph—Undirected graphs with self loops</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="graph.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="graph.html#methods">Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="digraph.html">DiGraph—Directed graphs with self loops</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="digraph.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digraph.html#methods">Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="multigraph.html">MultiGraph—Undirected graphs with self loops and parallel edges</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="multigraph.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multigraph.html#methods">Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="multidigraph.html">MultiDiGraph—Directed graphs with self loops and parallel edges</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="multidigraph.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multidigraph.html#methods">Methods</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>NetworkX uses <code class="xref py py-obj docutils literal notranslate"><span class="pre">dicts</span></code> to store the nodes and neighbors in a graph.
+So the reporting of nodes and edges for the base graph classes may not
+necessarily be consistent across versions and platforms; however, the reporting
+for CPython is consistent across platforms and versions after 3.6.</p>
+</div>
+</section>
+<section id="module-networkx.classes.graphviews">
+<span id="graph-views"></span><h2>Graph Views<a class="headerlink" href="#module-networkx.classes.graphviews" title="Permalink to this heading">#</a></h2>
+<p>View of Graphs as SubGraph, Reverse, Directed, Undirected.</p>
+<p>In some algorithms it is convenient to temporarily morph
+a graph to exclude some nodes or edges. It should be better
+to do that via a view than to remove and then re-add.
+In other algorithms it is convenient to temporarily morph
+a graph to reverse directed edges, or treat a directed graph
+as undirected, etc. This module provides those graph views.</p>
+<p>The resulting views are essentially read-only graphs that
+report data from the orignal graph object. We provide an
+attribute G._graph which points to the underlying graph object.</p>
+<p>Note: Since graphviews look like graphs, one can end up with
+view-of-view-of-view chains. Be careful with chains because
+they become very slow with about 15 nested views.
+For the common simple case of node induced subgraphs created
+from the graph class, we short-cut the chain by returning a
+subgraph of the original graph directly rather than a subgraph
+of a subgraph. We are careful not to disrupt any edge filter in
+the middle subgraph. In general, determining how to short-cut
+the chain is tricky and much harder with restricted_views than
+with induced subgraphs.
+Often it is easiest to use .copy() to avoid chains.</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.classes.graphviews.generic_graph_view.html#networkx.classes.graphviews.generic_graph_view" title="networkx.classes.graphviews.generic_graph_view"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generic_graph_view</span></code></a>(G[, create_using])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.classes.graphviews.subgraph_view.html#networkx.classes.graphviews.subgraph_view" title="networkx.classes.graphviews.subgraph_view"><code class="xref py py-obj docutils literal notranslate"><span class="pre">subgraph_view</span></code></a>(G[, filter_node, filter_edge])</p></td>
+<td><p>View of <code class="xref py py-obj docutils literal notranslate"><span class="pre">G</span></code> applying a filter on nodes and edges.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.classes.graphviews.reverse_view.html#networkx.classes.graphviews.reverse_view" title="networkx.classes.graphviews.reverse_view"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reverse_view</span></code></a>(G)</p></td>
+<td><p>View of <code class="xref py py-obj docutils literal notranslate"><span class="pre">G</span></code> with edge directions reversed</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-networkx.classes.coreviews">
+<span id="core-views"></span><h2>Core Views<a class="headerlink" href="#module-networkx.classes.coreviews" title="Permalink to this heading">#</a></h2>
+<p>Views of core data structures such as nested Mappings (e.g. dict-of-dicts).
+These <code class="docutils literal notranslate"><span class="pre">Views</span></code> often restrict element access, with either the entire view or
+layers of nested mappings being read-only.</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.classes.coreviews.AtlasView.html#networkx.classes.coreviews.AtlasView" title="networkx.classes.coreviews.AtlasView"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtlasView</span></code></a>(d)</p></td>
+<td><p>An AtlasView is a Read-only Mapping of Mappings.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.classes.coreviews.AdjacencyView.html#networkx.classes.coreviews.AdjacencyView" title="networkx.classes.coreviews.AdjacencyView"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AdjacencyView</span></code></a>(d)</p></td>
+<td><p>An AdjacencyView is a Read-only Map of Maps of Maps.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.classes.coreviews.MultiAdjacencyView.html#networkx.classes.coreviews.MultiAdjacencyView" title="networkx.classes.coreviews.MultiAdjacencyView"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MultiAdjacencyView</span></code></a>(d)</p></td>
+<td><p>An MultiAdjacencyView is a Read-only Map of Maps of Maps of Maps.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.classes.coreviews.UnionAtlas.html#networkx.classes.coreviews.UnionAtlas" title="networkx.classes.coreviews.UnionAtlas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UnionAtlas</span></code></a>(succ, pred)</p></td>
+<td><p>A read-only union of two atlases (dict-of-dict).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.classes.coreviews.UnionAdjacency.html#networkx.classes.coreviews.UnionAdjacency" title="networkx.classes.coreviews.UnionAdjacency"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UnionAdjacency</span></code></a>(succ, pred)</p></td>
+<td><p>A read-only union of dict Adjacencies as a Map of Maps of Maps.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.classes.coreviews.UnionMultiInner.html#networkx.classes.coreviews.UnionMultiInner" title="networkx.classes.coreviews.UnionMultiInner"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UnionMultiInner</span></code></a>(succ, pred)</p></td>
+<td><p>A read-only union of two inner dicts of MultiAdjacencies.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.classes.coreviews.UnionMultiAdjacency.html#networkx.classes.coreviews.UnionMultiAdjacency" title="networkx.classes.coreviews.UnionMultiAdjacency"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UnionMultiAdjacency</span></code></a>(succ, pred)</p></td>
+<td><p>A read-only union of two dict MultiAdjacencies.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.classes.coreviews.FilterAtlas.html#networkx.classes.coreviews.FilterAtlas" title="networkx.classes.coreviews.FilterAtlas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FilterAtlas</span></code></a>(d, NODE_OK)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.classes.coreviews.FilterAdjacency.html#networkx.classes.coreviews.FilterAdjacency" title="networkx.classes.coreviews.FilterAdjacency"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FilterAdjacency</span></code></a>(d, NODE_OK, EDGE_OK)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.classes.coreviews.FilterMultiInner.html#networkx.classes.coreviews.FilterMultiInner" title="networkx.classes.coreviews.FilterMultiInner"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FilterMultiInner</span></code></a>(d, NODE_OK, EDGE_OK)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.classes.coreviews.FilterMultiAdjacency.html#networkx.classes.coreviews.FilterMultiAdjacency" title="networkx.classes.coreviews.FilterMultiAdjacency"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FilterMultiAdjacency</span></code></a>(d, NODE_OK, EDGE_OK)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="filters">
+<h2>Filters<a class="headerlink" href="#filters" title="Permalink to this heading">#</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Filters can be used with views to restrict the view (or expand it).
+They can filter nodes or filter edges. These examples are intended to help
+you build new ones. They may instead contain all the filters you ever need.</p>
+</div>
+<span class="target" id="module-networkx.classes.filters"></span><p>Filter factories to hide or show sets of nodes and edges.</p>
+<p>These filters return the function used when creating <code class="xref py py-obj docutils literal notranslate"><span class="pre">SubGraph</span></code>.</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.classes.filters.no_filter.html#networkx.classes.filters.no_filter" title="networkx.classes.filters.no_filter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">no_filter</span></code></a>(*items)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.classes.filters.hide_nodes.html#networkx.classes.filters.hide_nodes" title="networkx.classes.filters.hide_nodes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hide_nodes</span></code></a>(nodes)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.classes.filters.hide_edges.html#networkx.classes.filters.hide_edges" title="networkx.classes.filters.hide_edges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hide_edges</span></code></a>(edges)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.classes.filters.hide_diedges.html#networkx.classes.filters.hide_diedges" title="networkx.classes.filters.hide_diedges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hide_diedges</span></code></a>(edges)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.classes.filters.hide_multidiedges.html#networkx.classes.filters.hide_multidiedges" title="networkx.classes.filters.hide_multidiedges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hide_multidiedges</span></code></a>(edges)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.classes.filters.hide_multiedges.html#networkx.classes.filters.hide_multiedges" title="networkx.classes.filters.hide_multiedges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hide_multiedges</span></code></a>(edges)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.classes.filters.show_nodes.html#networkx.classes.filters.show_nodes" title="networkx.classes.filters.show_nodes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_nodes</span></code></a>(nodes)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.classes.filters.show_edges.html#networkx.classes.filters.show_edges" title="networkx.classes.filters.show_edges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_edges</span></code></a>(edges)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.classes.filters.show_diedges.html#networkx.classes.filters.show_diedges" title="networkx.classes.filters.show_diedges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_diedges</span></code></a>(edges)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.classes.filters.show_multidiedges.html#networkx.classes.filters.show_multidiedges" title="networkx.classes.filters.show_multidiedges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_multidiedges</span></code></a>(edges)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.classes.filters.show_multiedges.html#networkx.classes.filters.show_multiedges" title="networkx.classes.filters.show_multiedges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_multiedges</span></code></a>(edges)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="backends">
+<h2>Backends<a class="headerlink" href="#backends" title="Permalink to this heading">#</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is an experimental feature to dispatch your computations to an
+alternate backend like GraphBLAS, instead of using pure Python dictionaries
+for computation. Things will change and break in the future!</p>
+</div>
+<span class="target" id="module-networkx.classes.backends"></span><p>Code to support various backends in a plugin dispatch architecture.</p>
+<section id="create-a-dispatcher">
+<h3>Create a Dispatcher<a class="headerlink" href="#create-a-dispatcher" title="Permalink to this heading">#</a></h3>
+<p>To be a valid plugin, a package must register an entry_point
+of <code class="xref py py-obj docutils literal notranslate"><span class="pre">networkx.plugins</span></code> with a key pointing to the handler.</p>
+<p>For example,
+<code class="docutils literal notranslate"><span class="pre">`</span>
+<span class="pre">entry_points={'networkx.plugins':</span> <span class="pre">'sparse</span> <span class="pre">=</span> <span class="pre">networkx_plugin_sparse'}</span>
+<span class="pre">`</span></code></p>
+<p>The plugin must create a Graph-like object which contains an attribute
+<code class="xref py py-obj docutils literal notranslate"><span class="pre">__networkx_plugin__</span></code> with a value of the entry point name.</p>
+<p>Continuing the example above:
+<a href="#id1"><span class="problematic" id="id2">``</span></a>`
+class WrappedSparse:</p>
+<blockquote>
+<div><p>__networkx_plugin__ = “sparse”
+…</p>
+</div></blockquote>
+<p><a href="#id3"><span class="problematic" id="id4">``</span></a><a href="#id5"><span class="problematic" id="id6">`</span></a></p>
+<p>When a dispatchable NetworkX algorithm encounters a Graph-like object
+with a <code class="xref py py-obj docutils literal notranslate"><span class="pre">__networkx_plugin__</span></code> attribute, it will look for the associated
+dispatch object in the entry_points, load it, and dispatch the work to it.</p>
+</section>
+<section id="testing">
+<h3>Testing<a class="headerlink" href="#testing" title="Permalink to this heading">#</a></h3>
+<p>To assist in validating the backend algorithm implementations, if an
+environment variable <code class="xref py py-obj docutils literal notranslate"><span class="pre">NETWORKX_GRAPH_CONVERT</span></code> is set to a registered
+plugin keys, the dispatch machinery will automatically convert regular
+networkx Graphs and DiGraphs to the backend equivalent by calling
+<code class="xref py py-obj docutils literal notranslate"><span class="pre">&lt;backend</span> <span class="pre">dispatcher&gt;.convert_from_nx(G,</span> <span class="pre">weight=weight,</span> <span class="pre">name=name)</span></code>.</p>
+<p>The converted object is then passed to the backend implementation of
+the algorithm. The result is then passed to
+<code class="xref py py-obj docutils literal notranslate"><span class="pre">&lt;backend</span> <span class="pre">dispatcher&gt;.convert_to_nx(result,</span> <span class="pre">name=name)</span></code> to convert back
+to a form expected by the NetworkX tests.</p>
+<p>By defining <code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_from_nx</span></code> and <code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_to_nx</span></code> methods and setting
+the environment variable, NetworkX will automatically route tests on
+dispatchable algorithms to the backend, allowing the full networkx test
+suite to be run against the backend implementation.</p>
+<p>Example pytest invocation:
+NETWORKX_GRAPH_CONVERT=sparse pytest –pyargs networkx</p>
+<p>Dispatchable algorithms which are not implemented by the backend
+will cause a <code class="xref py py-obj docutils literal notranslate"><span class="pre">pytest.xfail()</span></code>, giving some indication that not all
+tests are working, while avoiding causing an explicit failure.</p>
+<p>A special <code class="xref py py-obj docutils literal notranslate"><span class="pre">on_start_tests(items)</span></code> function may be defined by the backend.
+It will be called with the list of NetworkX tests discovered. Each item
+is a pytest.Node object. If the backend does not support the test, that
+test can be marked as xfail.</p>
+</section>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.classes.backends._dispatch.html#networkx.classes.backends._dispatch" title="networkx.classes.backends._dispatch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_dispatch</span></code></a>([func, name])</p></td>
+<td><p>Dispatches to a backend algorithm when the first argument is a backend graph-like object.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#which-graph-class-should-i-use">
+   Which graph class should I use?
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#basic-graph-types">
+   Basic graph types
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-networkx.classes.graphviews">
+   Graph Views
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-networkx.classes.coreviews">
+   Core Views
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#filters">
+   Filters
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#backends">
+   Backends
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#create-a-dispatcher">
+     Create a Dispatcher
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#testing">
+     Testing
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

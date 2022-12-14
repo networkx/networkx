@@ -1,0 +1,780 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>NXEP 1 — Governance and Decision Making &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'developer/nxeps/nxep-0001';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/developer/nxeps/nxep-0001.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="NXEP 2 — API design of view slices" href="nxep-0002.html" />
+    <link rel="prev" title="NXEP 0 — Purpose and Process" href="nxep-0000.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">
+    Section Navigation
+  </p>
+  <div class="bd-toc-item navbar-nav">
+    <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../about_us.html">About Us</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code_of_conduct.html">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../values.html">Mission and Values</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contributor Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../projects.html">Mentored Projects</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="../new_contributor_faq.html">New Contributor FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../core_developer.html">Core Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../release.html">Release Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecations.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../roadmap.html">Roadmap</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">NXEPs</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="nxep-0000.html">NXEP 0 — Purpose and Process</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">NXEP 1 — Governance and Decision Making</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nxep-0002.html">NXEP 2 — API design of view slices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nxep-0003.html">NXEP 3 — Graph Builders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nxep-0004.html">NXEP 4 — Adopting <code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.Generator</span></code> as default random interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nxep-template.html">NXEP X — Template and Instructions</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+</nav>
+    </div>
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <section id="nxep-1-governance-and-decision-making">
+<span id="governance"></span><h1>NXEP 1 — Governance and Decision Making<a class="headerlink" href="#nxep-1-governance-and-decision-making" title="Permalink to this heading">#</a></h1>
+<dl class="field-list simple">
+<dt class="field-odd">Author<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Jarrod Millman &lt;<a class="reference external" href="mailto:millman&#37;&#52;&#48;berkeley&#46;edu">millman<span>&#64;</span>berkeley<span>&#46;</span>edu</a>&gt;</p>
+</dd>
+<dt class="field-even">Author<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dan Schult &lt;<a class="reference external" href="mailto:dschult&#37;&#52;&#48;colgate&#46;edu">dschult<span>&#64;</span>colgate<span>&#46;</span>edu</a>&gt;</p>
+</dd>
+<dt class="field-odd">Status<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Draft</p>
+</dd>
+<dt class="field-even">Type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Process</p>
+</dd>
+<dt class="field-odd">Created<span class="colon">:</span></dt>
+<dd class="field-odd"><p>2020-06-25</p>
+</dd>
+</dl>
+<section id="abstract">
+<h2>Abstract<a class="headerlink" href="#abstract" title="Permalink to this heading">#</a></h2>
+<p>NetworkX is a consensus-based community project. Anyone with an interest in the
+project can join the community, contribute to the project design, and
+participate in the decision making process. This document describes how that
+participation takes place, how to find consensus, and how deadlocks are
+resolved.</p>
+</section>
+<section id="roles-and-responsibilities">
+<h2>Roles And Responsibilities<a class="headerlink" href="#roles-and-responsibilities" title="Permalink to this heading">#</a></h2>
+<section id="the-community">
+<h3>The Community<a class="headerlink" href="#the-community" title="Permalink to this heading">#</a></h3>
+<p>The NetworkX community consists of anyone using or working with the project
+in any way.</p>
+</section>
+<section id="contributors">
+<h3>Contributors<a class="headerlink" href="#contributors" title="Permalink to this heading">#</a></h3>
+<p>Any community member can become a contributor by interacting directly with the
+project in concrete ways, such as:</p>
+<ul class="simple">
+<li><p>proposing a change to the code or documentation via a GitHub pull request;</p></li>
+<li><p>reporting issues on our
+<a class="reference external" href="https://github.com/networkx/networkx/issues">GitHub issues page</a>;</p></li>
+<li><p>discussing the design of the library, website, or tutorials on the
+<a class="reference external" href="http://groups.google.com/group/networkx-discuss/">mailing list</a>,
+or in existing issues and pull requests; or</p></li>
+<li><p>reviewing
+<a class="reference external" href="https://github.com/networkx/networkx/pulls">open pull requests</a>,</p></li>
+</ul>
+<p>among other possibilities. By contributing to the project, community members
+can directly help to shape its future.</p>
+<p>Contributors should read the <a class="reference internal" href="../contribute.html#contributor-guide"><span class="std std-ref">Contributor Guide</span></a> and our <a class="reference internal" href="../code_of_conduct.html#code-of-conduct"><span class="std std-ref">Code of Conduct</span></a>.</p>
+</section>
+<section id="core-developers">
+<h3>Core Developers<a class="headerlink" href="#core-developers" title="Permalink to this heading">#</a></h3>
+<p>Core developers are community members that have demonstrated continued
+commitment to the project through ongoing contributions. They
+have shown they can be trusted to maintain NetworkX with care. Becoming a
+core developer allows contributors to merge approved pull requests, cast votes
+for and against merging a pull request, and be involved in deciding major
+changes to the API, and thereby more easily carry on with their project related
+activities. Core developers appear as team members on the <a class="reference external" href="https://github.com/orgs/networkx/teams/core-developers/members">NetworkX Core Team page</a> and can
+be messaged <code class="docutils literal notranslate"><span class="pre">&#64;networkx/core-developers</span></code>. Core
+developers are expected to review code contributions while adhering to the
+<a class="reference internal" href="../core_developer.html#core-dev"><span class="std std-ref">Core Developer Guide</span></a>.</p>
+<p>New core developers can be nominated by any existing core developer.
+Discussion about new core developer nominations is one of the few activities
+that takes place on the project’s private management list. The decision to
+invite a new core developer must be made by “lazy consensus”, meaning unanimous
+agreement by all responding existing core developers. Invitation must take
+place at least one week after initial nomination, to allow existing members
+time to voice any objections.</p>
+</section>
+<section id="steering-council">
+<span id="id1"></span><h3>Steering Council<a class="headerlink" href="#steering-council" title="Permalink to this heading">#</a></h3>
+<p>The Steering Council (SC) members are core developers who have additional
+responsibilities to ensure the smooth running of the project. SC members are
+expected to participate in strategic planning, approve changes to the
+governance model, and make decisions about funding granted to the project
+itself. (Funding to community members is theirs to pursue and manage.) The
+purpose of the SC is to ensure smooth progress from the big-picture
+perspective. Changes that impact the full project require analysis informed by
+long experience with both the project and the larger ecosystem. When the core
+developer community (including the SC members) fails to reach such a consensus
+in a reasonable timeframe, the SC is the entity that resolves the issue.</p>
+<p>Steering Council members appear as team members on the <a class="reference external" href="https://github.com/orgs/networkx/teams/steering-council/members">NetworkX Steering
+Council Team page</a> and
+can be messaged <code class="docutils literal notranslate"><span class="pre">&#64;networkx/steering-council</span></code>. Core</p>
+</section>
+</section>
+<section id="decision-making-process">
+<h2>Decision Making Process<a class="headerlink" href="#decision-making-process" title="Permalink to this heading">#</a></h2>
+<p>Decisions about the future of the project are made through discussion with all
+members of the community. All non-sensitive project management discussion takes
+place on the project
+<a class="reference external" href="http://groups.google.com/group/networkx-discuss/">mailing list</a>
+and the <a class="reference external" href="https://github.com/networkx/networkx/issues">issue tracker</a>.
+Occasionally, sensitive discussion may occur on a private list.</p>
+<p>Decisions should be made in accordance with our <a class="reference internal" href="../values.html#mission-and-values"><span class="std std-ref">Mission and Values</span></a>.</p>
+<p>NetworkX uses a <em>consensus seeking</em> process for making decisions. The group
+tries to find a resolution that has no open objections among core developers.
+Core developers are expected to distinguish between fundamental objections to a
+proposal and minor perceived flaws that they can live with, and not hold up the
+decision making process for the latter.  If no option can be found without
+an objection, the decision is escalated to the SC, which will itself use
+consensus seeking to come to a resolution. In the unlikely event that there is
+still a deadlock, the proposal will move forward if it has the support of a
+simple majority of the SC. Any proposal must be described by a NetworkX <a class="reference internal" href="#nxep"><span class="std std-ref">Enhancement Proposals (NXEPs)</span></a>.</p>
+<p>Decisions (in addition to adding core developers and SC membership as above)
+are made according to the following rules:</p>
+<ul class="simple">
+<li><p><strong>Minor documentation changes</strong>, such as typo fixes, or addition / correction of a
+sentence (but no change of the NetworkX landing page or the “about”
+page), require approval by a core developer <em>and</em> no disagreement or requested
+changes by a core developer on the issue or pull request page (lazy
+consensus). Core developers are expected to give “reasonable time” to others
+to give their opinion on the pull request if they’re not confident others
+would agree.</p></li>
+<li><p><strong>Code changes and major documentation changes</strong> require agreement by <em>two</em>
+core developers <em>and</em> no disagreement or requested changes by a core developer
+on the issue or pull-request page (lazy consensus).</p></li>
+<li><p><strong>Changes to the API principles</strong> require a <a class="reference internal" href="#nxep"><span class="std std-ref">Enhancement Proposals (NXEPs)</span></a> and follow the
+decision-making process outlined above.</p></li>
+<li><p><strong>Changes to this governance model or our mission and values</strong>
+require a <a class="reference internal" href="#nxep"><span class="std std-ref">Enhancement Proposals (NXEPs)</span></a> and follow the decision-making process outlined above,
+<em>unless</em> there is unanimous agreement from core developers on the change.</p></li>
+</ul>
+<p>If an objection is raised on a lazy consensus, the proposer can appeal to the
+community and core developers and the change can be approved or rejected by
+escalating to the SC, and if necessary, a NXEP (see below).</p>
+</section>
+<section id="enhancement-proposals-nxeps">
+<span id="nxep"></span><h2>Enhancement Proposals (NXEPs)<a class="headerlink" href="#enhancement-proposals-nxeps" title="Permalink to this heading">#</a></h2>
+<p>Any proposals for enhancements of NetworkX should be written as a formal NXEP
+following the template <a class="reference internal" href="nxep-template.html"><span class="doc">NXEP X — Template and Instructions</span></a>. The NXEP must be made public and
+discussed before any vote is taken. The discussion must be summarized by a
+key advocate of the proposal in the appropriate section of the NXEP.
+Once this summary is made public and after sufficient time to allow the
+core team to understand it, they vote.
+The workflow of a NXEP is detailed in <a class="reference internal" href="nxep-0000.html#nxep0"><span class="std std-ref">NXEP 0 — Purpose and Process</span></a>.</p>
+<p>A list of all existing NXEPs is available <a class="reference internal" href="index.html#nxep-list"><span class="std std-ref">here</span></a>.</p>
+</section>
+<section id="acknowledgments">
+<h2>Acknowledgments<a class="headerlink" href="#acknowledgments" title="Permalink to this heading">#</a></h2>
+<p>This document is based on the <a class="reference external" href="https://scikit-image.org/docs/stable/skips/1-governance.html">scikit-image governance document</a>.</p>
+</section>
+</section>
+
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#abstract">
+   Abstract
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#roles-and-responsibilities">
+   Roles And Responsibilities
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#the-community">
+     The Community
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#contributors">
+     Contributors
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#core-developers">
+     Core Developers
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#steering-council">
+     Steering Council
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#decision-making-process">
+   Decision Making Process
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#enhancement-proposals-nxeps">
+   Enhancement Proposals (NXEPs)
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#acknowledgments">
+   Acknowledgments
+  </a>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

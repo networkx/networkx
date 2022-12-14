@@ -1,0 +1,2244 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>networkx.algorithms.similarity &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/algorithms/similarity';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/algorithms/similarity.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../../../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../../../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <h1>Source code for networkx.algorithms.similarity</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot; Functions measuring similarity using graph edit distance.</span>
+
+<span class="sd">The graph edit distance is the number of edge/node changes needed</span>
+<span class="sd">to make two graphs isomorphic.</span>
+
+<span class="sd">The default algorithm/implementation is sub-optimal for some graphs.</span>
+<span class="sd">The problem of finding the exact Graph Edit Distance (GED) is NP-hard</span>
+<span class="sd">so it is often slow. If the simple interface `graph_edit_distance`</span>
+<span class="sd">takes too long for your graph, try `optimize_graph_edit_distance`</span>
+<span class="sd">and/or `optimize_edit_paths`.</span>
+
+<span class="sd">At the same time, I encourage capable people to investigate</span>
+<span class="sd">alternative GED algorithms, in order to improve the choices available.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">reduce</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">product</span>
+<span class="kn">from</span> <span class="nn">operator</span> <span class="kn">import</span> <span class="n">mul</span>
+
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;graph_edit_distance&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;optimal_edit_paths&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;optimize_graph_edit_distance&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;optimize_edit_paths&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;simrank_similarity&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;panther_similarity&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;generate_random_paths&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">debug_print</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="graph_edit_distance"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.similarity.graph_edit_distance.html#networkx.algorithms.similarity.graph_edit_distance">[docs]</a><span class="k">def</span> <span class="nf">graph_edit_distance</span><span class="p">(</span>
+    <span class="n">G1</span><span class="p">,</span>
+    <span class="n">G2</span><span class="p">,</span>
+    <span class="n">node_match</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">edge_match</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">node_subst_cost</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">node_del_cost</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">node_ins_cost</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">edge_subst_cost</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">edge_del_cost</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">edge_ins_cost</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">roots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">upper_bound</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns GED (graph edit distance) between graphs G1 and G2.</span>
+
+<span class="sd">    Graph edit distance is a graph similarity measure analogous to</span>
+<span class="sd">    Levenshtein distance for strings.  It is defined as minimum cost</span>
+<span class="sd">    of edit path (sequence of node and edge edit operations)</span>
+<span class="sd">    transforming graph G1 to graph isomorphic to G2.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G1, G2: graphs</span>
+<span class="sd">        The two graphs G1 and G2 must be of the same type.</span>
+
+<span class="sd">    node_match : callable</span>
+<span class="sd">        A function that returns True if node n1 in G1 and n2 in G2</span>
+<span class="sd">        should be considered equal during matching.</span>
+
+<span class="sd">        The function will be called like</span>
+
+<span class="sd">           node_match(G1.nodes[n1], G2.nodes[n2]).</span>
+
+<span class="sd">        That is, the function will receive the node attribute</span>
+<span class="sd">        dictionaries for n1 and n2 as inputs.</span>
+
+<span class="sd">        Ignored if node_subst_cost is specified.  If neither</span>
+<span class="sd">        node_match nor node_subst_cost are specified then node</span>
+<span class="sd">        attributes are not considered.</span>
+
+<span class="sd">    edge_match : callable</span>
+<span class="sd">        A function that returns True if the edge attribute dictionaries</span>
+<span class="sd">        for the pair of nodes (u1, v1) in G1 and (u2, v2) in G2 should</span>
+<span class="sd">        be considered equal during matching.</span>
+
+<span class="sd">        The function will be called like</span>
+
+<span class="sd">           edge_match(G1[u1][v1], G2[u2][v2]).</span>
+
+<span class="sd">        That is, the function will receive the edge attribute</span>
+<span class="sd">        dictionaries of the edges under consideration.</span>
+
+<span class="sd">        Ignored if edge_subst_cost is specified.  If neither</span>
+<span class="sd">        edge_match nor edge_subst_cost are specified then edge</span>
+<span class="sd">        attributes are not considered.</span>
+
+<span class="sd">    node_subst_cost, node_del_cost, node_ins_cost : callable</span>
+<span class="sd">        Functions that return the costs of node substitution, node</span>
+<span class="sd">        deletion, and node insertion, respectively.</span>
+
+<span class="sd">        The functions will be called like</span>
+
+<span class="sd">           node_subst_cost(G1.nodes[n1], G2.nodes[n2]),</span>
+<span class="sd">           node_del_cost(G1.nodes[n1]),</span>
+<span class="sd">           node_ins_cost(G2.nodes[n2]).</span>
+
+<span class="sd">        That is, the functions will receive the node attribute</span>
+<span class="sd">        dictionaries as inputs.  The functions are expected to return</span>
+<span class="sd">        positive numeric values.</span>
+
+<span class="sd">        Function node_subst_cost overrides node_match if specified.</span>
+<span class="sd">        If neither node_match nor node_subst_cost are specified then</span>
+<span class="sd">        default node substitution cost of 0 is used (node attributes</span>
+<span class="sd">        are not considered during matching).</span>
+
+<span class="sd">        If node_del_cost is not specified then default node deletion</span>
+<span class="sd">        cost of 1 is used.  If node_ins_cost is not specified then</span>
+<span class="sd">        default node insertion cost of 1 is used.</span>
+
+<span class="sd">    edge_subst_cost, edge_del_cost, edge_ins_cost : callable</span>
+<span class="sd">        Functions that return the costs of edge substitution, edge</span>
+<span class="sd">        deletion, and edge insertion, respectively.</span>
+
+<span class="sd">        The functions will be called like</span>
+
+<span class="sd">           edge_subst_cost(G1[u1][v1], G2[u2][v2]),</span>
+<span class="sd">           edge_del_cost(G1[u1][v1]),</span>
+<span class="sd">           edge_ins_cost(G2[u2][v2]).</span>
+
+<span class="sd">        That is, the functions will receive the edge attribute</span>
+<span class="sd">        dictionaries as inputs.  The functions are expected to return</span>
+<span class="sd">        positive numeric values.</span>
+
+<span class="sd">        Function edge_subst_cost overrides edge_match if specified.</span>
+<span class="sd">        If neither edge_match nor edge_subst_cost are specified then</span>
+<span class="sd">        default edge substitution cost of 0 is used (edge attributes</span>
+<span class="sd">        are not considered during matching).</span>
+
+<span class="sd">        If edge_del_cost is not specified then default edge deletion</span>
+<span class="sd">        cost of 1 is used.  If edge_ins_cost is not specified then</span>
+<span class="sd">        default edge insertion cost of 1 is used.</span>
+
+<span class="sd">    roots : 2-tuple</span>
+<span class="sd">        Tuple where first element is a node in G1 and the second</span>
+<span class="sd">        is a node in G2.</span>
+<span class="sd">        These nodes are forced to be matched in the comparison to</span>
+<span class="sd">        allow comparison between rooted graphs.</span>
+
+<span class="sd">    upper_bound : numeric</span>
+<span class="sd">        Maximum edit distance to consider.  Return None if no edit</span>
+<span class="sd">        distance under or equal to upper_bound exists.</span>
+
+<span class="sd">    timeout : numeric</span>
+<span class="sd">        Maximum number of seconds to execute.</span>
+<span class="sd">        After timeout is met, the current best GED is returned.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G1 = nx.cycle_graph(6)</span>
+<span class="sd">    &gt;&gt;&gt; G2 = nx.wheel_graph(7)</span>
+<span class="sd">    &gt;&gt;&gt; nx.graph_edit_distance(G1, G2)</span>
+<span class="sd">    7.0</span>
+
+<span class="sd">    &gt;&gt;&gt; G1 = nx.star_graph(5)</span>
+<span class="sd">    &gt;&gt;&gt; G2 = nx.star_graph(5)</span>
+<span class="sd">    &gt;&gt;&gt; nx.graph_edit_distance(G1, G2, roots=(0, 0))</span>
+<span class="sd">    0.0</span>
+<span class="sd">    &gt;&gt;&gt; nx.graph_edit_distance(G1, G2, roots=(1, 0))</span>
+<span class="sd">    8.0</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    optimal_edit_paths, optimize_graph_edit_distance,</span>
+
+<span class="sd">    is_isomorphic: test for graph edit distance of 0</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Zeina Abu-Aisheh, Romain Raveaux, Jean-Yves Ramel, Patrick</span>
+<span class="sd">       Martineau. An Exact Graph Edit Distance Algorithm for Solving</span>
+<span class="sd">       Pattern Recognition Problems. 4th International Conference on</span>
+<span class="sd">       Pattern Recognition Applications and Methods 2015, Jan 2015,</span>
+<span class="sd">       Lisbon, Portugal. 2015,</span>
+<span class="sd">       &lt;10.5220/0005209202710278&gt;. &lt;hal-01168816&gt;</span>
+<span class="sd">       https://hal.archives-ouvertes.fr/hal-01168816</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">bestcost</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">for</span> <span class="n">vertex_path</span><span class="p">,</span> <span class="n">edge_path</span><span class="p">,</span> <span class="n">cost</span> <span class="ow">in</span> <span class="n">optimize_edit_paths</span><span class="p">(</span>
+        <span class="n">G1</span><span class="p">,</span>
+        <span class="n">G2</span><span class="p">,</span>
+        <span class="n">node_match</span><span class="p">,</span>
+        <span class="n">edge_match</span><span class="p">,</span>
+        <span class="n">node_subst_cost</span><span class="p">,</span>
+        <span class="n">node_del_cost</span><span class="p">,</span>
+        <span class="n">node_ins_cost</span><span class="p">,</span>
+        <span class="n">edge_subst_cost</span><span class="p">,</span>
+        <span class="n">edge_del_cost</span><span class="p">,</span>
+        <span class="n">edge_ins_cost</span><span class="p">,</span>
+        <span class="n">upper_bound</span><span class="p">,</span>
+        <span class="kc">True</span><span class="p">,</span>
+        <span class="n">roots</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="c1"># assert bestcost is None or cost &lt; bestcost</span>
+        <span class="n">bestcost</span> <span class="o">=</span> <span class="n">cost</span>
+    <span class="k">return</span> <span class="n">bestcost</span></div>
+
+
+<div class="viewcode-block" id="optimal_edit_paths"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.similarity.optimal_edit_paths.html#networkx.algorithms.similarity.optimal_edit_paths">[docs]</a><span class="k">def</span> <span class="nf">optimal_edit_paths</span><span class="p">(</span>
+    <span class="n">G1</span><span class="p">,</span>
+    <span class="n">G2</span><span class="p">,</span>
+    <span class="n">node_match</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">edge_match</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">node_subst_cost</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">node_del_cost</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">node_ins_cost</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">edge_subst_cost</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">edge_del_cost</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">edge_ins_cost</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">upper_bound</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns all minimum-cost edit paths transforming G1 to G2.</span>
+
+<span class="sd">    Graph edit path is a sequence of node and edge edit operations</span>
+<span class="sd">    transforming graph G1 to graph isomorphic to G2.  Edit operations</span>
+<span class="sd">    include substitutions, deletions, and insertions.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G1, G2: graphs</span>
+<span class="sd">        The two graphs G1 and G2 must be of the same type.</span>
+
+<span class="sd">    node_match : callable</span>
+<span class="sd">        A function that returns True if node n1 in G1 and n2 in G2</span>
+<span class="sd">        should be considered equal during matching.</span>
+
+<span class="sd">        The function will be called like</span>
+
+<span class="sd">           node_match(G1.nodes[n1], G2.nodes[n2]).</span>
+
+<span class="sd">        That is, the function will receive the node attribute</span>
+<span class="sd">        dictionaries for n1 and n2 as inputs.</span>
+
+<span class="sd">        Ignored if node_subst_cost is specified.  If neither</span>
+<span class="sd">        node_match nor node_subst_cost are specified then node</span>
+<span class="sd">        attributes are not considered.</span>
+
+<span class="sd">    edge_match : callable</span>
+<span class="sd">        A function that returns True if the edge attribute dictionaries</span>
+<span class="sd">        for the pair of nodes (u1, v1) in G1 and (u2, v2) in G2 should</span>
+<span class="sd">        be considered equal during matching.</span>
+
+<span class="sd">        The function will be called like</span>
+
+<span class="sd">           edge_match(G1[u1][v1], G2[u2][v2]).</span>
+
+<span class="sd">        That is, the function will receive the edge attribute</span>
+<span class="sd">        dictionaries of the edges under consideration.</span>
+
+<span class="sd">        Ignored if edge_subst_cost is specified.  If neither</span>
+<span class="sd">        edge_match nor edge_subst_cost are specified then edge</span>
+<span class="sd">        attributes are not considered.</span>
+
+<span class="sd">    node_subst_cost, node_del_cost, node_ins_cost : callable</span>
+<span class="sd">        Functions that return the costs of node substitution, node</span>
+<span class="sd">        deletion, and node insertion, respectively.</span>
+
+<span class="sd">        The functions will be called like</span>
+
+<span class="sd">           node_subst_cost(G1.nodes[n1], G2.nodes[n2]),</span>
+<span class="sd">           node_del_cost(G1.nodes[n1]),</span>
+<span class="sd">           node_ins_cost(G2.nodes[n2]).</span>
+
+<span class="sd">        That is, the functions will receive the node attribute</span>
+<span class="sd">        dictionaries as inputs.  The functions are expected to return</span>
+<span class="sd">        positive numeric values.</span>
+
+<span class="sd">        Function node_subst_cost overrides node_match if specified.</span>
+<span class="sd">        If neither node_match nor node_subst_cost are specified then</span>
+<span class="sd">        default node substitution cost of 0 is used (node attributes</span>
+<span class="sd">        are not considered during matching).</span>
+
+<span class="sd">        If node_del_cost is not specified then default node deletion</span>
+<span class="sd">        cost of 1 is used.  If node_ins_cost is not specified then</span>
+<span class="sd">        default node insertion cost of 1 is used.</span>
+
+<span class="sd">    edge_subst_cost, edge_del_cost, edge_ins_cost : callable</span>
+<span class="sd">        Functions that return the costs of edge substitution, edge</span>
+<span class="sd">        deletion, and edge insertion, respectively.</span>
+
+<span class="sd">        The functions will be called like</span>
+
+<span class="sd">           edge_subst_cost(G1[u1][v1], G2[u2][v2]),</span>
+<span class="sd">           edge_del_cost(G1[u1][v1]),</span>
+<span class="sd">           edge_ins_cost(G2[u2][v2]).</span>
+
+<span class="sd">        That is, the functions will receive the edge attribute</span>
+<span class="sd">        dictionaries as inputs.  The functions are expected to return</span>
+<span class="sd">        positive numeric values.</span>
+
+<span class="sd">        Function edge_subst_cost overrides edge_match if specified.</span>
+<span class="sd">        If neither edge_match nor edge_subst_cost are specified then</span>
+<span class="sd">        default edge substitution cost of 0 is used (edge attributes</span>
+<span class="sd">        are not considered during matching).</span>
+
+<span class="sd">        If edge_del_cost is not specified then default edge deletion</span>
+<span class="sd">        cost of 1 is used.  If edge_ins_cost is not specified then</span>
+<span class="sd">        default edge insertion cost of 1 is used.</span>
+
+<span class="sd">    upper_bound : numeric</span>
+<span class="sd">        Maximum edit distance to consider.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    edit_paths : list of tuples (node_edit_path, edge_edit_path)</span>
+<span class="sd">        node_edit_path : list of tuples (u, v)</span>
+<span class="sd">        edge_edit_path : list of tuples ((u1, v1), (u2, v2))</span>
+
+<span class="sd">    cost : numeric</span>
+<span class="sd">        Optimal edit path cost (graph edit distance).</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G1 = nx.cycle_graph(4)</span>
+<span class="sd">    &gt;&gt;&gt; G2 = nx.wheel_graph(5)</span>
+<span class="sd">    &gt;&gt;&gt; paths, cost = nx.optimal_edit_paths(G1, G2)</span>
+<span class="sd">    &gt;&gt;&gt; len(paths)</span>
+<span class="sd">    40</span>
+<span class="sd">    &gt;&gt;&gt; cost</span>
+<span class="sd">    5.0</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    graph_edit_distance, optimize_edit_paths</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Zeina Abu-Aisheh, Romain Raveaux, Jean-Yves Ramel, Patrick</span>
+<span class="sd">       Martineau. An Exact Graph Edit Distance Algorithm for Solving</span>
+<span class="sd">       Pattern Recognition Problems. 4th International Conference on</span>
+<span class="sd">       Pattern Recognition Applications and Methods 2015, Jan 2015,</span>
+<span class="sd">       Lisbon, Portugal. 2015,</span>
+<span class="sd">       &lt;10.5220/0005209202710278&gt;. &lt;hal-01168816&gt;</span>
+<span class="sd">       https://hal.archives-ouvertes.fr/hal-01168816</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">paths</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="n">bestcost</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">for</span> <span class="n">vertex_path</span><span class="p">,</span> <span class="n">edge_path</span><span class="p">,</span> <span class="n">cost</span> <span class="ow">in</span> <span class="n">optimize_edit_paths</span><span class="p">(</span>
+        <span class="n">G1</span><span class="p">,</span>
+        <span class="n">G2</span><span class="p">,</span>
+        <span class="n">node_match</span><span class="p">,</span>
+        <span class="n">edge_match</span><span class="p">,</span>
+        <span class="n">node_subst_cost</span><span class="p">,</span>
+        <span class="n">node_del_cost</span><span class="p">,</span>
+        <span class="n">node_ins_cost</span><span class="p">,</span>
+        <span class="n">edge_subst_cost</span><span class="p">,</span>
+        <span class="n">edge_del_cost</span><span class="p">,</span>
+        <span class="n">edge_ins_cost</span><span class="p">,</span>
+        <span class="n">upper_bound</span><span class="p">,</span>
+        <span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="c1"># assert bestcost is None or cost &lt;= bestcost</span>
+        <span class="k">if</span> <span class="n">bestcost</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">cost</span> <span class="o">&lt;</span> <span class="n">bestcost</span><span class="p">:</span>
+            <span class="n">paths</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="n">paths</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">vertex_path</span><span class="p">,</span> <span class="n">edge_path</span><span class="p">))</span>
+        <span class="n">bestcost</span> <span class="o">=</span> <span class="n">cost</span>
+    <span class="k">return</span> <span class="n">paths</span><span class="p">,</span> <span class="n">bestcost</span></div>
+
+
+<div class="viewcode-block" id="optimize_graph_edit_distance"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.similarity.optimize_graph_edit_distance.html#networkx.algorithms.similarity.optimize_graph_edit_distance">[docs]</a><span class="k">def</span> <span class="nf">optimize_graph_edit_distance</span><span class="p">(</span>
+    <span class="n">G1</span><span class="p">,</span>
+    <span class="n">G2</span><span class="p">,</span>
+    <span class="n">node_match</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">edge_match</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">node_subst_cost</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">node_del_cost</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">node_ins_cost</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">edge_subst_cost</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">edge_del_cost</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">edge_ins_cost</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">upper_bound</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns consecutive approximations of GED (graph edit distance)</span>
+<span class="sd">    between graphs G1 and G2.</span>
+
+<span class="sd">    Graph edit distance is a graph similarity measure analogous to</span>
+<span class="sd">    Levenshtein distance for strings.  It is defined as minimum cost</span>
+<span class="sd">    of edit path (sequence of node and edge edit operations)</span>
+<span class="sd">    transforming graph G1 to graph isomorphic to G2.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G1, G2: graphs</span>
+<span class="sd">        The two graphs G1 and G2 must be of the same type.</span>
+
+<span class="sd">    node_match : callable</span>
+<span class="sd">        A function that returns True if node n1 in G1 and n2 in G2</span>
+<span class="sd">        should be considered equal during matching.</span>
+
+<span class="sd">        The function will be called like</span>
+
+<span class="sd">           node_match(G1.nodes[n1], G2.nodes[n2]).</span>
+
+<span class="sd">        That is, the function will receive the node attribute</span>
+<span class="sd">        dictionaries for n1 and n2 as inputs.</span>
+
+<span class="sd">        Ignored if node_subst_cost is specified.  If neither</span>
+<span class="sd">        node_match nor node_subst_cost are specified then node</span>
+<span class="sd">        attributes are not considered.</span>
+
+<span class="sd">    edge_match : callable</span>
+<span class="sd">        A function that returns True if the edge attribute dictionaries</span>
+<span class="sd">        for the pair of nodes (u1, v1) in G1 and (u2, v2) in G2 should</span>
+<span class="sd">        be considered equal during matching.</span>
+
+<span class="sd">        The function will be called like</span>
+
+<span class="sd">           edge_match(G1[u1][v1], G2[u2][v2]).</span>
+
+<span class="sd">        That is, the function will receive the edge attribute</span>
+<span class="sd">        dictionaries of the edges under consideration.</span>
+
+<span class="sd">        Ignored if edge_subst_cost is specified.  If neither</span>
+<span class="sd">        edge_match nor edge_subst_cost are specified then edge</span>
+<span class="sd">        attributes are not considered.</span>
+
+<span class="sd">    node_subst_cost, node_del_cost, node_ins_cost : callable</span>
+<span class="sd">        Functions that return the costs of node substitution, node</span>
+<span class="sd">        deletion, and node insertion, respectively.</span>
+
+<span class="sd">        The functions will be called like</span>
+
+<span class="sd">           node_subst_cost(G1.nodes[n1], G2.nodes[n2]),</span>
+<span class="sd">           node_del_cost(G1.nodes[n1]),</span>
+<span class="sd">           node_ins_cost(G2.nodes[n2]).</span>
+
+<span class="sd">        That is, the functions will receive the node attribute</span>
+<span class="sd">        dictionaries as inputs.  The functions are expected to return</span>
+<span class="sd">        positive numeric values.</span>
+
+<span class="sd">        Function node_subst_cost overrides node_match if specified.</span>
+<span class="sd">        If neither node_match nor node_subst_cost are specified then</span>
+<span class="sd">        default node substitution cost of 0 is used (node attributes</span>
+<span class="sd">        are not considered during matching).</span>
+
+<span class="sd">        If node_del_cost is not specified then default node deletion</span>
+<span class="sd">        cost of 1 is used.  If node_ins_cost is not specified then</span>
+<span class="sd">        default node insertion cost of 1 is used.</span>
+
+<span class="sd">    edge_subst_cost, edge_del_cost, edge_ins_cost : callable</span>
+<span class="sd">        Functions that return the costs of edge substitution, edge</span>
+<span class="sd">        deletion, and edge insertion, respectively.</span>
+
+<span class="sd">        The functions will be called like</span>
+
+<span class="sd">           edge_subst_cost(G1[u1][v1], G2[u2][v2]),</span>
+<span class="sd">           edge_del_cost(G1[u1][v1]),</span>
+<span class="sd">           edge_ins_cost(G2[u2][v2]).</span>
+
+<span class="sd">        That is, the functions will receive the edge attribute</span>
+<span class="sd">        dictionaries as inputs.  The functions are expected to return</span>
+<span class="sd">        positive numeric values.</span>
+
+<span class="sd">        Function edge_subst_cost overrides edge_match if specified.</span>
+<span class="sd">        If neither edge_match nor edge_subst_cost are specified then</span>
+<span class="sd">        default edge substitution cost of 0 is used (edge attributes</span>
+<span class="sd">        are not considered during matching).</span>
+
+<span class="sd">        If edge_del_cost is not specified then default edge deletion</span>
+<span class="sd">        cost of 1 is used.  If edge_ins_cost is not specified then</span>
+<span class="sd">        default edge insertion cost of 1 is used.</span>
+
+<span class="sd">    upper_bound : numeric</span>
+<span class="sd">        Maximum edit distance to consider.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Generator of consecutive approximations of graph edit distance.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G1 = nx.cycle_graph(6)</span>
+<span class="sd">    &gt;&gt;&gt; G2 = nx.wheel_graph(7)</span>
+<span class="sd">    &gt;&gt;&gt; for v in nx.optimize_graph_edit_distance(G1, G2):</span>
+<span class="sd">    ...     minv = v</span>
+<span class="sd">    &gt;&gt;&gt; minv</span>
+<span class="sd">    7.0</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    graph_edit_distance, optimize_edit_paths</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Zeina Abu-Aisheh, Romain Raveaux, Jean-Yves Ramel, Patrick</span>
+<span class="sd">       Martineau. An Exact Graph Edit Distance Algorithm for Solving</span>
+<span class="sd">       Pattern Recognition Problems. 4th International Conference on</span>
+<span class="sd">       Pattern Recognition Applications and Methods 2015, Jan 2015,</span>
+<span class="sd">       Lisbon, Portugal. 2015,</span>
+<span class="sd">       &lt;10.5220/0005209202710278&gt;. &lt;hal-01168816&gt;</span>
+<span class="sd">       https://hal.archives-ouvertes.fr/hal-01168816</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">vertex_path</span><span class="p">,</span> <span class="n">edge_path</span><span class="p">,</span> <span class="n">cost</span> <span class="ow">in</span> <span class="n">optimize_edit_paths</span><span class="p">(</span>
+        <span class="n">G1</span><span class="p">,</span>
+        <span class="n">G2</span><span class="p">,</span>
+        <span class="n">node_match</span><span class="p">,</span>
+        <span class="n">edge_match</span><span class="p">,</span>
+        <span class="n">node_subst_cost</span><span class="p">,</span>
+        <span class="n">node_del_cost</span><span class="p">,</span>
+        <span class="n">node_ins_cost</span><span class="p">,</span>
+        <span class="n">edge_subst_cost</span><span class="p">,</span>
+        <span class="n">edge_del_cost</span><span class="p">,</span>
+        <span class="n">edge_ins_cost</span><span class="p">,</span>
+        <span class="n">upper_bound</span><span class="p">,</span>
+        <span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="k">yield</span> <span class="n">cost</span></div>
+
+
+<div class="viewcode-block" id="optimize_edit_paths"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.similarity.optimize_edit_paths.html#networkx.algorithms.similarity.optimize_edit_paths">[docs]</a><span class="k">def</span> <span class="nf">optimize_edit_paths</span><span class="p">(</span>
+    <span class="n">G1</span><span class="p">,</span>
+    <span class="n">G2</span><span class="p">,</span>
+    <span class="n">node_match</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">edge_match</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">node_subst_cost</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">node_del_cost</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">node_ins_cost</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">edge_subst_cost</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">edge_del_cost</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">edge_ins_cost</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">upper_bound</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">strictly_decreasing</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">roots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;GED (graph edit distance) calculation: advanced interface.</span>
+
+<span class="sd">    Graph edit path is a sequence of node and edge edit operations</span>
+<span class="sd">    transforming graph G1 to graph isomorphic to G2.  Edit operations</span>
+<span class="sd">    include substitutions, deletions, and insertions.</span>
+
+<span class="sd">    Graph edit distance is defined as minimum cost of edit path.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G1, G2: graphs</span>
+<span class="sd">        The two graphs G1 and G2 must be of the same type.</span>
+
+<span class="sd">    node_match : callable</span>
+<span class="sd">        A function that returns True if node n1 in G1 and n2 in G2</span>
+<span class="sd">        should be considered equal during matching.</span>
+
+<span class="sd">        The function will be called like</span>
+
+<span class="sd">           node_match(G1.nodes[n1], G2.nodes[n2]).</span>
+
+<span class="sd">        That is, the function will receive the node attribute</span>
+<span class="sd">        dictionaries for n1 and n2 as inputs.</span>
+
+<span class="sd">        Ignored if node_subst_cost is specified.  If neither</span>
+<span class="sd">        node_match nor node_subst_cost are specified then node</span>
+<span class="sd">        attributes are not considered.</span>
+
+<span class="sd">    edge_match : callable</span>
+<span class="sd">        A function that returns True if the edge attribute dictionaries</span>
+<span class="sd">        for the pair of nodes (u1, v1) in G1 and (u2, v2) in G2 should</span>
+<span class="sd">        be considered equal during matching.</span>
+
+<span class="sd">        The function will be called like</span>
+
+<span class="sd">           edge_match(G1[u1][v1], G2[u2][v2]).</span>
+
+<span class="sd">        That is, the function will receive the edge attribute</span>
+<span class="sd">        dictionaries of the edges under consideration.</span>
+
+<span class="sd">        Ignored if edge_subst_cost is specified.  If neither</span>
+<span class="sd">        edge_match nor edge_subst_cost are specified then edge</span>
+<span class="sd">        attributes are not considered.</span>
+
+<span class="sd">    node_subst_cost, node_del_cost, node_ins_cost : callable</span>
+<span class="sd">        Functions that return the costs of node substitution, node</span>
+<span class="sd">        deletion, and node insertion, respectively.</span>
+
+<span class="sd">        The functions will be called like</span>
+
+<span class="sd">           node_subst_cost(G1.nodes[n1], G2.nodes[n2]),</span>
+<span class="sd">           node_del_cost(G1.nodes[n1]),</span>
+<span class="sd">           node_ins_cost(G2.nodes[n2]).</span>
+
+<span class="sd">        That is, the functions will receive the node attribute</span>
+<span class="sd">        dictionaries as inputs.  The functions are expected to return</span>
+<span class="sd">        positive numeric values.</span>
+
+<span class="sd">        Function node_subst_cost overrides node_match if specified.</span>
+<span class="sd">        If neither node_match nor node_subst_cost are specified then</span>
+<span class="sd">        default node substitution cost of 0 is used (node attributes</span>
+<span class="sd">        are not considered during matching).</span>
+
+<span class="sd">        If node_del_cost is not specified then default node deletion</span>
+<span class="sd">        cost of 1 is used.  If node_ins_cost is not specified then</span>
+<span class="sd">        default node insertion cost of 1 is used.</span>
+
+<span class="sd">    edge_subst_cost, edge_del_cost, edge_ins_cost : callable</span>
+<span class="sd">        Functions that return the costs of edge substitution, edge</span>
+<span class="sd">        deletion, and edge insertion, respectively.</span>
+
+<span class="sd">        The functions will be called like</span>
+
+<span class="sd">           edge_subst_cost(G1[u1][v1], G2[u2][v2]),</span>
+<span class="sd">           edge_del_cost(G1[u1][v1]),</span>
+<span class="sd">           edge_ins_cost(G2[u2][v2]).</span>
+
+<span class="sd">        That is, the functions will receive the edge attribute</span>
+<span class="sd">        dictionaries as inputs.  The functions are expected to return</span>
+<span class="sd">        positive numeric values.</span>
+
+<span class="sd">        Function edge_subst_cost overrides edge_match if specified.</span>
+<span class="sd">        If neither edge_match nor edge_subst_cost are specified then</span>
+<span class="sd">        default edge substitution cost of 0 is used (edge attributes</span>
+<span class="sd">        are not considered during matching).</span>
+
+<span class="sd">        If edge_del_cost is not specified then default edge deletion</span>
+<span class="sd">        cost of 1 is used.  If edge_ins_cost is not specified then</span>
+<span class="sd">        default edge insertion cost of 1 is used.</span>
+
+<span class="sd">    upper_bound : numeric</span>
+<span class="sd">        Maximum edit distance to consider.</span>
+
+<span class="sd">    strictly_decreasing : bool</span>
+<span class="sd">        If True, return consecutive approximations of strictly</span>
+<span class="sd">        decreasing cost.  Otherwise, return all edit paths of cost</span>
+<span class="sd">        less than or equal to the previous minimum cost.</span>
+
+<span class="sd">    roots : 2-tuple</span>
+<span class="sd">        Tuple where first element is a node in G1 and the second</span>
+<span class="sd">        is a node in G2.</span>
+<span class="sd">        These nodes are forced to be matched in the comparison to</span>
+<span class="sd">        allow comparison between rooted graphs.</span>
+
+<span class="sd">    timeout : numeric</span>
+<span class="sd">        Maximum number of seconds to execute.</span>
+<span class="sd">        After timeout is met, the current best GED is returned.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Generator of tuples (node_edit_path, edge_edit_path, cost)</span>
+<span class="sd">        node_edit_path : list of tuples (u, v)</span>
+<span class="sd">        edge_edit_path : list of tuples ((u1, v1), (u2, v2))</span>
+<span class="sd">        cost : numeric</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    graph_edit_distance, optimize_graph_edit_distance, optimal_edit_paths</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Zeina Abu-Aisheh, Romain Raveaux, Jean-Yves Ramel, Patrick</span>
+<span class="sd">       Martineau. An Exact Graph Edit Distance Algorithm for Solving</span>
+<span class="sd">       Pattern Recognition Problems. 4th International Conference on</span>
+<span class="sd">       Pattern Recognition Applications and Methods 2015, Jan 2015,</span>
+<span class="sd">       Lisbon, Portugal. 2015,</span>
+<span class="sd">       &lt;10.5220/0005209202710278&gt;. &lt;hal-01168816&gt;</span>
+<span class="sd">       https://hal.archives-ouvertes.fr/hal-01168816</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># TODO: support DiGraph</span>
+
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+    <span class="kn">import</span> <span class="nn">scipy</span> <span class="k">as</span> <span class="nn">sp</span>
+    <span class="kn">import</span> <span class="nn">scipy.optimize</span>  <span class="c1"># call as sp.optimize</span>
+
+    <span class="k">class</span> <span class="nc">CostMatrix</span><span class="p">:</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">lsa_row_ind</span><span class="p">,</span> <span class="n">lsa_col_ind</span><span class="p">,</span> <span class="n">ls</span><span class="p">):</span>
+            <span class="c1"># assert C.shape[0] == len(lsa_row_ind)</span>
+            <span class="c1"># assert C.shape[1] == len(lsa_col_ind)</span>
+            <span class="c1"># assert len(lsa_row_ind) == len(lsa_col_ind)</span>
+            <span class="c1"># assert set(lsa_row_ind) == set(range(len(lsa_row_ind)))</span>
+            <span class="c1"># assert set(lsa_col_ind) == set(range(len(lsa_col_ind)))</span>
+            <span class="c1"># assert ls == C[lsa_row_ind, lsa_col_ind].sum()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">C</span> <span class="o">=</span> <span class="n">C</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lsa_row_ind</span> <span class="o">=</span> <span class="n">lsa_row_ind</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lsa_col_ind</span> <span class="o">=</span> <span class="n">lsa_col_ind</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ls</span> <span class="o">=</span> <span class="n">ls</span>
+
+    <span class="k">def</span> <span class="nf">make_CostMatrix</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="c1"># assert(C.shape == (m + n, m + n))</span>
+        <span class="n">lsa_row_ind</span><span class="p">,</span> <span class="n">lsa_col_ind</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">optimize</span><span class="o">.</span><span class="n">linear_sum_assignment</span><span class="p">(</span><span class="n">C</span><span class="p">)</span>
+
+        <span class="c1"># Fixup dummy assignments:</span>
+        <span class="c1"># each substitution i&lt;-&gt;j should have dummy assignment m+j&lt;-&gt;n+i</span>
+        <span class="c1"># NOTE: fast reduce of Cv relies on it</span>
+        <span class="c1"># assert len(lsa_row_ind) == len(lsa_col_ind)</span>
+        <span class="n">indexes</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lsa_row_ind</span><span class="p">)),</span> <span class="n">lsa_row_ind</span><span class="p">,</span> <span class="n">lsa_col_ind</span><span class="p">)</span>
+        <span class="n">subst_ind</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">indexes</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">m</span> <span class="ow">and</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">)</span>
+        <span class="n">indexes</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lsa_row_ind</span><span class="p">)),</span> <span class="n">lsa_row_ind</span><span class="p">,</span> <span class="n">lsa_col_ind</span><span class="p">)</span>
+        <span class="n">dummy_ind</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">indexes</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="n">m</span> <span class="ow">and</span> <span class="n">j</span> <span class="o">&gt;=</span> <span class="n">n</span><span class="p">)</span>
+        <span class="c1"># assert len(subst_ind) == len(dummy_ind)</span>
+        <span class="n">lsa_row_ind</span><span class="p">[</span><span class="n">dummy_ind</span><span class="p">]</span> <span class="o">=</span> <span class="n">lsa_col_ind</span><span class="p">[</span><span class="n">subst_ind</span><span class="p">]</span> <span class="o">+</span> <span class="n">m</span>
+        <span class="n">lsa_col_ind</span><span class="p">[</span><span class="n">dummy_ind</span><span class="p">]</span> <span class="o">=</span> <span class="n">lsa_row_ind</span><span class="p">[</span><span class="n">subst_ind</span><span class="p">]</span> <span class="o">+</span> <span class="n">n</span>
+
+        <span class="k">return</span> <span class="n">CostMatrix</span><span class="p">(</span>
+            <span class="n">C</span><span class="p">,</span> <span class="n">lsa_row_ind</span><span class="p">,</span> <span class="n">lsa_col_ind</span><span class="p">,</span> <span class="n">C</span><span class="p">[</span><span class="n">lsa_row_ind</span><span class="p">,</span> <span class="n">lsa_col_ind</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">extract_C</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="c1"># assert(C.shape == (m + n, m + n))</span>
+        <span class="n">row_ind</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="ow">in</span> <span class="n">i</span> <span class="ow">or</span> <span class="n">k</span> <span class="o">-</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">j</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span> <span class="o">+</span> <span class="n">n</span><span class="p">)]</span>
+        <span class="n">col_ind</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="ow">in</span> <span class="n">j</span> <span class="ow">or</span> <span class="n">k</span> <span class="o">-</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">i</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span> <span class="o">+</span> <span class="n">n</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="n">C</span><span class="p">[</span><span class="n">row_ind</span><span class="p">,</span> <span class="p">:][:,</span> <span class="n">col_ind</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">reduce_C</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="c1"># assert(C.shape == (m + n, m + n))</span>
+        <span class="n">row_ind</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">i</span> <span class="ow">and</span> <span class="n">k</span> <span class="o">-</span> <span class="n">m</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">j</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span> <span class="o">+</span> <span class="n">n</span><span class="p">)]</span>
+        <span class="n">col_ind</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">j</span> <span class="ow">and</span> <span class="n">k</span> <span class="o">-</span> <span class="n">n</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">i</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span> <span class="o">+</span> <span class="n">n</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="n">C</span><span class="p">[</span><span class="n">row_ind</span><span class="p">,</span> <span class="p">:][:,</span> <span class="n">col_ind</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">reduce_ind</span><span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+        <span class="c1"># assert set(ind) == set(range(len(ind)))</span>
+        <span class="n">rind</span> <span class="o">=</span> <span class="n">ind</span><span class="p">[[</span><span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">i</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">ind</span><span class="p">]]</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+            <span class="n">rind</span><span class="p">[</span><span class="n">rind</span> <span class="o">&gt;=</span> <span class="n">k</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">rind</span>
+
+    <span class="k">def</span> <span class="nf">match_edges</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">pending_g</span><span class="p">,</span> <span class="n">pending_h</span><span class="p">,</span> <span class="n">Ce</span><span class="p">,</span> <span class="n">matched_uv</span><span class="o">=</span><span class="p">[]):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters:</span>
+<span class="sd">            u, v: matched vertices, u=None or v=None for</span>
+<span class="sd">               deletion/insertion</span>
+<span class="sd">            pending_g, pending_h: lists of edges not yet mapped</span>
+<span class="sd">            Ce: CostMatrix of pending edge mappings</span>
+<span class="sd">            matched_uv: partial vertex edit path</span>
+<span class="sd">                list of tuples (u, v) of previously matched vertex</span>
+<span class="sd">                    mappings u&lt;-&gt;v, u=None or v=None for</span>
+<span class="sd">                    deletion/insertion</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of (i, j): indices of edge mappings g&lt;-&gt;h</span>
+<span class="sd">            localCe: local CostMatrix of edge mappings</span>
+<span class="sd">                (basically submatrix of Ce at cross of rows i, cols j)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">M</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">pending_g</span><span class="p">)</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">pending_h</span><span class="p">)</span>
+        <span class="c1"># assert Ce.C.shape == (M + N, M + N)</span>
+
+        <span class="c1"># only attempt to match edges after one node match has been made</span>
+        <span class="c1"># this will stop self-edges on the first node being automatically deleted</span>
+        <span class="c1"># even when a substitution is the better option</span>
+        <span class="k">if</span> <span class="n">matched_uv</span><span class="p">:</span>
+            <span class="n">g_ind</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">i</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">M</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">pending_g</span><span class="p">[</span><span class="n">i</span><span class="p">][:</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span>
+                <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span>
+                    <span class="n">pending_g</span><span class="p">[</span><span class="n">i</span><span class="p">][:</span><span class="mi">2</span><span class="p">]</span> <span class="ow">in</span> <span class="p">((</span><span class="n">p</span><span class="p">,</span> <span class="n">u</span><span class="p">),</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">p</span><span class="p">),</span> <span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">p</span><span class="p">))</span> <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">matched_uv</span>
+                <span class="p">)</span>
+            <span class="p">]</span>
+            <span class="n">h_ind</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">j</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">pending_h</span><span class="p">[</span><span class="n">j</span><span class="p">][:</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+                <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span>
+                    <span class="n">pending_h</span><span class="p">[</span><span class="n">j</span><span class="p">][:</span><span class="mi">2</span><span class="p">]</span> <span class="ow">in</span> <span class="p">((</span><span class="n">q</span><span class="p">,</span> <span class="n">v</span><span class="p">),</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">q</span><span class="p">),</span> <span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">q</span><span class="p">))</span> <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">matched_uv</span>
+                <span class="p">)</span>
+            <span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">g_ind</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">h_ind</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">m</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">g_ind</span><span class="p">)</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">h_ind</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">m</span> <span class="ow">or</span> <span class="n">n</span><span class="p">:</span>
+            <span class="n">C</span> <span class="o">=</span> <span class="n">extract_C</span><span class="p">(</span><span class="n">Ce</span><span class="o">.</span><span class="n">C</span><span class="p">,</span> <span class="n">g_ind</span><span class="p">,</span> <span class="n">h_ind</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+            <span class="c1"># assert C.shape == (m + n, m + n)</span>
+
+            <span class="c1"># Forbid structurally invalid matches</span>
+            <span class="c1"># NOTE: inf remembered from Ce construction</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="p">),</span> <span class="n">g_ind</span><span class="p">):</span>
+                <span class="n">g</span> <span class="o">=</span> <span class="n">pending_g</span><span class="p">[</span><span class="n">i</span><span class="p">][:</span><span class="mi">2</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">l</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="n">h_ind</span><span class="p">):</span>
+                    <span class="n">h</span> <span class="o">=</span> <span class="n">pending_h</span><span class="p">[</span><span class="n">j</span><span class="p">][:</span><span class="mi">2</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">nx</span><span class="o">.</span><span class="n">is_directed</span><span class="p">(</span><span class="n">G1</span><span class="p">)</span> <span class="ow">or</span> <span class="n">nx</span><span class="o">.</span><span class="n">is_directed</span><span class="p">(</span><span class="n">G2</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span>
+                            <span class="n">g</span> <span class="o">==</span> <span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span> <span class="ow">and</span> <span class="n">h</span> <span class="o">==</span> <span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">or</span> <span class="n">g</span> <span class="o">==</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span> <span class="ow">and</span> <span class="n">h</span> <span class="o">==</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span>
+                            <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">matched_uv</span>
+                        <span class="p">):</span>
+                            <span class="k">continue</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span>
+                            <span class="n">g</span> <span class="ow">in</span> <span class="p">((</span><span class="n">p</span><span class="p">,</span> <span class="n">u</span><span class="p">),</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">p</span><span class="p">))</span> <span class="ow">and</span> <span class="n">h</span> <span class="ow">in</span> <span class="p">((</span><span class="n">q</span><span class="p">,</span> <span class="n">v</span><span class="p">),</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">q</span><span class="p">))</span>
+                            <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">matched_uv</span>
+                        <span class="p">):</span>
+                            <span class="k">continue</span>
+                    <span class="k">if</span> <span class="n">g</span> <span class="o">==</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span><span class="n">g</span> <span class="o">==</span> <span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">matched_uv</span><span class="p">):</span>
+                        <span class="k">continue</span>
+                    <span class="k">if</span> <span class="n">h</span> <span class="o">==</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span><span class="n">h</span> <span class="o">==</span> <span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">matched_uv</span><span class="p">):</span>
+                        <span class="k">continue</span>
+                    <span class="n">C</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">l</span><span class="p">]</span> <span class="o">=</span> <span class="n">inf</span>
+
+            <span class="n">localCe</span> <span class="o">=</span> <span class="n">make_CostMatrix</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+            <span class="n">ij</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="n">g_ind</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">if</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="n">m</span> <span class="k">else</span> <span class="n">M</span> <span class="o">+</span> <span class="n">h_ind</span><span class="p">[</span><span class="n">l</span><span class="p">],</span>
+                    <span class="n">h_ind</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="k">if</span> <span class="n">l</span> <span class="o">&lt;</span> <span class="n">n</span> <span class="k">else</span> <span class="n">N</span> <span class="o">+</span> <span class="n">g_ind</span><span class="p">[</span><span class="n">k</span><span class="p">],</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">localCe</span><span class="o">.</span><span class="n">lsa_row_ind</span><span class="p">,</span> <span class="n">localCe</span><span class="o">.</span><span class="n">lsa_col_ind</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="n">m</span> <span class="ow">or</span> <span class="n">l</span> <span class="o">&lt;</span> <span class="n">n</span>
+            <span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ij</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">localCe</span> <span class="o">=</span> <span class="n">CostMatrix</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="p">[],</span> <span class="p">[],</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ij</span><span class="p">,</span> <span class="n">localCe</span>
+
+    <span class="k">def</span> <span class="nf">reduce_Ce</span><span class="p">(</span><span class="n">Ce</span><span class="p">,</span> <span class="n">ij</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ij</span><span class="p">):</span>
+            <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">ij</span><span class="p">)</span>
+            <span class="n">m_i</span> <span class="o">=</span> <span class="n">m</span> <span class="o">-</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">i</span> <span class="k">if</span> <span class="n">t</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">)</span>
+            <span class="n">n_j</span> <span class="o">=</span> <span class="n">n</span> <span class="o">-</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">j</span> <span class="k">if</span> <span class="n">t</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">make_CostMatrix</span><span class="p">(</span><span class="n">reduce_C</span><span class="p">(</span><span class="n">Ce</span><span class="o">.</span><span class="n">C</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="n">m_i</span><span class="p">,</span> <span class="n">n_j</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Ce</span>
+
+    <span class="k">def</span> <span class="nf">get_edit_ops</span><span class="p">(</span>
+        <span class="n">matched_uv</span><span class="p">,</span> <span class="n">pending_u</span><span class="p">,</span> <span class="n">pending_v</span><span class="p">,</span> <span class="n">Cv</span><span class="p">,</span> <span class="n">pending_g</span><span class="p">,</span> <span class="n">pending_h</span><span class="p">,</span> <span class="n">Ce</span><span class="p">,</span> <span class="n">matched_cost</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters:</span>
+<span class="sd">            matched_uv: partial vertex edit path</span>
+<span class="sd">                list of tuples (u, v) of vertex mappings u&lt;-&gt;v,</span>
+<span class="sd">                u=None or v=None for deletion/insertion</span>
+<span class="sd">            pending_u, pending_v: lists of vertices not yet mapped</span>
+<span class="sd">            Cv: CostMatrix of pending vertex mappings</span>
+<span class="sd">            pending_g, pending_h: lists of edges not yet mapped</span>
+<span class="sd">            Ce: CostMatrix of pending edge mappings</span>
+<span class="sd">            matched_cost: cost of partial edit path</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            sequence of</span>
+<span class="sd">                (i, j): indices of vertex mapping u&lt;-&gt;v</span>
+<span class="sd">                Cv_ij: reduced CostMatrix of pending vertex mappings</span>
+<span class="sd">                    (basically Cv with row i, col j removed)</span>
+<span class="sd">                list of (x, y): indices of edge mappings g&lt;-&gt;h</span>
+<span class="sd">                Ce_xy: reduced CostMatrix of pending edge mappings</span>
+<span class="sd">                    (basically Ce with rows x, cols y removed)</span>
+<span class="sd">                cost: total cost of edit operation</span>
+<span class="sd">            NOTE: most promising ops first</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">pending_u</span><span class="p">)</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">pending_v</span><span class="p">)</span>
+        <span class="c1"># assert Cv.C.shape == (m + n, m + n)</span>
+
+        <span class="c1"># 1) a vertex mapping from optimal linear sum assignment</span>
+        <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">l</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">Cv</span><span class="o">.</span><span class="n">lsa_row_ind</span><span class="p">,</span> <span class="n">Cv</span><span class="o">.</span><span class="n">lsa_col_ind</span><span class="p">)</span> <span class="k">if</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="n">m</span> <span class="ow">or</span> <span class="n">l</span> <span class="o">&lt;</span> <span class="n">n</span>
+        <span class="p">)</span>
+        <span class="n">xy</span><span class="p">,</span> <span class="n">localCe</span> <span class="o">=</span> <span class="n">match_edges</span><span class="p">(</span>
+            <span class="n">pending_u</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">m</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">pending_v</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="k">if</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">n</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">pending_g</span><span class="p">,</span>
+            <span class="n">pending_h</span><span class="p">,</span>
+            <span class="n">Ce</span><span class="p">,</span>
+            <span class="n">matched_uv</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">Ce_xy</span> <span class="o">=</span> <span class="n">reduce_Ce</span><span class="p">(</span><span class="n">Ce</span><span class="p">,</span> <span class="n">xy</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">pending_g</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">pending_h</span><span class="p">))</span>
+        <span class="c1"># assert Ce.ls &lt;= localCe.ls + Ce_xy.ls</span>
+        <span class="k">if</span> <span class="n">prune</span><span class="p">(</span><span class="n">matched_cost</span> <span class="o">+</span> <span class="n">Cv</span><span class="o">.</span><span class="n">ls</span> <span class="o">+</span> <span class="n">localCe</span><span class="o">.</span><span class="n">ls</span> <span class="o">+</span> <span class="n">Ce_xy</span><span class="o">.</span><span class="n">ls</span><span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># get reduced Cv efficiently</span>
+            <span class="n">Cv_ij</span> <span class="o">=</span> <span class="n">CostMatrix</span><span class="p">(</span>
+                <span class="n">reduce_C</span><span class="p">(</span><span class="n">Cv</span><span class="o">.</span><span class="n">C</span><span class="p">,</span> <span class="p">(</span><span class="n">i</span><span class="p">,),</span> <span class="p">(</span><span class="n">j</span><span class="p">,),</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span>
+                <span class="n">reduce_ind</span><span class="p">(</span><span class="n">Cv</span><span class="o">.</span><span class="n">lsa_row_ind</span><span class="p">,</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">m</span> <span class="o">+</span> <span class="n">j</span><span class="p">)),</span>
+                <span class="n">reduce_ind</span><span class="p">(</span><span class="n">Cv</span><span class="o">.</span><span class="n">lsa_col_ind</span><span class="p">,</span> <span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">n</span> <span class="o">+</span> <span class="n">i</span><span class="p">)),</span>
+                <span class="n">Cv</span><span class="o">.</span><span class="n">ls</span> <span class="o">-</span> <span class="n">Cv</span><span class="o">.</span><span class="n">C</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="k">yield</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">),</span> <span class="n">Cv_ij</span><span class="p">,</span> <span class="n">xy</span><span class="p">,</span> <span class="n">Ce_xy</span><span class="p">,</span> <span class="n">Cv</span><span class="o">.</span><span class="n">C</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">localCe</span><span class="o">.</span><span class="n">ls</span>
+
+        <span class="c1"># 2) other candidates, sorted by lower-bound cost estimate</span>
+        <span class="n">other</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="n">fixed_i</span><span class="p">,</span> <span class="n">fixed_j</span> <span class="o">=</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span>
+        <span class="k">if</span> <span class="n">m</span> <span class="o">&lt;=</span> <span class="n">n</span><span class="p">:</span>
+            <span class="n">candidates</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">fixed_j</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span> <span class="o">+</span> <span class="n">n</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">t</span> <span class="o">!=</span> <span class="n">fixed_i</span> <span class="ow">and</span> <span class="p">(</span><span class="n">t</span> <span class="o">&lt;</span> <span class="n">m</span> <span class="ow">or</span> <span class="n">t</span> <span class="o">==</span> <span class="n">m</span> <span class="o">+</span> <span class="n">fixed_j</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">candidates</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="p">(</span><span class="n">fixed_i</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span> <span class="o">+</span> <span class="n">n</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">t</span> <span class="o">!=</span> <span class="n">fixed_j</span> <span class="ow">and</span> <span class="p">(</span><span class="n">t</span> <span class="o">&lt;</span> <span class="n">n</span> <span class="ow">or</span> <span class="n">t</span> <span class="o">==</span> <span class="n">n</span> <span class="o">+</span> <span class="n">fixed_i</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">candidates</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">prune</span><span class="p">(</span><span class="n">matched_cost</span> <span class="o">+</span> <span class="n">Cv</span><span class="o">.</span><span class="n">C</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">Ce</span><span class="o">.</span><span class="n">ls</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="n">Cv_ij</span> <span class="o">=</span> <span class="n">make_CostMatrix</span><span class="p">(</span>
+                <span class="n">reduce_C</span><span class="p">(</span><span class="n">Cv</span><span class="o">.</span><span class="n">C</span><span class="p">,</span> <span class="p">(</span><span class="n">i</span><span class="p">,),</span> <span class="p">(</span><span class="n">j</span><span class="p">,),</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span>
+                <span class="n">m</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">m</span> <span class="k">else</span> <span class="n">m</span><span class="p">,</span>
+                <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">n</span> <span class="k">else</span> <span class="n">n</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="c1"># assert Cv.ls &lt;= Cv.C[i, j] + Cv_ij.ls</span>
+            <span class="k">if</span> <span class="n">prune</span><span class="p">(</span><span class="n">matched_cost</span> <span class="o">+</span> <span class="n">Cv</span><span class="o">.</span><span class="n">C</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">Cv_ij</span><span class="o">.</span><span class="n">ls</span> <span class="o">+</span> <span class="n">Ce</span><span class="o">.</span><span class="n">ls</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="n">xy</span><span class="p">,</span> <span class="n">localCe</span> <span class="o">=</span> <span class="n">match_edges</span><span class="p">(</span>
+                <span class="n">pending_u</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">m</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="n">pending_v</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="k">if</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">n</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="n">pending_g</span><span class="p">,</span>
+                <span class="n">pending_h</span><span class="p">,</span>
+                <span class="n">Ce</span><span class="p">,</span>
+                <span class="n">matched_uv</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">prune</span><span class="p">(</span><span class="n">matched_cost</span> <span class="o">+</span> <span class="n">Cv</span><span class="o">.</span><span class="n">C</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">Cv_ij</span><span class="o">.</span><span class="n">ls</span> <span class="o">+</span> <span class="n">localCe</span><span class="o">.</span><span class="n">ls</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="n">Ce_xy</span> <span class="o">=</span> <span class="n">reduce_Ce</span><span class="p">(</span><span class="n">Ce</span><span class="p">,</span> <span class="n">xy</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">pending_g</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">pending_h</span><span class="p">))</span>
+            <span class="c1"># assert Ce.ls &lt;= localCe.ls + Ce_xy.ls</span>
+            <span class="k">if</span> <span class="n">prune</span><span class="p">(</span><span class="n">matched_cost</span> <span class="o">+</span> <span class="n">Cv</span><span class="o">.</span><span class="n">C</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">Cv_ij</span><span class="o">.</span><span class="n">ls</span> <span class="o">+</span> <span class="n">localCe</span><span class="o">.</span><span class="n">ls</span> <span class="o">+</span> <span class="n">Ce_xy</span><span class="o">.</span><span class="n">ls</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="n">other</span><span class="o">.</span><span class="n">append</span><span class="p">(((</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">),</span> <span class="n">Cv_ij</span><span class="p">,</span> <span class="n">xy</span><span class="p">,</span> <span class="n">Ce_xy</span><span class="p">,</span> <span class="n">Cv</span><span class="o">.</span><span class="n">C</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">localCe</span><span class="o">.</span><span class="n">ls</span><span class="p">))</span>
+
+        <span class="k">yield from</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">t</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">ls</span> <span class="o">+</span> <span class="n">t</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">ls</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_edit_paths</span><span class="p">(</span>
+        <span class="n">matched_uv</span><span class="p">,</span>
+        <span class="n">pending_u</span><span class="p">,</span>
+        <span class="n">pending_v</span><span class="p">,</span>
+        <span class="n">Cv</span><span class="p">,</span>
+        <span class="n">matched_gh</span><span class="p">,</span>
+        <span class="n">pending_g</span><span class="p">,</span>
+        <span class="n">pending_h</span><span class="p">,</span>
+        <span class="n">Ce</span><span class="p">,</span>
+        <span class="n">matched_cost</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters:</span>
+<span class="sd">            matched_uv: partial vertex edit path</span>
+<span class="sd">                list of tuples (u, v) of vertex mappings u&lt;-&gt;v,</span>
+<span class="sd">                u=None or v=None for deletion/insertion</span>
+<span class="sd">            pending_u, pending_v: lists of vertices not yet mapped</span>
+<span class="sd">            Cv: CostMatrix of pending vertex mappings</span>
+<span class="sd">            matched_gh: partial edge edit path</span>
+<span class="sd">                list of tuples (g, h) of edge mappings g&lt;-&gt;h,</span>
+<span class="sd">                g=None or h=None for deletion/insertion</span>
+<span class="sd">            pending_g, pending_h: lists of edges not yet mapped</span>
+<span class="sd">            Ce: CostMatrix of pending edge mappings</span>
+<span class="sd">            matched_cost: cost of partial edit path</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            sequence of (vertex_path, edge_path, cost)</span>
+<span class="sd">                vertex_path: complete vertex edit path</span>
+<span class="sd">                    list of tuples (u, v) of vertex mappings u&lt;-&gt;v,</span>
+<span class="sd">                    u=None or v=None for deletion/insertion</span>
+<span class="sd">                edge_path: complete edge edit path</span>
+<span class="sd">                    list of tuples (g, h) of edge mappings g&lt;-&gt;h,</span>
+<span class="sd">                    g=None or h=None for deletion/insertion</span>
+<span class="sd">                cost: total cost of edit path</span>
+<span class="sd">            NOTE: path costs are non-increasing</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># debug_print(&#39;matched-uv:&#39;, matched_uv)</span>
+        <span class="c1"># debug_print(&#39;matched-gh:&#39;, matched_gh)</span>
+        <span class="c1"># debug_print(&#39;matched-cost:&#39;, matched_cost)</span>
+        <span class="c1"># debug_print(&#39;pending-u:&#39;, pending_u)</span>
+        <span class="c1"># debug_print(&#39;pending-v:&#39;, pending_v)</span>
+        <span class="c1"># debug_print(Cv.C)</span>
+        <span class="c1"># assert list(sorted(G1.nodes)) == list(sorted(list(u for u, v in matched_uv if u is not None) + pending_u))</span>
+        <span class="c1"># assert list(sorted(G2.nodes)) == list(sorted(list(v for u, v in matched_uv if v is not None) + pending_v))</span>
+        <span class="c1"># debug_print(&#39;pending-g:&#39;, pending_g)</span>
+        <span class="c1"># debug_print(&#39;pending-h:&#39;, pending_h)</span>
+        <span class="c1"># debug_print(Ce.C)</span>
+        <span class="c1"># assert list(sorted(G1.edges)) == list(sorted(list(g for g, h in matched_gh if g is not None) + pending_g))</span>
+        <span class="c1"># assert list(sorted(G2.edges)) == list(sorted(list(h for g, h in matched_gh if h is not None) + pending_h))</span>
+        <span class="c1"># debug_print()</span>
+
+        <span class="k">if</span> <span class="n">prune</span><span class="p">(</span><span class="n">matched_cost</span> <span class="o">+</span> <span class="n">Cv</span><span class="o">.</span><span class="n">ls</span> <span class="o">+</span> <span class="n">Ce</span><span class="o">.</span><span class="n">ls</span><span class="p">):</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pending_u</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">pending_v</span><span class="p">)):</span>
+            <span class="c1"># assert not len(pending_g)</span>
+            <span class="c1"># assert not len(pending_h)</span>
+            <span class="c1"># path completed!</span>
+            <span class="c1"># assert matched_cost &lt;= maxcost.value</span>
+            <span class="n">maxcost</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">maxcost</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">matched_cost</span><span class="p">)</span>
+            <span class="k">yield</span> <span class="n">matched_uv</span><span class="p">,</span> <span class="n">matched_gh</span><span class="p">,</span> <span class="n">matched_cost</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">edit_ops</span> <span class="o">=</span> <span class="n">get_edit_ops</span><span class="p">(</span>
+                <span class="n">matched_uv</span><span class="p">,</span>
+                <span class="n">pending_u</span><span class="p">,</span>
+                <span class="n">pending_v</span><span class="p">,</span>
+                <span class="n">Cv</span><span class="p">,</span>
+                <span class="n">pending_g</span><span class="p">,</span>
+                <span class="n">pending_h</span><span class="p">,</span>
+                <span class="n">Ce</span><span class="p">,</span>
+                <span class="n">matched_cost</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">ij</span><span class="p">,</span> <span class="n">Cv_ij</span><span class="p">,</span> <span class="n">xy</span><span class="p">,</span> <span class="n">Ce_xy</span><span class="p">,</span> <span class="n">edit_cost</span> <span class="ow">in</span> <span class="n">edit_ops</span><span class="p">:</span>
+                <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">ij</span>
+                <span class="c1"># assert Cv.C[i, j] + sum(Ce.C[t] for t in xy) == edit_cost</span>
+                <span class="k">if</span> <span class="n">prune</span><span class="p">(</span><span class="n">matched_cost</span> <span class="o">+</span> <span class="n">edit_cost</span> <span class="o">+</span> <span class="n">Cv_ij</span><span class="o">.</span><span class="n">ls</span> <span class="o">+</span> <span class="n">Ce_xy</span><span class="o">.</span><span class="n">ls</span><span class="p">):</span>
+                    <span class="k">continue</span>
+
+                <span class="c1"># dive deeper</span>
+                <span class="n">u</span> <span class="o">=</span> <span class="n">pending_u</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">pending_u</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+                <span class="n">v</span> <span class="o">=</span> <span class="n">pending_v</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="k">if</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">pending_v</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+                <span class="n">matched_uv</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">xy</span><span class="p">:</span>
+                    <span class="n">len_g</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">pending_g</span><span class="p">)</span>
+                    <span class="n">len_h</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">pending_h</span><span class="p">)</span>
+                    <span class="n">matched_gh</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="p">(</span>
+                            <span class="n">pending_g</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="k">if</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">len_g</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                            <span class="n">pending_h</span><span class="p">[</span><span class="n">y</span><span class="p">]</span> <span class="k">if</span> <span class="n">y</span> <span class="o">&lt;</span> <span class="n">len_h</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="n">sortedx</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">xy</span><span class="p">))</span>
+                <span class="n">sortedy</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">y</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">xy</span><span class="p">))</span>
+                <span class="n">G</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+                    <span class="p">(</span><span class="n">pending_g</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">pending_g</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">sortedx</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="n">H</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+                    <span class="p">(</span><span class="n">pending_h</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="k">if</span> <span class="n">y</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">pending_h</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">sortedy</span><span class="p">)</span>
+                <span class="p">)</span>
+
+                <span class="k">yield from</span> <span class="n">get_edit_paths</span><span class="p">(</span>
+                    <span class="n">matched_uv</span><span class="p">,</span>
+                    <span class="n">pending_u</span><span class="p">,</span>
+                    <span class="n">pending_v</span><span class="p">,</span>
+                    <span class="n">Cv_ij</span><span class="p">,</span>
+                    <span class="n">matched_gh</span><span class="p">,</span>
+                    <span class="n">pending_g</span><span class="p">,</span>
+                    <span class="n">pending_h</span><span class="p">,</span>
+                    <span class="n">Ce_xy</span><span class="p">,</span>
+                    <span class="n">matched_cost</span> <span class="o">+</span> <span class="n">edit_cost</span><span class="p">,</span>
+                <span class="p">)</span>
+
+                <span class="c1"># backtrack</span>
+                <span class="k">if</span> <span class="n">u</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">pending_u</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">pending_v</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+                <span class="n">matched_uv</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">g</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">sortedx</span><span class="p">,</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">G</span><span class="p">)):</span>
+                    <span class="k">if</span> <span class="n">g</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">pending_g</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">g</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">y</span><span class="p">,</span> <span class="n">h</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">sortedy</span><span class="p">,</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">H</span><span class="p">)):</span>
+                    <span class="k">if</span> <span class="n">h</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">pending_h</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">xy</span><span class="p">:</span>
+                    <span class="n">matched_gh</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+    <span class="c1"># Initialization</span>
+
+    <span class="n">pending_u</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">G1</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
+    <span class="n">pending_v</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">G2</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
+
+    <span class="n">initial_cost</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">roots</span><span class="p">:</span>
+        <span class="n">root_u</span><span class="p">,</span> <span class="n">root_v</span> <span class="o">=</span> <span class="n">roots</span>
+        <span class="k">if</span> <span class="n">root_u</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">pending_u</span> <span class="ow">or</span> <span class="n">root_v</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">pending_v</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NodeNotFound</span><span class="p">(</span><span class="s2">&quot;Root node not in graph.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># remove roots from pending</span>
+        <span class="n">pending_u</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">root_u</span><span class="p">)</span>
+        <span class="n">pending_v</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">root_v</span><span class="p">)</span>
+
+    <span class="c1"># cost matrix of vertex mappings</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">pending_u</span><span class="p">)</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">pending_v</span><span class="p">)</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">m</span> <span class="o">+</span> <span class="n">n</span><span class="p">,</span> <span class="n">m</span> <span class="o">+</span> <span class="n">n</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">node_subst_cost</span><span class="p">:</span>
+        <span class="n">C</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">m</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">node_subst_cost</span><span class="p">(</span><span class="n">G1</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">u</span><span class="p">],</span> <span class="n">G2</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">v</span><span class="p">])</span>
+                <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">pending_u</span>
+                <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">pending_v</span>
+            <span class="p">]</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">roots</span><span class="p">:</span>
+            <span class="n">initial_cost</span> <span class="o">=</span> <span class="n">node_subst_cost</span><span class="p">(</span><span class="n">G1</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">root_u</span><span class="p">],</span> <span class="n">G2</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">root_v</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">node_match</span><span class="p">:</span>
+        <span class="n">C</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">m</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="mi">1</span> <span class="o">-</span> <span class="nb">int</span><span class="p">(</span><span class="n">node_match</span><span class="p">(</span><span class="n">G1</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">u</span><span class="p">],</span> <span class="n">G2</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">v</span><span class="p">]))</span>
+                <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">pending_u</span>
+                <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">pending_v</span>
+            <span class="p">]</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">roots</span><span class="p">:</span>
+            <span class="n">initial_cost</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">node_match</span><span class="p">(</span><span class="n">G1</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">root_u</span><span class="p">],</span> <span class="n">G2</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">root_v</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># all zeroes</span>
+        <span class="k">pass</span>
+    <span class="c1"># assert not min(m, n) or C[0:m, 0:n].min() &gt;= 0</span>
+    <span class="k">if</span> <span class="n">node_del_cost</span><span class="p">:</span>
+        <span class="n">del_costs</span> <span class="o">=</span> <span class="p">[</span><span class="n">node_del_cost</span><span class="p">(</span><span class="n">G1</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">u</span><span class="p">])</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">pending_u</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">del_costs</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">pending_u</span><span class="p">)</span>
+    <span class="c1"># assert not m or min(del_costs) &gt;= 0</span>
+    <span class="k">if</span> <span class="n">node_ins_cost</span><span class="p">:</span>
+        <span class="n">ins_costs</span> <span class="o">=</span> <span class="p">[</span><span class="n">node_ins_cost</span><span class="p">(</span><span class="n">G2</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">v</span><span class="p">])</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">pending_v</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ins_costs</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">pending_v</span><span class="p">)</span>
+    <span class="c1"># assert not n or min(ins_costs) &gt;= 0</span>
+    <span class="n">inf</span> <span class="o">=</span> <span class="n">C</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">m</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">+</span> <span class="nb">sum</span><span class="p">(</span><span class="n">del_costs</span><span class="p">)</span> <span class="o">+</span> <span class="nb">sum</span><span class="p">(</span><span class="n">ins_costs</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">C</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span> <span class="p">:</span> <span class="n">n</span> <span class="o">+</span> <span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">del_costs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">j</span> <span class="k">else</span> <span class="n">inf</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="p">)]</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span>
+    <span class="n">C</span><span class="p">[</span><span class="n">m</span> <span class="p">:</span> <span class="n">m</span> <span class="o">+</span> <span class="n">n</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">ins_costs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">j</span> <span class="k">else</span> <span class="n">inf</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)]</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+    <span class="n">Cv</span> <span class="o">=</span> <span class="n">make_CostMatrix</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+    <span class="c1"># debug_print(f&quot;Cv: {m} x {n}&quot;)</span>
+    <span class="c1"># debug_print(Cv.C)</span>
+
+    <span class="n">pending_g</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">G1</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span>
+    <span class="n">pending_h</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">G2</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span>
+
+    <span class="c1"># cost matrix of edge mappings</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">pending_g</span><span class="p">)</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">pending_h</span><span class="p">)</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">m</span> <span class="o">+</span> <span class="n">n</span><span class="p">,</span> <span class="n">m</span> <span class="o">+</span> <span class="n">n</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">edge_subst_cost</span><span class="p">:</span>
+        <span class="n">C</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">m</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">edge_subst_cost</span><span class="p">(</span><span class="n">G1</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">g</span><span class="p">],</span> <span class="n">G2</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">h</span><span class="p">])</span>
+                <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">pending_g</span>
+                <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">pending_h</span>
+            <span class="p">]</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">edge_match</span><span class="p">:</span>
+        <span class="n">C</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">m</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="mi">1</span> <span class="o">-</span> <span class="nb">int</span><span class="p">(</span><span class="n">edge_match</span><span class="p">(</span><span class="n">G1</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">g</span><span class="p">],</span> <span class="n">G2</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">h</span><span class="p">]))</span>
+                <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">pending_g</span>
+                <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">pending_h</span>
+            <span class="p">]</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># all zeroes</span>
+        <span class="k">pass</span>
+    <span class="c1"># assert not min(m, n) or C[0:m, 0:n].min() &gt;= 0</span>
+    <span class="k">if</span> <span class="n">edge_del_cost</span><span class="p">:</span>
+        <span class="n">del_costs</span> <span class="o">=</span> <span class="p">[</span><span class="n">edge_del_cost</span><span class="p">(</span><span class="n">G1</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">g</span><span class="p">])</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">pending_g</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">del_costs</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">pending_g</span><span class="p">)</span>
+    <span class="c1"># assert not m or min(del_costs) &gt;= 0</span>
+    <span class="k">if</span> <span class="n">edge_ins_cost</span><span class="p">:</span>
+        <span class="n">ins_costs</span> <span class="o">=</span> <span class="p">[</span><span class="n">edge_ins_cost</span><span class="p">(</span><span class="n">G2</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">h</span><span class="p">])</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">pending_h</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ins_costs</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">pending_h</span><span class="p">)</span>
+    <span class="c1"># assert not n or min(ins_costs) &gt;= 0</span>
+    <span class="n">inf</span> <span class="o">=</span> <span class="n">C</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">m</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">+</span> <span class="nb">sum</span><span class="p">(</span><span class="n">del_costs</span><span class="p">)</span> <span class="o">+</span> <span class="nb">sum</span><span class="p">(</span><span class="n">ins_costs</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">C</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span> <span class="p">:</span> <span class="n">n</span> <span class="o">+</span> <span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">del_costs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">j</span> <span class="k">else</span> <span class="n">inf</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="p">)]</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span>
+    <span class="n">C</span><span class="p">[</span><span class="n">m</span> <span class="p">:</span> <span class="n">m</span> <span class="o">+</span> <span class="n">n</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">ins_costs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">j</span> <span class="k">else</span> <span class="n">inf</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)]</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+    <span class="n">Ce</span> <span class="o">=</span> <span class="n">make_CostMatrix</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+    <span class="c1"># debug_print(f&#39;Ce: {m} x {n}&#39;)</span>
+    <span class="c1"># debug_print(Ce.C)</span>
+    <span class="c1"># debug_print()</span>
+
+    <span class="k">class</span> <span class="nc">MaxCost</span><span class="p">:</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="c1"># initial upper-bound estimate</span>
+            <span class="c1"># NOTE: should work for empty graph</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">Cv</span><span class="o">.</span><span class="n">C</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">+</span> <span class="n">Ce</span><span class="o">.</span><span class="n">C</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="n">maxcost</span> <span class="o">=</span> <span class="n">MaxCost</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">timeout</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">timeout</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;Timeout value must be greater than 0&quot;</span><span class="p">)</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">prune</span><span class="p">(</span><span class="n">cost</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">timeout</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span> <span class="o">&gt;</span> <span class="n">timeout</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">upper_bound</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">cost</span> <span class="o">&gt;</span> <span class="n">upper_bound</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">cost</span> <span class="o">&gt;</span> <span class="n">maxcost</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">elif</span> <span class="n">strictly_decreasing</span> <span class="ow">and</span> <span class="n">cost</span> <span class="o">&gt;=</span> <span class="n">maxcost</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="c1"># Now go!</span>
+
+    <span class="n">done_uv</span> <span class="o">=</span> <span class="p">[]</span> <span class="k">if</span> <span class="n">roots</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[</span><span class="n">roots</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">vertex_path</span><span class="p">,</span> <span class="n">edge_path</span><span class="p">,</span> <span class="n">cost</span> <span class="ow">in</span> <span class="n">get_edit_paths</span><span class="p">(</span>
+        <span class="n">done_uv</span><span class="p">,</span> <span class="n">pending_u</span><span class="p">,</span> <span class="n">pending_v</span><span class="p">,</span> <span class="n">Cv</span><span class="p">,</span> <span class="p">[],</span> <span class="n">pending_g</span><span class="p">,</span> <span class="n">pending_h</span><span class="p">,</span> <span class="n">Ce</span><span class="p">,</span> <span class="n">initial_cost</span>
+    <span class="p">):</span>
+        <span class="c1"># assert sorted(G1.nodes) == sorted(u for u, v in vertex_path if u is not None)</span>
+        <span class="c1"># assert sorted(G2.nodes) == sorted(v for u, v in vertex_path if v is not None)</span>
+        <span class="c1"># assert sorted(G1.edges) == sorted(g for g, h in edge_path if g is not None)</span>
+        <span class="c1"># assert sorted(G2.edges) == sorted(h for g, h in edge_path if h is not None)</span>
+        <span class="c1"># print(vertex_path, edge_path, cost, file = sys.stderr)</span>
+        <span class="c1"># assert cost == maxcost.value</span>
+        <span class="k">yield</span> <span class="nb">list</span><span class="p">(</span><span class="n">vertex_path</span><span class="p">),</span> <span class="nb">list</span><span class="p">(</span><span class="n">edge_path</span><span class="p">),</span> <span class="n">cost</span></div>
+
+
+<div class="viewcode-block" id="simrank_similarity"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.similarity.simrank_similarity.html#networkx.algorithms.similarity.simrank_similarity">[docs]</a><span class="k">def</span> <span class="nf">simrank_similarity</span><span class="p">(</span>
+    <span class="n">G</span><span class="p">,</span>
+    <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">importance_factor</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
+    <span class="n">max_iterations</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+    <span class="n">tolerance</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the SimRank similarity of nodes in the graph ``G``.</span>
+
+<span class="sd">    SimRank is a similarity metric that says &quot;two objects are considered</span>
+<span class="sd">    to be similar if they are referenced by similar objects.&quot; [1]_.</span>
+
+<span class="sd">    The pseudo-code definition from the paper is::</span>
+
+<span class="sd">        def simrank(G, u, v):</span>
+<span class="sd">            in_neighbors_u = G.predecessors(u)</span>
+<span class="sd">            in_neighbors_v = G.predecessors(v)</span>
+<span class="sd">            scale = C / (len(in_neighbors_u) * len(in_neighbors_v))</span>
+<span class="sd">            return scale * sum(simrank(G, w, x)</span>
+<span class="sd">                               for w, x in product(in_neighbors_u,</span>
+<span class="sd">                                                   in_neighbors_v))</span>
+
+<span class="sd">    where ``G`` is the graph, ``u`` is the source, ``v`` is the target,</span>
+<span class="sd">    and ``C`` is a float decay or importance factor between 0 and 1.</span>
+
+<span class="sd">    The SimRank algorithm for determining node similarity is defined in</span>
+<span class="sd">    [2]_.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+<span class="sd">        A NetworkX graph</span>
+
+<span class="sd">    source : node</span>
+<span class="sd">        If this is specified, the returned dictionary maps each node</span>
+<span class="sd">        ``v`` in the graph to the similarity between ``source`` and</span>
+<span class="sd">        ``v``.</span>
+
+<span class="sd">    target : node</span>
+<span class="sd">        If both ``source`` and ``target`` are specified, the similarity</span>
+<span class="sd">        value between ``source`` and ``target`` is returned. If</span>
+<span class="sd">        ``target`` is specified but ``source`` is not, this argument is</span>
+<span class="sd">        ignored.</span>
+
+<span class="sd">    importance_factor : float</span>
+<span class="sd">        The relative importance of indirect neighbors with respect to</span>
+<span class="sd">        direct neighbors.</span>
+
+<span class="sd">    max_iterations : integer</span>
+<span class="sd">        Maximum number of iterations.</span>
+
+<span class="sd">    tolerance : float</span>
+<span class="sd">        Error tolerance used to check convergence. When an iteration of</span>
+<span class="sd">        the algorithm finds that no similarity value changes more than</span>
+<span class="sd">        this amount, the algorithm halts.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    similarity : dictionary or float</span>
+<span class="sd">        If ``source`` and ``target`` are both ``None``, this returns a</span>
+<span class="sd">        dictionary of dictionaries, where keys are node pairs and value</span>
+<span class="sd">        are similarity of the pair of nodes.</span>
+
+<span class="sd">        If ``source`` is not ``None`` but ``target`` is, this returns a</span>
+<span class="sd">        dictionary mapping node to the similarity of ``source`` and that</span>
+<span class="sd">        node.</span>
+
+<span class="sd">        If neither ``source`` nor ``target`` is ``None``, this returns</span>
+<span class="sd">        the similarity value for the given pair of nodes.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.cycle_graph(2)</span>
+<span class="sd">    &gt;&gt;&gt; nx.simrank_similarity(G)</span>
+<span class="sd">    {0: {0: 1.0, 1: 0.0}, 1: {0: 0.0, 1: 1.0}}</span>
+<span class="sd">    &gt;&gt;&gt; nx.simrank_similarity(G, source=0)</span>
+<span class="sd">    {0: 1.0, 1: 0.0}</span>
+<span class="sd">    &gt;&gt;&gt; nx.simrank_similarity(G, source=0, target=0)</span>
+<span class="sd">    1.0</span>
+
+<span class="sd">    The result of this function can be converted to a numpy array</span>
+<span class="sd">    representing the SimRank matrix by using the node order of the</span>
+<span class="sd">    graph to determine which row and column represent each node.</span>
+<span class="sd">    Other ordering of nodes is also possible.</span>
+
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; sim = nx.simrank_similarity(G)</span>
+<span class="sd">    &gt;&gt;&gt; np.array([[sim[u][v] for v in G] for u in G])</span>
+<span class="sd">    array([[1., 0.],</span>
+<span class="sd">           [0., 1.]])</span>
+<span class="sd">    &gt;&gt;&gt; sim_1d = nx.simrank_similarity(G, source=0)</span>
+<span class="sd">    &gt;&gt;&gt; np.array([sim[0][v] for v in G])</span>
+<span class="sd">    array([1., 0.])</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] https://en.wikipedia.org/wiki/SimRank</span>
+<span class="sd">    .. [2] G. Jeh and J. Widom.</span>
+<span class="sd">           &quot;SimRank: a measure of structural-context similarity&quot;,</span>
+<span class="sd">           In KDD&#39;02: Proceedings of the Eighth ACM SIGKDD</span>
+<span class="sd">           International Conference on Knowledge Discovery and Data Mining,</span>
+<span class="sd">           pp. 538--543. ACM Press, 2002.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+    <span class="n">nodelist</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+    <span class="n">s_indx</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">source</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+    <span class="n">t_indx</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">target</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="n">_simrank_similarity_numpy</span><span class="p">(</span>
+        <span class="n">G</span><span class="p">,</span> <span class="n">s_indx</span><span class="p">,</span> <span class="n">t_indx</span><span class="p">,</span> <span class="n">importance_factor</span><span class="p">,</span> <span class="n">max_iterations</span><span class="p">,</span> <span class="n">tolerance</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="n">node</span><span class="p">:</span> <span class="n">val</span> <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">x</span><span class="p">)}</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># x.ndim == 2:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="n">u</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">row</span><span class="p">))</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">x</span><span class="p">)}</span>
+    <span class="k">return</span> <span class="n">x</span></div>
+
+
+<span class="k">def</span> <span class="nf">_simrank_similarity_python</span><span class="p">(</span>
+    <span class="n">G</span><span class="p">,</span>
+    <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">importance_factor</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
+    <span class="n">max_iterations</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+    <span class="n">tolerance</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the SimRank similarity of nodes in the graph ``G``.</span>
+
+<span class="sd">    This pure Python version is provided for pedagogical purposes.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.cycle_graph(2)</span>
+<span class="sd">    &gt;&gt;&gt; nx.similarity._simrank_similarity_python(G)</span>
+<span class="sd">    {0: {0: 1, 1: 0.0}, 1: {0: 0.0, 1: 1}}</span>
+<span class="sd">    &gt;&gt;&gt; nx.similarity._simrank_similarity_python(G, source=0)</span>
+<span class="sd">    {0: 1, 1: 0.0}</span>
+<span class="sd">    &gt;&gt;&gt; nx.similarity._simrank_similarity_python(G, source=0, target=0)</span>
+<span class="sd">    1</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># build up our similarity adjacency dictionary output</span>
+    <span class="n">newsim</span> <span class="o">=</span> <span class="p">{</span><span class="n">u</span><span class="p">:</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">u</span> <span class="o">==</span> <span class="n">v</span> <span class="k">else</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G</span><span class="p">}</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">G</span><span class="p">}</span>
+
+    <span class="c1"># These functions compute the update to the similarity value of the nodes</span>
+    <span class="c1"># `u` and `v` with respect to the previous similarity values.</span>
+    <span class="k">def</span> <span class="nf">avg_sim</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">newsim</span><span class="p">[</span><span class="n">w</span><span class="p">][</span><span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="ow">in</span> <span class="n">s</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">if</span> <span class="n">s</span> <span class="k">else</span> <span class="mf">0.0</span>
+
+    <span class="n">Gadj</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">pred</span> <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">is_directed</span><span class="p">()</span> <span class="k">else</span> <span class="n">G</span><span class="o">.</span><span class="n">adj</span>
+
+    <span class="k">def</span> <span class="nf">sim</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">importance_factor</span> <span class="o">*</span> <span class="n">avg_sim</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">product</span><span class="p">(</span><span class="n">Gadj</span><span class="p">[</span><span class="n">u</span><span class="p">],</span> <span class="n">Gadj</span><span class="p">[</span><span class="n">v</span><span class="p">])))</span>
+
+    <span class="k">for</span> <span class="n">its</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_iterations</span><span class="p">):</span>
+        <span class="n">oldsim</span> <span class="o">=</span> <span class="n">newsim</span>
+        <span class="n">newsim</span> <span class="o">=</span> <span class="p">{</span><span class="n">u</span><span class="p">:</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">sim</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">if</span> <span class="n">u</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">v</span> <span class="k">else</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G</span><span class="p">}</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">G</span><span class="p">}</span>
+        <span class="n">is_close</span> <span class="o">=</span> <span class="nb">all</span><span class="p">(</span>
+            <span class="nb">all</span><span class="p">(</span>
+                <span class="nb">abs</span><span class="p">(</span><span class="n">newsim</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">]</span> <span class="o">-</span> <span class="n">old</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">tolerance</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="nb">abs</span><span class="p">(</span><span class="n">old</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">v</span><span class="p">,</span> <span class="n">old</span> <span class="ow">in</span> <span class="n">nbrs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">nbrs</span> <span class="ow">in</span> <span class="n">oldsim</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">is_close</span><span class="p">:</span>
+            <span class="k">break</span>
+
+    <span class="k">if</span> <span class="n">its</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">==</span> <span class="n">max_iterations</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">ExceededMaxIterations</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;simrank did not converge after </span><span class="si">{</span><span class="n">max_iterations</span><span class="si">}</span><span class="s2"> iterations.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">source</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">target</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">newsim</span><span class="p">[</span><span class="n">source</span><span class="p">][</span><span class="n">target</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">source</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">newsim</span><span class="p">[</span><span class="n">source</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">newsim</span>
+
+
+<span class="k">def</span> <span class="nf">_simrank_similarity_numpy</span><span class="p">(</span>
+    <span class="n">G</span><span class="p">,</span>
+    <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">importance_factor</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
+    <span class="n">max_iterations</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+    <span class="n">tolerance</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculate SimRank of nodes in ``G`` using matrices with ``numpy``.</span>
+
+<span class="sd">    The SimRank algorithm for determining node similarity is defined in</span>
+<span class="sd">    [1]_.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+<span class="sd">        A NetworkX graph</span>
+
+<span class="sd">    source : node</span>
+<span class="sd">        If this is specified, the returned dictionary maps each node</span>
+<span class="sd">        ``v`` in the graph to the similarity between ``source`` and</span>
+<span class="sd">        ``v``.</span>
+
+<span class="sd">    target : node</span>
+<span class="sd">        If both ``source`` and ``target`` are specified, the similarity</span>
+<span class="sd">        value between ``source`` and ``target`` is returned. If</span>
+<span class="sd">        ``target`` is specified but ``source`` is not, this argument is</span>
+<span class="sd">        ignored.</span>
+
+<span class="sd">    importance_factor : float</span>
+<span class="sd">        The relative importance of indirect neighbors with respect to</span>
+<span class="sd">        direct neighbors.</span>
+
+<span class="sd">    max_iterations : integer</span>
+<span class="sd">        Maximum number of iterations.</span>
+
+<span class="sd">    tolerance : float</span>
+<span class="sd">        Error tolerance used to check convergence. When an iteration of</span>
+<span class="sd">        the algorithm finds that no similarity value changes more than</span>
+<span class="sd">        this amount, the algorithm halts.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    similarity : numpy array or float</span>
+<span class="sd">        If ``source`` and ``target`` are both ``None``, this returns a</span>
+<span class="sd">        2D array containing SimRank scores of the nodes.</span>
+
+<span class="sd">        If ``source`` is not ``None`` but ``target`` is, this returns an</span>
+<span class="sd">        1D array containing SimRank scores of ``source`` and that</span>
+<span class="sd">        node.</span>
+
+<span class="sd">        If neither ``source`` nor ``target`` is ``None``, this returns</span>
+<span class="sd">        the similarity value for the given pair of nodes.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.cycle_graph(2)</span>
+<span class="sd">    &gt;&gt;&gt; nx.similarity._simrank_similarity_numpy(G)</span>
+<span class="sd">    array([[1., 0.],</span>
+<span class="sd">           [0., 1.]])</span>
+<span class="sd">    &gt;&gt;&gt; nx.similarity._simrank_similarity_numpy(G, source=0)</span>
+<span class="sd">    array([1., 0.])</span>
+<span class="sd">    &gt;&gt;&gt; nx.similarity._simrank_similarity_numpy(G, source=0, target=0)</span>
+<span class="sd">    1.0</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] G. Jeh and J. Widom.</span>
+<span class="sd">           &quot;SimRank: a measure of structural-context similarity&quot;,</span>
+<span class="sd">           In KDD&#39;02: Proceedings of the Eighth ACM SIGKDD</span>
+<span class="sd">           International Conference on Knowledge Discovery and Data Mining,</span>
+<span class="sd">           pp. 538--543. ACM Press, 2002.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># This algorithm follows roughly</span>
+    <span class="c1">#</span>
+    <span class="c1">#     S = max{C * (A.T * S * A), I}</span>
+    <span class="c1">#</span>
+    <span class="c1"># where C is the importance factor, A is the column normalized</span>
+    <span class="c1"># adjacency matrix, and I is the identity matrix.</span>
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+    <span class="n">adjacency_matrix</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">to_numpy_array</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+
+    <span class="c1"># column-normalize the ``adjacency_matrix``</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">adjacency_matrix</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+    <span class="n">s</span><span class="p">[</span><span class="n">s</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">adjacency_matrix</span> <span class="o">/=</span> <span class="n">s</span>  <span class="c1"># adjacency_matrix.sum(axis=0)</span>
+
+    <span class="n">newsim</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">its</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_iterations</span><span class="p">):</span>
+        <span class="n">prevsim</span> <span class="o">=</span> <span class="n">newsim</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">newsim</span> <span class="o">=</span> <span class="n">importance_factor</span> <span class="o">*</span> <span class="p">((</span><span class="n">adjacency_matrix</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">prevsim</span><span class="p">)</span> <span class="o">@</span> <span class="n">adjacency_matrix</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">fill_diagonal</span><span class="p">(</span><span class="n">newsim</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">prevsim</span><span class="p">,</span> <span class="n">newsim</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="n">tolerance</span><span class="p">):</span>
+            <span class="k">break</span>
+
+    <span class="k">if</span> <span class="n">its</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">==</span> <span class="n">max_iterations</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">ExceededMaxIterations</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;simrank did not converge after </span><span class="si">{</span><span class="n">max_iterations</span><span class="si">}</span><span class="s2"> iterations.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">source</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">target</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">newsim</span><span class="p">[</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">source</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">newsim</span><span class="p">[</span><span class="n">source</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">newsim</span>
+
+
+<div class="viewcode-block" id="panther_similarity"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.similarity.panther_similarity.html#networkx.algorithms.similarity.panther_similarity">[docs]</a><span class="k">def</span> <span class="nf">panther_similarity</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">path_length</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns the Panther similarity of nodes in the graph `G` to node ``v``.</span>
+
+<span class="sd">    Panther is a similarity metric that says &quot;two objects are considered</span>
+<span class="sd">    to be similar if they frequently appear on the same paths.&quot; [1]_.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+<span class="sd">        A NetworkX graph</span>
+<span class="sd">    source : node</span>
+<span class="sd">        Source node for which to find the top `k` similar other nodes</span>
+<span class="sd">    k : int (default = 5)</span>
+<span class="sd">        The number of most similar nodes to return</span>
+<span class="sd">    path_length : int (default = 5)</span>
+<span class="sd">        How long the randomly generated paths should be (``T`` in [1]_)</span>
+<span class="sd">    c : float (default = 0.5)</span>
+<span class="sd">        A universal positive constant used to scale the number</span>
+<span class="sd">        of sample random paths to generate.</span>
+<span class="sd">    delta : float (default = 0.1)</span>
+<span class="sd">        The probability that the similarity $S$ is not an epsilon-approximation to (R, phi),</span>
+<span class="sd">        where $R$ is the number of random paths and $\phi$ is the probability</span>
+<span class="sd">        that an element sampled from a set $A \subseteq D$, where $D$ is the domain.</span>
+<span class="sd">    eps : float or None (default = None)</span>
+<span class="sd">        The error bound. Per [1]_, a good value is ``sqrt(1/|E|)``. Therefore,</span>
+<span class="sd">        if no value is provided, the recommended computed value will be used.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    similarity : dictionary</span>
+<span class="sd">        Dictionary of nodes to similarity scores (as floats). Note:</span>
+<span class="sd">        the self-similarity (i.e., ``v``) will not be included in</span>
+<span class="sd">        the returned dictionary.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.star_graph(10)</span>
+<span class="sd">    &gt;&gt;&gt; sim = nx.panther_similarity(G, 0)</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Zhang, J., Tang, J., Ma, C., Tong, H., Jing, Y., &amp; Li, J.</span>
+<span class="sd">           Panther: Fast top-k similarity search on large networks.</span>
+<span class="sd">           In Proceedings of the ACM SIGKDD International Conference</span>
+<span class="sd">           on Knowledge Discovery and Data Mining (Vol. 2015-August, pp. 1445–1454).</span>
+<span class="sd">           Association for Computing Machinery. https://doi.org/10.1145/2783258.2783267.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+    <span class="n">num_nodes</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">num_nodes</span> <span class="o">&lt;</span> <span class="n">k</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Number of nodes is </span><span class="si">{</span><span class="n">num_nodes</span><span class="si">}</span><span class="s2">, but requested k is </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">. &quot;</span>
+            <span class="s2">&quot;Setting k to number of nodes.&quot;</span>
+        <span class="p">)</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="n">num_nodes</span>
+    <span class="c1"># According to [1], they empirically determined</span>
+    <span class="c1"># a good value for ``eps`` to be sqrt( 1 / |E| )</span>
+    <span class="k">if</span> <span class="n">eps</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">eps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">G</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">())</span>
+
+    <span class="n">inv_node_map</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">index</span> <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">)}</span>
+    <span class="n">node_map</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+
+    <span class="c1"># Calculate the sample size ``R`` for how many paths</span>
+    <span class="c1"># to randomly generate</span>
+    <span class="n">t_choose_2</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">comb</span><span class="p">(</span><span class="n">path_length</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">sample_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">c</span> <span class="o">/</span> <span class="n">eps</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="n">t_choose_2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">delta</span><span class="p">)))</span>
+    <span class="n">index_map</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+        <span class="n">generate_random_paths</span><span class="p">(</span>
+            <span class="n">G</span><span class="p">,</span> <span class="n">sample_size</span><span class="p">,</span> <span class="n">path_length</span><span class="o">=</span><span class="n">path_length</span><span class="p">,</span> <span class="n">index_map</span><span class="o">=</span><span class="n">index_map</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_nodes</span><span class="p">)</span>
+
+    <span class="n">inv_sample_size</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">sample_size</span>
+
+    <span class="n">source_paths</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">index_map</span><span class="p">[</span><span class="n">source</span><span class="p">])</span>
+
+    <span class="c1"># Calculate the path similarities</span>
+    <span class="c1"># between ``source`` (v) and ``node`` (v_j)</span>
+    <span class="c1"># using our inverted index mapping of</span>
+    <span class="c1"># vertices to paths</span>
+    <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="n">paths</span> <span class="ow">in</span> <span class="n">index_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="c1"># Only consider paths where both</span>
+        <span class="c1"># ``node`` and ``source`` are present</span>
+        <span class="n">common_paths</span> <span class="o">=</span> <span class="n">source_paths</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">paths</span><span class="p">)</span>
+        <span class="n">S</span><span class="p">[</span><span class="n">inv_node_map</span><span class="p">[</span><span class="n">node</span><span class="p">]]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">common_paths</span><span class="p">)</span> <span class="o">*</span> <span class="n">inv_sample_size</span>
+
+    <span class="c1"># Retrieve top ``k`` similar</span>
+    <span class="c1"># Note: the below performed anywhere from 4-10x faster</span>
+    <span class="c1"># (depending on input sizes) vs the equivalent ``np.argsort(S)[::-1]``</span>
+    <span class="n">top_k_unsorted</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argpartition</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="o">-</span><span class="n">k</span><span class="p">)[</span><span class="o">-</span><span class="n">k</span><span class="p">:]</span>
+    <span class="n">top_k_sorted</span> <span class="o">=</span> <span class="n">top_k_unsorted</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">S</span><span class="p">[</span><span class="n">top_k_unsorted</span><span class="p">])][::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># Add back the similarity scores</span>
+    <span class="n">top_k_sorted_names</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">node_map</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="n">top_k_sorted</span><span class="p">)</span>
+    <span class="n">top_k_with_val</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">top_k_sorted_names</span><span class="p">,</span> <span class="n">S</span><span class="p">[</span><span class="n">top_k_sorted</span><span class="p">]))</span>
+
+    <span class="c1"># Remove the self-similarity</span>
+    <span class="n">top_k_with_val</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">top_k_with_val</span></div>
+
+
+<div class="viewcode-block" id="generate_random_paths"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.similarity.generate_random_paths.html#networkx.algorithms.similarity.generate_random_paths">[docs]</a><span class="k">def</span> <span class="nf">generate_random_paths</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">sample_size</span><span class="p">,</span> <span class="n">path_length</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">index_map</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Randomly generate `sample_size` paths of length `path_length`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+<span class="sd">        A NetworkX graph</span>
+<span class="sd">    sample_size : integer</span>
+<span class="sd">        The number of paths to generate. This is ``R`` in [1]_.</span>
+<span class="sd">    path_length : integer (default = 5)</span>
+<span class="sd">        The maximum size of the path to randomly generate.</span>
+<span class="sd">        This is ``T`` in [1]_. According to the paper, ``T &gt;= 5`` is</span>
+<span class="sd">        recommended.</span>
+<span class="sd">    index_map : dictionary, optional</span>
+<span class="sd">        If provided, this will be populated with the inverted</span>
+<span class="sd">        index of nodes mapped to the set of generated random path</span>
+<span class="sd">        indices within ``paths``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    paths : generator of lists</span>
+<span class="sd">        Generator of `sample_size` paths each with length `path_length`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Note that the return value is the list of paths:</span>
+
+<span class="sd">    &gt;&gt;&gt; G = nx.star_graph(3)</span>
+<span class="sd">    &gt;&gt;&gt; random_path = nx.generate_random_paths(G, 2)</span>
+
+<span class="sd">    By passing a dictionary into `index_map`, it will build an</span>
+<span class="sd">    inverted index mapping of nodes to the paths in which that node is present:</span>
+
+<span class="sd">    &gt;&gt;&gt; G = nx.star_graph(3)</span>
+<span class="sd">    &gt;&gt;&gt; index_map = {}</span>
+<span class="sd">    &gt;&gt;&gt; random_path = nx.generate_random_paths(G, 3, index_map=index_map)</span>
+<span class="sd">    &gt;&gt;&gt; paths_containing_node_0 = [random_path[path_idx] for path_idx in index_map.get(0, [])]</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Zhang, J., Tang, J., Ma, C., Tong, H., Jing, Y., &amp; Li, J.</span>
+<span class="sd">           Panther: Fast top-k similarity search on large networks.</span>
+<span class="sd">           In Proceedings of the ACM SIGKDD International Conference</span>
+<span class="sd">           on Knowledge Discovery and Data Mining (Vol. 2015-August, pp. 1445–1454).</span>
+<span class="sd">           Association for Computing Machinery. https://doi.org/10.1145/2783258.2783267.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+    <span class="c1"># Calculate transition probabilities between</span>
+    <span class="c1"># every pair of vertices according to Eq. (3)</span>
+    <span class="n">adj_mat</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">to_numpy_array</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+    <span class="n">inv_row_sums</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reciprocal</span><span class="p">(</span><span class="n">adj_mat</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">transition_probabilities</span> <span class="o">=</span> <span class="n">adj_mat</span> <span class="o">*</span> <span class="n">inv_row_sums</span>
+
+    <span class="n">node_map</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+    <span class="n">num_nodes</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">path_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">sample_size</span><span class="p">):</span>
+        <span class="c1"># Sample current vertex v = v_i uniformly at random</span>
+        <span class="n">node_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="n">num_nodes</span><span class="p">)</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="n">node_map</span><span class="p">[</span><span class="n">node_index</span><span class="p">]</span>
+
+        <span class="c1"># Add v into p_r and add p_r into the path set</span>
+        <span class="c1"># of v, i.e., P_v</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="p">[</span><span class="n">node</span><span class="p">]</span>
+
+        <span class="c1"># Build the inverted index (P_v) of vertices to paths</span>
+        <span class="k">if</span> <span class="n">index_map</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">index_map</span><span class="p">:</span>
+                <span class="n">index_map</span><span class="p">[</span><span class="n">node</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">path_index</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">index_map</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">path_index</span><span class="p">}</span>
+
+        <span class="n">starting_index</span> <span class="o">=</span> <span class="n">node_index</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">path_length</span><span class="p">):</span>
+            <span class="c1"># Randomly sample a neighbor (v_j) according</span>
+            <span class="c1"># to transition probabilities from ``node`` (v) to its neighbors</span>
+            <span class="n">neighbor_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span>
+                <span class="n">num_nodes</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">transition_probabilities</span><span class="p">[</span><span class="n">starting_index</span><span class="p">]</span>
+            <span class="p">)</span>
+
+            <span class="c1"># Set current vertex (v = v_j)</span>
+            <span class="n">starting_index</span> <span class="o">=</span> <span class="n">neighbor_index</span>
+
+            <span class="c1"># Add v into p_r</span>
+            <span class="n">neighbor_node</span> <span class="o">=</span> <span class="n">node_map</span><span class="p">[</span><span class="n">neighbor_index</span><span class="p">]</span>
+            <span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">neighbor_node</span><span class="p">)</span>
+
+            <span class="c1"># Add p_r into P_v</span>
+            <span class="k">if</span> <span class="n">index_map</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">neighbor_node</span> <span class="ow">in</span> <span class="n">index_map</span><span class="p">:</span>
+                    <span class="n">index_map</span><span class="p">[</span><span class="n">neighbor_node</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">path_index</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">index_map</span><span class="p">[</span><span class="n">neighbor_node</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">path_index</span><span class="p">}</span>
+
+        <span class="k">yield</span> <span class="n">path</span></div>
+</pre></div>
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

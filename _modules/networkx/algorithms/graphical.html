@@ -1,0 +1,947 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>networkx.algorithms.graphical &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/algorithms/graphical';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/algorithms/graphical.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../../../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../../../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <h1>Source code for networkx.algorithms.graphical</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Test sequences for graphiness.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">heapq</span>
+
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;is_graphical&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;is_multigraphical&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;is_pseudographical&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;is_digraphical&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;is_valid_degree_sequence_erdos_gallai&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;is_valid_degree_sequence_havel_hakimi&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="is_graphical"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.graphical.is_graphical.html#networkx.algorithms.graphical.is_graphical">[docs]</a><span class="k">def</span> <span class="nf">is_graphical</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;eg&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns True if sequence is a valid degree sequence.</span>
+
+<span class="sd">    A degree sequence is valid if some graph can realize it.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    sequence : list or iterable container</span>
+<span class="sd">        A sequence of integer node degrees</span>
+
+<span class="sd">    method : &quot;eg&quot; | &quot;hh&quot;  (default: &#39;eg&#39;)</span>
+<span class="sd">        The method used to validate the degree sequence.</span>
+<span class="sd">        &quot;eg&quot; corresponds to the Erdős-Gallai algorithm</span>
+<span class="sd">        [EG1960]_, [choudum1986]_, and</span>
+<span class="sd">        &quot;hh&quot; to the Havel-Hakimi algorithm</span>
+<span class="sd">        [havel1955]_, [hakimi1962]_, [CL1996]_.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    valid : bool</span>
+<span class="sd">        True if the sequence is a valid degree sequence and False if not.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.path_graph(4)</span>
+<span class="sd">    &gt;&gt;&gt; sequence = (d for n, d in G.degree())</span>
+<span class="sd">    &gt;&gt;&gt; nx.is_graphical(sequence)</span>
+<span class="sd">    True</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [EG1960] Erdős and Gallai, Mat. Lapok 11 264, 1960.</span>
+<span class="sd">    .. [choudum1986] S.A. Choudum. &quot;A simple proof of the Erdős-Gallai theorem on</span>
+<span class="sd">       graph sequences.&quot; Bulletin of the Australian Mathematical Society, 33,</span>
+<span class="sd">       pp 67-70, 1986. https://doi.org/10.1017/S0004972700002872</span>
+<span class="sd">    .. [havel1955] Havel, V. &quot;A Remark on the Existence of Finite Graphs&quot;</span>
+<span class="sd">       Casopis Pest. Mat. 80, 477-480, 1955.</span>
+<span class="sd">    .. [hakimi1962] Hakimi, S. &quot;On the Realizability of a Set of Integers as</span>
+<span class="sd">       Degrees of the Vertices of a Graph.&quot; SIAM J. Appl. Math. 10, 496-506, 1962.</span>
+<span class="sd">    .. [CL1996] G. Chartrand and L. Lesniak, &quot;Graphs and Digraphs&quot;,</span>
+<span class="sd">       Chapman and Hall/CRC, 1996.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;eg&quot;</span><span class="p">:</span>
+        <span class="n">valid</span> <span class="o">=</span> <span class="n">is_valid_degree_sequence_erdos_gallai</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">sequence</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;hh&quot;</span><span class="p">:</span>
+        <span class="n">valid</span> <span class="o">=</span> <span class="n">is_valid_degree_sequence_havel_hakimi</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">sequence</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;`method` must be &#39;eg&#39; or &#39;hh&#39;&quot;</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXException</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">valid</span></div>
+
+
+<span class="k">def</span> <span class="nf">_basic_graphical_tests</span><span class="p">(</span><span class="n">deg_sequence</span><span class="p">):</span>
+    <span class="c1"># Sort and perform some simple tests on the sequence</span>
+    <span class="n">deg_sequence</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">make_list_of_ints</span><span class="p">(</span><span class="n">deg_sequence</span><span class="p">)</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">deg_sequence</span><span class="p">)</span>
+    <span class="n">num_degs</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span>
+    <span class="n">dmax</span><span class="p">,</span> <span class="n">dmin</span><span class="p">,</span> <span class="n">dsum</span><span class="p">,</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">deg_sequence</span><span class="p">:</span>
+        <span class="c1"># Reject if degree is negative or larger than the sequence length</span>
+        <span class="k">if</span> <span class="n">d</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">d</span> <span class="o">&gt;=</span> <span class="n">p</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXUnfeasible</span>
+        <span class="c1"># Process only the non-zero integers</span>
+        <span class="k">elif</span> <span class="n">d</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">dmax</span><span class="p">,</span> <span class="n">dmin</span><span class="p">,</span> <span class="n">dsum</span><span class="p">,</span> <span class="n">n</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">dmax</span><span class="p">,</span> <span class="n">d</span><span class="p">),</span> <span class="nb">min</span><span class="p">(</span><span class="n">dmin</span><span class="p">,</span> <span class="n">d</span><span class="p">),</span> <span class="n">dsum</span> <span class="o">+</span> <span class="n">d</span><span class="p">,</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">num_degs</span><span class="p">[</span><span class="n">d</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="c1"># Reject sequence if it has odd sum or is oversaturated</span>
+    <span class="k">if</span> <span class="n">dsum</span> <span class="o">%</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">dsum</span> <span class="o">&gt;</span> <span class="n">n</span> <span class="o">*</span> <span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXUnfeasible</span>
+    <span class="k">return</span> <span class="n">dmax</span><span class="p">,</span> <span class="n">dmin</span><span class="p">,</span> <span class="n">dsum</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">num_degs</span>
+
+
+<div class="viewcode-block" id="is_valid_degree_sequence_havel_hakimi"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.graphical.is_valid_degree_sequence_havel_hakimi.html#networkx.algorithms.graphical.is_valid_degree_sequence_havel_hakimi">[docs]</a><span class="k">def</span> <span class="nf">is_valid_degree_sequence_havel_hakimi</span><span class="p">(</span><span class="n">deg_sequence</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns True if deg_sequence can be realized by a simple graph.</span>
+
+<span class="sd">    The validation proceeds using the Havel-Hakimi theorem</span>
+<span class="sd">    [havel1955]_, [hakimi1962]_, [CL1996]_.</span>
+<span class="sd">    Worst-case run time is $O(s)$ where $s$ is the sum of the sequence.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    deg_sequence : list</span>
+<span class="sd">        A list of integers where each element specifies the degree of a node</span>
+<span class="sd">        in a graph.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    valid : bool</span>
+<span class="sd">        True if deg_sequence is graphical and False if not.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The ZZ condition says that for the sequence d if</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        |d| &gt;= \frac{(\max(d) + \min(d) + 1)^2}{4*\min(d)}</span>
+
+<span class="sd">    then d is graphical.  This was shown in Theorem 6 in [1]_.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] I.E. Zverovich and V.E. Zverovich. &quot;Contributions to the theory</span>
+<span class="sd">       of graphic sequences&quot;, Discrete Mathematics, 105, pp. 292-303 (1992).</span>
+<span class="sd">    .. [havel1955] Havel, V. &quot;A Remark on the Existence of Finite Graphs&quot;</span>
+<span class="sd">       Casopis Pest. Mat. 80, 477-480, 1955.</span>
+<span class="sd">    .. [hakimi1962] Hakimi, S. &quot;On the Realizability of a Set of Integers as</span>
+<span class="sd">       Degrees of the Vertices of a Graph.&quot; SIAM J. Appl. Math. 10, 496-506, 1962.</span>
+<span class="sd">    .. [CL1996] G. Chartrand and L. Lesniak, &quot;Graphs and Digraphs&quot;,</span>
+<span class="sd">       Chapman and Hall/CRC, 1996.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">dmax</span><span class="p">,</span> <span class="n">dmin</span><span class="p">,</span> <span class="n">dsum</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">num_degs</span> <span class="o">=</span> <span class="n">_basic_graphical_tests</span><span class="p">(</span><span class="n">deg_sequence</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXUnfeasible</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="c1"># Accept if sequence has no non-zero degrees or passes the ZZ condition</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">dmin</span> <span class="o">*</span> <span class="n">n</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="n">dmax</span> <span class="o">+</span> <span class="n">dmin</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">dmax</span> <span class="o">+</span> <span class="n">dmin</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="n">modstubs</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">dmax</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># Successively reduce degree sequence by removing the maximum degree</span>
+    <span class="k">while</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1"># Retrieve the maximum degree in the sequence</span>
+        <span class="k">while</span> <span class="n">num_degs</span><span class="p">[</span><span class="n">dmax</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">dmax</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="c1"># If there are not enough stubs to connect to, then the sequence is</span>
+        <span class="c1"># not graphical</span>
+        <span class="k">if</span> <span class="n">dmax</span> <span class="o">&gt;</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># Remove largest stub in list</span>
+        <span class="n">num_degs</span><span class="p">[</span><span class="n">dmax</span><span class="p">],</span> <span class="n">n</span> <span class="o">=</span> <span class="n">num_degs</span><span class="p">[</span><span class="n">dmax</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="c1"># Reduce the next dmax largest stubs</span>
+        <span class="n">mslen</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="n">dmax</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dmax</span><span class="p">):</span>
+            <span class="k">while</span> <span class="n">num_degs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">k</span> <span class="o">-=</span> <span class="mi">1</span>
+            <span class="n">num_degs</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">n</span> <span class="o">=</span> <span class="n">num_degs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">modstubs</span><span class="p">[</span><span class="n">mslen</span><span class="p">]</span> <span class="o">=</span> <span class="n">k</span> <span class="o">-</span> <span class="mi">1</span>
+                <span class="n">mslen</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="c1"># Add back to the list any non-zero stubs that were removed</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">mslen</span><span class="p">):</span>
+            <span class="n">stub</span> <span class="o">=</span> <span class="n">modstubs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">num_degs</span><span class="p">[</span><span class="n">stub</span><span class="p">],</span> <span class="n">n</span> <span class="o">=</span> <span class="n">num_degs</span><span class="p">[</span><span class="n">stub</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="is_valid_degree_sequence_erdos_gallai"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.graphical.is_valid_degree_sequence_erdos_gallai.html#networkx.algorithms.graphical.is_valid_degree_sequence_erdos_gallai">[docs]</a><span class="k">def</span> <span class="nf">is_valid_degree_sequence_erdos_gallai</span><span class="p">(</span><span class="n">deg_sequence</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns True if deg_sequence can be realized by a simple graph.</span>
+
+<span class="sd">    The validation is done using the Erdős-Gallai theorem [EG1960]_.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    deg_sequence : list</span>
+<span class="sd">        A list of integers</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    valid : bool</span>
+<span class="sd">        True if deg_sequence is graphical and False if not.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+
+<span class="sd">    This implementation uses an equivalent form of the Erdős-Gallai criterion.</span>
+<span class="sd">    Worst-case run time is $O(n)$ where $n$ is the length of the sequence.</span>
+
+<span class="sd">    Specifically, a sequence d is graphical if and only if the</span>
+<span class="sd">    sum of the sequence is even and for all strong indices k in the sequence,</span>
+
+<span class="sd">     .. math::</span>
+
+<span class="sd">       \sum_{i=1}^{k} d_i \leq k(k-1) + \sum_{j=k+1}^{n} \min(d_i,k)</span>
+<span class="sd">             = k(n-1) - ( k \sum_{j=0}^{k-1} n_j - \sum_{j=0}^{k-1} j n_j )</span>
+
+<span class="sd">    A strong index k is any index where d_k &gt;= k and the value n_j is the</span>
+<span class="sd">    number of occurrences of j in d.  The maximal strong index is called the</span>
+<span class="sd">    Durfee index.</span>
+
+<span class="sd">    This particular rearrangement comes from the proof of Theorem 3 in [2]_.</span>
+
+<span class="sd">    The ZZ condition says that for the sequence d if</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        |d| &gt;= \frac{(\max(d) + \min(d) + 1)^2}{4*\min(d)}</span>
+
+<span class="sd">    then d is graphical.  This was shown in Theorem 6 in [2]_.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] A. Tripathi and S. Vijay. &quot;A note on a theorem of Erdős &amp; Gallai&quot;,</span>
+<span class="sd">       Discrete Mathematics, 265, pp. 417-420 (2003).</span>
+<span class="sd">    .. [2] I.E. Zverovich and V.E. Zverovich. &quot;Contributions to the theory</span>
+<span class="sd">       of graphic sequences&quot;, Discrete Mathematics, 105, pp. 292-303 (1992).</span>
+<span class="sd">    .. [EG1960] Erdős and Gallai, Mat. Lapok 11 264, 1960.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">dmax</span><span class="p">,</span> <span class="n">dmin</span><span class="p">,</span> <span class="n">dsum</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">num_degs</span> <span class="o">=</span> <span class="n">_basic_graphical_tests</span><span class="p">(</span><span class="n">deg_sequence</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXUnfeasible</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="c1"># Accept if sequence has no non-zero degrees or passes the ZZ condition</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">dmin</span> <span class="o">*</span> <span class="n">n</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="n">dmax</span> <span class="o">+</span> <span class="n">dmin</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">dmax</span> <span class="o">+</span> <span class="n">dmin</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="c1"># Perform the EG checks using the reformulation of Zverovich and Zverovich</span>
+    <span class="n">k</span><span class="p">,</span> <span class="n">sum_deg</span><span class="p">,</span> <span class="n">sum_nj</span><span class="p">,</span> <span class="n">sum_jnj</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">dk</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dmax</span><span class="p">,</span> <span class="n">dmin</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">dk</span> <span class="o">&lt;</span> <span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># Check if already past Durfee index</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">num_degs</span><span class="p">[</span><span class="n">dk</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">run_size</span> <span class="o">=</span> <span class="n">num_degs</span><span class="p">[</span><span class="n">dk</span><span class="p">]</span>  <span class="c1"># Process a run of identical-valued degrees</span>
+            <span class="k">if</span> <span class="n">dk</span> <span class="o">&lt;</span> <span class="n">k</span> <span class="o">+</span> <span class="n">run_size</span><span class="p">:</span>  <span class="c1"># Check if end of run is past Durfee index</span>
+                <span class="n">run_size</span> <span class="o">=</span> <span class="n">dk</span> <span class="o">-</span> <span class="n">k</span>  <span class="c1"># Adjust back to Durfee index</span>
+            <span class="n">sum_deg</span> <span class="o">+=</span> <span class="n">run_size</span> <span class="o">*</span> <span class="n">dk</span>
+            <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">run_size</span><span class="p">):</span>
+                <span class="n">sum_nj</span> <span class="o">+=</span> <span class="n">num_degs</span><span class="p">[</span><span class="n">k</span> <span class="o">+</span> <span class="n">v</span><span class="p">]</span>
+                <span class="n">sum_jnj</span> <span class="o">+=</span> <span class="p">(</span><span class="n">k</span> <span class="o">+</span> <span class="n">v</span><span class="p">)</span> <span class="o">*</span> <span class="n">num_degs</span><span class="p">[</span><span class="n">k</span> <span class="o">+</span> <span class="n">v</span><span class="p">]</span>
+            <span class="n">k</span> <span class="o">+=</span> <span class="n">run_size</span>
+            <span class="k">if</span> <span class="n">sum_deg</span> <span class="o">&gt;</span> <span class="n">k</span> <span class="o">*</span> <span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">k</span> <span class="o">*</span> <span class="n">sum_nj</span> <span class="o">+</span> <span class="n">sum_jnj</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="is_multigraphical"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.graphical.is_multigraphical.html#networkx.algorithms.graphical.is_multigraphical">[docs]</a><span class="k">def</span> <span class="nf">is_multigraphical</span><span class="p">(</span><span class="n">sequence</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns True if some multigraph can realize the sequence.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    sequence : list</span>
+<span class="sd">        A list of integers</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    valid : bool</span>
+<span class="sd">        True if deg_sequence is a multigraphic degree sequence and False if not.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The worst-case run time is $O(n)$ where $n$ is the length of the sequence.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] S. L. Hakimi. &quot;On the realizability of a set of integers as</span>
+<span class="sd">       degrees of the vertices of a linear graph&quot;, J. SIAM, 10, pp. 496-506</span>
+<span class="sd">       (1962).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">deg_sequence</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">make_list_of_ints</span><span class="p">(</span><span class="n">sequence</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="n">dsum</span><span class="p">,</span> <span class="n">dmax</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">deg_sequence</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">d</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="n">dsum</span><span class="p">,</span> <span class="n">dmax</span> <span class="o">=</span> <span class="n">dsum</span> <span class="o">+</span> <span class="n">d</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">dmax</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dsum</span> <span class="o">%</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">dsum</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">dmax</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="is_pseudographical"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.graphical.is_pseudographical.html#networkx.algorithms.graphical.is_pseudographical">[docs]</a><span class="k">def</span> <span class="nf">is_pseudographical</span><span class="p">(</span><span class="n">sequence</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns True if some pseudograph can realize the sequence.</span>
+
+<span class="sd">    Every nonnegative integer sequence with an even sum is pseudographical</span>
+<span class="sd">    (see [1]_).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    sequence : list or iterable container</span>
+<span class="sd">        A sequence of integer node degrees</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    valid : bool</span>
+<span class="sd">      True if the sequence is a pseudographic degree sequence and False if not.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The worst-case run time is $O(n)$ where n is the length of the sequence.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] F. Boesch and F. Harary. &quot;Line removal algorithms for graphs</span>
+<span class="sd">       and their degree lists&quot;, IEEE Trans. Circuits and Systems, CAS-23(12),</span>
+<span class="sd">       pp. 778-782 (1976).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">deg_sequence</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">make_list_of_ints</span><span class="p">(</span><span class="n">sequence</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">deg_sequence</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">min</span><span class="p">(</span><span class="n">deg_sequence</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span></div>
+
+
+<div class="viewcode-block" id="is_digraphical"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.graphical.is_digraphical.html#networkx.algorithms.graphical.is_digraphical">[docs]</a><span class="k">def</span> <span class="nf">is_digraphical</span><span class="p">(</span><span class="n">in_sequence</span><span class="p">,</span> <span class="n">out_sequence</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns True if some directed graph can realize the in- and out-degree</span>
+<span class="sd">    sequences.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    in_sequence : list or iterable container</span>
+<span class="sd">        A sequence of integer node in-degrees</span>
+
+<span class="sd">    out_sequence : list or iterable container</span>
+<span class="sd">        A sequence of integer node out-degrees</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    valid : bool</span>
+<span class="sd">      True if in and out-sequences are digraphic False if not.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This algorithm is from Kleitman and Wang [1]_.</span>
+<span class="sd">    The worst case runtime is $O(s \times \log n)$ where $s$ and $n$ are the</span>
+<span class="sd">    sum and length of the sequences respectively.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] D.J. Kleitman and D.L. Wang</span>
+<span class="sd">       Algorithms for Constructing Graphs and Digraphs with Given Valences</span>
+<span class="sd">       and Factors, Discrete Mathematics, 6(1), pp. 79-88 (1973)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">in_deg_sequence</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">make_list_of_ints</span><span class="p">(</span><span class="n">in_sequence</span><span class="p">)</span>
+        <span class="n">out_deg_sequence</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">make_list_of_ints</span><span class="p">(</span><span class="n">out_sequence</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="c1"># Process the sequences and form two heaps to store degree pairs with</span>
+    <span class="c1"># either zero or non-zero out degrees</span>
+    <span class="n">sumin</span><span class="p">,</span> <span class="n">sumout</span><span class="p">,</span> <span class="n">nin</span><span class="p">,</span> <span class="n">nout</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_deg_sequence</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">out_deg_sequence</span><span class="p">)</span>
+    <span class="n">maxn</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">nin</span><span class="p">,</span> <span class="n">nout</span><span class="p">)</span>
+    <span class="n">maxin</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">maxn</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="n">stubheap</span><span class="p">,</span> <span class="n">zeroheap</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">maxn</span><span class="p">):</span>
+        <span class="n">in_deg</span><span class="p">,</span> <span class="n">out_deg</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="n">nout</span><span class="p">:</span>
+            <span class="n">out_deg</span> <span class="o">=</span> <span class="n">out_deg_sequence</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="n">nin</span><span class="p">:</span>
+            <span class="n">in_deg</span> <span class="o">=</span> <span class="n">in_deg_sequence</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">in_deg</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">out_deg</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="n">sumin</span><span class="p">,</span> <span class="n">sumout</span><span class="p">,</span> <span class="n">maxin</span> <span class="o">=</span> <span class="n">sumin</span> <span class="o">+</span> <span class="n">in_deg</span><span class="p">,</span> <span class="n">sumout</span> <span class="o">+</span> <span class="n">out_deg</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">maxin</span><span class="p">,</span> <span class="n">in_deg</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">in_deg</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">stubheap</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">out_deg</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">in_deg</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">out_deg</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">zeroheap</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">out_deg</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">sumin</span> <span class="o">!=</span> <span class="n">sumout</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="n">heapq</span><span class="o">.</span><span class="n">heapify</span><span class="p">(</span><span class="n">stubheap</span><span class="p">)</span>
+    <span class="n">heapq</span><span class="o">.</span><span class="n">heapify</span><span class="p">(</span><span class="n">zeroheap</span><span class="p">)</span>
+
+    <span class="n">modstubs</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]</span> <span class="o">*</span> <span class="p">(</span><span class="n">maxin</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># Successively reduce degree sequence by removing the maximum out degree</span>
+    <span class="k">while</span> <span class="n">stubheap</span><span class="p">:</span>
+        <span class="c1"># Take the first value in the sequence with non-zero in degree</span>
+        <span class="p">(</span><span class="n">freeout</span><span class="p">,</span> <span class="n">freein</span><span class="p">)</span> <span class="o">=</span> <span class="n">heapq</span><span class="o">.</span><span class="n">heappop</span><span class="p">(</span><span class="n">stubheap</span><span class="p">)</span>
+        <span class="n">freein</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">if</span> <span class="n">freein</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">stubheap</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">zeroheap</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># Attach out stubs to the nodes with the most in stubs</span>
+        <span class="n">mslen</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">freein</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">zeroheap</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">stubheap</span> <span class="ow">or</span> <span class="n">stubheap</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">zeroheap</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="n">stubout</span> <span class="o">=</span> <span class="n">heapq</span><span class="o">.</span><span class="n">heappop</span><span class="p">(</span><span class="n">zeroheap</span><span class="p">)</span>
+                <span class="n">stubin</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="p">(</span><span class="n">stubout</span><span class="p">,</span> <span class="n">stubin</span><span class="p">)</span> <span class="o">=</span> <span class="n">heapq</span><span class="o">.</span><span class="n">heappop</span><span class="p">(</span><span class="n">stubheap</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">stubout</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="c1"># Check if target is now totally connected</span>
+            <span class="k">if</span> <span class="n">stubout</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">stubin</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">modstubs</span><span class="p">[</span><span class="n">mslen</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">stubout</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">stubin</span><span class="p">)</span>
+                <span class="n">mslen</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="c1"># Add back the nodes to the heap that still have available stubs</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">mslen</span><span class="p">):</span>
+            <span class="n">stub</span> <span class="o">=</span> <span class="n">modstubs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">stub</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">heapq</span><span class="o">.</span><span class="n">heappush</span><span class="p">(</span><span class="n">stubheap</span><span class="p">,</span> <span class="n">stub</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">heapq</span><span class="o">.</span><span class="n">heappush</span><span class="p">(</span><span class="n">zeroheap</span><span class="p">,</span> <span class="n">stub</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">freeout</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">heapq</span><span class="o">.</span><span class="n">heappush</span><span class="p">(</span><span class="n">zeroheap</span><span class="p">,</span> <span class="n">freeout</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+</pre></div>
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

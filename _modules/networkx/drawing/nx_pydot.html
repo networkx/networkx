@@ -1,0 +1,994 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>networkx.drawing.nx_pydot &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/drawing/nx_pydot';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/drawing/nx_pydot.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../../../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../../../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <h1>Source code for networkx.drawing.nx_pydot</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">*****</span>
+<span class="sd">Pydot</span>
+<span class="sd">*****</span>
+
+<span class="sd">Import and export NetworkX graphs in Graphviz dot format using pydot.</span>
+
+<span class="sd">Either this module or nx_agraph can be used to interface with graphviz.</span>
+
+<span class="sd">Examples</span>
+<span class="sd">--------</span>
+<span class="sd">&gt;&gt;&gt; G = nx.complete_graph(5)</span>
+<span class="sd">&gt;&gt;&gt; PG = nx.nx_pydot.to_pydot(G)</span>
+<span class="sd">&gt;&gt;&gt; H = nx.nx_pydot.from_pydot(PG)</span>
+
+<span class="sd">See Also</span>
+<span class="sd">--------</span>
+<span class="sd"> - pydot:         https://github.com/erocarrera/pydot</span>
+<span class="sd"> - Graphviz:      https://www.graphviz.org</span>
+<span class="sd"> - DOT Language:  http://www.graphviz.org/doc/info/lang.html</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">locale</span> <span class="kn">import</span> <span class="n">getpreferredencoding</span>
+
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">from</span> <span class="nn">networkx.utils</span> <span class="kn">import</span> <span class="n">open_file</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;write_dot&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;read_dot&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;graphviz_layout&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;pydot_layout&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;to_pydot&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;from_pydot&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="write_dot"><a class="viewcode-back" href="../../../reference/generated/networkx.drawing.nx_pydot.write_dot.html#networkx.drawing.nx_pydot.write_dot">[docs]</a><span class="nd">@open_file</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">write_dot</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Write NetworkX graph G to Graphviz dot format on path.</span>
+
+<span class="sd">    Path can be a string or a file handle.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;nx.nx_pydot.write_dot depends on the pydot package, which has&quot;</span>
+        <span class="s2">&quot;known issues and is not actively maintained. Consider using&quot;</span>
+        <span class="s2">&quot;nx.nx_agraph.write_dot instead.</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+        <span class="s2">&quot;See https://github.com/networkx/networkx/issues/5723&quot;</span>
+    <span class="p">)</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">P</span> <span class="o">=</span> <span class="n">to_pydot</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+    <span class="n">path</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
+    <span class="k">return</span></div>
+
+
+<div class="viewcode-block" id="read_dot"><a class="viewcode-back" href="../../../reference/generated/networkx.drawing.nx_pydot.read_dot.html#networkx.drawing.nx_pydot.read_dot">[docs]</a><span class="nd">@open_file</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">read_dot</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns a NetworkX :class:`MultiGraph` or :class:`MultiDiGraph` from the</span>
+<span class="sd">    dot file with the passed path.</span>
+
+<span class="sd">    If this file contains multiple graphs, only the first such graph is</span>
+<span class="sd">    returned. All graphs _except_ the first are silently ignored.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    path : str or file</span>
+<span class="sd">        Filename or file handle.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    G : MultiGraph or MultiDiGraph</span>
+<span class="sd">        A :class:`MultiGraph` or :class:`MultiDiGraph`.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Use `G = nx.Graph(nx.nx_pydot.read_dot(path))` to return a :class:`Graph` instead of a</span>
+<span class="sd">    :class:`MultiGraph`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">pydot</span>
+
+    <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;nx.nx_pydot.read_dot depends on the pydot package, which has&quot;</span>
+        <span class="s2">&quot;known issues and is not actively maintained. Consider using&quot;</span>
+        <span class="s2">&quot;nx.nx_agraph.read_dot instead.</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+        <span class="s2">&quot;See https://github.com/networkx/networkx/issues/5723&quot;</span>
+    <span class="p">)</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+    <span class="c1"># List of one or more &quot;pydot.Dot&quot; instances deserialized from this file.</span>
+    <span class="n">P_list</span> <span class="o">=</span> <span class="n">pydot</span><span class="o">.</span><span class="n">graph_from_dot_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="c1"># Convert only the first such instance into a NetworkX graph.</span>
+    <span class="k">return</span> <span class="n">from_pydot</span><span class="p">(</span><span class="n">P_list</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="from_pydot"><a class="viewcode-back" href="../../../reference/generated/networkx.drawing.nx_pydot.from_pydot.html#networkx.drawing.nx_pydot.from_pydot">[docs]</a><span class="k">def</span> <span class="nf">from_pydot</span><span class="p">(</span><span class="n">P</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns a NetworkX graph from a Pydot graph.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    P : Pydot graph</span>
+<span class="sd">      A graph created with Pydot</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    G : NetworkX multigraph</span>
+<span class="sd">        A MultiGraph or MultiDiGraph.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; K5 = nx.complete_graph(5)</span>
+<span class="sd">    &gt;&gt;&gt; A = nx.nx_pydot.to_pydot(K5)</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.nx_pydot.from_pydot(A)  # return MultiGraph</span>
+
+<span class="sd">    # make a Graph instead of MultiGraph</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.Graph(nx.nx_pydot.from_pydot(A))</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;nx.nx_pydot.from_pydot depends on the pydot package, which has&quot;</span>
+        <span class="s2">&quot;known issues and is not actively maintained.</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+        <span class="s2">&quot;See https://github.com/networkx/networkx/issues/5723&quot;</span>
+    <span class="p">)</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">P</span><span class="o">.</span><span class="n">get_strict</span><span class="p">(</span><span class="kc">None</span><span class="p">):</span>  <span class="c1"># pydot bug: get_strict() shouldn&#39;t take argument</span>
+        <span class="n">multiedges</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">multiedges</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">if</span> <span class="n">P</span><span class="o">.</span><span class="n">get_type</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;graph&quot;</span><span class="p">:</span>  <span class="c1"># undirected</span>
+        <span class="k">if</span> <span class="n">multiedges</span><span class="p">:</span>
+            <span class="n">N</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">MultiGraph</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">N</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">multiedges</span><span class="p">:</span>
+            <span class="n">N</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">MultiDiGraph</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">N</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
+
+    <span class="c1"># assign defaults</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+        <span class="n">N</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+
+    <span class="c1"># add nodes, attributes to N.node_attr</span>
+    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">P</span><span class="o">.</span><span class="n">get_node_list</span><span class="p">():</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;node&quot;</span><span class="p">,</span> <span class="s2">&quot;graph&quot;</span><span class="p">,</span> <span class="s2">&quot;edge&quot;</span><span class="p">):</span>
+            <span class="k">continue</span>
+        <span class="n">N</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="o">**</span><span class="n">p</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">())</span>
+
+    <span class="c1"># add edges</span>
+    <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">P</span><span class="o">.</span><span class="n">get_edge_list</span><span class="p">():</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">get_source</span><span class="p">()</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">get_destination</span><span class="p">()</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">()</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">unodes</span> <span class="ow">in</span> <span class="n">u</span><span class="p">[</span><span class="s2">&quot;nodes&quot;</span><span class="p">]:</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">unodes</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">vnodes</span> <span class="ow">in</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;nodes&quot;</span><span class="p">]:</span>
+                <span class="n">d</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vnodes</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">source_node</span> <span class="ow">in</span> <span class="n">s</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">destination_node</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+                <span class="n">N</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">source_node</span><span class="p">,</span> <span class="n">destination_node</span><span class="p">,</span> <span class="o">**</span><span class="n">attr</span><span class="p">)</span>
+
+    <span class="c1"># add default attributes for graph, nodes, edges</span>
+    <span class="n">pattr</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">pattr</span><span class="p">:</span>
+        <span class="n">N</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="s2">&quot;graph&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pattr</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">N</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="s2">&quot;node&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">get_node_defaults</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">IndexError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+        <span class="k">pass</span>  <span class="c1"># N.graph[&#39;node&#39;]={}</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">N</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="s2">&quot;edge&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">get_edge_defaults</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">IndexError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+        <span class="k">pass</span>  <span class="c1"># N.graph[&#39;edge&#39;]={}</span>
+    <span class="k">return</span> <span class="n">N</span></div>
+
+
+<span class="k">def</span> <span class="nf">_check_colon_quotes</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="c1"># A quick helper function to check if a string has a colon in it</span>
+    <span class="c1"># and if it is quoted properly with double quotes.</span>
+    <span class="c1"># refer https://github.com/pydot/pydot/issues/258</span>
+    <span class="k">return</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="n">s</span> <span class="ow">and</span> <span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;&quot;&#39;</span> <span class="ow">or</span> <span class="n">s</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;&quot;&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="to_pydot"><a class="viewcode-back" href="../../../reference/generated/networkx.drawing.nx_pydot.to_pydot.html#networkx.drawing.nx_pydot.to_pydot">[docs]</a><span class="k">def</span> <span class="nf">to_pydot</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns a pydot graph from a NetworkX graph N.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    N : NetworkX graph</span>
+<span class="sd">      A graph created with NetworkX</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; K5 = nx.complete_graph(5)</span>
+<span class="sd">    &gt;&gt;&gt; P = nx.nx_pydot.to_pydot(K5)</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">pydot</span>
+
+    <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;nx.nx_pydot.to_pydot depends on the pydot package, which has&quot;</span>
+        <span class="s2">&quot;known issues and is not actively maintained.</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+        <span class="s2">&quot;See https://github.com/networkx/networkx/issues/5723&quot;</span>
+    <span class="p">)</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="c1"># set Graphviz graph type</span>
+    <span class="k">if</span> <span class="n">N</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+        <span class="n">graph_type</span> <span class="o">=</span> <span class="s2">&quot;digraph&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">graph_type</span> <span class="o">=</span> <span class="s2">&quot;graph&quot;</span>
+    <span class="n">strict</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">number_of_selfloops</span><span class="p">(</span><span class="n">N</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">N</span><span class="o">.</span><span class="n">is_multigraph</span><span class="p">()</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">name</span>
+    <span class="n">graph_defaults</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;graph&quot;</span><span class="p">,</span> <span class="p">{})</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+        <span class="n">P</span> <span class="o">=</span> <span class="n">pydot</span><span class="o">.</span><span class="n">Dot</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">graph_type</span><span class="o">=</span><span class="n">graph_type</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="n">strict</span><span class="p">,</span> <span class="o">**</span><span class="n">graph_defaults</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">P</span> <span class="o">=</span> <span class="n">pydot</span><span class="o">.</span><span class="n">Dot</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">,</span> <span class="n">graph_type</span><span class="o">=</span><span class="n">graph_type</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="n">strict</span><span class="p">,</span> <span class="o">**</span><span class="n">graph_defaults</span>
+        <span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">P</span><span class="o">.</span><span class="n">set_node_defaults</span><span class="p">(</span><span class="o">**</span><span class="n">N</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="s2">&quot;node&quot;</span><span class="p">])</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">P</span><span class="o">.</span><span class="n">set_edge_defaults</span><span class="p">(</span><span class="o">**</span><span class="n">N</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="s2">&quot;edge&quot;</span><span class="p">])</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">nodedata</span> <span class="ow">in</span> <span class="n">N</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="n">str_nodedata</span> <span class="o">=</span> <span class="p">{</span><span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">):</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">nodedata</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="c1"># Explicitly catch nodes with &quot;:&quot; in node names or nodedata.</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+        <span class="n">raise_error</span> <span class="o">=</span> <span class="n">_check_colon_quotes</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+            <span class="nb">any</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">_check_colon_quotes</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="ow">or</span> <span class="n">_check_colon_quotes</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">str_nodedata</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">raise_error</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;Node names and attributes should not contain &quot;:&quot; unless they are quoted with &quot;&quot;.</span><span class="se">\</span>
+<span class="s1">                For example the string </span><span class="se">\&#39;</span><span class="s1">attribute:data1</span><span class="se">\&#39;</span><span class="s1"> should be written as </span><span class="se">\&#39;</span><span class="s1">&quot;attribute:data1&quot;</span><span class="se">\&#39;</span><span class="s1">.</span><span class="se">\</span>
+<span class="s1">                Please refer https://github.com/pydot/pydot/issues/258&#39;</span>
+            <span class="p">)</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">pydot</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="o">**</span><span class="n">str_nodedata</span><span class="p">)</span>
+        <span class="n">P</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">N</span><span class="o">.</span><span class="n">is_multigraph</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">edgedata</span> <span class="ow">in</span> <span class="n">N</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="n">str_edgedata</span> <span class="o">=</span> <span class="p">{</span><span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">):</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">edgedata</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="o">!=</span> <span class="s2">&quot;key&quot;</span><span class="p">}</span>
+            <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">u</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+            <span class="n">raise_error</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">_check_colon_quotes</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>
+                <span class="ow">or</span> <span class="n">_check_colon_quotes</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+                <span class="ow">or</span> <span class="p">(</span>
+                    <span class="nb">any</span><span class="p">(</span>
+                        <span class="p">(</span><span class="n">_check_colon_quotes</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="ow">or</span> <span class="n">_check_colon_quotes</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
+                        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">str_edgedata</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">raise_error</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">&#39;Node names and attributes should not contain &quot;:&quot; unless they are quoted with &quot;&quot;.</span><span class="se">\</span>
+<span class="s1">                    For example the string </span><span class="se">\&#39;</span><span class="s1">attribute:data1</span><span class="se">\&#39;</span><span class="s1"> should be written as </span><span class="se">\&#39;</span><span class="s1">&quot;attribute:data1&quot;</span><span class="se">\&#39;</span><span class="s1">.</span><span class="se">\</span>
+<span class="s1">                    Please refer https://github.com/pydot/pydot/issues/258&#39;</span>
+                <span class="p">)</span>
+            <span class="n">edge</span> <span class="o">=</span> <span class="n">pydot</span><span class="o">.</span><span class="n">Edge</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="o">**</span><span class="n">str_edgedata</span><span class="p">)</span>
+            <span class="n">P</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">edgedata</span> <span class="ow">in</span> <span class="n">N</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="n">str_edgedata</span> <span class="o">=</span> <span class="p">{</span><span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">):</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">edgedata</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+            <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">u</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+            <span class="n">raise_error</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">_check_colon_quotes</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>
+                <span class="ow">or</span> <span class="n">_check_colon_quotes</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+                <span class="ow">or</span> <span class="p">(</span>
+                    <span class="nb">any</span><span class="p">(</span>
+                        <span class="p">(</span><span class="n">_check_colon_quotes</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="ow">or</span> <span class="n">_check_colon_quotes</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
+                        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">str_edgedata</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">raise_error</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">&#39;Node names and attributes should not contain &quot;:&quot; unless they are quoted with &quot;&quot;.</span><span class="se">\</span>
+<span class="s1">                    For example the string </span><span class="se">\&#39;</span><span class="s1">attribute:data1</span><span class="se">\&#39;</span><span class="s1"> should be written as </span><span class="se">\&#39;</span><span class="s1">&quot;attribute:data1&quot;</span><span class="se">\&#39;</span><span class="s1">.</span><span class="se">\</span>
+<span class="s1">                    Please refer https://github.com/pydot/pydot/issues/258&#39;</span>
+                <span class="p">)</span>
+            <span class="n">edge</span> <span class="o">=</span> <span class="n">pydot</span><span class="o">.</span><span class="n">Edge</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="o">**</span><span class="n">str_edgedata</span><span class="p">)</span>
+            <span class="n">P</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">P</span></div>
+
+
+<div class="viewcode-block" id="graphviz_layout"><a class="viewcode-back" href="../../../reference/generated/networkx.drawing.nx_pydot.graphviz_layout.html#networkx.drawing.nx_pydot.graphviz_layout">[docs]</a><span class="k">def</span> <span class="nf">graphviz_layout</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">prog</span><span class="o">=</span><span class="s2">&quot;neato&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create node positions using Pydot and Graphviz.</span>
+
+<span class="sd">    Returns a dictionary of positions keyed by node.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX Graph</span>
+<span class="sd">        The graph for which the layout is computed.</span>
+<span class="sd">    prog : string (default: &#39;neato&#39;)</span>
+<span class="sd">        The name of the GraphViz program to use for layout.</span>
+<span class="sd">        Options depend on GraphViz version but may include:</span>
+<span class="sd">        &#39;dot&#39;, &#39;twopi&#39;, &#39;fdp&#39;, &#39;sfdp&#39;, &#39;circo&#39;</span>
+<span class="sd">    root : Node from G or None (default: None)</span>
+<span class="sd">        The node of G from which to start some layout algorithms.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">      Dictionary of (x, y) positions keyed by node.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.complete_graph(4)</span>
+<span class="sd">    &gt;&gt;&gt; pos = nx.nx_pydot.graphviz_layout(G)</span>
+<span class="sd">    &gt;&gt;&gt; pos = nx.nx_pydot.graphviz_layout(G, prog=&quot;dot&quot;)</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This is a wrapper for pydot_layout.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;nx.nx_pydot.graphviz_layout depends on the pydot package, which has&quot;</span>
+        <span class="s2">&quot;known issues and is not actively maintained. Consider using&quot;</span>
+        <span class="s2">&quot;nx.nx_agraph.graphviz_layout instead.</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+        <span class="s2">&quot;See https://github.com/networkx/networkx/issues/5723&quot;</span>
+    <span class="p">)</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">pydot_layout</span><span class="p">(</span><span class="n">G</span><span class="o">=</span><span class="n">G</span><span class="p">,</span> <span class="n">prog</span><span class="o">=</span><span class="n">prog</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="pydot_layout"><a class="viewcode-back" href="../../../reference/generated/networkx.drawing.nx_pydot.pydot_layout.html#networkx.drawing.nx_pydot.pydot_layout">[docs]</a><span class="k">def</span> <span class="nf">pydot_layout</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">prog</span><span class="o">=</span><span class="s2">&quot;neato&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create node positions using :mod:`pydot` and Graphviz.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : Graph</span>
+<span class="sd">        NetworkX graph to be laid out.</span>
+<span class="sd">    prog : string  (default: &#39;neato&#39;)</span>
+<span class="sd">        Name of the GraphViz command to use for layout.</span>
+<span class="sd">        Options depend on GraphViz version but may include:</span>
+<span class="sd">        &#39;dot&#39;, &#39;twopi&#39;, &#39;fdp&#39;, &#39;sfdp&#39;, &#39;circo&#39;</span>
+<span class="sd">    root : Node from G or None (default: None)</span>
+<span class="sd">        The node of G from which to start some layout algorithms.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+<span class="sd">        Dictionary of positions keyed by node.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.complete_graph(4)</span>
+<span class="sd">    &gt;&gt;&gt; pos = nx.nx_pydot.pydot_layout(G)</span>
+<span class="sd">    &gt;&gt;&gt; pos = nx.nx_pydot.pydot_layout(G, prog=&quot;dot&quot;)</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    If you use complex node objects, they may have the same string</span>
+<span class="sd">    representation and GraphViz could treat them as the same node.</span>
+<span class="sd">    The layout may assign both nodes a single location. See Issue #1568</span>
+<span class="sd">    If this occurs in your case, consider relabeling the nodes just</span>
+<span class="sd">    for the layout computation using something similar to::</span>
+
+<span class="sd">        H = nx.convert_node_labels_to_integers(G, label_attribute=&#39;node_label&#39;)</span>
+<span class="sd">        H_layout = nx.nx_pydot.pydot_layout(G, prog=&#39;dot&#39;)</span>
+<span class="sd">        G_layout = {H.nodes[n][&#39;node_label&#39;]: p for n, p in H_layout.items()}</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">pydot</span>
+
+    <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;nx.nx_pydot.pydot_layout depends on the pydot package, which has&quot;</span>
+        <span class="s2">&quot;known issues and is not actively maintained.</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+        <span class="s2">&quot;See https://github.com/networkx/networkx/issues/5723&quot;</span>
+    <span class="p">)</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">P</span> <span class="o">=</span> <span class="n">to_pydot</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">root</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">P</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;root&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">root</span><span class="p">))</span>
+
+    <span class="c1"># List of low-level bytes comprising a string in the dot language converted</span>
+    <span class="c1"># from the passed graph with the passed external GraphViz command.</span>
+    <span class="n">D_bytes</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">create_dot</span><span class="p">(</span><span class="n">prog</span><span class="o">=</span><span class="n">prog</span><span class="p">)</span>
+
+    <span class="c1"># Unique string decoded from these bytes with the preferred locale encoding</span>
+    <span class="n">D</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">D_bytes</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">getpreferredencoding</span><span class="p">())</span>
+
+    <span class="k">if</span> <span class="n">D</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>  <span class="c1"># no data returned</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Graphviz layout with </span><span class="si">{</span><span class="n">prog</span><span class="si">}</span><span class="s2"> failed&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;To debug what happened try:&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;P = nx.nx_pydot.to_pydot(G)&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;P.write_dot(&quot;file.dot&quot;)&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;And then run </span><span class="si">{</span><span class="n">prog</span><span class="si">}</span><span class="s2"> on file.dot&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="c1"># List of one or more &quot;pydot.Dot&quot; instances deserialized from this string.</span>
+    <span class="n">Q_list</span> <span class="o">=</span> <span class="n">pydot</span><span class="o">.</span><span class="n">graph_from_dot_data</span><span class="p">(</span><span class="n">D</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">Q_list</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+
+    <span class="c1"># The first and only such instance, as guaranteed by the above assertion.</span>
+    <span class="n">Q</span> <span class="o">=</span> <span class="n">Q_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">node_pos</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
+        <span class="n">str_n</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+        <span class="c1"># Explicitly catch nodes with &quot;:&quot; in node names or nodedata.</span>
+        <span class="k">if</span> <span class="n">_check_colon_quotes</span><span class="p">(</span><span class="n">str_n</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;Node names and node attributes should not contain &quot;:&quot; unless they are quoted with &quot;&quot;.</span><span class="se">\</span>
+<span class="s1">                For example the string </span><span class="se">\&#39;</span><span class="s1">attribute:data1</span><span class="se">\&#39;</span><span class="s1"> should be written as </span><span class="se">\&#39;</span><span class="s1">&quot;attribute:data1&quot;</span><span class="se">\&#39;</span><span class="s1">.</span><span class="se">\</span>
+<span class="s1">                Please refer https://github.com/pydot/pydot/issues/258&#39;</span>
+            <span class="p">)</span>
+        <span class="n">pydot_node</span> <span class="o">=</span> <span class="n">pydot</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="n">str_n</span><span class="p">)</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="n">Q</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">pydot_node</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">node</span> <span class="o">=</span> <span class="n">node</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">get_pos</span><span class="p">()[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># strip leading and trailing double quotes</span>
+        <span class="k">if</span> <span class="n">pos</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span> <span class="o">=</span> <span class="n">pos</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+            <span class="n">node_pos</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">xx</span><span class="p">),</span> <span class="nb">float</span><span class="p">(</span><span class="n">yy</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">node_pos</span></div>
+</pre></div>
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

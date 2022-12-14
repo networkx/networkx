@@ -1,0 +1,2094 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>networkx.drawing.nx_pylab &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/drawing/nx_pylab';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/drawing/nx_pylab.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../../../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../../../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <h1>Source code for networkx.drawing.nx_pylab</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">**********</span>
+<span class="sd">Matplotlib</span>
+<span class="sd">**********</span>
+
+<span class="sd">Draw networks with matplotlib.</span>
+
+<span class="sd">Examples</span>
+<span class="sd">--------</span>
+<span class="sd">&gt;&gt;&gt; G = nx.complete_graph(5)</span>
+<span class="sd">&gt;&gt;&gt; nx.draw(G)</span>
+
+<span class="sd">See Also</span>
+<span class="sd">--------</span>
+<span class="sd"> - :doc:`matplotlib &lt;matplotlib:index&gt;`</span>
+<span class="sd"> - :func:`matplotlib.pyplot.scatter`</span>
+<span class="sd"> - :obj:`matplotlib.patches.FancyArrowPatch`</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">numbers</span> <span class="kn">import</span> <span class="n">Number</span>
+
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">from</span> <span class="nn">networkx.drawing.layout</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">circular_layout</span><span class="p">,</span>
+    <span class="n">kamada_kawai_layout</span><span class="p">,</span>
+    <span class="n">planar_layout</span><span class="p">,</span>
+    <span class="n">random_layout</span><span class="p">,</span>
+    <span class="n">shell_layout</span><span class="p">,</span>
+    <span class="n">spectral_layout</span><span class="p">,</span>
+    <span class="n">spring_layout</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;draw&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;draw_networkx&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;draw_networkx_nodes&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;draw_networkx_edges&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;draw_networkx_labels&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;draw_networkx_edge_labels&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;draw_circular&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;draw_kamada_kawai&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;draw_random&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;draw_spectral&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;draw_spring&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;draw_planar&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;draw_shell&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="draw"><a class="viewcode-back" href="../../../reference/generated/networkx.drawing.nx_pylab.draw.html#networkx.drawing.nx_pylab.draw">[docs]</a><span class="k">def</span> <span class="nf">draw</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Draw the graph G with Matplotlib.</span>
+
+<span class="sd">    Draw the graph as a simple representation with no node</span>
+<span class="sd">    labels or edge labels and using the full Matplotlib figure area</span>
+<span class="sd">    and no axis labels by default.  See draw_networkx() for more</span>
+<span class="sd">    full-featured drawing that allows title, axis labels etc.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : graph</span>
+<span class="sd">        A networkx graph</span>
+
+<span class="sd">    pos : dictionary, optional</span>
+<span class="sd">        A dictionary with nodes as keys and positions as values.</span>
+<span class="sd">        If not specified a spring layout positioning will be computed.</span>
+<span class="sd">        See :py:mod:`networkx.drawing.layout` for functions that</span>
+<span class="sd">        compute node positions.</span>
+
+<span class="sd">    ax : Matplotlib Axes object, optional</span>
+<span class="sd">        Draw the graph in specified Matplotlib axes.</span>
+
+<span class="sd">    kwds : optional keywords</span>
+<span class="sd">        See networkx.draw_networkx() for a description of optional keywords.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.dodecahedral_graph()</span>
+<span class="sd">    &gt;&gt;&gt; nx.draw(G)</span>
+<span class="sd">    &gt;&gt;&gt; nx.draw(G, pos=nx.spring_layout(G))  # use spring layout</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    draw_networkx</span>
+<span class="sd">    draw_networkx_nodes</span>
+<span class="sd">    draw_networkx_edges</span>
+<span class="sd">    draw_networkx_labels</span>
+<span class="sd">    draw_networkx_edge_labels</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function has the same name as pylab.draw and pyplot.draw</span>
+<span class="sd">    so beware when using `from networkx import *`</span>
+
+<span class="sd">    since you might overwrite the pylab.draw function.</span>
+
+<span class="sd">    With pyplot use</span>
+
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.dodecahedral_graph()</span>
+<span class="sd">    &gt;&gt;&gt; nx.draw(G)  # networkx draw()</span>
+<span class="sd">    &gt;&gt;&gt; plt.draw()  # pyplot draw()</span>
+
+<span class="sd">    Also see the NetworkX drawing examples at</span>
+<span class="sd">    https://networkx.org/documentation/latest/auto_examples/index.html</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+    <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">cf</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">cf</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_figure</span><span class="p">()</span>
+    <span class="n">cf</span><span class="o">.</span><span class="n">set_facecolor</span><span class="p">(</span><span class="s2">&quot;w&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">cf</span><span class="o">.</span><span class="n">axes</span><span class="p">:</span>
+            <span class="n">ax</span> <span class="o">=</span> <span class="n">cf</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ax</span> <span class="o">=</span> <span class="n">cf</span><span class="o">.</span><span class="n">add_axes</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="s2">&quot;with_labels&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwds</span><span class="p">:</span>
+        <span class="n">kwds</span><span class="p">[</span><span class="s2">&quot;with_labels&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;labels&quot;</span> <span class="ow">in</span> <span class="n">kwds</span>
+
+    <span class="n">draw_networkx</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="n">pos</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_axis_off</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">draw_if_interactive</span><span class="p">()</span>
+    <span class="k">return</span></div>
+
+
+<div class="viewcode-block" id="draw_networkx"><a class="viewcode-back" href="../../../reference/generated/networkx.drawing.nx_pylab.draw_networkx.html#networkx.drawing.nx_pylab.draw_networkx">[docs]</a><span class="k">def</span> <span class="nf">draw_networkx</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">arrows</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">with_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Draw the graph G using Matplotlib.</span>
+
+<span class="sd">    Draw the graph with Matplotlib with options for node positions,</span>
+<span class="sd">    labeling, titles, and many other drawing features.</span>
+<span class="sd">    See draw() for simple drawing without labels or axes.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : graph</span>
+<span class="sd">        A networkx graph</span>
+
+<span class="sd">    pos : dictionary, optional</span>
+<span class="sd">        A dictionary with nodes as keys and positions as values.</span>
+<span class="sd">        If not specified a spring layout positioning will be computed.</span>
+<span class="sd">        See :py:mod:`networkx.drawing.layout` for functions that</span>
+<span class="sd">        compute node positions.</span>
+
+<span class="sd">    arrows : bool or None, optional (default=None)</span>
+<span class="sd">        If `None`, directed graphs draw arrowheads with</span>
+<span class="sd">        `~matplotlib.patches.FancyArrowPatch`, while undirected graphs draw edges</span>
+<span class="sd">        via `~matplotlib.collections.LineCollection` for speed.</span>
+<span class="sd">        If `True`, draw arrowheads with FancyArrowPatches (bendable and stylish).</span>
+<span class="sd">        If `False`, draw edges using LineCollection (linear and fast).</span>
+<span class="sd">        For directed graphs, if True draw arrowheads.</span>
+<span class="sd">        Note: Arrows will be the same color as edges.</span>
+
+<span class="sd">    arrowstyle : str (default=&#39;-\|&gt;&#39; for directed graphs)</span>
+<span class="sd">        For directed graphs, choose the style of the arrowsheads.</span>
+<span class="sd">        For undirected graphs default to &#39;-&#39;</span>
+
+<span class="sd">        See `matplotlib.patches.ArrowStyle` for more options.</span>
+
+<span class="sd">    arrowsize : int or list (default=10)</span>
+<span class="sd">        For directed graphs, choose the size of the arrow head&#39;s length and</span>
+<span class="sd">        width. A list of values can be passed in to assign a different size for arrow head&#39;s length and width.</span>
+<span class="sd">        See `matplotlib.patches.FancyArrowPatch` for attribute `mutation_scale`</span>
+<span class="sd">        for more info.</span>
+
+<span class="sd">    with_labels :  bool (default=True)</span>
+<span class="sd">        Set to True to draw labels on the nodes.</span>
+
+<span class="sd">    ax : Matplotlib Axes object, optional</span>
+<span class="sd">        Draw the graph in the specified Matplotlib axes.</span>
+
+<span class="sd">    nodelist : list (default=list(G))</span>
+<span class="sd">        Draw only specified nodes</span>
+
+<span class="sd">    edgelist : list (default=list(G.edges()))</span>
+<span class="sd">        Draw only specified edges</span>
+
+<span class="sd">    node_size : scalar or array (default=300)</span>
+<span class="sd">        Size of nodes.  If an array is specified it must be the</span>
+<span class="sd">        same length as nodelist.</span>
+
+<span class="sd">    node_color : color or array of colors (default=&#39;#1f78b4&#39;)</span>
+<span class="sd">        Node color. Can be a single color or a sequence of colors with the same</span>
+<span class="sd">        length as nodelist. Color can be string or rgb (or rgba) tuple of</span>
+<span class="sd">        floats from 0-1. If numeric values are specified they will be</span>
+<span class="sd">        mapped to colors using the cmap and vmin,vmax parameters. See</span>
+<span class="sd">        matplotlib.scatter for more details.</span>
+
+<span class="sd">    node_shape :  string (default=&#39;o&#39;)</span>
+<span class="sd">        The shape of the node.  Specification is as matplotlib.scatter</span>
+<span class="sd">        marker, one of &#39;so^&gt;v&lt;dph8&#39;.</span>
+
+<span class="sd">    alpha : float or None (default=None)</span>
+<span class="sd">        The node and edge transparency</span>
+
+<span class="sd">    cmap : Matplotlib colormap, optional</span>
+<span class="sd">        Colormap for mapping intensities of nodes</span>
+
+<span class="sd">    vmin,vmax : float, optional</span>
+<span class="sd">        Minimum and maximum for node colormap scaling</span>
+
+<span class="sd">    linewidths : scalar or sequence (default=1.0)</span>
+<span class="sd">        Line width of symbol border</span>
+
+<span class="sd">    width : float or array of floats (default=1.0)</span>
+<span class="sd">        Line width of edges</span>
+
+<span class="sd">    edge_color : color or array of colors (default=&#39;k&#39;)</span>
+<span class="sd">        Edge color. Can be a single color or a sequence of colors with the same</span>
+<span class="sd">        length as edgelist. Color can be string or rgb (or rgba) tuple of</span>
+<span class="sd">        floats from 0-1. If numeric values are specified they will be</span>
+<span class="sd">        mapped to colors using the edge_cmap and edge_vmin,edge_vmax parameters.</span>
+
+<span class="sd">    edge_cmap : Matplotlib colormap, optional</span>
+<span class="sd">        Colormap for mapping intensities of edges</span>
+
+<span class="sd">    edge_vmin,edge_vmax : floats, optional</span>
+<span class="sd">        Minimum and maximum for edge colormap scaling</span>
+
+<span class="sd">    style : string (default=solid line)</span>
+<span class="sd">        Edge line style e.g.: &#39;-&#39;, &#39;--&#39;, &#39;-.&#39;, &#39;:&#39;</span>
+<span class="sd">        or words like &#39;solid&#39; or &#39;dashed&#39;.</span>
+<span class="sd">        (See `matplotlib.patches.FancyArrowPatch`: `linestyle`)</span>
+
+<span class="sd">    labels : dictionary (default=None)</span>
+<span class="sd">        Node labels in a dictionary of text labels keyed by node</span>
+
+<span class="sd">    font_size : int (default=12 for nodes, 10 for edges)</span>
+<span class="sd">        Font size for text labels</span>
+
+<span class="sd">    font_color : string (default=&#39;k&#39; black)</span>
+<span class="sd">        Font color string</span>
+
+<span class="sd">    font_weight : string (default=&#39;normal&#39;)</span>
+<span class="sd">        Font weight</span>
+
+<span class="sd">    font_family : string (default=&#39;sans-serif&#39;)</span>
+<span class="sd">        Font family</span>
+
+<span class="sd">    label : string, optional</span>
+<span class="sd">        Label for graph legend</span>
+
+<span class="sd">    kwds : optional keywords</span>
+<span class="sd">        See networkx.draw_networkx_nodes(), networkx.draw_networkx_edges(), and</span>
+<span class="sd">        networkx.draw_networkx_labels() for a description of optional keywords.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    For directed graphs, arrows  are drawn at the head end.  Arrows can be</span>
+<span class="sd">    turned off with keyword arrows=False.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.dodecahedral_graph()</span>
+<span class="sd">    &gt;&gt;&gt; nx.draw(G)</span>
+<span class="sd">    &gt;&gt;&gt; nx.draw(G, pos=nx.spring_layout(G))  # use spring layout</span>
+
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; limits = plt.axis(&quot;off&quot;)  # turn off axis</span>
+
+<span class="sd">    Also see the NetworkX drawing examples at</span>
+<span class="sd">    https://networkx.org/documentation/latest/auto_examples/index.html</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    draw</span>
+<span class="sd">    draw_networkx_nodes</span>
+<span class="sd">    draw_networkx_edges</span>
+<span class="sd">    draw_networkx_labels</span>
+<span class="sd">    draw_networkx_edge_labels</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">signature</span>
+
+    <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+    <span class="c1"># Get all valid keywords by inspecting the signatures of draw_networkx_nodes,</span>
+    <span class="c1"># draw_networkx_edges, draw_networkx_labels</span>
+
+    <span class="n">valid_node_kwds</span> <span class="o">=</span> <span class="n">signature</span><span class="p">(</span><span class="n">draw_networkx_nodes</span><span class="p">)</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+    <span class="n">valid_edge_kwds</span> <span class="o">=</span> <span class="n">signature</span><span class="p">(</span><span class="n">draw_networkx_edges</span><span class="p">)</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+    <span class="n">valid_label_kwds</span> <span class="o">=</span> <span class="n">signature</span><span class="p">(</span><span class="n">draw_networkx_labels</span><span class="p">)</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+
+    <span class="c1"># Create a set with all valid keywords across the three functions and</span>
+    <span class="c1"># remove the arguments of this function (draw_networkx)</span>
+    <span class="n">valid_kwds</span> <span class="o">=</span> <span class="p">(</span><span class="n">valid_node_kwds</span> <span class="o">|</span> <span class="n">valid_edge_kwds</span> <span class="o">|</span> <span class="n">valid_label_kwds</span><span class="p">)</span> <span class="o">-</span> <span class="p">{</span>
+        <span class="s2">&quot;G&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;pos&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;arrows&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;with_labels&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="nb">any</span><span class="p">([</span><span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">valid_kwds</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">kwds</span><span class="p">]):</span>
+        <span class="n">invalid_args</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">kwds</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">valid_kwds</span><span class="p">])</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Received invalid argument(s): </span><span class="si">{</span><span class="n">invalid_args</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">node_kwds</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwds</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">valid_node_kwds</span><span class="p">}</span>
+    <span class="n">edge_kwds</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwds</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">valid_edge_kwds</span><span class="p">}</span>
+    <span class="n">label_kwds</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwds</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">valid_label_kwds</span><span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">pos</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">drawing</span><span class="o">.</span><span class="n">spring_layout</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>  <span class="c1"># default to spring layout</span>
+
+    <span class="n">draw_networkx_nodes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="o">**</span><span class="n">node_kwds</span><span class="p">)</span>
+    <span class="n">draw_networkx_edges</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">arrows</span><span class="o">=</span><span class="n">arrows</span><span class="p">,</span> <span class="o">**</span><span class="n">edge_kwds</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">with_labels</span><span class="p">:</span>
+        <span class="n">draw_networkx_labels</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="o">**</span><span class="n">label_kwds</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">draw_if_interactive</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="draw_networkx_nodes"><a class="viewcode-back" href="../../../reference/generated/networkx.drawing.nx_pylab.draw_networkx_nodes.html#networkx.drawing.nx_pylab.draw_networkx_nodes">[docs]</a><span class="k">def</span> <span class="nf">draw_networkx_nodes</span><span class="p">(</span>
+    <span class="n">G</span><span class="p">,</span>
+    <span class="n">pos</span><span class="p">,</span>
+    <span class="n">nodelist</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">node_size</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
+    <span class="n">node_color</span><span class="o">=</span><span class="s2">&quot;#1f78b4&quot;</span><span class="p">,</span>
+    <span class="n">node_shape</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span>
+    <span class="n">alpha</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">cmap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">vmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">vmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">linewidths</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">edgecolors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">margins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Draw the nodes of the graph G.</span>
+
+<span class="sd">    This draws only the nodes of the graph G.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : graph</span>
+<span class="sd">        A networkx graph</span>
+
+<span class="sd">    pos : dictionary</span>
+<span class="sd">        A dictionary with nodes as keys and positions as values.</span>
+<span class="sd">        Positions should be sequences of length 2.</span>
+
+<span class="sd">    ax : Matplotlib Axes object, optional</span>
+<span class="sd">        Draw the graph in the specified Matplotlib axes.</span>
+
+<span class="sd">    nodelist : list (default list(G))</span>
+<span class="sd">        Draw only specified nodes</span>
+
+<span class="sd">    node_size : scalar or array (default=300)</span>
+<span class="sd">        Size of nodes.  If an array it must be the same length as nodelist.</span>
+
+<span class="sd">    node_color : color or array of colors (default=&#39;#1f78b4&#39;)</span>
+<span class="sd">        Node color. Can be a single color or a sequence of colors with the same</span>
+<span class="sd">        length as nodelist. Color can be string or rgb (or rgba) tuple of</span>
+<span class="sd">        floats from 0-1. If numeric values are specified they will be</span>
+<span class="sd">        mapped to colors using the cmap and vmin,vmax parameters. See</span>
+<span class="sd">        matplotlib.scatter for more details.</span>
+
+<span class="sd">    node_shape :  string (default=&#39;o&#39;)</span>
+<span class="sd">        The shape of the node.  Specification is as matplotlib.scatter</span>
+<span class="sd">        marker, one of &#39;so^&gt;v&lt;dph8&#39;.</span>
+
+<span class="sd">    alpha : float or array of floats (default=None)</span>
+<span class="sd">        The node transparency.  This can be a single alpha value,</span>
+<span class="sd">        in which case it will be applied to all the nodes of color. Otherwise,</span>
+<span class="sd">        if it is an array, the elements of alpha will be applied to the colors</span>
+<span class="sd">        in order (cycling through alpha multiple times if necessary).</span>
+
+<span class="sd">    cmap : Matplotlib colormap (default=None)</span>
+<span class="sd">        Colormap for mapping intensities of nodes</span>
+
+<span class="sd">    vmin,vmax : floats or None (default=None)</span>
+<span class="sd">        Minimum and maximum for node colormap scaling</span>
+
+<span class="sd">    linewidths : [None | scalar | sequence] (default=1.0)</span>
+<span class="sd">        Line width of symbol border</span>
+
+<span class="sd">    edgecolors : [None | scalar | sequence] (default = node_color)</span>
+<span class="sd">        Colors of node borders</span>
+
+<span class="sd">    label : [None | string]</span>
+<span class="sd">        Label for legend</span>
+
+<span class="sd">    margins : float or 2-tuple, optional</span>
+<span class="sd">        Sets the padding for axis autoscaling. Increase margin to prevent</span>
+<span class="sd">        clipping for nodes that are near the edges of an image. Values should</span>
+<span class="sd">        be in the range ``[0, 1]``. See :meth:`matplotlib.axes.Axes.margins`</span>
+<span class="sd">        for details. The default is `None`, which uses the Matplotlib default.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    matplotlib.collections.PathCollection</span>
+<span class="sd">        `PathCollection` of the nodes.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.dodecahedral_graph()</span>
+<span class="sd">    &gt;&gt;&gt; nodes = nx.draw_networkx_nodes(G, pos=nx.spring_layout(G))</span>
+
+<span class="sd">    Also see the NetworkX drawing examples at</span>
+<span class="sd">    https://networkx.org/documentation/latest/auto_examples/index.html</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    draw</span>
+<span class="sd">    draw_networkx</span>
+<span class="sd">    draw_networkx_edges</span>
+<span class="sd">    draw_networkx_labels</span>
+<span class="sd">    draw_networkx_edge_labels</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Iterable</span>
+
+    <span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">mpl</span>
+    <span class="kn">import</span> <span class="nn">matplotlib.collections</span>  <span class="c1"># call as mpl.collections</span>
+    <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+    <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">nodelist</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">nodelist</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodelist</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># empty nodelist, no drawing</span>
+        <span class="k">return</span> <span class="n">mpl</span><span class="o">.</span><span class="n">collections</span><span class="o">.</span><span class="n">PathCollection</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">xy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">pos</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">nodelist</span><span class="p">])</span>
+    <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Node </span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2"> has no position.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">err</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">):</span>
+        <span class="n">node_color</span> <span class="o">=</span> <span class="n">apply_alpha</span><span class="p">(</span><span class="n">node_color</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="n">cmap</span><span class="p">,</span> <span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">)</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">node_collection</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
+        <span class="n">xy</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span>
+        <span class="n">xy</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
+        <span class="n">s</span><span class="o">=</span><span class="n">node_size</span><span class="p">,</span>
+        <span class="n">c</span><span class="o">=</span><span class="n">node_color</span><span class="p">,</span>
+        <span class="n">marker</span><span class="o">=</span><span class="n">node_shape</span><span class="p">,</span>
+        <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span>
+        <span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span>
+        <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">,</span>
+        <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span>
+        <span class="n">linewidths</span><span class="o">=</span><span class="n">linewidths</span><span class="p">,</span>
+        <span class="n">edgecolors</span><span class="o">=</span><span class="n">edgecolors</span><span class="p">,</span>
+        <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span>
+        <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span>
+        <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span>
+        <span class="n">bottom</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">left</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">labelbottom</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">labelleft</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">margins</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">margins</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">):</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">margins</span><span class="p">(</span><span class="o">*</span><span class="n">margins</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">margins</span><span class="p">(</span><span class="n">margins</span><span class="p">)</span>
+
+    <span class="n">node_collection</span><span class="o">.</span><span class="n">set_zorder</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">node_collection</span></div>
+
+
+<div class="viewcode-block" id="draw_networkx_edges"><a class="viewcode-back" href="../../../reference/generated/networkx.drawing.nx_pylab.draw_networkx_edges.html#networkx.drawing.nx_pylab.draw_networkx_edges">[docs]</a><span class="k">def</span> <span class="nf">draw_networkx_edges</span><span class="p">(</span>
+    <span class="n">G</span><span class="p">,</span>
+    <span class="n">pos</span><span class="p">,</span>
+    <span class="n">edgelist</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">width</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">edge_color</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span>
+    <span class="n">style</span><span class="o">=</span><span class="s2">&quot;solid&quot;</span><span class="p">,</span>
+    <span class="n">alpha</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">arrowstyle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">arrowsize</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">edge_cmap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">edge_vmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">edge_vmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">arrows</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">node_size</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
+    <span class="n">nodelist</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">node_shape</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span>
+    <span class="n">connectionstyle</span><span class="o">=</span><span class="s2">&quot;arc3&quot;</span><span class="p">,</span>
+    <span class="n">min_source_margin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">min_target_margin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Draw the edges of the graph G.</span>
+
+<span class="sd">    This draws only the edges of the graph G.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : graph</span>
+<span class="sd">        A networkx graph</span>
+
+<span class="sd">    pos : dictionary</span>
+<span class="sd">        A dictionary with nodes as keys and positions as values.</span>
+<span class="sd">        Positions should be sequences of length 2.</span>
+
+<span class="sd">    edgelist : collection of edge tuples (default=G.edges())</span>
+<span class="sd">        Draw only specified edges</span>
+
+<span class="sd">    width : float or array of floats (default=1.0)</span>
+<span class="sd">        Line width of edges</span>
+
+<span class="sd">    edge_color : color or array of colors (default=&#39;k&#39;)</span>
+<span class="sd">        Edge color. Can be a single color or a sequence of colors with the same</span>
+<span class="sd">        length as edgelist. Color can be string or rgb (or rgba) tuple of</span>
+<span class="sd">        floats from 0-1. If numeric values are specified they will be</span>
+<span class="sd">        mapped to colors using the edge_cmap and edge_vmin,edge_vmax parameters.</span>
+
+<span class="sd">    style : string or array of strings (default=&#39;solid&#39;)</span>
+<span class="sd">        Edge line style e.g.: &#39;-&#39;, &#39;--&#39;, &#39;-.&#39;, &#39;:&#39;</span>
+<span class="sd">        or words like &#39;solid&#39; or &#39;dashed&#39;.</span>
+<span class="sd">        Can be a single style or a sequence of styles with the same</span>
+<span class="sd">        length as the edge list.</span>
+<span class="sd">        If less styles than edges are given the styles will cycle.</span>
+<span class="sd">        If more styles than edges are given the styles will be used sequentially</span>
+<span class="sd">        and not be exhausted.</span>
+<span class="sd">        Also, `(offset, onoffseq)` tuples can be used as style instead of a strings.</span>
+<span class="sd">        (See `matplotlib.patches.FancyArrowPatch`: `linestyle`)</span>
+
+<span class="sd">    alpha : float or array of floats (default=None)</span>
+<span class="sd">        The edge transparency.  This can be a single alpha value,</span>
+<span class="sd">        in which case it will be applied to all specified edges. Otherwise,</span>
+<span class="sd">        if it is an array, the elements of alpha will be applied to the colors</span>
+<span class="sd">        in order (cycling through alpha multiple times if necessary).</span>
+
+<span class="sd">    edge_cmap : Matplotlib colormap, optional</span>
+<span class="sd">        Colormap for mapping intensities of edges</span>
+
+<span class="sd">    edge_vmin,edge_vmax : floats, optional</span>
+<span class="sd">        Minimum and maximum for edge colormap scaling</span>
+
+<span class="sd">    ax : Matplotlib Axes object, optional</span>
+<span class="sd">        Draw the graph in the specified Matplotlib axes.</span>
+
+<span class="sd">    arrows : bool or None, optional (default=None)</span>
+<span class="sd">        If `None`, directed graphs draw arrowheads with</span>
+<span class="sd">        `~matplotlib.patches.FancyArrowPatch`, while undirected graphs draw edges</span>
+<span class="sd">        via `~matplotlib.collections.LineCollection` for speed.</span>
+<span class="sd">        If `True`, draw arrowheads with FancyArrowPatches (bendable and stylish).</span>
+<span class="sd">        If `False`, draw edges using LineCollection (linear and fast).</span>
+
+<span class="sd">        Note: Arrowheads will be the same color as edges.</span>
+
+<span class="sd">    arrowstyle : str (default=&#39;-\|&gt;&#39; for directed graphs)</span>
+<span class="sd">        For directed graphs and `arrows==True` defaults to &#39;-\|&gt;&#39;,</span>
+<span class="sd">        For undirected graphs default to &#39;-&#39;.</span>
+
+<span class="sd">        See `matplotlib.patches.ArrowStyle` for more options.</span>
+
+<span class="sd">    arrowsize : int (default=10)</span>
+<span class="sd">        For directed graphs, choose the size of the arrow head&#39;s length and</span>
+<span class="sd">        width. See `matplotlib.patches.FancyArrowPatch` for attribute</span>
+<span class="sd">        `mutation_scale` for more info.</span>
+
+<span class="sd">    connectionstyle : string (default=&quot;arc3&quot;)</span>
+<span class="sd">        Pass the connectionstyle parameter to create curved arc of rounding</span>
+<span class="sd">        radius rad. For example, connectionstyle=&#39;arc3,rad=0.2&#39;.</span>
+<span class="sd">        See `matplotlib.patches.ConnectionStyle` and</span>
+<span class="sd">        `matplotlib.patches.FancyArrowPatch` for more info.</span>
+
+<span class="sd">    node_size : scalar or array (default=300)</span>
+<span class="sd">        Size of nodes. Though the nodes are not drawn with this function, the</span>
+<span class="sd">        node size is used in determining edge positioning.</span>
+
+<span class="sd">    nodelist : list, optional (default=G.nodes())</span>
+<span class="sd">       This provides the node order for the `node_size` array (if it is an array).</span>
+
+<span class="sd">    node_shape :  string (default=&#39;o&#39;)</span>
+<span class="sd">        The marker used for nodes, used in determining edge positioning.</span>
+<span class="sd">        Specification is as a `matplotlib.markers` marker, e.g. one of &#39;so^&gt;v&lt;dph8&#39;.</span>
+
+<span class="sd">    label : None or string</span>
+<span class="sd">        Label for legend</span>
+
+<span class="sd">    min_source_margin : int (default=0)</span>
+<span class="sd">        The minimum margin (gap) at the begining of the edge at the source.</span>
+
+<span class="sd">    min_target_margin : int (default=0)</span>
+<span class="sd">        The minimum margin (gap) at the end of the edge at the target.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">     matplotlib.colections.LineCollection or a list of matplotlib.patches.FancyArrowPatch</span>
+<span class="sd">        If ``arrows=True``, a list of FancyArrowPatches is returned.</span>
+<span class="sd">        If ``arrows=False``, a LineCollection is returned.</span>
+<span class="sd">        If ``arrows=None`` (the default), then a LineCollection is returned if</span>
+<span class="sd">        `G` is undirected, otherwise returns a list of FancyArrowPatches.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    For directed graphs, arrows are drawn at the head end.  Arrows can be</span>
+<span class="sd">    turned off with keyword arrows=False or by passing an arrowstyle without</span>
+<span class="sd">    an arrow on the end.</span>
+
+<span class="sd">    Be sure to include `node_size` as a keyword argument; arrows are</span>
+<span class="sd">    drawn considering the size of nodes.</span>
+
+<span class="sd">    Self-loops are always drawn with `~matplotlib.patches.FancyArrowPatch`</span>
+<span class="sd">    regardless of the value of `arrows` or whether `G` is directed.</span>
+<span class="sd">    When ``arrows=False`` or ``arrows=None`` and `G` is undirected, the</span>
+<span class="sd">    FancyArrowPatches corresponding to the self-loops are not explicitly</span>
+<span class="sd">    returned. They should instead be accessed via the ``Axes.patches``</span>
+<span class="sd">    attribute (see examples).</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.dodecahedral_graph()</span>
+<span class="sd">    &gt;&gt;&gt; edges = nx.draw_networkx_edges(G, pos=nx.spring_layout(G))</span>
+
+<span class="sd">    &gt;&gt;&gt; G = nx.DiGraph()</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edges_from([(1, 2), (1, 3), (2, 3)])</span>
+<span class="sd">    &gt;&gt;&gt; arcs = nx.draw_networkx_edges(G, pos=nx.spring_layout(G))</span>
+<span class="sd">    &gt;&gt;&gt; alphas = [0.3, 0.4, 0.5]</span>
+<span class="sd">    &gt;&gt;&gt; for i, arc in enumerate(arcs):  # change alpha values of arcs</span>
+<span class="sd">    ...     arc.set_alpha(alphas[i])</span>
+
+<span class="sd">    The FancyArrowPatches corresponding to self-loops are not always</span>
+<span class="sd">    returned, but can always be accessed via the ``patches`` attribute of the</span>
+<span class="sd">    `matplotlib.Axes` object.</span>
+
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; fig, ax = plt.subplots()</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.Graph([(0, 1), (0, 0)])  # Self-loop at node 0</span>
+<span class="sd">    &gt;&gt;&gt; edge_collection = nx.draw_networkx_edges(G, pos=nx.circular_layout(G), ax=ax)</span>
+<span class="sd">    &gt;&gt;&gt; self_loop_fap = ax.patches[0]</span>
+
+<span class="sd">    Also see the NetworkX drawing examples at</span>
+<span class="sd">    https://networkx.org/documentation/latest/auto_examples/index.html</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    draw</span>
+<span class="sd">    draw_networkx</span>
+<span class="sd">    draw_networkx_nodes</span>
+<span class="sd">    draw_networkx_labels</span>
+<span class="sd">    draw_networkx_edge_labels</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">mpl</span>
+    <span class="kn">import</span> <span class="nn">matplotlib.collections</span>  <span class="c1"># call as mpl.collections</span>
+    <span class="kn">import</span> <span class="nn">matplotlib.colors</span>  <span class="c1"># call as mpl.colors</span>
+    <span class="kn">import</span> <span class="nn">matplotlib.patches</span>  <span class="c1"># call as mpl.patches</span>
+    <span class="kn">import</span> <span class="nn">matplotlib.path</span>  <span class="c1"># call as mpl.path</span>
+    <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+    <span class="c1"># The default behavior is to use LineCollection to draw edges for</span>
+    <span class="c1"># undirected graphs (for performance reasons) and use FancyArrowPatches</span>
+    <span class="c1"># for directed graphs.</span>
+    <span class="c1"># The `arrows` keyword can be used to override the default behavior</span>
+    <span class="n">use_linecollection</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">G</span><span class="o">.</span><span class="n">is_directed</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">arrows</span> <span class="ow">in</span> <span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="n">use_linecollection</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">arrows</span>
+
+    <span class="c1"># Some kwargs only apply to FancyArrowPatches. Warn users when they use</span>
+    <span class="c1"># non-default values for these kwargs when LineCollection is being used</span>
+    <span class="c1"># instead of silently ignoring the specified option</span>
+    <span class="k">if</span> <span class="n">use_linecollection</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="n">arrowstyle</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">arrowsize</span> <span class="o">!=</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="n">connectionstyle</span> <span class="o">!=</span> <span class="s2">&quot;arc3&quot;</span><span class="p">,</span>
+            <span class="n">min_source_margin</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="n">min_target_margin</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="p">]</span>
+    <span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">warnings</span>
+
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">The </span><span class="si">{0}</span><span class="s2"> keyword argument is not applicable when drawing edges</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;with LineCollection.</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;To make this warning go away, either specify `arrows=True` to</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;force FancyArrowPatches or use the default value for </span><span class="si">{0}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;Note that using FancyArrowPatches may be slow for large graphs.</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">arrowstyle</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;arrowstyle&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">arrowsize</span> <span class="o">!=</span> <span class="mi">10</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;arrowsize&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">connectionstyle</span> <span class="o">!=</span> <span class="s2">&quot;arc3&quot;</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;connectionstyle&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">min_source_margin</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;min_source_margin&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">min_target_margin</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;min_target_margin&quot;</span><span class="p">)</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">arrowstyle</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+            <span class="n">arrowstyle</span> <span class="o">=</span> <span class="s2">&quot;-|&gt;&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">arrowstyle</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span>
+
+    <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">edgelist</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">edgelist</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">())</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">edgelist</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># no edges!</span>
+        <span class="k">return</span> <span class="p">[]</span>
+
+    <span class="k">if</span> <span class="n">nodelist</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">nodelist</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">())</span>
+
+    <span class="c1"># FancyArrowPatch handles color=None different from LineCollection</span>
+    <span class="k">if</span> <span class="n">edge_color</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">edge_color</span> <span class="o">=</span> <span class="s2">&quot;k&quot;</span>
+    <span class="n">edgelist_tuple</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="n">edgelist</span><span class="p">))</span>
+
+    <span class="c1"># set edge positions</span>
+    <span class="n">edge_pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([(</span><span class="n">pos</span><span class="p">[</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">pos</span><span class="p">[</span><span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">edgelist</span><span class="p">])</span>
+
+    <span class="c1"># Check if edge_color is an array of floats and map to edge_cmap.</span>
+    <span class="c1"># This is the only case handled differently from matplotlib</span>
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">iterable</span><span class="p">(</span><span class="n">edge_color</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">edge_color</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">edge_pos</span><span class="p">))</span>
+        <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">alltrue</span><span class="p">([</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">Number</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">edge_color</span><span class="p">])</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="n">edge_cmap</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">edge_cmap</span><span class="p">,</span> <span class="n">mpl</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">Colormap</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">edge_cmap</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">edge_vmin</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">edge_vmin</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">edge_color</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">edge_vmax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">edge_vmax</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">edge_color</span><span class="p">)</span>
+        <span class="n">color_normal</span> <span class="o">=</span> <span class="n">mpl</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">Normalize</span><span class="p">(</span><span class="n">vmin</span><span class="o">=</span><span class="n">edge_vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">edge_vmax</span><span class="p">)</span>
+        <span class="n">edge_color</span> <span class="o">=</span> <span class="p">[</span><span class="n">edge_cmap</span><span class="p">(</span><span class="n">color_normal</span><span class="p">(</span><span class="n">e</span><span class="p">))</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">edge_color</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_draw_networkx_edges_line_collection</span><span class="p">():</span>
+        <span class="n">edge_collection</span> <span class="o">=</span> <span class="n">mpl</span><span class="o">.</span><span class="n">collections</span><span class="o">.</span><span class="n">LineCollection</span><span class="p">(</span>
+            <span class="n">edge_pos</span><span class="p">,</span>
+            <span class="n">colors</span><span class="o">=</span><span class="n">edge_color</span><span class="p">,</span>
+            <span class="n">linewidths</span><span class="o">=</span><span class="n">width</span><span class="p">,</span>
+            <span class="n">antialiaseds</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,),</span>
+            <span class="n">linestyle</span><span class="o">=</span><span class="n">style</span><span class="p">,</span>
+            <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">edge_collection</span><span class="o">.</span><span class="n">set_cmap</span><span class="p">(</span><span class="n">edge_cmap</span><span class="p">)</span>
+        <span class="n">edge_collection</span><span class="o">.</span><span class="n">set_clim</span><span class="p">(</span><span class="n">edge_vmin</span><span class="p">,</span> <span class="n">edge_vmax</span><span class="p">)</span>
+        <span class="n">edge_collection</span><span class="o">.</span><span class="n">set_zorder</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># edges go behind nodes</span>
+        <span class="n">edge_collection</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">add_collection</span><span class="p">(</span><span class="n">edge_collection</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">edge_collection</span>
+
+    <span class="k">def</span> <span class="nf">_draw_networkx_edges_fancy_arrow_patch</span><span class="p">():</span>
+        <span class="c1"># Note: Waiting for someone to implement arrow to intersection with</span>
+        <span class="c1"># marker.  Meanwhile, this works well for polygons with more than 4</span>
+        <span class="c1"># sides and circle.</span>
+
+        <span class="k">def</span> <span class="nf">to_marker_edge</span><span class="p">(</span><span class="n">marker_size</span><span class="p">,</span> <span class="n">marker</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">marker</span> <span class="ow">in</span> <span class="s2">&quot;s^&gt;v&lt;d&quot;</span><span class="p">:</span>  <span class="c1"># `large` markers need extra space</span>
+                <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">marker_size</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">marker_size</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+
+        <span class="c1"># Draw arrows with `matplotlib.patches.FancyarrowPatch`</span>
+        <span class="n">arrow_collection</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arrowsize</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">arrowsize</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">edge_pos</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;arrowsize should have the same length as edgelist&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mutation_scale</span> <span class="o">=</span> <span class="n">arrowsize</span>  <span class="c1"># scale factor of arrow head</span>
+
+        <span class="n">base_connection_style</span> <span class="o">=</span> <span class="n">mpl</span><span class="o">.</span><span class="n">patches</span><span class="o">.</span><span class="n">ConnectionStyle</span><span class="p">(</span><span class="n">connectionstyle</span><span class="p">)</span>
+
+        <span class="c1"># Fallback for self-loop scale. Left outside of _connectionstyle so it is</span>
+        <span class="c1"># only computed once</span>
+        <span class="n">max_nodesize</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">node_size</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+        <span class="k">def</span> <span class="nf">_connectionstyle</span><span class="p">(</span><span class="n">posA</span><span class="p">,</span> <span class="n">posB</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="c1"># check if we need to do a self-loop</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">posA</span> <span class="o">==</span> <span class="n">posB</span><span class="p">):</span>
+                <span class="c1"># Self-loops are scaled by view extent, except in cases the extent</span>
+                <span class="c1"># is 0, e.g. for a single node. In this case, fall back to scaling</span>
+                <span class="c1"># by the maximum node size</span>
+                <span class="n">selfloop_ht</span> <span class="o">=</span> <span class="mf">0.005</span> <span class="o">*</span> <span class="n">max_nodesize</span> <span class="k">if</span> <span class="n">h</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">h</span>
+                <span class="c1"># this is called with _screen space_ values so covert back</span>
+                <span class="c1"># to data space</span>
+                <span class="n">data_loc</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">transData</span><span class="o">.</span><span class="n">inverted</span><span class="p">()</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">posA</span><span class="p">)</span>
+                <span class="n">v_shift</span> <span class="o">=</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">selfloop_ht</span>
+                <span class="n">h_shift</span> <span class="o">=</span> <span class="n">v_shift</span> <span class="o">*</span> <span class="mf">0.5</span>
+                <span class="c1"># put the top of the loop first so arrow is not hidden by node</span>
+                <span class="n">path</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="c1"># 1</span>
+                    <span class="n">data_loc</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">v_shift</span><span class="p">]),</span>
+                    <span class="c1"># 4 4 4</span>
+                    <span class="n">data_loc</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">h_shift</span><span class="p">,</span> <span class="n">v_shift</span><span class="p">]),</span>
+                    <span class="n">data_loc</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">h_shift</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span>
+                    <span class="n">data_loc</span><span class="p">,</span>
+                    <span class="c1"># 4 4 4</span>
+                    <span class="n">data_loc</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="o">-</span><span class="n">h_shift</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span>
+                    <span class="n">data_loc</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="o">-</span><span class="n">h_shift</span><span class="p">,</span> <span class="n">v_shift</span><span class="p">]),</span>
+                    <span class="n">data_loc</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">v_shift</span><span class="p">]),</span>
+                <span class="p">]</span>
+
+                <span class="n">ret</span> <span class="o">=</span> <span class="n">mpl</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">transData</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+            <span class="c1"># if not, fall back to the user specified behavior</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ret</span> <span class="o">=</span> <span class="n">base_connection_style</span><span class="p">(</span><span class="n">posA</span><span class="p">,</span> <span class="n">posB</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">ret</span>
+
+        <span class="c1"># FancyArrowPatch doesn&#39;t handle color strings</span>
+        <span class="n">arrow_colors</span> <span class="o">=</span> <span class="n">mpl</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">colorConverter</span><span class="o">.</span><span class="n">to_rgba_array</span><span class="p">(</span><span class="n">edge_color</span><span class="p">,</span> <span class="n">alpha</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">fancy_edges_indices</span><span class="p">,</span> <span class="n">edge_pos</span><span class="p">):</span>
+            <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span> <span class="o">=</span> <span class="n">src</span>
+            <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span> <span class="o">=</span> <span class="n">dst</span>
+            <span class="n">shrink_source</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># space from source to tail</span>
+            <span class="n">shrink_target</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># space from  head to target</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arrowsize</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="c1"># Scale each factor of each arrow based on arrowsize list</span>
+                <span class="n">mutation_scale</span> <span class="o">=</span> <span class="n">arrowsize</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">iterable</span><span class="p">(</span><span class="n">node_size</span><span class="p">):</span>  <span class="c1"># many node sizes</span>
+                <span class="n">source</span><span class="p">,</span> <span class="n">target</span> <span class="o">=</span> <span class="n">edgelist</span><span class="p">[</span><span class="n">i</span><span class="p">][:</span><span class="mi">2</span><span class="p">]</span>
+                <span class="n">source_node_size</span> <span class="o">=</span> <span class="n">node_size</span><span class="p">[</span><span class="n">nodelist</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">source</span><span class="p">)]</span>
+                <span class="n">target_node_size</span> <span class="o">=</span> <span class="n">node_size</span><span class="p">[</span><span class="n">nodelist</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">target</span><span class="p">)]</span>
+                <span class="n">shrink_source</span> <span class="o">=</span> <span class="n">to_marker_edge</span><span class="p">(</span><span class="n">source_node_size</span><span class="p">,</span> <span class="n">node_shape</span><span class="p">)</span>
+                <span class="n">shrink_target</span> <span class="o">=</span> <span class="n">to_marker_edge</span><span class="p">(</span><span class="n">target_node_size</span><span class="p">,</span> <span class="n">node_shape</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">shrink_source</span> <span class="o">=</span> <span class="n">shrink_target</span> <span class="o">=</span> <span class="n">to_marker_edge</span><span class="p">(</span><span class="n">node_size</span><span class="p">,</span> <span class="n">node_shape</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">shrink_source</span> <span class="o">&lt;</span> <span class="n">min_source_margin</span><span class="p">:</span>
+                <span class="n">shrink_source</span> <span class="o">=</span> <span class="n">min_source_margin</span>
+
+            <span class="k">if</span> <span class="n">shrink_target</span> <span class="o">&lt;</span> <span class="n">min_target_margin</span><span class="p">:</span>
+                <span class="n">shrink_target</span> <span class="o">=</span> <span class="n">min_target_margin</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">arrow_colors</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">i</span><span class="p">:</span>
+                <span class="n">arrow_color</span> <span class="o">=</span> <span class="n">arrow_colors</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">arrow_colors</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">arrow_color</span> <span class="o">=</span> <span class="n">arrow_colors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># Cycle through colors</span>
+                <span class="n">arrow_color</span> <span class="o">=</span> <span class="n">arrow_colors</span><span class="p">[</span><span class="n">i</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">arrow_colors</span><span class="p">)]</span>
+
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">iterable</span><span class="p">(</span><span class="n">width</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">width</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">i</span><span class="p">:</span>
+                    <span class="n">line_width</span> <span class="o">=</span> <span class="n">width</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">line_width</span> <span class="o">=</span> <span class="n">width</span><span class="p">[</span><span class="n">i</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">width</span><span class="p">)]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">line_width</span> <span class="o">=</span> <span class="n">width</span>
+
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">iterable</span><span class="p">(</span><span class="n">style</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">style</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">style</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span>
+            <span class="p">):</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">style</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">i</span><span class="p">:</span>
+                    <span class="n">linestyle</span> <span class="o">=</span> <span class="n">style</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>  <span class="c1"># Cycle through styles</span>
+                    <span class="n">linestyle</span> <span class="o">=</span> <span class="n">style</span><span class="p">[</span><span class="n">i</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">style</span><span class="p">)]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">linestyle</span> <span class="o">=</span> <span class="n">style</span>
+
+            <span class="n">arrow</span> <span class="o">=</span> <span class="n">mpl</span><span class="o">.</span><span class="n">patches</span><span class="o">.</span><span class="n">FancyArrowPatch</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">),</span>
+                <span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">),</span>
+                <span class="n">arrowstyle</span><span class="o">=</span><span class="n">arrowstyle</span><span class="p">,</span>
+                <span class="n">shrinkA</span><span class="o">=</span><span class="n">shrink_source</span><span class="p">,</span>
+                <span class="n">shrinkB</span><span class="o">=</span><span class="n">shrink_target</span><span class="p">,</span>
+                <span class="n">mutation_scale</span><span class="o">=</span><span class="n">mutation_scale</span><span class="p">,</span>
+                <span class="n">color</span><span class="o">=</span><span class="n">arrow_color</span><span class="p">,</span>
+                <span class="n">linewidth</span><span class="o">=</span><span class="n">line_width</span><span class="p">,</span>
+                <span class="n">connectionstyle</span><span class="o">=</span><span class="n">_connectionstyle</span><span class="p">,</span>
+                <span class="n">linestyle</span><span class="o">=</span><span class="n">linestyle</span><span class="p">,</span>
+                <span class="n">zorder</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="p">)</span>  <span class="c1"># arrows go behind nodes</span>
+
+            <span class="n">arrow_collection</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">arrow</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">arrow</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">arrow_collection</span>
+
+    <span class="c1"># compute initial view</span>
+    <span class="n">minx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">edge_pos</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]))</span>
+    <span class="n">maxx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">edge_pos</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]))</span>
+    <span class="n">miny</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">edge_pos</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]))</span>
+    <span class="n">maxy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">edge_pos</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]))</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">maxx</span> <span class="o">-</span> <span class="n">minx</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="n">maxy</span> <span class="o">-</span> <span class="n">miny</span>
+
+    <span class="c1"># Draw the edges</span>
+    <span class="k">if</span> <span class="n">use_linecollection</span><span class="p">:</span>
+        <span class="n">edge_viz_obj</span> <span class="o">=</span> <span class="n">_draw_networkx_edges_line_collection</span><span class="p">()</span>
+        <span class="c1"># Make sure selfloop edges are also drawn</span>
+        <span class="n">selfloops_to_draw</span> <span class="o">=</span> <span class="p">[</span><span class="n">loop</span> <span class="k">for</span> <span class="n">loop</span> <span class="ow">in</span> <span class="n">nx</span><span class="o">.</span><span class="n">selfloop_edges</span><span class="p">(</span><span class="n">G</span><span class="p">)</span> <span class="k">if</span> <span class="n">loop</span> <span class="ow">in</span> <span class="n">edgelist</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">selfloops_to_draw</span><span class="p">:</span>
+            <span class="n">fancy_edges_indices</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">edgelist_tuple</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">loop</span><span class="p">)</span> <span class="k">for</span> <span class="n">loop</span> <span class="ow">in</span> <span class="n">selfloops_to_draw</span>
+            <span class="p">]</span>
+            <span class="n">edge_pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([(</span><span class="n">pos</span><span class="p">[</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">pos</span><span class="p">[</span><span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">selfloops_to_draw</span><span class="p">])</span>
+            <span class="n">arrowstyle</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span>
+            <span class="n">_draw_networkx_edges_fancy_arrow_patch</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fancy_edges_indices</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">edgelist</span><span class="p">))</span>
+        <span class="n">edge_viz_obj</span> <span class="o">=</span> <span class="n">_draw_networkx_edges_fancy_arrow_patch</span><span class="p">()</span>
+
+    <span class="c1"># update view after drawing</span>
+    <span class="n">padx</span><span class="p">,</span> <span class="n">pady</span> <span class="o">=</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="n">w</span><span class="p">,</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="n">h</span>
+    <span class="n">corners</span> <span class="o">=</span> <span class="p">(</span><span class="n">minx</span> <span class="o">-</span> <span class="n">padx</span><span class="p">,</span> <span class="n">miny</span> <span class="o">-</span> <span class="n">pady</span><span class="p">),</span> <span class="p">(</span><span class="n">maxx</span> <span class="o">+</span> <span class="n">padx</span><span class="p">,</span> <span class="n">maxy</span> <span class="o">+</span> <span class="n">pady</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">update_datalim</span><span class="p">(</span><span class="n">corners</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">autoscale_view</span><span class="p">()</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span>
+        <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span>
+        <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span>
+        <span class="n">bottom</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">left</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">labelbottom</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">labelleft</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">edge_viz_obj</span></div>
+
+
+<div class="viewcode-block" id="draw_networkx_labels"><a class="viewcode-back" href="../../../reference/generated/networkx.drawing.nx_pylab.draw_networkx_labels.html#networkx.drawing.nx_pylab.draw_networkx_labels">[docs]</a><span class="k">def</span> <span class="nf">draw_networkx_labels</span><span class="p">(</span>
+    <span class="n">G</span><span class="p">,</span>
+    <span class="n">pos</span><span class="p">,</span>
+    <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">font_size</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
+    <span class="n">font_color</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span>
+    <span class="n">font_family</span><span class="o">=</span><span class="s2">&quot;sans-serif&quot;</span><span class="p">,</span>
+    <span class="n">font_weight</span><span class="o">=</span><span class="s2">&quot;normal&quot;</span><span class="p">,</span>
+    <span class="n">alpha</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">bbox</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">horizontalalignment</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span>
+    <span class="n">verticalalignment</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span>
+    <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">clip_on</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Draw node labels on the graph G.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : graph</span>
+<span class="sd">        A networkx graph</span>
+
+<span class="sd">    pos : dictionary</span>
+<span class="sd">        A dictionary with nodes as keys and positions as values.</span>
+<span class="sd">        Positions should be sequences of length 2.</span>
+
+<span class="sd">    labels : dictionary (default={n: n for n in G})</span>
+<span class="sd">        Node labels in a dictionary of text labels keyed by node.</span>
+<span class="sd">        Node-keys in labels should appear as keys in `pos`.</span>
+<span class="sd">        If needed use: `{n:lab for n,lab in labels.items() if n in pos}`</span>
+
+<span class="sd">    font_size : int (default=12)</span>
+<span class="sd">        Font size for text labels</span>
+
+<span class="sd">    font_color : string (default=&#39;k&#39; black)</span>
+<span class="sd">        Font color string</span>
+
+<span class="sd">    font_weight : string (default=&#39;normal&#39;)</span>
+<span class="sd">        Font weight</span>
+
+<span class="sd">    font_family : string (default=&#39;sans-serif&#39;)</span>
+<span class="sd">        Font family</span>
+
+<span class="sd">    alpha : float or None (default=None)</span>
+<span class="sd">        The text transparency</span>
+
+<span class="sd">    bbox : Matplotlib bbox, (default is Matplotlib&#39;s ax.text default)</span>
+<span class="sd">        Specify text box properties (e.g. shape, color etc.) for node labels.</span>
+
+<span class="sd">    horizontalalignment : string (default=&#39;center&#39;)</span>
+<span class="sd">        Horizontal alignment {&#39;center&#39;, &#39;right&#39;, &#39;left&#39;}</span>
+
+<span class="sd">    verticalalignment : string (default=&#39;center&#39;)</span>
+<span class="sd">        Vertical alignment {&#39;center&#39;, &#39;top&#39;, &#39;bottom&#39;, &#39;baseline&#39;, &#39;center_baseline&#39;}</span>
+
+<span class="sd">    ax : Matplotlib Axes object, optional</span>
+<span class="sd">        Draw the graph in the specified Matplotlib axes.</span>
+
+<span class="sd">    clip_on : bool (default=True)</span>
+<span class="sd">        Turn on clipping of node labels at axis boundaries</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+<span class="sd">        `dict` of labels keyed on the nodes</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.dodecahedral_graph()</span>
+<span class="sd">    &gt;&gt;&gt; labels = nx.draw_networkx_labels(G, pos=nx.spring_layout(G))</span>
+
+<span class="sd">    Also see the NetworkX drawing examples at</span>
+<span class="sd">    https://networkx.org/documentation/latest/auto_examples/index.html</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    draw</span>
+<span class="sd">    draw_networkx</span>
+<span class="sd">    draw_networkx_nodes</span>
+<span class="sd">    draw_networkx_edges</span>
+<span class="sd">    draw_networkx_edge_labels</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+    <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">labels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="p">{</span><span class="n">n</span><span class="p">:</span> <span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">()}</span>
+
+    <span class="n">text_items</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># there is no text collection so we&#39;ll fake one</span>
+    <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">labels</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="o">=</span> <span class="n">pos</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>  <span class="c1"># this makes &quot;1&quot; and 1 labeled the same</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span>
+            <span class="n">x</span><span class="p">,</span>
+            <span class="n">y</span><span class="p">,</span>
+            <span class="n">label</span><span class="p">,</span>
+            <span class="n">size</span><span class="o">=</span><span class="n">font_size</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="n">font_color</span><span class="p">,</span>
+            <span class="n">family</span><span class="o">=</span><span class="n">font_family</span><span class="p">,</span>
+            <span class="n">weight</span><span class="o">=</span><span class="n">font_weight</span><span class="p">,</span>
+            <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span>
+            <span class="n">horizontalalignment</span><span class="o">=</span><span class="n">horizontalalignment</span><span class="p">,</span>
+            <span class="n">verticalalignment</span><span class="o">=</span><span class="n">verticalalignment</span><span class="p">,</span>
+            <span class="n">transform</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">transData</span><span class="p">,</span>
+            <span class="n">bbox</span><span class="o">=</span><span class="n">bbox</span><span class="p">,</span>
+            <span class="n">clip_on</span><span class="o">=</span><span class="n">clip_on</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">text_items</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">t</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span>
+        <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span>
+        <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span>
+        <span class="n">bottom</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">left</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">labelbottom</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">labelleft</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">text_items</span></div>
+
+
+<div class="viewcode-block" id="draw_networkx_edge_labels"><a class="viewcode-back" href="../../../reference/generated/networkx.drawing.nx_pylab.draw_networkx_edge_labels.html#networkx.drawing.nx_pylab.draw_networkx_edge_labels">[docs]</a><span class="k">def</span> <span class="nf">draw_networkx_edge_labels</span><span class="p">(</span>
+    <span class="n">G</span><span class="p">,</span>
+    <span class="n">pos</span><span class="p">,</span>
+    <span class="n">edge_labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">label_pos</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+    <span class="n">font_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">font_color</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span>
+    <span class="n">font_family</span><span class="o">=</span><span class="s2">&quot;sans-serif&quot;</span><span class="p">,</span>
+    <span class="n">font_weight</span><span class="o">=</span><span class="s2">&quot;normal&quot;</span><span class="p">,</span>
+    <span class="n">alpha</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">bbox</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">horizontalalignment</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span>
+    <span class="n">verticalalignment</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span>
+    <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">rotate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">clip_on</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Draw edge labels.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : graph</span>
+<span class="sd">        A networkx graph</span>
+
+<span class="sd">    pos : dictionary</span>
+<span class="sd">        A dictionary with nodes as keys and positions as values.</span>
+<span class="sd">        Positions should be sequences of length 2.</span>
+
+<span class="sd">    edge_labels : dictionary (default=None)</span>
+<span class="sd">        Edge labels in a dictionary of labels keyed by edge two-tuple.</span>
+<span class="sd">        Only labels for the keys in the dictionary are drawn.</span>
+
+<span class="sd">    label_pos : float (default=0.5)</span>
+<span class="sd">        Position of edge label along edge (0=head, 0.5=center, 1=tail)</span>
+
+<span class="sd">    font_size : int (default=10)</span>
+<span class="sd">        Font size for text labels</span>
+
+<span class="sd">    font_color : string (default=&#39;k&#39; black)</span>
+<span class="sd">        Font color string</span>
+
+<span class="sd">    font_weight : string (default=&#39;normal&#39;)</span>
+<span class="sd">        Font weight</span>
+
+<span class="sd">    font_family : string (default=&#39;sans-serif&#39;)</span>
+<span class="sd">        Font family</span>
+
+<span class="sd">    alpha : float or None (default=None)</span>
+<span class="sd">        The text transparency</span>
+
+<span class="sd">    bbox : Matplotlib bbox, optional</span>
+<span class="sd">        Specify text box properties (e.g. shape, color etc.) for edge labels.</span>
+<span class="sd">        Default is {boxstyle=&#39;round&#39;, ec=(1.0, 1.0, 1.0), fc=(1.0, 1.0, 1.0)}.</span>
+
+<span class="sd">    horizontalalignment : string (default=&#39;center&#39;)</span>
+<span class="sd">        Horizontal alignment {&#39;center&#39;, &#39;right&#39;, &#39;left&#39;}</span>
+
+<span class="sd">    verticalalignment : string (default=&#39;center&#39;)</span>
+<span class="sd">        Vertical alignment {&#39;center&#39;, &#39;top&#39;, &#39;bottom&#39;, &#39;baseline&#39;, &#39;center_baseline&#39;}</span>
+
+<span class="sd">    ax : Matplotlib Axes object, optional</span>
+<span class="sd">        Draw the graph in the specified Matplotlib axes.</span>
+
+<span class="sd">    rotate : bool (deafult=True)</span>
+<span class="sd">        Rotate edge labels to lie parallel to edges</span>
+
+<span class="sd">    clip_on : bool (default=True)</span>
+<span class="sd">        Turn on clipping of edge labels at axis boundaries</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+<span class="sd">        `dict` of labels keyed by edge</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.dodecahedral_graph()</span>
+<span class="sd">    &gt;&gt;&gt; edge_labels = nx.draw_networkx_edge_labels(G, pos=nx.spring_layout(G))</span>
+
+<span class="sd">    Also see the NetworkX drawing examples at</span>
+<span class="sd">    https://networkx.org/documentation/latest/auto_examples/index.html</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    draw</span>
+<span class="sd">    draw_networkx</span>
+<span class="sd">    draw_networkx_nodes</span>
+<span class="sd">    draw_networkx_edges</span>
+<span class="sd">    draw_networkx_labels</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+    <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">edge_labels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="p">{(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span> <span class="n">d</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">)}</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="n">edge_labels</span>
+        <span class="c1"># Informative exception for multiedges</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">labels</span><span class="p">))</span>  <span class="c1"># ensures no edge key provided</span>
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span>
+                <span class="s2">&quot;draw_networkx_edge_labels does not support multiedges.&quot;</span>
+            <span class="p">)</span> <span class="kn">from</span> <span class="nn">err</span>
+        <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+    <span class="n">text_items</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">),</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">labels</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">)</span> <span class="o">=</span> <span class="n">pos</span><span class="p">[</span><span class="n">n1</span><span class="p">]</span>
+        <span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">)</span> <span class="o">=</span> <span class="n">pos</span><span class="p">[</span><span class="n">n2</span><span class="p">]</span>
+        <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">x1</span> <span class="o">*</span> <span class="n">label_pos</span> <span class="o">+</span> <span class="n">x2</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">label_pos</span><span class="p">),</span>
+            <span class="n">y1</span> <span class="o">*</span> <span class="n">label_pos</span> <span class="o">+</span> <span class="n">y2</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">label_pos</span><span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">rotate</span><span class="p">:</span>
+            <span class="c1"># in degrees</span>
+            <span class="n">angle</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">y2</span> <span class="o">-</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span> <span class="o">-</span> <span class="n">x1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">*</span> <span class="mi">360</span>
+            <span class="c1"># make label orientation &quot;right-side-up&quot;</span>
+            <span class="k">if</span> <span class="n">angle</span> <span class="o">&gt;</span> <span class="mi">90</span><span class="p">:</span>
+                <span class="n">angle</span> <span class="o">-=</span> <span class="mi">180</span>
+            <span class="k">if</span> <span class="n">angle</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mi">90</span><span class="p">:</span>
+                <span class="n">angle</span> <span class="o">+=</span> <span class="mi">180</span>
+            <span class="c1"># transform data coordinate angle to screen coordinate angle</span>
+            <span class="n">xy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+            <span class="n">trans_angle</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">transData</span><span class="o">.</span><span class="n">transform_angles</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="n">angle</span><span class="p">,)),</span> <span class="n">xy</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+            <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">trans_angle</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="c1"># use default box of white with white border</span>
+        <span class="k">if</span> <span class="n">bbox</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">bbox</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">boxstyle</span><span class="o">=</span><span class="s2">&quot;round&quot;</span><span class="p">,</span> <span class="n">ec</span><span class="o">=</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="n">fc</span><span class="o">=</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>  <span class="c1"># this makes &quot;1&quot; and 1 labeled the same</span>
+
+        <span class="n">t</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span>
+            <span class="n">x</span><span class="p">,</span>
+            <span class="n">y</span><span class="p">,</span>
+            <span class="n">label</span><span class="p">,</span>
+            <span class="n">size</span><span class="o">=</span><span class="n">font_size</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="n">font_color</span><span class="p">,</span>
+            <span class="n">family</span><span class="o">=</span><span class="n">font_family</span><span class="p">,</span>
+            <span class="n">weight</span><span class="o">=</span><span class="n">font_weight</span><span class="p">,</span>
+            <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span>
+            <span class="n">horizontalalignment</span><span class="o">=</span><span class="n">horizontalalignment</span><span class="p">,</span>
+            <span class="n">verticalalignment</span><span class="o">=</span><span class="n">verticalalignment</span><span class="p">,</span>
+            <span class="n">rotation</span><span class="o">=</span><span class="n">trans_angle</span><span class="p">,</span>
+            <span class="n">transform</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">transData</span><span class="p">,</span>
+            <span class="n">bbox</span><span class="o">=</span><span class="n">bbox</span><span class="p">,</span>
+            <span class="n">zorder</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">clip_on</span><span class="o">=</span><span class="n">clip_on</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">text_items</span><span class="p">[(</span><span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">)]</span> <span class="o">=</span> <span class="n">t</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span>
+        <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span>
+        <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span>
+        <span class="n">bottom</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">left</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">labelbottom</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">labelleft</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">text_items</span></div>
+
+
+<div class="viewcode-block" id="draw_circular"><a class="viewcode-back" href="../../../reference/generated/networkx.drawing.nx_pylab.draw_circular.html#networkx.drawing.nx_pylab.draw_circular">[docs]</a><span class="k">def</span> <span class="nf">draw_circular</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Draw the graph `G` with a circular layout.</span>
+
+<span class="sd">    This is a convenience function equivalent to::</span>
+
+<span class="sd">        nx.draw(G, pos=nx.circular_layout(G), **kwargs)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : graph</span>
+<span class="sd">        A networkx graph</span>
+
+<span class="sd">    kwargs : optional keywords</span>
+<span class="sd">        See `draw_networkx` for a description of optional keywords.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The layout is computed each time this function is called. For</span>
+<span class="sd">    repeated drawing it is much more efficient to call</span>
+<span class="sd">    `~networkx.drawing.layout.circular_layout` directly and reuse the result::</span>
+
+<span class="sd">        &gt;&gt;&gt; G = nx.complete_graph(5)</span>
+<span class="sd">        &gt;&gt;&gt; pos = nx.circular_layout(G)</span>
+<span class="sd">        &gt;&gt;&gt; nx.draw(G, pos=pos)  # Draw the original graph</span>
+<span class="sd">        &gt;&gt;&gt; # Draw a subgraph, reusing the same node positions</span>
+<span class="sd">        &gt;&gt;&gt; nx.draw(G.subgraph([0, 1, 2]), pos=pos, node_color=&quot;red&quot;)</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :func:`~networkx.drawing.layout.circular_layout`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">draw</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">circular_layout</span><span class="p">(</span><span class="n">G</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="draw_kamada_kawai"><a class="viewcode-back" href="../../../reference/generated/networkx.drawing.nx_pylab.draw_kamada_kawai.html#networkx.drawing.nx_pylab.draw_kamada_kawai">[docs]</a><span class="k">def</span> <span class="nf">draw_kamada_kawai</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Draw the graph `G` with a Kamada-Kawai force-directed layout.</span>
+
+<span class="sd">    This is a convenience function equivalent to::</span>
+
+<span class="sd">        nx.draw(G, pos=nx.kamada_kawai_layout(G), **kwargs)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : graph</span>
+<span class="sd">        A networkx graph</span>
+
+<span class="sd">    kwargs : optional keywords</span>
+<span class="sd">        See `draw_networkx` for a description of optional keywords.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The layout is computed each time this function is called.</span>
+<span class="sd">    For repeated drawing it is much more efficient to call</span>
+<span class="sd">    `~networkx.drawing.layout.kamada_kawai_layout` directly and reuse the</span>
+<span class="sd">    result::</span>
+
+<span class="sd">        &gt;&gt;&gt; G = nx.complete_graph(5)</span>
+<span class="sd">        &gt;&gt;&gt; pos = nx.kamada_kawai_layout(G)</span>
+<span class="sd">        &gt;&gt;&gt; nx.draw(G, pos=pos)  # Draw the original graph</span>
+<span class="sd">        &gt;&gt;&gt; # Draw a subgraph, reusing the same node positions</span>
+<span class="sd">        &gt;&gt;&gt; nx.draw(G.subgraph([0, 1, 2]), pos=pos, node_color=&quot;red&quot;)</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :func:`~networkx.drawing.layout.kamada_kawai_layout`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">draw</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">kamada_kawai_layout</span><span class="p">(</span><span class="n">G</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="draw_random"><a class="viewcode-back" href="../../../reference/generated/networkx.drawing.nx_pylab.draw_random.html#networkx.drawing.nx_pylab.draw_random">[docs]</a><span class="k">def</span> <span class="nf">draw_random</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Draw the graph `G` with a random layout.</span>
+
+<span class="sd">    This is a convenience function equivalent to::</span>
+
+<span class="sd">        nx.draw(G, pos=nx.random_layout(G), **kwargs)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : graph</span>
+<span class="sd">        A networkx graph</span>
+
+<span class="sd">    kwargs : optional keywords</span>
+<span class="sd">        See `draw_networkx` for a description of optional keywords.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The layout is computed each time this function is called.</span>
+<span class="sd">    For repeated drawing it is much more efficient to call</span>
+<span class="sd">    `~networkx.drawing.layout.random_layout` directly and reuse the result::</span>
+
+<span class="sd">        &gt;&gt;&gt; G = nx.complete_graph(5)</span>
+<span class="sd">        &gt;&gt;&gt; pos = nx.random_layout(G)</span>
+<span class="sd">        &gt;&gt;&gt; nx.draw(G, pos=pos)  # Draw the original graph</span>
+<span class="sd">        &gt;&gt;&gt; # Draw a subgraph, reusing the same node positions</span>
+<span class="sd">        &gt;&gt;&gt; nx.draw(G.subgraph([0, 1, 2]), pos=pos, node_color=&quot;red&quot;)</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :func:`~networkx.drawing.layout.random_layout`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">draw</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">random_layout</span><span class="p">(</span><span class="n">G</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="draw_spectral"><a class="viewcode-back" href="../../../reference/generated/networkx.drawing.nx_pylab.draw_spectral.html#networkx.drawing.nx_pylab.draw_spectral">[docs]</a><span class="k">def</span> <span class="nf">draw_spectral</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Draw the graph `G` with a spectral 2D layout.</span>
+
+<span class="sd">    This is a convenience function equivalent to::</span>
+
+<span class="sd">        nx.draw(G, pos=nx.spectral_layout(G), **kwargs)</span>
+
+<span class="sd">    For more information about how node positions are determined, see</span>
+<span class="sd">    `~networkx.drawing.layout.spectral_layout`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : graph</span>
+<span class="sd">        A networkx graph</span>
+
+<span class="sd">    kwargs : optional keywords</span>
+<span class="sd">        See `draw_networkx` for a description of optional keywords.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The layout is computed each time this function is called.</span>
+<span class="sd">    For repeated drawing it is much more efficient to call</span>
+<span class="sd">    `~networkx.drawing.layout.spectral_layout` directly and reuse the result::</span>
+
+<span class="sd">        &gt;&gt;&gt; G = nx.complete_graph(5)</span>
+<span class="sd">        &gt;&gt;&gt; pos = nx.spectral_layout(G)</span>
+<span class="sd">        &gt;&gt;&gt; nx.draw(G, pos=pos)  # Draw the original graph</span>
+<span class="sd">        &gt;&gt;&gt; # Draw a subgraph, reusing the same node positions</span>
+<span class="sd">        &gt;&gt;&gt; nx.draw(G.subgraph([0, 1, 2]), pos=pos, node_color=&quot;red&quot;)</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :func:`~networkx.drawing.layout.spectral_layout`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">draw</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">spectral_layout</span><span class="p">(</span><span class="n">G</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="draw_spring"><a class="viewcode-back" href="../../../reference/generated/networkx.drawing.nx_pylab.draw_spring.html#networkx.drawing.nx_pylab.draw_spring">[docs]</a><span class="k">def</span> <span class="nf">draw_spring</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Draw the graph `G` with a spring layout.</span>
+
+<span class="sd">    This is a convenience function equivalent to::</span>
+
+<span class="sd">        nx.draw(G, pos=nx.spring_layout(G), **kwargs)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : graph</span>
+<span class="sd">        A networkx graph</span>
+
+<span class="sd">    kwargs : optional keywords</span>
+<span class="sd">        See `draw_networkx` for a description of optional keywords.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    `~networkx.drawing.layout.spring_layout` is also the default layout for</span>
+<span class="sd">    `draw`, so this function is equivalent to `draw`.</span>
+
+<span class="sd">    The layout is computed each time this function is called.</span>
+<span class="sd">    For repeated drawing it is much more efficient to call</span>
+<span class="sd">    `~networkx.drawing.layout.spring_layout` directly and reuse the result::</span>
+
+<span class="sd">        &gt;&gt;&gt; G = nx.complete_graph(5)</span>
+<span class="sd">        &gt;&gt;&gt; pos = nx.spring_layout(G)</span>
+<span class="sd">        &gt;&gt;&gt; nx.draw(G, pos=pos)  # Draw the original graph</span>
+<span class="sd">        &gt;&gt;&gt; # Draw a subgraph, reusing the same node positions</span>
+<span class="sd">        &gt;&gt;&gt; nx.draw(G.subgraph([0, 1, 2]), pos=pos, node_color=&quot;red&quot;)</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    draw</span>
+<span class="sd">    :func:`~networkx.drawing.layout.spring_layout`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">draw</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">spring_layout</span><span class="p">(</span><span class="n">G</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="draw_shell"><a class="viewcode-back" href="../../../reference/generated/networkx.drawing.nx_pylab.draw_shell.html#networkx.drawing.nx_pylab.draw_shell">[docs]</a><span class="k">def</span> <span class="nf">draw_shell</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">nlist</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Draw networkx graph `G` with shell layout.</span>
+
+<span class="sd">    This is a convenience function equivalent to::</span>
+
+<span class="sd">        nx.draw(G, pos=nx.shell_layout(G, nlist=nlist), **kwargs)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : graph</span>
+<span class="sd">        A networkx graph</span>
+
+<span class="sd">    nlist : list of list of nodes, optional</span>
+<span class="sd">        A list containing lists of nodes representing the shells.</span>
+<span class="sd">        Default is `None`, meaning all nodes are in a single shell.</span>
+<span class="sd">        See `~networkx.drawing.layout.shell_layout` for details.</span>
+
+<span class="sd">    kwargs : optional keywords</span>
+<span class="sd">        See `draw_networkx` for a description of optional keywords.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The layout is computed each time this function is called.</span>
+<span class="sd">    For repeated drawing it is much more efficient to call</span>
+<span class="sd">    `~networkx.drawing.layout.shell_layout` directly and reuse the result::</span>
+
+<span class="sd">        &gt;&gt;&gt; G = nx.complete_graph(5)</span>
+<span class="sd">        &gt;&gt;&gt; pos = nx.shell_layout(G)</span>
+<span class="sd">        &gt;&gt;&gt; nx.draw(G, pos=pos)  # Draw the original graph</span>
+<span class="sd">        &gt;&gt;&gt; # Draw a subgraph, reusing the same node positions</span>
+<span class="sd">        &gt;&gt;&gt; nx.draw(G.subgraph([0, 1, 2]), pos=pos, node_color=&quot;red&quot;)</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :func:`~networkx.drawing.layout.shell_layout`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">draw</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">shell_layout</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">nlist</span><span class="o">=</span><span class="n">nlist</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="draw_planar"><a class="viewcode-back" href="../../../reference/generated/networkx.drawing.nx_pylab.draw_planar.html#networkx.drawing.nx_pylab.draw_planar">[docs]</a><span class="k">def</span> <span class="nf">draw_planar</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Draw a planar networkx graph `G` with planar layout.</span>
+
+<span class="sd">    This is a convenience function equivalent to::</span>
+
+<span class="sd">        nx.draw(G, pos=nx.planar_layout(G), **kwargs)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : graph</span>
+<span class="sd">        A planar networkx graph</span>
+
+<span class="sd">    kwargs : optional keywords</span>
+<span class="sd">        See `draw_networkx` for a description of optional keywords.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NetworkXException</span>
+<span class="sd">        When `G` is not planar</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The layout is computed each time this function is called.</span>
+<span class="sd">    For repeated drawing it is much more efficient to call</span>
+<span class="sd">    `~networkx.drawing.layout.planar_layout` directly and reuse the result::</span>
+
+<span class="sd">        &gt;&gt;&gt; G = nx.path_graph(5)</span>
+<span class="sd">        &gt;&gt;&gt; pos = nx.planar_layout(G)</span>
+<span class="sd">        &gt;&gt;&gt; nx.draw(G, pos=pos)  # Draw the original graph</span>
+<span class="sd">        &gt;&gt;&gt; # Draw a subgraph, reusing the same node positions</span>
+<span class="sd">        &gt;&gt;&gt; nx.draw(G.subgraph([0, 1, 2]), pos=pos, node_color=&quot;red&quot;)</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :func:`~networkx.drawing.layout.planar_layout`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">draw</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">planar_layout</span><span class="p">(</span><span class="n">G</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">apply_alpha</span><span class="p">(</span><span class="n">colors</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">elem_list</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Apply an alpha (or list of alphas) to the colors provided.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    colors : color string or array of floats (default=&#39;r&#39;)</span>
+<span class="sd">        Color of element. Can be a single color format string,</span>
+<span class="sd">        or a sequence of colors with the same length as nodelist.</span>
+<span class="sd">        If numeric values are specified they will be mapped to</span>
+<span class="sd">        colors using the cmap and vmin,vmax parameters.  See</span>
+<span class="sd">        matplotlib.scatter for more details.</span>
+
+<span class="sd">    alpha : float or array of floats</span>
+<span class="sd">        Alpha values for elements. This can be a single alpha value, in</span>
+<span class="sd">        which case it will be applied to all the elements of color. Otherwise,</span>
+<span class="sd">        if it is an array, the elements of alpha will be applied to the colors</span>
+<span class="sd">        in order (cycling through alpha multiple times if necessary).</span>
+
+<span class="sd">    elem_list : array of networkx objects</span>
+<span class="sd">        The list of elements which are being colored. These could be nodes,</span>
+<span class="sd">        edges or labels.</span>
+
+<span class="sd">    cmap : matplotlib colormap</span>
+<span class="sd">        Color map for use if colors is a list of floats corresponding to points</span>
+<span class="sd">        on a color mapping.</span>
+
+<span class="sd">    vmin, vmax : float</span>
+<span class="sd">        Minimum and maximum values for normalizing colors if a colormap is used</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+
+<span class="sd">    rgba_colors : numpy ndarray</span>
+<span class="sd">        Array containing RGBA format values for each of the node colours.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">cycle</span><span class="p">,</span> <span class="n">islice</span>
+
+    <span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">mpl</span>
+    <span class="kn">import</span> <span class="nn">matplotlib.cm</span>  <span class="c1"># call as mpl.cm</span>
+    <span class="kn">import</span> <span class="nn">matplotlib.colors</span>  <span class="c1"># call as mpl.colors</span>
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+    <span class="c1"># If we have been provided with a list of numbers as long as elem_list,</span>
+    <span class="c1"># apply the color mapping.</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">colors</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">elem_list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">colors</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Number</span><span class="p">):</span>
+        <span class="n">mapper</span> <span class="o">=</span> <span class="n">mpl</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">ScalarMappable</span><span class="p">(</span><span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">)</span>
+        <span class="n">mapper</span><span class="o">.</span><span class="n">set_clim</span><span class="p">(</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">)</span>
+        <span class="n">rgba_colors</span> <span class="o">=</span> <span class="n">mapper</span><span class="o">.</span><span class="n">to_rgba</span><span class="p">(</span><span class="n">colors</span><span class="p">)</span>
+    <span class="c1"># Otherwise, convert colors to matplotlib&#39;s RGB using the colorConverter</span>
+    <span class="c1"># object.  These are converted to numpy ndarrays to be consistent with the</span>
+    <span class="c1"># to_rgba method of ScalarMappable.</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">rgba_colors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">mpl</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">colorConverter</span><span class="o">.</span><span class="n">to_rgba</span><span class="p">(</span><span class="n">colors</span><span class="p">)])</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">rgba_colors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">mpl</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">colorConverter</span><span class="o">.</span><span class="n">to_rgba</span><span class="p">(</span><span class="n">color</span><span class="p">)</span> <span class="k">for</span> <span class="n">color</span> <span class="ow">in</span> <span class="n">colors</span><span class="p">]</span>
+            <span class="p">)</span>
+    <span class="c1"># Set the final column of the rgba_colors to have the relevant alpha values</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># If alpha is longer than the number of colors, resize to the number of</span>
+        <span class="c1"># elements.  Also, if rgba_colors.size (the number of elements of</span>
+        <span class="c1"># rgba_colors) is the same as the number of elements, resize the array,</span>
+        <span class="c1"># to avoid it being interpreted as a colormap by scatter()</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">rgba_colors</span><span class="p">)</span> <span class="ow">or</span> <span class="n">rgba_colors</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">elem_list</span><span class="p">):</span>
+            <span class="n">rgba_colors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">rgba_colors</span><span class="p">,</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">elem_list</span><span class="p">),</span> <span class="mi">4</span><span class="p">))</span>
+            <span class="n">rgba_colors</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">rgba_colors</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+            <span class="n">rgba_colors</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">rgba_colors</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">rgba_colors</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">rgba_colors</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+        <span class="n">rgba_colors</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">islice</span><span class="p">(</span><span class="n">cycle</span><span class="p">(</span><span class="n">alpha</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">rgba_colors</span><span class="p">)))</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="n">rgba_colors</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">alpha</span>
+    <span class="k">return</span> <span class="n">rgba_colors</span>
+</pre></div>
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

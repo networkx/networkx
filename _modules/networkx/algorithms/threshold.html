@@ -1,0 +1,1516 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>networkx.algorithms.threshold &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/algorithms/threshold';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/algorithms/threshold.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../../../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../../../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <h1>Source code for networkx.algorithms.threshold</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Threshold Graphs - Creation, manipulation and identification.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">sqrt</span>
+
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">from</span> <span class="nn">networkx.utils</span> <span class="kn">import</span> <span class="n">py_random_state</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;is_threshold_graph&quot;</span><span class="p">,</span> <span class="s2">&quot;find_threshold_graph&quot;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="is_threshold_graph"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.threshold.is_threshold_graph.html#networkx.algorithms.threshold.is_threshold_graph">[docs]</a><span class="k">def</span> <span class="nf">is_threshold_graph</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns `True` if `G` is a threshold graph.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph instance</span>
+<span class="sd">        An instance of `Graph`, `DiGraph`, `MultiGraph` or `MultiDiGraph`</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bool</span>
+<span class="sd">        `True` if `G` is a threshold graph, `False` otherwise.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from networkx.algorithms.threshold import is_threshold_graph</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.path_graph(3)</span>
+<span class="sd">    &gt;&gt;&gt; is_threshold_graph(G)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.barbell_graph(3, 3)</span>
+<span class="sd">    &gt;&gt;&gt; is_threshold_graph(G)</span>
+<span class="sd">    False</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Threshold graphs: https://en.wikipedia.org/wiki/Threshold_graph</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">is_threshold_sequence</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">d</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">degree</span><span class="p">()))</span></div>
+
+
+<span class="k">def</span> <span class="nf">is_threshold_sequence</span><span class="p">(</span><span class="n">degree_sequence</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns True if the sequence is a threshold degree seqeunce.</span>
+
+<span class="sd">    Uses the property that a threshold graph must be constructed by</span>
+<span class="sd">    adding either dominating or isolated nodes. Thus, it can be</span>
+<span class="sd">    deconstructed iteratively by removing a node of degree zero or a</span>
+<span class="sd">    node that connects to the remaining nodes.  If this deconstruction</span>
+<span class="sd">    failes then the sequence is not a threshold sequence.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ds</span> <span class="o">=</span> <span class="n">degree_sequence</span><span class="p">[:]</span>  <span class="c1"># get a copy so we don&#39;t destroy original</span>
+    <span class="n">ds</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+    <span class="k">while</span> <span class="n">ds</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># if isolated node</span>
+            <span class="n">ds</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># remove it</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">ds</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># is the largest degree node dominating?</span>
+            <span class="k">return</span> <span class="kc">False</span>  <span class="c1"># no, not a threshold degree sequence</span>
+        <span class="n">ds</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>  <span class="c1"># yes, largest is the dominating node</span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">ds</span><span class="p">]</span>  <span class="c1"># remove it and decrement all degrees</span>
+    <span class="k">return</span> <span class="kc">True</span>
+
+
+<span class="k">def</span> <span class="nf">creation_sequence</span><span class="p">(</span><span class="n">degree_sequence</span><span class="p">,</span> <span class="n">with_labels</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">compact</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Determines the creation sequence for the given threshold degree sequence.</span>
+
+<span class="sd">    The creation sequence is a list of single characters &#39;d&#39;</span>
+<span class="sd">    or &#39;i&#39;: &#39;d&#39; for dominating or &#39;i&#39; for isolated vertices.</span>
+<span class="sd">    Dominating vertices are connected to all vertices present when it</span>
+<span class="sd">    is added.  The first node added is by convention &#39;d&#39;.</span>
+<span class="sd">    This list can be converted to a string if desired using &quot;&quot;.join(cs)</span>
+
+<span class="sd">    If with_labels==True:</span>
+<span class="sd">    Returns a list of 2-tuples containing the vertex number</span>
+<span class="sd">    and a character &#39;d&#39; or &#39;i&#39; which describes the type of vertex.</span>
+
+<span class="sd">    If compact==True:</span>
+<span class="sd">    Returns the creation sequence in a compact form that is the number</span>
+<span class="sd">    of &#39;i&#39;s and &#39;d&#39;s alternating.</span>
+<span class="sd">    Examples:</span>
+<span class="sd">    [1,2,2,3] represents d,i,i,d,d,i,i,i</span>
+<span class="sd">    [3,1,2] represents d,d,d,i,d,d</span>
+
+<span class="sd">    Notice that the first number is the first vertex to be used for</span>
+<span class="sd">    construction and so is always &#39;d&#39;.</span>
+
+<span class="sd">    with_labels and compact cannot both be True.</span>
+
+<span class="sd">    Returns None if the sequence is not a threshold sequence</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">with_labels</span> <span class="ow">and</span> <span class="n">compact</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;compact sequences cannot be labeled&quot;</span><span class="p">)</span>
+
+    <span class="c1"># make an indexed copy</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">degree_sequence</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>  <span class="c1"># labeled degree seqeunce</span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="p">[[</span><span class="n">degree</span><span class="p">,</span> <span class="n">label</span><span class="p">]</span> <span class="k">for</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">degree</span><span class="p">)</span> <span class="ow">in</span> <span class="n">degree_sequence</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="p">[[</span><span class="n">d</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">degree_sequence</span><span class="p">)]</span>
+    <span class="n">ds</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+    <span class="n">cs</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># creation sequence</span>
+    <span class="k">while</span> <span class="n">ds</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ds</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># isolated node</span>
+            <span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># make sure we start with a d</span>
+                <span class="n">cs</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s2">&quot;i&quot;</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">cs</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">))</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">ds</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># Not dominating node</span>
+            <span class="k">return</span> <span class="kc">None</span>  <span class="c1"># not a threshold degree sequence</span>
+        <span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="n">cs</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">))</span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="p">[[</span><span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">ds</span><span class="p">]</span>  <span class="c1"># decrement due to removing node</span>
+
+    <span class="k">if</span> <span class="n">with_labels</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">cs</span>
+    <span class="k">if</span> <span class="n">compact</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">make_compact</span><span class="p">(</span><span class="n">cs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">cs</span><span class="p">]</span>  <span class="c1"># not labeled</span>
+
+
+<span class="k">def</span> <span class="nf">make_compact</span><span class="p">(</span><span class="n">creation_sequence</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the creation sequence in a compact form</span>
+<span class="sd">    that is the number of &#39;i&#39;s and &#39;d&#39;s alternating.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from networkx.algorithms.threshold import make_compact</span>
+<span class="sd">    &gt;&gt;&gt; make_compact([&quot;d&quot;, &quot;i&quot;, &quot;i&quot;, &quot;d&quot;, &quot;d&quot;, &quot;i&quot;, &quot;i&quot;, &quot;i&quot;])</span>
+<span class="sd">    [1, 2, 2, 3]</span>
+<span class="sd">    &gt;&gt;&gt; make_compact([&quot;d&quot;, &quot;d&quot;, &quot;d&quot;, &quot;i&quot;, &quot;d&quot;, &quot;d&quot;])</span>
+<span class="sd">    [3, 1, 2]</span>
+
+<span class="sd">    Notice that the first number is the first vertex</span>
+<span class="sd">    to be used for construction and so is always &#39;d&#39;.</span>
+
+<span class="sd">    Labeled creation sequences lose their labels in the</span>
+<span class="sd">    compact representation.</span>
+
+<span class="sd">    &gt;&gt;&gt; make_compact([3, 1, 2])</span>
+<span class="sd">    [3, 1, 2]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">first</span> <span class="o">=</span> <span class="n">creation_sequence</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>  <span class="c1"># creation sequence</span>
+        <span class="n">cs</span> <span class="o">=</span> <span class="n">creation_sequence</span><span class="p">[:]</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>  <span class="c1"># labeled creation sequence</span>
+        <span class="n">cs</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">creation_sequence</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>  <span class="c1"># compact creation sequence</span>
+        <span class="k">return</span> <span class="n">creation_sequence</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Not a valid creation sequence type&quot;</span><span class="p">)</span>
+
+    <span class="n">ccs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># count the run lengths of d&#39;s or i&#39;s.</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">cs</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">cs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">cs</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]:</span>
+            <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ccs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">count</span><span class="p">)</span>
+            <span class="n">count</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">ccs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">count</span><span class="p">)</span>  <span class="c1"># don&#39;t forget the last one</span>
+    <span class="k">return</span> <span class="n">ccs</span>
+
+
+<span class="k">def</span> <span class="nf">uncompact</span><span class="p">(</span><span class="n">creation_sequence</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Converts a compact creation sequence for a threshold</span>
+<span class="sd">    graph to a standard creation sequence (unlabeled).</span>
+<span class="sd">    If the creation_sequence is already standard, return it.</span>
+<span class="sd">    See creation_sequence.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">first</span> <span class="o">=</span> <span class="n">creation_sequence</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>  <span class="c1"># creation sequence</span>
+        <span class="k">return</span> <span class="n">creation_sequence</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>  <span class="c1"># labeled creation sequence</span>
+        <span class="k">return</span> <span class="n">creation_sequence</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>  <span class="c1"># compact creation sequence</span>
+        <span class="n">ccscopy</span> <span class="o">=</span> <span class="n">creation_sequence</span><span class="p">[:]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Not a valid creation sequence type&quot;</span><span class="p">)</span>
+    <span class="n">cs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">while</span> <span class="n">ccscopy</span><span class="p">:</span>
+        <span class="n">cs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">ccscopy</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="p">[</span><span class="s2">&quot;d&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">ccscopy</span><span class="p">:</span>
+            <span class="n">cs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">ccscopy</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="p">[</span><span class="s2">&quot;i&quot;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">cs</span>
+
+
+<span class="k">def</span> <span class="nf">creation_sequence_to_weights</span><span class="p">(</span><span class="n">creation_sequence</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a list of node weights which create the threshold</span>
+<span class="sd">    graph designated by the creation sequence.  The weights</span>
+<span class="sd">    are scaled so that the threshold is 1.0.  The order of the</span>
+<span class="sd">    nodes is the same as that in the creation sequence.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Turn input sequence into a labeled creation sequence</span>
+    <span class="n">first</span> <span class="o">=</span> <span class="n">creation_sequence</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>  <span class="c1"># creation sequence</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">creation_sequence</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">wseq</span> <span class="o">=</span> <span class="n">creation_sequence</span><span class="p">[:]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">wseq</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">creation_sequence</span><span class="p">)</span>  <span class="c1"># string like &#39;ddidid&#39;</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>  <span class="c1"># labeled creation sequence</span>
+        <span class="n">wseq</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">creation_sequence</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>  <span class="c1"># compact creation sequence</span>
+        <span class="n">wseq</span> <span class="o">=</span> <span class="n">uncompact</span><span class="p">(</span><span class="n">creation_sequence</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Not a valid creation sequence type&quot;</span><span class="p">)</span>
+    <span class="c1"># pass through twice--first backwards</span>
+    <span class="n">wseq</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">prev</span> <span class="o">=</span> <span class="s2">&quot;i&quot;</span>
+    <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">wseq</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">s</span> <span class="o">==</span> <span class="s2">&quot;i&quot;</span><span class="p">:</span>
+            <span class="n">wseq</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">w</span>
+            <span class="n">prev</span> <span class="o">=</span> <span class="n">s</span>
+        <span class="k">elif</span> <span class="n">prev</span> <span class="o">==</span> <span class="s2">&quot;i&quot;</span><span class="p">:</span>
+            <span class="n">prev</span> <span class="o">=</span> <span class="n">s</span>
+            <span class="n">w</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">wseq</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>  <span class="c1"># now pass through forwards</span>
+    <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">wseq</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">s</span> <span class="o">==</span> <span class="s2">&quot;d&quot;</span><span class="p">:</span>
+            <span class="n">wseq</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">w</span>
+            <span class="n">prev</span> <span class="o">=</span> <span class="n">s</span>
+        <span class="k">elif</span> <span class="n">prev</span> <span class="o">==</span> <span class="s2">&quot;d&quot;</span><span class="p">:</span>
+            <span class="n">prev</span> <span class="o">=</span> <span class="n">s</span>
+            <span class="n">w</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="c1"># Now scale weights</span>
+    <span class="k">if</span> <span class="n">prev</span> <span class="o">==</span> <span class="s2">&quot;d&quot;</span><span class="p">:</span>
+        <span class="n">w</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">wscale</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">w</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">ww</span> <span class="o">*</span> <span class="n">wscale</span> <span class="k">for</span> <span class="n">ww</span> <span class="ow">in</span> <span class="n">wseq</span><span class="p">]</span>
+    <span class="c1"># return wseq</span>
+
+
+<span class="k">def</span> <span class="nf">weights_to_creation_sequence</span><span class="p">(</span>
+    <span class="n">weights</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">with_labels</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">compact</span><span class="o">=</span><span class="kc">False</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a creation sequence for a threshold graph</span>
+<span class="sd">    determined by the weights and threshold given as input.</span>
+<span class="sd">    If the sum of two node weights is greater than the</span>
+<span class="sd">    threshold value, an edge is created between these nodes.</span>
+
+<span class="sd">    The creation sequence is a list of single characters &#39;d&#39;</span>
+<span class="sd">    or &#39;i&#39;: &#39;d&#39; for dominating or &#39;i&#39; for isolated vertices.</span>
+<span class="sd">    Dominating vertices are connected to all vertices present</span>
+<span class="sd">    when it is added.  The first node added is by convention &#39;d&#39;.</span>
+
+<span class="sd">    If with_labels==True:</span>
+<span class="sd">    Returns a list of 2-tuples containing the vertex number</span>
+<span class="sd">    and a character &#39;d&#39; or &#39;i&#39; which describes the type of vertex.</span>
+
+<span class="sd">    If compact==True:</span>
+<span class="sd">    Returns the creation sequence in a compact form that is the number</span>
+<span class="sd">    of &#39;i&#39;s and &#39;d&#39;s alternating.</span>
+<span class="sd">    Examples:</span>
+<span class="sd">    [1,2,2,3] represents d,i,i,d,d,i,i,i</span>
+<span class="sd">    [3,1,2] represents d,d,d,i,d,d</span>
+
+<span class="sd">    Notice that the first number is the first vertex to be used for</span>
+<span class="sd">    construction and so is always &#39;d&#39;.</span>
+
+<span class="sd">    with_labels and compact cannot both be True.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">with_labels</span> <span class="ow">and</span> <span class="n">compact</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;compact sequences cannot be labeled&quot;</span><span class="p">)</span>
+
+    <span class="c1"># make an indexed copy</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>  <span class="c1"># labeled weights</span>
+        <span class="n">wseq</span> <span class="o">=</span> <span class="p">[[</span><span class="n">w</span><span class="p">,</span> <span class="n">label</span><span class="p">]</span> <span class="k">for</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span> <span class="ow">in</span> <span class="n">weights</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">wseq</span> <span class="o">=</span> <span class="p">[[</span><span class="n">w</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">w</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">weights</span><span class="p">)]</span>
+    <span class="n">wseq</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+    <span class="n">cs</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># creation sequence</span>
+    <span class="n">cutoff</span> <span class="o">=</span> <span class="n">threshold</span> <span class="o">-</span> <span class="n">wseq</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">while</span> <span class="n">wseq</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">wseq</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">cutoff</span><span class="p">:</span>  <span class="c1"># isolated node</span>
+            <span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span> <span class="o">=</span> <span class="n">wseq</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">cs</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">label</span><span class="p">,</span> <span class="s2">&quot;i&quot;</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span> <span class="o">=</span> <span class="n">wseq</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="n">cs</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">label</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">))</span>
+            <span class="n">cutoff</span> <span class="o">=</span> <span class="n">threshold</span> <span class="o">-</span> <span class="n">wseq</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">wseq</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># make sure we start with a d</span>
+            <span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span> <span class="o">=</span> <span class="n">wseq</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="n">cs</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">label</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">))</span>
+    <span class="c1"># put in correct order</span>
+    <span class="n">cs</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">with_labels</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">cs</span>
+    <span class="k">if</span> <span class="n">compact</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">make_compact</span><span class="p">(</span><span class="n">cs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">cs</span><span class="p">]</span>  <span class="c1"># not labeled</span>
+
+
+<span class="c1"># Manipulating NetworkX.Graphs in context of threshold graphs</span>
+<span class="k">def</span> <span class="nf">threshold_graph</span><span class="p">(</span><span class="n">creation_sequence</span><span class="p">,</span> <span class="n">create_using</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a threshold graph from the creation sequence or compact</span>
+<span class="sd">    creation_sequence.</span>
+
+<span class="sd">    The input sequence can be a</span>
+
+<span class="sd">    creation sequence (e.g. [&#39;d&#39;,&#39;i&#39;,&#39;d&#39;,&#39;d&#39;,&#39;d&#39;,&#39;i&#39;])</span>
+<span class="sd">    labeled creation sequence (e.g. [(0,&#39;d&#39;),(2,&#39;d&#39;),(1,&#39;i&#39;)])</span>
+<span class="sd">    compact creation sequence (e.g. [2,1,1,2,0])</span>
+
+<span class="sd">    Use cs=creation_sequence(degree_sequence,labeled=True)</span>
+<span class="sd">    to convert a degree sequence to a creation sequence.</span>
+
+<span class="sd">    Returns None if the sequence is not valid</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Turn input sequence into a labeled creation sequence</span>
+    <span class="n">first</span> <span class="o">=</span> <span class="n">creation_sequence</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>  <span class="c1"># creation sequence</span>
+        <span class="n">ci</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">enumerate</span><span class="p">(</span><span class="n">creation_sequence</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>  <span class="c1"># labeled creation sequence</span>
+        <span class="n">ci</span> <span class="o">=</span> <span class="n">creation_sequence</span><span class="p">[:]</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>  <span class="c1"># compact creation sequence</span>
+        <span class="n">cs</span> <span class="o">=</span> <span class="n">uncompact</span><span class="p">(</span><span class="n">creation_sequence</span><span class="p">)</span>
+        <span class="n">ci</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">enumerate</span><span class="p">(</span><span class="n">cs</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;not a valid creation sequence type&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">empty_graph</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">create_using</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;Directed Graph not supported&quot;</span><span class="p">)</span>
+
+    <span class="n">G</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Threshold Graph&quot;</span>
+
+    <span class="c1"># add nodes and edges</span>
+    <span class="c1"># if type is &#39;i&#39; just add nodea</span>
+    <span class="c1"># if type is a d connect to everything previous</span>
+    <span class="k">while</span> <span class="n">ci</span><span class="p">:</span>
+        <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">node_type</span><span class="p">)</span> <span class="o">=</span> <span class="n">ci</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">node_type</span> <span class="o">==</span> <span class="s2">&quot;d&quot;</span><span class="p">:</span>  <span class="c1"># dominating type, connect to all existing nodes</span>
+            <span class="c1"># We use `for u in list(G):` instead of</span>
+            <span class="c1"># `for u in G:` because we edit the graph `G` in</span>
+            <span class="c1"># the loop. Hence using an iterator will result in</span>
+            <span class="c1"># `RuntimeError: dictionary changed size during iteration`</span>
+            <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+                <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">G</span>
+
+
+<span class="k">def</span> <span class="nf">find_alternating_4_cycle</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns False if there aren&#39;t any alternating 4 cycles.</span>
+<span class="sd">    Otherwise returns the cycle as [a,b,c,d] where (a,b)</span>
+<span class="sd">    and (c,d) are edges and (a,c) and (b,d) are not.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">G</span><span class="o">.</span><span class="n">has_edge</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span> <span class="ow">and</span> <span class="n">u</span> <span class="o">!=</span> <span class="n">w</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="n">w</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">G</span><span class="o">.</span><span class="n">has_edge</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="ow">and</span> <span class="n">v</span> <span class="o">!=</span> <span class="n">x</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="p">[</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">x</span><span class="p">]</span>
+    <span class="k">return</span> <span class="kc">False</span>
+
+
+<div class="viewcode-block" id="find_threshold_graph"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.threshold.find_threshold_graph.html#networkx.algorithms.threshold.find_threshold_graph">[docs]</a><span class="k">def</span> <span class="nf">find_threshold_graph</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">create_using</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a threshold subgraph that is close to largest in `G`.</span>
+
+<span class="sd">    The threshold graph will contain the largest degree node in G.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph instance</span>
+<span class="sd">        An instance of `Graph`, or `MultiDiGraph`</span>
+<span class="sd">    create_using : NetworkX graph class or `None` (default), optional</span>
+<span class="sd">        Type of graph to use when constructing the threshold graph.</span>
+<span class="sd">        If `None`, infer the appropriate graph type from the input.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    graph :</span>
+<span class="sd">        A graph instance representing the threshold graph</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from networkx.algorithms.threshold import find_threshold_graph</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.barbell_graph(3, 3)</span>
+<span class="sd">    &gt;&gt;&gt; T = find_threshold_graph(G)</span>
+<span class="sd">    &gt;&gt;&gt; T.nodes # may vary</span>
+<span class="sd">    NodeView((7, 8, 5, 6))</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Threshold graphs: https://en.wikipedia.org/wiki/Threshold_graph</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">threshold_graph</span><span class="p">(</span><span class="n">find_creation_sequence</span><span class="p">(</span><span class="n">G</span><span class="p">),</span> <span class="n">create_using</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">find_creation_sequence</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Find a threshold subgraph that is close to largest in G.</span>
+<span class="sd">    Returns the labeled creation sequence of that threshold graph.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1"># get a local pointer to the working part of the graph</span>
+    <span class="n">H</span> <span class="o">=</span> <span class="n">G</span>
+    <span class="k">while</span> <span class="n">H</span><span class="o">.</span><span class="n">order</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1"># get new degree sequence on subgraph</span>
+        <span class="n">dsdict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">H</span><span class="o">.</span><span class="n">degree</span><span class="p">())</span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="p">[(</span><span class="n">d</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dsdict</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
+        <span class="n">ds</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="c1"># Update threshold graph nodes</span>
+        <span class="k">if</span> <span class="n">ds</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># all are isolated</span>
+            <span class="n">cs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">dsdict</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;i&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;d&quot;</span><span class="p">]))</span>
+            <span class="k">break</span>  <span class="c1"># Done!</span>
+        <span class="c1"># pull off isolated nodes</span>
+        <span class="k">while</span> <span class="n">ds</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">iso</span><span class="p">)</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">cs</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">iso</span><span class="p">,</span> <span class="s2">&quot;i&quot;</span><span class="p">))</span>
+        <span class="c1"># find new biggest node</span>
+        <span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">bigv</span><span class="p">)</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="c1"># add edges of star to t_g</span>
+        <span class="n">cs</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">bigv</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">))</span>
+        <span class="c1"># form subgraph of neighbors of big node</span>
+        <span class="n">H</span> <span class="o">=</span> <span class="n">H</span><span class="o">.</span><span class="n">subgraph</span><span class="p">(</span><span class="n">H</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="n">bigv</span><span class="p">))</span>
+    <span class="n">cs</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">cs</span>
+
+
+<span class="c1"># Properties of Threshold Graphs</span>
+<span class="k">def</span> <span class="nf">triangles</span><span class="p">(</span><span class="n">creation_sequence</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute number of triangles in the threshold graph with the</span>
+<span class="sd">    given creation sequence.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># shortcut algorithm that doesn&#39;t require computing number</span>
+    <span class="c1"># of triangles at each node.</span>
+    <span class="n">cs</span> <span class="o">=</span> <span class="n">creation_sequence</span>  <span class="c1"># alias</span>
+    <span class="n">dr</span> <span class="o">=</span> <span class="n">cs</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;d&quot;</span><span class="p">)</span>  <span class="c1"># number of d&#39;s in sequence</span>
+    <span class="n">ntri</span> <span class="o">=</span> <span class="n">dr</span> <span class="o">*</span> <span class="p">(</span><span class="n">dr</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">dr</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="mi">6</span>  <span class="c1"># number of triangles in clique of nd d&#39;s</span>
+    <span class="c1"># now add dr choose 2 triangles for every &#39;i&#39; in sequence where</span>
+    <span class="c1"># dr is the number of d&#39;s to the right of the current i</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">typ</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">cs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">typ</span> <span class="o">==</span> <span class="s2">&quot;i&quot;</span><span class="p">:</span>
+            <span class="n">ntri</span> <span class="o">+=</span> <span class="n">dr</span> <span class="o">*</span> <span class="p">(</span><span class="n">dr</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dr</span> <span class="o">-=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">ntri</span>
+
+
+<span class="k">def</span> <span class="nf">triangle_sequence</span><span class="p">(</span><span class="n">creation_sequence</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return triangle sequence for the given threshold graph creation sequence.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cs</span> <span class="o">=</span> <span class="n">creation_sequence</span>
+    <span class="n">seq</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">dr</span> <span class="o">=</span> <span class="n">cs</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;d&quot;</span><span class="p">)</span>  <span class="c1"># number of d&#39;s to the right of the current pos</span>
+    <span class="n">dcur</span> <span class="o">=</span> <span class="p">(</span><span class="n">dr</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">dr</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>  <span class="c1"># number of triangles through a node of clique dr</span>
+    <span class="n">irun</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># number of i&#39;s in the last run</span>
+    <span class="n">drun</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># number of d&#39;s in the last run</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">sym</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">cs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">sym</span> <span class="o">==</span> <span class="s2">&quot;d&quot;</span><span class="p">:</span>
+            <span class="n">drun</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">tri</span> <span class="o">=</span> <span class="n">dcur</span> <span class="o">+</span> <span class="p">(</span><span class="n">dr</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">irun</span>  <span class="c1"># new triangles at this d</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># cs[i]=&quot;i&quot;:</span>
+            <span class="k">if</span> <span class="n">prevsym</span> <span class="o">==</span> <span class="s2">&quot;d&quot;</span><span class="p">:</span>  <span class="c1"># new string of i&#39;s</span>
+                <span class="n">dcur</span> <span class="o">+=</span> <span class="p">(</span><span class="n">dr</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">irun</span>  <span class="c1"># accumulate shared shortest paths</span>
+                <span class="n">irun</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># reset i run counter</span>
+                <span class="n">dr</span> <span class="o">-=</span> <span class="n">drun</span>  <span class="c1"># reduce number of d&#39;s to right</span>
+                <span class="n">drun</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># reset d run counter</span>
+            <span class="n">irun</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">tri</span> <span class="o">=</span> <span class="n">dr</span> <span class="o">*</span> <span class="p">(</span><span class="n">dr</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>  <span class="c1"># new triangles at this i</span>
+        <span class="n">seq</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tri</span><span class="p">)</span>
+        <span class="n">prevsym</span> <span class="o">=</span> <span class="n">sym</span>
+    <span class="k">return</span> <span class="n">seq</span>
+
+
+<span class="k">def</span> <span class="nf">cluster_sequence</span><span class="p">(</span><span class="n">creation_sequence</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return cluster sequence for the given threshold graph creation sequence.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">triseq</span> <span class="o">=</span> <span class="n">triangle_sequence</span><span class="p">(</span><span class="n">creation_sequence</span><span class="p">)</span>
+    <span class="n">degseq</span> <span class="o">=</span> <span class="n">degree_sequence</span><span class="p">(</span><span class="n">creation_sequence</span><span class="p">)</span>
+    <span class="n">cseq</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">deg</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">degseq</span><span class="p">):</span>
+        <span class="n">tri</span> <span class="o">=</span> <span class="n">triseq</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">deg</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># isolated vertex or single pair gets cc 0</span>
+            <span class="n">cseq</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">continue</span>
+        <span class="n">max_size</span> <span class="o">=</span> <span class="p">(</span><span class="n">deg</span> <span class="o">*</span> <span class="p">(</span><span class="n">deg</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">//</span> <span class="mi">2</span>
+        <span class="n">cseq</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tri</span> <span class="o">/</span> <span class="n">max_size</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">cseq</span>
+
+
+<span class="k">def</span> <span class="nf">degree_sequence</span><span class="p">(</span><span class="n">creation_sequence</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return degree sequence for the threshold graph with the given</span>
+<span class="sd">    creation sequence</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cs</span> <span class="o">=</span> <span class="n">creation_sequence</span>  <span class="c1"># alias</span>
+    <span class="n">seq</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">rd</span> <span class="o">=</span> <span class="n">cs</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;d&quot;</span><span class="p">)</span>  <span class="c1"># number of d to the right</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">sym</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">cs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">sym</span> <span class="o">==</span> <span class="s2">&quot;d&quot;</span><span class="p">:</span>
+            <span class="n">rd</span> <span class="o">-=</span> <span class="mi">1</span>
+            <span class="n">seq</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rd</span> <span class="o">+</span> <span class="n">i</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">seq</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rd</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">seq</span>
+
+
+<span class="k">def</span> <span class="nf">density</span><span class="p">(</span><span class="n">creation_sequence</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the density of the graph with this creation_sequence.</span>
+<span class="sd">    The density is the fraction of possible edges present.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">creation_sequence</span><span class="p">)</span>
+    <span class="n">two_size</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">degree_sequence</span><span class="p">(</span><span class="n">creation_sequence</span><span class="p">))</span>
+    <span class="n">two_possible</span> <span class="o">=</span> <span class="n">N</span> <span class="o">*</span> <span class="p">(</span><span class="n">N</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">den</span> <span class="o">=</span> <span class="n">two_size</span> <span class="o">/</span> <span class="n">two_possible</span>
+    <span class="k">return</span> <span class="n">den</span>
+
+
+<span class="k">def</span> <span class="nf">degree_correlation</span><span class="p">(</span><span class="n">creation_sequence</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the degree-degree correlation over all edges.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cs</span> <span class="o">=</span> <span class="n">creation_sequence</span>
+    <span class="n">s1</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># deg_i*deg_j</span>
+    <span class="n">s2</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># deg_i^2+deg_j^2</span>
+    <span class="n">s3</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># deg_i+deg_j</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># number of edges</span>
+    <span class="n">rd</span> <span class="o">=</span> <span class="n">cs</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;d&quot;</span><span class="p">)</span>  <span class="c1"># number of d nodes to the right</span>
+    <span class="n">rdi</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">sym</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">cs</span><span class="p">)</span> <span class="k">if</span> <span class="n">sym</span> <span class="o">==</span> <span class="s2">&quot;d&quot;</span><span class="p">]</span>  <span class="c1"># index of &quot;d&quot;s</span>
+    <span class="n">ds</span> <span class="o">=</span> <span class="n">degree_sequence</span><span class="p">(</span><span class="n">cs</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">sym</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">cs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">sym</span> <span class="o">==</span> <span class="s2">&quot;d&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">rdi</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Logic error in degree_correlation&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">rdi</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span>
+            <span class="n">rdi</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">degi</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">dj</span> <span class="ow">in</span> <span class="n">rdi</span><span class="p">:</span>
+            <span class="n">degj</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">dj</span><span class="p">]</span>
+            <span class="n">s1</span> <span class="o">+=</span> <span class="n">degj</span> <span class="o">*</span> <span class="n">degi</span>
+            <span class="n">s2</span> <span class="o">+=</span> <span class="n">degi</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">degj</span><span class="o">**</span><span class="mi">2</span>
+            <span class="n">s3</span> <span class="o">+=</span> <span class="n">degi</span> <span class="o">+</span> <span class="n">degj</span>
+            <span class="n">m</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">denom</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">m</span> <span class="o">*</span> <span class="n">s2</span> <span class="o">-</span> <span class="n">s3</span> <span class="o">*</span> <span class="n">s3</span>
+    <span class="n">numer</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">m</span> <span class="o">*</span> <span class="n">s1</span> <span class="o">-</span> <span class="n">s3</span> <span class="o">*</span> <span class="n">s3</span>
+    <span class="k">if</span> <span class="n">denom</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">numer</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">1</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Zero Denominator but Numerator is </span><span class="si">{</span><span class="n">numer</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">numer</span> <span class="o">/</span> <span class="n">denom</span>
+
+
+<span class="k">def</span> <span class="nf">shortest_path</span><span class="p">(</span><span class="n">creation_sequence</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Find the shortest path between u and v in a</span>
+<span class="sd">    threshold graph G with the given creation_sequence.</span>
+
+<span class="sd">    For an unlabeled creation_sequence, the vertices</span>
+<span class="sd">    u and v must be integers in (0,len(sequence)) referring</span>
+<span class="sd">    to the position of the desired vertices in the sequence.</span>
+
+<span class="sd">    For a labeled creation_sequence, u and v are labels of veritices.</span>
+
+<span class="sd">    Use cs=creation_sequence(degree_sequence,with_labels=True)</span>
+<span class="sd">    to convert a degree sequence to a creation sequence.</span>
+
+<span class="sd">    Returns a list of vertices from u to v.</span>
+<span class="sd">    Example: if they are neighbors, it returns [u,v]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Turn input sequence into a labeled creation sequence</span>
+    <span class="n">first</span> <span class="o">=</span> <span class="n">creation_sequence</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>  <span class="c1"># creation sequence</span>
+        <span class="n">cs</span> <span class="o">=</span> <span class="p">[(</span><span class="n">i</span><span class="p">,</span> <span class="n">creation_sequence</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">creation_sequence</span><span class="p">))]</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>  <span class="c1"># labeled creation sequence</span>
+        <span class="n">cs</span> <span class="o">=</span> <span class="n">creation_sequence</span><span class="p">[:]</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>  <span class="c1"># compact creation sequence</span>
+        <span class="n">ci</span> <span class="o">=</span> <span class="n">uncompact</span><span class="p">(</span><span class="n">creation_sequence</span><span class="p">)</span>
+        <span class="n">cs</span> <span class="o">=</span> <span class="p">[(</span><span class="n">i</span><span class="p">,</span> <span class="n">ci</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ci</span><span class="p">))]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Not a valid creation sequence type&quot;</span><span class="p">)</span>
+
+    <span class="n">verts</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">cs</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">v</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">verts</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Vertex </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2"> not in graph from creation_sequence&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">u</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">verts</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Vertex </span><span class="si">{</span><span class="n">u</span><span class="si">}</span><span class="s2"> not in graph from creation_sequence&quot;</span><span class="p">)</span>
+    <span class="c1"># Done checking</span>
+    <span class="k">if</span> <span class="n">u</span> <span class="o">==</span> <span class="n">v</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">u</span><span class="p">]</span>
+
+    <span class="n">uindex</span> <span class="o">=</span> <span class="n">verts</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>
+    <span class="n">vindex</span> <span class="o">=</span> <span class="n">verts</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+    <span class="n">bigind</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">uindex</span><span class="p">,</span> <span class="n">vindex</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">cs</span><span class="p">[</span><span class="n">bigind</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;d&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">]</span>
+    <span class="c1"># must be that cs[bigind][1]==&#39;i&#39;</span>
+    <span class="n">cs</span> <span class="o">=</span> <span class="n">cs</span><span class="p">[</span><span class="n">bigind</span><span class="p">:]</span>
+    <span class="k">while</span> <span class="n">cs</span><span class="p">:</span>
+        <span class="n">vert</span> <span class="o">=</span> <span class="n">cs</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">vert</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;d&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">u</span><span class="p">,</span> <span class="n">vert</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">v</span><span class="p">]</span>
+    <span class="c1"># All after u are type &#39;i&#39; so no connection</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+
+
+<span class="k">def</span> <span class="nf">shortest_path_length</span><span class="p">(</span><span class="n">creation_sequence</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the shortest path length from indicated node to</span>
+<span class="sd">    every other node for the threshold graph with the given</span>
+<span class="sd">    creation sequence.</span>
+<span class="sd">    Node is indicated by index i in creation_sequence unless</span>
+<span class="sd">    creation_sequence is labeled in which case, i is taken to</span>
+<span class="sd">    be the label of the node.</span>
+
+<span class="sd">    Paths lengths in threshold graphs are at most 2.</span>
+<span class="sd">    Length to unreachable nodes is set to -1.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Turn input sequence into a labeled creation sequence</span>
+    <span class="n">first</span> <span class="o">=</span> <span class="n">creation_sequence</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>  <span class="c1"># creation sequence</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">creation_sequence</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">cs</span> <span class="o">=</span> <span class="n">creation_sequence</span><span class="p">[:]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">creation_sequence</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>  <span class="c1"># labeled creation sequence</span>
+        <span class="n">cs</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">creation_sequence</span><span class="p">]</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">creation_sequence</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>  <span class="c1"># compact creation sequence</span>
+        <span class="n">cs</span> <span class="o">=</span> <span class="n">uncompact</span><span class="p">(</span><span class="n">creation_sequence</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Not a valid creation sequence type&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Compute</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">cs</span><span class="p">)</span>
+    <span class="n">spl</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">N</span>  <span class="c1"># length 2 to every node</span>
+    <span class="n">spl</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># except self which is 0</span>
+    <span class="c1"># 1 for all d&#39;s to the right</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">cs</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;d&quot;</span><span class="p">:</span>
+            <span class="n">spl</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">cs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;d&quot;</span><span class="p">:</span>  <span class="c1"># 1 for all nodes to the left</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+            <span class="n">spl</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="c1"># and -1 for any trailing i to indicate unreachable</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">cs</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;d&quot;</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="n">spl</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="k">return</span> <span class="n">spl</span>
+
+
+<span class="k">def</span> <span class="nf">betweenness_sequence</span><span class="p">(</span><span class="n">creation_sequence</span><span class="p">,</span> <span class="n">normalized</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return betweenness for the threshold graph with the given creation</span>
+<span class="sd">    sequence.  The result is unscaled.  To scale the values</span>
+<span class="sd">    to the iterval [0,1] divide by (n-1)*(n-2).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cs</span> <span class="o">=</span> <span class="n">creation_sequence</span>
+    <span class="n">seq</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># betweenness</span>
+    <span class="n">lastchar</span> <span class="o">=</span> <span class="s2">&quot;d&quot;</span>  <span class="c1"># first node is always a &#39;d&#39;</span>
+    <span class="n">dr</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">cs</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;d&quot;</span><span class="p">))</span>  <span class="c1"># number of d&#39;s to the right of curren pos</span>
+    <span class="n">irun</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># number of i&#39;s in the last run</span>
+    <span class="n">drun</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># number of d&#39;s in the last run</span>
+    <span class="n">dlast</span> <span class="o">=</span> <span class="mf">0.0</span>  <span class="c1"># betweenness of last d</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">cs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">c</span> <span class="o">==</span> <span class="s2">&quot;d&quot;</span><span class="p">:</span>  <span class="c1"># cs[i]==&quot;d&quot;:</span>
+            <span class="c1"># betweennees = amt shared with eariler d&#39;s and i&#39;s</span>
+            <span class="c1">#             + new isolated nodes covered</span>
+            <span class="c1">#             + new paths to all previous nodes</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="n">dlast</span> <span class="o">+</span> <span class="p">(</span><span class="n">irun</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">irun</span> <span class="o">/</span> <span class="n">dr</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">irun</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">-</span> <span class="n">drun</span> <span class="o">-</span> <span class="n">irun</span><span class="p">)</span> <span class="o">/</span> <span class="n">dr</span>
+            <span class="n">drun</span> <span class="o">+=</span> <span class="mi">1</span>  <span class="c1"># update counter</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># cs[i]=&quot;i&quot;:</span>
+            <span class="k">if</span> <span class="n">lastchar</span> <span class="o">==</span> <span class="s2">&quot;d&quot;</span><span class="p">:</span>  <span class="c1"># if this is a new run of i&#39;s</span>
+                <span class="n">dlast</span> <span class="o">=</span> <span class="n">b</span>  <span class="c1"># accumulate betweenness</span>
+                <span class="n">dr</span> <span class="o">-=</span> <span class="n">drun</span>  <span class="c1"># update number of d&#39;s to the right</span>
+                <span class="n">drun</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># reset d counter</span>
+                <span class="n">irun</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># reset i counter</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># isolated nodes have zero betweenness</span>
+            <span class="n">irun</span> <span class="o">+=</span> <span class="mi">1</span>  <span class="c1"># add another i to the run</span>
+        <span class="n">seq</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">b</span><span class="p">))</span>
+        <span class="n">lastchar</span> <span class="o">=</span> <span class="n">c</span>
+
+    <span class="c1"># normalize by the number of possible shortest paths</span>
+    <span class="k">if</span> <span class="n">normalized</span><span class="p">:</span>
+        <span class="n">order</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">cs</span><span class="p">)</span>
+        <span class="n">scale</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">((</span><span class="n">order</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">order</span> <span class="o">-</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="n">seq</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="o">*</span> <span class="n">scale</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">seq</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">seq</span>
+
+
+<span class="k">def</span> <span class="nf">eigenvectors</span><span class="p">(</span><span class="n">creation_sequence</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return a 2-tuple of Laplacian eigenvalues and eigenvectors</span>
+<span class="sd">    for the threshold network with creation_sequence.</span>
+<span class="sd">    The first value is a list of eigenvalues.</span>
+<span class="sd">    The second value is a list of eigenvectors.</span>
+<span class="sd">    The lists are in the same order so corresponding eigenvectors</span>
+<span class="sd">    and eigenvalues are in the same position in the two lists.</span>
+
+<span class="sd">    Notice that the order of the eigenvalues returned by eigenvalues(cs)</span>
+<span class="sd">    may not correspond to the order of these eigenvectors.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ccs</span> <span class="o">=</span> <span class="n">make_compact</span><span class="p">(</span><span class="n">creation_sequence</span><span class="p">)</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">ccs</span><span class="p">)</span>
+    <span class="n">vec</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">N</span>
+    <span class="n">val</span> <span class="o">=</span> <span class="n">vec</span><span class="p">[:]</span>
+    <span class="c1"># get number of type d nodes to the right (all for first node)</span>
+    <span class="n">dr</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">ccs</span><span class="p">[::</span><span class="mi">2</span><span class="p">])</span>
+
+    <span class="n">nn</span> <span class="o">=</span> <span class="n">ccs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">vec</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">N</span><span class="p">)]</span> <span class="o">*</span> <span class="n">N</span>
+    <span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">e</span> <span class="o">=</span> <span class="n">dr</span>
+    <span class="n">dr</span> <span class="o">-=</span> <span class="n">nn</span>
+    <span class="n">type_d</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">dd</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">while</span> <span class="n">dd</span> <span class="o">&lt;</span> <span class="n">nn</span><span class="p">:</span>
+        <span class="n">scale</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">dd</span> <span class="o">*</span> <span class="n">dd</span> <span class="o">+</span> <span class="n">i</span><span class="p">)</span>
+        <span class="n">vec</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="p">[</span><span class="o">-</span><span class="n">scale</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">dd</span> <span class="o">*</span> <span class="n">scale</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">N</span> <span class="o">-</span> <span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">val</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">e</span>
+        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">dd</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ccs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">vec</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">nn</span> <span class="ow">in</span> <span class="n">ccs</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+        <span class="n">scale</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">nn</span> <span class="o">*</span> <span class="n">i</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="n">nn</span><span class="p">))</span>
+        <span class="n">vec</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="p">[</span><span class="o">-</span><span class="n">nn</span> <span class="o">*</span> <span class="n">scale</span><span class="p">]</span> <span class="o">+</span> <span class="n">nn</span> <span class="o">*</span> <span class="p">[</span><span class="n">i</span> <span class="o">*</span> <span class="n">scale</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">N</span> <span class="o">-</span> <span class="n">i</span> <span class="o">-</span> <span class="n">nn</span><span class="p">)</span>
+        <span class="c1"># find eigenvalue</span>
+        <span class="n">type_d</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">type_d</span>
+        <span class="k">if</span> <span class="n">type_d</span><span class="p">:</span>
+            <span class="n">e</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="n">dr</span>
+            <span class="n">dr</span> <span class="o">-=</span> <span class="n">nn</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">e</span> <span class="o">=</span> <span class="n">dr</span>
+        <span class="n">val</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">e</span>
+        <span class="n">st</span> <span class="o">=</span> <span class="n">i</span>
+        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">dd</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">while</span> <span class="n">dd</span> <span class="o">&lt;</span> <span class="n">nn</span><span class="p">:</span>
+            <span class="n">scale</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">i</span> <span class="o">-</span> <span class="n">st</span> <span class="o">+</span> <span class="n">dd</span> <span class="o">*</span> <span class="n">dd</span><span class="p">)</span>
+            <span class="n">vec</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">st</span> <span class="o">+</span> <span class="p">(</span><span class="n">i</span> <span class="o">-</span> <span class="n">st</span><span class="p">)</span> <span class="o">*</span> <span class="p">[</span><span class="o">-</span><span class="n">scale</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">dd</span> <span class="o">*</span> <span class="n">scale</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">N</span> <span class="o">-</span> <span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">val</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">e</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">dd</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">vec</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">spectral_projection</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">eigenpairs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the coefficients of each eigenvector</span>
+<span class="sd">    in a projection of the vector u onto the normalized</span>
+<span class="sd">    eigenvectors which are contained in eigenpairs.</span>
+
+<span class="sd">    eigenpairs should be a list of two objects.  The</span>
+<span class="sd">    first is a list of eigenvalues and the second a list</span>
+<span class="sd">    of eigenvectors.  The eigenvectors should be lists.</span>
+
+<span class="sd">    There&#39;s not a lot of error checking on lengths of</span>
+<span class="sd">    arrays, etc. so be careful.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">coeff</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">evect</span> <span class="o">=</span> <span class="n">eigenpairs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">ev</span> <span class="ow">in</span> <span class="n">evect</span><span class="p">:</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">evv</span> <span class="o">*</span> <span class="n">uv</span> <span class="k">for</span> <span class="p">(</span><span class="n">evv</span><span class="p">,</span> <span class="n">uv</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ev</span><span class="p">,</span> <span class="n">u</span><span class="p">))</span>
+        <span class="n">coeff</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">coeff</span>
+
+
+<span class="k">def</span> <span class="nf">eigenvalues</span><span class="p">(</span><span class="n">creation_sequence</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return sequence of eigenvalues of the Laplacian of the threshold</span>
+<span class="sd">    graph for the given creation_sequence.</span>
+
+<span class="sd">    Based on the Ferrer&#39;s diagram method.  The spectrum is integral</span>
+<span class="sd">    and is the conjugate of the degree sequence.</span>
+
+<span class="sd">    See::</span>
+
+<span class="sd">      @Article{degree-merris-1994,</span>
+<span class="sd">       author = {Russel Merris},</span>
+<span class="sd">       title = {Degree maximal graphs are Laplacian integral},</span>
+<span class="sd">       journal = {Linear Algebra Appl.},</span>
+<span class="sd">       year = {1994},</span>
+<span class="sd">       volume = {199},</span>
+<span class="sd">       pages = {381--389},</span>
+<span class="sd">      }</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">degseq</span> <span class="o">=</span> <span class="n">degree_sequence</span><span class="p">(</span><span class="n">creation_sequence</span><span class="p">)</span>
+    <span class="n">degseq</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+    <span class="n">eiglist</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># zero is always one eigenvalue</span>
+    <span class="n">eig</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">row</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">degseq</span><span class="p">)</span>
+    <span class="n">bigdeg</span> <span class="o">=</span> <span class="n">degseq</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+    <span class="k">while</span> <span class="n">row</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">bigdeg</span> <span class="o">&lt;</span> <span class="n">row</span><span class="p">:</span>
+            <span class="n">eiglist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">eig</span><span class="p">)</span>
+            <span class="n">row</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">eig</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">degseq</span><span class="p">:</span>
+                <span class="n">bigdeg</span> <span class="o">=</span> <span class="n">degseq</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">bigdeg</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">return</span> <span class="n">eiglist</span>
+
+
+<span class="c1"># Threshold graph creation routines</span>
+
+
+<span class="nd">@py_random_state</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">random_threshold_sequence</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a random threshold sequence of size n.</span>
+<span class="sd">    A creation sequence is built by randomly choosing d&#39;s with</span>
+<span class="sd">    probabiliy p and i&#39;s with probability 1-p.</span>
+
+<span class="sd">    s=nx.random_threshold_sequence(10,0.5)</span>
+
+<span class="sd">    returns a threshold sequence of length 10 with equal</span>
+<span class="sd">    probably of an i or a d at each position.</span>
+
+<span class="sd">    A &quot;random&quot; threshold graph can be built with</span>
+
+<span class="sd">    G=nx.threshold_graph(s)</span>
+
+<span class="sd">    seed : integer, random_state, or None (default)</span>
+<span class="sd">        Indicator of random number generation state.</span>
+<span class="sd">        See :ref:`Randomness&lt;randomness&gt;`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">p</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;p must be in [0,1]&quot;</span><span class="p">)</span>
+
+    <span class="n">cs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;d&quot;</span><span class="p">]</span>  <span class="c1"># threshold sequences always start with a d</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">seed</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">p</span><span class="p">:</span>
+            <span class="n">cs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;d&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;i&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">cs</span>
+
+
+<span class="c1"># maybe *_d_threshold_sequence routines should</span>
+<span class="c1"># be (or be called from) a single routine with a more descriptive name</span>
+<span class="c1"># and a keyword parameter?</span>
+<span class="k">def</span> <span class="nf">right_d_threshold_sequence</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a skewed threshold graph with a given number</span>
+<span class="sd">    of vertices (n) and a given number of edges (m).</span>
+
+<span class="sd">    The routine returns an unlabeled creation sequence</span>
+<span class="sd">    for the threshold graph.</span>
+
+<span class="sd">    FIXME: describe algorithm</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;d&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;i&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># create sequence with n insolated nodes</span>
+
+    <span class="c1">#  m &lt;n : not enough edges, make disconnected</span>
+    <span class="k">if</span> <span class="n">m</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">:</span>
+        <span class="n">cs</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;d&quot;</span>
+        <span class="k">return</span> <span class="n">cs</span>
+
+    <span class="c1"># too many edges</span>
+    <span class="k">if</span> <span class="n">m</span> <span class="o">&gt;</span> <span class="n">n</span> <span class="o">*</span> <span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Too many edges for this many nodes.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># connected case m &gt;n-1</span>
+    <span class="n">ind</span> <span class="o">=</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="nb">sum</span> <span class="o">=</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="k">while</span> <span class="nb">sum</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">:</span>
+        <span class="n">cs</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;d&quot;</span>
+        <span class="n">ind</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="nb">sum</span> <span class="o">+=</span> <span class="n">ind</span>
+    <span class="n">ind</span> <span class="o">=</span> <span class="n">m</span> <span class="o">-</span> <span class="p">(</span><span class="nb">sum</span> <span class="o">-</span> <span class="n">ind</span><span class="p">)</span>
+    <span class="n">cs</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;d&quot;</span>
+    <span class="k">return</span> <span class="n">cs</span>
+
+
+<span class="k">def</span> <span class="nf">left_d_threshold_sequence</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a skewed threshold graph with a given number</span>
+<span class="sd">    of vertices (n) and a given number of edges (m).</span>
+
+<span class="sd">    The routine returns an unlabeled creation sequence</span>
+<span class="sd">    for the threshold graph.</span>
+
+<span class="sd">    FIXME: describe algorithm</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;d&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;i&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># create sequence with n insolated nodes</span>
+
+    <span class="c1">#  m &lt;n : not enough edges, make disconnected</span>
+    <span class="k">if</span> <span class="n">m</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">:</span>
+        <span class="n">cs</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;d&quot;</span>
+        <span class="k">return</span> <span class="n">cs</span>
+
+    <span class="c1"># too many edges</span>
+    <span class="k">if</span> <span class="n">m</span> <span class="o">&gt;</span> <span class="n">n</span> <span class="o">*</span> <span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Too many edges for this many nodes.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Connected case when M&gt;N-1</span>
+    <span class="n">cs</span><span class="p">[</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;d&quot;</span>
+    <span class="nb">sum</span> <span class="o">=</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="n">ind</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">while</span> <span class="nb">sum</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">:</span>
+        <span class="n">cs</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;d&quot;</span>
+        <span class="nb">sum</span> <span class="o">+=</span> <span class="n">ind</span>
+        <span class="n">ind</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="nb">sum</span> <span class="o">&gt;</span> <span class="n">m</span><span class="p">:</span>  <span class="c1"># be sure not to change the first vertex</span>
+        <span class="n">cs</span><span class="p">[</span><span class="nb">sum</span> <span class="o">-</span> <span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;i&quot;</span>
+    <span class="k">return</span> <span class="n">cs</span>
+
+
+<span class="nd">@py_random_state</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">swap_d</span><span class="p">(</span><span class="n">cs</span><span class="p">,</span> <span class="n">p_split</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">p_combine</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Perform a &quot;swap&quot; operation on a threshold sequence.</span>
+
+<span class="sd">    The swap preserves the number of nodes and edges</span>
+<span class="sd">    in the graph for the given sequence.</span>
+<span class="sd">    The resulting sequence is still a threshold sequence.</span>
+
+<span class="sd">    Perform one split and one combine operation on the</span>
+<span class="sd">    &#39;d&#39;s of a creation sequence for a threshold graph.</span>
+<span class="sd">    This operation maintains the number of nodes and edges</span>
+<span class="sd">    in the graph, but shifts the edges from node to node</span>
+<span class="sd">    maintaining the threshold quality of the graph.</span>
+
+<span class="sd">    seed : integer, random_state, or None (default)</span>
+<span class="sd">        Indicator of random number generation state.</span>
+<span class="sd">        See :ref:`Randomness&lt;randomness&gt;`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># preprocess the creation sequence</span>
+    <span class="n">dlist</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">node_type</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">cs</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="k">if</span> <span class="n">node_type</span> <span class="o">==</span> <span class="s2">&quot;d&quot;</span><span class="p">]</span>
+    <span class="c1"># split</span>
+    <span class="k">if</span> <span class="n">seed</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">p_split</span><span class="p">:</span>
+        <span class="n">choice</span> <span class="o">=</span> <span class="n">seed</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">dlist</span><span class="p">)</span>
+        <span class="n">split_to</span> <span class="o">=</span> <span class="n">seed</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">choice</span><span class="p">))</span>
+        <span class="n">flip_side</span> <span class="o">=</span> <span class="n">choice</span> <span class="o">-</span> <span class="n">split_to</span>
+        <span class="k">if</span> <span class="n">split_to</span> <span class="o">!=</span> <span class="n">flip_side</span> <span class="ow">and</span> <span class="n">cs</span><span class="p">[</span><span class="n">split_to</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;i&quot;</span> <span class="ow">and</span> <span class="n">cs</span><span class="p">[</span><span class="n">flip_side</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;i&quot;</span><span class="p">:</span>
+            <span class="n">cs</span><span class="p">[</span><span class="n">choice</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;i&quot;</span>
+            <span class="n">cs</span><span class="p">[</span><span class="n">split_to</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;d&quot;</span>
+            <span class="n">cs</span><span class="p">[</span><span class="n">flip_side</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;d&quot;</span>
+            <span class="n">dlist</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">choice</span><span class="p">)</span>
+            <span class="c1"># don&#39;t add or combine may reverse this action</span>
+            <span class="c1"># dlist.extend([split_to,flip_side])</span>
+    <span class="c1">#            print &gt;&gt;sys.stderr,&quot;split at %s to %s and %s&quot;%(choice,split_to,flip_side)</span>
+    <span class="c1"># combine</span>
+    <span class="k">if</span> <span class="n">seed</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">p_combine</span> <span class="ow">and</span> <span class="n">dlist</span><span class="p">:</span>
+        <span class="n">first_choice</span> <span class="o">=</span> <span class="n">seed</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">dlist</span><span class="p">)</span>
+        <span class="n">second_choice</span> <span class="o">=</span> <span class="n">seed</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">dlist</span><span class="p">)</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="n">first_choice</span> <span class="o">+</span> <span class="n">second_choice</span>
+        <span class="k">if</span> <span class="n">target</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">cs</span><span class="p">)</span> <span class="ow">or</span> <span class="n">cs</span><span class="p">[</span><span class="n">target</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;d&quot;</span> <span class="ow">or</span> <span class="n">first_choice</span> <span class="o">==</span> <span class="n">second_choice</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">cs</span>
+        <span class="c1"># OK to combine</span>
+        <span class="n">cs</span><span class="p">[</span><span class="n">first_choice</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;i&quot;</span>
+        <span class="n">cs</span><span class="p">[</span><span class="n">second_choice</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;i&quot;</span>
+        <span class="n">cs</span><span class="p">[</span><span class="n">target</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;d&quot;</span>
+    <span class="c1">#        print &gt;&gt;sys.stderr,&quot;combine %s and %s to make %s.&quot;%(first_choice,second_choice,target)</span>
+
+    <span class="k">return</span> <span class="n">cs</span>
+</pre></div>
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

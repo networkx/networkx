@@ -1,0 +1,875 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>NXEP 0 — Purpose and Process &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'developer/nxeps/nxep-0000';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/developer/nxeps/nxep-0000.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="NXEP 1 — Governance and Decision Making" href="nxep-0001.html" />
+    <link rel="prev" title="NXEPs" href="index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">
+    Section Navigation
+  </p>
+  <div class="bd-toc-item navbar-nav">
+    <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../about_us.html">About Us</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code_of_conduct.html">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../values.html">Mission and Values</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contributor Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../projects.html">Mentored Projects</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="../new_contributor_faq.html">New Contributor FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../core_developer.html">Core Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../release.html">Release Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecations.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../roadmap.html">Roadmap</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">NXEPs</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">NXEP 0 — Purpose and Process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nxep-0001.html">NXEP 1 — Governance and Decision Making</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nxep-0002.html">NXEP 2 — API design of view slices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nxep-0003.html">NXEP 3 — Graph Builders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nxep-0004.html">NXEP 4 — Adopting <code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.Generator</span></code> as default random interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nxep-template.html">NXEP X — Template and Instructions</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+</nav>
+    </div>
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <section id="nxep-0-purpose-and-process">
+<span id="nxep0"></span><h1>NXEP 0 — Purpose and Process<a class="headerlink" href="#nxep-0-purpose-and-process" title="Permalink to this heading">#</a></h1>
+<dl class="field-list simple">
+<dt class="field-odd">Author<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Jarrod Millman &lt;<a class="reference external" href="mailto:millman&#37;&#52;&#48;berkeley&#46;edu">millman<span>&#64;</span>berkeley<span>&#46;</span>edu</a>&gt;</p>
+</dd>
+<dt class="field-even">Status<span class="colon">:</span></dt>
+<dd class="field-even"><p>Draft</p>
+</dd>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Process</p>
+</dd>
+<dt class="field-even">Created<span class="colon">:</span></dt>
+<dd class="field-even"><p>2020-06-25</p>
+</dd>
+</dl>
+<section id="what-is-a-nxep">
+<h2>What is a NXEP?<a class="headerlink" href="#what-is-a-nxep" title="Permalink to this heading">#</a></h2>
+<p>NXEP stands for NetworkX Enhancement Proposal.  NXEPs are the primary
+mechanisms for proposing major new features, for collecting community input on
+an issue, and for documenting the design decisions that have gone into
+NetworkX.  A NXEP should provide a concise technical specification of the
+feature and a rationale for the feature.  The NXEP author is responsible for
+building consensus within the community and documenting dissenting opinions.</p>
+<p>Because the NXEPs are maintained as text files in a versioned
+repository, their revision history is the historical record of the
+feature proposal <a class="footnote-reference brackets" href="#id3" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>.</p>
+<section id="types">
+<h3>Types<a class="headerlink" href="#types" title="Permalink to this heading">#</a></h3>
+<p>There are three kinds of NXEPs:</p>
+<ol class="arabic simple">
+<li><p>A <strong>Standards Track</strong> NXEP describes a new feature or implementation
+for NetworkX.</p></li>
+<li><p>An <strong>Informational</strong> NXEP describes a NetworkX design issue, or provides
+general guidelines or information to the Python community, but does not
+propose a new feature. Informational NXEPs do not necessarily represent a
+NetworkX community consensus or recommendation, so users and implementers are
+free to ignore Informational NXEPs or follow their advice.</p></li>
+<li><p>A <strong>Process</strong> NXEP describes a process surrounding NetworkX, or
+proposes a change to (or an event in) a process.  Process NXEPs are
+like Standards Track NXEPs but apply to areas other than the NetworkX
+language itself.  They may propose an implementation, but not to
+NetworkX’s codebase; they require community consensus.  Examples include
+procedures, guidelines, changes to the decision-making process, and
+changes to the tools or environment used in NetworkX development.
+Any meta-NXEP is also considered a Process NXEP.</p></li>
+</ol>
+</section>
+</section>
+<section id="nxep-workflow">
+<h2>NXEP Workflow<a class="headerlink" href="#nxep-workflow" title="Permalink to this heading">#</a></h2>
+<p>The NXEP process begins with a new idea for NetworkX.  It is highly
+recommended that a single NXEP contain a single key proposal or new
+idea. Small enhancements or patches often don’t need
+a NXEP and can be injected into the NetworkX development workflow with a
+pull request to the NetworkX <a class="reference external" href="https://github.com/networkx/networkx">repo</a>. The more focused the
+NXEP, the more successful it tends to be.
+If in doubt, split your NXEP into several well-focused ones.</p>
+<p>Each NXEP must have a champion—someone who writes the NXEP using the style
+and format described below, shepherds the discussions in the appropriate
+forums, and attempts to build community consensus around the idea.  The NXEP
+champion (a.k.a. Author) should first attempt to ascertain whether the idea is
+suitable for a NXEP. Posting to the networkx-discussion <a class="reference external" href="https://groups.google.com/group/networkx-discuss/">mailing list</a> is the best
+way to go about doing this.</p>
+<p>The proposal should be submitted as a draft NXEP via a <a class="reference external" href="https://github.com/networkx/networkx/pulls">GitHub pull
+request</a> to the <code class="docutils literal notranslate"><span class="pre">doc/nxeps</span></code> directory with the name <code class="docutils literal notranslate"><span class="pre">nxep-&lt;n&gt;.rst</span></code>
+where <code class="docutils literal notranslate"><span class="pre">&lt;n&gt;</span></code> is an appropriately assigned four-digit number (e.g.,
+<code class="docutils literal notranslate"><span class="pre">nxep-0000.rst</span></code>). The draft must use the <a class="reference internal" href="nxep-template.html"><span class="doc">NXEP X — Template and Instructions</span></a> file.</p>
+<p>Once the PR for the NXEP is in place, a post should be made to the
+mailing list containing the sections up to “Backward compatibility”,
+with the purpose of limiting discussion there to usage and impact.
+Discussion on the pull request will have a broader scope, also including
+details of implementation.</p>
+<p>At the earliest convenience, the PR should be merged (regardless of
+whether it is accepted during discussion).  Additional PRs may be made
+by the Author to update or expand the NXEP, or by maintainers to set
+its status, discussion URL, etc.</p>
+<p>Standards Track NXEPs consist of two parts, a design document and a
+reference implementation.  It is generally recommended that at least a
+prototype implementation be co-developed with the NXEP, as ideas that sound
+good in principle sometimes turn out to be impractical when subjected to the
+test of implementation.  Often it makes sense for the prototype implementation
+to be made available as PR to the NetworkX repo (making sure to appropriately
+mark the PR as a WIP).</p>
+<section id="review-and-resolution">
+<h3>Review and Resolution<a class="headerlink" href="#review-and-resolution" title="Permalink to this heading">#</a></h3>
+<p>NXEPs are discussed on the mailing list.  The possible paths of the
+status of NXEPs are as follows:</p>
+<img alt="../../_images/nxep-0000.png" src="../../_images/nxep-0000.png" />
+<p>All NXEPs should be created with the <code class="docutils literal notranslate"><span class="pre">Draft</span></code> status.</p>
+<p>Eventually, after discussion, there may be a consensus that the NXEP
+should be accepted – see the next section for details. At this point
+the status becomes <code class="docutils literal notranslate"><span class="pre">Accepted</span></code>.</p>
+<p>Once a NXEP has been <code class="docutils literal notranslate"><span class="pre">Accepted</span></code>, the reference implementation must be
+completed.  When the reference implementation is complete and incorporated
+into the main source code repository, the status will be changed to <code class="docutils literal notranslate"><span class="pre">Final</span></code>.</p>
+<p>To allow gathering of additional design and interface feedback before
+committing to long term stability for a language feature or standard library
+API, a NXEP may also be marked as “Provisional”. This is short for
+“Provisionally Accepted”, and indicates that the proposal has been accepted for
+inclusion in the reference implementation, but additional user feedback is
+needed before the full design can be considered “Final”. Unlike regular
+accepted NXEPs, provisionally accepted NXEPs may still be Rejected or Withdrawn
+even after the related changes have been included in a Python release.</p>
+<p>Wherever possible, it is considered preferable to reduce the scope of a
+proposal to avoid the need to rely on the “Provisional” status (e.g. by
+deferring some features to later NXEPs), as this status can lead to version
+compatibility challenges in the wider NetworkX ecosystem.</p>
+<p>A NXEP can also be assigned status <code class="docutils literal notranslate"><span class="pre">Deferred</span></code>.  The NXEP author or a
+core developer can assign the NXEP this status when no progress is being made
+on the NXEP.</p>
+<p>A NXEP can also be <code class="docutils literal notranslate"><span class="pre">Rejected</span></code>.  Perhaps after all is said and done it
+was not a good idea.  It is still important to have a record of this
+fact. The <code class="docutils literal notranslate"><span class="pre">Withdrawn</span></code> status is similar—it means that the NXEP author
+themselves has decided that the NXEP is actually a bad idea, or has
+accepted that a competing proposal is a better alternative.</p>
+<p>When a NXEP is <code class="docutils literal notranslate"><span class="pre">Accepted</span></code>, <code class="docutils literal notranslate"><span class="pre">Rejected</span></code>, or <code class="docutils literal notranslate"><span class="pre">Withdrawn</span></code>, the NXEP should be
+updated accordingly. In addition to updating the status field, at the very
+least the <code class="docutils literal notranslate"><span class="pre">Resolution</span></code> header should be added with a link to the relevant
+thread in the mailing list archives.</p>
+<p>NXEPs can also be <code class="docutils literal notranslate"><span class="pre">Superseded</span></code> by a different NXEP, rendering the
+original obsolete.  The <code class="docutils literal notranslate"><span class="pre">Replaced-By</span></code> and <code class="docutils literal notranslate"><span class="pre">Replaces</span></code> headers
+should be added to the original and new NXEPs respectively.</p>
+<p>Process NXEPs may also have a status of <code class="docutils literal notranslate"><span class="pre">Active</span></code> if they are never
+meant to be completed, e.g. NXEP 0 (this NXEP).</p>
+</section>
+<section id="how-a-nxep-becomes-accepted">
+<h3>How a NXEP becomes Accepted<a class="headerlink" href="#how-a-nxep-becomes-accepted" title="Permalink to this heading">#</a></h3>
+<p>A NXEP is <code class="docutils literal notranslate"><span class="pre">Accepted</span></code> by consensus of all interested contributors. We
+need a concrete way to tell whether consensus has been reached. When
+you think a NXEP is ready to accept, send an email to the
+networkx-discussion mailing list with a subject like:</p>
+<blockquote>
+<div><p>Proposal to accept NXEP #&lt;number&gt;: &lt;title&gt;</p>
+</div></blockquote>
+<p>In the body of your email, you should:</p>
+<ul class="simple">
+<li><p>link to the latest version of the NXEP,</p></li>
+<li><p>briefly describe any major points of contention and how they were
+resolved,</p></li>
+<li><p>include a sentence like: “If there are no substantive objections
+within 7 days from this email, then the NXEP will be accepted; see
+NXEP 0 for more details.”</p></li>
+</ul>
+<p>For an example, see: <a class="reference external" href="https://mail.python.org/pipermail/networkx-discussion/2018-June/078345.html">https://mail.python.org/pipermail/networkx-discussion/2018-June/078345.html</a></p>
+<p>After you send the email, you should make sure to link to the email
+thread from the <code class="docutils literal notranslate"><span class="pre">Discussion</span></code> section of the NXEP, so that people can
+find it later.</p>
+<p>Generally the NXEP author will be the one to send this email, but
+anyone can do it – the important thing is to make sure that everyone
+knows when a NXEP is on the verge of acceptance, and give them a final
+chance to respond. If there’s some special reason to extend this final
+comment period beyond 7 days, then that’s fine, just say so in the
+email. You shouldn’t do less than 7 days, because sometimes people are
+travelling or similar and need some time to respond.</p>
+<p>In general, the goal is to make sure that the community has consensus,
+not provide a rigid policy for people to try to game. When in doubt,
+err on the side of asking for more feedback and looking for
+opportunities to compromise.</p>
+<p>If the final comment period passes without any substantive objections,
+then the NXEP can officially be marked <code class="docutils literal notranslate"><span class="pre">Accepted</span></code>. You should send a
+followup email notifying the list (celebratory emoji optional but
+encouraged 🎉✨), and then update the NXEP by setting its <code class="docutils literal notranslate"><span class="pre">:Status:</span></code>
+to <code class="docutils literal notranslate"><span class="pre">Accepted</span></code>, and its <code class="docutils literal notranslate"><span class="pre">:Resolution:</span></code> header to a link to your
+followup email.</p>
+<p>If there <em>are</em> substantive objections, then the NXEP remains in
+<code class="docutils literal notranslate"><span class="pre">Draft</span></code> state, discussion continues as normal, and it can be
+proposed for acceptance again later once the objections are resolved.</p>
+<p>In unusual cases, disagreements about the direction or approach may
+require escalation to the NetworkX <a class="reference internal" href="nxep-0001.html#steering-council"><span class="std std-ref">Steering Council</span></a> who
+then decide whether a controversial NXEP is <code class="docutils literal notranslate"><span class="pre">Accepted</span></code>.</p>
+</section>
+<section id="maintenance">
+<h3>Maintenance<a class="headerlink" href="#maintenance" title="Permalink to this heading">#</a></h3>
+<p>In general, Standards track NXEPs are no longer modified after they have
+reached the Final state as the code and project documentation are considered
+the ultimate reference for the implemented feature.
+However, finalized Standards track NXEPs may be updated as needed.</p>
+<p>Process NXEPs may be updated over time to reflect changes
+to development practices and other details. The precise process followed in
+these cases will depend on the nature and purpose of the NXEP being updated.</p>
+</section>
+</section>
+<section id="format-and-template">
+<h2>Format and Template<a class="headerlink" href="#format-and-template" title="Permalink to this heading">#</a></h2>
+<p>NXEPs are UTF-8 encoded text files using the <a class="reference external" href="http://docutils.sourceforge.net/rst.html">reStructuredText</a> format.  Please
+see the <a class="reference internal" href="nxep-template.html"><span class="doc">NXEP X — Template and Instructions</span></a> file and the <a class="reference external" href="http://www.sphinx-doc.org/en/stable/rest.html">reStructuredTextPrimer</a> for more
+information.  We use <a class="reference external" href="http://www.sphinx-doc.org/en/stable/">Sphinx</a> to convert NXEPs to HTML for viewing on the web
+<a class="footnote-reference brackets" href="#id4" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>.</p>
+<section id="header-preamble">
+<h3>Header Preamble<a class="headerlink" href="#header-preamble" title="Permalink to this heading">#</a></h3>
+<p>Each NXEP must begin with a header preamble.  The headers
+must appear in the following order.  Headers marked with <code class="docutils literal notranslate"><span class="pre">*</span></code> are
+optional.  All other headers are required.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  <span class="p">:</span><span class="n">Author</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">list</span> <span class="n">of</span> <span class="n">authors</span><span class="s1">&#39; real names and optionally, email addresses&gt;</span>
+  <span class="p">:</span><span class="n">Status</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">Draft</span> <span class="o">|</span> <span class="n">Active</span> <span class="o">|</span> <span class="n">Accepted</span> <span class="o">|</span> <span class="n">Deferred</span> <span class="o">|</span> <span class="n">Rejected</span> <span class="o">|</span>
+           <span class="n">Withdrawn</span> <span class="o">|</span> <span class="n">Final</span> <span class="o">|</span> <span class="n">Superseded</span><span class="o">&gt;</span>
+  <span class="p">:</span><span class="n">Type</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">Standards</span> <span class="n">Track</span> <span class="o">|</span> <span class="n">Process</span><span class="o">&gt;</span>
+  <span class="p">:</span><span class="n">Created</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">date</span> <span class="n">created</span> <span class="n">on</span><span class="p">,</span> <span class="ow">in</span> <span class="n">dd</span><span class="o">-</span><span class="n">mmm</span><span class="o">-</span><span class="n">yyyy</span> <span class="nb">format</span><span class="o">&gt;</span>
+<span class="o">*</span> <span class="p">:</span><span class="n">Requires</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">nxep</span> <span class="n">numbers</span><span class="o">&gt;</span>
+<span class="o">*</span> <span class="p">:</span><span class="n">NetworkX</span><span class="o">-</span><span class="n">Version</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">version</span> <span class="n">number</span><span class="o">&gt;</span>
+<span class="o">*</span> <span class="p">:</span><span class="n">Replaces</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">nxep</span> <span class="n">number</span><span class="o">&gt;</span>
+<span class="o">*</span> <span class="p">:</span><span class="n">Replaced</span><span class="o">-</span><span class="n">By</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">nxep</span> <span class="n">number</span><span class="o">&gt;</span>
+<span class="o">*</span> <span class="p">:</span><span class="n">Resolution</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">url</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>The Author header lists the names, and optionally the email addresses
+of all the authors of the NXEP.  The format of the Author header
+value must be</p>
+<blockquote>
+<div><p>Random J. User &lt;<a class="reference external" href="mailto:address&#37;&#52;&#48;dom&#46;ain">address<span>&#64;</span>dom<span>&#46;</span>ain</a>&gt;</p>
+</div></blockquote>
+<p>if the email address is included, and just</p>
+<blockquote>
+<div><p>Random J. User</p>
+</div></blockquote>
+<p>if the address is not given.  If there are multiple authors, each should be on
+a separate line.</p>
+</section>
+</section>
+<section id="references-and-footnotes">
+<h2>References and Footnotes<a class="headerlink" href="#references-and-footnotes" title="Permalink to this heading">#</a></h2>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="id3" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>This historical record is available by the normal git commands
+for retrieving older revisions, and can also be browsed on
+<a class="reference external" href="https://github.com/networkx/networkx/tree/main/doc/developer/nxeps">GitHub</a>.</p>
+</aside>
+<aside class="footnote brackets" id="id4" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
+<p>The URL for viewing NXEPs on the web is
+<a class="reference external" href="https://networkx.org/documentation/latest/developer/nxeps/index.html">https://networkx.org/documentation/latest/developer/nxeps/index.html</a></p>
+</aside>
+</aside>
+</section>
+</section>
+
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#what-is-a-nxep">
+   What is a NXEP?
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#types">
+     Types
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#nxep-workflow">
+   NXEP Workflow
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#review-and-resolution">
+     Review and Resolution
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#how-a-nxep-becomes-accepted">
+     How a NXEP becomes Accepted
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#maintenance">
+     Maintenance
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#format-and-template">
+   Format and Template
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#header-preamble">
+     Header Preamble
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#references-and-footnotes">
+   References and Footnotes
+  </a>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,1135 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>NetworkX 2.0 &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'release/release_2.0';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/release/release_2.0.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="NetworkX 1.11" href="api_1.11.html" />
+    <link rel="prev" title="NetworkX 2.1" href="release_2.1.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">
+    Section Navigation
+  </p>
+  <div class="bd-toc-item navbar-nav">
+    <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="release_dev.html">NetworkX 3.0 (unreleased)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.8.8.html">NetworkX 2.8.7</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.8.7.html">NetworkX 2.8.7</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.8.6.html">NetworkX 2.8.6</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.8.5.html">NetworkX 2.8.5</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.8.4.html">NetworkX 2.8.4</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.8.3.html">NetworkX 2.8.3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.8.2.html">NetworkX 2.8.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.8.1.html">NetworkX 2.8.1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.8.html">NetworkX 2.8</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.7.1.html">NetworkX 2.7.1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.7.html">NetworkX 2.7</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.6.html">NetworkX 2.6</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.5.html">NetworkX 2.5</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.4.html">NetworkX 2.4</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.3.html">NetworkX 2.3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.2.html">NetworkX 2.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_2.1.html">NetworkX 2.1</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">NetworkX 2.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_1.11.html">NetworkX 1.11</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_1.10.html">NetworkX 1.10</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_1.9.html">NetworkX 1.9</a></li>
+
+
+<li class="toctree-l1"><a class="reference internal" href="api_1.8.html">NetworkX 1.8</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_1.7.html">NetworkX 1.7</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_1.6.html">NetworkX 1.6</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_1.5.html">NetworkX 1.5</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_1.4.html">NetworkX 1.4</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="api_1.0.html">NetworkX 1.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_0.99.html">NetworkX 0.99</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="old_release_log.html">Old Release Log</a></li>
+</ul>
+
+  </div>
+</nav>
+    </div>
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <section id="networkx-2-0">
+<h1>NetworkX 2.0<a class="headerlink" href="#networkx-2-0" title="Permalink to this heading">#</a></h1>
+<p>Release date: 20 September 2017</p>
+<p>Support for Python 3.6 added, drop support for Python 3.3.</p>
+<p>See <a class="reference internal" href="migration_guide_from_1.x_to_2.0.html"><span class="doc">Migration guide from 1.X to 2.0</span></a>.</p>
+<p>NetworkX is a Python package for the creation, manipulation, and study of the
+structure, dynamics, and functions of complex networks.</p>
+<p>For more information, please visit our <a class="reference external" href="https://networkx.org/">website</a>
+and our <a class="reference external" href="https://networkx.org/documentation/latest/auto_examples/index.html">gallery of examples</a>.
+Please send comments and questions to the <a class="reference external" href="http://groups.google.com/group/networkx-discuss">networkx-discuss mailing list</a>.</p>
+<section id="highlights">
+<h2>Highlights<a class="headerlink" href="#highlights" title="Permalink to this heading">#</a></h2>
+<p>This release is the result of over two years of work with 1212 commits and
+193 merges by 86 contributors. Highlights include:</p>
+<ul class="simple">
+<li><p>We have made major changes to the methods in the Multi/Di/Graph classes.
+There is a <a class="reference external" href="https://networkx.org/documentation/latest/release/migration_guide_from_1.x_to_2.0.html">migration guide for people moving from 1.X to 2.0</a>.</p></li>
+<li><p>We updated the documentation system.</p></li>
+</ul>
+</section>
+<section id="api-changes">
+<h2>API Changes<a class="headerlink" href="#api-changes" title="Permalink to this heading">#</a></h2>
+<ul>
+<li><p>Base Graph Class Changes
+With the release of NetworkX 2.0 we are moving towards a view/iterator reporting API.
+We used to have two methods for the same property of the graph, one that returns a
+list and one that returns an iterator. With 2.0 we have replaced them with a view.
+A view is a read-only object that is quick to create, automatically updated, and
+provides basic access like iteration, membership and set operations where appropriate.
+For example, <code class="docutils literal notranslate"><span class="pre">G.nodes()</span></code> used to return a list and <code class="docutils literal notranslate"><span class="pre">G.nodes_iter()</span></code> an iterator.
+Now <code class="docutils literal notranslate"><span class="pre">G.nodes()</span></code> returns a view and <code class="docutils literal notranslate"><span class="pre">G.nodes_iter()</span></code> is removed. <code class="docutils literal notranslate"><span class="pre">G.degree()</span></code>
+returns a view with <code class="docutils literal notranslate"><span class="pre">(node,</span> <span class="pre">degree)</span></code> iteration, so that <code class="docutils literal notranslate"><span class="pre">dict(G.degree())</span></code>
+returns a dict keyed by node with degree as value.
+The old behavior</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">complete_graph</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">()</span>  
+<span class="go">[0, 1, 2, 3, 4]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">nodes_iter</span><span class="p">()</span>  
+<span class="go">&lt;dictionary-keyiterator at ...&gt;</span>
+</pre></div>
+</div>
+<p>has changed to</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">complete_graph</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">()</span>
+<span class="go">NodeView((0, 1, 2, 3, 4))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">())</span>
+<span class="go">[0, 1, 2, 3, 4]</span>
+</pre></div>
+</div>
+<p>New feature include lookup of node and edge data from the views, property
+access without parentheses, and set operations.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+<span class="go">{&#39;color&#39;: &#39;blue&#39;}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span> <span class="o">&amp;</span> <span class="p">{</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">}</span>
+<span class="go">{3, 4}</span>
+</pre></div>
+</div>
+<p>The following methods have changed:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Graph/MultiGraph</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">G.nodes()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">G.edges()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">G.neighbors()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">G.adjacency_list()</span></code> and <code class="docutils literal notranslate"><span class="pre">G.adjacency_iter()</span></code> to <code class="docutils literal notranslate"><span class="pre">G.adjacency()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">G.degree()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">G.subgraph()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">G.copy()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">G.__class__()</span></code> should be replaced with <code class="docutils literal notranslate"><span class="pre">G.fresh_copy()</span></code></p></li>
+</ul>
+</li>
+<li><p>DiGraph/MultiDiGraph</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">G.nodes()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">G.edges()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">G.in_edges()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">G.out_edges()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">G.degree()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">G.in_degree()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">G.out_degree()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">G.reverse()</span></code></p></li>
+</ul>
+</li>
+</ul>
+</div></blockquote>
+<dl class="simple">
+<dt>The following deprecated methods will be removed in a future release (3.0?).</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">G.node</span></code>, <code class="docutils literal notranslate"><span class="pre">G.edge</span></code> (replaced by G.nodes, G.edges)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">G.add_path</span></code>, <code class="docutils literal notranslate"><span class="pre">G.add_cycle</span></code>, <code class="docutils literal notranslate"><span class="pre">G.add_star</span></code> (Now <code class="docutils literal notranslate"><span class="pre">nx.add_path(G,...</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">G.selfloop_edges</span></code>, <code class="docutils literal notranslate"><span class="pre">G.nodes_with_selfloops</span></code>, <code class="docutils literal notranslate"><span class="pre">G.number_of_selfloops</span></code>
+(Now <code class="docutils literal notranslate"><span class="pre">nx.selfloop_edges(G)</span></code>, etc)</p></li>
+</ul>
+</dd>
+<dt>Many subclasses have been changed accordingly such as:</dt><dd><ul class="simple">
+<li><p>AntiGraph</p></li>
+<li><p>OrderedGraph and friends</p></li>
+<li><p>Examples such as ThinGraph that inherit from Graph</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>[<a class="reference external" href="https://github.com/networkx/networkx/pull/2107">#2107</a>]
+The Graph class methods <code class="docutils literal notranslate"><span class="pre">add_edge</span></code> and <code class="docutils literal notranslate"><span class="pre">add_edges_from</span></code> no longer
+allow the use of the <code class="docutils literal notranslate"><span class="pre">attr_dict</span></code> parameter.  Instead use keyword arguments.
+Thus <code class="docutils literal notranslate"><span class="pre">G.add_edge(1,</span> <span class="pre">2,</span> <span class="pre">{'color':</span> <span class="pre">'red'})</span></code> becomes
+<code class="docutils literal notranslate"><span class="pre">G.add_edge(1,</span> <span class="pre">2,</span> <span class="pre">color='red')</span></code>.
+Note that this only works if the attribute name is a string. For non-string
+attributes you will need to add the edge and then update manually using
+e.g. <code class="docutils literal notranslate"><span class="pre">G.edges[1,</span> <span class="pre">2].update({0:</span> <span class="pre">&quot;zero&quot;})</span></code></p></li>
+<li><p>[<a class="reference external" href="https://github.com/networkx/networkx/pull/1577">#1577</a>]
+In addition to minimum spanning trees, a new function for calculating maximum
+spanning trees is now provided. The new API consists of four functions:
+<code class="docutils literal notranslate"><span class="pre">minimum_spanning_edges</span></code>, <code class="docutils literal notranslate"><span class="pre">maximum_spanning_edges</span></code>,
+<code class="docutils literal notranslate"><span class="pre">minimum_spanning_tree</span></code>, and <code class="docutils literal notranslate"><span class="pre">maximum_spanning_tree</span></code>.
+All of these functions accept an <code class="docutils literal notranslate"><span class="pre">algorithm</span></code> parameter which specifies the
+algorithm to use when finding the minimum or maximum spanning tree. Currently,
+Kruskal’s and Prim’s algorithms are implemented, defined as ‘kruskal’ and
+‘prim’, respectively. If nothing is specified, Kruskal’s algorithm is used.
+For example, to calculate the maximum spanning tree of a graph using Kruskal’s
+algorithm, the function <code class="docutils literal notranslate"><span class="pre">maximum_spanning_tree</span></code> has to be called like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">nx</span><span class="o">.</span><span class="n">maximum_spanning_tree</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="s1">&#39;kruskal&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">algorithm</span></code> parameter is new and appears before the existing <code class="docutils literal notranslate"><span class="pre">weight</span></code>
+parameter. So existing code that did not explicitly name the optional
+<code class="docutils literal notranslate"><span class="pre">weight</span></code> parameter will need to be updated:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">nx</span><span class="o">.</span><span class="n">minimum_spanning_tree</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="s1">&#39;mass&#39;</span><span class="p">)</span>  <span class="c1"># old</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nx</span><span class="o">.</span><span class="n">minimum_spanning_tree</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s1">&#39;mass&#39;</span><span class="p">)</span> <span class="c1"># new</span>
+</pre></div>
+</div>
+<p>In the above, we are still relying on the functions being imported into the
+top-level  namespace. We do not have immediate plans to deprecate this approach,
+but we recommend the following instead:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">networkx.algorithms</span> <span class="kn">import</span> <span class="n">tree</span>
+<span class="go"># recommended</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tree</span><span class="o">.</span><span class="n">minimum_spanning_tree</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="s1">&#39;kruskal&#39;</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s1">&#39;mass&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tree</span><span class="o">.</span><span class="n">minimum_spanning_edges</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="s1">&#39;prim&#39;</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s1">&#39;mass&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p>[<a class="reference external" href="https://github.com/networkx/networkx/pull/1445">#1445</a>]
+Most of the <code class="docutils literal notranslate"><span class="pre">shortest_path</span></code> algorithms now raise a <code class="docutils literal notranslate"><span class="pre">NodeNotFound</span></code> exception
+when a source or a target are not present in the graph.</p></li>
+<li><p>[<a class="reference external" href="https://github.com/networkx/networkx/pull/2326">#2326</a>]
+Centrality algorithms were harmonized with respect to the default behavior of
+the weight parameter. The default value of the <code class="docutils literal notranslate"><span class="pre">weight</span></code> keyword argument has
+been changed from <code class="docutils literal notranslate"><span class="pre">weight</span></code> to <code class="docutils literal notranslate"><span class="pre">None</span></code>.  This affects the
+following centrality functions:</p>
+<ul class="simple">
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">approximate_current_flow_betweenness_centrality()</span></code></p></li>
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">current_flow_betweenness_centrality()</span></code></p></li>
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">current_flow_betweenness_centrality_subset()</span></code></p></li>
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">current_flow_closeness_centrality()</span></code></p></li>
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">edge_current_flow_betweenness_centrality()</span></code></p></li>
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">edge_current_flow_betweenness_centrality_subset()</span></code></p></li>
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">eigenvector_centrality()</span></code></p></li>
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">eigenvector_centrality_numpy()</span></code></p></li>
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">katz_centrality()</span></code></p></li>
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">katz_centrality_numpy()</span></code></p></li>
+</ul>
+</li>
+<li><p>[<a class="reference external" href="https://github.com/networkx/networkx/pull/2420">#2420</a>]
+New community detection algorithm provided. Fluid Communities is an
+asynchronous algorithm based on the simple idea of fluids interacting in an
+environment, expanding and pushing each other. The algorithm is completely
+described in <a class="reference external" href="https://arxiv.org/pdf/1703.09307.pdf">“Fluid Communities: A Competitive and Highly Scalable Community
+Detection Algorithm”</a>.</p></li>
+<li><p>[<a class="reference external" href="https://github.com/networkx/networkx/pull/2510">#2510</a> and
+<a class="reference external" href="https://github.com/networkx/networkx/pull/2508">#2508</a>]
+<code class="docutils literal notranslate"><span class="pre">single_source_dijkstra</span></code>, <code class="docutils literal notranslate"><span class="pre">multi_source_dijkstra</span></code> and functions that use
+these now have new behavior when <code class="docutils literal notranslate"><span class="pre">target</span></code> is specified. Instead of
+returning dicts for distances and paths a 2-tuple of <code class="docutils literal notranslate"><span class="pre">(distance,</span> <span class="pre">path)</span></code> is
+returned.  When <code class="docutils literal notranslate"><span class="pre">target</span></code> is not specified the return value is still 2
+dicts.</p></li>
+<li><p>[<a class="reference external" href="https://github.com/networkx/networkx/pull/2553">#2553</a>]
+<code class="docutils literal notranslate"><span class="pre">set_node_attributes()</span></code> and <code class="docutils literal notranslate"><span class="pre">set_edge_attributes()</span></code> now accept
+dict-of-dict input of shape <code class="docutils literal notranslate"><span class="pre">{node/edge:</span> <span class="pre">{name:</span> <span class="pre">value}}</span></code> in addition to
+previous valid inputs: <code class="docutils literal notranslate"><span class="pre">{node/edge:</span> <span class="pre">value}</span></code> and <code class="docutils literal notranslate"><span class="pre">value</span></code>. The order of the
+parameters changed also: The second parameter “values” is the value argument
+and the third parameter “name” is the name of the attribute. “name” has
+default value <code class="docutils literal notranslate"><span class="pre">None</span></code> in which case “values” must be the newly allowed form
+containing names. Previously “name” came second without default, and “values”
+came third.</p></li>
+<li><p>[<a class="reference external" href="https://github.com/networkx/networkx/pull/2604">#2604</a>] Move selfloop
+methods out of base classes to networkx functions.
+<code class="docutils literal notranslate"><span class="pre">G.number_of_selfloops()</span></code>, <code class="docutils literal notranslate"><span class="pre">G.selfloop_edges()</span></code>,
+<code class="docutils literal notranslate"><span class="pre">G.nodes_with_selfloops()</span></code> are now <code class="docutils literal notranslate"><span class="pre">nx.number_of_selfloops(G)</span></code>,
+<code class="docutils literal notranslate"><span class="pre">nx.selfloop_edges(G)</span></code>, <code class="docutils literal notranslate"><span class="pre">nx.nodes_with_selfloops(G)</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">G.node</span></code> and <code class="docutils literal notranslate"><span class="pre">G.edge</span></code> are removed. Their functionality are replaced by
+<code class="docutils literal notranslate"><span class="pre">G.nodes</span></code> and <code class="docutils literal notranslate"><span class="pre">G.edges</span></code>.</p>
+</li>
+<li><p>[<a class="reference external" href="https://github.com/networkx/networkx/pull/2558">#2558</a>]
+Previously, the function <code class="docutils literal notranslate"><span class="pre">from_pandas_dataframe</span></code> assumed that the dataframe
+has edge-list like structures, but <code class="docutils literal notranslate"><span class="pre">to_pandas_dataframe</span></code> generates an
+adjacency matrix.  We now provide four functions <code class="docutils literal notranslate"><span class="pre">from_pandas_edgelist</span></code>,
+<code class="docutils literal notranslate"><span class="pre">to_pandas_edgelist</span></code>, <code class="docutils literal notranslate"><span class="pre">from_pandas_adjacency</span></code>, and <code class="docutils literal notranslate"><span class="pre">to_pandas_adjacency</span></code>.</p></li>
+<li><p>[<a class="reference external" href="https://github.com/networkx/networkx/pull/2620">#2620</a>]
+Removed <code class="docutils literal notranslate"><span class="pre">draw_nx</span></code>, please use <code class="docutils literal notranslate"><span class="pre">draw</span></code> or <code class="docutils literal notranslate"><span class="pre">draw_networkx</span></code>.</p></li>
+<li><p>[<a class="reference external" href="https://github.com/networkx/networkx/pull/1662">#1662</a>]
+Rewrote <code class="docutils literal notranslate"><span class="pre">topolgical_sort</span></code> as a generator.  It no longer accepts
+<code class="docutils literal notranslate"><span class="pre">reverse</span></code> or <code class="docutils literal notranslate"><span class="pre">nbunch</span></code> arguments and is slightly faster.
+Added <code class="docutils literal notranslate"><span class="pre">lexicographical_topological_sort</span></code>, which accepts a key.</p></li>
+</ul>
+</section>
+<section id="deprecations">
+<h2>Deprecations<a class="headerlink" href="#deprecations" title="Permalink to this heading">#</a></h2>
+<p>The following deprecated functions will be removed in 2.1.</p>
+<ul class="simple">
+<li><p>The function <code class="docutils literal notranslate"><span class="pre">bellman_ford</span></code> has been deprecated in favor of
+<code class="docutils literal notranslate"><span class="pre">bellman_ford_predecessor_and_distance</span></code>.</p></li>
+<li><p>The functions <code class="docutils literal notranslate"><span class="pre">to_pandas_dataframe</span></code> and <code class="docutils literal notranslate"><span class="pre">from_pandas_dataframe</span></code> have been
+deprecated in favor of <code class="docutils literal notranslate"><span class="pre">to_pandas_adjacency</span></code>, <code class="docutils literal notranslate"><span class="pre">from_pandas_adjacency</span></code>,
+<code class="docutils literal notranslate"><span class="pre">to_pandas_edgelist</span></code>, and <code class="docutils literal notranslate"><span class="pre">from_pandas_edgelist</span></code>.</p></li>
+</ul>
+</section>
+<section id="contributors">
+<h2>Contributors<a class="headerlink" href="#contributors" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Niels van Adrichem</p></li>
+<li><p>Kevin Arvai</p></li>
+<li><p>Ali Baharev</p></li>
+<li><p>Moritz Emanuel Beber</p></li>
+<li><p>Livio Bioglio</p></li>
+<li><p>Jake Bogerd</p></li>
+<li><p>Moreno Bonaventura</p></li>
+<li><p>Raphaël Bournhonesque</p></li>
+<li><p>Matthew Brett</p></li>
+<li><p>James Clough</p></li>
+<li><p>Marco Cognetta</p></li>
+<li><p>Jamie Cox</p></li>
+<li><p>Jon Crall</p></li>
+<li><p>Robert Davidson</p></li>
+<li><p>Nikhil Desai</p></li>
+<li><p>DonQuixoteDeLaMancha</p></li>
+<li><p>Dosenpfand</p></li>
+<li><p>Allen Downey</p></li>
+<li><p>Enrico</p></li>
+<li><p>Jens Erat</p></li>
+<li><p>Jeffrey Finkelstein</p></li>
+<li><p>Minas Gjoka</p></li>
+<li><p>Aravind Gollakota</p></li>
+<li><p>Thomas Grainger</p></li>
+<li><p>Aric Hagberg</p></li>
+<li><p>Harry</p></li>
+<li><p>Yawara ISHIDA</p></li>
+<li><p>Bilal AL JAMMAL</p></li>
+<li><p>Ryan James</p></li>
+<li><p>Omer Katz</p></li>
+<li><p>Janis Klaise</p></li>
+<li><p>Valentin Lorentz</p></li>
+<li><p>Alessandro Luongo</p></li>
+<li><p>Francois Malassenet</p></li>
+<li><p>Arya McCarthy</p></li>
+<li><p>Michael-E-Rose</p></li>
+<li><p>Peleg Michaeli</p></li>
+<li><p>Jarrod Millman</p></li>
+<li><p>Chris Morin</p></li>
+<li><p>Sanggyu Nam</p></li>
+<li><p>Nishant Nikhil</p></li>
+<li><p>Rhile Nova</p></li>
+<li><p>Ramil Nugmanov</p></li>
+<li><p>Juan Nunez-Iglesias</p></li>
+<li><p>Pim Otte</p></li>
+<li><p>Ferran Parés</p></li>
+<li><p>Richard Penney</p></li>
+<li><p>Phobia</p></li>
+<li><p>Tristan Poupard</p></li>
+<li><p>Sebastian Pucilowski</p></li>
+<li><p>Alexander Rodriguez</p></li>
+<li><p>Michael E. Rose</p></li>
+<li><p>Alex Ryan</p></li>
+<li><p>Zachary Sailer</p></li>
+<li><p>René Saitenmacher</p></li>
+<li><p>Felipe Schneider</p></li>
+<li><p>Dan Schult</p></li>
+<li><p>Scinawa</p></li>
+<li><p>Michael Seifert</p></li>
+<li><p>Mohammad Hossein Sekhavat</p></li>
+<li><p>Mridul Seth</p></li>
+<li><p>SkyTodInfi</p></li>
+<li><p>Stacey Smolash</p></li>
+<li><p>Jordi Torrents</p></li>
+<li><p>Martin Törnwall</p></li>
+<li><p>Jannis Vamvas</p></li>
+<li><p>Luca Verginer</p></li>
+<li><p>Prayag Verma</p></li>
+<li><p>Peter Wills</p></li>
+<li><p>Ianto Lin Xi</p></li>
+<li><p>Heqing Ya</p></li>
+<li><p>aryamccarthy</p></li>
+<li><p>chebee7i</p></li>
+<li><p>definitelyuncertain</p></li>
+<li><p>jfinkels</p></li>
+<li><p>juliensiebert</p></li>
+<li><p>leotrs</p></li>
+<li><p>leycec</p></li>
+<li><p>mcognetta</p></li>
+<li><p>numpde</p></li>
+<li><p>root</p></li>
+<li><p>salotz</p></li>
+<li><p>scott-vsi</p></li>
+<li><p>thegreathippo</p></li>
+<li><p>vpodpecan</p></li>
+<li><p>yash14123</p></li>
+<li><p>Neil Girdhar</p></li>
+</ul>
+</section>
+<section id="merged-prs">
+<h2>Merged PRs<a class="headerlink" href="#merged-prs" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Gml read fix. (#1962)</p></li>
+<li><p>Small changes leftover from #1847 (#1966)</p></li>
+<li><p>Fix k_core for directed graphs. Add tests (#1963)</p></li>
+<li><p>Communicability fix (#1958)</p></li>
+<li><p>Allows weight functions in shortest path functions (#1690)</p></li>
+<li><p>minor doc changes on weighted.py (#1969)</p></li>
+<li><p>Fix minimum_st_edge_cut documentation. (#1977)</p></li>
+<li><p>Fix all_node_cuts corner cases: cycle and complete graphs. (#1976)</p></li>
+<li><p>Change add_path/star/cycle from methods to functions (#1970)</p></li>
+<li><p>branch ‘edge-subgraph’ from &#64;jfinkels (#1740)</p></li>
+<li><p>Corrected eppstein matching (#1955)</p></li>
+<li><p>Nose ignore docstrings (#1980)</p></li>
+<li><p>Edited Doc Makefile so clean doesn’t delete the examples folder (#1967)</p></li>
+<li><p>bug fix in convert_matrix.py (#1983)</p></li>
+<li><p>Avoid unnecessary eigenval sort in pagerank_numpy (#1986)</p></li>
+<li><p>Fix a typo in install.rst (#1991)</p></li>
+<li><p>Adds unorderable nodes test for dag_longest_path. (#1999)</p></li>
+<li><p>Improve drawing test scripts (typos, newlines, methods) (#1992)</p></li>
+<li><p>Improves test coverage for A* shortest path. (#1988)</p></li>
+<li><p>Improves test coverage for avg degree connectivity (#1987)</p></li>
+<li><p>Fix Graph() docstring to reflect input flexibility (#2006)</p></li>
+<li><p>Fix sphinx autosummary doc generation errors. (#2026)</p></li>
+<li><p>Improve gexf.py (#2010)</p></li>
+<li><p>Readme.rst should mention Decorator package is required. (#2009)</p></li>
+<li><p>fix_duplicate_kwarg: Fix a duplicate kwarg that was causing to_agraph… (#2005)</p></li>
+<li><p>Cleans documentation for graph6 and sparse6 I/O. (#2002)</p></li>
+<li><p>Remove http server example (#2001)</p></li>
+<li><p>Generalize and improve docstrings of node_link.py (#2000)</p></li>
+<li><p>fix issue #1948 and PEP8 formatting (#2031)</p></li>
+<li><p>Uses weight function for dijkstra_path_length. (#2033)</p></li>
+<li><p>Change default role for sphinx to ‘obj’ (#2027)</p></li>
+<li><p>fixed typo s/abritrary/arbitrary/ (#2035)</p></li>
+<li><p>Fix bug in dtype-valued matrices (#2038)</p></li>
+<li><p>Adds example for using Graph.nodes() with default (#2040)</p></li>
+<li><p>Clarifies some examples for relabel_nodes(). (#2041)</p></li>
+<li><p>Cleans code and documentation for graph power. (#2042)</p></li>
+<li><p>Cleans the classes.function module. (#2043)</p></li>
+<li><p>UnboundLocalError if called with an empty graph (#2047)</p></li>
+<li><p>Standardized Bellman-Ford function calls (#1910)</p></li>
+<li><p>Nobody is in IRC (#2059)</p></li>
+<li><p>Uses add_weighted_edges_from function in MST test. (#2061)</p></li>
+<li><p>Adds multi-source Dijkstra’s algorithm (#2073)</p></li>
+<li><p>Adds Voronoi cells algorithm (#2074)</p></li>
+<li><p>Fixes several issues with the Girvan-Newman partitioning function. Fixes #1703, #1725, #1799  (#1972)</p></li>
+<li><p>Moves is_path from utils to simple_paths. (#1921)</p></li>
+<li><p>add max_iter and tol parameter for numpy version (#2013)</p></li>
+<li><p>Remove draw_graphviz function. Fixes #1997 (#2077)</p></li>
+<li><p>Fixes #1998 edge_load function needs documentation. (#2075)</p></li>
+<li><p>Update fixcoverage.py (#2080)</p></li>
+<li><p>Support digraphs in approximate min vertex cover (#2039)</p></li>
+<li><p>Simplifies code in functions for greedy coloring. (#1680)</p></li>
+<li><p>Allows arbitrary metric in geometric generators. (#1679)</p></li>
+<li><p>Fix spring_layout for single node graph. (#2081)</p></li>
+<li><p>Updates set_{node,edge}_attributes and docs. (#1935)</p></li>
+<li><p>Fixes tests for maximal matching. (#1919)</p></li>
+<li><p>Adds LFM benchmark graph generator for communities (#1727)</p></li>
+<li><p>Adds global and local efficiency functions. (#1521)</p></li>
+<li><p>Apply alphas to individual nodes (#1289)</p></li>
+<li><p>Code and tests for temporal VF2 (#1653)</p></li>
+<li><p>extend convert_bool in gexf.py and graphml.py to all valid boolean  (#1063)</p></li>
+<li><p>Remove encoded … to plain ascii (#2086)</p></li>
+<li><p>Use not_implemented_for() for in_degree_centrality() and out_degree_centrality() (#2084)</p></li>
+<li><p>Issue 2072 weighted modularity (#2088)</p></li>
+<li><p>Simplifies eigenvector centrality implementation. (#1708)</p></li>
+<li><p>Fjmalass nodes as tuples (#2089)</p></li>
+<li><p>Generator rename (#2090)</p></li>
+<li><p>Ensure links in doc <code class="docutils literal notranslate"><span class="pre">`See</span> <span class="pre">also`</span></code> sections (#2082)</p></li>
+<li><p>Document integer-only numeric mixing (#2085)</p></li>
+<li><p>doc sphinx error removal (#2091)</p></li>
+<li><p>Correct see also links (#2095)</p></li>
+<li><p>Adjust layout.py function signatures, docs, exposure (#2096)</p></li>
+<li><p>Adds missing __all__ attributes. (#2098)</p></li>
+<li><p>Fixes 2 bugs in dominance frontier code (#2092)</p></li>
+<li><p>Created two new files: joint_degree_seq.py and test_joint_degree_seq.… (#2011)</p></li>
+<li><p>Adds Borůvka’s minimum spanning tree algorithm. (#1873)</p></li>
+<li><p>Adds global/local reaching centrality functions. (#2099)</p></li>
+<li><p>Remove conflicts from #1894 (Update Exception Classes) (#2100)</p></li>
+<li><p>Add Exceptions for missing source in shortest_path (#2102)</p></li>
+<li><p>Docs for compose now warn about MultiGraph edgekeys (#2101)</p></li>
+<li><p>Improve Notes section on simplex and friends docs. (#2104)</p></li>
+<li><p>Add Dinitz’ algorithm for maximum flow problems. (#1978)</p></li>
+<li><p>Removed duplicated method/doc (add_edges_from) (#1)</p></li>
+<li><p>Bugfix for generic_multiedge_match (Issue #2114) (#2124)</p></li>
+<li><p>Fix for 2015. (#2)</p></li>
+<li><p>add_node, add_edge attr_dict change. (#2132)</p></li>
+<li><p>Handle graph name attribute in relabel_nodes (#2136)</p></li>
+<li><p>Fix fruchterman reingold bug and add more tests to layouts. (#2141)</p></li>
+<li><p>Adds exception: failed power iteration convergence (#2143)</p></li>
+<li><p>Tweak iteration logic of HITS (#2142)</p></li>
+<li><p>Fix PageRank personalize docstring (#2148)</p></li>
+<li><p>Set default source=None for dfs_tree (#2149)</p></li>
+<li><p>Fix docs for maximal_matching and tensor_product (#2158)</p></li>
+<li><p>Isolate edge key generation in multigraphs (#2150)</p></li>
+<li><p>Sort centralities together and outsource dispersion (#2083)</p></li>
+<li><p>Changed classic generators to use generators instead of lists (#2167)</p></li>
+<li><p>Adds beam search traversal algorithm with example (#2129)</p></li>
+<li><p>Turan graph (#2172)</p></li>
+<li><p>Removes irrelevant Notes section from docstring (#2178)</p></li>
+<li><p>Corrects logarithm base in example (#2179)</p></li>
+<li><p>Minor correction in documentation (#2180)</p></li>
+<li><p>Add Boykov Kolmogorov algorithm for maximum flow problems. (#2122)</p></li>
+<li><p>Remove temporary files after tests are run. (#2202)</p></li>
+<li><p>Add support for subgraphs with no edges in convert_matrix.to_scipy_sparse_matrix. (#2199)</p></li>
+<li><p>Add support for reading adjacency matrix in readwrite.pajek.parse_pajek. (#2200)</p></li>
+<li><p>Moves Graph Atlas to data file. (#2064)</p></li>
+<li><p>Refactor Dinitz’ algorithm implementation. (#2196)</p></li>
+<li><p>Use arrays instead of matrices in scipy.linalg.expm() (#2208)</p></li>
+<li><p>Making in_edges equivalent to out_edges (#2206)</p></li>
+<li><p>Fix tests failing because of ordering issues. (#2207)</p></li>
+<li><p>Fix code escaping. (#2214)</p></li>
+<li><p>Add adjlist_outer_dict_factory. (#2222)</p></li>
+<li><p>Typo in scale free network generator documentation (#2225)</p></li>
+<li><p>Add link to nx.drawing.layout instead of mentionning nx.layout. (#2224)</p></li>
+<li><p>Example not working in tutorial (#2230)</p></li>
+<li><p>don’t assume nodes are sortable when running dag_longest_path (#2228)</p></li>
+<li><p>Correct typo (#2236)</p></li>
+<li><p>Use ego graph when computing local efficiency (#2246)</p></li>
+<li><p>Make harmonic centrality more memory-efficient (#2247)</p></li>
+<li><p>have dag_longest_path_length return path length, not edge count (#2237)</p></li>
+<li><p>Added transitive_reduction in dag (#2215)</p></li>
+<li><p>alpha kwarg not used in pylab label drawing, added it here.   (#2269)</p></li>
+<li><p>Make PyDot Support Great Again (#2272)</p></li>
+<li><p>Unnecessary array copying in katz_centrality_numpy ? (#2287)</p></li>
+<li><p>Switch to faster smallest-last algorithm implementation. (#2268)</p></li>
+<li><p>Adds example for getting all simple edge paths. Fixes #718  (#2260)</p></li>
+<li><p>Remove obsolete testing tools. (#2303)</p></li>
+<li><p>Correct error in minimum_spanning_arborescence (#2285)</p></li>
+<li><p>Yield string, not dict, in dfs_labeled_edges. (#2277)</p></li>
+<li><p>Removes unnecessary convert_to_(un)directed func (#2259)</p></li>
+<li><p>Complete multipartite graph docs (#2221)</p></li>
+<li><p>fix LPA bug, see issues/2219 (#2227)</p></li>
+<li><p>Generalized degree (#2220)</p></li>
+<li><p>Turan docs (#2218)</p></li>
+<li><p>Fix broken link to the description of the P2G format. (#2211)</p></li>
+<li><p>Test ordering (#2209)</p></li>
+<li><p>add example of node weights (#2250)</p></li>
+<li><p>added paramether nbunch (#2253)</p></li>
+<li><p>Adds unit tests for using dtype with to_numpy_matrix (#2257)</p></li>
+<li><p>Adds chain decomposition algorithm. (#2284)</p></li>
+<li><p>add the Hoffman-Singleton graph (#2275)</p></li>
+<li><p>Allow grid_graph generator to accept tuple dim argument (#2320)</p></li>
+<li><p>psuedo -&gt; pseudo (fixing typo) (#2322)</p></li>
+<li><p>Corrects navigable small world graph param docs (#2321)</p></li>
+<li><p>Fix bug in find_cycle. (#2324)</p></li>
+<li><p>flip source target (#2309)</p></li>
+<li><p>Simpler version of digitsrep(..) function (#2330)</p></li>
+<li><p>change articulation_points so that it only returns every vertex once (#2333)</p></li>
+<li><p>Use faster random geometric graph implementation. (#2337)</p></li>
+<li><p>Allow community asyn_lpa test to have two answers (#2339)</p></li>
+<li><p>Fix broken links and remove pdf files from Makefile (#2344)</p></li>
+<li><p>Documents orderable node requirement for isom. (#2302)</p></li>
+<li><p>Adds modularity measure for communities. (#1729)</p></li>
+<li><p>Simplifies degree sequence graph generators. (#1866)</p></li>
+<li><p>Adds tree encoding and decoding functions. (#1874)</p></li>
+<li><p>Corrects number_of_edges docs for directed graphs (#2360)</p></li>
+<li><p>Adds multigraph keys to Eulerian circuits (#2359)</p></li>
+<li><p>Update predecessors/successors in edge subgraph (#2373)</p></li>
+<li><p>Fix for #2364 (#2372)</p></li>
+<li><p>Raise an Exception for disconnected Graphs in bipartite.sets (#2375)</p></li>
+<li><p>fixes typo in NetworkXNotImplemented (#2385)</p></li>
+<li><p>Check alternating paths using iterative DFS in to_vertex_cover. (#2386)</p></li>
+<li><p>Fix typos in generating NXError in networkx.linalg.graphmatrix.incidence_matrix (#2395)</p></li>
+<li><p>[Fixes #2342] remove calls to plt.hold(), deprecated in mpl2.0 (#2397)</p></li>
+<li><p>Fix broken links (#2414)</p></li>
+<li><p>Fix all tests for 3.6 (#2413)</p></li>
+<li><p>Improve bipartite documentation. (#2402)</p></li>
+<li><p>correct logic in GEXFWriter (#2399)</p></li>
+<li><p>list optional dependencies in setup.py (#2398)</p></li>
+<li><p>Gitwash update (#2371)</p></li>
+<li><p>Added cytoscape JSON handling (#2351)</p></li>
+<li><p>Fix for issues #2328 and #2332 (#2366)</p></li>
+<li><p>Workaround for gdal python3.6 at travis and more doctests fixes (#2416)</p></li>
+<li><p>Fixed bug on custom attrs usage: unavailable iteritems method for dict. (#2461)</p></li>
+<li><p>Fix sphinx errors and class outlines (#2480)</p></li>
+<li><p>Note the precondition that graphs are directed and acyclic (#2500)</p></li>
+<li><p>Add CONTRIBUTE file (#2501)</p></li>
+<li><p>Remove external module (#2521)</p></li>
+<li><p>Ensure <code class="xref py py-obj docutils literal notranslate"><span class="pre">make</span> <span class="pre">html</span></code> doesn’t fail build on exit (#2530)</p></li>
+<li><p>Cherry pick missing commits (#2535)</p></li>
+<li><p>Document release process (#2539)</p></li>
+<li><p>Update copyright (#2551)</p></li>
+<li><p>Remove deprecated code (#2536)</p></li>
+<li><p>Improve docs (#2555)</p></li>
+<li><p>WIP: Add note on how to estimate appropriate values for alpha (#2583)</p></li>
+<li><p>Travis refactor (#2596)</p></li>
+<li><p>Create separate functions for df as edge-lists and adjacency matrices (#2558)</p></li>
+<li><p>Use texext for math_dollar (#2609)</p></li>
+<li><p>Add drawing tests (#2617)</p></li>
+<li><p>Add threshold tests (#2622)</p></li>
+<li><p>Update docs (#2623)</p></li>
+<li><p>Prep beta release (#2624)</p></li>
+<li><p>Refactor travis tests and deploy docs with travis (#2647)</p></li>
+<li><p>matplotlib 2.1 deprecated is_string_like (#2659)</p></li>
+<li><p>topolgical_sort, lexicographical_topological_sort (#1662)</p></li>
+</ul>
+</section>
+</section>
+
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#highlights">
+   Highlights
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#api-changes">
+   API Changes
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#deprecations">
+   Deprecations
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#contributors">
+   Contributors
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#merged-prs">
+   Merged PRs
+  </a>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

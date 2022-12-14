@@ -1,0 +1,893 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>networkx.algorithms.community.louvain &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/algorithms/community/louvain';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/algorithms/community/louvain.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../../../../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../../../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../../../../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <h1>Source code for networkx.algorithms.community.louvain</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Function for detecting communities based on Louvain Community Detection</span>
+<span class="sd">Algorithm&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span><span class="p">,</span> <span class="n">deque</span>
+
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">from</span> <span class="nn">networkx.algorithms.community</span> <span class="kn">import</span> <span class="n">modularity</span>
+<span class="kn">from</span> <span class="nn">networkx.utils</span> <span class="kn">import</span> <span class="n">py_random_state</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;louvain_communities&quot;</span><span class="p">,</span> <span class="s2">&quot;louvain_partitions&quot;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="louvain_communities"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.community.louvain.louvain_communities.html#networkx.algorithms.community.louvain.louvain_communities">[docs]</a><span class="nd">@py_random_state</span><span class="p">(</span><span class="s2">&quot;seed&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">louvain_communities</span><span class="p">(</span>
+    <span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.0000001</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Find the best partition of a graph using the Louvain Community Detection</span>
+<span class="sd">    Algorithm.</span>
+
+<span class="sd">    Louvain Community Detection Algorithm is a simple method to extract the community</span>
+<span class="sd">    structure of a network. This is a heuristic method based on modularity optimization. [1]_</span>
+
+<span class="sd">    The algorithm works in 2 steps. On the first step it assigns every node to be</span>
+<span class="sd">    in its own community and then for each node it tries to find the maximum positive</span>
+<span class="sd">    modularity gain by moving each node to all of its neighbor communities. If no positive</span>
+<span class="sd">    gain is achieved the node remains in its original community.</span>
+
+<span class="sd">    The modularity gain obtained by moving an isolated node $i$ into a community $C$ can</span>
+<span class="sd">    easily be calculated by the following formula (combining [1]_ [2]_ and some algebra):</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \Delta Q = \frac{k_{i,in}}{2m} - \gamma\frac{ \Sigma_{tot} \cdot k_i}{2m^2}</span>
+
+<span class="sd">    where $m$ is the size of the graph, $k_{i,in}$ is the sum of the weights of the links</span>
+<span class="sd">    from $i$ to nodes in $C$, $k_i$ is the sum of the weights of the links incident to node $i$,</span>
+<span class="sd">    $\Sigma_{tot}$ is the sum of the weights of the links incident to nodes in $C$ and $\gamma$</span>
+<span class="sd">    is the resolution parameter.</span>
+
+<span class="sd">    For the directed case the modularity gain can be computed using this formula according to [3]_</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \Delta Q = \frac{k_{i,in}}{m}</span>
+<span class="sd">        - \gamma\frac{k_i^{out} \cdot\Sigma_{tot}^{in} + k_i^{in} \cdot \Sigma_{tot}^{out}}{m^2}</span>
+
+<span class="sd">    where $k_i^{out}$, $k_i^{in}$ are the outer and inner weighted degrees of node $i$ and</span>
+<span class="sd">    $\Sigma_{tot}^{in}$, $\Sigma_{tot}^{out}$ are the sum of in-going and out-going links incident</span>
+<span class="sd">    to nodes in $C$.</span>
+
+<span class="sd">    The first phase continues until no individual move can improve the modularity.</span>
+
+<span class="sd">    The second phase consists in building a new network whose nodes are now the communities</span>
+<span class="sd">    found in the first phase. To do so, the weights of the links between the new nodes are given by</span>
+<span class="sd">    the sum of the weight of the links between nodes in the corresponding two communities. Once this</span>
+<span class="sd">    phase is complete it is possible to reapply the first phase creating bigger communities with</span>
+<span class="sd">    increased modularity.</span>
+
+<span class="sd">    The above two phases are executed until no modularity gain is achieved (or is less than</span>
+<span class="sd">    the `threshold`).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+<span class="sd">    weight : string or None, optional (default=&quot;weight&quot;)</span>
+<span class="sd">        The name of an edge attribute that holds the numerical value</span>
+<span class="sd">        used as a weight. If None then each edge has weight 1.</span>
+<span class="sd">    resolution : float, optional (default=1)</span>
+<span class="sd">        If resolution is less than 1, the algorithm favors larger communities.</span>
+<span class="sd">        Greater than 1 favors smaller communities</span>
+<span class="sd">    threshold : float, optional (default=0.0000001)</span>
+<span class="sd">        Modularity gain threshold for each level. If the gain of modularity</span>
+<span class="sd">        between 2 levels of the algorithm is less than the given threshold</span>
+<span class="sd">        then the algorithm stops and returns the resulting communities.</span>
+<span class="sd">    seed : integer, random_state, or None (default)</span>
+<span class="sd">        Indicator of random number generation state.</span>
+<span class="sd">        See :ref:`Randomness&lt;randomness&gt;`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    list</span>
+<span class="sd">        A list of sets (partition of `G`). Each set represents one community and contains</span>
+<span class="sd">        all the nodes that constitute it.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import networkx as nx</span>
+<span class="sd">    &gt;&gt;&gt; import networkx.algorithms.community as nx_comm</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.petersen_graph()</span>
+<span class="sd">    &gt;&gt;&gt; nx_comm.louvain_communities(G, seed=123)</span>
+<span class="sd">    [{0, 4, 5, 7, 9}, {1, 2, 3, 6, 8}]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The order in which the nodes are considered can affect the final output. In the algorithm</span>
+<span class="sd">    the ordering happens using a random shuffle.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Blondel, V.D. et al. Fast unfolding of communities in</span>
+<span class="sd">       large networks. J. Stat. Mech 10008, 1-12(2008). https://doi.org/10.1088/1742-5468/2008/10/P10008</span>
+<span class="sd">    .. [2] Traag, V.A., Waltman, L. &amp; van Eck, N.J. From Louvain to Leiden: guaranteeing</span>
+<span class="sd">       well-connected communities. Sci Rep 9, 5233 (2019). https://doi.org/10.1038/s41598-019-41695-z</span>
+<span class="sd">    .. [3] Nicolas Dugué, Anthony Perez. Directed Louvain : maximizing modularity in directed networks.</span>
+<span class="sd">        [Research Report] Université d’Orléans. 2015. hal-01231784. https://hal.archives-ouvertes.fr/hal-01231784</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    louvain_partitions</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">d</span> <span class="o">=</span> <span class="n">louvain_partitions</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="p">,</span> <span class="n">resolution</span><span class="p">,</span> <span class="n">threshold</span><span class="p">,</span> <span class="n">seed</span><span class="p">)</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="n">deque</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">maxlen</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">q</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="louvain_partitions"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.community.louvain.louvain_partitions.html#networkx.algorithms.community.louvain.louvain_partitions">[docs]</a><span class="nd">@py_random_state</span><span class="p">(</span><span class="s2">&quot;seed&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">louvain_partitions</span><span class="p">(</span>
+    <span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.0000001</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Yields partitions for each level of the Louvain Community Detection Algorithm</span>
+
+<span class="sd">    Louvain Community Detection Algorithm is a simple method to extract the community</span>
+<span class="sd">    structure of a network. This is a heuristic method based on modularity optimization. [1]_</span>
+
+<span class="sd">    The partitions at each level (step of the algorithm) form a dendogram of communities.</span>
+<span class="sd">    A dendrogram is a diagram representing a tree and each level represents</span>
+<span class="sd">    a partition of the G graph. The top level contains the smallest communities</span>
+<span class="sd">    and as you traverse to the bottom of the tree the communities get bigger</span>
+<span class="sd">    and the overal modularity increases making the partition better.</span>
+
+<span class="sd">    Each level is generated by executing the two phases of the Louvain Community</span>
+<span class="sd">    Detection Algorithm.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+<span class="sd">    weight : string or None, optional (default=&quot;weight&quot;)</span>
+<span class="sd">     The name of an edge attribute that holds the numerical value</span>
+<span class="sd">     used as a weight. If None then each edge has weight 1.</span>
+<span class="sd">    resolution : float, optional (default=1)</span>
+<span class="sd">        If resolution is less than 1, the algorithm favors larger communities.</span>
+<span class="sd">        Greater than 1 favors smaller communities</span>
+<span class="sd">    threshold : float, optional (default=0.0000001)</span>
+<span class="sd">     Modularity gain threshold for each level. If the gain of modularity</span>
+<span class="sd">     between 2 levels of the algorithm is less than the given threshold</span>
+<span class="sd">     then the algorithm stops and returns the resulting communities.</span>
+<span class="sd">    seed : integer, random_state, or None (default)</span>
+<span class="sd">     Indicator of random number generation state.</span>
+<span class="sd">     See :ref:`Randomness&lt;randomness&gt;`.</span>
+
+<span class="sd">    Yields</span>
+<span class="sd">    ------</span>
+<span class="sd">    list</span>
+<span class="sd">        A list of sets (partition of `G`). Each set represents one community and contains</span>
+<span class="sd">        all the nodes that constitute it.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Blondel, V.D. et al. Fast unfolding of communities in</span>
+<span class="sd">       large networks. J. Stat. Mech 10008, 1-12(2008)</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    louvain_communities</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">partition</span> <span class="o">=</span> <span class="p">[{</span><span class="n">u</span><span class="p">}</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">()]</span>
+    <span class="n">mod</span> <span class="o">=</span> <span class="n">modularity</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">partition</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="n">resolution</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">)</span>
+    <span class="n">is_directed</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">is_directed</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">is_multigraph</span><span class="p">():</span>
+        <span class="n">graph</span> <span class="o">=</span> <span class="n">_convert_multigraph</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="p">,</span> <span class="n">is_directed</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">graph</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
+        <span class="n">graph</span><span class="o">.</span><span class="n">add_nodes_from</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+        <span class="n">graph</span><span class="o">.</span><span class="n">add_weighted_edges_from</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">weight</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+
+    <span class="n">m</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">)</span>
+    <span class="n">partition</span><span class="p">,</span> <span class="n">inner_partition</span><span class="p">,</span> <span class="n">improvement</span> <span class="o">=</span> <span class="n">_one_level</span><span class="p">(</span>
+        <span class="n">graph</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">partition</span><span class="p">,</span> <span class="n">resolution</span><span class="p">,</span> <span class="n">is_directed</span><span class="p">,</span> <span class="n">seed</span>
+    <span class="p">)</span>
+    <span class="n">improvement</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">while</span> <span class="n">improvement</span><span class="p">:</span>
+        <span class="c1"># gh-5901 protect the sets in the yielded list from further manipulation here</span>
+        <span class="k">yield</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">partition</span><span class="p">]</span>
+        <span class="n">new_mod</span> <span class="o">=</span> <span class="n">modularity</span><span class="p">(</span>
+            <span class="n">graph</span><span class="p">,</span> <span class="n">inner_partition</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="n">resolution</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">new_mod</span> <span class="o">-</span> <span class="n">mod</span> <span class="o">&lt;=</span> <span class="n">threshold</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">mod</span> <span class="o">=</span> <span class="n">new_mod</span>
+        <span class="n">graph</span> <span class="o">=</span> <span class="n">_gen_graph</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">inner_partition</span><span class="p">)</span>
+        <span class="n">partition</span><span class="p">,</span> <span class="n">inner_partition</span><span class="p">,</span> <span class="n">improvement</span> <span class="o">=</span> <span class="n">_one_level</span><span class="p">(</span>
+            <span class="n">graph</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">partition</span><span class="p">,</span> <span class="n">resolution</span><span class="p">,</span> <span class="n">is_directed</span><span class="p">,</span> <span class="n">seed</span>
+        <span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">_one_level</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">partition</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">is_directed</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculate one level of the Louvain partitions tree</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX Graph/DiGraph</span>
+<span class="sd">        The graph from which to detect communities</span>
+<span class="sd">    m : number</span>
+<span class="sd">        The size of the graph `G`.</span>
+<span class="sd">    partition : list of sets of nodes</span>
+<span class="sd">        A valid partition of the graph `G`</span>
+<span class="sd">    resolution : positive number</span>
+<span class="sd">        The resolution parameter for computing the modularity of a partition</span>
+<span class="sd">    is_directed : bool</span>
+<span class="sd">        True if `G` is a directed graph.</span>
+<span class="sd">    seed : integer, random_state, or None (default)</span>
+<span class="sd">        Indicator of random number generation state.</span>
+<span class="sd">        See :ref:`Randomness&lt;randomness&gt;`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">node2com</span> <span class="o">=</span> <span class="p">{</span><span class="n">u</span><span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">u</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">())}</span>
+    <span class="n">inner_partition</span> <span class="o">=</span> <span class="p">[{</span><span class="n">u</span><span class="p">}</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">()]</span>
+    <span class="k">if</span> <span class="n">is_directed</span><span class="p">:</span>
+        <span class="n">in_degrees</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">in_degree</span><span class="p">(</span><span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">))</span>
+        <span class="n">out_degrees</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">out_degree</span><span class="p">(</span><span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">))</span>
+        <span class="n">Stot_in</span> <span class="o">=</span> <span class="p">[</span><span class="n">deg</span> <span class="k">for</span> <span class="n">deg</span> <span class="ow">in</span> <span class="n">in_degrees</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+        <span class="n">Stot_out</span> <span class="o">=</span> <span class="p">[</span><span class="n">deg</span> <span class="k">for</span> <span class="n">deg</span> <span class="ow">in</span> <span class="n">out_degrees</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+        <span class="c1"># Calculate weights for both in and out neighbours</span>
+        <span class="n">nbrs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">G</span><span class="p">:</span>
+            <span class="n">nbrs</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">wt</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">out_edges</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">):</span>
+                <span class="n">nbrs</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">n</span><span class="p">]</span> <span class="o">+=</span> <span class="n">wt</span>
+            <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">wt</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">in_edges</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">):</span>
+                <span class="n">nbrs</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">n</span><span class="p">]</span> <span class="o">+=</span> <span class="n">wt</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">degrees</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">degree</span><span class="p">(</span><span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">))</span>
+        <span class="n">Stot</span> <span class="o">=</span> <span class="p">[</span><span class="n">deg</span> <span class="k">for</span> <span class="n">deg</span> <span class="ow">in</span> <span class="n">degrees</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+        <span class="n">nbrs</span> <span class="o">=</span> <span class="p">{</span><span class="n">u</span><span class="p">:</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;weight&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">G</span><span class="p">[</span><span class="n">u</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="o">!=</span> <span class="n">u</span><span class="p">}</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">G</span><span class="p">}</span>
+    <span class="n">rand_nodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
+    <span class="n">seed</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">rand_nodes</span><span class="p">)</span>
+    <span class="n">nb_moves</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">improvement</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">while</span> <span class="n">nb_moves</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">nb_moves</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">rand_nodes</span><span class="p">:</span>
+            <span class="n">best_mod</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">best_com</span> <span class="o">=</span> <span class="n">node2com</span><span class="p">[</span><span class="n">u</span><span class="p">]</span>
+            <span class="n">weights2com</span> <span class="o">=</span> <span class="n">_neighbor_weights</span><span class="p">(</span><span class="n">nbrs</span><span class="p">[</span><span class="n">u</span><span class="p">],</span> <span class="n">node2com</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">is_directed</span><span class="p">:</span>
+                <span class="n">in_degree</span> <span class="o">=</span> <span class="n">in_degrees</span><span class="p">[</span><span class="n">u</span><span class="p">]</span>
+                <span class="n">out_degree</span> <span class="o">=</span> <span class="n">out_degrees</span><span class="p">[</span><span class="n">u</span><span class="p">]</span>
+                <span class="n">Stot_in</span><span class="p">[</span><span class="n">best_com</span><span class="p">]</span> <span class="o">-=</span> <span class="n">in_degree</span>
+                <span class="n">Stot_out</span><span class="p">[</span><span class="n">best_com</span><span class="p">]</span> <span class="o">-=</span> <span class="n">out_degree</span>
+                <span class="n">remove_cost</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="o">-</span><span class="n">weights2com</span><span class="p">[</span><span class="n">best_com</span><span class="p">]</span> <span class="o">/</span> <span class="n">m</span>
+                    <span class="o">+</span> <span class="n">resolution</span>
+                    <span class="o">*</span> <span class="p">(</span><span class="n">out_degree</span> <span class="o">*</span> <span class="n">Stot_in</span><span class="p">[</span><span class="n">best_com</span><span class="p">]</span> <span class="o">+</span> <span class="n">in_degree</span> <span class="o">*</span> <span class="n">Stot_out</span><span class="p">[</span><span class="n">best_com</span><span class="p">])</span>
+                    <span class="o">/</span> <span class="n">m</span><span class="o">**</span><span class="mi">2</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">degree</span> <span class="o">=</span> <span class="n">degrees</span><span class="p">[</span><span class="n">u</span><span class="p">]</span>
+                <span class="n">Stot</span><span class="p">[</span><span class="n">best_com</span><span class="p">]</span> <span class="o">-=</span> <span class="n">degree</span>
+                <span class="n">remove_cost</span> <span class="o">=</span> <span class="o">-</span><span class="n">weights2com</span><span class="p">[</span><span class="n">best_com</span><span class="p">]</span> <span class="o">/</span> <span class="n">m</span> <span class="o">+</span> <span class="n">resolution</span> <span class="o">*</span> <span class="p">(</span>
+                    <span class="n">Stot</span><span class="p">[</span><span class="n">best_com</span><span class="p">]</span> <span class="o">*</span> <span class="n">degree</span>
+                <span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">m</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">nbr_com</span><span class="p">,</span> <span class="n">wt</span> <span class="ow">in</span> <span class="n">weights2com</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">is_directed</span><span class="p">:</span>
+                    <span class="n">gain</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="n">remove_cost</span>
+                        <span class="o">+</span> <span class="n">wt</span> <span class="o">/</span> <span class="n">m</span>
+                        <span class="o">-</span> <span class="n">resolution</span>
+                        <span class="o">*</span> <span class="p">(</span>
+                            <span class="n">out_degree</span> <span class="o">*</span> <span class="n">Stot_in</span><span class="p">[</span><span class="n">nbr_com</span><span class="p">]</span>
+                            <span class="o">+</span> <span class="n">in_degree</span> <span class="o">*</span> <span class="n">Stot_out</span><span class="p">[</span><span class="n">nbr_com</span><span class="p">]</span>
+                        <span class="p">)</span>
+                        <span class="o">/</span> <span class="n">m</span><span class="o">**</span><span class="mi">2</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">gain</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="n">remove_cost</span>
+                        <span class="o">+</span> <span class="n">wt</span> <span class="o">/</span> <span class="n">m</span>
+                        <span class="o">-</span> <span class="n">resolution</span> <span class="o">*</span> <span class="p">(</span><span class="n">Stot</span><span class="p">[</span><span class="n">nbr_com</span><span class="p">]</span> <span class="o">*</span> <span class="n">degree</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">m</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="k">if</span> <span class="n">gain</span> <span class="o">&gt;</span> <span class="n">best_mod</span><span class="p">:</span>
+                    <span class="n">best_mod</span> <span class="o">=</span> <span class="n">gain</span>
+                    <span class="n">best_com</span> <span class="o">=</span> <span class="n">nbr_com</span>
+            <span class="k">if</span> <span class="n">is_directed</span><span class="p">:</span>
+                <span class="n">Stot_in</span><span class="p">[</span><span class="n">best_com</span><span class="p">]</span> <span class="o">+=</span> <span class="n">in_degree</span>
+                <span class="n">Stot_out</span><span class="p">[</span><span class="n">best_com</span><span class="p">]</span> <span class="o">+=</span> <span class="n">out_degree</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">Stot</span><span class="p">[</span><span class="n">best_com</span><span class="p">]</span> <span class="o">+=</span> <span class="n">degree</span>
+            <span class="k">if</span> <span class="n">best_com</span> <span class="o">!=</span> <span class="n">node2com</span><span class="p">[</span><span class="n">u</span><span class="p">]:</span>
+                <span class="n">com</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">u</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;nodes&quot;</span><span class="p">,</span> <span class="p">{</span><span class="n">u</span><span class="p">})</span>
+                <span class="n">partition</span><span class="p">[</span><span class="n">node2com</span><span class="p">[</span><span class="n">u</span><span class="p">]]</span><span class="o">.</span><span class="n">difference_update</span><span class="p">(</span><span class="n">com</span><span class="p">)</span>
+                <span class="n">inner_partition</span><span class="p">[</span><span class="n">node2com</span><span class="p">[</span><span class="n">u</span><span class="p">]]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>
+                <span class="n">partition</span><span class="p">[</span><span class="n">best_com</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">com</span><span class="p">)</span>
+                <span class="n">inner_partition</span><span class="p">[</span><span class="n">best_com</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>
+                <span class="n">improvement</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">nb_moves</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">node2com</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="o">=</span> <span class="n">best_com</span>
+    <span class="n">partition</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="nb">len</span><span class="p">,</span> <span class="n">partition</span><span class="p">))</span>
+    <span class="n">inner_partition</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="nb">len</span><span class="p">,</span> <span class="n">inner_partition</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">partition</span><span class="p">,</span> <span class="n">inner_partition</span><span class="p">,</span> <span class="n">improvement</span>
+
+
+<span class="k">def</span> <span class="nf">_neighbor_weights</span><span class="p">(</span><span class="n">nbrs</span><span class="p">,</span> <span class="n">node2com</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculate weights between node and its neighbor communities.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    nbrs : dictionary</span>
+<span class="sd">           Dictionary with nodes&#39; neighbours as keys and their edge weight as value.</span>
+<span class="sd">    node2com : dictionary</span>
+<span class="sd">           Dictionary with all graph&#39;s nodes as keys and their community index as value.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">nbr</span><span class="p">,</span> <span class="n">wt</span> <span class="ow">in</span> <span class="n">nbrs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">weights</span><span class="p">[</span><span class="n">node2com</span><span class="p">[</span><span class="n">nbr</span><span class="p">]]</span> <span class="o">+=</span> <span class="n">wt</span>
+    <span class="k">return</span> <span class="n">weights</span>
+
+
+<span class="k">def</span> <span class="nf">_gen_graph</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">partition</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Generate a new graph based on the partitions of a given graph&quot;&quot;&quot;</span>
+    <span class="n">H</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
+    <span class="n">node2com</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">part</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">partition</span><span class="p">):</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">part</span><span class="p">:</span>
+            <span class="n">node2com</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+            <span class="n">nodes</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;nodes&quot;</span><span class="p">,</span> <span class="p">{</span><span class="n">node</span><span class="p">}))</span>
+        <span class="n">H</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="n">nodes</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">node1</span><span class="p">,</span> <span class="n">node2</span><span class="p">,</span> <span class="n">wt</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="n">wt</span> <span class="o">=</span> <span class="n">wt</span><span class="p">[</span><span class="s2">&quot;weight&quot;</span><span class="p">]</span>
+        <span class="n">com1</span> <span class="o">=</span> <span class="n">node2com</span><span class="p">[</span><span class="n">node1</span><span class="p">]</span>
+        <span class="n">com2</span> <span class="o">=</span> <span class="n">node2com</span><span class="p">[</span><span class="n">node2</span><span class="p">]</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">H</span><span class="o">.</span><span class="n">get_edge_data</span><span class="p">(</span><span class="n">com1</span><span class="p">,</span> <span class="n">com2</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;weight&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">})[</span><span class="s2">&quot;weight&quot;</span><span class="p">]</span>
+        <span class="n">H</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">com1</span><span class="p">,</span> <span class="n">com2</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="s2">&quot;weight&quot;</span><span class="p">:</span> <span class="n">wt</span> <span class="o">+</span> <span class="n">temp</span><span class="p">})</span>
+    <span class="k">return</span> <span class="n">H</span>
+
+
+<span class="k">def</span> <span class="nf">_convert_multigraph</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="p">,</span> <span class="n">is_directed</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert a Multigraph to normal Graph&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">is_directed</span><span class="p">:</span>
+        <span class="n">H</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">H</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+    <span class="n">H</span><span class="o">.</span><span class="n">add_nodes_from</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">wt</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">weight</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">H</span><span class="o">.</span><span class="n">has_edge</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+            <span class="n">H</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">][</span><span class="s2">&quot;weight&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">wt</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">H</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">wt</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">H</span>
+</pre></div>
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

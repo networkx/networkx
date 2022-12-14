@@ -1,0 +1,1704 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>networkx.convert_matrix &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/convert_matrix';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/convert_matrix.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <h1>Source code for networkx.convert_matrix</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Functions to convert NetworkX graphs to and from common data containers</span>
+<span class="sd">like numpy arrays, scipy sparse arrays, and pandas DataFrames.</span>
+
+<span class="sd">The preferred way of converting data to a NetworkX graph is through the</span>
+<span class="sd">graph constructor.  The constructor calls the `~networkx.convert.to_networkx_graph`</span>
+<span class="sd">function which attempts to guess the input type and convert it automatically.</span>
+
+<span class="sd">Examples</span>
+<span class="sd">--------</span>
+<span class="sd">Create a 10 node random graph from a numpy array</span>
+
+<span class="sd">&gt;&gt;&gt; import numpy as np</span>
+<span class="sd">&gt;&gt;&gt; rng = np.random.default_rng()</span>
+<span class="sd">&gt;&gt;&gt; a = rng.integers(low=0, high=2, size=(10, 10))</span>
+<span class="sd">&gt;&gt;&gt; DG = nx.from_numpy_array(a, create_using=nx.DiGraph)</span>
+
+<span class="sd">or equivalently:</span>
+
+<span class="sd">&gt;&gt;&gt; DG = nx.DiGraph(a)</span>
+
+<span class="sd">which calls `from_numpy_array` internally based on the type of ``a``.</span>
+
+<span class="sd">See Also</span>
+<span class="sd">--------</span>
+<span class="sd">nx_agraph, nx_pydot</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">from</span> <span class="nn">networkx.utils</span> <span class="kn">import</span> <span class="n">not_implemented_for</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;from_pandas_adjacency&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;to_pandas_adjacency&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;from_pandas_edgelist&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;to_pandas_edgelist&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;from_scipy_sparse_array&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;to_scipy_sparse_array&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;from_numpy_array&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;to_numpy_array&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="to_pandas_adjacency"><a class="viewcode-back" href="../../reference/generated/networkx.convert_matrix.to_pandas_adjacency.html#networkx.convert_matrix.to_pandas_adjacency">[docs]</a><span class="k">def</span> <span class="nf">to_pandas_adjacency</span><span class="p">(</span>
+    <span class="n">G</span><span class="p">,</span>
+    <span class="n">nodelist</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">multigraph_weight</span><span class="o">=</span><span class="nb">sum</span><span class="p">,</span>
+    <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span>
+    <span class="n">nonedge</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the graph adjacency matrix as a Pandas DataFrame.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : graph</span>
+<span class="sd">        The NetworkX graph used to construct the Pandas DataFrame.</span>
+
+<span class="sd">    nodelist : list, optional</span>
+<span class="sd">       The rows and columns are ordered according to the nodes in `nodelist`.</span>
+<span class="sd">       If `nodelist` is None, then the ordering is produced by G.nodes().</span>
+
+<span class="sd">    multigraph_weight : {sum, min, max}, optional</span>
+<span class="sd">        An operator that determines how weights in multigraphs are handled.</span>
+<span class="sd">        The default is to sum the weights of the multiple edges.</span>
+
+<span class="sd">    weight : string or None, optional</span>
+<span class="sd">        The edge attribute that holds the numerical value used for</span>
+<span class="sd">        the edge weight.  If an edge does not have that attribute, then the</span>
+<span class="sd">        value 1 is used instead.</span>
+
+<span class="sd">    nonedge : float, optional</span>
+<span class="sd">        The matrix values corresponding to nonedges are typically set to zero.</span>
+<span class="sd">        However, this could be undesirable if there are matrix values</span>
+<span class="sd">        corresponding to actual edges that also have the value zero. If so,</span>
+<span class="sd">        one might prefer nonedges to have some other value, such as nan.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    df : Pandas DataFrame</span>
+<span class="sd">       Graph adjacency matrix</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    For directed graphs, entry i,j corresponds to an edge from i to j.</span>
+
+<span class="sd">    The DataFrame entries are assigned to the weight edge attribute. When</span>
+<span class="sd">    an edge does not have a weight attribute, the value of the entry is set to</span>
+<span class="sd">    the number 1.  For multiple (parallel) edges, the values of the entries</span>
+<span class="sd">    are determined by the &#39;multigraph_weight&#39; parameter.  The default is to</span>
+<span class="sd">    sum the weight attributes for each of the parallel edges.</span>
+
+<span class="sd">    When `nodelist` does not contain every node in `G`, the matrix is built</span>
+<span class="sd">    from the subgraph of `G` that is induced by the nodes in `nodelist`.</span>
+
+<span class="sd">    The convention used for self-loop edges in graphs is to assign the</span>
+<span class="sd">    diagonal matrix entry value to the weight attribute of the edge</span>
+<span class="sd">    (or the number 1 if the edge has no weight attribute).  If the</span>
+<span class="sd">    alternate convention of doubling the edge weight is desired the</span>
+<span class="sd">    resulting Pandas DataFrame can be modified as follows:</span>
+
+<span class="sd">    &gt;&gt;&gt; import pandas as pd</span>
+<span class="sd">    &gt;&gt;&gt; pd.options.display.max_columns = 20</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.Graph([(1, 1)])</span>
+<span class="sd">    &gt;&gt;&gt; df = nx.to_pandas_adjacency(G, dtype=int)</span>
+<span class="sd">    &gt;&gt;&gt; df</span>
+<span class="sd">       1</span>
+<span class="sd">    1  1</span>
+<span class="sd">    &gt;&gt;&gt; df.values[np.diag_indices_from(df)] *= 2</span>
+<span class="sd">    &gt;&gt;&gt; df</span>
+<span class="sd">       1</span>
+<span class="sd">    1  2</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.MultiDiGraph()</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(0, 1, weight=2)</span>
+<span class="sd">    0</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(1, 0)</span>
+<span class="sd">    0</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(2, 2, weight=3)</span>
+<span class="sd">    0</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(2, 2)</span>
+<span class="sd">    1</span>
+<span class="sd">    &gt;&gt;&gt; nx.to_pandas_adjacency(G, nodelist=[0, 1, 2], dtype=int)</span>
+<span class="sd">       0  1  2</span>
+<span class="sd">    0  0  2  0</span>
+<span class="sd">    1  1  0  0</span>
+<span class="sd">    2  0  0  4</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+    <span class="n">M</span> <span class="o">=</span> <span class="n">to_numpy_array</span><span class="p">(</span>
+        <span class="n">G</span><span class="p">,</span>
+        <span class="n">nodelist</span><span class="o">=</span><span class="n">nodelist</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+        <span class="n">multigraph_weight</span><span class="o">=</span><span class="n">multigraph_weight</span><span class="p">,</span>
+        <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">,</span>
+        <span class="n">nonedge</span><span class="o">=</span><span class="n">nonedge</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">nodelist</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">nodelist</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">M</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">nodelist</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">nodelist</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="from_pandas_adjacency"><a class="viewcode-back" href="../../reference/generated/networkx.convert_matrix.from_pandas_adjacency.html#networkx.convert_matrix.from_pandas_adjacency">[docs]</a><span class="k">def</span> <span class="nf">from_pandas_adjacency</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">create_using</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns a graph from Pandas DataFrame.</span>
+
+<span class="sd">    The Pandas DataFrame is interpreted as an adjacency matrix for the graph.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    df : Pandas DataFrame</span>
+<span class="sd">      An adjacency matrix representation of a graph</span>
+
+<span class="sd">    create_using : NetworkX graph constructor, optional (default=nx.Graph)</span>
+<span class="sd">       Graph type to create. If graph instance, then cleared before populated.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    For directed graphs, explicitly mention create_using=nx.DiGraph,</span>
+<span class="sd">    and entry i,j of df corresponds to an edge from i to j.</span>
+
+<span class="sd">    If `df` has a single data type for each entry it will be converted to an</span>
+<span class="sd">    appropriate Python data type.</span>
+
+<span class="sd">    If `df` has a user-specified compound data type the names</span>
+<span class="sd">    of the data fields will be used as attribute keys in the resulting</span>
+<span class="sd">    NetworkX graph.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    to_pandas_adjacency</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Simple integer weights on edges:</span>
+
+<span class="sd">    &gt;&gt;&gt; import pandas as pd</span>
+<span class="sd">    &gt;&gt;&gt; pd.options.display.max_columns = 20</span>
+<span class="sd">    &gt;&gt;&gt; df = pd.DataFrame([[1, 1], [2, 1]])</span>
+<span class="sd">    &gt;&gt;&gt; df</span>
+<span class="sd">       0  1</span>
+<span class="sd">    0  1  1</span>
+<span class="sd">    1  2  1</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.from_pandas_adjacency(df)</span>
+<span class="sd">    &gt;&gt;&gt; G.name = &quot;Graph from pandas adjacency matrix&quot;</span>
+<span class="sd">    &gt;&gt;&gt; print(G)</span>
+<span class="sd">    Graph named &#39;Graph from pandas adjacency matrix&#39; with 2 nodes and 3 edges</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="n">missing</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">)))</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">missing</span><span class="si">}</span><span class="s2"> not in columns&quot;</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;Columns must match Indices.&quot;</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">err</span>
+
+    <span class="n">A</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">from_numpy_array</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">create_using</span><span class="o">=</span><span class="n">create_using</span><span class="p">)</span>
+
+    <span class="n">nx</span><span class="o">.</span><span class="n">relabel</span><span class="o">.</span><span class="n">relabel_nodes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">enumerate</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">)),</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">G</span></div>
+
+
+<div class="viewcode-block" id="to_pandas_edgelist"><a class="viewcode-back" href="../../reference/generated/networkx.convert_matrix.to_pandas_edgelist.html#networkx.convert_matrix.to_pandas_edgelist">[docs]</a><span class="k">def</span> <span class="nf">to_pandas_edgelist</span><span class="p">(</span>
+    <span class="n">G</span><span class="p">,</span>
+    <span class="n">source</span><span class="o">=</span><span class="s2">&quot;source&quot;</span><span class="p">,</span>
+    <span class="n">target</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">,</span>
+    <span class="n">nodelist</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">edge_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the graph edge list as a Pandas DataFrame.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : graph</span>
+<span class="sd">        The NetworkX graph used to construct the Pandas DataFrame.</span>
+
+<span class="sd">    source : str or int, optional</span>
+<span class="sd">        A valid column name (string or integer) for the source nodes (for the</span>
+<span class="sd">        directed case).</span>
+
+<span class="sd">    target : str or int, optional</span>
+<span class="sd">        A valid column name (string or integer) for the target nodes (for the</span>
+<span class="sd">        directed case).</span>
+
+<span class="sd">    nodelist : list, optional</span>
+<span class="sd">       Use only nodes specified in nodelist</span>
+
+<span class="sd">    dtype : dtype, default None</span>
+<span class="sd">        Use to create the DataFrame. Data type to force.</span>
+<span class="sd">        Only a single dtype is allowed. If None, infer.</span>
+
+<span class="sd">    edge_key : str or int or None, optional (default=None)</span>
+<span class="sd">        A valid column name (string or integer) for the edge keys (for the</span>
+<span class="sd">        multigraph case). If None, edge keys are not stored in the DataFrame.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    df : Pandas DataFrame</span>
+<span class="sd">       Graph edge list</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.Graph(</span>
+<span class="sd">    ...     [</span>
+<span class="sd">    ...         (&quot;A&quot;, &quot;B&quot;, {&quot;cost&quot;: 1, &quot;weight&quot;: 7}),</span>
+<span class="sd">    ...         (&quot;C&quot;, &quot;E&quot;, {&quot;cost&quot;: 9, &quot;weight&quot;: 10}),</span>
+<span class="sd">    ...     ]</span>
+<span class="sd">    ... )</span>
+<span class="sd">    &gt;&gt;&gt; df = nx.to_pandas_edgelist(G, nodelist=[&quot;A&quot;, &quot;C&quot;])</span>
+<span class="sd">    &gt;&gt;&gt; df[[&quot;source&quot;, &quot;target&quot;, &quot;cost&quot;, &quot;weight&quot;]]</span>
+<span class="sd">      source target  cost  weight</span>
+<span class="sd">    0      A      B     1       7</span>
+<span class="sd">    1      C      E     9      10</span>
+
+<span class="sd">    &gt;&gt;&gt; G = nx.MultiGraph([(&#39;A&#39;, &#39;B&#39;, {&#39;cost&#39;: 1}), (&#39;A&#39;, &#39;B&#39;, {&#39;cost&#39;: 9})])</span>
+<span class="sd">    &gt;&gt;&gt; df = nx.to_pandas_edgelist(G, nodelist=[&#39;A&#39;, &#39;C&#39;], edge_key=&#39;ekey&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; df[[&#39;source&#39;, &#39;target&#39;, &#39;cost&#39;, &#39;ekey&#39;]]</span>
+<span class="sd">      source target  cost  ekey</span>
+<span class="sd">    0      A      B     1     0</span>
+<span class="sd">    1      A      B     9     1</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+    <span class="k">if</span> <span class="n">nodelist</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">edgelist</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">edgelist</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">nodelist</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">source_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">edgelist</span><span class="p">]</span>
+    <span class="n">target_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">edgelist</span><span class="p">]</span>
+
+    <span class="n">all_attrs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">edgelist</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">source</span> <span class="ow">in</span> <span class="n">all_attrs</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Source name </span><span class="si">{</span><span class="n">source</span><span class="si">!r}</span><span class="s2"> is an edge attr name&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">all_attrs</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Target name </span><span class="si">{</span><span class="n">target</span><span class="si">!r}</span><span class="s2"> is an edge attr name&quot;</span><span class="p">)</span>
+
+    <span class="n">nan</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;nan&quot;</span><span class="p">)</span>
+    <span class="n">edge_attr</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="p">[</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">nan</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">edgelist</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">all_attrs</span><span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">is_multigraph</span><span class="p">()</span> <span class="ow">and</span> <span class="n">edge_key</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">edge_key</span> <span class="ow">in</span> <span class="n">all_attrs</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Edge key name </span><span class="si">{</span><span class="n">edge_key</span><span class="si">!r}</span><span class="s2"> is an edge attr name&quot;</span><span class="p">)</span>
+        <span class="n">edge_keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">keys</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span>
+        <span class="n">edgelistdict</span> <span class="o">=</span> <span class="p">{</span><span class="n">source</span><span class="p">:</span> <span class="n">source_nodes</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="n">target_nodes</span><span class="p">,</span> <span class="n">edge_key</span><span class="p">:</span> <span class="n">edge_keys</span><span class="p">}</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">edgelistdict</span> <span class="o">=</span> <span class="p">{</span><span class="n">source</span><span class="p">:</span> <span class="n">source_nodes</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="n">target_nodes</span><span class="p">}</span>
+
+    <span class="n">edgelistdict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">edge_attr</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">edgelistdict</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="from_pandas_edgelist"><a class="viewcode-back" href="../../reference/generated/networkx.convert_matrix.from_pandas_edgelist.html#networkx.convert_matrix.from_pandas_edgelist">[docs]</a><span class="k">def</span> <span class="nf">from_pandas_edgelist</span><span class="p">(</span>
+    <span class="n">df</span><span class="p">,</span>
+    <span class="n">source</span><span class="o">=</span><span class="s2">&quot;source&quot;</span><span class="p">,</span>
+    <span class="n">target</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">,</span>
+    <span class="n">edge_attr</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">create_using</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">edge_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns a graph from Pandas DataFrame containing an edge list.</span>
+
+<span class="sd">    The Pandas DataFrame should contain at least two columns of node names and</span>
+<span class="sd">    zero or more columns of edge attributes. Each row will be processed as one</span>
+<span class="sd">    edge instance.</span>
+
+<span class="sd">    Note: This function iterates over DataFrame.values, which is not</span>
+<span class="sd">    guaranteed to retain the data type across columns in the row. This is only</span>
+<span class="sd">    a problem if your row is entirely numeric and a mix of ints and floats. In</span>
+<span class="sd">    that case, all values will be returned as floats. See the</span>
+<span class="sd">    DataFrame.iterrows documentation for an example.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    df : Pandas DataFrame</span>
+<span class="sd">        An edge list representation of a graph</span>
+
+<span class="sd">    source : str or int</span>
+<span class="sd">        A valid column name (string or integer) for the source nodes (for the</span>
+<span class="sd">        directed case).</span>
+
+<span class="sd">    target : str or int</span>
+<span class="sd">        A valid column name (string or integer) for the target nodes (for the</span>
+<span class="sd">        directed case).</span>
+
+<span class="sd">    edge_attr : str or int, iterable, True, or None</span>
+<span class="sd">        A valid column name (str or int) or iterable of column names that are</span>
+<span class="sd">        used to retrieve items and add them to the graph as edge attributes.</span>
+<span class="sd">        If `True`, all of the remaining columns will be added.</span>
+<span class="sd">        If `None`, no edge attributes are added to the graph.</span>
+
+<span class="sd">    create_using : NetworkX graph constructor, optional (default=nx.Graph)</span>
+<span class="sd">        Graph type to create. If graph instance, then cleared before populated.</span>
+
+<span class="sd">    edge_key : str or None, optional (default=None)</span>
+<span class="sd">        A valid column name for the edge keys (for a MultiGraph). The values in</span>
+<span class="sd">        this column are used for the edge keys when adding edges if create_using</span>
+<span class="sd">        is a multigraph.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    to_pandas_edgelist</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Simple integer weights on edges:</span>
+
+<span class="sd">    &gt;&gt;&gt; import pandas as pd</span>
+<span class="sd">    &gt;&gt;&gt; pd.options.display.max_columns = 20</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; rng = np.random.RandomState(seed=5)</span>
+<span class="sd">    &gt;&gt;&gt; ints = rng.randint(1, 11, size=(3, 2))</span>
+<span class="sd">    &gt;&gt;&gt; a = [&quot;A&quot;, &quot;B&quot;, &quot;C&quot;]</span>
+<span class="sd">    &gt;&gt;&gt; b = [&quot;D&quot;, &quot;A&quot;, &quot;E&quot;]</span>
+<span class="sd">    &gt;&gt;&gt; df = pd.DataFrame(ints, columns=[&quot;weight&quot;, &quot;cost&quot;])</span>
+<span class="sd">    &gt;&gt;&gt; df[0] = a</span>
+<span class="sd">    &gt;&gt;&gt; df[&quot;b&quot;] = b</span>
+<span class="sd">    &gt;&gt;&gt; df[[&quot;weight&quot;, &quot;cost&quot;, 0, &quot;b&quot;]]</span>
+<span class="sd">       weight  cost  0  b</span>
+<span class="sd">    0       4     7  A  D</span>
+<span class="sd">    1       7     1  B  A</span>
+<span class="sd">    2      10     9  C  E</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.from_pandas_edgelist(df, 0, &quot;b&quot;, [&quot;weight&quot;, &quot;cost&quot;])</span>
+<span class="sd">    &gt;&gt;&gt; G[&quot;E&quot;][&quot;C&quot;][&quot;weight&quot;]</span>
+<span class="sd">    10</span>
+<span class="sd">    &gt;&gt;&gt; G[&quot;E&quot;][&quot;C&quot;][&quot;cost&quot;]</span>
+<span class="sd">    9</span>
+<span class="sd">    &gt;&gt;&gt; edges = pd.DataFrame(</span>
+<span class="sd">    ...     {</span>
+<span class="sd">    ...         &quot;source&quot;: [0, 1, 2],</span>
+<span class="sd">    ...         &quot;target&quot;: [2, 2, 3],</span>
+<span class="sd">    ...         &quot;weight&quot;: [3, 4, 5],</span>
+<span class="sd">    ...         &quot;color&quot;: [&quot;red&quot;, &quot;blue&quot;, &quot;blue&quot;],</span>
+<span class="sd">    ...     }</span>
+<span class="sd">    ... )</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.from_pandas_edgelist(edges, edge_attr=True)</span>
+<span class="sd">    &gt;&gt;&gt; G[0][2][&quot;color&quot;]</span>
+<span class="sd">    &#39;red&#39;</span>
+
+<span class="sd">    Build multigraph with custom keys:</span>
+
+<span class="sd">    &gt;&gt;&gt; edges = pd.DataFrame(</span>
+<span class="sd">    ...     {</span>
+<span class="sd">    ...         &quot;source&quot;: [0, 1, 2, 0],</span>
+<span class="sd">    ...         &quot;target&quot;: [2, 2, 3, 2],</span>
+<span class="sd">    ...         &quot;my_edge_key&quot;: [&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;],</span>
+<span class="sd">    ...         &quot;weight&quot;: [3, 4, 5, 6],</span>
+<span class="sd">    ...         &quot;color&quot;: [&quot;red&quot;, &quot;blue&quot;, &quot;blue&quot;, &quot;blue&quot;],</span>
+<span class="sd">    ...     }</span>
+<span class="sd">    ... )</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.from_pandas_edgelist(</span>
+<span class="sd">    ...     edges,</span>
+<span class="sd">    ...     edge_key=&quot;my_edge_key&quot;,</span>
+<span class="sd">    ...     edge_attr=[&quot;weight&quot;, &quot;color&quot;],</span>
+<span class="sd">    ...     create_using=nx.MultiGraph(),</span>
+<span class="sd">    ... )</span>
+<span class="sd">    &gt;&gt;&gt; G[0][2]</span>
+<span class="sd">    AtlasView({&#39;A&#39;: {&#39;weight&#39;: 3, &#39;color&#39;: &#39;red&#39;}, &#39;D&#39;: {&#39;weight&#39;: 6, &#39;color&#39;: &#39;blue&#39;}})</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">empty_graph</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">create_using</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">edge_attr</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">source</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="n">target</span><span class="p">]))</span>
+        <span class="k">return</span> <span class="n">g</span>
+
+    <span class="n">reserved_columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">]</span>
+
+    <span class="c1"># Additional columns requested</span>
+    <span class="n">attr_col_headings</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">attribute_data</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">edge_attr</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">attr_col_headings</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">reserved_columns</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">edge_attr</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+        <span class="n">attr_col_headings</span> <span class="o">=</span> <span class="n">edge_attr</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">attr_col_headings</span> <span class="o">=</span> <span class="p">[</span><span class="n">edge_attr</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">attr_col_headings</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Invalid edge_attr argument: No columns found with name: </span><span class="si">{</span><span class="n">attr_col_headings</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">attribute_data</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">attr_col_headings</span><span class="p">])</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Invalid edge_attr argument: </span><span class="si">{</span><span class="n">edge_attr</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">err</span>
+
+    <span class="k">if</span> <span class="n">g</span><span class="o">.</span><span class="n">is_multigraph</span><span class="p">():</span>
+        <span class="c1"># =&gt; append the edge keys from the df to the bundled data</span>
+        <span class="k">if</span> <span class="n">edge_key</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">multigraph_edge_keys</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">edge_key</span><span class="p">]</span>
+                <span class="n">attribute_data</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="n">attribute_data</span><span class="p">,</span> <span class="n">multigraph_edge_keys</span><span class="p">)</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Invalid edge_key argument: </span><span class="si">{</span><span class="n">edge_key</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">err</span>
+
+        <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">attrs</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">source</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="n">target</span><span class="p">],</span> <span class="n">attribute_data</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">edge_key</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">attrs</span><span class="p">,</span> <span class="n">multigraph_edge_key</span> <span class="o">=</span> <span class="n">attrs</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">multigraph_edge_key</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+
+            <span class="n">g</span><span class="p">[</span><span class="n">s</span><span class="p">][</span><span class="n">t</span><span class="p">][</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">attr_col_headings</span><span class="p">,</span> <span class="n">attrs</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">attrs</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">source</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="n">target</span><span class="p">],</span> <span class="n">attribute_data</span><span class="p">):</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+            <span class="n">g</span><span class="p">[</span><span class="n">s</span><span class="p">][</span><span class="n">t</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">attr_col_headings</span><span class="p">,</span> <span class="n">attrs</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">g</span></div>
+
+
+<div class="viewcode-block" id="to_scipy_sparse_array"><a class="viewcode-back" href="../../reference/generated/networkx.convert_matrix.to_scipy_sparse_array.html#networkx.convert_matrix.to_scipy_sparse_array">[docs]</a><span class="k">def</span> <span class="nf">to_scipy_sparse_array</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">nodelist</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;csr&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the graph adjacency matrix as a SciPy sparse array.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : graph</span>
+<span class="sd">        The NetworkX graph used to construct the sparse matrix.</span>
+
+<span class="sd">    nodelist : list, optional</span>
+<span class="sd">       The rows and columns are ordered according to the nodes in `nodelist`.</span>
+<span class="sd">       If `nodelist` is None, then the ordering is produced by G.nodes().</span>
+
+<span class="sd">    dtype : NumPy data-type, optional</span>
+<span class="sd">        A valid NumPy dtype used to initialize the array. If None, then the</span>
+<span class="sd">        NumPy default is used.</span>
+
+<span class="sd">    weight : string or None   optional (default=&#39;weight&#39;)</span>
+<span class="sd">        The edge attribute that holds the numerical value used for</span>
+<span class="sd">        the edge weight.  If None then all edge weights are 1.</span>
+
+<span class="sd">    format : str in {&#39;bsr&#39;, &#39;csr&#39;, &#39;csc&#39;, &#39;coo&#39;, &#39;lil&#39;, &#39;dia&#39;, &#39;dok&#39;}</span>
+<span class="sd">        The type of the matrix to be returned (default &#39;csr&#39;).  For</span>
+<span class="sd">        some algorithms different implementations of sparse matrices</span>
+<span class="sd">        can perform better.  See [1]_ for details.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    A : SciPy sparse array</span>
+<span class="sd">       Graph adjacency matrix.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    For directed graphs, matrix entry i,j corresponds to an edge from i to j.</span>
+
+<span class="sd">    The matrix entries are populated using the edge attribute held in</span>
+<span class="sd">    parameter weight. When an edge does not have that attribute, the</span>
+<span class="sd">    value of the entry is 1.</span>
+
+<span class="sd">    For multiple edges the matrix values are the sums of the edge weights.</span>
+
+<span class="sd">    When `nodelist` does not contain every node in `G`, the adjacency matrix</span>
+<span class="sd">    is built from the subgraph of `G` that is induced by the nodes in</span>
+<span class="sd">    `nodelist`.</span>
+
+<span class="sd">    The convention used for self-loop edges in graphs is to assign the</span>
+<span class="sd">    diagonal matrix entry value to the weight attribute of the edge</span>
+<span class="sd">    (or the number 1 if the edge has no weight attribute).  If the</span>
+<span class="sd">    alternate convention of doubling the edge weight is desired the</span>
+<span class="sd">    resulting SciPy sparse array can be modified as follows:</span>
+
+<span class="sd">    &gt;&gt;&gt; G = nx.Graph([(1, 1)])</span>
+<span class="sd">    &gt;&gt;&gt; A = nx.to_scipy_sparse_array(G)</span>
+<span class="sd">    &gt;&gt;&gt; print(A.todense())</span>
+<span class="sd">    [[1]]</span>
+<span class="sd">    &gt;&gt;&gt; A.setdiag(A.diagonal() * 2)</span>
+<span class="sd">    &gt;&gt;&gt; print(A.toarray())</span>
+<span class="sd">    [[2]]</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.MultiDiGraph()</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(0, 1, weight=2)</span>
+<span class="sd">    0</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(1, 0)</span>
+<span class="sd">    0</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(2, 2, weight=3)</span>
+<span class="sd">    0</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(2, 2)</span>
+<span class="sd">    1</span>
+<span class="sd">    &gt;&gt;&gt; S = nx.to_scipy_sparse_array(G, nodelist=[0, 1, 2])</span>
+<span class="sd">    &gt;&gt;&gt; print(S.toarray())</span>
+<span class="sd">    [[0 2 0]</span>
+<span class="sd">     [1 0 0]</span>
+<span class="sd">     [0 0 4]]</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Scipy Dev. References, &quot;Sparse Matrices&quot;,</span>
+<span class="sd">       https://docs.scipy.org/doc/scipy/reference/sparse.html</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">scipy</span> <span class="k">as</span> <span class="nn">sp</span>
+    <span class="kn">import</span> <span class="nn">scipy.sparse</span>  <span class="c1"># call as sp.sparse</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;Graph has no nodes or edges&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">nodelist</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">nodelist</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+        <span class="n">nlen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">nlen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodelist</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">nlen</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;nodelist has no nodes&quot;</span><span class="p">)</span>
+        <span class="n">nodeset</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nbunch_iter</span><span class="p">(</span><span class="n">nodelist</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">nlen</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodeset</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nodelist</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">n</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">G</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Node </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2"> in nodelist is not in G&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;nodelist contains duplicates.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">nlen</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+            <span class="n">G</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">subgraph</span><span class="p">(</span><span class="n">nodelist</span><span class="p">)</span>
+
+    <span class="n">index</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">nodelist</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="n">nlen</span><span class="p">)))</span>
+    <span class="n">coefficients</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span>
+        <span class="o">*</span><span class="p">((</span><span class="n">index</span><span class="p">[</span><span class="n">u</span><span class="p">],</span> <span class="n">index</span><span class="p">[</span><span class="n">v</span><span class="p">],</span> <span class="n">wt</span><span class="p">)</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">wt</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">weight</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+    <span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">coefficients</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="c1"># there is no edge in the subgraph</span>
+        <span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+
+    <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">coo_array</span><span class="p">((</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">)),</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">nlen</span><span class="p">,</span> <span class="n">nlen</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># symmetrize matrix</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">data</span> <span class="o">+</span> <span class="n">data</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">row</span> <span class="o">+</span> <span class="n">col</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">col</span> <span class="o">+</span> <span class="n">row</span>
+        <span class="c1"># selfloop entries get double counted when symmetrizing</span>
+        <span class="c1"># so we subtract the data on the diagonal</span>
+        <span class="n">selfloops</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">selfloop_edges</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">weight</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">selfloops</span><span class="p">:</span>
+            <span class="n">diag_index</span><span class="p">,</span> <span class="n">diag_data</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="p">((</span><span class="n">index</span><span class="p">[</span><span class="n">u</span><span class="p">],</span> <span class="o">-</span><span class="n">wt</span><span class="p">)</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">wt</span> <span class="ow">in</span> <span class="n">selfloops</span><span class="p">))</span>
+            <span class="n">d</span> <span class="o">+=</span> <span class="n">diag_data</span>
+            <span class="n">r</span> <span class="o">+=</span> <span class="n">diag_index</span>
+            <span class="n">c</span> <span class="o">+=</span> <span class="n">diag_index</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">coo_array</span><span class="p">((</span><span class="n">d</span><span class="p">,</span> <span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">)),</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">nlen</span><span class="p">,</span> <span class="n">nlen</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">A</span><span class="o">.</span><span class="n">asformat</span><span class="p">(</span><span class="nb">format</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown sparse matrix format: </span><span class="si">{</span><span class="nb">format</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">err</span></div>
+
+
+<span class="k">def</span> <span class="nf">_csr_gen_triples</span><span class="p">(</span><span class="n">A</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Converts a SciPy sparse array in **Compressed Sparse Row** format to</span>
+<span class="sd">    an iterable of weighted edge triples.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">nrows</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">data</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">indptr</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">A</span><span class="o">.</span><span class="n">indices</span><span class="p">,</span> <span class="n">A</span><span class="o">.</span><span class="n">indptr</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nrows</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">indptr</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">indptr</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]):</span>
+            <span class="k">yield</span> <span class="n">i</span><span class="p">,</span> <span class="n">indices</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">_csc_gen_triples</span><span class="p">(</span><span class="n">A</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Converts a SciPy sparse array in **Compressed Sparse Column** format to</span>
+<span class="sd">    an iterable of weighted edge triples.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ncols</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">data</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">indptr</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">A</span><span class="o">.</span><span class="n">indices</span><span class="p">,</span> <span class="n">A</span><span class="o">.</span><span class="n">indptr</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ncols</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">indptr</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">indptr</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]):</span>
+            <span class="k">yield</span> <span class="n">indices</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">i</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">_coo_gen_triples</span><span class="p">(</span><span class="n">A</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Converts a SciPy sparse array in **Coordinate** format to an iterable</span>
+<span class="sd">    of weighted edge triples.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">row</span><span class="p">,</span> <span class="n">A</span><span class="o">.</span><span class="n">col</span><span class="p">,</span> <span class="n">A</span><span class="o">.</span><span class="n">data</span>
+    <span class="k">return</span> <span class="nb">zip</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_dok_gen_triples</span><span class="p">(</span><span class="n">A</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Converts a SciPy sparse array in **Dictionary of Keys** format to an</span>
+<span class="sd">    iterable of weighted edge triples.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">),</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">A</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">yield</span> <span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">v</span>
+
+
+<span class="k">def</span> <span class="nf">_generate_weighted_edges</span><span class="p">(</span><span class="n">A</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns an iterable over (u, v, w) triples, where u and v are adjacent</span>
+<span class="sd">    vertices and w is the weight of the edge joining u and v.</span>
+
+<span class="sd">    `A` is a SciPy sparse array (in any format).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">A</span><span class="o">.</span><span class="n">format</span> <span class="o">==</span> <span class="s2">&quot;csr&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_csr_gen_triples</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">A</span><span class="o">.</span><span class="n">format</span> <span class="o">==</span> <span class="s2">&quot;csc&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_csc_gen_triples</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">A</span><span class="o">.</span><span class="n">format</span> <span class="o">==</span> <span class="s2">&quot;dok&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_dok_gen_triples</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+    <span class="c1"># If A is in any other format (including COO), convert it to COO format.</span>
+    <span class="k">return</span> <span class="n">_coo_gen_triples</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">tocoo</span><span class="p">())</span>
+
+
+<div class="viewcode-block" id="from_scipy_sparse_array"><a class="viewcode-back" href="../../reference/generated/networkx.convert_matrix.from_scipy_sparse_array.html#networkx.convert_matrix.from_scipy_sparse_array">[docs]</a><span class="k">def</span> <span class="nf">from_scipy_sparse_array</span><span class="p">(</span>
+    <span class="n">A</span><span class="p">,</span> <span class="n">parallel_edges</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">create_using</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">edge_attribute</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Creates a new graph from an adjacency matrix given as a SciPy sparse</span>
+<span class="sd">    array.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    A: scipy.sparse array</span>
+<span class="sd">      An adjacency matrix representation of a graph</span>
+
+<span class="sd">    parallel_edges : Boolean</span>
+<span class="sd">      If this is True, `create_using` is a multigraph, and `A` is an</span>
+<span class="sd">      integer matrix, then entry *(i, j)* in the matrix is interpreted as the</span>
+<span class="sd">      number of parallel edges joining vertices *i* and *j* in the graph.</span>
+<span class="sd">      If it is False, then the entries in the matrix are interpreted as</span>
+<span class="sd">      the weight of a single edge joining the vertices.</span>
+
+<span class="sd">    create_using : NetworkX graph constructor, optional (default=nx.Graph)</span>
+<span class="sd">       Graph type to create. If graph instance, then cleared before populated.</span>
+
+<span class="sd">    edge_attribute: string</span>
+<span class="sd">       Name of edge attribute to store matrix numeric value. The data will</span>
+<span class="sd">       have the same type as the matrix entry (int, float, (real,imag)).</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    For directed graphs, explicitly mention create_using=nx.DiGraph,</span>
+<span class="sd">    and entry i,j of A corresponds to an edge from i to j.</span>
+
+<span class="sd">    If `create_using` is :class:`networkx.MultiGraph` or</span>
+<span class="sd">    :class:`networkx.MultiDiGraph`, `parallel_edges` is True, and the</span>
+<span class="sd">    entries of `A` are of type :class:`int`, then this function returns a</span>
+<span class="sd">    multigraph (constructed from `create_using`) with parallel edges.</span>
+<span class="sd">    In this case, `edge_attribute` will be ignored.</span>
+
+<span class="sd">    If `create_using` indicates an undirected multigraph, then only the edges</span>
+<span class="sd">    indicated by the upper triangle of the matrix `A` will be added to the</span>
+<span class="sd">    graph.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import scipy as sp</span>
+<span class="sd">    &gt;&gt;&gt; import scipy.sparse  # call as sp.sparse</span>
+<span class="sd">    &gt;&gt;&gt; A = sp.sparse.eye(2, 2, 1)</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.from_scipy_sparse_array(A)</span>
+
+<span class="sd">    If `create_using` indicates a multigraph and the matrix has only integer</span>
+<span class="sd">    entries and `parallel_edges` is False, then the entries will be treated</span>
+<span class="sd">    as weights for edges joining the nodes (without creating parallel edges):</span>
+
+<span class="sd">    &gt;&gt;&gt; A = sp.sparse.csr_array([[1, 1], [1, 2]])</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.from_scipy_sparse_array(A, create_using=nx.MultiGraph)</span>
+<span class="sd">    &gt;&gt;&gt; G[1][1]</span>
+<span class="sd">    AtlasView({0: {&#39;weight&#39;: 2}})</span>
+
+<span class="sd">    If `create_using` indicates a multigraph and the matrix has only integer</span>
+<span class="sd">    entries and `parallel_edges` is True, then the entries will be treated</span>
+<span class="sd">    as the number of parallel edges joining those two vertices:</span>
+
+<span class="sd">    &gt;&gt;&gt; A = sp.sparse.csr_array([[1, 1], [1, 2]])</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.from_scipy_sparse_array(</span>
+<span class="sd">    ...     A, parallel_edges=True, create_using=nx.MultiGraph</span>
+<span class="sd">    ... )</span>
+<span class="sd">    &gt;&gt;&gt; G[1][1]</span>
+<span class="sd">    AtlasView({0: {&#39;weight&#39;: 1}, 1: {&#39;weight&#39;: 1}})</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">empty_graph</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">create_using</span><span class="p">)</span>
+    <span class="n">n</span><span class="p">,</span> <span class="n">m</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">!=</span> <span class="n">m</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Adjacency matrix not square: nx,ny=</span><span class="si">{</span><span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="c1"># Make sure we get even the isolated nodes of the graph.</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">add_nodes_from</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+    <span class="c1"># Create an iterable over (u, v, w) triples and for each triple, add an</span>
+    <span class="c1"># edge from u to v with weight w.</span>
+    <span class="n">triples</span> <span class="o">=</span> <span class="n">_generate_weighted_edges</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+    <span class="c1"># If the entries in the adjacency matrix are integers, the graph is a</span>
+    <span class="c1"># multigraph, and parallel_edges is True, then create parallel edges, each</span>
+    <span class="c1"># with weight 1, for each entry in the adjacency matrix. Otherwise, create</span>
+    <span class="c1"># one edge for each positive entry in the adjacency matrix and set the</span>
+    <span class="c1"># weight of that edge to be the entry in the matrix.</span>
+    <span class="k">if</span> <span class="n">A</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;i&quot;</span><span class="p">,</span> <span class="s2">&quot;u&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">G</span><span class="o">.</span><span class="n">is_multigraph</span><span class="p">()</span> <span class="ow">and</span> <span class="n">parallel_edges</span><span class="p">:</span>
+        <span class="n">chain</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span>
+        <span class="c1"># The following line is equivalent to:</span>
+        <span class="c1">#</span>
+        <span class="c1">#     for (u, v) in edges:</span>
+        <span class="c1">#         for d in range(A[u, v]):</span>
+        <span class="c1">#             G.add_edge(u, v, weight=1)</span>
+        <span class="c1">#</span>
+        <span class="n">triples</span> <span class="o">=</span> <span class="n">chain</span><span class="p">(((</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">w</span><span class="p">))</span> <span class="k">for</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span> <span class="ow">in</span> <span class="n">triples</span><span class="p">)</span>
+    <span class="c1"># If we are creating an undirected multigraph, only add the edges from the</span>
+    <span class="c1"># upper triangle of the matrix. Otherwise, add all the edges. This relies</span>
+    <span class="c1"># on the fact that the vertices created in the</span>
+    <span class="c1"># `_generated_weighted_edges()` function are actually the row/column</span>
+    <span class="c1"># indices for the matrix `A`.</span>
+    <span class="c1">#</span>
+    <span class="c1"># Without this check, we run into a problem where each edge is added twice</span>
+    <span class="c1"># when `G.add_weighted_edges_from()` is invoked below.</span>
+    <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">is_multigraph</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">G</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+        <span class="n">triples</span> <span class="o">=</span> <span class="p">((</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">triples</span> <span class="k">if</span> <span class="n">u</span> <span class="o">&lt;=</span> <span class="n">v</span><span class="p">)</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">add_weighted_edges_from</span><span class="p">(</span><span class="n">triples</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">edge_attribute</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">G</span></div>
+
+
+<div class="viewcode-block" id="to_numpy_array"><a class="viewcode-back" href="../../reference/generated/networkx.convert_matrix.to_numpy_array.html#networkx.convert_matrix.to_numpy_array">[docs]</a><span class="k">def</span> <span class="nf">to_numpy_array</span><span class="p">(</span>
+    <span class="n">G</span><span class="p">,</span>
+    <span class="n">nodelist</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">multigraph_weight</span><span class="o">=</span><span class="nb">sum</span><span class="p">,</span>
+    <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span>
+    <span class="n">nonedge</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the graph adjacency matrix as a NumPy array.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : graph</span>
+<span class="sd">        The NetworkX graph used to construct the NumPy array.</span>
+
+<span class="sd">    nodelist : list, optional</span>
+<span class="sd">        The rows and columns are ordered according to the nodes in `nodelist`.</span>
+<span class="sd">        If `nodelist` is ``None``, then the ordering is produced by ``G.nodes()``.</span>
+
+<span class="sd">    dtype : NumPy data type, optional</span>
+<span class="sd">        A NumPy data type used to initialize the array. If None, then the NumPy</span>
+<span class="sd">        default is used. The dtype can be structured if `weight=None`, in which</span>
+<span class="sd">        case the dtype field names are used to look up edge attributes. The</span>
+<span class="sd">        result is a structured array where each named field in the dtype</span>
+<span class="sd">        corresponds to the adjaceny for that edge attribute. See examples for</span>
+<span class="sd">        details.</span>
+
+<span class="sd">    order : {&#39;C&#39;, &#39;F&#39;}, optional</span>
+<span class="sd">        Whether to store multidimensional data in C- or Fortran-contiguous</span>
+<span class="sd">        (row- or column-wise) order in memory. If None, then the NumPy default</span>
+<span class="sd">        is used.</span>
+
+<span class="sd">    multigraph_weight : callable, optional</span>
+<span class="sd">        An function that determines how weights in multigraphs are handled.</span>
+<span class="sd">        The function should accept a sequence of weights and return a single</span>
+<span class="sd">        value. The default is to sum the weights of the multiple edges.</span>
+
+<span class="sd">    weight : string or None optional (default = &#39;weight&#39;)</span>
+<span class="sd">        The edge attribute that holds the numerical value used for</span>
+<span class="sd">        the edge weight. If an edge does not have that attribute, then the</span>
+<span class="sd">        value 1 is used instead. `weight` must be ``None`` if a structured</span>
+<span class="sd">        dtype is used.</span>
+
+<span class="sd">    nonedge : array_like (default = 0.0)</span>
+<span class="sd">        The value used to represent non-edges in the adjaceny matrix.</span>
+<span class="sd">        The array values corresponding to nonedges are typically set to zero.</span>
+<span class="sd">        However, this could be undesirable if there are array values</span>
+<span class="sd">        corresponding to actual edges that also have the value zero. If so,</span>
+<span class="sd">        one might prefer nonedges to have some other value, such as ``nan``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    A : NumPy ndarray</span>
+<span class="sd">        Graph adjacency matrix</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NetworkXError</span>
+<span class="sd">        If `dtype` is a structured dtype and `G` is a multigraph</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If `dtype` is a structured dtype and `weight` is not `None`</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    from_numpy_array</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    For directed graphs, entry ``i, j`` corresponds to an edge from ``i`` to ``j``.</span>
+
+<span class="sd">    Entries in the adjacency matrix are given by the `weight` edge attribute.</span>
+<span class="sd">    When an edge does not have a weight attribute, the value of the entry is</span>
+<span class="sd">    set to the number 1.  For multiple (parallel) edges, the values of the</span>
+<span class="sd">    entries are determined by the `multigraph_weight` parameter. The default is</span>
+<span class="sd">    to sum the weight attributes for each of the parallel edges.</span>
+
+<span class="sd">    When `nodelist` does not contain every node in `G`, the adjacency matrix is</span>
+<span class="sd">    built from the subgraph of `G` that is induced by the nodes in `nodelist`.</span>
+
+<span class="sd">    The convention used for self-loop edges in graphs is to assign the</span>
+<span class="sd">    diagonal array entry value to the weight attribute of the edge</span>
+<span class="sd">    (or the number 1 if the edge has no weight attribute). If the</span>
+<span class="sd">    alternate convention of doubling the edge weight is desired the</span>
+<span class="sd">    resulting NumPy array can be modified as follows:</span>
+
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.Graph([(1, 1)])</span>
+<span class="sd">    &gt;&gt;&gt; A = nx.to_numpy_array(G)</span>
+<span class="sd">    &gt;&gt;&gt; A</span>
+<span class="sd">    array([[1.]])</span>
+<span class="sd">    &gt;&gt;&gt; A[np.diag_indices_from(A)] *= 2</span>
+<span class="sd">    &gt;&gt;&gt; A</span>
+<span class="sd">    array([[2.]])</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.MultiDiGraph()</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(0, 1, weight=2)</span>
+<span class="sd">    0</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(1, 0)</span>
+<span class="sd">    0</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(2, 2, weight=3)</span>
+<span class="sd">    0</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(2, 2)</span>
+<span class="sd">    1</span>
+<span class="sd">    &gt;&gt;&gt; nx.to_numpy_array(G, nodelist=[0, 1, 2])</span>
+<span class="sd">    array([[0., 2., 0.],</span>
+<span class="sd">           [1., 0., 0.],</span>
+<span class="sd">           [0., 0., 4.]])</span>
+
+<span class="sd">    When `nodelist` argument is used, nodes of `G` which do not appear in the `nodelist`</span>
+<span class="sd">    and their edges are not included in the adjacency matrix. Here is an example:</span>
+
+<span class="sd">    &gt;&gt;&gt; G = nx.Graph()</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(3, 1)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(2, 0)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(2, 1)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(3, 0)</span>
+<span class="sd">    &gt;&gt;&gt; nx.to_numpy_array(G, nodelist=[1, 2, 3])</span>
+<span class="sd">    array([[0., 1., 1.],</span>
+<span class="sd">           [1., 0., 0.],</span>
+<span class="sd">           [1., 0., 0.]])</span>
+
+<span class="sd">    This function can also be used to create adjacency matrices for multiple</span>
+<span class="sd">    edge attributes with structured dtypes:</span>
+
+<span class="sd">    &gt;&gt;&gt; G = nx.Graph()</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(0, 1, weight=10)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(1, 2, cost=5)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(2, 3, weight=3, cost=-4.0)</span>
+<span class="sd">    &gt;&gt;&gt; dtype = np.dtype([(&quot;weight&quot;, int), (&quot;cost&quot;, float)])</span>
+<span class="sd">    &gt;&gt;&gt; A = nx.to_numpy_array(G, dtype=dtype, weight=None)</span>
+<span class="sd">    &gt;&gt;&gt; A[&quot;weight&quot;]</span>
+<span class="sd">    array([[ 0, 10,  0,  0],</span>
+<span class="sd">           [10,  0,  1,  0],</span>
+<span class="sd">           [ 0,  1,  0,  3],</span>
+<span class="sd">           [ 0,  0,  3,  0]])</span>
+<span class="sd">    &gt;&gt;&gt; A[&quot;cost&quot;]</span>
+<span class="sd">    array([[ 0.,  1.,  0.,  0.],</span>
+<span class="sd">           [ 1.,  0.,  5.,  0.],</span>
+<span class="sd">           [ 0.,  5.,  0., -4.],</span>
+<span class="sd">           [ 0.,  0., -4.,  0.]])</span>
+
+<span class="sd">    As stated above, the argument &quot;nonedge&quot; is useful especially when there are</span>
+<span class="sd">    actually edges with weight 0 in the graph. Setting a nonedge value different than 0,</span>
+<span class="sd">    makes it much clearer to differentiate such 0-weighted edges and actual nonedge values.</span>
+
+<span class="sd">    &gt;&gt;&gt; G = nx.Graph()</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(3, 1, weight=2)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(2, 0, weight=0)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(2, 1, weight=0)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(3, 0, weight=1)</span>
+<span class="sd">    &gt;&gt;&gt; nx.to_numpy_array(G, nonedge=-1.)</span>
+<span class="sd">    array([[-1.,  2., -1.,  1.],</span>
+<span class="sd">           [ 2., -1.,  0., -1.],</span>
+<span class="sd">           [-1.,  0., -1.,  0.],</span>
+<span class="sd">           [ 1., -1.,  0., -1.]])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+    <span class="k">if</span> <span class="n">nodelist</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">nodelist</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+    <span class="n">nlen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodelist</span><span class="p">)</span>
+
+    <span class="c1"># Input validation</span>
+    <span class="n">nodeset</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">nodelist</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">nodeset</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Nodes </span><span class="si">{</span><span class="n">nodeset</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">G</span><span class="p">)</span><span class="si">}</span><span class="s2"> in nodelist is not in G&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodeset</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">nlen</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;nodelist contains duplicates.&quot;</span><span class="p">)</span>
+
+    <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">nlen</span><span class="p">,</span> <span class="n">nlen</span><span class="p">),</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">nonedge</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
+
+    <span class="c1"># Corner cases: empty nodelist or graph without any edges</span>
+    <span class="k">if</span> <span class="n">nlen</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">G</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">A</span>
+
+    <span class="c1"># If dtype is structured and weight is None, use dtype field names as</span>
+    <span class="c1"># edge attributes</span>
+    <span class="n">edge_attrs</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Only single edge attribute by default</span>
+    <span class="k">if</span> <span class="n">A</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">names</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">weight</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">edge_attrs</span> <span class="o">=</span> <span class="n">dtype</span><span class="o">.</span><span class="n">names</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Specifying `weight` not supported for structured dtypes</span><span class="se">\n</span><span class="s2">.&quot;</span>
+                <span class="s2">&quot;To create adjacency matrices from structured dtypes, use `weight=None`.&quot;</span>
+            <span class="p">)</span>
+
+    <span class="c1"># Map nodes to row/col in matrix</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">nodelist</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="n">nlen</span><span class="p">)))</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodelist</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">subgraph</span><span class="p">(</span><span class="n">nodelist</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="c1"># Collect all edge weights and reduce with `multigraph_weights`</span>
+    <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">is_multigraph</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">edge_attrs</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span>
+                <span class="s2">&quot;Structured arrays are not supported for MultiGraphs&quot;</span>
+            <span class="p">)</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">wt</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">weight</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+            <span class="n">d</span><span class="p">[(</span><span class="n">idx</span><span class="p">[</span><span class="n">u</span><span class="p">],</span> <span class="n">idx</span><span class="p">[</span><span class="n">v</span><span class="p">])]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">wt</span><span class="p">)</span>
+        <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span><span class="o">.</span><span class="n">T</span>  <span class="c1"># indices</span>
+        <span class="n">wts</span> <span class="o">=</span> <span class="p">[</span><span class="n">multigraph_weight</span><span class="p">(</span><span class="n">ws</span><span class="p">)</span> <span class="k">for</span> <span class="n">ws</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>  <span class="c1"># reduced weights</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">wts</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+
+        <span class="c1"># Special branch: multi-attr adjacency from structured dtypes</span>
+        <span class="k">if</span> <span class="n">edge_attrs</span><span class="p">:</span>
+            <span class="c1"># Extract edges with all data</span>
+            <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+                <span class="n">i</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="n">u</span><span class="p">])</span>
+                <span class="n">j</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="n">v</span><span class="p">])</span>
+                <span class="n">wts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="c1"># Map each attribute to the appropriate named field in the</span>
+            <span class="c1"># structured dtype</span>
+            <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">edge_attrs</span><span class="p">:</span>
+                <span class="n">attr_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">wt</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span> <span class="k">for</span> <span class="n">wt</span> <span class="ow">in</span> <span class="n">wts</span><span class="p">]</span>
+                <span class="n">A</span><span class="p">[</span><span class="n">attr</span><span class="p">][</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">attr_data</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">G</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+                    <span class="n">A</span><span class="p">[</span><span class="n">attr</span><span class="p">][</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">attr_data</span>
+            <span class="k">return</span> <span class="n">A</span>
+
+        <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">wt</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">weight</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+            <span class="n">i</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="n">u</span><span class="p">])</span>
+            <span class="n">j</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="n">v</span><span class="p">])</span>
+            <span class="n">wts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">wt</span><span class="p">)</span>
+
+    <span class="c1"># Set array values with advanced indexing</span>
+    <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">wts</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">G</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+        <span class="n">A</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">wts</span>
+
+    <span class="k">return</span> <span class="n">A</span></div>
+
+
+<div class="viewcode-block" id="from_numpy_array"><a class="viewcode-back" href="../../reference/generated/networkx.convert_matrix.from_numpy_array.html#networkx.convert_matrix.from_numpy_array">[docs]</a><span class="k">def</span> <span class="nf">from_numpy_array</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">parallel_edges</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">create_using</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns a graph from a 2D NumPy array.</span>
+
+<span class="sd">    The 2D NumPy array is interpreted as an adjacency matrix for the graph.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    A : a 2D numpy.ndarray</span>
+<span class="sd">        An adjacency matrix representation of a graph</span>
+
+<span class="sd">    parallel_edges : Boolean</span>
+<span class="sd">        If this is True, `create_using` is a multigraph, and `A` is an</span>
+<span class="sd">        integer array, then entry *(i, j)* in the array is interpreted as the</span>
+<span class="sd">        number of parallel edges joining vertices *i* and *j* in the graph.</span>
+<span class="sd">        If it is False, then the entries in the array are interpreted as</span>
+<span class="sd">        the weight of a single edge joining the vertices.</span>
+
+<span class="sd">    create_using : NetworkX graph constructor, optional (default=nx.Graph)</span>
+<span class="sd">       Graph type to create. If graph instance, then cleared before populated.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    For directed graphs, explicitly mention create_using=nx.DiGraph,</span>
+<span class="sd">    and entry i,j of A corresponds to an edge from i to j.</span>
+
+<span class="sd">    If `create_using` is :class:`networkx.MultiGraph` or</span>
+<span class="sd">    :class:`networkx.MultiDiGraph`, `parallel_edges` is True, and the</span>
+<span class="sd">    entries of `A` are of type :class:`int`, then this function returns a</span>
+<span class="sd">    multigraph (of the same type as `create_using`) with parallel edges.</span>
+
+<span class="sd">    If `create_using` indicates an undirected multigraph, then only the edges</span>
+<span class="sd">    indicated by the upper triangle of the array `A` will be added to the</span>
+<span class="sd">    graph.</span>
+
+<span class="sd">    If the NumPy array has a single data type for each array entry it</span>
+<span class="sd">    will be converted to an appropriate Python data type.</span>
+
+<span class="sd">    If the NumPy array has a user-specified compound data type the names</span>
+<span class="sd">    of the data fields will be used as attribute keys in the resulting</span>
+<span class="sd">    NetworkX graph.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    to_numpy_array</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Simple integer weights on edges:</span>
+
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; A = np.array([[1, 1], [2, 1]])</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.from_numpy_array(A)</span>
+<span class="sd">    &gt;&gt;&gt; G.edges(data=True)</span>
+<span class="sd">    EdgeDataView([(0, 0, {&#39;weight&#39;: 1}), (0, 1, {&#39;weight&#39;: 2}), (1, 1, {&#39;weight&#39;: 1})])</span>
+
+<span class="sd">    If `create_using` indicates a multigraph and the array has only integer</span>
+<span class="sd">    entries and `parallel_edges` is False, then the entries will be treated</span>
+<span class="sd">    as weights for edges joining the nodes (without creating parallel edges):</span>
+
+<span class="sd">    &gt;&gt;&gt; A = np.array([[1, 1], [1, 2]])</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.from_numpy_array(A, create_using=nx.MultiGraph)</span>
+<span class="sd">    &gt;&gt;&gt; G[1][1]</span>
+<span class="sd">    AtlasView({0: {&#39;weight&#39;: 2}})</span>
+
+<span class="sd">    If `create_using` indicates a multigraph and the array has only integer</span>
+<span class="sd">    entries and `parallel_edges` is True, then the entries will be treated</span>
+<span class="sd">    as the number of parallel edges joining those two vertices:</span>
+
+<span class="sd">    &gt;&gt;&gt; A = np.array([[1, 1], [1, 2]])</span>
+<span class="sd">    &gt;&gt;&gt; temp = nx.MultiGraph()</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.from_numpy_array(A, parallel_edges=True, create_using=temp)</span>
+<span class="sd">    &gt;&gt;&gt; G[1][1]</span>
+<span class="sd">    AtlasView({0: {&#39;weight&#39;: 1}, 1: {&#39;weight&#39;: 1}})</span>
+
+<span class="sd">    User defined compound data type on edges:</span>
+
+<span class="sd">    &gt;&gt;&gt; dt = [(&quot;weight&quot;, float), (&quot;cost&quot;, int)]</span>
+<span class="sd">    &gt;&gt;&gt; A = np.array([[(1.0, 2)]], dtype=dt)</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.from_numpy_array(A)</span>
+<span class="sd">    &gt;&gt;&gt; G.edges()</span>
+<span class="sd">    EdgeView([(0, 0)])</span>
+<span class="sd">    &gt;&gt;&gt; G[0][0][&quot;cost&quot;]</span>
+<span class="sd">    2</span>
+<span class="sd">    &gt;&gt;&gt; G[0][0][&quot;weight&quot;]</span>
+<span class="sd">    1.0</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">kind_to_python_type</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;f&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="s2">&quot;i&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="s2">&quot;u&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+        <span class="s2">&quot;c&quot;</span><span class="p">:</span> <span class="nb">complex</span><span class="p">,</span>
+        <span class="s2">&quot;S&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="s2">&quot;U&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="s2">&quot;V&quot;</span><span class="p">:</span> <span class="s2">&quot;void&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">empty_graph</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">create_using</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">A</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Input array must be 2D, not </span><span class="si">{</span><span class="n">A</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">n</span><span class="p">,</span> <span class="n">m</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">!=</span> <span class="n">m</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Adjacency matrix not square: nx,ny=</span><span class="si">{</span><span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">dtype</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">python_type</span> <span class="o">=</span> <span class="n">kind_to_python_type</span><span class="p">[</span><span class="n">dt</span><span class="o">.</span><span class="n">kind</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown numpy data type: </span><span class="si">{</span><span class="n">dt</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">err</span>
+
+    <span class="c1"># Make sure we get even the isolated nodes of the graph.</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">add_nodes_from</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+    <span class="c1"># Get a list of all the entries in the array with nonzero entries. These</span>
+    <span class="c1"># coordinates become edges in the graph. (convert to int from np.int64)</span>
+    <span class="n">edges</span> <span class="o">=</span> <span class="p">((</span><span class="nb">int</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">A</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()))</span>
+    <span class="c1"># handle numpy constructed data type</span>
+    <span class="k">if</span> <span class="n">python_type</span> <span class="o">==</span> <span class="s2">&quot;void&quot;</span><span class="p">:</span>
+        <span class="c1"># Sort the fields by their offset, then by dtype, then by name.</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">offset</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">offset</span><span class="p">)</span> <span class="ow">in</span> <span class="n">A</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="n">triples</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">(</span>
+                <span class="n">u</span><span class="p">,</span>
+                <span class="n">v</span><span class="p">,</span>
+                <span class="p">{</span>
+                    <span class="n">name</span><span class="p">:</span> <span class="n">kind_to_python_type</span><span class="p">[</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span><span class="p">](</span><span class="n">val</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">name</span><span class="p">),</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">fields</span><span class="p">,</span> <span class="n">A</span><span class="p">[</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">])</span>
+                <span class="p">},</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">edges</span>
+        <span class="p">)</span>
+    <span class="c1"># If the entries in the adjacency matrix are integers, the graph is a</span>
+    <span class="c1"># multigraph, and parallel_edges is True, then create parallel edges, each</span>
+    <span class="c1"># with weight 1, for each entry in the adjacency matrix. Otherwise, create</span>
+    <span class="c1"># one edge for each positive entry in the adjacency matrix and set the</span>
+    <span class="c1"># weight of that edge to be the entry in the matrix.</span>
+    <span class="k">elif</span> <span class="n">python_type</span> <span class="ow">is</span> <span class="nb">int</span> <span class="ow">and</span> <span class="n">G</span><span class="o">.</span><span class="n">is_multigraph</span><span class="p">()</span> <span class="ow">and</span> <span class="n">parallel_edges</span><span class="p">:</span>
+        <span class="n">chain</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span>
+        <span class="c1"># The following line is equivalent to:</span>
+        <span class="c1">#</span>
+        <span class="c1">#     for (u, v) in edges:</span>
+        <span class="c1">#         for d in range(A[u, v]):</span>
+        <span class="c1">#             G.add_edge(u, v, weight=1)</span>
+        <span class="c1">#</span>
+        <span class="n">triples</span> <span class="o">=</span> <span class="n">chain</span><span class="p">(</span>
+            <span class="p">((</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;weight&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">A</span><span class="p">[</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">]))</span> <span class="k">for</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">edges</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># basic data type</span>
+        <span class="n">triples</span> <span class="o">=</span> <span class="p">((</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">weight</span><span class="o">=</span><span class="n">python_type</span><span class="p">(</span><span class="n">A</span><span class="p">[</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">])))</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">)</span>
+    <span class="c1"># If we are creating an undirected multigraph, only add the edges from the</span>
+    <span class="c1"># upper triangle of the matrix. Otherwise, add all the edges. This relies</span>
+    <span class="c1"># on the fact that the vertices created in the</span>
+    <span class="c1"># `_generated_weighted_edges()` function are actually the row/column</span>
+    <span class="c1"># indices for the matrix `A`.</span>
+    <span class="c1">#</span>
+    <span class="c1"># Without this check, we run into a problem where each edge is added twice</span>
+    <span class="c1"># when `G.add_edges_from()` is invoked below.</span>
+    <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">is_multigraph</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">G</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+        <span class="n">triples</span> <span class="o">=</span> <span class="p">((</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">triples</span> <span class="k">if</span> <span class="n">u</span> <span class="o">&lt;=</span> <span class="n">v</span><span class="p">)</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span><span class="n">triples</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">G</span></div>
+</pre></div>
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

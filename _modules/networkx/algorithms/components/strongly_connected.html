@@ -1,0 +1,980 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>networkx.algorithms.components.strongly_connected &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/algorithms/components/strongly_connected';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/algorithms/components/strongly_connected.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../../../../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../../../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../../../../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <h1>Source code for networkx.algorithms.components.strongly_connected</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Strongly connected components.&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">from</span> <span class="nn">networkx.utils.decorators</span> <span class="kn">import</span> <span class="n">not_implemented_for</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;number_strongly_connected_components&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;strongly_connected_components&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;is_strongly_connected&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;strongly_connected_components_recursive&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;kosaraju_strongly_connected_components&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;condensation&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="strongly_connected_components"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.components.strongly_connected_components.html#networkx.algorithms.components.strongly_connected_components">[docs]</a><span class="nd">@nx</span><span class="o">.</span><span class="n">_dispatch</span>
+<span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;undirected&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">strongly_connected_components</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Generate nodes in strongly connected components of graph.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX Graph</span>
+<span class="sd">        A directed graph.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    comp : generator of sets</span>
+<span class="sd">        A generator of sets of nodes, one for each strongly connected</span>
+<span class="sd">        component of G.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NetworkXNotImplemented</span>
+<span class="sd">        If G is undirected.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Generate a sorted list of strongly connected components, largest first.</span>
+
+<span class="sd">    &gt;&gt;&gt; G = nx.cycle_graph(4, create_using=nx.DiGraph())</span>
+<span class="sd">    &gt;&gt;&gt; nx.add_cycle(G, [10, 11, 12])</span>
+<span class="sd">    &gt;&gt;&gt; [</span>
+<span class="sd">    ...     len(c)</span>
+<span class="sd">    ...     for c in sorted(nx.strongly_connected_components(G), key=len, reverse=True)</span>
+<span class="sd">    ... ]</span>
+<span class="sd">    [4, 3]</span>
+
+<span class="sd">    If you only want the largest component, it&#39;s more efficient to</span>
+<span class="sd">    use max instead of sort.</span>
+
+<span class="sd">    &gt;&gt;&gt; largest = max(nx.strongly_connected_components(G), key=len)</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    connected_components</span>
+<span class="sd">    weakly_connected_components</span>
+<span class="sd">    kosaraju_strongly_connected_components</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Uses Tarjan&#39;s algorithm[1]_ with Nuutila&#39;s modifications[2]_.</span>
+<span class="sd">    Nonrecursive version of algorithm.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Depth-first search and linear graph algorithms, R. Tarjan</span>
+<span class="sd">       SIAM Journal of Computing 1(2):146-160, (1972).</span>
+
+<span class="sd">    .. [2] On finding the strongly connected components in a directed graph.</span>
+<span class="sd">       E. Nuutila and E. Soisalon-Soinen</span>
+<span class="sd">       Information Processing Letters 49(1): 9-14, (1994)..</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">preorder</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">lowlink</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">scc_found</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="n">scc_queue</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Preorder counter</span>
+    <span class="n">neighbors</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="nb">iter</span><span class="p">(</span><span class="n">G</span><span class="p">[</span><span class="n">v</span><span class="p">])</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G</span><span class="p">}</span>
+    <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="n">G</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">source</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">scc_found</span><span class="p">:</span>
+            <span class="n">queue</span> <span class="o">=</span> <span class="p">[</span><span class="n">source</span><span class="p">]</span>
+            <span class="k">while</span> <span class="n">queue</span><span class="p">:</span>
+                <span class="n">v</span> <span class="o">=</span> <span class="n">queue</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">v</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">preorder</span><span class="p">:</span>
+                    <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+                    <span class="n">preorder</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+                <span class="n">done</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">neighbors</span><span class="p">[</span><span class="n">v</span><span class="p">]:</span>
+                    <span class="k">if</span> <span class="n">w</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">preorder</span><span class="p">:</span>
+                        <span class="n">queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+                        <span class="n">done</span> <span class="o">=</span> <span class="kc">False</span>
+                        <span class="k">break</span>
+                <span class="k">if</span> <span class="n">done</span><span class="p">:</span>
+                    <span class="n">lowlink</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">preorder</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">G</span><span class="p">[</span><span class="n">v</span><span class="p">]:</span>
+                        <span class="k">if</span> <span class="n">w</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">scc_found</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">preorder</span><span class="p">[</span><span class="n">w</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">preorder</span><span class="p">[</span><span class="n">v</span><span class="p">]:</span>
+                                <span class="n">lowlink</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="n">lowlink</span><span class="p">[</span><span class="n">v</span><span class="p">],</span> <span class="n">lowlink</span><span class="p">[</span><span class="n">w</span><span class="p">]])</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">lowlink</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="n">lowlink</span><span class="p">[</span><span class="n">v</span><span class="p">],</span> <span class="n">preorder</span><span class="p">[</span><span class="n">w</span><span class="p">]])</span>
+                    <span class="n">queue</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="n">lowlink</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">==</span> <span class="n">preorder</span><span class="p">[</span><span class="n">v</span><span class="p">]:</span>
+                        <span class="n">scc</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">}</span>
+                        <span class="k">while</span> <span class="n">scc_queue</span> <span class="ow">and</span> <span class="n">preorder</span><span class="p">[</span><span class="n">scc_queue</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">&gt;</span> <span class="n">preorder</span><span class="p">[</span><span class="n">v</span><span class="p">]:</span>
+                            <span class="n">k</span> <span class="o">=</span> <span class="n">scc_queue</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+                            <span class="n">scc</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+                        <span class="n">scc_found</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">scc</span><span class="p">)</span>
+                        <span class="k">yield</span> <span class="n">scc</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">scc_queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="kosaraju_strongly_connected_components"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.components.kosaraju_strongly_connected_components.html#networkx.algorithms.components.kosaraju_strongly_connected_components">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;undirected&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">kosaraju_strongly_connected_components</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Generate nodes in strongly connected components of graph.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX Graph</span>
+<span class="sd">        A directed graph.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    comp : generator of sets</span>
+<span class="sd">        A generator of sets of nodes, one for each strongly connected</span>
+<span class="sd">        component of G.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NetworkXNotImplemented</span>
+<span class="sd">        If G is undirected.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Generate a sorted list of strongly connected components, largest first.</span>
+
+<span class="sd">    &gt;&gt;&gt; G = nx.cycle_graph(4, create_using=nx.DiGraph())</span>
+<span class="sd">    &gt;&gt;&gt; nx.add_cycle(G, [10, 11, 12])</span>
+<span class="sd">    &gt;&gt;&gt; [</span>
+<span class="sd">    ...     len(c)</span>
+<span class="sd">    ...     for c in sorted(</span>
+<span class="sd">    ...         nx.kosaraju_strongly_connected_components(G), key=len, reverse=True</span>
+<span class="sd">    ...     )</span>
+<span class="sd">    ... ]</span>
+<span class="sd">    [4, 3]</span>
+
+<span class="sd">    If you only want the largest component, it&#39;s more efficient to</span>
+<span class="sd">    use max instead of sort.</span>
+
+<span class="sd">    &gt;&gt;&gt; largest = max(nx.kosaraju_strongly_connected_components(G), key=len)</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    strongly_connected_components</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Uses Kosaraju&#39;s algorithm.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">post</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">dfs_postorder_nodes</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">reverse</span><span class="p">(</span><span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span> <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">))</span>
+
+    <span class="n">seen</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">while</span> <span class="n">post</span><span class="p">:</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">post</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">dfs_preorder_nodes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">c</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">}</span>
+        <span class="n">seen</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">new</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">new</span></div>
+
+
+<div class="viewcode-block" id="strongly_connected_components_recursive"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.components.strongly_connected_components_recursive.html#networkx.algorithms.components.strongly_connected_components_recursive">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;undirected&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">strongly_connected_components_recursive</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Generate nodes in strongly connected components of graph.</span>
+
+<span class="sd">    Recursive version of algorithm.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX Graph</span>
+<span class="sd">        A directed graph.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    comp : generator of sets</span>
+<span class="sd">        A generator of sets of nodes, one for each strongly connected</span>
+<span class="sd">        component of G.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NetworkXNotImplemented</span>
+<span class="sd">        If G is undirected.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Generate a sorted list of strongly connected components, largest first.</span>
+
+<span class="sd">    &gt;&gt;&gt; G = nx.cycle_graph(4, create_using=nx.DiGraph())</span>
+<span class="sd">    &gt;&gt;&gt; nx.add_cycle(G, [10, 11, 12])</span>
+<span class="sd">    &gt;&gt;&gt; [</span>
+<span class="sd">    ...     len(c)</span>
+<span class="sd">    ...     for c in sorted(</span>
+<span class="sd">    ...         nx.strongly_connected_components_recursive(G), key=len, reverse=True</span>
+<span class="sd">    ...     )</span>
+<span class="sd">    ... ]</span>
+<span class="sd">    [4, 3]</span>
+
+<span class="sd">    If you only want the largest component, it&#39;s more efficient to</span>
+<span class="sd">    use max instead of sort.</span>
+
+<span class="sd">    &gt;&gt;&gt; largest = max(nx.strongly_connected_components_recursive(G), key=len)</span>
+
+<span class="sd">    To create the induced subgraph of the components use:</span>
+<span class="sd">    &gt;&gt;&gt; S = [G.subgraph(c).copy() for c in nx.weakly_connected_components(G)]</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    connected_components</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Uses Tarjan&#39;s algorithm[1]_ with Nuutila&#39;s modifications[2]_.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Depth-first search and linear graph algorithms, R. Tarjan</span>
+<span class="sd">       SIAM Journal of Computing 1(2):146-160, (1972).</span>
+
+<span class="sd">    .. [2] On finding the strongly connected components in a directed graph.</span>
+<span class="sd">       E. Nuutila and E. Soisalon-Soinen</span>
+<span class="sd">       Information Processing Letters 49(1): 9-14, (1994)..</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">visit</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">cnt</span><span class="p">):</span>
+        <span class="n">root</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">cnt</span>
+        <span class="n">visited</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">cnt</span>
+        <span class="n">cnt</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">G</span><span class="p">[</span><span class="n">v</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">w</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span>
+                <span class="k">yield from</span> <span class="n">visit</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">cnt</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">w</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">component</span><span class="p">:</span>
+                <span class="n">root</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">root</span><span class="p">[</span><span class="n">v</span><span class="p">],</span> <span class="n">root</span><span class="p">[</span><span class="n">w</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">root</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">==</span> <span class="n">visited</span><span class="p">[</span><span class="n">v</span><span class="p">]:</span>
+            <span class="n">component</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">root</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+            <span class="n">tmpc</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">}</span>  <span class="c1"># hold nodes in this component</span>
+            <span class="k">while</span> <span class="n">stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">v</span><span class="p">:</span>
+                <span class="n">w</span> <span class="o">=</span> <span class="n">stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+                <span class="n">component</span><span class="p">[</span><span class="n">w</span><span class="p">]</span> <span class="o">=</span> <span class="n">root</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+                <span class="n">tmpc</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+            <span class="n">stack</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+            <span class="k">yield</span> <span class="n">tmpc</span>
+
+    <span class="n">visited</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">component</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">cnt</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">stack</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="n">G</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">source</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span>
+            <span class="k">yield from</span> <span class="n">visit</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">cnt</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="number_strongly_connected_components"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.components.number_strongly_connected_components.html#networkx.algorithms.components.number_strongly_connected_components">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;undirected&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">number_strongly_connected_components</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns number of strongly connected components in graph.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+<span class="sd">       A directed graph.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    n : integer</span>
+<span class="sd">       Number of strongly connected components</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NetworkXNotImplemented</span>
+<span class="sd">        If G is undirected.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.DiGraph([(0, 1), (1, 2), (2, 0), (2, 3), (4, 5), (3, 4), (5, 6), (6, 3), (6, 7)])</span>
+<span class="sd">    &gt;&gt;&gt; nx.number_strongly_connected_components(G)</span>
+<span class="sd">    3</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    strongly_connected_components</span>
+<span class="sd">    number_connected_components</span>
+<span class="sd">    number_weakly_connected_components</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    For directed graphs only.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">scc</span> <span class="ow">in</span> <span class="n">strongly_connected_components</span><span class="p">(</span><span class="n">G</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="is_strongly_connected"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.components.is_strongly_connected.html#networkx.algorithms.components.is_strongly_connected">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;undirected&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">is_strongly_connected</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Test directed graph for strong connectivity.</span>
+
+<span class="sd">    A directed graph is strongly connected if and only if every vertex in</span>
+<span class="sd">    the graph is reachable from every other vertex.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX Graph</span>
+<span class="sd">       A directed graph.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    connected : bool</span>
+<span class="sd">      True if the graph is strongly connected, False otherwise.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.DiGraph([(0, 1), (1, 2), (2, 3), (3, 0), (2, 4), (4, 2)])</span>
+<span class="sd">    &gt;&gt;&gt; nx.is_strongly_connected(G)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; G.remove_edge(2, 3)</span>
+<span class="sd">    &gt;&gt;&gt; nx.is_strongly_connected(G)</span>
+<span class="sd">    False</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NetworkXNotImplemented</span>
+<span class="sd">        If G is undirected.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    is_weakly_connected</span>
+<span class="sd">    is_semiconnected</span>
+<span class="sd">    is_connected</span>
+<span class="sd">    is_biconnected</span>
+<span class="sd">    strongly_connected_components</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    For directed graphs only.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXPointlessConcept</span><span class="p">(</span>
+            <span class="sd">&quot;&quot;&quot;Connectivity is undefined for the null graph.&quot;&quot;&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">strongly_connected_components</span><span class="p">(</span><span class="n">G</span><span class="p">)))</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="condensation"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.components.condensation.html#networkx.algorithms.components.condensation">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;undirected&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">condensation</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">scc</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the condensation of G.</span>
+
+<span class="sd">    The condensation of G is the graph with each of the strongly connected</span>
+<span class="sd">    components contracted into a single node.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX DiGraph</span>
+<span class="sd">       A directed graph.</span>
+
+<span class="sd">    scc:  list or generator (optional, default=None)</span>
+<span class="sd">       Strongly connected components. If provided, the elements in</span>
+<span class="sd">       `scc` must partition the nodes in `G`. If not provided, it will be</span>
+<span class="sd">       calculated as scc=nx.strongly_connected_components(G).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    C : NetworkX DiGraph</span>
+<span class="sd">       The condensation graph C of G.  The node labels are integers</span>
+<span class="sd">       corresponding to the index of the component in the list of</span>
+<span class="sd">       strongly connected components of G.  C has a graph attribute named</span>
+<span class="sd">       &#39;mapping&#39; with a dictionary mapping the original nodes to the</span>
+<span class="sd">       nodes in C to which they belong.  Each node in C also has a node</span>
+<span class="sd">       attribute &#39;members&#39; with the set of original nodes in G that</span>
+<span class="sd">       form the SCC that the node in C represents.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NetworkXNotImplemented</span>
+<span class="sd">        If G is undirected.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Contracting two sets of strongly connected nodes into two distinct SCC</span>
+<span class="sd">    using the barbell graph.</span>
+
+<span class="sd">    &gt;&gt;&gt; G = nx.barbell_graph(4, 0)</span>
+<span class="sd">    &gt;&gt;&gt; G.remove_edge(3, 4)</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.DiGraph(G)</span>
+<span class="sd">    &gt;&gt;&gt; H = nx.condensation(G)</span>
+<span class="sd">    &gt;&gt;&gt; H.nodes.data()</span>
+<span class="sd">    NodeDataView({0: {&#39;members&#39;: {0, 1, 2, 3}}, 1: {&#39;members&#39;: {4, 5, 6, 7}}})</span>
+<span class="sd">    &gt;&gt;&gt; H.graph[&#39;mapping&#39;]</span>
+<span class="sd">    {0: 0, 1: 0, 2: 0, 3: 0, 4: 1, 5: 1, 6: 1, 7: 1}</span>
+
+<span class="sd">    Contracting a complete graph into one single SCC.</span>
+
+<span class="sd">    &gt;&gt;&gt; G = nx.complete_graph(7, create_using=nx.DiGraph)</span>
+<span class="sd">    &gt;&gt;&gt; H = nx.condensation(G)</span>
+<span class="sd">    &gt;&gt;&gt; H.nodes</span>
+<span class="sd">    NodeView((0,))</span>
+<span class="sd">    &gt;&gt;&gt; H.nodes.data()</span>
+<span class="sd">    NodeDataView({0: {&#39;members&#39;: {0, 1, 2, 3, 4, 5, 6}}})</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    After contracting all strongly connected components to a single node,</span>
+<span class="sd">    the resulting graph is a directed acyclic graph.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">scc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">scc</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">strongly_connected_components</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+    <span class="n">mapping</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">members</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
+    <span class="c1"># Add mapping dict as graph attribute</span>
+    <span class="n">C</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="s2">&quot;mapping&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapping</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">C</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">component</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">scc</span><span class="p">):</span>
+        <span class="n">members</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">component</span>
+        <span class="n">mapping</span><span class="o">.</span><span class="n">update</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">component</span><span class="p">)</span>
+    <span class="n">number_of_components</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">C</span><span class="o">.</span><span class="n">add_nodes_from</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">number_of_components</span><span class="p">))</span>
+    <span class="n">C</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span>
+        <span class="p">(</span><span class="n">mapping</span><span class="p">[</span><span class="n">u</span><span class="p">],</span> <span class="n">mapping</span><span class="p">[</span><span class="n">v</span><span class="p">])</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">()</span> <span class="k">if</span> <span class="n">mapping</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="o">!=</span> <span class="n">mapping</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="c1"># Add a list of members (ie original nodes) to each node (ie scc) in C.</span>
+    <span class="n">nx</span><span class="o">.</span><span class="n">set_node_attributes</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">members</span><span class="p">,</span> <span class="s2">&quot;members&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">C</span></div>
+</pre></div>
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

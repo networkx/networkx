@@ -1,0 +1,1206 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>networkx.algorithms.flow.networksimplex &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/algorithms/flow/networksimplex';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/algorithms/flow/networksimplex.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../../../../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../../../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../../../../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <h1>Source code for networkx.algorithms.flow.networksimplex</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Minimum cost flow algorithms on directed connected graphs.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;network_simplex&quot;</span><span class="p">]</span>
+
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span><span class="p">,</span> <span class="n">islice</span><span class="p">,</span> <span class="n">repeat</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">ceil</span><span class="p">,</span> <span class="n">sqrt</span>
+
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">from</span> <span class="nn">networkx.utils</span> <span class="kn">import</span> <span class="n">not_implemented_for</span>
+
+
+<span class="k">class</span> <span class="nc">_DataEssentialsAndFunctions</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">multigraph</span><span class="p">,</span> <span class="n">demand</span><span class="o">=</span><span class="s2">&quot;demand&quot;</span><span class="p">,</span> <span class="n">capacity</span><span class="o">=</span><span class="s2">&quot;capacity&quot;</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span>
+    <span class="p">):</span>
+
+        <span class="c1"># Number all nodes and edges and hereafter reference them using ONLY their numbers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>  <span class="c1"># nodes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_indices</span> <span class="o">=</span> <span class="p">{</span><span class="n">u</span><span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">u</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">node_list</span><span class="p">)}</span>  <span class="c1"># node indices</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_demands</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">u</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">demand</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_list</span>
+        <span class="p">]</span>  <span class="c1"># node demands</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge_sources</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># edge sources</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge_targets</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># edge targets</span>
+        <span class="k">if</span> <span class="n">multigraph</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">edge_keys</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># edge keys</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge_indices</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># edge indices</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge_capacities</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># edge capacities</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge_weights</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># edge weights</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">multigraph</span><span class="p">:</span>
+            <span class="n">edges</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">edges</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">inf</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span>
+        <span class="n">edges</span> <span class="o">=</span> <span class="p">(</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">edges</span> <span class="k">if</span> <span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="n">e</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">capacity</span><span class="p">,</span> <span class="n">inf</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">edges</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">edge_sources</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">node_indices</span><span class="p">[</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">edge_targets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">node_indices</span><span class="p">[</span><span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+            <span class="k">if</span> <span class="n">multigraph</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">edge_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">edge_indices</span><span class="p">[</span><span class="n">e</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">i</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">edge_capacities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">capacity</span><span class="p">,</span> <span class="n">inf</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">edge_weights</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">weight</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
+        <span class="c1"># spanning tree specific data to be initialized</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge_count</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># number of edges</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge_flow</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># edge flows</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_potentials</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># node potentials</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># parent nodes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent_edge</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># edges to parents</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subtree_size</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># subtree sizes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">next_node_dft</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># next nodes in depth-first thread</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prev_node_dft</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># previous nodes in depth-first thread</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_descendent_dft</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># last descendants in depth-first thread</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spanning_tree_initialized</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="kc">False</span>  <span class="c1"># False until initialize_spanning_tree() is called</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">initialize_spanning_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">faux_inf</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edge_indices</span><span class="p">)</span>  <span class="c1"># number of edges</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge_flow</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+            <span class="n">chain</span><span class="p">(</span><span class="n">repeat</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_count</span><span class="p">),</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_demands</span><span class="p">))</span>
+        <span class="p">)</span>  <span class="c1"># edge flows</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_potentials</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">faux_inf</span> <span class="k">if</span> <span class="n">d</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="k">else</span> <span class="o">-</span><span class="n">faux_inf</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_demands</span>
+        <span class="p">]</span>  <span class="c1"># node potentials</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">chain</span><span class="p">(</span><span class="n">repeat</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="p">[</span><span class="kc">None</span><span class="p">]))</span>  <span class="c1"># parent nodes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent_edge</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+            <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edge_count</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_count</span> <span class="o">+</span> <span class="n">n</span><span class="p">)</span>
+        <span class="p">)</span>  <span class="c1"># edges to parents</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subtree_size</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">chain</span><span class="p">(</span><span class="n">repeat</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="p">[</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]))</span>  <span class="c1"># subtree sizes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">next_node_dft</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+            <span class="n">chain</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="p">)</span>  <span class="c1"># next nodes in depth-first thread</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prev_node_dft</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>  <span class="c1"># previous nodes in depth-first thread</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_descendent_dft</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+            <span class="n">chain</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="p">[</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="p">)</span>  <span class="c1"># last descendants in depth-first thread</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spanning_tree_initialized</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># True only if all the assignments pass</span>
+
+    <span class="k">def</span> <span class="nf">find_apex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Find the lowest common ancestor of nodes p and q in the spanning tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">size_p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subtree_size</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
+        <span class="n">size_q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subtree_size</span><span class="p">[</span><span class="n">q</span><span class="p">]</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">while</span> <span class="n">size_p</span> <span class="o">&lt;</span> <span class="n">size_q</span><span class="p">:</span>
+                <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
+                <span class="n">size_p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subtree_size</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
+            <span class="k">while</span> <span class="n">size_p</span> <span class="o">&gt;</span> <span class="n">size_q</span><span class="p">:</span>
+                <span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">[</span><span class="n">q</span><span class="p">]</span>
+                <span class="n">size_q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subtree_size</span><span class="p">[</span><span class="n">q</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">size_p</span> <span class="o">==</span> <span class="n">size_q</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">p</span> <span class="o">!=</span> <span class="n">q</span><span class="p">:</span>
+                    <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
+                    <span class="n">size_p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subtree_size</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
+                    <span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">[</span><span class="n">q</span><span class="p">]</span>
+                    <span class="n">size_q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subtree_size</span><span class="p">[</span><span class="n">q</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">p</span>
+
+    <span class="k">def</span> <span class="nf">trace_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">w</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the nodes and edges on the path from node p to its ancestor w.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">Wn</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="p">]</span>
+        <span class="n">We</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">while</span> <span class="n">p</span> <span class="o">!=</span> <span class="n">w</span><span class="p">:</span>
+            <span class="n">We</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent_edge</span><span class="p">[</span><span class="n">p</span><span class="p">])</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
+            <span class="n">Wn</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Wn</span><span class="p">,</span> <span class="n">We</span>
+
+    <span class="k">def</span> <span class="nf">find_cycle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the nodes and edges on the cycle containing edge i == (p, q)</span>
+<span class="sd">        when the latter is added to the spanning tree.</span>
+
+<span class="sd">        The cycle is oriented in the direction from p to q.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_apex</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span>
+        <span class="n">Wn</span><span class="p">,</span> <span class="n">We</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace_path</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+        <span class="n">Wn</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+        <span class="n">We</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">We</span> <span class="o">!=</span> <span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+            <span class="n">We</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">WnR</span><span class="p">,</span> <span class="n">WeR</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace_path</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+        <span class="k">del</span> <span class="n">WnR</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">Wn</span> <span class="o">+=</span> <span class="n">WnR</span>
+        <span class="n">We</span> <span class="o">+=</span> <span class="n">WeR</span>
+        <span class="k">return</span> <span class="n">Wn</span><span class="p">,</span> <span class="n">We</span>
+
+    <span class="k">def</span> <span class="nf">augment_flow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Wn</span><span class="p">,</span> <span class="n">We</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Augment f units of flow along a cycle represented by Wn and We.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">We</span><span class="p">,</span> <span class="n">Wn</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_sources</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">p</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">edge_flow</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">f</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">edge_flow</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-=</span> <span class="n">f</span>
+
+    <span class="k">def</span> <span class="nf">trace_subtree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Yield the nodes in the subtree rooted at a node p.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">yield</span> <span class="n">p</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_descendent_dft</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
+        <span class="k">while</span> <span class="n">p</span> <span class="o">!=</span> <span class="n">l</span><span class="p">:</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">next_node_dft</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
+            <span class="k">yield</span> <span class="n">p</span>
+
+    <span class="k">def</span> <span class="nf">remove_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove an edge (s, t) where parent[t] == s from the spanning tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">size_t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subtree_size</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+        <span class="n">prev_t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prev_node_dft</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+        <span class="n">last_t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_descendent_dft</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+        <span class="n">next_last_t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">next_node_dft</span><span class="p">[</span><span class="n">last_t</span><span class="p">]</span>
+        <span class="c1"># Remove (s, t).</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent_edge</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># Remove the subtree rooted at t from the depth-first thread.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">next_node_dft</span><span class="p">[</span><span class="n">prev_t</span><span class="p">]</span> <span class="o">=</span> <span class="n">next_last_t</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prev_node_dft</span><span class="p">[</span><span class="n">next_last_t</span><span class="p">]</span> <span class="o">=</span> <span class="n">prev_t</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">next_node_dft</span><span class="p">[</span><span class="n">last_t</span><span class="p">]</span> <span class="o">=</span> <span class="n">t</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prev_node_dft</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">last_t</span>
+        <span class="c1"># Update the subtree sizes and last descendants of the (old) acenstors</span>
+        <span class="c1"># of t.</span>
+        <span class="k">while</span> <span class="n">s</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subtree_size</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">-=</span> <span class="n">size_t</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_descendent_dft</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">==</span> <span class="n">last_t</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">last_descendent_dft</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">prev_t</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">make_root</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Make a node q the root of its containing subtree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ancestors</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">while</span> <span class="n">q</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ancestors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
+            <span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">[</span><span class="n">q</span><span class="p">]</span>
+        <span class="n">ancestors</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ancestors</span><span class="p">,</span> <span class="n">islice</span><span class="p">(</span><span class="n">ancestors</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">None</span><span class="p">)):</span>
+            <span class="n">size_p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subtree_size</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
+            <span class="n">last_p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_descendent_dft</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
+            <span class="n">prev_q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prev_node_dft</span><span class="p">[</span><span class="n">q</span><span class="p">]</span>
+            <span class="n">last_q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_descendent_dft</span><span class="p">[</span><span class="n">q</span><span class="p">]</span>
+            <span class="n">next_last_q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">next_node_dft</span><span class="p">[</span><span class="n">last_q</span><span class="p">]</span>
+            <span class="c1"># Make p a child of q.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">=</span> <span class="n">q</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">[</span><span class="n">q</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent_edge</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent_edge</span><span class="p">[</span><span class="n">q</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent_edge</span><span class="p">[</span><span class="n">q</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subtree_size</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">=</span> <span class="n">size_p</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">subtree_size</span><span class="p">[</span><span class="n">q</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subtree_size</span><span class="p">[</span><span class="n">q</span><span class="p">]</span> <span class="o">=</span> <span class="n">size_p</span>
+            <span class="c1"># Remove the subtree rooted at q from the depth-first thread.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">next_node_dft</span><span class="p">[</span><span class="n">prev_q</span><span class="p">]</span> <span class="o">=</span> <span class="n">next_last_q</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prev_node_dft</span><span class="p">[</span><span class="n">next_last_q</span><span class="p">]</span> <span class="o">=</span> <span class="n">prev_q</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">next_node_dft</span><span class="p">[</span><span class="n">last_q</span><span class="p">]</span> <span class="o">=</span> <span class="n">q</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prev_node_dft</span><span class="p">[</span><span class="n">q</span><span class="p">]</span> <span class="o">=</span> <span class="n">last_q</span>
+            <span class="k">if</span> <span class="n">last_p</span> <span class="o">==</span> <span class="n">last_q</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">last_descendent_dft</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">=</span> <span class="n">prev_q</span>
+                <span class="n">last_p</span> <span class="o">=</span> <span class="n">prev_q</span>
+            <span class="c1"># Add the remaining parts of the subtree rooted at p as a subtree</span>
+            <span class="c1"># of q in the depth-first thread.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prev_node_dft</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">=</span> <span class="n">last_q</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">next_node_dft</span><span class="p">[</span><span class="n">last_q</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">next_node_dft</span><span class="p">[</span><span class="n">last_p</span><span class="p">]</span> <span class="o">=</span> <span class="n">q</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prev_node_dft</span><span class="p">[</span><span class="n">q</span><span class="p">]</span> <span class="o">=</span> <span class="n">last_p</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">last_descendent_dft</span><span class="p">[</span><span class="n">q</span><span class="p">]</span> <span class="o">=</span> <span class="n">last_p</span>
+
+    <span class="k">def</span> <span class="nf">add_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add an edge (p, q) to the spanning tree where q is the root of a subtree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">last_p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_descendent_dft</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
+        <span class="n">next_last_p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">next_node_dft</span><span class="p">[</span><span class="n">last_p</span><span class="p">]</span>
+        <span class="n">size_q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subtree_size</span><span class="p">[</span><span class="n">q</span><span class="p">]</span>
+        <span class="n">last_q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_descendent_dft</span><span class="p">[</span><span class="n">q</span><span class="p">]</span>
+        <span class="c1"># Make q a child of p.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">[</span><span class="n">q</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent_edge</span><span class="p">[</span><span class="n">q</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+        <span class="c1"># Insert the subtree rooted at q into the depth-first thread.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">next_node_dft</span><span class="p">[</span><span class="n">last_p</span><span class="p">]</span> <span class="o">=</span> <span class="n">q</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prev_node_dft</span><span class="p">[</span><span class="n">q</span><span class="p">]</span> <span class="o">=</span> <span class="n">last_p</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prev_node_dft</span><span class="p">[</span><span class="n">next_last_p</span><span class="p">]</span> <span class="o">=</span> <span class="n">last_q</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">next_node_dft</span><span class="p">[</span><span class="n">last_q</span><span class="p">]</span> <span class="o">=</span> <span class="n">next_last_p</span>
+        <span class="c1"># Update the subtree sizes and last descendants of the (new) ancestors</span>
+        <span class="c1"># of q.</span>
+        <span class="k">while</span> <span class="n">p</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subtree_size</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">+=</span> <span class="n">size_q</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_descendent_dft</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">==</span> <span class="n">last_p</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">last_descendent_dft</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">=</span> <span class="n">last_q</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">update_potentials</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the potentials of the nodes in the subtree rooted at a node</span>
+<span class="sd">        q connected to its parent p by an edge i.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">q</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_targets</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_potentials</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_weights</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_potentials</span><span class="p">[</span><span class="n">q</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_potentials</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_weights</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_potentials</span><span class="p">[</span><span class="n">q</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace_subtree</span><span class="p">(</span><span class="n">q</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">node_potentials</span><span class="p">[</span><span class="n">q</span><span class="p">]</span> <span class="o">+=</span> <span class="n">d</span>
+
+    <span class="k">def</span> <span class="nf">reduced_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the reduced cost of an edge i.&quot;&quot;&quot;</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">edge_weights</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_potentials</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">edge_sources</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_potentials</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">edge_targets</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">c</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_flow</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="o">-</span><span class="n">c</span>
+
+    <span class="k">def</span> <span class="nf">find_entering_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Yield entering edges until none can be found.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Entering edges are found by combining Dantzig&#39;s rule and Bland&#39;s</span>
+        <span class="c1"># rule. The edges are cyclically grouped into blocks of size B. Within</span>
+        <span class="c1"># each block, Dantzig&#39;s rule is applied to find an entering edge. The</span>
+        <span class="c1"># blocks to search is determined following Bland&#39;s rule.</span>
+        <span class="n">B</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ceil</span><span class="p">(</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edge_count</span><span class="p">)))</span>  <span class="c1"># pivot block size</span>
+        <span class="n">M</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edge_count</span> <span class="o">+</span> <span class="n">B</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="n">B</span>  <span class="c1"># number of blocks needed to cover all edges</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># number of consecutive blocks without eligible</span>
+        <span class="c1"># entering edges</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># first edge in block</span>
+        <span class="k">while</span> <span class="n">m</span> <span class="o">&lt;</span> <span class="n">M</span><span class="p">:</span>
+            <span class="c1"># Determine the next block of edges.</span>
+            <span class="n">l</span> <span class="o">=</span> <span class="n">f</span> <span class="o">+</span> <span class="n">B</span>
+            <span class="k">if</span> <span class="n">l</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_count</span><span class="p">:</span>
+                <span class="n">edges</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">l</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">l</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_count</span>
+                <span class="n">edges</span> <span class="o">=</span> <span class="n">chain</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_count</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="n">l</span><span class="p">))</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="n">l</span>
+            <span class="c1"># Find the first edge with the lowest reduced cost.</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">edges</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">reduced_cost</span><span class="p">)</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reduced_cost</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">c</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># No entering edge found in the current block.</span>
+                <span class="n">m</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Entering edge found.</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_flow</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_sources</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                    <span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_targets</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_targets</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                    <span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_sources</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="k">yield</span> <span class="n">i</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span>
+                <span class="n">m</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1"># All edges have nonnegative reduced costs. The current flow is</span>
+        <span class="c1"># optimal.</span>
+
+    <span class="k">def</span> <span class="nf">residual_capacity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the residual capacity of an edge i in the direction away</span>
+<span class="sd">        from its endpoint p.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">edge_capacities</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_flow</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_sources</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">p</span>
+            <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_flow</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">find_leaving_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Wn</span><span class="p">,</span> <span class="n">We</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the leaving edge in a cycle represented by Wn and We.&quot;&quot;&quot;</span>
+        <span class="n">j</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span>
+            <span class="nb">zip</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="n">We</span><span class="p">),</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">Wn</span><span class="p">)),</span>
+            <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">i_p</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">residual_capacity</span><span class="p">(</span><span class="o">*</span><span class="n">i_p</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_targets</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_sources</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="n">s</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_sources</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">j</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span>
+
+
+<div class="viewcode-block" id="network_simplex"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.flow.network_simplex.html#networkx.algorithms.flow.network_simplex">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;undirected&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">network_simplex</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">demand</span><span class="o">=</span><span class="s2">&quot;demand&quot;</span><span class="p">,</span> <span class="n">capacity</span><span class="o">=</span><span class="s2">&quot;capacity&quot;</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Find a minimum cost flow satisfying all demands in digraph G.</span>
+
+<span class="sd">    This is a primal network simplex algorithm that uses the leaving</span>
+<span class="sd">    arc rule to prevent cycling.</span>
+
+<span class="sd">    G is a digraph with edge costs and capacities and in which nodes</span>
+<span class="sd">    have demand, i.e., they want to send or receive some amount of</span>
+<span class="sd">    flow. A negative demand means that the node wants to send flow, a</span>
+<span class="sd">    positive demand means that the node want to receive flow. A flow on</span>
+<span class="sd">    the digraph G satisfies all demand if the net flow into each node</span>
+<span class="sd">    is equal to the demand of that node.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+<span class="sd">        DiGraph on which a minimum cost flow satisfying all demands is</span>
+<span class="sd">        to be found.</span>
+
+<span class="sd">    demand : string</span>
+<span class="sd">        Nodes of the graph G are expected to have an attribute demand</span>
+<span class="sd">        that indicates how much flow a node wants to send (negative</span>
+<span class="sd">        demand) or receive (positive demand). Note that the sum of the</span>
+<span class="sd">        demands should be 0 otherwise the problem in not feasible. If</span>
+<span class="sd">        this attribute is not present, a node is considered to have 0</span>
+<span class="sd">        demand. Default value: &#39;demand&#39;.</span>
+
+<span class="sd">    capacity : string</span>
+<span class="sd">        Edges of the graph G are expected to have an attribute capacity</span>
+<span class="sd">        that indicates how much flow the edge can support. If this</span>
+<span class="sd">        attribute is not present, the edge is considered to have</span>
+<span class="sd">        infinite capacity. Default value: &#39;capacity&#39;.</span>
+
+<span class="sd">    weight : string</span>
+<span class="sd">        Edges of the graph G are expected to have an attribute weight</span>
+<span class="sd">        that indicates the cost incurred by sending one unit of flow on</span>
+<span class="sd">        that edge. If not present, the weight is considered to be 0.</span>
+<span class="sd">        Default value: &#39;weight&#39;.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    flowCost : integer, float</span>
+<span class="sd">        Cost of a minimum cost flow satisfying all demands.</span>
+
+<span class="sd">    flowDict : dictionary</span>
+<span class="sd">        Dictionary of dictionaries keyed by nodes such that</span>
+<span class="sd">        flowDict[u][v] is the flow edge (u, v).</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NetworkXError</span>
+<span class="sd">        This exception is raised if the input graph is not directed or</span>
+<span class="sd">        not connected.</span>
+
+<span class="sd">    NetworkXUnfeasible</span>
+<span class="sd">        This exception is raised in the following situations:</span>
+
+<span class="sd">            * The sum of the demands is not zero. Then, there is no</span>
+<span class="sd">              flow satisfying all demands.</span>
+<span class="sd">            * There is no flow satisfying all demand.</span>
+
+<span class="sd">    NetworkXUnbounded</span>
+<span class="sd">        This exception is raised if the digraph G has a cycle of</span>
+<span class="sd">        negative cost and infinite capacity. Then, the cost of a flow</span>
+<span class="sd">        satisfying all demands is unbounded below.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This algorithm is not guaranteed to work if edge weights or demands</span>
+<span class="sd">    are floating point numbers (overflows and roundoff errors can</span>
+<span class="sd">    cause problems). As a workaround you can use integer numbers by</span>
+<span class="sd">    multiplying the relevant edge attributes by a convenient</span>
+<span class="sd">    constant factor (eg 100).</span>
+
+<span class="sd">    See also</span>
+<span class="sd">    --------</span>
+<span class="sd">    cost_of_flow, max_flow_min_cost, min_cost_flow, min_cost_flow_cost</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    A simple example of a min cost flow problem.</span>
+
+<span class="sd">    &gt;&gt;&gt; G = nx.DiGraph()</span>
+<span class="sd">    &gt;&gt;&gt; G.add_node(&quot;a&quot;, demand=-5)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_node(&quot;d&quot;, demand=5)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(&quot;a&quot;, &quot;b&quot;, weight=3, capacity=4)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(&quot;a&quot;, &quot;c&quot;, weight=6, capacity=10)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(&quot;b&quot;, &quot;d&quot;, weight=1, capacity=9)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(&quot;c&quot;, &quot;d&quot;, weight=2, capacity=5)</span>
+<span class="sd">    &gt;&gt;&gt; flowCost, flowDict = nx.network_simplex(G)</span>
+<span class="sd">    &gt;&gt;&gt; flowCost</span>
+<span class="sd">    24</span>
+<span class="sd">    &gt;&gt;&gt; flowDict</span>
+<span class="sd">    {&#39;a&#39;: {&#39;b&#39;: 4, &#39;c&#39;: 1}, &#39;d&#39;: {}, &#39;b&#39;: {&#39;d&#39;: 4}, &#39;c&#39;: {&#39;d&#39;: 1}}</span>
+
+<span class="sd">    The mincost flow algorithm can also be used to solve shortest path</span>
+<span class="sd">    problems. To find the shortest path between two nodes u and v,</span>
+<span class="sd">    give all edges an infinite capacity, give node u a demand of -1 and</span>
+<span class="sd">    node v a demand a 1. Then run the network simplex. The value of a</span>
+<span class="sd">    min cost flow will be the distance between u and v and edges</span>
+<span class="sd">    carrying positive flow will indicate the path.</span>
+
+<span class="sd">    &gt;&gt;&gt; G = nx.DiGraph()</span>
+<span class="sd">    &gt;&gt;&gt; G.add_weighted_edges_from(</span>
+<span class="sd">    ...     [</span>
+<span class="sd">    ...         (&quot;s&quot;, &quot;u&quot;, 10),</span>
+<span class="sd">    ...         (&quot;s&quot;, &quot;x&quot;, 5),</span>
+<span class="sd">    ...         (&quot;u&quot;, &quot;v&quot;, 1),</span>
+<span class="sd">    ...         (&quot;u&quot;, &quot;x&quot;, 2),</span>
+<span class="sd">    ...         (&quot;v&quot;, &quot;y&quot;, 1),</span>
+<span class="sd">    ...         (&quot;x&quot;, &quot;u&quot;, 3),</span>
+<span class="sd">    ...         (&quot;x&quot;, &quot;v&quot;, 5),</span>
+<span class="sd">    ...         (&quot;x&quot;, &quot;y&quot;, 2),</span>
+<span class="sd">    ...         (&quot;y&quot;, &quot;s&quot;, 7),</span>
+<span class="sd">    ...         (&quot;y&quot;, &quot;v&quot;, 6),</span>
+<span class="sd">    ...     ]</span>
+<span class="sd">    ... )</span>
+<span class="sd">    &gt;&gt;&gt; G.add_node(&quot;s&quot;, demand=-1)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_node(&quot;v&quot;, demand=1)</span>
+<span class="sd">    &gt;&gt;&gt; flowCost, flowDict = nx.network_simplex(G)</span>
+<span class="sd">    &gt;&gt;&gt; flowCost == nx.shortest_path_length(G, &quot;s&quot;, &quot;v&quot;, weight=&quot;weight&quot;)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; sorted([(u, v) for u in flowDict for v in flowDict[u] if flowDict[u][v] &gt; 0])</span>
+<span class="sd">    [(&#39;s&#39;, &#39;x&#39;), (&#39;u&#39;, &#39;v&#39;), (&#39;x&#39;, &#39;u&#39;)]</span>
+<span class="sd">    &gt;&gt;&gt; nx.shortest_path(G, &quot;s&quot;, &quot;v&quot;, weight=&quot;weight&quot;)</span>
+<span class="sd">    [&#39;s&#39;, &#39;x&#39;, &#39;u&#39;, &#39;v&#39;]</span>
+
+<span class="sd">    It is possible to change the name of the attributes used for the</span>
+<span class="sd">    algorithm.</span>
+
+<span class="sd">    &gt;&gt;&gt; G = nx.DiGraph()</span>
+<span class="sd">    &gt;&gt;&gt; G.add_node(&quot;p&quot;, spam=-4)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_node(&quot;q&quot;, spam=2)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_node(&quot;a&quot;, spam=-2)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_node(&quot;d&quot;, spam=-1)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_node(&quot;t&quot;, spam=2)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_node(&quot;w&quot;, spam=3)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(&quot;p&quot;, &quot;q&quot;, cost=7, vacancies=5)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(&quot;p&quot;, &quot;a&quot;, cost=1, vacancies=4)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(&quot;q&quot;, &quot;d&quot;, cost=2, vacancies=3)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(&quot;t&quot;, &quot;q&quot;, cost=1, vacancies=2)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(&quot;a&quot;, &quot;t&quot;, cost=2, vacancies=4)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(&quot;d&quot;, &quot;w&quot;, cost=3, vacancies=4)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(&quot;t&quot;, &quot;w&quot;, cost=4, vacancies=1)</span>
+<span class="sd">    &gt;&gt;&gt; flowCost, flowDict = nx.network_simplex(</span>
+<span class="sd">    ...     G, demand=&quot;spam&quot;, capacity=&quot;vacancies&quot;, weight=&quot;cost&quot;</span>
+<span class="sd">    ... )</span>
+<span class="sd">    &gt;&gt;&gt; flowCost</span>
+<span class="sd">    37</span>
+<span class="sd">    &gt;&gt;&gt; flowDict</span>
+<span class="sd">    {&#39;p&#39;: {&#39;q&#39;: 2, &#39;a&#39;: 2}, &#39;q&#39;: {&#39;d&#39;: 1}, &#39;a&#39;: {&#39;t&#39;: 4}, &#39;d&#39;: {&#39;w&#39;: 2}, &#39;t&#39;: {&#39;q&#39;: 1, &#39;w&#39;: 1}, &#39;w&#39;: {}}</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Z. Kiraly, P. Kovacs.</span>
+<span class="sd">           Efficient implementation of minimum-cost flow algorithms.</span>
+<span class="sd">           Acta Universitatis Sapientiae, Informatica 4(1):67--118. 2012.</span>
+<span class="sd">    .. [2] R. Barr, F. Glover, D. Klingman.</span>
+<span class="sd">           Enhancement of spanning tree labeling procedures for network</span>
+<span class="sd">           optimization.</span>
+<span class="sd">           INFOR 17(1):16--34. 1979.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># Problem essentials extraction and sanity check</span>
+    <span class="c1">###########################################################################</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;graph has no nodes&quot;</span><span class="p">)</span>
+
+    <span class="n">multigraph</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">is_multigraph</span><span class="p">()</span>
+
+    <span class="c1"># extracting data essential to problem</span>
+    <span class="n">DEAF</span> <span class="o">=</span> <span class="n">_DataEssentialsAndFunctions</span><span class="p">(</span>
+        <span class="n">G</span><span class="p">,</span> <span class="n">multigraph</span><span class="p">,</span> <span class="n">demand</span><span class="o">=</span><span class="n">demand</span><span class="p">,</span> <span class="n">capacity</span><span class="o">=</span><span class="n">capacity</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">weight</span>
+    <span class="p">)</span>
+
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># Quick Error Detection</span>
+    <span class="c1">###########################################################################</span>
+
+    <span class="n">inf</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">DEAF</span><span class="o">.</span><span class="n">node_list</span><span class="p">,</span> <span class="n">DEAF</span><span class="o">.</span><span class="n">node_demands</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="o">==</span> <span class="n">inf</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;node </span><span class="si">{</span><span class="n">u</span><span class="si">!r}</span><span class="s2"> has infinite demand&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">w</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">DEAF</span><span class="o">.</span><span class="n">edge_indices</span><span class="p">,</span> <span class="n">DEAF</span><span class="o">.</span><span class="n">edge_weights</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">==</span> <span class="n">inf</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;edge </span><span class="si">{</span><span class="n">e</span><span class="si">!r}</span><span class="s2"> has infinite weight&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">multigraph</span><span class="p">:</span>
+        <span class="n">edges</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">selfloop_edges</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">edges</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">selfloop_edges</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">weight</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span> <span class="o">==</span> <span class="n">inf</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;edge </span><span class="si">{</span><span class="n">e</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">!r}</span><span class="s2"> has infinite weight&quot;</span><span class="p">)</span>
+
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># Quick Infeasibility Detection</span>
+    <span class="c1">###########################################################################</span>
+
+    <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">DEAF</span><span class="o">.</span><span class="n">node_demands</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXUnfeasible</span><span class="p">(</span><span class="s2">&quot;total node demand is not zero&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">DEAF</span><span class="o">.</span><span class="n">edge_indices</span><span class="p">,</span> <span class="n">DEAF</span><span class="o">.</span><span class="n">edge_capacities</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">c</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXUnfeasible</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;edge </span><span class="si">{</span><span class="n">e</span><span class="si">!r}</span><span class="s2"> has negative capacity&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">multigraph</span><span class="p">:</span>
+        <span class="n">edges</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">selfloop_edges</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">edges</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">selfloop_edges</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">e</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">capacity</span><span class="p">,</span> <span class="n">inf</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXUnfeasible</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;edge </span><span class="si">{</span><span class="n">e</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">!r}</span><span class="s2"> has negative capacity&quot;</span><span class="p">)</span>
+
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># Initialization</span>
+    <span class="c1">###########################################################################</span>
+
+    <span class="c1"># Add a dummy node -1 and connect all existing nodes to it with infinite-</span>
+    <span class="c1"># capacity dummy edges. Node -1 will serve as the root of the</span>
+    <span class="c1"># spanning tree of the network simplex method. The new edges will used to</span>
+    <span class="c1"># trivially satisfy the node demands and create an initial strongly</span>
+    <span class="c1"># feasible spanning tree.</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">DEAF</span><span class="o">.</span><span class="n">node_demands</span><span class="p">):</span>
+        <span class="c1"># Must be greater-than here. Zero-demand nodes must have</span>
+        <span class="c1"># edges pointing towards the root to ensure strong feasibility.</span>
+        <span class="k">if</span> <span class="n">d</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">DEAF</span><span class="o">.</span><span class="n">edge_sources</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">DEAF</span><span class="o">.</span><span class="n">edge_targets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">DEAF</span><span class="o">.</span><span class="n">edge_sources</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">DEAF</span><span class="o">.</span><span class="n">edge_targets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">faux_inf</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="mi">3</span>
+        <span class="o">*</span> <span class="nb">max</span><span class="p">(</span>
+            <span class="n">chain</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="nb">sum</span><span class="p">(</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">DEAF</span><span class="o">.</span><span class="n">edge_capacities</span> <span class="k">if</span> <span class="n">c</span> <span class="o">&lt;</span> <span class="n">inf</span><span class="p">),</span>
+                    <span class="nb">sum</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">DEAF</span><span class="o">.</span><span class="n">edge_weights</span><span class="p">),</span>
+                <span class="p">],</span>
+                <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">DEAF</span><span class="o">.</span><span class="n">node_demands</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="ow">or</span> <span class="mi">1</span>
+    <span class="p">)</span>
+
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">DEAF</span><span class="o">.</span><span class="n">node_list</span><span class="p">)</span>  <span class="c1"># number of nodes</span>
+    <span class="n">DEAF</span><span class="o">.</span><span class="n">edge_weights</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">repeat</span><span class="p">(</span><span class="n">faux_inf</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>
+    <span class="n">DEAF</span><span class="o">.</span><span class="n">edge_capacities</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">repeat</span><span class="p">(</span><span class="n">faux_inf</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>
+
+    <span class="c1"># Construct the initial spanning tree.</span>
+    <span class="n">DEAF</span><span class="o">.</span><span class="n">initialize_spanning_tree</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">faux_inf</span><span class="p">)</span>
+
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># Pivot loop</span>
+    <span class="c1">###########################################################################</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">DEAF</span><span class="o">.</span><span class="n">find_entering_edges</span><span class="p">():</span>
+        <span class="n">Wn</span><span class="p">,</span> <span class="n">We</span> <span class="o">=</span> <span class="n">DEAF</span><span class="o">.</span><span class="n">find_cycle</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span>
+        <span class="n">j</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span> <span class="o">=</span> <span class="n">DEAF</span><span class="o">.</span><span class="n">find_leaving_edge</span><span class="p">(</span><span class="n">Wn</span><span class="p">,</span> <span class="n">We</span><span class="p">)</span>
+        <span class="n">DEAF</span><span class="o">.</span><span class="n">augment_flow</span><span class="p">(</span><span class="n">Wn</span><span class="p">,</span> <span class="n">We</span><span class="p">,</span> <span class="n">DEAF</span><span class="o">.</span><span class="n">residual_capacity</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">s</span><span class="p">))</span>
+        <span class="c1"># Do nothing more if the entering edge is the same as the leaving edge.</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">j</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">DEAF</span><span class="o">.</span><span class="n">parent</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">!=</span> <span class="n">s</span><span class="p">:</span>
+                <span class="c1"># Ensure that s is the parent of t.</span>
+                <span class="n">s</span><span class="p">,</span> <span class="n">t</span> <span class="o">=</span> <span class="n">t</span><span class="p">,</span> <span class="n">s</span>
+            <span class="k">if</span> <span class="n">We</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">We</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">j</span><span class="p">):</span>
+                <span class="c1"># Ensure that q is in the subtree rooted at t.</span>
+                <span class="n">p</span><span class="p">,</span> <span class="n">q</span> <span class="o">=</span> <span class="n">q</span><span class="p">,</span> <span class="n">p</span>
+            <span class="n">DEAF</span><span class="o">.</span><span class="n">remove_edge</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+            <span class="n">DEAF</span><span class="o">.</span><span class="n">make_root</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
+            <span class="n">DEAF</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span>
+            <span class="n">DEAF</span><span class="o">.</span><span class="n">update_potentials</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span>
+
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># Infeasibility and unboundedness detection</span>
+    <span class="c1">###########################################################################</span>
+
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">DEAF</span><span class="o">.</span><span class="n">edge_flow</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="n">n</span><span class="p">,</span> <span class="mi">0</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXUnfeasible</span><span class="p">(</span><span class="s2">&quot;no flow satisfies all node demands&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">DEAF</span><span class="o">.</span><span class="n">edge_flow</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">&gt;=</span> <span class="n">faux_inf</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">DEAF</span><span class="o">.</span><span class="n">edge_count</span><span class="p">))</span> <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span>
+        <span class="n">e</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">capacity</span><span class="p">,</span> <span class="n">inf</span><span class="p">)</span> <span class="o">==</span> <span class="n">inf</span> <span class="ow">and</span> <span class="n">e</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">weight</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">nx</span><span class="o">.</span><span class="n">selfloop_edges</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="p">):</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXUnbounded</span><span class="p">(</span><span class="s2">&quot;negative cycle with infinite capacity found&quot;</span><span class="p">)</span>
+
+    <span class="c1">###########################################################################</span>
+    <span class="c1"># Flow cost calculation and flow dict construction</span>
+    <span class="c1">###########################################################################</span>
+
+    <span class="k">del</span> <span class="n">DEAF</span><span class="o">.</span><span class="n">edge_flow</span><span class="p">[</span><span class="n">DEAF</span><span class="o">.</span><span class="n">edge_count</span> <span class="p">:]</span>
+    <span class="n">flow_cost</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">w</span> <span class="o">*</span> <span class="n">x</span> <span class="k">for</span> <span class="n">w</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">DEAF</span><span class="o">.</span><span class="n">edge_weights</span><span class="p">,</span> <span class="n">DEAF</span><span class="o">.</span><span class="n">edge_flow</span><span class="p">))</span>
+    <span class="n">flow_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">n</span><span class="p">:</span> <span class="p">{}</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">DEAF</span><span class="o">.</span><span class="n">node_list</span><span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">add_entry</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add a flow dict entry.&quot;&quot;&quot;</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">flow_dict</span><span class="p">[</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="p">]:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">d</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="n">t</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">t</span>
+                <span class="n">d</span> <span class="o">=</span> <span class="n">t</span>
+        <span class="n">d</span><span class="p">[</span><span class="n">e</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]]</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">DEAF</span><span class="o">.</span><span class="n">edge_sources</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">DEAF</span><span class="o">.</span><span class="n">node_list</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">DEAF</span><span class="o">.</span><span class="n">edge_sources</span>
+    <span class="p">)</span>  <span class="c1"># Use original nodes.</span>
+    <span class="n">DEAF</span><span class="o">.</span><span class="n">edge_targets</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">DEAF</span><span class="o">.</span><span class="n">node_list</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">DEAF</span><span class="o">.</span><span class="n">edge_targets</span>
+    <span class="p">)</span>  <span class="c1"># Use original nodes.</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">multigraph</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">DEAF</span><span class="o">.</span><span class="n">edge_sources</span><span class="p">,</span> <span class="n">DEAF</span><span class="o">.</span><span class="n">edge_targets</span><span class="p">,</span> <span class="n">DEAF</span><span class="o">.</span><span class="n">edge_flow</span><span class="p">):</span>
+            <span class="n">add_entry</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="n">edges</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+            <span class="n">DEAF</span><span class="o">.</span><span class="n">edge_sources</span><span class="p">,</span> <span class="n">DEAF</span><span class="o">.</span><span class="n">edge_targets</span><span class="p">,</span> <span class="n">DEAF</span><span class="o">.</span><span class="n">edge_keys</span><span class="p">,</span> <span class="n">DEAF</span><span class="o">.</span><span class="n">edge_flow</span>
+        <span class="p">):</span>
+            <span class="n">add_entry</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="n">edges</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">e</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">capacity</span><span class="p">,</span> <span class="n">inf</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">add_entry</span><span class="p">(</span><span class="n">e</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="mi">0</span><span class="p">,))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">w</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">weight</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">w</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">add_entry</span><span class="p">(</span><span class="n">e</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="mi">0</span><span class="p">,))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">c</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">capacity</span><span class="p">]</span>
+                <span class="n">flow_cost</span> <span class="o">+=</span> <span class="n">w</span> <span class="o">*</span> <span class="n">c</span>
+                <span class="n">add_entry</span><span class="p">(</span><span class="n">e</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">c</span><span class="p">,))</span>
+
+    <span class="k">return</span> <span class="n">flow_cost</span><span class="p">,</span> <span class="n">flow_dict</span></div>
+</pre></div>
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

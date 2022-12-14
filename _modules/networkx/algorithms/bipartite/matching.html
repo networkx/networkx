@@ -1,0 +1,1121 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>networkx.algorithms.bipartite.matching &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/algorithms/bipartite/matching';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/algorithms/bipartite/matching.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../../../../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../../../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../../../../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <h1>Source code for networkx.algorithms.bipartite.matching</h1><div class="highlight"><pre>
+<span></span><span class="c1"># This module uses material from the Wikipedia article Hopcroft--Karp algorithm</span>
+<span class="c1"># &lt;https://en.wikipedia.org/wiki/Hopcroft%E2%80%93Karp_algorithm&gt;, accessed on</span>
+<span class="c1"># January 3, 2015, which is released under the Creative Commons</span>
+<span class="c1"># Attribution-Share-Alike License 3.0</span>
+<span class="c1"># &lt;http://creativecommons.org/licenses/by-sa/3.0/&gt;. That article includes</span>
+<span class="c1"># pseudocode, which has been translated into the corresponding Python code.</span>
+<span class="c1">#</span>
+<span class="c1"># Portions of this module use code from David Eppstein&#39;s Python Algorithms and</span>
+<span class="c1"># Data Structures (PADS) library, which is dedicated to the public domain (for</span>
+<span class="c1"># proof, see &lt;http://www.ics.uci.edu/~eppstein/PADS/ABOUT-PADS.txt&gt;).</span>
+<span class="sd">&quot;&quot;&quot;Provides functions for computing maximum cardinality matchings and minimum</span>
+<span class="sd">weight full matchings in a bipartite graph.</span>
+
+<span class="sd">If you don&#39;t care about the particular implementation of the maximum matching</span>
+<span class="sd">algorithm, simply use the :func:`maximum_matching`. If you do care, you can</span>
+<span class="sd">import one of the named maximum matching algorithms directly.</span>
+
+<span class="sd">For example, to find a maximum matching in the complete bipartite graph with</span>
+<span class="sd">two vertices on the left and three vertices on the right:</span>
+
+<span class="sd">&gt;&gt;&gt; G = nx.complete_bipartite_graph(2, 3)</span>
+<span class="sd">&gt;&gt;&gt; left, right = nx.bipartite.sets(G)</span>
+<span class="sd">&gt;&gt;&gt; list(left)</span>
+<span class="sd">[0, 1]</span>
+<span class="sd">&gt;&gt;&gt; list(right)</span>
+<span class="sd">[2, 3, 4]</span>
+<span class="sd">&gt;&gt;&gt; nx.bipartite.maximum_matching(G)</span>
+<span class="sd">{0: 2, 1: 3, 2: 0, 3: 1}</span>
+
+<span class="sd">The dictionary returned by :func:`maximum_matching` includes a mapping for</span>
+<span class="sd">vertices in both the left and right vertex sets.</span>
+
+<span class="sd">Similarly, :func:`minimum_weight_full_matching` produces, for a complete</span>
+<span class="sd">weighted bipartite graph, a matching whose cardinality is the cardinality of</span>
+<span class="sd">the smaller of the two partitions, and for which the sum of the weights of the</span>
+<span class="sd">edges included in the matching is minimal.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">from</span> <span class="nn">networkx.algorithms.bipartite</span> <span class="kn">import</span> <span class="n">sets</span> <span class="k">as</span> <span class="n">bipartite_sets</span>
+<span class="kn">from</span> <span class="nn">networkx.algorithms.bipartite.matrix</span> <span class="kn">import</span> <span class="n">biadjacency_matrix</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;maximum_matching&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;hopcroft_karp_matching&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;eppstein_matching&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;to_vertex_cover&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;minimum_weight_full_matching&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">INFINITY</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="hopcroft_karp_matching"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.bipartite.matching.hopcroft_karp_matching.html#networkx.algorithms.bipartite.matching.hopcroft_karp_matching">[docs]</a><span class="k">def</span> <span class="nf">hopcroft_karp_matching</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">top_nodes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the maximum cardinality matching of the bipartite graph `G`.</span>
+
+<span class="sd">    A matching is a set of edges that do not share any nodes. A maximum</span>
+<span class="sd">    cardinality matching is a matching with the most edges possible. It</span>
+<span class="sd">    is not always unique. Finding a matching in a bipartite graph can be</span>
+<span class="sd">    treated as a networkx flow problem.</span>
+
+<span class="sd">    The functions ``hopcroft_karp_matching`` and ``maximum_matching``</span>
+<span class="sd">    are aliases of the same function.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+
+<span class="sd">      Undirected bipartite graph</span>
+
+<span class="sd">    top_nodes : container of nodes</span>
+
+<span class="sd">      Container with all nodes in one bipartite node set. If not supplied</span>
+<span class="sd">      it will be computed. But if more than one solution exists an exception</span>
+<span class="sd">      will be raised.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    matches : dictionary</span>
+
+<span class="sd">      The matching is returned as a dictionary, `matches`, such that</span>
+<span class="sd">      ``matches[v] == w`` if node `v` is matched to node `w`. Unmatched</span>
+<span class="sd">      nodes do not occur as a key in `matches`.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    AmbiguousSolution</span>
+<span class="sd">      Raised if the input bipartite graph is disconnected and no container</span>
+<span class="sd">      with all nodes in one bipartite set is provided. When determining</span>
+<span class="sd">      the nodes in each bipartite set more than one valid solution is</span>
+<span class="sd">      possible if the input graph is disconnected.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function is implemented with the `Hopcroft--Karp matching algorithm</span>
+<span class="sd">    &lt;https://en.wikipedia.org/wiki/Hopcroft%E2%80%93Karp_algorithm&gt;`_ for</span>
+<span class="sd">    bipartite graphs.</span>
+
+<span class="sd">    See :mod:`bipartite documentation &lt;networkx.algorithms.bipartite&gt;`</span>
+<span class="sd">    for further details on how bipartite graphs are handled in NetworkX.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    maximum_matching</span>
+<span class="sd">    hopcroft_karp_matching</span>
+<span class="sd">    eppstein_matching</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] John E. Hopcroft and Richard M. Karp. &quot;An n^{5 / 2} Algorithm for</span>
+<span class="sd">       Maximum Matchings in Bipartite Graphs&quot; In: **SIAM Journal of Computing**</span>
+<span class="sd">       2.4 (1973), pp. 225--231. &lt;https://doi.org/10.1137/0202019&gt;.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># First we define some auxiliary search functions.</span>
+    <span class="c1">#</span>
+    <span class="c1"># If you are a human reading these auxiliary search functions, the &quot;global&quot;</span>
+    <span class="c1"># variables `leftmatches`, `rightmatches`, `distances`, etc. are defined</span>
+    <span class="c1"># below the functions, so that they are initialized close to the initial</span>
+    <span class="c1"># invocation of the search functions.</span>
+    <span class="k">def</span> <span class="nf">breadth_first_search</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">left</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">leftmatches</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">distances</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">distances</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">INFINITY</span>
+        <span class="n">distances</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="n">INFINITY</span>
+        <span class="k">while</span> <span class="n">queue</span><span class="p">:</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">popleft</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">distances</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">distances</span><span class="p">[</span><span class="kc">None</span><span class="p">]:</span>
+                <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">G</span><span class="p">[</span><span class="n">v</span><span class="p">]:</span>
+                    <span class="k">if</span> <span class="n">distances</span><span class="p">[</span><span class="n">rightmatches</span><span class="p">[</span><span class="n">u</span><span class="p">]]</span> <span class="ow">is</span> <span class="n">INFINITY</span><span class="p">:</span>
+                        <span class="n">distances</span><span class="p">[</span><span class="n">rightmatches</span><span class="p">[</span><span class="n">u</span><span class="p">]]</span> <span class="o">=</span> <span class="n">distances</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+                        <span class="n">queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rightmatches</span><span class="p">[</span><span class="n">u</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">distances</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">INFINITY</span>
+
+    <span class="k">def</span> <span class="nf">depth_first_search</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">G</span><span class="p">[</span><span class="n">v</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">distances</span><span class="p">[</span><span class="n">rightmatches</span><span class="p">[</span><span class="n">u</span><span class="p">]]</span> <span class="o">==</span> <span class="n">distances</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">depth_first_search</span><span class="p">(</span><span class="n">rightmatches</span><span class="p">[</span><span class="n">u</span><span class="p">]):</span>
+                        <span class="n">rightmatches</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+                        <span class="n">leftmatches</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">u</span>
+                        <span class="k">return</span> <span class="kc">True</span>
+            <span class="n">distances</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">INFINITY</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="c1"># Initialize the &quot;global&quot; variables that maintain state during the search.</span>
+    <span class="n">left</span><span class="p">,</span> <span class="n">right</span> <span class="o">=</span> <span class="n">bipartite_sets</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">top_nodes</span><span class="p">)</span>
+    <span class="n">leftmatches</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">left</span><span class="p">}</span>
+    <span class="n">rightmatches</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">right</span><span class="p">}</span>
+    <span class="n">distances</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">queue</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">deque</span><span class="p">()</span>
+
+    <span class="c1"># Implementation note: this counter is incremented as pairs are matched but</span>
+    <span class="c1"># it is currently not used elsewhere in the computation.</span>
+    <span class="n">num_matched_pairs</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="n">breadth_first_search</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">left</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">leftmatches</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">depth_first_search</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+                    <span class="n">num_matched_pairs</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="c1"># Strip the entries matched to `None`.</span>
+    <span class="n">leftmatches</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">leftmatches</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">}</span>
+    <span class="n">rightmatches</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">rightmatches</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">}</span>
+
+    <span class="c1"># At this point, the left matches and the right matches are inverses of one</span>
+    <span class="c1"># another. In other words,</span>
+    <span class="c1">#</span>
+    <span class="c1">#     leftmatches == {v, k for k, v in rightmatches.items()}</span>
+    <span class="c1">#</span>
+    <span class="c1"># Finally, we combine both the left matches and right matches.</span>
+    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="n">leftmatches</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">rightmatches</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span></div>
+
+
+<div class="viewcode-block" id="eppstein_matching"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.bipartite.matching.eppstein_matching.html#networkx.algorithms.bipartite.matching.eppstein_matching">[docs]</a><span class="k">def</span> <span class="nf">eppstein_matching</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">top_nodes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the maximum cardinality matching of the bipartite graph `G`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+
+<span class="sd">      Undirected bipartite graph</span>
+
+<span class="sd">    top_nodes : container</span>
+
+<span class="sd">      Container with all nodes in one bipartite node set. If not supplied</span>
+<span class="sd">      it will be computed. But if more than one solution exists an exception</span>
+<span class="sd">      will be raised.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    matches : dictionary</span>
+
+<span class="sd">      The matching is returned as a dictionary, `matching`, such that</span>
+<span class="sd">      ``matching[v] == w`` if node `v` is matched to node `w`. Unmatched</span>
+<span class="sd">      nodes do not occur as a key in `matching`.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    AmbiguousSolution</span>
+<span class="sd">      Raised if the input bipartite graph is disconnected and no container</span>
+<span class="sd">      with all nodes in one bipartite set is provided. When determining</span>
+<span class="sd">      the nodes in each bipartite set more than one valid solution is</span>
+<span class="sd">      possible if the input graph is disconnected.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function is implemented with David Eppstein&#39;s version of the algorithm</span>
+<span class="sd">    Hopcroft--Karp algorithm (see :func:`hopcroft_karp_matching`), which</span>
+<span class="sd">    originally appeared in the `Python Algorithms and Data Structures library</span>
+<span class="sd">    (PADS) &lt;http://www.ics.uci.edu/~eppstein/PADS/ABOUT-PADS.txt&gt;`_.</span>
+
+<span class="sd">    See :mod:`bipartite documentation &lt;networkx.algorithms.bipartite&gt;`</span>
+<span class="sd">    for further details on how bipartite graphs are handled in NetworkX.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    hopcroft_karp_matching</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Due to its original implementation, a directed graph is needed</span>
+    <span class="c1"># so that the two sets of bipartite nodes can be distinguished</span>
+    <span class="n">left</span><span class="p">,</span> <span class="n">right</span> <span class="o">=</span> <span class="n">bipartite_sets</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">top_nodes</span><span class="p">)</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">left</span><span class="p">))</span>
+    <span class="c1"># initialize greedy matching (redundant, but faster than full search)</span>
+    <span class="n">matching</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">G</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G</span><span class="p">[</span><span class="n">u</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">v</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">matching</span><span class="p">:</span>
+                <span class="n">matching</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">u</span>
+                <span class="k">break</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="c1"># structure residual graph into layers</span>
+        <span class="c1"># pred[u] gives the neighbor in the previous layer for u in U</span>
+        <span class="c1"># preds[v] gives a list of neighbors in the previous layer for v in V</span>
+        <span class="c1"># unmatched gives a list of unmatched vertices in final layer of V,</span>
+        <span class="c1"># and is also used as a flag value for pred[u] when u is in the first</span>
+        <span class="c1"># layer</span>
+        <span class="n">preds</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">unmatched</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">pred</span> <span class="o">=</span> <span class="p">{</span><span class="n">u</span><span class="p">:</span> <span class="n">unmatched</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">G</span><span class="p">}</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">matching</span><span class="p">:</span>
+            <span class="k">del</span> <span class="n">pred</span><span class="p">[</span><span class="n">matching</span><span class="p">[</span><span class="n">v</span><span class="p">]]</span>
+        <span class="n">layer</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">pred</span><span class="p">)</span>
+
+        <span class="c1"># repeatedly extend layering structure by another pair of layers</span>
+        <span class="k">while</span> <span class="n">layer</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">unmatched</span><span class="p">:</span>
+            <span class="n">newLayer</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">layer</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G</span><span class="p">[</span><span class="n">u</span><span class="p">]:</span>
+                    <span class="k">if</span> <span class="n">v</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">preds</span><span class="p">:</span>
+                        <span class="n">newLayer</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>
+            <span class="n">layer</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">newLayer</span><span class="p">:</span>
+                <span class="n">preds</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">newLayer</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">matching</span><span class="p">:</span>
+                    <span class="n">layer</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">matching</span><span class="p">[</span><span class="n">v</span><span class="p">])</span>
+                    <span class="n">pred</span><span class="p">[</span><span class="n">matching</span><span class="p">[</span><span class="n">v</span><span class="p">]]</span> <span class="o">=</span> <span class="n">v</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">unmatched</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+
+        <span class="c1"># did we finish layering without finding any alternating paths?</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">unmatched</span><span class="p">:</span>
+            <span class="n">unlayered</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">G</span><span class="p">:</span>
+                <span class="c1"># TODO Why is extra inner loop necessary?</span>
+                <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G</span><span class="p">[</span><span class="n">u</span><span class="p">]:</span>
+                    <span class="k">if</span> <span class="n">v</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">preds</span><span class="p">:</span>
+                        <span class="n">unlayered</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="c1"># TODO Originally, this function returned a three-tuple:</span>
+            <span class="c1">#</span>
+            <span class="c1">#     return (matching, list(pred), list(unlayered))</span>
+            <span class="c1">#</span>
+            <span class="c1"># For some reason, the documentation for this function</span>
+            <span class="c1"># indicated that the second and third elements of the returned</span>
+            <span class="c1"># three-tuple would be the vertices in the left and right vertex</span>
+            <span class="c1"># sets, respectively, that are also in the maximum independent set.</span>
+            <span class="c1"># However, what I think the author meant was that the second</span>
+            <span class="c1"># element is the list of vertices that were unmatched and the third</span>
+            <span class="c1"># element was the list of vertices that were matched. Since that</span>
+            <span class="c1"># seems to be the case, they don&#39;t really need to be returned,</span>
+            <span class="c1"># since that information can be inferred from the matching</span>
+            <span class="c1"># dictionary.</span>
+
+            <span class="c1"># All the matched nodes must be a key in the dictionary</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">matching</span><span class="o">.</span><span class="n">copy</span><span class="p">():</span>
+                <span class="n">matching</span><span class="p">[</span><span class="n">matching</span><span class="p">[</span><span class="n">key</span><span class="p">]]</span> <span class="o">=</span> <span class="n">key</span>
+            <span class="k">return</span> <span class="n">matching</span>
+
+        <span class="c1"># recursively search backward through layers to find alternating paths</span>
+        <span class="c1"># recursion returns true if found path, false otherwise</span>
+        <span class="k">def</span> <span class="nf">recurse</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">preds</span><span class="p">:</span>
+                <span class="n">L</span> <span class="o">=</span> <span class="n">preds</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">L</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">pred</span><span class="p">:</span>
+                        <span class="n">pu</span> <span class="o">=</span> <span class="n">pred</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">pu</span> <span class="ow">is</span> <span class="n">unmatched</span> <span class="ow">or</span> <span class="n">recurse</span><span class="p">(</span><span class="n">pu</span><span class="p">):</span>
+                            <span class="n">matching</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">u</span>
+                            <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">unmatched</span><span class="p">:</span>
+            <span class="n">recurse</span><span class="p">(</span><span class="n">v</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">_is_connected_by_alternating_path</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">matched_edges</span><span class="p">,</span> <span class="n">unmatched_edges</span><span class="p">,</span> <span class="n">targets</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns True if and only if the vertex `v` is connected to one of</span>
+<span class="sd">    the target vertices by an alternating path in `G`.</span>
+
+<span class="sd">    An *alternating path* is a path in which every other edge is in the</span>
+<span class="sd">    specified maximum matching (and the remaining edges in the path are not in</span>
+<span class="sd">    the matching). An alternating path may have matched edges in the even</span>
+<span class="sd">    positions or in the odd positions, as long as the edges alternate between</span>
+<span class="sd">    &#39;matched&#39; and &#39;unmatched&#39;.</span>
+
+<span class="sd">    `G` is an undirected bipartite NetworkX graph.</span>
+
+<span class="sd">    `v` is a vertex in `G`.</span>
+
+<span class="sd">    `matched_edges` is a set of edges present in a maximum matching in `G`.</span>
+
+<span class="sd">    `unmatched_edges` is a set of edges not present in a maximum</span>
+<span class="sd">    matching in `G`.</span>
+
+<span class="sd">    `targets` is a set of vertices.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_alternating_dfs</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">along_matched</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns True if and only if `u` is connected to one of the</span>
+<span class="sd">        targets by an alternating path.</span>
+
+<span class="sd">        `u` is a vertex in the graph `G`.</span>
+
+<span class="sd">        If `along_matched` is True, this step of the depth-first search</span>
+<span class="sd">        will continue only through edges in the given matching. Otherwise, it</span>
+<span class="sd">        will continue only through edges *not* in the given matching.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">visited</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="c1"># Follow matched edges when depth is even,</span>
+        <span class="c1"># and follow unmatched edges when depth is odd.</span>
+        <span class="n">initial_depth</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">along_matched</span> <span class="k">else</span> <span class="mi">1</span>
+        <span class="n">stack</span> <span class="o">=</span> <span class="p">[(</span><span class="n">u</span><span class="p">,</span> <span class="nb">iter</span><span class="p">(</span><span class="n">G</span><span class="p">[</span><span class="n">u</span><span class="p">]),</span> <span class="n">initial_depth</span><span class="p">)]</span>
+        <span class="k">while</span> <span class="n">stack</span><span class="p">:</span>
+            <span class="n">parent</span><span class="p">,</span> <span class="n">children</span><span class="p">,</span> <span class="n">depth</span> <span class="o">=</span> <span class="n">stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">valid_edges</span> <span class="o">=</span> <span class="n">matched_edges</span> <span class="k">if</span> <span class="n">depth</span> <span class="o">%</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">unmatched_edges</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">child</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">children</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">child</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">child</span><span class="p">)</span> <span class="ow">in</span> <span class="n">valid_edges</span> <span class="ow">or</span> <span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">parent</span><span class="p">)</span> <span class="ow">in</span> <span class="n">valid_edges</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">targets</span><span class="p">:</span>
+                            <span class="k">return</span> <span class="kc">True</span>
+                        <span class="n">visited</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+                        <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">child</span><span class="p">,</span> <span class="nb">iter</span><span class="p">(</span><span class="n">G</span><span class="p">[</span><span class="n">child</span><span class="p">]),</span> <span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+                <span class="n">stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="c1"># Check for alternating paths starting with edges in the matching, then</span>
+    <span class="c1"># check for alternating paths starting with edges not in the</span>
+    <span class="c1"># matching.</span>
+    <span class="k">return</span> <span class="n">_alternating_dfs</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">along_matched</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="ow">or</span> <span class="n">_alternating_dfs</span><span class="p">(</span>
+        <span class="n">v</span><span class="p">,</span> <span class="n">along_matched</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_connected_by_alternating_paths</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">matching</span><span class="p">,</span> <span class="n">targets</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the set of vertices that are connected to one of the target</span>
+<span class="sd">    vertices by an alternating path in `G` or are themselves a target.</span>
+
+<span class="sd">    An *alternating path* is a path in which every other edge is in the</span>
+<span class="sd">    specified maximum matching (and the remaining edges in the path are not in</span>
+<span class="sd">    the matching). An alternating path may have matched edges in the even</span>
+<span class="sd">    positions or in the odd positions, as long as the edges alternate between</span>
+<span class="sd">    &#39;matched&#39; and &#39;unmatched&#39;.</span>
+
+<span class="sd">    `G` is an undirected bipartite NetworkX graph.</span>
+
+<span class="sd">    `matching` is a dictionary representing a maximum matching in `G`, as</span>
+<span class="sd">    returned by, for example, :func:`maximum_matching`.</span>
+
+<span class="sd">    `targets` is a set of vertices.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Get the set of matched edges and the set of unmatched edges. Only include</span>
+    <span class="c1"># one version of each undirected edge (for example, include edge (1, 2) but</span>
+    <span class="c1"># not edge (2, 1)). Using frozensets as an intermediary step we do not</span>
+    <span class="c1"># require nodes to be orderable.</span>
+    <span class="n">edge_sets</span> <span class="o">=</span> <span class="p">{</span><span class="nb">frozenset</span><span class="p">((</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">matching</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+    <span class="n">matched_edges</span> <span class="o">=</span> <span class="p">{</span><span class="nb">tuple</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span> <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">edge_sets</span><span class="p">}</span>
+    <span class="n">unmatched_edges</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">()</span> <span class="k">if</span> <span class="nb">frozenset</span><span class="p">((</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">edge_sets</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="n">v</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G</span>
+        <span class="k">if</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">targets</span>
+        <span class="ow">or</span> <span class="n">_is_connected_by_alternating_path</span><span class="p">(</span>
+            <span class="n">G</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">matched_edges</span><span class="p">,</span> <span class="n">unmatched_edges</span><span class="p">,</span> <span class="n">targets</span>
+        <span class="p">)</span>
+    <span class="p">}</span>
+
+
+<div class="viewcode-block" id="to_vertex_cover"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.bipartite.matching.to_vertex_cover.html#networkx.algorithms.bipartite.matching.to_vertex_cover">[docs]</a><span class="k">def</span> <span class="nf">to_vertex_cover</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">matching</span><span class="p">,</span> <span class="n">top_nodes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the minimum vertex cover corresponding to the given maximum</span>
+<span class="sd">    matching of the bipartite graph `G`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+
+<span class="sd">      Undirected bipartite graph</span>
+
+<span class="sd">    matching : dictionary</span>
+
+<span class="sd">      A dictionary whose keys are vertices in `G` and whose values are the</span>
+<span class="sd">      distinct neighbors comprising the maximum matching for `G`, as returned</span>
+<span class="sd">      by, for example, :func:`maximum_matching`. The dictionary *must*</span>
+<span class="sd">      represent the maximum matching.</span>
+
+<span class="sd">    top_nodes : container</span>
+
+<span class="sd">      Container with all nodes in one bipartite node set. If not supplied</span>
+<span class="sd">      it will be computed. But if more than one solution exists an exception</span>
+<span class="sd">      will be raised.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    vertex_cover : :class:`set`</span>
+
+<span class="sd">      The minimum vertex cover in `G`.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    AmbiguousSolution</span>
+<span class="sd">      Raised if the input bipartite graph is disconnected and no container</span>
+<span class="sd">      with all nodes in one bipartite set is provided. When determining</span>
+<span class="sd">      the nodes in each bipartite set more than one valid solution is</span>
+<span class="sd">      possible if the input graph is disconnected.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function is implemented using the procedure guaranteed by `Konig&#39;s</span>
+<span class="sd">    theorem</span>
+<span class="sd">    &lt;https://en.wikipedia.org/wiki/K%C3%B6nig%27s_theorem_%28graph_theory%29&gt;`_,</span>
+<span class="sd">    which proves an equivalence between a maximum matching and a minimum vertex</span>
+<span class="sd">    cover in bipartite graphs.</span>
+
+<span class="sd">    Since a minimum vertex cover is the complement of a maximum independent set</span>
+<span class="sd">    for any graph, one can compute the maximum independent set of a bipartite</span>
+<span class="sd">    graph this way:</span>
+
+<span class="sd">    &gt;&gt;&gt; G = nx.complete_bipartite_graph(2, 3)</span>
+<span class="sd">    &gt;&gt;&gt; matching = nx.bipartite.maximum_matching(G)</span>
+<span class="sd">    &gt;&gt;&gt; vertex_cover = nx.bipartite.to_vertex_cover(G, matching)</span>
+<span class="sd">    &gt;&gt;&gt; independent_set = set(G) - vertex_cover</span>
+<span class="sd">    &gt;&gt;&gt; print(list(independent_set))</span>
+<span class="sd">    [2, 3, 4]</span>
+
+<span class="sd">    See :mod:`bipartite documentation &lt;networkx.algorithms.bipartite&gt;`</span>
+<span class="sd">    for further details on how bipartite graphs are handled in NetworkX.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># This is a Python implementation of the algorithm described at</span>
+    <span class="c1"># &lt;https://en.wikipedia.org/wiki/K%C3%B6nig%27s_theorem_%28graph_theory%29#Proof&gt;.</span>
+    <span class="n">L</span><span class="p">,</span> <span class="n">R</span> <span class="o">=</span> <span class="n">bipartite_sets</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">top_nodes</span><span class="p">)</span>
+    <span class="c1"># Let U be the set of unmatched vertices in the left vertex set.</span>
+    <span class="n">unmatched_vertices</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">G</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">matching</span><span class="p">)</span>
+    <span class="n">U</span> <span class="o">=</span> <span class="n">unmatched_vertices</span> <span class="o">&amp;</span> <span class="n">L</span>
+    <span class="c1"># Let Z be the set of vertices that are either in U or are connected to U</span>
+    <span class="c1"># by alternating paths.</span>
+    <span class="n">Z</span> <span class="o">=</span> <span class="n">_connected_by_alternating_paths</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">matching</span><span class="p">,</span> <span class="n">U</span><span class="p">)</span>
+    <span class="c1"># At this point, every edge either has a right endpoint in Z or a left</span>
+    <span class="c1"># endpoint not in Z. This gives us the vertex cover.</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">L</span> <span class="o">-</span> <span class="n">Z</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">R</span> <span class="o">&amp;</span> <span class="n">Z</span><span class="p">)</span></div>
+
+
+<span class="c1">#: Returns the maximum cardinality matching in the given bipartite graph.</span>
+<span class="c1">#:</span>
+<span class="c1">#: This function is simply an alias for :func:`hopcroft_karp_matching`.</span>
+<span class="n">maximum_matching</span> <span class="o">=</span> <span class="n">hopcroft_karp_matching</span>
+
+
+<div class="viewcode-block" id="minimum_weight_full_matching"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.bipartite.matching.minimum_weight_full_matching.html#networkx.algorithms.bipartite.matching.minimum_weight_full_matching">[docs]</a><span class="k">def</span> <span class="nf">minimum_weight_full_matching</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">top_nodes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns a minimum weight full matching of the bipartite graph `G`.</span>
+
+<span class="sd">    Let :math:`G = ((U, V), E)` be a weighted bipartite graph with real weights</span>
+<span class="sd">    :math:`w : E \to \mathbb{R}`. This function then produces a matching</span>
+<span class="sd">    :math:`M \subseteq E` with cardinality</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       \lvert M \rvert = \min(\lvert U \rvert, \lvert V \rvert),</span>
+
+<span class="sd">    which minimizes the sum of the weights of the edges included in the</span>
+<span class="sd">    matching, :math:`\sum_{e \in M} w(e)`, or raises an error if no such</span>
+<span class="sd">    matching exists.</span>
+
+<span class="sd">    When :math:`\lvert U \rvert = \lvert V \rvert`, this is commonly</span>
+<span class="sd">    referred to as a perfect matching; here, since we allow</span>
+<span class="sd">    :math:`\lvert U \rvert` and :math:`\lvert V \rvert` to differ, we</span>
+<span class="sd">    follow Karp [1]_ and refer to the matching as *full*.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+
+<span class="sd">      Undirected bipartite graph</span>
+
+<span class="sd">    top_nodes : container</span>
+
+<span class="sd">      Container with all nodes in one bipartite node set. If not supplied</span>
+<span class="sd">      it will be computed.</span>
+
+<span class="sd">    weight : string, optional (default=&#39;weight&#39;)</span>
+
+<span class="sd">       The edge data key used to provide each value in the matrix.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    matches : dictionary</span>
+
+<span class="sd">      The matching is returned as a dictionary, `matches`, such that</span>
+<span class="sd">      ``matches[v] == w`` if node `v` is matched to node `w`. Unmatched</span>
+<span class="sd">      nodes do not occur as a key in `matches`.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">      Raised if no full matching exists.</span>
+
+<span class="sd">    ImportError</span>
+<span class="sd">      Raised if SciPy is not available.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The problem of determining a minimum weight full matching is also known as</span>
+<span class="sd">    the rectangular linear assignment problem. This implementation defers the</span>
+<span class="sd">    calculation of the assignment to SciPy.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Richard Manning Karp:</span>
+<span class="sd">       An algorithm to Solve the m x n Assignment Problem in Expected Time</span>
+<span class="sd">       O(mn log n).</span>
+<span class="sd">       Networks, 10(2):143–152, 1980.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+    <span class="kn">import</span> <span class="nn">scipy</span> <span class="k">as</span> <span class="nn">sp</span>
+    <span class="kn">import</span> <span class="nn">scipy.optimize</span>  <span class="c1"># call as sp.optimize</span>
+
+    <span class="n">left</span><span class="p">,</span> <span class="n">right</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">bipartite</span><span class="o">.</span><span class="n">sets</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">top_nodes</span><span class="p">)</span>
+    <span class="n">U</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">left</span><span class="p">)</span>
+    <span class="n">V</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">right</span><span class="p">)</span>
+    <span class="c1"># We explicitly create the biadjancency matrix having infinities</span>
+    <span class="c1"># where edges are missing (as opposed to zeros, which is what one would</span>
+    <span class="c1"># get by using toarray on the sparse matrix).</span>
+    <span class="n">weights_sparse</span> <span class="o">=</span> <span class="n">biadjacency_matrix</span><span class="p">(</span>
+        <span class="n">G</span><span class="p">,</span> <span class="n">row_order</span><span class="o">=</span><span class="n">U</span><span class="p">,</span> <span class="n">column_order</span><span class="o">=</span><span class="n">V</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;coo&quot;</span>
+    <span class="p">)</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">weights_sparse</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+    <span class="n">weights</span><span class="p">[</span><span class="n">weights_sparse</span><span class="o">.</span><span class="n">row</span><span class="p">,</span> <span class="n">weights_sparse</span><span class="o">.</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">weights_sparse</span><span class="o">.</span><span class="n">data</span>
+    <span class="n">left_matches</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">optimize</span><span class="o">.</span><span class="n">linear_sum_assignment</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="n">U</span><span class="p">[</span><span class="n">u</span><span class="p">]:</span> <span class="n">V</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">left_matches</span><span class="p">)}</span>
+    <span class="c1"># d will contain the matching from edges in left to right; we need to</span>
+    <span class="c1"># add the ones from right to left as well.</span>
+    <span class="n">d</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">v</span><span class="p">:</span> <span class="n">u</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">()})</span>
+    <span class="k">return</span> <span class="n">d</span></div>
+</pre></div>
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

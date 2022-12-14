@@ -1,0 +1,720 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>bellman_ford_path &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'reference/algorithms/generated/networkx.algorithms.shortest_paths.weighted.bellman_ford_path';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.shortest_paths.weighted.bellman_ford_path.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../../../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="bellman_ford_path_length" href="networkx.algorithms.shortest_paths.weighted.bellman_ford_path_length.html" />
+    <link rel="prev" title="bidirectional_dijkstra" href="networkx.algorithms.shortest_paths.weighted.bidirectional_dijkstra.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../../../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../../index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../../index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">
+    Section Navigation
+  </p>
+  <div class="bd-toc-item navbar-nav">
+    <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../classes/index.html">Graph types</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html">Algorithms</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../approximation.html">Approximations and Heuristics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../assortativity.html">Assortativity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../asteroidal.html">Asteroidal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bipartite.html">Bipartite</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../boundary.html">Boundary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bridges.html">Bridges</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../centrality.html">Centrality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chains.html">Chains</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chordal.html">Chordal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../clique.html">Clique</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../clustering.html">Clustering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../coloring.html">Coloring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../communicability_alg.html">Communicability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../community.html">Communities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../component.html">Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../connectivity.html">Connectivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core.html">Cores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../covering.html">Covering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cycles.html">Cycles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cuts.html">Cuts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../d_separation.html">D-Separation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dag.html">Directed Acyclic Graphs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../distance_measures.html">Distance Measures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../distance_regular.html">Distance-Regular Graphs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dominance.html">Dominance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dominating.html">Dominating Sets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../efficiency_measures.html">Efficiency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../euler.html">Eulerian</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../flow.html">Flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../graph_hashing.html">Graph Hashing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../graphical.html">Graphical degree sequence</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../hierarchy.html">Hierarchy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../hybrid.html">Hybrid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../isolates.html">Isolates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../isomorphism.html">Isomorphism</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../link_analysis.html">Link Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../link_prediction.html">Link Prediction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../lowest_common_ancestors.html">Lowest Common Ancestor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../matching.html">Matching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../minors.html">Minors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mis.html">Maximal independent set</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../non_randomness.html">non-randomness</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../moral.html">Moral</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../node_classification.html">Node Classification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../operators.html">Operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../planarity.html">Planarity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../planar_drawing.html">Planar Drawing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../polynomials.html">Graph Polynomials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reciprocity.html">Reciprocity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../regular.html">Regular</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../rich_club.html">Rich Club</a></li>
+<li class="toctree-l2 current active"><a class="reference internal" href="../shortest_paths.html">Shortest Paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../similarity.html">Similarity Measures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../simple_paths.html">Simple Paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../smallworld.html">Small-world</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../smetric.html">s metric</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sparsifiers.html">Sparsifiers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../structuralholes.html">Structural holes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../summarization.html">Summarization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../swap.html">Swap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../threshold.html">Threshold Graphs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tournament.html">Tournament</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../traversal.html">Traversal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tree.html">Tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../triads.html">Triads</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../vitality.html">Vitality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../voronoi.html">Voronoi cells</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../wiener.html">Wiener index</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../functions.html">Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generators.html">Graph generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../linalg.html">Linear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../convert.html">Converting to and from other data formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../relabel.html">Relabeling nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../readwrite/index.html">Reading and writing graphs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../drawing.html">Drawing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../randomness.html">Randomness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../exceptions.html">Exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils.html">Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../glossary.html">Glossary</a></li>
+</ul>
+
+  </div>
+</nav>
+    </div>
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <section id="bellman-ford-path">
+<h1>bellman_ford_path<a class="headerlink" href="#bellman-ford-path" title="Permalink to this heading">#</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="networkx.algorithms.shortest_paths.weighted.bellman_ford_path">
+<span class="sig-name descname"><span class="pre">bellman_ford_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'weight'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/networkx/algorithms/shortest_paths/weighted.html#bellman_ford_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#networkx.algorithms.shortest_paths.weighted.bellman_ford_path" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns the shortest path from source to target in a weighted graph G.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>G</strong><span class="classifier">NetworkX graph</span></dt><dd></dd>
+<dt><strong>source</strong><span class="classifier">node</span></dt><dd><p>Starting node</p>
+</dd>
+<dt><strong>target</strong><span class="classifier">node</span></dt><dd><p>Ending node</p>
+</dd>
+<dt><strong>weight</strong><span class="classifier">string or function (default=”weight”)</span></dt><dd><p>If this is a string, then edge weights will be accessed via the
+edge attribute with this key (that is, the weight of the edge
+joining <code class="xref py py-obj docutils literal notranslate"><span class="pre">u</span></code> to <code class="xref py py-obj docutils literal notranslate"><span class="pre">v</span></code> will be <code class="docutils literal notranslate"><span class="pre">G.edges[u,</span> <span class="pre">v][weight]</span></code>). If no
+such edge attribute exists, the weight of the edge is assumed to
+be one.</p>
+<p>If this is a function, the weight of an edge is the value
+returned by the function. The function must accept exactly three
+positional arguments: the two endpoints of an edge and the
+dictionary of edge attributes for that edge. The function must
+return a number.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>path</strong><span class="classifier">list</span></dt><dd><p>List of nodes in a shortest path.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt>NodeNotFound</dt><dd><p>If <code class="xref py py-obj docutils literal notranslate"><span class="pre">source</span></code> is not in <code class="xref py py-obj docutils literal notranslate"><span class="pre">G</span></code>.</p>
+</dd>
+<dt>NetworkXNoPath</dt><dd><p>If no path exists between source and target.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="networkx.algorithms.shortest_paths.weighted.dijkstra_path.html#networkx.algorithms.shortest_paths.weighted.dijkstra_path" title="networkx.algorithms.shortest_paths.weighted.dijkstra_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dijkstra_path</span></code></a>, <a class="reference internal" href="networkx.algorithms.shortest_paths.weighted.bellman_ford_path_length.html#networkx.algorithms.shortest_paths.weighted.bellman_ford_path_length" title="networkx.algorithms.shortest_paths.weighted.bellman_ford_path_length"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bellman_ford_path_length</span></code></a></dt><dd></dd>
+</dl>
+</div>
+<p class="rubric">Notes</p>
+<p>Edge weight attributes must be numerical.
+Distances are calculated as sums of weighted edges traversed.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">path_graph</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nx</span><span class="o">.</span><span class="n">bellman_ford_path</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="go">[0, 1, 2, 3, 4]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#networkx.algorithms.shortest_paths.weighted.bellman_ford_path">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     bellman_ford_path()
+    </span>
+   </code>
+  </a>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

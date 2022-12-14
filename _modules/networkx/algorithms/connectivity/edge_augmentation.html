@@ -1,0 +1,1798 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>networkx.algorithms.connectivity.edge_augmentation &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/algorithms/connectivity/edge_augmentation';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/algorithms/connectivity/edge_augmentation.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../../../../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../../../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../../../../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <h1>Source code for networkx.algorithms.connectivity.edge_augmentation</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Algorithms for finding k-edge-augmentations</span>
+
+<span class="sd">A k-edge-augmentation is a set of edges, that once added to a graph, ensures</span>
+<span class="sd">that the graph is k-edge-connected; i.e. the graph cannot be disconnected</span>
+<span class="sd">unless k or more edges are removed.  Typically, the goal is to find the</span>
+<span class="sd">augmentation with minimum weight.  In general, it is not guaranteed that a</span>
+<span class="sd">k-edge-augmentation exists.</span>
+
+<span class="sd">See Also</span>
+<span class="sd">--------</span>
+<span class="sd">:mod:`edge_kcomponents` : algorithms for finding k-edge-connected components</span>
+<span class="sd">:mod:`connectivity` : algorithms for determening edge connectivity.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">itertools</span> <span class="k">as</span> <span class="nn">it</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span><span class="p">,</span> <span class="n">namedtuple</span>
+
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">from</span> <span class="nn">networkx.utils</span> <span class="kn">import</span> <span class="n">not_implemented_for</span><span class="p">,</span> <span class="n">py_random_state</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;k_edge_augmentation&quot;</span><span class="p">,</span> <span class="s2">&quot;is_k_edge_connected&quot;</span><span class="p">,</span> <span class="s2">&quot;is_locally_k_edge_connected&quot;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="is_k_edge_connected"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.connectivity.edge_augmentation.is_k_edge_connected.html#networkx.algorithms.connectivity.edge_augmentation.is_k_edge_connected">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;directed&quot;</span><span class="p">)</span>
+<span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;multigraph&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">is_k_edge_connected</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Tests to see if a graph is k-edge-connected.</span>
+
+<span class="sd">    Is it impossible to disconnect the graph by removing fewer than k edges?</span>
+<span class="sd">    If so, then G is k-edge-connected.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+<span class="sd">       An undirected graph.</span>
+
+<span class="sd">    k : integer</span>
+<span class="sd">        edge connectivity to test for</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    boolean</span>
+<span class="sd">        True if G is k-edge-connected.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :func:`is_locally_k_edge_connected`</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.barbell_graph(10, 0)</span>
+<span class="sd">    &gt;&gt;&gt; nx.is_k_edge_connected(G, k=1)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; nx.is_k_edge_connected(G, k=2)</span>
+<span class="sd">    False</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;k must be positive, not </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="c1"># First try to quickly determine if G is not k-edge-connected</span>
+    <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">elif</span> <span class="nb">any</span><span class="p">(</span><span class="n">d</span> <span class="o">&lt;</span> <span class="n">k</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">degree</span><span class="p">()):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Otherwise perform the full check</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">nx</span><span class="o">.</span><span class="n">is_connected</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">k</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="ow">not</span> <span class="n">nx</span><span class="o">.</span><span class="n">has_bridges</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">nx</span><span class="o">.</span><span class="n">edge_connectivity</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="n">k</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">k</span></div>
+
+
+<div class="viewcode-block" id="is_locally_k_edge_connected"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.connectivity.edge_augmentation.is_locally_k_edge_connected.html#networkx.algorithms.connectivity.edge_augmentation.is_locally_k_edge_connected">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;directed&quot;</span><span class="p">)</span>
+<span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;multigraph&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">is_locally_k_edge_connected</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Tests to see if an edge in a graph is locally k-edge-connected.</span>
+
+<span class="sd">    Is it impossible to disconnect s and t by removing fewer than k edges?</span>
+<span class="sd">    If so, then s and t are locally k-edge-connected in G.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+<span class="sd">       An undirected graph.</span>
+
+<span class="sd">    s : node</span>
+<span class="sd">        Source node</span>
+
+<span class="sd">    t : node</span>
+<span class="sd">        Target node</span>
+
+<span class="sd">    k : integer</span>
+<span class="sd">        local edge connectivity for nodes s and t</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    boolean</span>
+<span class="sd">        True if s and t are locally k-edge-connected in G.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :func:`is_k_edge_connected`</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from networkx.algorithms.connectivity import is_locally_k_edge_connected</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.barbell_graph(10, 0)</span>
+<span class="sd">    &gt;&gt;&gt; is_locally_k_edge_connected(G, 5, 15, k=1)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; is_locally_k_edge_connected(G, 5, 15, k=2)</span>
+<span class="sd">    False</span>
+<span class="sd">    &gt;&gt;&gt; is_locally_k_edge_connected(G, 1, 5, k=2)</span>
+<span class="sd">    True</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;k must be positive, not </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># First try to quickly determine s, t is not k-locally-edge-connected in G</span>
+    <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">degree</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">k</span> <span class="ow">or</span> <span class="n">G</span><span class="o">.</span><span class="n">degree</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">k</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Otherwise perform the full check</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">nx</span><span class="o">.</span><span class="n">has_path</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">localk</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">connectivity</span><span class="o">.</span><span class="n">local_edge_connectivity</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="n">k</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">localk</span> <span class="o">&gt;=</span> <span class="n">k</span></div>
+
+
+<div class="viewcode-block" id="k_edge_augmentation"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.connectivity.edge_augmentation.k_edge_augmentation.html#networkx.algorithms.connectivity.edge_augmentation.k_edge_augmentation">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;directed&quot;</span><span class="p">)</span>
+<span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;multigraph&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">k_edge_augmentation</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">avail</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">partial</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Finds set of edges to k-edge-connect G.</span>
+
+<span class="sd">    Adding edges from the augmentation to G make it impossible to disconnect G</span>
+<span class="sd">    unless k or more edges are removed. This function uses the most efficient</span>
+<span class="sd">    function available (depending on the value of k and if the problem is</span>
+<span class="sd">    weighted or unweighted) to search for a minimum weight subset of available</span>
+<span class="sd">    edges that k-edge-connects G. In general, finding a k-edge-augmentation is</span>
+<span class="sd">    NP-hard, so solutions are not guaranteed to be minimal. Furthermore, a</span>
+<span class="sd">    k-edge-augmentation may not exist.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+<span class="sd">       An undirected graph.</span>
+
+<span class="sd">    k : integer</span>
+<span class="sd">        Desired edge connectivity</span>
+
+<span class="sd">    avail : dict or a set of 2 or 3 tuples</span>
+<span class="sd">        The available edges that can be used in the augmentation.</span>
+
+<span class="sd">        If unspecified, then all edges in the complement of G are available.</span>
+<span class="sd">        Otherwise, each item is an available edge (with an optional weight).</span>
+
+<span class="sd">        In the unweighted case, each item is an edge ``(u, v)``.</span>
+
+<span class="sd">        In the weighted case, each item is a 3-tuple ``(u, v, d)`` or a dict</span>
+<span class="sd">        with items ``(u, v): d``.  The third item, ``d``, can be a dictionary</span>
+<span class="sd">        or a real number.  If ``d`` is a dictionary ``d[weight]``</span>
+<span class="sd">        correspondings to the weight.</span>
+
+<span class="sd">    weight : string</span>
+<span class="sd">        key to use to find weights if ``avail`` is a set of 3-tuples where the</span>
+<span class="sd">        third item in each tuple is a dictionary.</span>
+
+<span class="sd">    partial : boolean</span>
+<span class="sd">        If partial is True and no feasible k-edge-augmentation exists, then all</span>
+<span class="sd">        a partial k-edge-augmentation is generated. Adding the edges in a</span>
+<span class="sd">        partial augmentation to G, minimizes the number of k-edge-connected</span>
+<span class="sd">        components and maximizes the edge connectivity between those</span>
+<span class="sd">        components. For details, see :func:`partial_k_edge_augmentation`.</span>
+
+<span class="sd">    Yields</span>
+<span class="sd">    ------</span>
+<span class="sd">    edge : tuple</span>
+<span class="sd">        Edges that, once added to G, would cause G to become k-edge-connected.</span>
+<span class="sd">        If partial is False, an error is raised if this is not possible.</span>
+<span class="sd">        Otherwise, generated edges form a partial augmentation, which</span>
+<span class="sd">        k-edge-connects any part of G where it is possible, and maximally</span>
+<span class="sd">        connects the remaining parts.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NetworkXUnfeasible</span>
+<span class="sd">        If partial is False and no k-edge-augmentation exists.</span>
+
+<span class="sd">    NetworkXNotImplemented</span>
+<span class="sd">        If the input graph is directed or a multigraph.</span>
+
+<span class="sd">    ValueError:</span>
+<span class="sd">        If k is less than 1</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    When k=1 this returns an optimal solution.</span>
+
+<span class="sd">    When k=2 and ``avail`` is None, this returns an optimal solution.</span>
+<span class="sd">    Otherwise when k=2, this returns a 2-approximation of the optimal solution.</span>
+
+<span class="sd">    For k&gt;3, this problem is NP-hard and this uses a randomized algorithm that</span>
+<span class="sd">        produces a feasible solution, but provides no guarantees on the</span>
+<span class="sd">        solution weight.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; # Unweighted cases</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.path_graph((1, 2, 3, 4))</span>
+<span class="sd">    &gt;&gt;&gt; G.add_node(5)</span>
+<span class="sd">    &gt;&gt;&gt; sorted(nx.k_edge_augmentation(G, k=1))</span>
+<span class="sd">    [(1, 5)]</span>
+<span class="sd">    &gt;&gt;&gt; sorted(nx.k_edge_augmentation(G, k=2))</span>
+<span class="sd">    [(1, 5), (5, 4)]</span>
+<span class="sd">    &gt;&gt;&gt; sorted(nx.k_edge_augmentation(G, k=3))</span>
+<span class="sd">    [(1, 4), (1, 5), (2, 5), (3, 5), (4, 5)]</span>
+<span class="sd">    &gt;&gt;&gt; complement = list(nx.k_edge_augmentation(G, k=5, partial=True))</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edges_from(complement)</span>
+<span class="sd">    &gt;&gt;&gt; nx.edge_connectivity(G)</span>
+<span class="sd">    4</span>
+
+<span class="sd">    &gt;&gt;&gt; # Weighted cases</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.path_graph((1, 2, 3, 4))</span>
+<span class="sd">    &gt;&gt;&gt; G.add_node(5)</span>
+<span class="sd">    &gt;&gt;&gt; # avail can be a tuple with a dict</span>
+<span class="sd">    &gt;&gt;&gt; avail = [(1, 5, {&quot;weight&quot;: 11}), (2, 5, {&quot;weight&quot;: 10})]</span>
+<span class="sd">    &gt;&gt;&gt; sorted(nx.k_edge_augmentation(G, k=1, avail=avail, weight=&quot;weight&quot;))</span>
+<span class="sd">    [(2, 5)]</span>
+<span class="sd">    &gt;&gt;&gt; # or avail can be a 3-tuple with a real number</span>
+<span class="sd">    &gt;&gt;&gt; avail = [(1, 5, 11), (2, 5, 10), (4, 3, 1), (4, 5, 51)]</span>
+<span class="sd">    &gt;&gt;&gt; sorted(nx.k_edge_augmentation(G, k=2, avail=avail))</span>
+<span class="sd">    [(1, 5), (2, 5), (4, 5)]</span>
+<span class="sd">    &gt;&gt;&gt; # or avail can be a dict</span>
+<span class="sd">    &gt;&gt;&gt; avail = {(1, 5): 11, (2, 5): 10, (4, 3): 1, (4, 5): 51}</span>
+<span class="sd">    &gt;&gt;&gt; sorted(nx.k_edge_augmentation(G, k=2, avail=avail))</span>
+<span class="sd">    [(1, 5), (2, 5), (4, 5)]</span>
+<span class="sd">    &gt;&gt;&gt; # If augmentation is infeasible, then a partial solution can be found</span>
+<span class="sd">    &gt;&gt;&gt; avail = {(1, 5): 11}</span>
+<span class="sd">    &gt;&gt;&gt; sorted(nx.k_edge_augmentation(G, k=2, avail=avail, partial=True))</span>
+<span class="sd">    [(1, 5)]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;k must be a positive integer, not </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">G</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;impossible to </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> connect in graph with less than </span><span class="si">{</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="s2"> nodes&quot;</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXUnfeasible</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">avail</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">avail</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">nx</span><span class="o">.</span><span class="n">is_k_edge_connected</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXUnfeasible</span><span class="p">(</span><span class="s2">&quot;no available edges&quot;</span><span class="p">)</span>
+            <span class="n">aug_edges</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">elif</span> <span class="n">k</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">aug_edges</span> <span class="o">=</span> <span class="n">one_edge_augmentation</span><span class="p">(</span>
+                <span class="n">G</span><span class="p">,</span> <span class="n">avail</span><span class="o">=</span><span class="n">avail</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">,</span> <span class="n">partial</span><span class="o">=</span><span class="n">partial</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">k</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">aug_edges</span> <span class="o">=</span> <span class="n">bridge_augmentation</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">avail</span><span class="o">=</span><span class="n">avail</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># raise NotImplementedError(f&#39;not implemented for k&gt;2. k={k}&#39;)</span>
+            <span class="n">aug_edges</span> <span class="o">=</span> <span class="n">greedy_k_edge_augmentation</span><span class="p">(</span>
+                <span class="n">G</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">avail</span><span class="o">=</span><span class="n">avail</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span>
+            <span class="p">)</span>
+        <span class="c1"># Do eager evaulation so we can catch any exceptions</span>
+        <span class="c1"># Before executing partial code.</span>
+        <span class="k">yield from</span> <span class="nb">list</span><span class="p">(</span><span class="n">aug_edges</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXUnfeasible</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">partial</span><span class="p">:</span>
+            <span class="c1"># Return all available edges</span>
+            <span class="k">if</span> <span class="n">avail</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">aug_edges</span> <span class="o">=</span> <span class="n">complement_edges</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># If we can&#39;t k-edge-connect the entire graph, try to</span>
+                <span class="c1"># k-edge-connect as much as possible</span>
+                <span class="n">aug_edges</span> <span class="o">=</span> <span class="n">partial_k_edge_augmentation</span><span class="p">(</span>
+                    <span class="n">G</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">avail</span><span class="o">=</span><span class="n">avail</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">weight</span>
+                <span class="p">)</span>
+            <span class="k">yield from</span> <span class="n">aug_edges</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span></div>
+
+
+<span class="k">def</span> <span class="nf">partial_k_edge_augmentation</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">avail</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Finds augmentation that k-edge-connects as much of the graph as possible.</span>
+
+<span class="sd">    When a k-edge-augmentation is not possible, we can still try to find a</span>
+<span class="sd">    small set of edges that partially k-edge-connects as much of the graph as</span>
+<span class="sd">    possible. All possible edges are generated between remaining parts.</span>
+<span class="sd">    This minimizes the number of k-edge-connected subgraphs in the resulting</span>
+<span class="sd">    graph and maxmizes the edge connectivity between those subgraphs.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+<span class="sd">       An undirected graph.</span>
+
+<span class="sd">    k : integer</span>
+<span class="sd">        Desired edge connectivity</span>
+
+<span class="sd">    avail : dict or a set of 2 or 3 tuples</span>
+<span class="sd">        For more details, see :func:`k_edge_augmentation`.</span>
+
+<span class="sd">    weight : string</span>
+<span class="sd">        key to use to find weights if ``avail`` is a set of 3-tuples.</span>
+<span class="sd">        For more details, see :func:`k_edge_augmentation`.</span>
+
+<span class="sd">    Yields</span>
+<span class="sd">    ------</span>
+<span class="sd">    edge : tuple</span>
+<span class="sd">        Edges in the partial augmentation of G. These edges k-edge-connect any</span>
+<span class="sd">        part of G where it is possible, and maximally connects the remaining</span>
+<span class="sd">        parts. In other words, all edges from avail are generated except for</span>
+<span class="sd">        those within subgraphs that have already become k-edge-connected.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Construct H that augments G with all edges in avail.</span>
+<span class="sd">    Find the k-edge-subgraphs of H.</span>
+<span class="sd">    For each k-edge-subgraph, if the number of nodes is more than k, then find</span>
+<span class="sd">    the k-edge-augmentation of that graph and add it to the solution. Then add</span>
+<span class="sd">    all edges in avail between k-edge subgraphs to the solution.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :func:`k_edge_augmentation`</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.path_graph((1, 2, 3, 4, 5, 6, 7))</span>
+<span class="sd">    &gt;&gt;&gt; G.add_node(8)</span>
+<span class="sd">    &gt;&gt;&gt; avail = [(1, 3), (1, 4), (1, 5), (2, 4), (2, 5), (3, 5), (1, 8)]</span>
+<span class="sd">    &gt;&gt;&gt; sorted(partial_k_edge_augmentation(G, k=2, avail=avail))</span>
+<span class="sd">    [(1, 5), (1, 8)]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_edges_between_disjoint</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">only1</span><span class="p">,</span> <span class="n">only2</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;finds edges between disjoint nodes&quot;&quot;&quot;</span>
+        <span class="n">only1_adj</span> <span class="o">=</span> <span class="p">{</span><span class="n">u</span><span class="p">:</span> <span class="nb">set</span><span class="p">(</span><span class="n">H</span><span class="o">.</span><span class="n">adj</span><span class="p">[</span><span class="n">u</span><span class="p">])</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">only1</span><span class="p">}</span>
+        <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">neighbs</span> <span class="ow">in</span> <span class="n">only1_adj</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># Find the neighbors of u in only1 that are also in only2</span>
+            <span class="n">neighbs12</span> <span class="o">=</span> <span class="n">neighbs</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">only2</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">neighbs12</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+
+    <span class="n">avail_uv</span><span class="p">,</span> <span class="n">avail_w</span> <span class="o">=</span> <span class="n">_unpack_available_edges</span><span class="p">(</span><span class="n">avail</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">,</span> <span class="n">G</span><span class="o">=</span><span class="n">G</span><span class="p">)</span>
+
+    <span class="c1"># Find which parts of the graph can be k-edge-connected</span>
+    <span class="n">H</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">H</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span>
+        <span class="p">(</span>
+            <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;weight&quot;</span><span class="p">:</span> <span class="n">w</span><span class="p">,</span> <span class="s2">&quot;generator&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)})</span>
+            <span class="k">for</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">),</span> <span class="n">w</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">avail</span><span class="p">,</span> <span class="n">avail_w</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">k_edge_subgraphs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">k_edge_subgraphs</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">))</span>
+
+    <span class="c1"># Generate edges to k-edge-connect internal subgraphs</span>
+    <span class="k">for</span> <span class="n">nodes</span> <span class="ow">in</span> <span class="n">k_edge_subgraphs</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># Get the k-edge-connected subgraph</span>
+            <span class="n">C</span> <span class="o">=</span> <span class="n">H</span><span class="o">.</span><span class="n">subgraph</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="c1"># Find the internal edges that were available</span>
+            <span class="n">sub_avail</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">d</span><span class="p">[</span><span class="s2">&quot;generator&quot;</span><span class="p">]:</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;weight&quot;</span><span class="p">]</span>
+                <span class="k">for</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span> <span class="ow">in</span> <span class="n">C</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="k">if</span> <span class="s2">&quot;generator&quot;</span> <span class="ow">in</span> <span class="n">d</span>
+            <span class="p">}</span>
+            <span class="c1"># Remove potential augmenting edges</span>
+            <span class="n">C</span><span class="o">.</span><span class="n">remove_edges_from</span><span class="p">(</span><span class="n">sub_avail</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="c1"># Find a subset of these edges that makes the compoment</span>
+            <span class="c1"># k-edge-connected and ignore the rest</span>
+            <span class="k">yield from</span> <span class="n">nx</span><span class="o">.</span><span class="n">k_edge_augmentation</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">avail</span><span class="o">=</span><span class="n">sub_avail</span><span class="p">)</span>
+
+    <span class="c1"># Generate all edges between CCs that could not be k-edge-connected</span>
+    <span class="k">for</span> <span class="n">cc1</span><span class="p">,</span> <span class="n">cc2</span> <span class="ow">in</span> <span class="n">it</span><span class="o">.</span><span class="n">combinations</span><span class="p">(</span><span class="n">k_edge_subgraphs</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">_edges_between_disjoint</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">cc1</span><span class="p">,</span> <span class="n">cc2</span><span class="p">):</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">H</span><span class="o">.</span><span class="n">get_edge_data</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+            <span class="n">edge</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;generator&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">edge</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="n">edge</span>
+
+
+<span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;multigraph&quot;</span><span class="p">)</span>
+<span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;directed&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">one_edge_augmentation</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">avail</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">partial</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Finds minimum weight set of edges to connect G.</span>
+
+<span class="sd">    Equivalent to :func:`k_edge_augmentation` when k=1. Adding the resulting</span>
+<span class="sd">    edges to G will make it 1-edge-connected. The solution is optimal for both</span>
+<span class="sd">    weighted and non-weighted variants.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+<span class="sd">       An undirected graph.</span>
+
+<span class="sd">    avail : dict or a set of 2 or 3 tuples</span>
+<span class="sd">        For more details, see :func:`k_edge_augmentation`.</span>
+
+<span class="sd">    weight : string</span>
+<span class="sd">        key to use to find weights if ``avail`` is a set of 3-tuples.</span>
+<span class="sd">        For more details, see :func:`k_edge_augmentation`.</span>
+
+<span class="sd">    partial : boolean</span>
+<span class="sd">        If partial is True and no feasible k-edge-augmentation exists, then the</span>
+<span class="sd">        augmenting edges minimize the number of connected components.</span>
+
+<span class="sd">    Yields</span>
+<span class="sd">    ------</span>
+<span class="sd">    edge : tuple</span>
+<span class="sd">        Edges in the one-augmentation of G</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NetworkXUnfeasible</span>
+<span class="sd">        If partial is False and no one-edge-augmentation exists.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Uses either :func:`unconstrained_one_edge_augmentation` or</span>
+<span class="sd">    :func:`weighted_one_edge_augmentation` depending on whether ``avail`` is</span>
+<span class="sd">    specified. Both algorithms are based on finding a minimum spanning tree.</span>
+<span class="sd">    As such both algorithms find optimal solutions and run in linear time.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :func:`k_edge_augmentation`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">avail</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">unconstrained_one_edge_augmentation</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">weighted_one_edge_augmentation</span><span class="p">(</span>
+            <span class="n">G</span><span class="p">,</span> <span class="n">avail</span><span class="o">=</span><span class="n">avail</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">,</span> <span class="n">partial</span><span class="o">=</span><span class="n">partial</span>
+        <span class="p">)</span>
+
+
+<span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;multigraph&quot;</span><span class="p">)</span>
+<span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;directed&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">bridge_augmentation</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">avail</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Finds the a set of edges that bridge connects G.</span>
+
+<span class="sd">    Equivalent to :func:`k_edge_augmentation` when k=2, and partial=False.</span>
+<span class="sd">    Adding the resulting edges to G will make it 2-edge-connected.  If no</span>
+<span class="sd">    constraints are specified the returned set of edges is minimum an optimal,</span>
+<span class="sd">    otherwise the solution is approximated.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+<span class="sd">       An undirected graph.</span>
+
+<span class="sd">    avail : dict or a set of 2 or 3 tuples</span>
+<span class="sd">        For more details, see :func:`k_edge_augmentation`.</span>
+
+<span class="sd">    weight : string</span>
+<span class="sd">        key to use to find weights if ``avail`` is a set of 3-tuples.</span>
+<span class="sd">        For more details, see :func:`k_edge_augmentation`.</span>
+
+<span class="sd">    Yields</span>
+<span class="sd">    ------</span>
+<span class="sd">    edge : tuple</span>
+<span class="sd">        Edges in the bridge-augmentation of G</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NetworkXUnfeasible</span>
+<span class="sd">        If no bridge-augmentation exists.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    If there are no constraints the solution can be computed in linear time</span>
+<span class="sd">    using :func:`unconstrained_bridge_augmentation`. Otherwise, the problem</span>
+<span class="sd">    becomes NP-hard and is the solution is approximated by</span>
+<span class="sd">    :func:`weighted_bridge_augmentation`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :func:`k_edge_augmentation`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXUnfeasible</span><span class="p">(</span><span class="s2">&quot;impossible to bridge connect less than 3 nodes&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">avail</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">unconstrained_bridge_augmentation</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">weighted_bridge_augmentation</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">avail</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">)</span>
+
+
+<span class="c1"># --- Algorithms and Helpers ---</span>
+
+
+<span class="k">def</span> <span class="nf">_ordered</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the nodes in an undirected edge in lower-triangular order&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">if</span> <span class="n">u</span> <span class="o">&lt;</span> <span class="n">v</span> <span class="k">else</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_unpack_available_edges</span><span class="p">(</span><span class="n">avail</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">G</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Helper to separate avail into edges and corresponding weights&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">weight</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">weight</span> <span class="o">=</span> <span class="s2">&quot;weight&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">avail</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">avail_uv</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">avail</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">avail_w</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">avail</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+    <span class="k">else</span><span class="p">:</span>
+
+        <span class="k">def</span> <span class="nf">_try_getitem</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">d</span><span class="p">[</span><span class="n">weight</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">d</span>
+
+        <span class="n">avail_uv</span> <span class="o">=</span> <span class="p">[</span><span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">tup</span> <span class="ow">in</span> <span class="n">avail</span><span class="p">]</span>
+        <span class="n">avail_w</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tup</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">_try_getitem</span><span class="p">(</span><span class="n">tup</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">tup</span> <span class="ow">in</span> <span class="n">avail</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">G</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Edges already in the graph are filtered</span>
+        <span class="n">flags</span> <span class="o">=</span> <span class="p">[</span><span class="ow">not</span> <span class="n">G</span><span class="o">.</span><span class="n">has_edge</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">avail_uv</span><span class="p">]</span>
+        <span class="n">avail_uv</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">it</span><span class="o">.</span><span class="n">compress</span><span class="p">(</span><span class="n">avail_uv</span><span class="p">,</span> <span class="n">flags</span><span class="p">))</span>
+        <span class="n">avail_w</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">it</span><span class="o">.</span><span class="n">compress</span><span class="p">(</span><span class="n">avail_w</span><span class="p">,</span> <span class="n">flags</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">avail_uv</span><span class="p">,</span> <span class="n">avail_w</span>
+
+
+<span class="n">MetaEdge</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;MetaEdge&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;meta_uv&quot;</span><span class="p">,</span> <span class="s2">&quot;uv&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">_lightest_meta_edges</span><span class="p">(</span><span class="n">mapping</span><span class="p">,</span> <span class="n">avail_uv</span><span class="p">,</span> <span class="n">avail_w</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Maps available edges in the original graph to edges in the metagraph.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    mapping : dict</span>
+<span class="sd">        mapping produced by :func:`collapse`, that maps each node in the</span>
+<span class="sd">        original graph to a node in the meta graph</span>
+
+<span class="sd">    avail_uv : list</span>
+<span class="sd">        list of edges</span>
+
+<span class="sd">    avail_w : list</span>
+<span class="sd">        list of edge weights</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Each node in the metagraph is a k-edge-connected component in the original</span>
+<span class="sd">    graph.  We don&#39;t care about any edge within the same k-edge-connected</span>
+<span class="sd">    component, so we ignore self edges.  We also are only intereseted in the</span>
+<span class="sd">    minimum weight edge bridging each k-edge-connected component so, we group</span>
+<span class="sd">    the edges by meta-edge and take the lightest in each group.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; # Each group represents a meta-node</span>
+<span class="sd">    &gt;&gt;&gt; groups = ([1, 2, 3], [4, 5], [6])</span>
+<span class="sd">    &gt;&gt;&gt; mapping = {n: meta_n for meta_n, ns in enumerate(groups) for n in ns}</span>
+<span class="sd">    &gt;&gt;&gt; avail_uv = [(1, 2), (3, 6), (1, 4), (5, 2), (6, 1), (2, 6), (3, 1)]</span>
+<span class="sd">    &gt;&gt;&gt; avail_w = [20, 99, 20, 15, 50, 99, 20]</span>
+<span class="sd">    &gt;&gt;&gt; sorted(_lightest_meta_edges(mapping, avail_uv, avail_w))</span>
+<span class="sd">    [MetaEdge(meta_uv=(0, 1), uv=(5, 2), w=15), MetaEdge(meta_uv=(0, 2), uv=(6, 1), w=50)]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">grouped_wuv</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">w</span><span class="p">,</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">avail_w</span><span class="p">,</span> <span class="n">avail_uv</span><span class="p">):</span>
+        <span class="c1"># Order the meta-edge so it can be used as a dict key</span>
+        <span class="n">meta_uv</span> <span class="o">=</span> <span class="n">_ordered</span><span class="p">(</span><span class="n">mapping</span><span class="p">[</span><span class="n">u</span><span class="p">],</span> <span class="n">mapping</span><span class="p">[</span><span class="n">v</span><span class="p">])</span>
+        <span class="c1"># Group each available edge using the meta-edge as a key</span>
+        <span class="n">grouped_wuv</span><span class="p">[</span><span class="n">meta_uv</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">w</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>
+
+    <span class="c1"># Now that all available edges are grouped, choose one per group</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">mv</span><span class="p">),</span> <span class="n">choices_wuv</span> <span class="ow">in</span> <span class="n">grouped_wuv</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="c1"># Ignore available edges within the same meta-node</span>
+        <span class="k">if</span> <span class="n">mu</span> <span class="o">!=</span> <span class="n">mv</span><span class="p">:</span>
+            <span class="c1"># Choose the lightest available edge belonging to each meta-edge</span>
+            <span class="n">w</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">choices_wuv</span><span class="p">)</span>
+            <span class="k">yield</span> <span class="n">MetaEdge</span><span class="p">((</span><span class="n">mu</span><span class="p">,</span> <span class="n">mv</span><span class="p">),</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">),</span> <span class="n">w</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">unconstrained_one_edge_augmentation</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Finds the smallest set of edges to connect G.</span>
+
+<span class="sd">    This is a variant of the unweighted MST problem.</span>
+<span class="sd">    If G is not empty, a feasible solution always exists.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+<span class="sd">       An undirected graph.</span>
+
+<span class="sd">    Yields</span>
+<span class="sd">    ------</span>
+<span class="sd">    edge : tuple</span>
+<span class="sd">        Edges in the one-edge-augmentation of G</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :func:`one_edge_augmentation`</span>
+<span class="sd">    :func:`k_edge_augmentation`</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.Graph([(1, 2), (2, 3), (4, 5)])</span>
+<span class="sd">    &gt;&gt;&gt; G.add_nodes_from([6, 7, 8])</span>
+<span class="sd">    &gt;&gt;&gt; sorted(unconstrained_one_edge_augmentation(G))</span>
+<span class="sd">    [(1, 4), (4, 6), (6, 7), (7, 8)]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ccs1</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">connected_components</span><span class="p">(</span><span class="n">G</span><span class="p">))</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">collapse</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">ccs1</span><span class="p">)</span>
+    <span class="c1"># When we are not constrained, we can just make a meta graph tree.</span>
+    <span class="n">meta_nodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">nodes</span><span class="p">())</span>
+    <span class="c1"># build a path in the metagraph</span>
+    <span class="n">meta_aug</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">meta_nodes</span><span class="p">,</span> <span class="n">meta_nodes</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>
+    <span class="c1"># map that path to the original graph</span>
+    <span class="n">inverse</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">C</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="s2">&quot;mapping&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">inverse</span><span class="p">[</span><span class="n">v</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">mu</span><span class="p">,</span> <span class="n">mv</span> <span class="ow">in</span> <span class="n">meta_aug</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="p">(</span><span class="n">inverse</span><span class="p">[</span><span class="n">mu</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">inverse</span><span class="p">[</span><span class="n">mv</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+
+
+<span class="k">def</span> <span class="nf">weighted_one_edge_augmentation</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">avail</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">partial</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Finds the minimum weight set of edges to connect G if one exists.</span>
+
+<span class="sd">    This is a variant of the weighted MST problem.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+<span class="sd">       An undirected graph.</span>
+
+<span class="sd">    avail : dict or a set of 2 or 3 tuples</span>
+<span class="sd">        For more details, see :func:`k_edge_augmentation`.</span>
+
+<span class="sd">    weight : string</span>
+<span class="sd">        key to use to find weights if ``avail`` is a set of 3-tuples.</span>
+<span class="sd">        For more details, see :func:`k_edge_augmentation`.</span>
+
+<span class="sd">    partial : boolean</span>
+<span class="sd">        If partial is True and no feasible k-edge-augmentation exists, then the</span>
+<span class="sd">        augmenting edges minimize the number of connected components.</span>
+
+<span class="sd">    Yields</span>
+<span class="sd">    ------</span>
+<span class="sd">    edge : tuple</span>
+<span class="sd">        Edges in the subset of avail chosen to connect G.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :func:`one_edge_augmentation`</span>
+<span class="sd">    :func:`k_edge_augmentation`</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.Graph([(1, 2), (2, 3), (4, 5)])</span>
+<span class="sd">    &gt;&gt;&gt; G.add_nodes_from([6, 7, 8])</span>
+<span class="sd">    &gt;&gt;&gt; # any edge not in avail has an implicit weight of infinity</span>
+<span class="sd">    &gt;&gt;&gt; avail = [(1, 3), (1, 5), (4, 7), (4, 8), (6, 1), (8, 1), (8, 2)]</span>
+<span class="sd">    &gt;&gt;&gt; sorted(weighted_one_edge_augmentation(G, avail))</span>
+<span class="sd">    [(1, 5), (4, 7), (6, 1), (8, 1)]</span>
+<span class="sd">    &gt;&gt;&gt; # find another solution by giving large weights to edges in the</span>
+<span class="sd">    &gt;&gt;&gt; # previous solution (note some of the old edges must be used)</span>
+<span class="sd">    &gt;&gt;&gt; avail = [(1, 3), (1, 5, 99), (4, 7, 9), (6, 1, 99), (8, 1, 99), (8, 2)]</span>
+<span class="sd">    &gt;&gt;&gt; sorted(weighted_one_edge_augmentation(G, avail))</span>
+<span class="sd">    [(1, 5), (4, 7), (6, 1), (8, 2)]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">avail_uv</span><span class="p">,</span> <span class="n">avail_w</span> <span class="o">=</span> <span class="n">_unpack_available_edges</span><span class="p">(</span><span class="n">avail</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">,</span> <span class="n">G</span><span class="o">=</span><span class="n">G</span><span class="p">)</span>
+    <span class="c1"># Collapse CCs in the original graph into nodes in a metagraph</span>
+    <span class="c1"># Then find an MST of the metagraph instead of the original graph</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">collapse</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">nx</span><span class="o">.</span><span class="n">connected_components</span><span class="p">(</span><span class="n">G</span><span class="p">))</span>
+    <span class="n">mapping</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="s2">&quot;mapping&quot;</span><span class="p">]</span>
+    <span class="c1"># Assign each available edge to an edge in the metagraph</span>
+    <span class="n">candidate_mapping</span> <span class="o">=</span> <span class="n">_lightest_meta_edges</span><span class="p">(</span><span class="n">mapping</span><span class="p">,</span> <span class="n">avail_uv</span><span class="p">,</span> <span class="n">avail_w</span><span class="p">)</span>
+    <span class="c1"># nx.set_edge_attributes(C, name=&#39;weight&#39;, values=0)</span>
+    <span class="n">C</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span>
+        <span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">mv</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;weight&quot;</span><span class="p">:</span> <span class="n">w</span><span class="p">,</span> <span class="s2">&quot;generator&quot;</span><span class="p">:</span> <span class="n">uv</span><span class="p">})</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">mv</span><span class="p">),</span> <span class="n">uv</span><span class="p">,</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">candidate_mapping</span>
+    <span class="p">)</span>
+    <span class="c1"># Find MST of the meta graph</span>
+    <span class="n">meta_mst</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">minimum_spanning_tree</span><span class="p">(</span><span class="n">C</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">partial</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">nx</span><span class="o">.</span><span class="n">is_connected</span><span class="p">(</span><span class="n">meta_mst</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXUnfeasible</span><span class="p">(</span><span class="s2">&quot;Not possible to connect G with available edges&quot;</span><span class="p">)</span>
+    <span class="c1"># Yield the edge that generated the meta-edge</span>
+    <span class="k">for</span> <span class="n">mu</span><span class="p">,</span> <span class="n">mv</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">meta_mst</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s2">&quot;generator&quot;</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+            <span class="n">edge</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;generator&quot;</span><span class="p">]</span>
+            <span class="k">yield</span> <span class="n">edge</span>
+
+
+<span class="k">def</span> <span class="nf">unconstrained_bridge_augmentation</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Finds an optimal 2-edge-augmentation of G using the fewest edges.</span>
+
+<span class="sd">    This is an implementation of the algorithm detailed in [1]_.</span>
+<span class="sd">    The basic idea is to construct a meta-graph of bridge-ccs, connect leaf</span>
+<span class="sd">    nodes of the trees to connect the entire graph, and finally connect the</span>
+<span class="sd">    leafs of the tree in dfs-preorder to bridge connect the entire graph.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+<span class="sd">       An undirected graph.</span>
+
+<span class="sd">    Yields</span>
+<span class="sd">    ------</span>
+<span class="sd">    edge : tuple</span>
+<span class="sd">        Edges in the bridge augmentation of G</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Input: a graph G.</span>
+<span class="sd">    First find the bridge components of G and collapse each bridge-cc into a</span>
+<span class="sd">    node of a metagraph graph C, which is guaranteed to be a forest of trees.</span>
+
+<span class="sd">    C contains p &quot;leafs&quot; --- nodes with exactly one incident edge.</span>
+<span class="sd">    C contains q &quot;isolated nodes&quot; --- nodes with no incident edges.</span>
+
+<span class="sd">    Theorem: If p + q &gt; 1, then at least :math:`ceil(p / 2) + q` edges are</span>
+<span class="sd">        needed to bridge connect C. This algorithm achieves this min number.</span>
+
+<span class="sd">    The method first adds enough edges to make G into a tree and then pairs</span>
+<span class="sd">    leafs in a simple fashion.</span>
+
+<span class="sd">    Let n be the number of trees in C. Let v(i) be an isolated vertex in the</span>
+<span class="sd">    i-th tree if one exists, otherwise it is a pair of distinct leafs nodes</span>
+<span class="sd">    in the i-th tree. Alternating edges from these sets (i.e.  adding edges</span>
+<span class="sd">    A1 = [(v(i)[0], v(i + 1)[1]), v(i + 1)[0], v(i + 2)[1])...]) connects C</span>
+<span class="sd">    into a tree T. This tree has p&#39; = p + 2q - 2(n -1) leafs and no isolated</span>
+<span class="sd">    vertices. A1 has n - 1 edges. The next step finds ceil(p&#39; / 2) edges to</span>
+<span class="sd">    biconnect any tree with p&#39; leafs.</span>
+
+<span class="sd">    Convert T into an arborescence T&#39; by picking an arbitrary root node with</span>
+<span class="sd">    degree &gt;= 2 and directing all edges away from the root. Note the</span>
+<span class="sd">    implementation implicitly constructs T&#39;.</span>
+
+<span class="sd">    The leafs of T are the nodes with no existing edges in T&#39;.</span>
+<span class="sd">    Order the leafs of T&#39; by DFS prorder. Then break this list in half</span>
+<span class="sd">    and add the zipped pairs to A2.</span>
+
+<span class="sd">    The set A = A1 + A2 is the minimum augmentation in the metagraph.</span>
+
+<span class="sd">    To convert this to edges in the original graph</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Eswaran, Kapali P., and R. Endre Tarjan. (1975) Augmentation problems.</span>
+<span class="sd">        http://epubs.siam.org/doi/abs/10.1137/0205044</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :func:`bridge_augmentation`</span>
+<span class="sd">    :func:`k_edge_augmentation`</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.path_graph((1, 2, 3, 4, 5, 6, 7))</span>
+<span class="sd">    &gt;&gt;&gt; sorted(unconstrained_bridge_augmentation(G))</span>
+<span class="sd">    [(1, 7)]</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.path_graph((1, 2, 3, 2, 4, 5, 6, 7))</span>
+<span class="sd">    &gt;&gt;&gt; sorted(unconstrained_bridge_augmentation(G))</span>
+<span class="sd">    [(1, 3), (3, 7)]</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.Graph([(0, 1), (0, 2), (1, 2)])</span>
+<span class="sd">    &gt;&gt;&gt; G.add_node(4)</span>
+<span class="sd">    &gt;&gt;&gt; sorted(unconstrained_bridge_augmentation(G))</span>
+<span class="sd">    [(1, 4), (4, 0)]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># -----</span>
+    <span class="c1"># Mapping of terms from (Eswaran and Tarjan):</span>
+    <span class="c1">#     G = G_0 - the input graph</span>
+    <span class="c1">#     C = G_0&#39; - the bridge condensation of G. (This is a forest of trees)</span>
+    <span class="c1">#     A1 = A_1 - the edges to connect the forest into a tree</span>
+    <span class="c1">#         leaf = pendant - a node with degree of 1</span>
+
+    <span class="c1">#     alpha(v) = maps the node v in G to its meta-node in C</span>
+    <span class="c1">#     beta(x) = maps the meta-node x in C to any node in the bridge</span>
+    <span class="c1">#         component of G corresponding to x.</span>
+
+    <span class="c1"># find the 2-edge-connected components of G</span>
+    <span class="n">bridge_ccs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">connectivity</span><span class="o">.</span><span class="n">bridge_components</span><span class="p">(</span><span class="n">G</span><span class="p">))</span>
+    <span class="c1"># condense G into an forest C</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">collapse</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">bridge_ccs</span><span class="p">)</span>
+
+    <span class="c1"># Choose pairs of distinct leaf nodes in each tree. If this is not</span>
+    <span class="c1"># possible then make a pair using the single isolated node in the tree.</span>
+    <span class="n">vset1</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="nb">tuple</span><span class="p">(</span><span class="n">cc</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span>  <span class="c1"># case1: an isolated node</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cc</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="k">else</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">cc</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">degree</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>  <span class="c1"># case2: pair of leaf nodes</span>
+        <span class="k">for</span> <span class="n">cc</span> <span class="ow">in</span> <span class="n">nx</span><span class="o">.</span><span class="n">connected_components</span><span class="p">(</span><span class="n">C</span><span class="p">)</span>
+    <span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">vset1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="c1"># Use this set to construct edges that connect C into a tree.</span>
+        <span class="n">nodes1</span> <span class="o">=</span> <span class="p">[</span><span class="n">vs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">vs</span> <span class="ow">in</span> <span class="n">vset1</span><span class="p">]</span>
+        <span class="n">nodes2</span> <span class="o">=</span> <span class="p">[</span><span class="n">vs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">vs</span> <span class="ow">in</span> <span class="n">vset1</span><span class="p">]</span>
+        <span class="n">A1</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">nodes1</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">nodes2</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">A1</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1"># Connect each tree in the forest to construct an arborescence</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">T</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span><span class="n">A1</span><span class="p">)</span>
+
+    <span class="c1"># If there are only two leaf nodes, we simply connect them.</span>
+    <span class="n">leafs</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">T</span><span class="o">.</span><span class="n">degree</span><span class="p">()</span> <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">leafs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">A2</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">leafs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">A2</span> <span class="o">=</span> <span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">leafs</span><span class="p">)]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Choose an arbitrary non-leaf root</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">root</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">T</span><span class="o">.</span><span class="n">degree</span><span class="p">()</span> <span class="k">if</span> <span class="n">d</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>  <span class="c1"># no nodes found with degree &gt; 1</span>
+            <span class="k">return</span>
+        <span class="c1"># order the leaves of C by (induced directed) preorder</span>
+        <span class="n">v2</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nx</span><span class="o">.</span><span class="n">dfs_preorder_nodes</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">root</span><span class="p">)</span> <span class="k">if</span> <span class="n">T</span><span class="o">.</span><span class="n">degree</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="c1"># connecting first half of the leafs in pre-order to the second</span>
+        <span class="c1"># half will bridge connect the tree with the fewest edges.</span>
+        <span class="n">half</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">v2</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">A2</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">v2</span><span class="p">[:</span><span class="n">half</span><span class="p">],</span> <span class="n">v2</span><span class="p">[</span><span class="o">-</span><span class="n">half</span><span class="p">:]))</span>
+
+    <span class="c1"># collect the edges used to augment the original forest</span>
+    <span class="n">aug_tree_edges</span> <span class="o">=</span> <span class="n">A1</span> <span class="o">+</span> <span class="n">A2</span>
+
+    <span class="c1"># Construct the mapping (beta) from meta-nodes to regular nodes</span>
+    <span class="n">inverse</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">C</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="s2">&quot;mapping&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">inverse</span><span class="p">[</span><span class="n">v</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+    <span class="c1"># sort so we choose minimum degree nodes first</span>
+    <span class="n">inverse</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">mu</span><span class="p">:</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">mapped</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">u</span><span class="p">:</span> <span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">degree</span><span class="p">(</span><span class="n">u</span><span class="p">),</span> <span class="n">u</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">mu</span><span class="p">,</span> <span class="n">mapped</span> <span class="ow">in</span> <span class="n">inverse</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+    <span class="p">}</span>
+
+    <span class="c1"># For each meta-edge, map back to an arbitrary pair in the original graph</span>
+    <span class="n">G2</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">mu</span><span class="p">,</span> <span class="n">mv</span> <span class="ow">in</span> <span class="n">aug_tree_edges</span><span class="p">:</span>
+        <span class="c1"># Find the first available edge that doesn&#39;t exist and return it</span>
+        <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">it</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">inverse</span><span class="p">[</span><span class="n">mu</span><span class="p">],</span> <span class="n">inverse</span><span class="p">[</span><span class="n">mv</span><span class="p">]):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">G2</span><span class="o">.</span><span class="n">has_edge</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+                <span class="n">G2</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+                <span class="k">yield</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span>
+                <span class="k">break</span>
+
+
+<span class="k">def</span> <span class="nf">weighted_bridge_augmentation</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">avail</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Finds an approximate min-weight 2-edge-augmentation of G.</span>
+
+<span class="sd">    This is an implementation of the approximation algorithm detailed in [1]_.</span>
+<span class="sd">    It chooses a set of edges from avail to add to G that renders it</span>
+<span class="sd">    2-edge-connected if such a subset exists.  This is done by finding a</span>
+<span class="sd">    minimum spanning arborescence of a specially constructed metagraph.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+<span class="sd">       An undirected graph.</span>
+
+<span class="sd">    avail : set of 2 or 3 tuples.</span>
+<span class="sd">        candidate edges (with optional weights) to choose from</span>
+
+<span class="sd">    weight : string</span>
+<span class="sd">        key to use to find weights if avail is a set of 3-tuples where the</span>
+<span class="sd">        third item in each tuple is a dictionary.</span>
+
+<span class="sd">    Yields</span>
+<span class="sd">    ------</span>
+<span class="sd">    edge : tuple</span>
+<span class="sd">        Edges in the subset of avail chosen to bridge augment G.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Finding a weighted 2-edge-augmentation is NP-hard.</span>
+<span class="sd">    Any edge not in ``avail`` is considered to have a weight of infinity.</span>
+<span class="sd">    The approximation factor is 2 if ``G`` is connected and 3 if it is not.</span>
+<span class="sd">    Runs in :math:`O(m + n log(n))` time</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Khuller, Samir, and Ramakrishna Thurimella. (1993) Approximation</span>
+<span class="sd">        algorithms for graph augmentation.</span>
+<span class="sd">        http://www.sciencedirect.com/science/article/pii/S0196677483710102</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :func:`bridge_augmentation`</span>
+<span class="sd">    :func:`k_edge_augmentation`</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.path_graph((1, 2, 3, 4))</span>
+<span class="sd">    &gt;&gt;&gt; # When the weights are equal, (1, 4) is the best</span>
+<span class="sd">    &gt;&gt;&gt; avail = [(1, 4, 1), (1, 3, 1), (2, 4, 1)]</span>
+<span class="sd">    &gt;&gt;&gt; sorted(weighted_bridge_augmentation(G, avail))</span>
+<span class="sd">    [(1, 4)]</span>
+<span class="sd">    &gt;&gt;&gt; # Giving (1, 4) a high weight makes the two edge solution the best.</span>
+<span class="sd">    &gt;&gt;&gt; avail = [(1, 4, 1000), (1, 3, 1), (2, 4, 1)]</span>
+<span class="sd">    &gt;&gt;&gt; sorted(weighted_bridge_augmentation(G, avail))</span>
+<span class="sd">    [(1, 3), (2, 4)]</span>
+<span class="sd">    &gt;&gt;&gt; # ------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.path_graph((1, 2, 3, 4))</span>
+<span class="sd">    &gt;&gt;&gt; G.add_node(5)</span>
+<span class="sd">    &gt;&gt;&gt; avail = [(1, 5, 11), (2, 5, 10), (4, 3, 1), (4, 5, 1)]</span>
+<span class="sd">    &gt;&gt;&gt; sorted(weighted_bridge_augmentation(G, avail=avail))</span>
+<span class="sd">    [(1, 5), (4, 5)]</span>
+<span class="sd">    &gt;&gt;&gt; avail = [(1, 5, 11), (2, 5, 10), (4, 3, 1), (4, 5, 51)]</span>
+<span class="sd">    &gt;&gt;&gt; sorted(weighted_bridge_augmentation(G, avail=avail))</span>
+<span class="sd">    [(1, 5), (2, 5), (4, 5)]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">weight</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">weight</span> <span class="o">=</span> <span class="s2">&quot;weight&quot;</span>
+
+    <span class="c1"># If input G is not connected the approximation factor increases to 3</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">nx</span><span class="o">.</span><span class="n">is_connected</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+        <span class="n">H</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">connectors</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">one_edge_augmentation</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">avail</span><span class="o">=</span><span class="n">avail</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">))</span>
+        <span class="n">H</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span><span class="n">connectors</span><span class="p">)</span>
+
+        <span class="k">yield from</span> <span class="n">connectors</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">connectors</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">H</span> <span class="o">=</span> <span class="n">G</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">avail</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">nx</span><span class="o">.</span><span class="n">has_bridges</span><span class="p">(</span><span class="n">H</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXUnfeasible</span><span class="p">(</span><span class="s2">&quot;no augmentation possible&quot;</span><span class="p">)</span>
+
+    <span class="n">avail_uv</span><span class="p">,</span> <span class="n">avail_w</span> <span class="o">=</span> <span class="n">_unpack_available_edges</span><span class="p">(</span><span class="n">avail</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">,</span> <span class="n">G</span><span class="o">=</span><span class="n">H</span><span class="p">)</span>
+
+    <span class="c1"># Collapse input into a metagraph. Meta nodes are bridge-ccs</span>
+    <span class="n">bridge_ccs</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">connectivity</span><span class="o">.</span><span class="n">bridge_components</span><span class="p">(</span><span class="n">H</span><span class="p">)</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">collapse</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">bridge_ccs</span><span class="p">)</span>
+
+    <span class="c1"># Use the meta graph to shrink avail to a small feasible subset</span>
+    <span class="n">mapping</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="s2">&quot;mapping&quot;</span><span class="p">]</span>
+    <span class="c1"># Choose the minimum weight feasible edge in each group</span>
+    <span class="n">meta_to_wuv</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">mv</span><span class="p">):</span> <span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">uv</span><span class="p">)</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">mv</span><span class="p">),</span> <span class="n">uv</span><span class="p">,</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">_lightest_meta_edges</span><span class="p">(</span><span class="n">mapping</span><span class="p">,</span> <span class="n">avail_uv</span><span class="p">,</span> <span class="n">avail_w</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="c1"># Mapping of terms from (Khuller and Thurimella):</span>
+    <span class="c1">#     C         : G_0 = (V, E^0)</span>
+    <span class="c1">#        This is the metagraph where each node is a 2-edge-cc in G.</span>
+    <span class="c1">#        The edges in C represent bridges in the original graph.</span>
+    <span class="c1">#     (mu, mv)  : E - E^0  # they group both avail and given edges in E</span>
+    <span class="c1">#     T         : \Gamma</span>
+    <span class="c1">#     D         : G^D = (V, E_D)</span>
+
+    <span class="c1">#     The paper uses ancestor because children point to parents, which is</span>
+    <span class="c1">#     contrary to networkx standards.  So, we actually need to run</span>
+    <span class="c1">#     nx.least_common_ancestor on the reversed Tree.</span>
+
+    <span class="c1"># Pick an arbitrary leaf from C as the root</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">C</span><span class="o">.</span><span class="n">degree</span><span class="p">()</span> <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>  <span class="c1"># no nodes found with degree == 1</span>
+        <span class="k">return</span>
+    <span class="c1"># Root C into a tree TR by directing all edges away from the root</span>
+    <span class="c1"># Note in their paper T directs edges towards the root</span>
+    <span class="n">TR</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">dfs_tree</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">root</span><span class="p">)</span>
+
+    <span class="c1"># Add to D the directed edges of T and set their weight to zero</span>
+    <span class="c1"># This indicates that it costs nothing to use edges that were given.</span>
+    <span class="n">D</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">reverse</span><span class="p">(</span><span class="n">TR</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="n">nx</span><span class="o">.</span><span class="n">set_edge_attributes</span><span class="p">(</span><span class="n">D</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># The LCA of mu and mv in T is the shared ancestor of mu and mv that is</span>
+    <span class="c1"># located farthest from the root.</span>
+    <span class="n">lca_gen</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">tree_all_pairs_lowest_common_ancestor</span><span class="p">(</span>
+        <span class="n">TR</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">pairs</span><span class="o">=</span><span class="n">meta_to_wuv</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+    <span class="p">)</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">mv</span><span class="p">),</span> <span class="n">lca</span> <span class="ow">in</span> <span class="n">lca_gen</span><span class="p">:</span>
+        <span class="n">w</span><span class="p">,</span> <span class="n">uv</span> <span class="o">=</span> <span class="n">meta_to_wuv</span><span class="p">[(</span><span class="n">mu</span><span class="p">,</span> <span class="n">mv</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="n">lca</span> <span class="o">==</span> <span class="n">mu</span><span class="p">:</span>
+            <span class="c1"># If u is an ancestor of v in TR, then add edge u-&gt;v to D</span>
+            <span class="n">D</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">lca</span><span class="p">,</span> <span class="n">mv</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">w</span><span class="p">,</span> <span class="n">generator</span><span class="o">=</span><span class="n">uv</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">lca</span> <span class="o">==</span> <span class="n">mv</span><span class="p">:</span>
+            <span class="c1"># If v is an ancestor of u in TR, then add edge v-&gt;u to D</span>
+            <span class="n">D</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">lca</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">w</span><span class="p">,</span> <span class="n">generator</span><span class="o">=</span><span class="n">uv</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># If neither u nor v is a ancestor of the other in TR</span>
+            <span class="c1"># let t = lca(TR, u, v) and add edges t-&gt;u and t-&gt;v</span>
+            <span class="c1"># Track the original edge that GENERATED these edges.</span>
+            <span class="n">D</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">lca</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">w</span><span class="p">,</span> <span class="n">generator</span><span class="o">=</span><span class="n">uv</span><span class="p">)</span>
+            <span class="n">D</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">lca</span><span class="p">,</span> <span class="n">mv</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">w</span><span class="p">,</span> <span class="n">generator</span><span class="o">=</span><span class="n">uv</span><span class="p">)</span>
+
+    <span class="c1"># Then compute a minimum rooted branching</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Note the original edges must be directed towards to root for the</span>
+        <span class="c1"># branching to give us a bridge-augmentation.</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="n">_minimum_rooted_branching</span><span class="p">(</span><span class="n">D</span><span class="p">,</span> <span class="n">root</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXException</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="c1"># If there is no branching then augmentation is not possible</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXUnfeasible</span><span class="p">(</span><span class="s2">&quot;no 2-edge-augmentation possible&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">err</span>
+
+    <span class="c1"># For each edge e, in the branching that did not belong to the directed</span>
+    <span class="c1"># tree T, add the corresponding edge that **GENERATED** it (this is not</span>
+    <span class="c1"># necesarilly e itself!)</span>
+
+    <span class="c1"># ensure the third case does not generate edges twice</span>
+    <span class="n">bridge_connectors</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">mu</span><span class="p">,</span> <span class="n">mv</span> <span class="ow">in</span> <span class="n">A</span><span class="o">.</span><span class="n">edges</span><span class="p">():</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">D</span><span class="o">.</span><span class="n">get_edge_data</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">mv</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;generator&quot;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="c1"># Add the avail edge that generated the branching edge.</span>
+            <span class="n">edge</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;generator&quot;</span><span class="p">]</span>
+            <span class="n">bridge_connectors</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
+
+    <span class="k">yield from</span> <span class="n">bridge_connectors</span>
+
+
+<span class="k">def</span> <span class="nf">_minimum_rooted_branching</span><span class="p">(</span><span class="n">D</span><span class="p">,</span> <span class="n">root</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Helper function to compute a minimum rooted branching (aka rooted</span>
+<span class="sd">    arborescence)</span>
+
+<span class="sd">    Before the branching can be computed, the directed graph must be rooted by</span>
+<span class="sd">    removing the predecessors of root.</span>
+
+<span class="sd">    A branching / arborescence of rooted graph G is a subgraph that contains a</span>
+<span class="sd">    directed path from the root to every other vertex. It is the directed</span>
+<span class="sd">    analog of the minimum spanning tree problem.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Khuller, Samir (2002) Advanced Algorithms Lecture 24 Notes.</span>
+<span class="sd">    https://web.archive.org/web/20121030033722/https://www.cs.umd.edu/class/spring2011/cmsc651/lec07.pdf</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rooted</span> <span class="o">=</span> <span class="n">D</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="c1"># root the graph by removing all predecessors to `root`.</span>
+    <span class="n">rooted</span><span class="o">.</span><span class="n">remove_edges_from</span><span class="p">([(</span><span class="n">u</span><span class="p">,</span> <span class="n">root</span><span class="p">)</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">D</span><span class="o">.</span><span class="n">predecessors</span><span class="p">(</span><span class="n">root</span><span class="p">)])</span>
+    <span class="c1"># Then compute the branching / arborescence.</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">minimum_spanning_arborescence</span><span class="p">(</span><span class="n">rooted</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">A</span>
+
+
+<span class="k">def</span> <span class="nf">collapse</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">grouped_nodes</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Collapses each group of nodes into a single node.</span>
+
+<span class="sd">    This is similar to condensation, but works on undirected graphs.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX Graph</span>
+
+<span class="sd">    grouped_nodes:  list or generator</span>
+<span class="sd">       Grouping of nodes to collapse. The grouping must be disjoint.</span>
+<span class="sd">       If grouped_nodes are strongly_connected_components then this is</span>
+<span class="sd">       equivalent to :func:`condensation`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    C : NetworkX Graph</span>
+<span class="sd">       The collapsed graph C of G with respect to the node grouping.  The node</span>
+<span class="sd">       labels are integers corresponding to the index of the component in the</span>
+<span class="sd">       list of grouped_nodes.  C has a graph attribute named &#39;mapping&#39; with a</span>
+<span class="sd">       dictionary mapping the original nodes to the nodes in C to which they</span>
+<span class="sd">       belong.  Each node in C also has a node attribute &#39;members&#39; with the set</span>
+<span class="sd">       of original nodes in G that form the group that the node in C</span>
+<span class="sd">       represents.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; # Collapses a graph using disjoint groups, but not necesarilly connected</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.Graph([(1, 0), (2, 3), (3, 1), (3, 4), (4, 5), (5, 6), (5, 7)])</span>
+<span class="sd">    &gt;&gt;&gt; G.add_node(&quot;A&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; grouped_nodes = [{0, 1, 2, 3}, {5, 6, 7}]</span>
+<span class="sd">    &gt;&gt;&gt; C = collapse(G, grouped_nodes)</span>
+<span class="sd">    &gt;&gt;&gt; members = nx.get_node_attributes(C, &quot;members&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; sorted(members.keys())</span>
+<span class="sd">    [0, 1, 2, 3]</span>
+<span class="sd">    &gt;&gt;&gt; member_values = set(map(frozenset, members.values()))</span>
+<span class="sd">    &gt;&gt;&gt; assert {0, 1, 2, 3} in member_values</span>
+<span class="sd">    &gt;&gt;&gt; assert {4} in member_values</span>
+<span class="sd">    &gt;&gt;&gt; assert {5, 6, 7} in member_values</span>
+<span class="sd">    &gt;&gt;&gt; assert {&quot;A&quot;} in member_values</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">mapping</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">members</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># required if G is empty</span>
+    <span class="n">remaining</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">())</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">group</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">grouped_nodes</span><span class="p">):</span>
+        <span class="n">group</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">group</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">remaining</span><span class="o">.</span><span class="n">issuperset</span><span class="p">(</span>
+            <span class="n">group</span>
+        <span class="p">),</span> <span class="s2">&quot;grouped nodes must exist in G and be disjoint&quot;</span>
+        <span class="n">remaining</span><span class="o">.</span><span class="n">difference_update</span><span class="p">(</span><span class="n">group</span><span class="p">)</span>
+        <span class="n">members</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">group</span>
+        <span class="n">mapping</span><span class="o">.</span><span class="n">update</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">group</span><span class="p">)</span>
+    <span class="c1"># remaining nodes are in their own group</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">remaining</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">group</span> <span class="o">=</span> <span class="p">{</span><span class="n">node</span><span class="p">}</span>
+        <span class="n">members</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">group</span>
+        <span class="n">mapping</span><span class="o">.</span><span class="n">update</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">group</span><span class="p">)</span>
+    <span class="n">number_of_groups</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">C</span><span class="o">.</span><span class="n">add_nodes_from</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">number_of_groups</span><span class="p">))</span>
+    <span class="n">C</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span>
+        <span class="p">(</span><span class="n">mapping</span><span class="p">[</span><span class="n">u</span><span class="p">],</span> <span class="n">mapping</span><span class="p">[</span><span class="n">v</span><span class="p">])</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">()</span> <span class="k">if</span> <span class="n">mapping</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="o">!=</span> <span class="n">mapping</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="c1"># Add a list of members (ie original nodes) to each node (ie scc) in C.</span>
+    <span class="n">nx</span><span class="o">.</span><span class="n">set_node_attributes</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;members&quot;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">members</span><span class="p">)</span>
+    <span class="c1"># Add mapping dict as graph attribute</span>
+    <span class="n">C</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="s2">&quot;mapping&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapping</span>
+    <span class="k">return</span> <span class="n">C</span>
+
+
+<span class="k">def</span> <span class="nf">complement_edges</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns only the edges in the complement of G</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX Graph</span>
+
+<span class="sd">    Yields</span>
+<span class="sd">    ------</span>
+<span class="sd">    edge : tuple</span>
+<span class="sd">        Edges in the complement of G</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.path_graph((1, 2, 3, 4))</span>
+<span class="sd">    &gt;&gt;&gt; sorted(complement_edges(G))</span>
+<span class="sd">    [(1, 3), (1, 4), (2, 4)]</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.path_graph((1, 2, 3, 4), nx.DiGraph())</span>
+<span class="sd">    &gt;&gt;&gt; sorted(complement_edges(G))</span>
+<span class="sd">    [(1, 3), (1, 4), (2, 1), (2, 4), (3, 1), (3, 2), (4, 1), (4, 2), (4, 3)]</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.complete_graph(1000)</span>
+<span class="sd">    &gt;&gt;&gt; sorted(complement_edges(G))</span>
+<span class="sd">    []</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">G_adj</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">_adj</span>  <span class="c1"># Store as a variable to eliminate attribute lookup</span>
+    <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">it</span><span class="o">.</span><span class="n">combinations</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">(),</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">v</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">G_adj</span><span class="p">[</span><span class="n">u</span><span class="p">]:</span>
+                <span class="k">yield</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">u</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">G_adj</span><span class="p">[</span><span class="n">v</span><span class="p">]:</span>
+                <span class="k">yield</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">it</span><span class="o">.</span><span class="n">combinations</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">(),</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">v</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">G_adj</span><span class="p">[</span><span class="n">u</span><span class="p">]:</span>
+                <span class="k">yield</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_compat_shuffle</span><span class="p">(</span><span class="n">rng</span><span class="p">,</span> <span class="nb">input</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;wrapper around rng.shuffle for python 2 compatibility reasons&quot;&quot;&quot;</span>
+    <span class="n">rng</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+
+
+<span class="nd">@py_random_state</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;multigraph&quot;</span><span class="p">)</span>
+<span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;directed&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">greedy_k_edge_augmentation</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">avail</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Greedy algorithm for finding a k-edge-augmentation</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+<span class="sd">       An undirected graph.</span>
+
+<span class="sd">    k : integer</span>
+<span class="sd">        Desired edge connectivity</span>
+
+<span class="sd">    avail : dict or a set of 2 or 3 tuples</span>
+<span class="sd">        For more details, see :func:`k_edge_augmentation`.</span>
+
+<span class="sd">    weight : string</span>
+<span class="sd">        key to use to find weights if ``avail`` is a set of 3-tuples.</span>
+<span class="sd">        For more details, see :func:`k_edge_augmentation`.</span>
+
+<span class="sd">    seed : integer, random_state, or None (default)</span>
+<span class="sd">        Indicator of random number generation state.</span>
+<span class="sd">        See :ref:`Randomness&lt;randomness&gt;`.</span>
+
+<span class="sd">    Yields</span>
+<span class="sd">    ------</span>
+<span class="sd">    edge : tuple</span>
+<span class="sd">        Edges in the greedy augmentation of G</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The algorithm is simple. Edges are incrementally added between parts of the</span>
+<span class="sd">    graph that are not yet locally k-edge-connected. Then edges are from the</span>
+<span class="sd">    augmenting set are pruned as long as local-edge-connectivity is not broken.</span>
+
+<span class="sd">    This algorithm is greedy and does not provide optimality guarantees. It</span>
+<span class="sd">    exists only to provide :func:`k_edge_augmentation` with the ability to</span>
+<span class="sd">    generate a feasible solution for arbitrary k.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :func:`k_edge_augmentation`</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.path_graph((1, 2, 3, 4, 5, 6, 7))</span>
+<span class="sd">    &gt;&gt;&gt; sorted(greedy_k_edge_augmentation(G, k=2))</span>
+<span class="sd">    [(1, 7)]</span>
+<span class="sd">    &gt;&gt;&gt; sorted(greedy_k_edge_augmentation(G, k=1, avail=[]))</span>
+<span class="sd">    []</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.path_graph((1, 2, 3, 4, 5, 6, 7))</span>
+<span class="sd">    &gt;&gt;&gt; avail = {(u, v): 1 for (u, v) in complement_edges(G)}</span>
+<span class="sd">    &gt;&gt;&gt; # randomized pruning process can produce different solutions</span>
+<span class="sd">    &gt;&gt;&gt; sorted(greedy_k_edge_augmentation(G, k=4, avail=avail, seed=2))</span>
+<span class="sd">    [(1, 3), (1, 4), (1, 5), (1, 6), (1, 7), (2, 4), (2, 6), (3, 7), (5, 7)]</span>
+<span class="sd">    &gt;&gt;&gt; sorted(greedy_k_edge_augmentation(G, k=4, avail=avail, seed=3))</span>
+<span class="sd">    [(1, 3), (1, 5), (1, 6), (2, 4), (2, 6), (3, 7), (4, 7), (5, 7)]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Result set</span>
+    <span class="n">aug_edges</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">done</span> <span class="o">=</span> <span class="n">is_k_edge_connected</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">done</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="k">if</span> <span class="n">avail</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># all edges are available</span>
+        <span class="n">avail_uv</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">complement_edges</span><span class="p">(</span><span class="n">G</span><span class="p">))</span>
+        <span class="n">avail_w</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">avail_uv</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Get the unique set of unweighted edges</span>
+        <span class="n">avail_uv</span><span class="p">,</span> <span class="n">avail_w</span> <span class="o">=</span> <span class="n">_unpack_available_edges</span><span class="p">(</span><span class="n">avail</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">,</span> <span class="n">G</span><span class="o">=</span><span class="n">G</span><span class="p">)</span>
+
+    <span class="c1"># Greedy: order lightest edges. Use degree sum to tie-break</span>
+    <span class="n">tiebreaker</span> <span class="o">=</span> <span class="p">[</span><span class="nb">sum</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span> <span class="n">uv</span><span class="p">))</span> <span class="k">for</span> <span class="n">uv</span> <span class="ow">in</span> <span class="n">avail_uv</span><span class="p">]</span>
+    <span class="n">avail_wduv</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">avail_w</span><span class="p">,</span> <span class="n">tiebreaker</span><span class="p">,</span> <span class="n">avail_uv</span><span class="p">))</span>
+    <span class="n">avail_uv</span> <span class="o">=</span> <span class="p">[</span><span class="n">uv</span> <span class="k">for</span> <span class="n">w</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">uv</span> <span class="ow">in</span> <span class="n">avail_wduv</span><span class="p">]</span>
+
+    <span class="c1"># Incrementally add edges in until we are k-connected</span>
+    <span class="n">H</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">avail_uv</span><span class="p">:</span>
+        <span class="n">done</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_locally_k_edge_connected</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">):</span>
+            <span class="c1"># Only add edges in parts that are not yet locally k-edge-connected</span>
+            <span class="n">aug_edges</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>
+            <span class="n">H</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+            <span class="c1"># Did adding this edge help?</span>
+            <span class="k">if</span> <span class="n">H</span><span class="o">.</span><span class="n">degree</span><span class="p">(</span><span class="n">u</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">k</span> <span class="ow">and</span> <span class="n">H</span><span class="o">.</span><span class="n">degree</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">k</span><span class="p">:</span>
+                <span class="n">done</span> <span class="o">=</span> <span class="n">is_k_edge_connected</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">done</span><span class="p">:</span>
+            <span class="k">break</span>
+
+    <span class="c1"># Check for feasibility</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">done</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXUnfeasible</span><span class="p">(</span><span class="s2">&quot;not able to k-edge-connect with available edges&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Randomized attempt to reduce the size of the solution</span>
+    <span class="n">_compat_shuffle</span><span class="p">(</span><span class="n">seed</span><span class="p">,</span> <span class="n">aug_edges</span><span class="p">)</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">aug_edges</span><span class="p">):</span>
+        <span class="c1"># Don&#39;t remove if we know it would break connectivity</span>
+        <span class="k">if</span> <span class="n">H</span><span class="o">.</span><span class="n">degree</span><span class="p">(</span><span class="n">u</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">k</span> <span class="ow">or</span> <span class="n">H</span><span class="o">.</span><span class="n">degree</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">k</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">H</span><span class="o">.</span><span class="n">remove_edge</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+        <span class="n">aug_edges</span><span class="o">.</span><span class="n">remove</span><span class="p">((</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_k_edge_connected</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">):</span>
+            <span class="c1"># If removing this edge breaks feasibility, undo</span>
+            <span class="n">H</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+            <span class="n">aug_edges</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>
+
+    <span class="c1"># Generate results</span>
+    <span class="k">yield from</span> <span class="n">aug_edges</span>
+</pre></div>
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

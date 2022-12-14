@@ -1,0 +1,1004 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>networkx.linalg.attrmatrix &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/linalg/attrmatrix';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/linalg/attrmatrix.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../../../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../../../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <h1>Source code for networkx.linalg.attrmatrix</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Functions for constructing matrix-like objects from graph attributes.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;attr_matrix&quot;</span><span class="p">,</span> <span class="s2">&quot;attr_sparse_matrix&quot;</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">_node_value</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">node_attr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns a function that returns a value from G.nodes[u].</span>
+
+<span class="sd">    We return a function expecting a node as its sole argument. Then, in the</span>
+<span class="sd">    simplest scenario, the returned function will return G.nodes[u][node_attr].</span>
+<span class="sd">    However, we also handle the case when `node_attr` is None or when it is a</span>
+<span class="sd">    function itself.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : graph</span>
+<span class="sd">        A NetworkX graph</span>
+
+<span class="sd">    node_attr : {None, str, callable}</span>
+<span class="sd">        Specification of how the value of the node attribute should be obtained</span>
+<span class="sd">        from the node attribute dictionary.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    value : function</span>
+<span class="sd">        A function expecting a node as its sole argument. The function will</span>
+<span class="sd">        returns a value from G.nodes[u] that depends on `edge_attr`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">node_attr</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="n">u</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">u</span>
+
+    <span class="k">elif</span> <span class="ow">not</span> <span class="n">callable</span><span class="p">(</span><span class="n">node_attr</span><span class="p">):</span>
+        <span class="c1"># assume it is a key for the node attribute dictionary</span>
+        <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="n">u</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">node_attr</span><span class="p">]</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Advanced:  Allow users to specify something else.</span>
+        <span class="c1">#</span>
+        <span class="c1"># For example,</span>
+        <span class="c1">#     node_attr = lambda u: G.nodes[u].get(&#39;size&#39;, .5) * 3</span>
+        <span class="c1">#</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">node_attr</span>
+
+    <span class="k">return</span> <span class="n">value</span>
+
+
+<span class="k">def</span> <span class="nf">_edge_value</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">edge_attr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns a function that returns a value from G[u][v].</span>
+
+<span class="sd">    Suppose there exists an edge between u and v.  Then we return a function</span>
+<span class="sd">    expecting u and v as arguments.  For Graph and DiGraph, G[u][v] is</span>
+<span class="sd">    the edge attribute dictionary, and the function (essentially) returns</span>
+<span class="sd">    G[u][v][edge_attr].  However, we also handle cases when `edge_attr` is None</span>
+<span class="sd">    and when it is a function itself. For MultiGraph and MultiDiGraph, G[u][v]</span>
+<span class="sd">    is a dictionary of all edges between u and v.  In this case, the returned</span>
+<span class="sd">    function sums the value of `edge_attr` for every edge between u and v.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : graph</span>
+<span class="sd">       A NetworkX graph</span>
+
+<span class="sd">    edge_attr : {None, str, callable}</span>
+<span class="sd">        Specification of how the value of the edge attribute should be obtained</span>
+<span class="sd">        from the edge attribute dictionary, G[u][v].  For multigraphs, G[u][v]</span>
+<span class="sd">        is a dictionary of all the edges between u and v.  This allows for</span>
+<span class="sd">        special treatment of multiedges.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    value : function</span>
+<span class="sd">        A function expecting two nodes as parameters. The nodes should</span>
+<span class="sd">        represent the from- and to- node of an edge. The function will</span>
+<span class="sd">        return a value from G[u][v] that depends on `edge_attr`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">edge_attr</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># topological count of edges</span>
+
+        <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">is_multigraph</span><span class="p">():</span>
+
+            <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+                <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">])</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+                <span class="k">return</span> <span class="mi">1</span>
+
+    <span class="k">elif</span> <span class="ow">not</span> <span class="n">callable</span><span class="p">(</span><span class="n">edge_attr</span><span class="p">):</span>
+        <span class="c1"># assume it is a key for the edge attribute dictionary</span>
+
+        <span class="k">if</span> <span class="n">edge_attr</span> <span class="o">==</span> <span class="s2">&quot;weight&quot;</span><span class="p">:</span>
+            <span class="c1"># provide a default value</span>
+            <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">is_multigraph</span><span class="p">():</span>
+
+                <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">edge_attr</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">G</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+            <span class="k">else</span><span class="p">:</span>
+
+                <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="n">G</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">edge_attr</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># otherwise, the edge attribute MUST exist for each edge</span>
+            <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">is_multigraph</span><span class="p">():</span>
+
+                <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">edge_attr</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">G</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+            <span class="k">else</span><span class="p">:</span>
+
+                <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="n">G</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">][</span><span class="n">edge_attr</span><span class="p">]</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Advanced:  Allow users to specify something else.</span>
+        <span class="c1">#</span>
+        <span class="c1"># Alternative default value:</span>
+        <span class="c1">#     edge_attr = lambda u,v: G[u][v].get(&#39;thickness&#39;, .5)</span>
+        <span class="c1">#</span>
+        <span class="c1"># Function on an attribute:</span>
+        <span class="c1">#     edge_attr = lambda u,v: abs(G[u][v][&#39;weight&#39;])</span>
+        <span class="c1">#</span>
+        <span class="c1"># Handle Multi(Di)Graphs differently:</span>
+        <span class="c1">#     edge_attr = lambda u,v: numpy.prod([d[&#39;size&#39;] for d in G[u][v].values()])</span>
+        <span class="c1">#</span>
+        <span class="c1"># Ignore multiple edges</span>
+        <span class="c1">#     edge_attr = lambda u,v: 1 if len(G[u][v]) else 0</span>
+        <span class="c1">#</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">edge_attr</span>
+
+    <span class="k">return</span> <span class="n">value</span>
+
+
+<div class="viewcode-block" id="attr_matrix"><a class="viewcode-back" href="../../../reference/generated/networkx.linalg.attrmatrix.attr_matrix.html#networkx.linalg.attrmatrix.attr_matrix">[docs]</a><span class="k">def</span> <span class="nf">attr_matrix</span><span class="p">(</span>
+    <span class="n">G</span><span class="p">,</span>
+    <span class="n">edge_attr</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">node_attr</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">normalized</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">rc_order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the attribute matrix using attributes from `G` as a numpy array.</span>
+
+<span class="sd">    If only `G` is passed in, then the adjacency matrix is constructed.</span>
+
+<span class="sd">    Let A be a discrete set of values for the node attribute `node_attr`. Then</span>
+<span class="sd">    the elements of A represent the rows and columns of the constructed matrix.</span>
+<span class="sd">    Now, iterate through every edge e=(u,v) in `G` and consider the value</span>
+<span class="sd">    of the edge attribute `edge_attr`.  If ua and va are the values of the</span>
+<span class="sd">    node attribute `node_attr` for u and v, respectively, then the value of</span>
+<span class="sd">    the edge attribute is added to the matrix element at (ua, va).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : graph</span>
+<span class="sd">        The NetworkX graph used to construct the attribute matrix.</span>
+
+<span class="sd">    edge_attr : str, optional</span>
+<span class="sd">        Each element of the matrix represents a running total of the</span>
+<span class="sd">        specified edge attribute for edges whose node attributes correspond</span>
+<span class="sd">        to the rows/cols of the matrix. The attribute must be present for</span>
+<span class="sd">        all edges in the graph. If no attribute is specified, then we</span>
+<span class="sd">        just count the number of edges whose node attributes correspond</span>
+<span class="sd">        to the matrix element.</span>
+
+<span class="sd">    node_attr : str, optional</span>
+<span class="sd">        Each row and column in the matrix represents a particular value</span>
+<span class="sd">        of the node attribute.  The attribute must be present for all nodes</span>
+<span class="sd">        in the graph. Note, the values of this attribute should be reliably</span>
+<span class="sd">        hashable. So, float values are not recommended. If no attribute is</span>
+<span class="sd">        specified, then the rows and columns will be the nodes of the graph.</span>
+
+<span class="sd">    normalized : bool, optional</span>
+<span class="sd">        If True, then each row is normalized by the summation of its values.</span>
+
+<span class="sd">    rc_order : list, optional</span>
+<span class="sd">        A list of the node attribute values. This list specifies the ordering</span>
+<span class="sd">        of rows and columns of the array. If no ordering is provided, then</span>
+<span class="sd">        the ordering will be random (and also, a return value).</span>
+
+<span class="sd">    Other Parameters</span>
+<span class="sd">    ----------------</span>
+<span class="sd">    dtype : NumPy data-type, optional</span>
+<span class="sd">        A valid NumPy dtype used to initialize the array. Keep in mind certain</span>
+<span class="sd">        dtypes can yield unexpected results if the array is to be normalized.</span>
+<span class="sd">        The parameter is passed to numpy.zeros(). If unspecified, the NumPy</span>
+<span class="sd">        default is used.</span>
+
+<span class="sd">    order : {&#39;C&#39;, &#39;F&#39;}, optional</span>
+<span class="sd">        Whether to store multidimensional data in C- or Fortran-contiguous</span>
+<span class="sd">        (row- or column-wise) order in memory. This parameter is passed to</span>
+<span class="sd">        numpy.zeros(). If unspecified, the NumPy default is used.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    M : 2D NumPy ndarray</span>
+<span class="sd">        The attribute matrix.</span>
+
+<span class="sd">    ordering : list</span>
+<span class="sd">        If `rc_order` was specified, then only the attribute matrix is returned.</span>
+<span class="sd">        However, if `rc_order` was None, then the ordering used to construct</span>
+<span class="sd">        the matrix is returned as well.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Construct an adjacency matrix:</span>
+
+<span class="sd">    &gt;&gt;&gt; G = nx.Graph()</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(0, 1, thickness=1, weight=3)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(0, 2, thickness=2)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(1, 2, thickness=3)</span>
+<span class="sd">    &gt;&gt;&gt; nx.attr_matrix(G, rc_order=[0, 1, 2])</span>
+<span class="sd">    array([[0., 1., 1.],</span>
+<span class="sd">           [1., 0., 1.],</span>
+<span class="sd">           [1., 1., 0.]])</span>
+
+<span class="sd">    Alternatively, we can obtain the matrix describing edge thickness.</span>
+
+<span class="sd">    &gt;&gt;&gt; nx.attr_matrix(G, edge_attr=&quot;thickness&quot;, rc_order=[0, 1, 2])</span>
+<span class="sd">    array([[0., 1., 2.],</span>
+<span class="sd">           [1., 0., 3.],</span>
+<span class="sd">           [2., 3., 0.]])</span>
+
+<span class="sd">    We can also color the nodes and ask for the probability distribution over</span>
+<span class="sd">    all edges (u,v) describing:</span>
+
+<span class="sd">        Pr(v has color Y | u has color X)</span>
+
+<span class="sd">    &gt;&gt;&gt; G.nodes[0][&quot;color&quot;] = &quot;red&quot;</span>
+<span class="sd">    &gt;&gt;&gt; G.nodes[1][&quot;color&quot;] = &quot;red&quot;</span>
+<span class="sd">    &gt;&gt;&gt; G.nodes[2][&quot;color&quot;] = &quot;blue&quot;</span>
+<span class="sd">    &gt;&gt;&gt; rc = [&quot;red&quot;, &quot;blue&quot;]</span>
+<span class="sd">    &gt;&gt;&gt; nx.attr_matrix(G, node_attr=&quot;color&quot;, normalized=True, rc_order=rc)</span>
+<span class="sd">    array([[0.33333333, 0.66666667],</span>
+<span class="sd">           [1.        , 0.        ]])</span>
+
+<span class="sd">    For example, the above tells us that for all edges (u,v):</span>
+
+<span class="sd">        Pr( v is red  | u is red)  = 1/3</span>
+<span class="sd">        Pr( v is blue | u is red)  = 2/3</span>
+
+<span class="sd">        Pr( v is red  | u is blue) = 1</span>
+<span class="sd">        Pr( v is blue | u is blue) = 0</span>
+
+<span class="sd">    Finally, we can obtain the total weights listed by the node colors.</span>
+
+<span class="sd">    &gt;&gt;&gt; nx.attr_matrix(G, edge_attr=&quot;weight&quot;, node_attr=&quot;color&quot;, rc_order=rc)</span>
+<span class="sd">    array([[3., 2.],</span>
+<span class="sd">           [2., 0.]])</span>
+
+<span class="sd">    Thus, the total weight over all edges (u,v) with u and v having colors:</span>
+
+<span class="sd">        (red, red)   is 3   # the sole contribution is from edge (0,1)</span>
+<span class="sd">        (red, blue)  is 2   # contributions from edges (0,2) and (1,2)</span>
+<span class="sd">        (blue, red)  is 2   # same as (red, blue) since graph is undirected</span>
+<span class="sd">        (blue, blue) is 0   # there are no edges with blue endpoints</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+    <span class="n">edge_value</span> <span class="o">=</span> <span class="n">_edge_value</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">edge_attr</span><span class="p">)</span>
+    <span class="n">node_value</span> <span class="o">=</span> <span class="n">_node_value</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">node_attr</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">rc_order</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ordering</span> <span class="o">=</span> <span class="nb">list</span><span class="p">({</span><span class="n">node_value</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">G</span><span class="p">})</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ordering</span> <span class="o">=</span> <span class="n">rc_order</span>
+
+    <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ordering</span><span class="p">)</span>
+    <span class="n">undirected</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">G</span><span class="o">.</span><span class="n">is_directed</span><span class="p">()</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">ordering</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">)))</span>
+    <span class="n">M</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N</span><span class="p">,</span> <span class="n">N</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
+
+    <span class="n">seen</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">nbrdict</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">adjacency</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">nbrdict</span><span class="p">:</span>
+            <span class="c1"># Obtain the node attribute values.</span>
+            <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">index</span><span class="p">[</span><span class="n">node_value</span><span class="p">(</span><span class="n">u</span><span class="p">)],</span> <span class="n">index</span><span class="p">[</span><span class="n">node_value</span><span class="p">(</span><span class="n">v</span><span class="p">)]</span>
+            <span class="k">if</span> <span class="n">v</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">:</span>
+                <span class="n">M</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+=</span> <span class="n">edge_value</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">undirected</span><span class="p">:</span>
+                    <span class="n">M</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">M</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">undirected</span><span class="p">:</span>
+            <span class="n">seen</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">normalized</span><span class="p">:</span>
+        <span class="n">M</span> <span class="o">/=</span> <span class="n">M</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">N</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">rc_order</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">M</span><span class="p">,</span> <span class="n">ordering</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">M</span></div>
+
+
+<div class="viewcode-block" id="attr_sparse_matrix"><a class="viewcode-back" href="../../../reference/generated/networkx.linalg.attrmatrix.attr_sparse_matrix.html#networkx.linalg.attrmatrix.attr_sparse_matrix">[docs]</a><span class="k">def</span> <span class="nf">attr_sparse_matrix</span><span class="p">(</span>
+    <span class="n">G</span><span class="p">,</span> <span class="n">edge_attr</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">node_attr</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">normalized</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">rc_order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns a SciPy sparse array using attributes from G.</span>
+
+<span class="sd">    If only `G` is passed in, then the adjacency matrix is constructed.</span>
+
+<span class="sd">    Let A be a discrete set of values for the node attribute `node_attr`. Then</span>
+<span class="sd">    the elements of A represent the rows and columns of the constructed matrix.</span>
+<span class="sd">    Now, iterate through every edge e=(u,v) in `G` and consider the value</span>
+<span class="sd">    of the edge attribute `edge_attr`.  If ua and va are the values of the</span>
+<span class="sd">    node attribute `node_attr` for u and v, respectively, then the value of</span>
+<span class="sd">    the edge attribute is added to the matrix element at (ua, va).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : graph</span>
+<span class="sd">        The NetworkX graph used to construct the NumPy matrix.</span>
+
+<span class="sd">    edge_attr : str, optional</span>
+<span class="sd">        Each element of the matrix represents a running total of the</span>
+<span class="sd">        specified edge attribute for edges whose node attributes correspond</span>
+<span class="sd">        to the rows/cols of the matirx. The attribute must be present for</span>
+<span class="sd">        all edges in the graph. If no attribute is specified, then we</span>
+<span class="sd">        just count the number of edges whose node attributes correspond</span>
+<span class="sd">        to the matrix element.</span>
+
+<span class="sd">    node_attr : str, optional</span>
+<span class="sd">        Each row and column in the matrix represents a particular value</span>
+<span class="sd">        of the node attribute.  The attribute must be present for all nodes</span>
+<span class="sd">        in the graph. Note, the values of this attribute should be reliably</span>
+<span class="sd">        hashable. So, float values are not recommended. If no attribute is</span>
+<span class="sd">        specified, then the rows and columns will be the nodes of the graph.</span>
+
+<span class="sd">    normalized : bool, optional</span>
+<span class="sd">        If True, then each row is normalized by the summation of its values.</span>
+
+<span class="sd">    rc_order : list, optional</span>
+<span class="sd">        A list of the node attribute values. This list specifies the ordering</span>
+<span class="sd">        of rows and columns of the array. If no ordering is provided, then</span>
+<span class="sd">        the ordering will be random (and also, a return value).</span>
+
+<span class="sd">    Other Parameters</span>
+<span class="sd">    ----------------</span>
+<span class="sd">    dtype : NumPy data-type, optional</span>
+<span class="sd">        A valid NumPy dtype used to initialize the array. Keep in mind certain</span>
+<span class="sd">        dtypes can yield unexpected results if the array is to be normalized.</span>
+<span class="sd">        The parameter is passed to numpy.zeros(). If unspecified, the NumPy</span>
+<span class="sd">        default is used.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    M : SciPy sparse array</span>
+<span class="sd">        The attribute matrix.</span>
+
+<span class="sd">    ordering : list</span>
+<span class="sd">        If `rc_order` was specified, then only the matrix is returned.</span>
+<span class="sd">        However, if `rc_order` was None, then the ordering used to construct</span>
+<span class="sd">        the matrix is returned as well.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Construct an adjacency matrix:</span>
+
+<span class="sd">    &gt;&gt;&gt; G = nx.Graph()</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(0, 1, thickness=1, weight=3)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(0, 2, thickness=2)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(1, 2, thickness=3)</span>
+<span class="sd">    &gt;&gt;&gt; M = nx.attr_sparse_matrix(G, rc_order=[0, 1, 2])</span>
+<span class="sd">    &gt;&gt;&gt; M.toarray()</span>
+<span class="sd">    array([[0., 1., 1.],</span>
+<span class="sd">           [1., 0., 1.],</span>
+<span class="sd">           [1., 1., 0.]])</span>
+
+<span class="sd">    Alternatively, we can obtain the matrix describing edge thickness.</span>
+
+<span class="sd">    &gt;&gt;&gt; M = nx.attr_sparse_matrix(G, edge_attr=&quot;thickness&quot;, rc_order=[0, 1, 2])</span>
+<span class="sd">    &gt;&gt;&gt; M.toarray()</span>
+<span class="sd">    array([[0., 1., 2.],</span>
+<span class="sd">           [1., 0., 3.],</span>
+<span class="sd">           [2., 3., 0.]])</span>
+
+<span class="sd">    We can also color the nodes and ask for the probability distribution over</span>
+<span class="sd">    all edges (u,v) describing:</span>
+
+<span class="sd">        Pr(v has color Y | u has color X)</span>
+
+<span class="sd">    &gt;&gt;&gt; G.nodes[0][&quot;color&quot;] = &quot;red&quot;</span>
+<span class="sd">    &gt;&gt;&gt; G.nodes[1][&quot;color&quot;] = &quot;red&quot;</span>
+<span class="sd">    &gt;&gt;&gt; G.nodes[2][&quot;color&quot;] = &quot;blue&quot;</span>
+<span class="sd">    &gt;&gt;&gt; rc = [&quot;red&quot;, &quot;blue&quot;]</span>
+<span class="sd">    &gt;&gt;&gt; M = nx.attr_sparse_matrix(G, node_attr=&quot;color&quot;, normalized=True, rc_order=rc)</span>
+<span class="sd">    &gt;&gt;&gt; M.toarray()</span>
+<span class="sd">    array([[0.33333333, 0.66666667],</span>
+<span class="sd">           [1.        , 0.        ]])</span>
+
+<span class="sd">    For example, the above tells us that for all edges (u,v):</span>
+
+<span class="sd">        Pr( v is red  | u is red)  = 1/3</span>
+<span class="sd">        Pr( v is blue | u is red)  = 2/3</span>
+
+<span class="sd">        Pr( v is red  | u is blue) = 1</span>
+<span class="sd">        Pr( v is blue | u is blue) = 0</span>
+
+<span class="sd">    Finally, we can obtain the total weights listed by the node colors.</span>
+
+<span class="sd">    &gt;&gt;&gt; M = nx.attr_sparse_matrix(G, edge_attr=&quot;weight&quot;, node_attr=&quot;color&quot;, rc_order=rc)</span>
+<span class="sd">    &gt;&gt;&gt; M.toarray()</span>
+<span class="sd">    array([[3., 2.],</span>
+<span class="sd">           [2., 0.]])</span>
+
+<span class="sd">    Thus, the total weight over all edges (u,v) with u and v having colors:</span>
+
+<span class="sd">        (red, red)   is 3   # the sole contribution is from edge (0,1)</span>
+<span class="sd">        (red, blue)  is 2   # contributions from edges (0,2) and (1,2)</span>
+<span class="sd">        (blue, red)  is 2   # same as (red, blue) since graph is undirected</span>
+<span class="sd">        (blue, blue) is 0   # there are no edges with blue endpoints</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+    <span class="kn">import</span> <span class="nn">scipy</span> <span class="k">as</span> <span class="nn">sp</span>
+    <span class="kn">import</span> <span class="nn">scipy.sparse</span>  <span class="c1"># call as sp.sparse</span>
+
+    <span class="n">edge_value</span> <span class="o">=</span> <span class="n">_edge_value</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">edge_attr</span><span class="p">)</span>
+    <span class="n">node_value</span> <span class="o">=</span> <span class="n">_node_value</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">node_attr</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">rc_order</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ordering</span> <span class="o">=</span> <span class="nb">list</span><span class="p">({</span><span class="n">node_value</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">G</span><span class="p">})</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ordering</span> <span class="o">=</span> <span class="n">rc_order</span>
+
+    <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ordering</span><span class="p">)</span>
+    <span class="n">undirected</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">G</span><span class="o">.</span><span class="n">is_directed</span><span class="p">()</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">ordering</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">)))</span>
+    <span class="n">M</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">lil_array</span><span class="p">((</span><span class="n">N</span><span class="p">,</span> <span class="n">N</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+
+    <span class="n">seen</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">nbrdict</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">adjacency</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">nbrdict</span><span class="p">:</span>
+            <span class="c1"># Obtain the node attribute values.</span>
+            <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">index</span><span class="p">[</span><span class="n">node_value</span><span class="p">(</span><span class="n">u</span><span class="p">)],</span> <span class="n">index</span><span class="p">[</span><span class="n">node_value</span><span class="p">(</span><span class="n">v</span><span class="p">)]</span>
+            <span class="k">if</span> <span class="n">v</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">:</span>
+                <span class="n">M</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+=</span> <span class="n">edge_value</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">undirected</span><span class="p">:</span>
+                    <span class="n">M</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">M</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">undirected</span><span class="p">:</span>
+            <span class="n">seen</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">normalized</span><span class="p">:</span>
+        <span class="n">M</span> <span class="o">*=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">M</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>  <span class="c1"># in-place mult preserves sparse</span>
+
+    <span class="k">if</span> <span class="n">rc_order</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">M</span><span class="p">,</span> <span class="n">ordering</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">M</span></div>
+</pre></div>
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

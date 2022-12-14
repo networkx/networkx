@@ -1,0 +1,1507 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>networkx.algorithms.simple_paths &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/algorithms/simple_paths';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/algorithms/simple_paths.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../../../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../../../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <h1>Source code for networkx.algorithms.simple_paths</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">heapq</span> <span class="kn">import</span> <span class="n">heappop</span><span class="p">,</span> <span class="n">heappush</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">count</span>
+
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">from</span> <span class="nn">networkx.algorithms.shortest_paths.weighted</span> <span class="kn">import</span> <span class="n">_weight_function</span>
+<span class="kn">from</span> <span class="nn">networkx.utils</span> <span class="kn">import</span> <span class="n">not_implemented_for</span><span class="p">,</span> <span class="n">pairwise</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;all_simple_paths&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;is_simple_path&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;shortest_simple_paths&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;all_simple_edge_paths&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="is_simple_path"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.simple_paths.is_simple_path.html#networkx.algorithms.simple_paths.is_simple_path">[docs]</a><span class="nd">@nx</span><span class="o">.</span><span class="n">_dispatch</span>
+<span class="k">def</span> <span class="nf">is_simple_path</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">nodes</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns True if and only if `nodes` form a simple path in `G`.</span>
+
+<span class="sd">    A *simple path* in a graph is a nonempty sequence of nodes in which</span>
+<span class="sd">    no node appears more than once in the sequence, and each adjacent</span>
+<span class="sd">    pair of nodes in the sequence is adjacent in the graph.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : graph</span>
+<span class="sd">        A NetworkX graph.</span>
+<span class="sd">    nodes : list</span>
+<span class="sd">        A list of one or more nodes in the graph `G`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bool</span>
+<span class="sd">        Whether the given list of nodes represents a simple path in `G`.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    An empty list of nodes is not a path but a list of one node is a</span>
+<span class="sd">    path. Here&#39;s an explanation why.</span>
+
+<span class="sd">    This function operates on *node paths*. One could also consider</span>
+<span class="sd">    *edge paths*. There is a bijection between node paths and edge</span>
+<span class="sd">    paths.</span>
+
+<span class="sd">    The *length of a path* is the number of edges in the path, so a list</span>
+<span class="sd">    of nodes of length *n* corresponds to a path of length *n* - 1.</span>
+<span class="sd">    Thus the smallest edge path would be a list of zero edges, the empty</span>
+<span class="sd">    path. This corresponds to a list of one node.</span>
+
+<span class="sd">    To convert between a node path and an edge path, you can use code</span>
+<span class="sd">    like the following::</span>
+
+<span class="sd">        &gt;&gt;&gt; from networkx.utils import pairwise</span>
+<span class="sd">        &gt;&gt;&gt; nodes = [0, 1, 2, 3]</span>
+<span class="sd">        &gt;&gt;&gt; edges = list(pairwise(nodes))</span>
+<span class="sd">        &gt;&gt;&gt; edges</span>
+<span class="sd">        [(0, 1), (1, 2), (2, 3)]</span>
+<span class="sd">        &gt;&gt;&gt; nodes = [edges[0][0]] + [v for u, v in edges]</span>
+<span class="sd">        &gt;&gt;&gt; nodes</span>
+<span class="sd">        [0, 1, 2, 3]</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.cycle_graph(4)</span>
+<span class="sd">    &gt;&gt;&gt; nx.is_simple_path(G, [2, 3, 0])</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; nx.is_simple_path(G, [0, 2])</span>
+<span class="sd">    False</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># The empty list is not a valid path. Could also return</span>
+    <span class="c1"># NetworkXPointlessConcept here.</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="c1"># If the list is a single node, just check that the node is actually</span>
+    <span class="c1"># in the graph.</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">G</span>
+    <span class="c1"># Test that no node appears more than once, and that each</span>
+    <span class="c1"># adjacent pair of nodes is adjacent.</span>
+    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">nodes</span><span class="p">))</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span><span class="n">v</span> <span class="ow">in</span> <span class="n">G</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">pairwise</span><span class="p">(</span><span class="n">nodes</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="all_simple_paths"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.simple_paths.all_simple_paths.html#networkx.algorithms.simple_paths.all_simple_paths">[docs]</a><span class="k">def</span> <span class="nf">all_simple_paths</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Generate all simple paths in the graph G from source to target.</span>
+
+<span class="sd">    A simple path is a path with no repeated nodes.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+
+<span class="sd">    source : node</span>
+<span class="sd">       Starting node for path</span>
+
+<span class="sd">    target : nodes</span>
+<span class="sd">       Single node or iterable of nodes at which to end path</span>
+
+<span class="sd">    cutoff : integer, optional</span>
+<span class="sd">        Depth to stop the search. Only paths of length &lt;= cutoff are returned.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    path_generator: generator</span>
+<span class="sd">       A generator that produces lists of simple paths.  If there are no paths</span>
+<span class="sd">       between the source and target within the given cutoff the generator</span>
+<span class="sd">       produces no output. If it is possible to traverse the same sequence of</span>
+<span class="sd">       nodes in multiple ways, namely through parallel edges, then it will be</span>
+<span class="sd">       returned multiple times (once for each viable edge combination).</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    This iterator generates lists of nodes::</span>
+
+<span class="sd">        &gt;&gt;&gt; G = nx.complete_graph(4)</span>
+<span class="sd">        &gt;&gt;&gt; for path in nx.all_simple_paths(G, source=0, target=3):</span>
+<span class="sd">        ...     print(path)</span>
+<span class="sd">        ...</span>
+<span class="sd">        [0, 1, 2, 3]</span>
+<span class="sd">        [0, 1, 3]</span>
+<span class="sd">        [0, 2, 1, 3]</span>
+<span class="sd">        [0, 2, 3]</span>
+<span class="sd">        [0, 3]</span>
+
+<span class="sd">    You can generate only those paths that are shorter than a certain</span>
+<span class="sd">    length by using the `cutoff` keyword argument::</span>
+
+<span class="sd">        &gt;&gt;&gt; paths = nx.all_simple_paths(G, source=0, target=3, cutoff=2)</span>
+<span class="sd">        &gt;&gt;&gt; print(list(paths))</span>
+<span class="sd">        [[0, 1, 3], [0, 2, 3], [0, 3]]</span>
+
+<span class="sd">    To get each path as the corresponding list of edges, you can use the</span>
+<span class="sd">    :func:`networkx.utils.pairwise` helper function::</span>
+
+<span class="sd">        &gt;&gt;&gt; paths = nx.all_simple_paths(G, source=0, target=3)</span>
+<span class="sd">        &gt;&gt;&gt; for path in map(nx.utils.pairwise, paths):</span>
+<span class="sd">        ...     print(list(path))</span>
+<span class="sd">        [(0, 1), (1, 2), (2, 3)]</span>
+<span class="sd">        [(0, 1), (1, 3)]</span>
+<span class="sd">        [(0, 2), (2, 1), (1, 3)]</span>
+<span class="sd">        [(0, 2), (2, 3)]</span>
+<span class="sd">        [(0, 3)]</span>
+
+<span class="sd">    Pass an iterable of nodes as target to generate all paths ending in any of several nodes::</span>
+
+<span class="sd">        &gt;&gt;&gt; G = nx.complete_graph(4)</span>
+<span class="sd">        &gt;&gt;&gt; for path in nx.all_simple_paths(G, source=0, target=[3, 2]):</span>
+<span class="sd">        ...     print(path)</span>
+<span class="sd">        ...</span>
+<span class="sd">        [0, 1, 2]</span>
+<span class="sd">        [0, 1, 2, 3]</span>
+<span class="sd">        [0, 1, 3]</span>
+<span class="sd">        [0, 1, 3, 2]</span>
+<span class="sd">        [0, 2]</span>
+<span class="sd">        [0, 2, 1, 3]</span>
+<span class="sd">        [0, 2, 3]</span>
+<span class="sd">        [0, 3]</span>
+<span class="sd">        [0, 3, 1, 2]</span>
+<span class="sd">        [0, 3, 2]</span>
+
+<span class="sd">    Iterate over each path from the root nodes to the leaf nodes in a</span>
+<span class="sd">    directed acyclic graph using a functional programming approach::</span>
+
+<span class="sd">        &gt;&gt;&gt; from itertools import chain</span>
+<span class="sd">        &gt;&gt;&gt; from itertools import product</span>
+<span class="sd">        &gt;&gt;&gt; from itertools import starmap</span>
+<span class="sd">        &gt;&gt;&gt; from functools import partial</span>
+<span class="sd">        &gt;&gt;&gt;</span>
+<span class="sd">        &gt;&gt;&gt; chaini = chain.from_iterable</span>
+<span class="sd">        &gt;&gt;&gt;</span>
+<span class="sd">        &gt;&gt;&gt; G = nx.DiGraph([(0, 1), (1, 2), (0, 3), (3, 2)])</span>
+<span class="sd">        &gt;&gt;&gt; roots = (v for v, d in G.in_degree() if d == 0)</span>
+<span class="sd">        &gt;&gt;&gt; leaves = (v for v, d in G.out_degree() if d == 0)</span>
+<span class="sd">        &gt;&gt;&gt; all_paths = partial(nx.all_simple_paths, G)</span>
+<span class="sd">        &gt;&gt;&gt; list(chaini(starmap(all_paths, product(roots, leaves))))</span>
+<span class="sd">        [[0, 1, 2], [0, 3, 2]]</span>
+
+<span class="sd">    The same list computed using an iterative approach::</span>
+
+<span class="sd">        &gt;&gt;&gt; G = nx.DiGraph([(0, 1), (1, 2), (0, 3), (3, 2)])</span>
+<span class="sd">        &gt;&gt;&gt; roots = (v for v, d in G.in_degree() if d == 0)</span>
+<span class="sd">        &gt;&gt;&gt; leaves = (v for v, d in G.out_degree() if d == 0)</span>
+<span class="sd">        &gt;&gt;&gt; all_paths = []</span>
+<span class="sd">        &gt;&gt;&gt; for root in roots:</span>
+<span class="sd">        ...     for leaf in leaves:</span>
+<span class="sd">        ...         paths = nx.all_simple_paths(G, root, leaf)</span>
+<span class="sd">        ...         all_paths.extend(paths)</span>
+<span class="sd">        &gt;&gt;&gt; all_paths</span>
+<span class="sd">        [[0, 1, 2], [0, 3, 2]]</span>
+
+<span class="sd">    Iterate over each path from the root nodes to the leaf nodes in a</span>
+<span class="sd">    directed acyclic graph passing all leaves together to avoid unnecessary</span>
+<span class="sd">    compute::</span>
+
+<span class="sd">        &gt;&gt;&gt; G = nx.DiGraph([(0, 1), (2, 1), (1, 3), (1, 4)])</span>
+<span class="sd">        &gt;&gt;&gt; roots = (v for v, d in G.in_degree() if d == 0)</span>
+<span class="sd">        &gt;&gt;&gt; leaves = [v for v, d in G.out_degree() if d == 0]</span>
+<span class="sd">        &gt;&gt;&gt; all_paths = []</span>
+<span class="sd">        &gt;&gt;&gt; for root in roots:</span>
+<span class="sd">        ...     paths = nx.all_simple_paths(G, root, leaves)</span>
+<span class="sd">        ...     all_paths.extend(paths)</span>
+<span class="sd">        &gt;&gt;&gt; all_paths</span>
+<span class="sd">        [[0, 1, 3], [0, 1, 4], [2, 1, 3], [2, 1, 4]]</span>
+
+<span class="sd">    If parallel edges offer multiple ways to traverse a given sequence of</span>
+<span class="sd">    nodes, this sequence of nodes will be returned multiple times:</span>
+
+<span class="sd">        &gt;&gt;&gt; G = nx.MultiDiGraph([(0, 1), (0, 1), (1, 2)])</span>
+<span class="sd">        &gt;&gt;&gt; list(nx.all_simple_paths(G, 0, 2))</span>
+<span class="sd">        [[0, 1, 2], [0, 1, 2]]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This algorithm uses a modified depth-first search to generate the</span>
+<span class="sd">    paths [1]_.  A single path can be found in $O(V+E)$ time but the</span>
+<span class="sd">    number of simple paths in a graph can be very large, e.g. $O(n!)$ in</span>
+<span class="sd">    the complete graph of order $n$.</span>
+
+<span class="sd">    This function does not check that a path exists between `source` and</span>
+<span class="sd">    `target`. For large graphs, this may result in very long runtimes.</span>
+<span class="sd">    Consider using `has_path` to check that a path exists between `source` and</span>
+<span class="sd">    `target` before calling this function on large graphs.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] R. Sedgewick, &quot;Algorithms in C, Part 5: Graph Algorithms&quot;,</span>
+<span class="sd">       Addison Wesley Professional, 3rd ed., 2001.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    all_shortest_paths, shortest_path, has_path</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">source</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">G</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NodeNotFound</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;source node </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2"> not in graph&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">G</span><span class="p">:</span>
+        <span class="n">targets</span> <span class="o">=</span> <span class="p">{</span><span class="n">target</span><span class="p">}</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">targets</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NodeNotFound</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;target node </span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s2"> not in graph&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">err</span>
+    <span class="k">if</span> <span class="n">source</span> <span class="ow">in</span> <span class="n">targets</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_empty_generator</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">cutoff</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">cutoff</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">cutoff</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_empty_generator</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">is_multigraph</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">_all_simple_paths_multigraph</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_all_simple_paths_graph</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">_empty_generator</span><span class="p">():</span>
+    <span class="k">yield from</span> <span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">_all_simple_paths_graph</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">):</span>
+    <span class="n">visited</span> <span class="o">=</span> <span class="p">{</span><span class="n">source</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+    <span class="n">stack</span> <span class="o">=</span> <span class="p">[</span><span class="nb">iter</span><span class="p">(</span><span class="n">G</span><span class="p">[</span><span class="n">source</span><span class="p">])]</span>
+    <span class="k">while</span> <span class="n">stack</span><span class="p">:</span>
+        <span class="n">children</span> <span class="o">=</span> <span class="n">stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">child</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">children</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">child</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="n">visited</span><span class="o">.</span><span class="n">popitem</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">visited</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">cutoff</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">targets</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="nb">list</span><span class="p">(</span><span class="n">visited</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="n">child</span><span class="p">]</span>
+            <span class="n">visited</span><span class="p">[</span><span class="n">child</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="n">targets</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">visited</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>  <span class="c1"># expand stack until find all targets</span>
+                <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">G</span><span class="p">[</span><span class="n">child</span><span class="p">]))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">visited</span><span class="o">.</span><span class="n">popitem</span><span class="p">()</span>  <span class="c1"># maybe other ways to child</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># len(visited) == cutoff:</span>
+            <span class="k">for</span> <span class="n">target</span> <span class="ow">in</span> <span class="p">(</span><span class="n">targets</span> <span class="o">&amp;</span> <span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">children</span><span class="p">)</span> <span class="o">|</span> <span class="p">{</span><span class="n">child</span><span class="p">}))</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">visited</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                <span class="k">yield</span> <span class="nb">list</span><span class="p">(</span><span class="n">visited</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="n">target</span><span class="p">]</span>
+            <span class="n">stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="n">visited</span><span class="o">.</span><span class="n">popitem</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">_all_simple_paths_multigraph</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">):</span>
+    <span class="n">visited</span> <span class="o">=</span> <span class="p">{</span><span class="n">source</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+    <span class="n">stack</span> <span class="o">=</span> <span class="p">[(</span><span class="n">v</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">source</span><span class="p">))]</span>
+    <span class="k">while</span> <span class="n">stack</span><span class="p">:</span>
+        <span class="n">children</span> <span class="o">=</span> <span class="n">stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">child</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">children</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">child</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="n">visited</span><span class="o">.</span><span class="n">popitem</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">visited</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">cutoff</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">targets</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="nb">list</span><span class="p">(</span><span class="n">visited</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="n">child</span><span class="p">]</span>
+            <span class="n">visited</span><span class="p">[</span><span class="n">child</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="n">targets</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">visited</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">v</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">child</span><span class="p">)))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">visited</span><span class="o">.</span><span class="n">popitem</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># len(visited) == cutoff:</span>
+            <span class="k">for</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">targets</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">visited</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                <span class="n">count</span> <span class="o">=</span> <span class="p">([</span><span class="n">child</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">children</span><span class="p">))</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">count</span><span class="p">):</span>
+                    <span class="k">yield</span> <span class="nb">list</span><span class="p">(</span><span class="n">visited</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="n">target</span><span class="p">]</span>
+            <span class="n">stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="n">visited</span><span class="o">.</span><span class="n">popitem</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="all_simple_edge_paths"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.simple_paths.all_simple_edge_paths.html#networkx.algorithms.simple_paths.all_simple_edge_paths">[docs]</a><span class="k">def</span> <span class="nf">all_simple_edge_paths</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Generate lists of edges for all simple paths in G from source to target.</span>
+
+<span class="sd">    A simple path is a path with no repeated nodes.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+
+<span class="sd">    source : node</span>
+<span class="sd">       Starting node for path</span>
+
+<span class="sd">    target : nodes</span>
+<span class="sd">       Single node or iterable of nodes at which to end path</span>
+
+<span class="sd">    cutoff : integer, optional</span>
+<span class="sd">        Depth to stop the search. Only paths of length &lt;= cutoff are returned.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    path_generator: generator</span>
+<span class="sd">       A generator that produces lists of simple paths.  If there are no paths</span>
+<span class="sd">       between the source and target within the given cutoff the generator</span>
+<span class="sd">       produces no output.</span>
+<span class="sd">       For multigraphs, the list of edges have elements of the form `(u,v,k)`.</span>
+<span class="sd">       Where `k` corresponds to the edge key.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    Print the simple path edges of a Graph::</span>
+
+<span class="sd">        &gt;&gt;&gt; g = nx.Graph([(1, 2), (2, 4), (1, 3), (3, 4)])</span>
+<span class="sd">        &gt;&gt;&gt; for path in sorted(nx.all_simple_edge_paths(g, 1, 4)):</span>
+<span class="sd">        ...     print(path)</span>
+<span class="sd">        [(1, 2), (2, 4)]</span>
+<span class="sd">        [(1, 3), (3, 4)]</span>
+
+<span class="sd">    Print the simple path edges of a MultiGraph. Returned edges come with</span>
+<span class="sd">    their associated keys::</span>
+
+<span class="sd">        &gt;&gt;&gt; mg = nx.MultiGraph()</span>
+<span class="sd">        &gt;&gt;&gt; mg.add_edge(1, 2, key=&quot;k0&quot;)</span>
+<span class="sd">        &#39;k0&#39;</span>
+<span class="sd">        &gt;&gt;&gt; mg.add_edge(1, 2, key=&quot;k1&quot;)</span>
+<span class="sd">        &#39;k1&#39;</span>
+<span class="sd">        &gt;&gt;&gt; mg.add_edge(2, 3, key=&quot;k0&quot;)</span>
+<span class="sd">        &#39;k0&#39;</span>
+<span class="sd">        &gt;&gt;&gt; for path in sorted(nx.all_simple_edge_paths(mg, 1, 3)):</span>
+<span class="sd">        ...     print(path)</span>
+<span class="sd">        [(1, 2, &#39;k0&#39;), (2, 3, &#39;k0&#39;)]</span>
+<span class="sd">        [(1, 2, &#39;k1&#39;), (2, 3, &#39;k0&#39;)]</span>
+
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This algorithm uses a modified depth-first search to generate the</span>
+<span class="sd">    paths [1]_.  A single path can be found in $O(V+E)$ time but the</span>
+<span class="sd">    number of simple paths in a graph can be very large, e.g. $O(n!)$ in</span>
+<span class="sd">    the complete graph of order $n$.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] R. Sedgewick, &quot;Algorithms in C, Part 5: Graph Algorithms&quot;,</span>
+<span class="sd">       Addison Wesley Professional, 3rd ed., 2001.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    all_shortest_paths, shortest_path, all_simple_paths</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">source</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">G</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NodeNotFound</span><span class="p">(</span><span class="s2">&quot;source node </span><span class="si">%s</span><span class="s2"> not in graph&quot;</span> <span class="o">%</span> <span class="n">source</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">G</span><span class="p">:</span>
+        <span class="n">targets</span> <span class="o">=</span> <span class="p">{</span><span class="n">target</span><span class="p">}</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">targets</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NodeNotFound</span><span class="p">(</span><span class="s2">&quot;target node </span><span class="si">%s</span><span class="s2"> not in graph&quot;</span> <span class="o">%</span> <span class="n">target</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">source</span> <span class="ow">in</span> <span class="n">targets</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">cutoff</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">cutoff</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">cutoff</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">is_multigraph</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">simp_path</span> <span class="ow">in</span> <span class="n">_all_simple_edge_paths_multigraph</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">):</span>
+            <span class="k">yield</span> <span class="n">simp_path</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">simp_path</span> <span class="ow">in</span> <span class="n">_all_simple_paths_graph</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">):</span>
+            <span class="k">yield</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">simp_path</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">simp_path</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span></div>
+
+
+<span class="k">def</span> <span class="nf">_all_simple_edge_paths_multigraph</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">cutoff</span> <span class="ow">or</span> <span class="n">cutoff</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+    <span class="n">visited</span> <span class="o">=</span> <span class="p">[</span><span class="n">source</span><span class="p">]</span>
+    <span class="n">stack</span> <span class="o">=</span> <span class="p">[</span><span class="nb">iter</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="kc">True</span><span class="p">))]</span>
+
+    <span class="k">while</span> <span class="n">stack</span><span class="p">:</span>
+        <span class="n">children</span> <span class="o">=</span> <span class="n">stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">child</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">children</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">child</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="n">visited</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">visited</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">cutoff</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">child</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="n">targets</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="n">visited</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">+</span> <span class="p">[</span><span class="n">child</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">child</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">[</span><span class="mi">1</span><span class="p">:]]:</span>
+                <span class="n">visited</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+                <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">child</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">keys</span><span class="o">=</span><span class="kc">True</span><span class="p">)))</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># len(visited) == cutoff:</span>
+            <span class="k">for</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="n">child</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">children</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">targets</span><span class="p">:</span>
+                    <span class="k">yield</span> <span class="n">visited</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">+</span> <span class="p">[(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">k</span><span class="p">)]</span>
+            <span class="n">stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="n">visited</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="shortest_simple_paths"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.simple_paths.shortest_simple_paths.html#networkx.algorithms.simple_paths.shortest_simple_paths">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;multigraph&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">shortest_simple_paths</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Generate all simple paths in the graph G from source to target,</span>
+<span class="sd">       starting from shortest ones.</span>
+
+<span class="sd">    A simple path is a path with no repeated nodes.</span>
+
+<span class="sd">    If a weighted shortest path search is to be used, no negative weights</span>
+<span class="sd">    are allowed.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+
+<span class="sd">    source : node</span>
+<span class="sd">       Starting node for path</span>
+
+<span class="sd">    target : node</span>
+<span class="sd">       Ending node for path</span>
+
+<span class="sd">    weight : string or function</span>
+<span class="sd">        If it is a string, it is the name of the edge attribute to be</span>
+<span class="sd">        used as a weight.</span>
+
+<span class="sd">        If it is a function, the weight of an edge is the value returned</span>
+<span class="sd">        by the function. The function must accept exactly three positional</span>
+<span class="sd">        arguments: the two endpoints of an edge and the dictionary of edge</span>
+<span class="sd">        attributes for that edge. The function must return a number.</span>
+
+<span class="sd">        If None all edges are considered to have unit weight. Default</span>
+<span class="sd">        value None.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    path_generator: generator</span>
+<span class="sd">       A generator that produces lists of simple paths, in order from</span>
+<span class="sd">       shortest to longest.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NetworkXNoPath</span>
+<span class="sd">       If no path exists between source and target.</span>
+
+<span class="sd">    NetworkXError</span>
+<span class="sd">       If source or target nodes are not in the input graph.</span>
+
+<span class="sd">    NetworkXNotImplemented</span>
+<span class="sd">       If the input graph is a Multi[Di]Graph.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; G = nx.cycle_graph(7)</span>
+<span class="sd">    &gt;&gt;&gt; paths = list(nx.shortest_simple_paths(G, 0, 3))</span>
+<span class="sd">    &gt;&gt;&gt; print(paths)</span>
+<span class="sd">    [[0, 1, 2, 3], [0, 6, 5, 4, 3]]</span>
+
+<span class="sd">    You can use this function to efficiently compute the k shortest/best</span>
+<span class="sd">    paths between two nodes.</span>
+
+<span class="sd">    &gt;&gt;&gt; from itertools import islice</span>
+<span class="sd">    &gt;&gt;&gt; def k_shortest_paths(G, source, target, k, weight=None):</span>
+<span class="sd">    ...     return list(</span>
+<span class="sd">    ...         islice(nx.shortest_simple_paths(G, source, target, weight=weight), k)</span>
+<span class="sd">    ...     )</span>
+<span class="sd">    &gt;&gt;&gt; for path in k_shortest_paths(G, 0, 3, 2):</span>
+<span class="sd">    ...     print(path)</span>
+<span class="sd">    [0, 1, 2, 3]</span>
+<span class="sd">    [0, 6, 5, 4, 3]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This procedure is based on algorithm by Jin Y. Yen [1]_.  Finding</span>
+<span class="sd">    the first $K$ paths requires $O(KN^3)$ operations.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    all_shortest_paths</span>
+<span class="sd">    shortest_path</span>
+<span class="sd">    all_simple_paths</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Jin Y. Yen, &quot;Finding the K Shortest Loopless Paths in a</span>
+<span class="sd">       Network&quot;, Management Science, Vol. 17, No. 11, Theory Series</span>
+<span class="sd">       (Jul., 1971), pp. 712-716.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">source</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">G</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NodeNotFound</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;source node </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2"> not in graph&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">target</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">G</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NodeNotFound</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;target node </span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s2"> not in graph&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">weight</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">length_func</span> <span class="o">=</span> <span class="nb">len</span>
+        <span class="n">shortest_path_func</span> <span class="o">=</span> <span class="n">_bidirectional_shortest_path</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">wt</span> <span class="o">=</span> <span class="n">_weight_function</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">length_func</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span>
+                <span class="n">wt</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">G</span><span class="o">.</span><span class="n">get_edge_data</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span> <span class="k">for</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">path</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+            <span class="p">)</span>
+
+        <span class="n">shortest_path_func</span> <span class="o">=</span> <span class="n">_bidirectional_dijkstra</span>
+
+    <span class="n">listA</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="n">listB</span> <span class="o">=</span> <span class="n">PathBuffer</span><span class="p">()</span>
+    <span class="n">prev_path</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">prev_path</span><span class="p">:</span>
+            <span class="n">length</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="n">shortest_path_func</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">)</span>
+            <span class="n">listB</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ignore_nodes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+            <span class="n">ignore_edges</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">prev_path</span><span class="p">)):</span>
+                <span class="n">root</span> <span class="o">=</span> <span class="n">prev_path</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">root_length</span> <span class="o">=</span> <span class="n">length_func</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">listA</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">path</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">root</span><span class="p">:</span>
+                        <span class="n">ignore_edges</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">path</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span> <span class="n">path</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">length</span><span class="p">,</span> <span class="n">spur</span> <span class="o">=</span> <span class="n">shortest_path_func</span><span class="p">(</span>
+                        <span class="n">G</span><span class="p">,</span>
+                        <span class="n">root</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                        <span class="n">target</span><span class="p">,</span>
+                        <span class="n">ignore_nodes</span><span class="o">=</span><span class="n">ignore_nodes</span><span class="p">,</span>
+                        <span class="n">ignore_edges</span><span class="o">=</span><span class="n">ignore_edges</span><span class="p">,</span>
+                        <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="n">path</span> <span class="o">=</span> <span class="n">root</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">spur</span>
+                    <span class="n">listB</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">root_length</span> <span class="o">+</span> <span class="n">length</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+                <span class="k">except</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXNoPath</span><span class="p">:</span>
+                    <span class="k">pass</span>
+                <span class="n">ignore_nodes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">root</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">listB</span><span class="p">:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">listB</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="k">yield</span> <span class="n">path</span>
+            <span class="n">listA</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+            <span class="n">prev_path</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">break</span></div>
+
+
+<span class="k">class</span> <span class="nc">PathBuffer</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">paths</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sortedpaths</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">counter</span> <span class="o">=</span> <span class="n">count</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sortedpaths</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">push</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cost</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="n">hashable_path</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">hashable_path</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="p">:</span>
+            <span class="n">heappush</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sortedpaths</span><span class="p">,</span> <span class="p">(</span><span class="n">cost</span><span class="p">,</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">counter</span><span class="p">),</span> <span class="n">path</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">hashable_path</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">pop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="p">(</span><span class="n">cost</span><span class="p">,</span> <span class="n">num</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span> <span class="o">=</span> <span class="n">heappop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sortedpaths</span><span class="p">)</span>
+        <span class="n">hashable_path</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">hashable_path</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">path</span>
+
+
+<span class="k">def</span> <span class="nf">_bidirectional_shortest_path</span><span class="p">(</span>
+    <span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">ignore_nodes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_edges</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the shortest path between source and target ignoring</span>
+<span class="sd">       nodes and edges in the containers ignore_nodes and ignore_edges.</span>
+
+<span class="sd">    This is a custom modification of the standard bidirectional shortest</span>
+<span class="sd">    path implementation at networkx.algorithms.unweighted</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+
+<span class="sd">    source : node</span>
+<span class="sd">       starting node for path</span>
+
+<span class="sd">    target : node</span>
+<span class="sd">       ending node for path</span>
+
+<span class="sd">    ignore_nodes : container of nodes</span>
+<span class="sd">       nodes to ignore, optional</span>
+
+<span class="sd">    ignore_edges : container of edges</span>
+<span class="sd">       edges to ignore, optional</span>
+
+<span class="sd">    weight : None</span>
+<span class="sd">       This function accepts a weight argument for convenience of</span>
+<span class="sd">       shortest_simple_paths function. It will be ignored.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    path: list</span>
+<span class="sd">       List of nodes in a path from source to target.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NetworkXNoPath</span>
+<span class="sd">       If no path exists between source and target.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    shortest_path</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># call helper to do the real work</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">_bidirectional_pred_succ</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">ignore_nodes</span><span class="p">,</span> <span class="n">ignore_edges</span><span class="p">)</span>
+    <span class="n">pred</span><span class="p">,</span> <span class="n">succ</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="n">results</span>
+
+    <span class="c1"># build path from pred+w+succ</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1"># from w to target</span>
+    <span class="k">while</span> <span class="n">w</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="n">succ</span><span class="p">[</span><span class="n">w</span><span class="p">]</span>
+    <span class="c1"># from source to w</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">pred</span><span class="p">[</span><span class="n">path</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+    <span class="k">while</span> <span class="n">w</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="n">pred</span><span class="p">[</span><span class="n">w</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="n">path</span>
+
+
+<span class="k">def</span> <span class="nf">_bidirectional_pred_succ</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">ignore_nodes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_edges</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Bidirectional shortest path helper.</span>
+<span class="sd">    Returns (pred,succ,w) where</span>
+<span class="sd">    pred is a dictionary of predecessors from w to the source, and</span>
+<span class="sd">    succ is a dictionary of successors from w to the target.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># does BFS from both source and target and meets in the middle</span>
+    <span class="k">if</span> <span class="n">ignore_nodes</span> <span class="ow">and</span> <span class="p">(</span><span class="n">source</span> <span class="ow">in</span> <span class="n">ignore_nodes</span> <span class="ow">or</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">ignore_nodes</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXNoPath</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No path between </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">target</span> <span class="o">==</span> <span class="n">source</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">({</span><span class="n">target</span><span class="p">:</span> <span class="kc">None</span><span class="p">},</span> <span class="p">{</span><span class="n">source</span><span class="p">:</span> <span class="kc">None</span><span class="p">},</span> <span class="n">source</span><span class="p">)</span>
+
+    <span class="c1"># handle either directed or undirected</span>
+    <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+        <span class="n">Gpred</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">predecessors</span>
+        <span class="n">Gsucc</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">successors</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">Gpred</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">neighbors</span>
+        <span class="n">Gsucc</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">neighbors</span>
+
+    <span class="c1"># support optional nodes filter</span>
+    <span class="k">if</span> <span class="n">ignore_nodes</span><span class="p">:</span>
+
+        <span class="k">def</span> <span class="nf">filter_iter</span><span class="p">(</span><span class="n">nodes</span><span class="p">):</span>
+            <span class="k">def</span> <span class="nf">iterate</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">w</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ignore_nodes</span><span class="p">:</span>
+                        <span class="k">yield</span> <span class="n">w</span>
+
+            <span class="k">return</span> <span class="n">iterate</span>
+
+        <span class="n">Gpred</span> <span class="o">=</span> <span class="n">filter_iter</span><span class="p">(</span><span class="n">Gpred</span><span class="p">)</span>
+        <span class="n">Gsucc</span> <span class="o">=</span> <span class="n">filter_iter</span><span class="p">(</span><span class="n">Gsucc</span><span class="p">)</span>
+
+    <span class="c1"># support optional edges filter</span>
+    <span class="k">if</span> <span class="n">ignore_edges</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+
+            <span class="k">def</span> <span class="nf">filter_pred_iter</span><span class="p">(</span><span class="n">pred_iter</span><span class="p">):</span>
+                <span class="k">def</span> <span class="nf">iterate</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">pred_iter</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ignore_edges</span><span class="p">:</span>
+                            <span class="k">yield</span> <span class="n">w</span>
+
+                <span class="k">return</span> <span class="n">iterate</span>
+
+            <span class="k">def</span> <span class="nf">filter_succ_iter</span><span class="p">(</span><span class="n">succ_iter</span><span class="p">):</span>
+                <span class="k">def</span> <span class="nf">iterate</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">succ_iter</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ignore_edges</span><span class="p">:</span>
+                            <span class="k">yield</span> <span class="n">w</span>
+
+                <span class="k">return</span> <span class="n">iterate</span>
+
+            <span class="n">Gpred</span> <span class="o">=</span> <span class="n">filter_pred_iter</span><span class="p">(</span><span class="n">Gpred</span><span class="p">)</span>
+            <span class="n">Gsucc</span> <span class="o">=</span> <span class="n">filter_succ_iter</span><span class="p">(</span><span class="n">Gsucc</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="k">def</span> <span class="nf">filter_iter</span><span class="p">(</span><span class="n">nodes</span><span class="p">):</span>
+                <span class="k">def</span> <span class="nf">iterate</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ignore_edges</span> <span class="ow">and</span> <span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ignore_edges</span><span class="p">:</span>
+                            <span class="k">yield</span> <span class="n">w</span>
+
+                <span class="k">return</span> <span class="n">iterate</span>
+
+            <span class="n">Gpred</span> <span class="o">=</span> <span class="n">filter_iter</span><span class="p">(</span><span class="n">Gpred</span><span class="p">)</span>
+            <span class="n">Gsucc</span> <span class="o">=</span> <span class="n">filter_iter</span><span class="p">(</span><span class="n">Gsucc</span><span class="p">)</span>
+
+    <span class="c1"># predecesssor and successors in search</span>
+    <span class="n">pred</span> <span class="o">=</span> <span class="p">{</span><span class="n">source</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+    <span class="n">succ</span> <span class="o">=</span> <span class="p">{</span><span class="n">target</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+
+    <span class="c1"># initialize fringes, start with forward</span>
+    <span class="n">forward_fringe</span> <span class="o">=</span> <span class="p">[</span><span class="n">source</span><span class="p">]</span>
+    <span class="n">reverse_fringe</span> <span class="o">=</span> <span class="p">[</span><span class="n">target</span><span class="p">]</span>
+
+    <span class="k">while</span> <span class="n">forward_fringe</span> <span class="ow">and</span> <span class="n">reverse_fringe</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">forward_fringe</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">reverse_fringe</span><span class="p">):</span>
+            <span class="n">this_level</span> <span class="o">=</span> <span class="n">forward_fringe</span>
+            <span class="n">forward_fringe</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">this_level</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">Gsucc</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">w</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">pred</span><span class="p">:</span>
+                        <span class="n">forward_fringe</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+                        <span class="n">pred</span><span class="p">[</span><span class="n">w</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+                    <span class="k">if</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">succ</span><span class="p">:</span>
+                        <span class="c1"># found path</span>
+                        <span class="k">return</span> <span class="n">pred</span><span class="p">,</span> <span class="n">succ</span><span class="p">,</span> <span class="n">w</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">this_level</span> <span class="o">=</span> <span class="n">reverse_fringe</span>
+            <span class="n">reverse_fringe</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">this_level</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">Gpred</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">w</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">succ</span><span class="p">:</span>
+                        <span class="n">succ</span><span class="p">[</span><span class="n">w</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+                        <span class="n">reverse_fringe</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">pred</span><span class="p">:</span>
+                        <span class="c1"># found path</span>
+                        <span class="k">return</span> <span class="n">pred</span><span class="p">,</span> <span class="n">succ</span><span class="p">,</span> <span class="n">w</span>
+
+    <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXNoPath</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No path between </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_bidirectional_dijkstra</span><span class="p">(</span>
+    <span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="n">ignore_nodes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_edges</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Dijkstra&#39;s algorithm for shortest paths using bidirectional search.</span>
+
+<span class="sd">    This function returns the shortest path between source and target</span>
+<span class="sd">    ignoring nodes and edges in the containers ignore_nodes and</span>
+<span class="sd">    ignore_edges.</span>
+
+<span class="sd">    This is a custom modification of the standard Dijkstra bidirectional</span>
+<span class="sd">    shortest path implementation at networkx.algorithms.weighted</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+
+<span class="sd">    source : node</span>
+<span class="sd">       Starting node.</span>
+
+<span class="sd">    target : node</span>
+<span class="sd">       Ending node.</span>
+
+<span class="sd">    weight: string, function, optional (default=&#39;weight&#39;)</span>
+<span class="sd">       Edge data key or weight function corresponding to the edge weight</span>
+
+<span class="sd">    ignore_nodes : container of nodes</span>
+<span class="sd">       nodes to ignore, optional</span>
+
+<span class="sd">    ignore_edges : container of edges</span>
+<span class="sd">       edges to ignore, optional</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    length : number</span>
+<span class="sd">        Shortest path length.</span>
+
+<span class="sd">    Returns a tuple of two dictionaries keyed by node.</span>
+<span class="sd">    The first dictionary stores distance from the source.</span>
+<span class="sd">    The second stores the path from the source to that node.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NetworkXNoPath</span>
+<span class="sd">        If no path exists between source and target.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Edge weight attributes must be numerical.</span>
+<span class="sd">    Distances are calculated as sums of weighted edges traversed.</span>
+
+<span class="sd">    In practice  bidirectional Dijkstra is much more than twice as fast as</span>
+<span class="sd">    ordinary Dijkstra.</span>
+
+<span class="sd">    Ordinary Dijkstra expands nodes in a sphere-like manner from the</span>
+<span class="sd">    source. The radius of this sphere will eventually be the length</span>
+<span class="sd">    of the shortest path. Bidirectional Dijkstra will expand nodes</span>
+<span class="sd">    from both the source and the target, making two spheres of half</span>
+<span class="sd">    this radius. Volume of the first sphere is pi*r*r while the</span>
+<span class="sd">    others are 2*pi*r/2*r/2, making up half the volume.</span>
+
+<span class="sd">    This algorithm is not guaranteed to work if edge weights</span>
+<span class="sd">    are negative or are floating point numbers</span>
+<span class="sd">    (overflows and roundoff errors can cause problems).</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    shortest_path</span>
+<span class="sd">    shortest_path_length</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">ignore_nodes</span> <span class="ow">and</span> <span class="p">(</span><span class="n">source</span> <span class="ow">in</span> <span class="n">ignore_nodes</span> <span class="ow">or</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">ignore_nodes</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXNoPath</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No path between </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">source</span> <span class="o">==</span> <span class="n">target</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">source</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">G</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NodeNotFound</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Node </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2"> not in graph&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="n">source</span><span class="p">])</span>
+
+    <span class="c1"># handle either directed or undirected</span>
+    <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+        <span class="n">Gpred</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">predecessors</span>
+        <span class="n">Gsucc</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">successors</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">Gpred</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">neighbors</span>
+        <span class="n">Gsucc</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">neighbors</span>
+
+    <span class="c1"># support optional nodes filter</span>
+    <span class="k">if</span> <span class="n">ignore_nodes</span><span class="p">:</span>
+
+        <span class="k">def</span> <span class="nf">filter_iter</span><span class="p">(</span><span class="n">nodes</span><span class="p">):</span>
+            <span class="k">def</span> <span class="nf">iterate</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">w</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ignore_nodes</span><span class="p">:</span>
+                        <span class="k">yield</span> <span class="n">w</span>
+
+            <span class="k">return</span> <span class="n">iterate</span>
+
+        <span class="n">Gpred</span> <span class="o">=</span> <span class="n">filter_iter</span><span class="p">(</span><span class="n">Gpred</span><span class="p">)</span>
+        <span class="n">Gsucc</span> <span class="o">=</span> <span class="n">filter_iter</span><span class="p">(</span><span class="n">Gsucc</span><span class="p">)</span>
+
+    <span class="c1"># support optional edges filter</span>
+    <span class="k">if</span> <span class="n">ignore_edges</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+
+            <span class="k">def</span> <span class="nf">filter_pred_iter</span><span class="p">(</span><span class="n">pred_iter</span><span class="p">):</span>
+                <span class="k">def</span> <span class="nf">iterate</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">pred_iter</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ignore_edges</span><span class="p">:</span>
+                            <span class="k">yield</span> <span class="n">w</span>
+
+                <span class="k">return</span> <span class="n">iterate</span>
+
+            <span class="k">def</span> <span class="nf">filter_succ_iter</span><span class="p">(</span><span class="n">succ_iter</span><span class="p">):</span>
+                <span class="k">def</span> <span class="nf">iterate</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">succ_iter</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ignore_edges</span><span class="p">:</span>
+                            <span class="k">yield</span> <span class="n">w</span>
+
+                <span class="k">return</span> <span class="n">iterate</span>
+
+            <span class="n">Gpred</span> <span class="o">=</span> <span class="n">filter_pred_iter</span><span class="p">(</span><span class="n">Gpred</span><span class="p">)</span>
+            <span class="n">Gsucc</span> <span class="o">=</span> <span class="n">filter_succ_iter</span><span class="p">(</span><span class="n">Gsucc</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="k">def</span> <span class="nf">filter_iter</span><span class="p">(</span><span class="n">nodes</span><span class="p">):</span>
+                <span class="k">def</span> <span class="nf">iterate</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ignore_edges</span> <span class="ow">and</span> <span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ignore_edges</span><span class="p">:</span>
+                            <span class="k">yield</span> <span class="n">w</span>
+
+                <span class="k">return</span> <span class="n">iterate</span>
+
+            <span class="n">Gpred</span> <span class="o">=</span> <span class="n">filter_iter</span><span class="p">(</span><span class="n">Gpred</span><span class="p">)</span>
+            <span class="n">Gsucc</span> <span class="o">=</span> <span class="n">filter_iter</span><span class="p">(</span><span class="n">Gsucc</span><span class="p">)</span>
+
+    <span class="n">push</span> <span class="o">=</span> <span class="n">heappush</span>
+    <span class="n">pop</span> <span class="o">=</span> <span class="n">heappop</span>
+    <span class="c1"># Init:   Forward             Backward</span>
+    <span class="n">dists</span> <span class="o">=</span> <span class="p">[{},</span> <span class="p">{}]</span>  <span class="c1"># dictionary of final distances</span>
+    <span class="n">paths</span> <span class="o">=</span> <span class="p">[{</span><span class="n">source</span><span class="p">:</span> <span class="p">[</span><span class="n">source</span><span class="p">]},</span> <span class="p">{</span><span class="n">target</span><span class="p">:</span> <span class="p">[</span><span class="n">target</span><span class="p">]}]</span>  <span class="c1"># dictionary of paths</span>
+    <span class="n">fringe</span> <span class="o">=</span> <span class="p">[[],</span> <span class="p">[]]</span>  <span class="c1"># heap of (distance, node) tuples for</span>
+    <span class="c1"># extracting next node to expand</span>
+    <span class="n">seen</span> <span class="o">=</span> <span class="p">[{</span><span class="n">source</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span> <span class="p">{</span><span class="n">target</span><span class="p">:</span> <span class="mi">0</span><span class="p">}]</span>  <span class="c1"># dictionary of distances to</span>
+    <span class="c1"># nodes seen</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">count</span><span class="p">()</span>
+    <span class="c1"># initialize fringe heap</span>
+    <span class="n">push</span><span class="p">(</span><span class="n">fringe</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">next</span><span class="p">(</span><span class="n">c</span><span class="p">),</span> <span class="n">source</span><span class="p">))</span>
+    <span class="n">push</span><span class="p">(</span><span class="n">fringe</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">next</span><span class="p">(</span><span class="n">c</span><span class="p">),</span> <span class="n">target</span><span class="p">))</span>
+    <span class="c1"># neighs for extracting correct neighbor information</span>
+    <span class="n">neighs</span> <span class="o">=</span> <span class="p">[</span><span class="n">Gsucc</span><span class="p">,</span> <span class="n">Gpred</span><span class="p">]</span>
+    <span class="c1"># variables to hold shortest discovered path</span>
+    <span class="c1"># finaldist = 1e30000</span>
+    <span class="n">finalpath</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="nb">dir</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">while</span> <span class="n">fringe</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">fringe</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="c1"># choose direction</span>
+        <span class="c1"># dir == 0 is forward direction and dir == 1 is back</span>
+        <span class="nb">dir</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="nb">dir</span>
+        <span class="c1"># extract closest to expand</span>
+        <span class="p">(</span><span class="n">dist</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="o">=</span> <span class="n">pop</span><span class="p">(</span><span class="n">fringe</span><span class="p">[</span><span class="nb">dir</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">dists</span><span class="p">[</span><span class="nb">dir</span><span class="p">]:</span>
+            <span class="c1"># Shortest path to v has already been found</span>
+            <span class="k">continue</span>
+        <span class="c1"># update distance</span>
+        <span class="n">dists</span><span class="p">[</span><span class="nb">dir</span><span class="p">][</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">dist</span>  <span class="c1"># equal to seen[dir][v]</span>
+        <span class="k">if</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">dists</span><span class="p">[</span><span class="mi">1</span> <span class="o">-</span> <span class="nb">dir</span><span class="p">]:</span>
+            <span class="c1"># if we have scanned v in both directions we are done</span>
+            <span class="c1"># we have now discovered the shortest path</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">finaldist</span><span class="p">,</span> <span class="n">finalpath</span><span class="p">)</span>
+
+        <span class="n">wt</span> <span class="o">=</span> <span class="n">_weight_function</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">neighs</span><span class="p">[</span><span class="nb">dir</span><span class="p">](</span><span class="n">v</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">dir</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># forward</span>
+                <span class="n">minweight</span> <span class="o">=</span> <span class="n">wt</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">G</span><span class="o">.</span><span class="n">get_edge_data</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">))</span>
+                <span class="n">vwLength</span> <span class="o">=</span> <span class="n">dists</span><span class="p">[</span><span class="nb">dir</span><span class="p">][</span><span class="n">v</span><span class="p">]</span> <span class="o">+</span> <span class="n">minweight</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># back, must remember to change v,w-&gt;w,v</span>
+                <span class="n">minweight</span> <span class="o">=</span> <span class="n">wt</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">G</span><span class="o">.</span><span class="n">get_edge_data</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>
+                <span class="n">vwLength</span> <span class="o">=</span> <span class="n">dists</span><span class="p">[</span><span class="nb">dir</span><span class="p">][</span><span class="n">v</span><span class="p">]</span> <span class="o">+</span> <span class="n">minweight</span>
+
+            <span class="k">if</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">dists</span><span class="p">[</span><span class="nb">dir</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">vwLength</span> <span class="o">&lt;</span> <span class="n">dists</span><span class="p">[</span><span class="nb">dir</span><span class="p">][</span><span class="n">w</span><span class="p">]:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Contradictory paths found: negative weights?&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">w</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">[</span><span class="nb">dir</span><span class="p">]</span> <span class="ow">or</span> <span class="n">vwLength</span> <span class="o">&lt;</span> <span class="n">seen</span><span class="p">[</span><span class="nb">dir</span><span class="p">][</span><span class="n">w</span><span class="p">]:</span>
+                <span class="c1"># relaxing</span>
+                <span class="n">seen</span><span class="p">[</span><span class="nb">dir</span><span class="p">][</span><span class="n">w</span><span class="p">]</span> <span class="o">=</span> <span class="n">vwLength</span>
+                <span class="n">push</span><span class="p">(</span><span class="n">fringe</span><span class="p">[</span><span class="nb">dir</span><span class="p">],</span> <span class="p">(</span><span class="n">vwLength</span><span class="p">,</span> <span class="nb">next</span><span class="p">(</span><span class="n">c</span><span class="p">),</span> <span class="n">w</span><span class="p">))</span>
+                <span class="n">paths</span><span class="p">[</span><span class="nb">dir</span><span class="p">][</span><span class="n">w</span><span class="p">]</span> <span class="o">=</span> <span class="n">paths</span><span class="p">[</span><span class="nb">dir</span><span class="p">][</span><span class="n">v</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">w</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                    <span class="c1"># see if this path is better than the already</span>
+                    <span class="c1"># discovered shortest path</span>
+                    <span class="n">totaldist</span> <span class="o">=</span> <span class="n">seen</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">w</span><span class="p">]</span> <span class="o">+</span> <span class="n">seen</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">w</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">finalpath</span> <span class="o">==</span> <span class="p">[]</span> <span class="ow">or</span> <span class="n">finaldist</span> <span class="o">&gt;</span> <span class="n">totaldist</span><span class="p">:</span>
+                        <span class="n">finaldist</span> <span class="o">=</span> <span class="n">totaldist</span>
+                        <span class="n">revpath</span> <span class="o">=</span> <span class="n">paths</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">w</span><span class="p">][:]</span>
+                        <span class="n">revpath</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+                        <span class="n">finalpath</span> <span class="o">=</span> <span class="n">paths</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">w</span><span class="p">]</span> <span class="o">+</span> <span class="n">revpath</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+    <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXNoPath</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No path between </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+</pre></div>
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

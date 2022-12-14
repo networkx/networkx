@@ -1,0 +1,1328 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>networkx.generators.geometric &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/generators/geometric';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/generators/geometric.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../../../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../../../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <h1>Source code for networkx.generators.geometric</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Generators for geometric graphs.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">from</span> <span class="nn">bisect</span> <span class="kn">import</span> <span class="n">bisect_left</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">accumulate</span><span class="p">,</span> <span class="n">combinations</span><span class="p">,</span> <span class="n">product</span>
+
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">from</span> <span class="nn">networkx.utils</span> <span class="kn">import</span> <span class="n">py_random_state</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;geometric_edges&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;geographical_threshold_graph&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;navigable_small_world_graph&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;random_geometric_graph&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;soft_random_geometric_graph&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;thresholded_random_geometric_graph&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;waxman_graph&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="geometric_edges"><a class="viewcode-back" href="../../../reference/generated/networkx.generators.geometric.geometric_edges.html#networkx.generators.geometric.geometric_edges">[docs]</a><span class="k">def</span> <span class="nf">geometric_edges</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns edge list of node pairs within `radius` of each other.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : networkx graph</span>
+<span class="sd">        The graph from which to generate the edge list. The nodes in `G` should</span>
+<span class="sd">        have an attribute ``pos`` corresponding to the node position, which is</span>
+<span class="sd">        used to compute the distance to other nodes.</span>
+<span class="sd">    radius : scalar</span>
+<span class="sd">        The distance threshold. Edges are included in the edge list if the</span>
+<span class="sd">        distance between the two nodes is less than `radius`.</span>
+<span class="sd">    p : scalar, default=2</span>
+<span class="sd">        The `Minkowski distance metric</span>
+<span class="sd">        &lt;https://en.wikipedia.org/wiki/Minkowski_distance&gt;`_ used to compute</span>
+<span class="sd">        distances. The default value is 2, i.e. Euclidean distance.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    edges : list</span>
+<span class="sd">        List of edges whose distances are less than `radius`</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Radius uses Minkowski distance metric `p`.</span>
+<span class="sd">    If scipy is available, `scipy.spatial.cKDTree` is used to speed computation.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Create a graph with nodes that have a &quot;pos&quot; attribute representing 2D</span>
+<span class="sd">    coordinates.</span>
+
+<span class="sd">    &gt;&gt;&gt; G = nx.Graph()</span>
+<span class="sd">    &gt;&gt;&gt; G.add_nodes_from([</span>
+<span class="sd">    ...     (0, {&quot;pos&quot;: (0, 0)}),</span>
+<span class="sd">    ...     (1, {&quot;pos&quot;: (3, 0)}),</span>
+<span class="sd">    ...     (2, {&quot;pos&quot;: (8, 0)}),</span>
+<span class="sd">    ... ])</span>
+<span class="sd">    &gt;&gt;&gt; nx.geometric_edges(G, radius=1)</span>
+<span class="sd">    []</span>
+<span class="sd">    &gt;&gt;&gt; nx.geometric_edges(G, radius=4)</span>
+<span class="sd">    [(0, 1)]</span>
+<span class="sd">    &gt;&gt;&gt; nx.geometric_edges(G, radius=6)</span>
+<span class="sd">    [(0, 1), (1, 2)]</span>
+<span class="sd">    &gt;&gt;&gt; nx.geometric_edges(G, radius=9)</span>
+<span class="sd">    [(0, 1), (0, 2), (1, 2)]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Input validation - every node must have a &quot;pos&quot; attribute</span>
+    <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">pos</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s2">&quot;pos&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">pos</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;All nodes in `G` must have a &#39;pos&#39; attribute. Check node </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+    <span class="c1"># NOTE: See _geometric_edges for the actual implementation. The reason this</span>
+    <span class="c1"># is split into two functions is to avoid the overhead of input validation</span>
+    <span class="c1"># every time the function is called internally in one of the other</span>
+    <span class="c1"># geometric generators</span>
+    <span class="k">return</span> <span class="n">_geometric_edges</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">_geometric_edges</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Implements `geometric_edges` without input validation. See `geometric_edges`</span>
+<span class="sd">    for complete docstring.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">nodes_pos</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s2">&quot;pos&quot;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">scipy</span> <span class="k">as</span> <span class="nn">sp</span>
+        <span class="kn">import</span> <span class="nn">scipy.spatial</span>  <span class="c1"># call as sp.spatial</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="c1"># no scipy KDTree so compute by for-loop</span>
+        <span class="n">radius_p</span> <span class="o">=</span> <span class="n">radius</span><span class="o">**</span><span class="n">p</span>
+        <span class="n">edges</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+            <span class="k">for</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">pu</span><span class="p">),</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">pv</span><span class="p">)</span> <span class="ow">in</span> <span class="n">combinations</span><span class="p">(</span><span class="n">nodes_pos</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">a</span> <span class="o">-</span> <span class="n">b</span><span class="p">)</span> <span class="o">**</span> <span class="n">p</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">pu</span><span class="p">,</span> <span class="n">pv</span><span class="p">))</span> <span class="o">&lt;=</span> <span class="n">radius_p</span>
+        <span class="p">]</span>
+        <span class="k">return</span> <span class="n">edges</span>
+    <span class="c1"># scipy KDTree is available</span>
+    <span class="n">nodes</span><span class="p">,</span> <span class="n">coords</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">nodes_pos</span><span class="p">))</span>
+    <span class="n">kdtree</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">cKDTree</span><span class="p">(</span><span class="n">coords</span><span class="p">)</span>  <span class="c1"># Cannot provide generator.</span>
+    <span class="n">edge_indexes</span> <span class="o">=</span> <span class="n">kdtree</span><span class="o">.</span><span class="n">query_pairs</span><span class="p">(</span><span class="n">radius</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+    <span class="n">edges</span> <span class="o">=</span> <span class="p">[(</span><span class="n">nodes</span><span class="p">[</span><span class="n">u</span><span class="p">],</span> <span class="n">nodes</span><span class="p">[</span><span class="n">v</span><span class="p">])</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">edge_indexes</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="n">edges</span>
+
+
+<div class="viewcode-block" id="random_geometric_graph"><a class="viewcode-back" href="../../../reference/generated/networkx.generators.geometric.random_geometric_graph.html#networkx.generators.geometric.random_geometric_graph">[docs]</a><span class="nd">@py_random_state</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">random_geometric_graph</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns a random geometric graph in the unit cube of dimensions `dim`.</span>
+
+<span class="sd">    The random geometric graph model places `n` nodes uniformly at</span>
+<span class="sd">    random in the unit cube. Two nodes are joined by an edge if the</span>
+<span class="sd">    distance between the nodes is at most `radius`.</span>
+
+<span class="sd">    Edges are determined using a KDTree when SciPy is available.</span>
+<span class="sd">    This reduces the time complexity from $O(n^2)$ to $O(n)$.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n : int or iterable</span>
+<span class="sd">        Number of nodes or iterable of nodes</span>
+<span class="sd">    radius: float</span>
+<span class="sd">        Distance threshold value</span>
+<span class="sd">    dim : int, optional</span>
+<span class="sd">        Dimension of graph</span>
+<span class="sd">    pos : dict, optional</span>
+<span class="sd">        A dictionary keyed by node with node positions as values.</span>
+<span class="sd">    p : float, optional</span>
+<span class="sd">        Which Minkowski distance metric to use.  `p` has to meet the condition</span>
+<span class="sd">        ``1 &lt;= p &lt;= infinity``.</span>
+
+<span class="sd">        If this argument is not specified, the :math:`L^2` metric</span>
+<span class="sd">        (the Euclidean distance metric), p = 2 is used.</span>
+<span class="sd">        This should not be confused with the `p` of an Erdős-Rényi random</span>
+<span class="sd">        graph, which represents probability.</span>
+<span class="sd">    seed : integer, random_state, or None (default)</span>
+<span class="sd">        Indicator of random number generation state.</span>
+<span class="sd">        See :ref:`Randomness&lt;randomness&gt;`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Graph</span>
+<span class="sd">        A random geometric graph, undirected and without self-loops.</span>
+<span class="sd">        Each node has a node attribute ``&#39;pos&#39;`` that stores the</span>
+<span class="sd">        position of that node in Euclidean space as provided by the</span>
+<span class="sd">        ``pos`` keyword argument or, if ``pos`` was not provided, as</span>
+<span class="sd">        generated by this function.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Create a random geometric graph on twenty nodes where nodes are joined by</span>
+<span class="sd">    an edge if their distance is at most 0.1::</span>
+
+<span class="sd">    &gt;&gt;&gt; G = nx.random_geometric_graph(20, 0.1)</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This uses a *k*-d tree to build the graph.</span>
+
+<span class="sd">    The `pos` keyword argument can be used to specify node positions so you</span>
+<span class="sd">    can create an arbitrary distribution and domain for positions.</span>
+
+<span class="sd">    For example, to use a 2D Gaussian distribution of node positions with mean</span>
+<span class="sd">    (0, 0) and standard deviation 2::</span>
+
+<span class="sd">    &gt;&gt;&gt; import random</span>
+<span class="sd">    &gt;&gt;&gt; n = 20</span>
+<span class="sd">    &gt;&gt;&gt; pos = {i: (random.gauss(0, 2), random.gauss(0, 2)) for i in range(n)}</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.random_geometric_graph(n, 0.2, pos=pos)</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Penrose, Mathew, *Random Geometric Graphs*,</span>
+<span class="sd">           Oxford Studies in Probability, 5, 2003.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># TODO Is this function just a special case of the geographical</span>
+    <span class="c1"># threshold graph?</span>
+    <span class="c1">#</span>
+    <span class="c1">#     half_radius = {v: radius / 2 for v in n}</span>
+    <span class="c1">#     return geographical_threshold_graph(nodes, theta=1, alpha=1,</span>
+    <span class="c1">#                                         weight=half_radius)</span>
+    <span class="c1">#</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">empty_graph</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="c1"># If no positions are provided, choose uniformly random vectors in</span>
+    <span class="c1"># Euclidean space of the specified dimension.</span>
+    <span class="k">if</span> <span class="n">pos</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="p">[</span><span class="n">seed</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dim</span><span class="p">)]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G</span><span class="p">}</span>
+    <span class="n">nx</span><span class="o">.</span><span class="n">set_node_attributes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="s2">&quot;pos&quot;</span><span class="p">)</span>
+
+    <span class="n">G</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span><span class="n">_geometric_edges</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">p</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">G</span></div>
+
+
+<div class="viewcode-block" id="soft_random_geometric_graph"><a class="viewcode-back" href="../../../reference/generated/networkx.generators.geometric.soft_random_geometric_graph.html#networkx.generators.geometric.soft_random_geometric_graph">[docs]</a><span class="nd">@py_random_state</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">soft_random_geometric_graph</span><span class="p">(</span>
+    <span class="n">n</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">p_dist</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns a soft random geometric graph in the unit cube.</span>
+
+<span class="sd">    The soft random geometric graph [1] model places `n` nodes uniformly at</span>
+<span class="sd">    random in the unit cube in dimension `dim`. Two nodes of distance, `dist`,</span>
+<span class="sd">    computed by the `p`-Minkowski distance metric are joined by an edge with</span>
+<span class="sd">    probability `p_dist` if the computed distance metric value of the nodes</span>
+<span class="sd">    is at most `radius`, otherwise they are not joined.</span>
+
+<span class="sd">    Edges within `radius` of each other are determined using a KDTree when</span>
+<span class="sd">    SciPy is available. This reduces the time complexity from :math:`O(n^2)`</span>
+<span class="sd">    to :math:`O(n)`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n : int or iterable</span>
+<span class="sd">        Number of nodes or iterable of nodes</span>
+<span class="sd">    radius: float</span>
+<span class="sd">        Distance threshold value</span>
+<span class="sd">    dim : int, optional</span>
+<span class="sd">        Dimension of graph</span>
+<span class="sd">    pos : dict, optional</span>
+<span class="sd">        A dictionary keyed by node with node positions as values.</span>
+<span class="sd">    p : float, optional</span>
+<span class="sd">        Which Minkowski distance metric to use.</span>
+<span class="sd">        `p` has to meet the condition ``1 &lt;= p &lt;= infinity``.</span>
+
+<span class="sd">        If this argument is not specified, the :math:`L^2` metric</span>
+<span class="sd">        (the Euclidean distance metric), p = 2 is used.</span>
+
+<span class="sd">        This should not be confused with the `p` of an Erdős-Rényi random</span>
+<span class="sd">        graph, which represents probability.</span>
+<span class="sd">    p_dist : function, optional</span>
+<span class="sd">        A probability density function computing the probability of</span>
+<span class="sd">        connecting two nodes that are of distance, dist, computed by the</span>
+<span class="sd">        Minkowski distance metric. The probability density function, `p_dist`,</span>
+<span class="sd">        must be any function that takes the metric value as input</span>
+<span class="sd">        and outputs a single probability value between 0-1. The scipy.stats</span>
+<span class="sd">        package has many probability distribution functions implemented and</span>
+<span class="sd">        tools for custom probability distribution definitions [2], and passing</span>
+<span class="sd">        the .pdf method of scipy.stats distributions can be used here.  If the</span>
+<span class="sd">        probability function, `p_dist`, is not supplied, the default function</span>
+<span class="sd">        is an exponential distribution with rate parameter :math:`\lambda=1`.</span>
+<span class="sd">    seed : integer, random_state, or None (default)</span>
+<span class="sd">        Indicator of random number generation state.</span>
+<span class="sd">        See :ref:`Randomness&lt;randomness&gt;`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Graph</span>
+<span class="sd">        A soft random geometric graph, undirected and without self-loops.</span>
+<span class="sd">        Each node has a node attribute ``&#39;pos&#39;`` that stores the</span>
+<span class="sd">        position of that node in Euclidean space as provided by the</span>
+<span class="sd">        ``pos`` keyword argument or, if ``pos`` was not provided, as</span>
+<span class="sd">        generated by this function.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Default Graph:</span>
+
+<span class="sd">    G = nx.soft_random_geometric_graph(50, 0.2)</span>
+
+<span class="sd">    Custom Graph:</span>
+
+<span class="sd">    Create a soft random geometric graph on 100 uniformly distributed nodes</span>
+<span class="sd">    where nodes are joined by an edge with probability computed from an</span>
+<span class="sd">    exponential distribution with rate parameter :math:`\lambda=1` if their</span>
+<span class="sd">    Euclidean distance is at most 0.2.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This uses a *k*-d tree to build the graph.</span>
+
+<span class="sd">    The `pos` keyword argument can be used to specify node positions so you</span>
+<span class="sd">    can create an arbitrary distribution and domain for positions.</span>
+
+<span class="sd">    For example, to use a 2D Gaussian distribution of node positions with mean</span>
+<span class="sd">    (0, 0) and standard deviation 2</span>
+
+<span class="sd">    The scipy.stats package can be used to define the probability distribution</span>
+<span class="sd">    with the .pdf method used as `p_dist`.</span>
+
+<span class="sd">    ::</span>
+
+<span class="sd">    &gt;&gt;&gt; import random</span>
+<span class="sd">    &gt;&gt;&gt; import math</span>
+<span class="sd">    &gt;&gt;&gt; n = 100</span>
+<span class="sd">    &gt;&gt;&gt; pos = {i: (random.gauss(0, 2), random.gauss(0, 2)) for i in range(n)}</span>
+<span class="sd">    &gt;&gt;&gt; p_dist = lambda dist: math.exp(-dist)</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.soft_random_geometric_graph(n, 0.2, pos=pos, p_dist=p_dist)</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Penrose, Mathew D. &quot;Connectivity of soft random geometric graphs.&quot;</span>
+<span class="sd">           The Annals of Applied Probability 26.2 (2016): 986-1028.</span>
+<span class="sd">    .. [2] scipy.stats -</span>
+<span class="sd">           https://docs.scipy.org/doc/scipy/reference/tutorial/stats.html</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">empty_graph</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;soft_random_geometric_graph(</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">radius</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">dim</span><span class="si">}</span><span class="s2">)&quot;</span>
+    <span class="c1"># If no positions are provided, choose uniformly random vectors in</span>
+    <span class="c1"># Euclidean space of the specified dimension.</span>
+    <span class="k">if</span> <span class="n">pos</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="p">[</span><span class="n">seed</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dim</span><span class="p">)]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G</span><span class="p">}</span>
+    <span class="n">nx</span><span class="o">.</span><span class="n">set_node_attributes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="s2">&quot;pos&quot;</span><span class="p">)</span>
+
+    <span class="c1"># if p_dist function not supplied the default function is an exponential</span>
+    <span class="c1"># distribution with rate parameter :math:`\lambda=1`.</span>
+    <span class="k">if</span> <span class="n">p_dist</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="k">def</span> <span class="nf">p_dist</span><span class="p">(</span><span class="n">dist</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">dist</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">should_join</span><span class="p">(</span><span class="n">edge</span><span class="p">):</span>
+        <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">edge</span>
+        <span class="n">dist</span> <span class="o">=</span> <span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">a</span> <span class="o">-</span> <span class="n">b</span><span class="p">)</span> <span class="o">**</span> <span class="n">p</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">pos</span><span class="p">[</span><span class="n">u</span><span class="p">],</span> <span class="n">pos</span><span class="p">[</span><span class="n">v</span><span class="p">])))</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">p</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">seed</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">p_dist</span><span class="p">(</span><span class="n">dist</span><span class="p">)</span>
+
+    <span class="n">G</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="n">should_join</span><span class="p">,</span> <span class="n">_geometric_edges</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">p</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="n">G</span></div>
+
+
+<div class="viewcode-block" id="geographical_threshold_graph"><a class="viewcode-back" href="../../../reference/generated/networkx.generators.geometric.geographical_threshold_graph.html#networkx.generators.geometric.geographical_threshold_graph">[docs]</a><span class="nd">@py_random_state</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">geographical_threshold_graph</span><span class="p">(</span>
+    <span class="n">n</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">p_dist</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns a geographical threshold graph.</span>
+
+<span class="sd">    The geographical threshold graph model places $n$ nodes uniformly at</span>
+<span class="sd">    random in a rectangular domain.  Each node $u$ is assigned a weight</span>
+<span class="sd">    $w_u$. Two nodes $u$ and $v$ are joined by an edge if</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">       (w_u + w_v)p_{dist}(r) \ge \theta</span>
+
+<span class="sd">    where `r` is the distance between `u` and `v`, `p_dist` is any function of</span>
+<span class="sd">    `r`, and :math:`\theta` as the threshold parameter. `p_dist` is used to</span>
+<span class="sd">    give weight to the distance between nodes when deciding whether or not</span>
+<span class="sd">    they should be connected. The larger `p_dist` is, the more prone nodes</span>
+<span class="sd">    separated by `r` are to be connected, and vice versa.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n : int or iterable</span>
+<span class="sd">        Number of nodes or iterable of nodes</span>
+<span class="sd">    theta: float</span>
+<span class="sd">        Threshold value</span>
+<span class="sd">    dim : int, optional</span>
+<span class="sd">        Dimension of graph</span>
+<span class="sd">    pos : dict</span>
+<span class="sd">        Node positions as a dictionary of tuples keyed by node.</span>
+<span class="sd">    weight : dict</span>
+<span class="sd">        Node weights as a dictionary of numbers keyed by node.</span>
+<span class="sd">    metric : function</span>
+<span class="sd">        A metric on vectors of numbers (represented as lists or</span>
+<span class="sd">        tuples). This must be a function that accepts two lists (or</span>
+<span class="sd">        tuples) as input and yields a number as output. The function</span>
+<span class="sd">        must also satisfy the four requirements of a `metric`_.</span>
+<span class="sd">        Specifically, if $d$ is the function and $x$, $y$,</span>
+<span class="sd">        and $z$ are vectors in the graph, then $d$ must satisfy</span>
+
+<span class="sd">        1. $d(x, y) \ge 0$,</span>
+<span class="sd">        2. $d(x, y) = 0$ if and only if $x = y$,</span>
+<span class="sd">        3. $d(x, y) = d(y, x)$,</span>
+<span class="sd">        4. $d(x, z) \le d(x, y) + d(y, z)$.</span>
+
+<span class="sd">        If this argument is not specified, the Euclidean distance metric is</span>
+<span class="sd">        used.</span>
+
+<span class="sd">        .. _metric: https://en.wikipedia.org/wiki/Metric_%28mathematics%29</span>
+<span class="sd">    p_dist : function, optional</span>
+<span class="sd">        Any function used to give weight to the distance between nodes when</span>
+<span class="sd">        deciding whether or not they should be connected. `p_dist` was</span>
+<span class="sd">        originally conceived as a probability density function giving the</span>
+<span class="sd">        probability of connecting two nodes that are of metric distance `r`</span>
+<span class="sd">        apart. The implementation here allows for more arbitrary definitions</span>
+<span class="sd">        of `p_dist` that do not need to correspond to valid probability</span>
+<span class="sd">        density functions. The :mod:`scipy.stats` package has many</span>
+<span class="sd">        probability density functions implemented and tools for custom</span>
+<span class="sd">        probability density definitions, and passing the ``.pdf`` method of</span>
+<span class="sd">        scipy.stats distributions can be used here. If ``p_dist=None``</span>
+<span class="sd">        (the default), the exponential function :math:`r^{-2}` is used.</span>
+<span class="sd">    seed : integer, random_state, or None (default)</span>
+<span class="sd">        Indicator of random number generation state.</span>
+<span class="sd">        See :ref:`Randomness&lt;randomness&gt;`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Graph</span>
+<span class="sd">        A random geographic threshold graph, undirected and without</span>
+<span class="sd">        self-loops.</span>
+
+<span class="sd">        Each node has a node attribute ``pos`` that stores the</span>
+<span class="sd">        position of that node in Euclidean space as provided by the</span>
+<span class="sd">        ``pos`` keyword argument or, if ``pos`` was not provided, as</span>
+<span class="sd">        generated by this function. Similarly, each node has a node</span>
+<span class="sd">        attribute ``weight`` that stores the weight of that node as</span>
+<span class="sd">        provided or as generated.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Specify an alternate distance metric using the ``metric`` keyword</span>
+<span class="sd">    argument. For example, to use the `taxicab metric`_ instead of the</span>
+<span class="sd">    default `Euclidean metric`_::</span>
+
+<span class="sd">        &gt;&gt;&gt; dist = lambda x, y: sum(abs(a - b) for a, b in zip(x, y))</span>
+<span class="sd">        &gt;&gt;&gt; G = nx.geographical_threshold_graph(10, 0.1, metric=dist)</span>
+
+<span class="sd">    .. _taxicab metric: https://en.wikipedia.org/wiki/Taxicab_geometry</span>
+<span class="sd">    .. _Euclidean metric: https://en.wikipedia.org/wiki/Euclidean_distance</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    If weights are not specified they are assigned to nodes by drawing randomly</span>
+<span class="sd">    from the exponential distribution with rate parameter $\lambda=1$.</span>
+<span class="sd">    To specify weights from a different distribution, use the `weight` keyword</span>
+<span class="sd">    argument::</span>
+
+<span class="sd">    &gt;&gt;&gt; import random</span>
+<span class="sd">    &gt;&gt;&gt; n = 20</span>
+<span class="sd">    &gt;&gt;&gt; w = {i: random.expovariate(5.0) for i in range(n)}</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.geographical_threshold_graph(20, 50, weight=w)</span>
+
+<span class="sd">    If node positions are not specified they are randomly assigned from the</span>
+<span class="sd">    uniform distribution.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Masuda, N., Miwa, H., Konno, N.:</span>
+<span class="sd">       Geographical threshold graphs with small-world and scale-free</span>
+<span class="sd">       properties.</span>
+<span class="sd">       Physical Review E 71, 036108 (2005)</span>
+<span class="sd">    .. [2]  Milan Bradonjić, Aric Hagberg and Allon G. Percus,</span>
+<span class="sd">       Giant component and connectivity in geographical threshold graphs,</span>
+<span class="sd">       in Algorithms and Models for the Web-Graph (WAW 2007),</span>
+<span class="sd">       Antony Bonato and Fan Chung (Eds), pp. 209--216, 2007</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">empty_graph</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="c1"># If no weights are provided, choose them from an exponential</span>
+    <span class="c1"># distribution.</span>
+    <span class="k">if</span> <span class="n">weight</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">weight</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">seed</span><span class="o">.</span><span class="n">expovariate</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G</span><span class="p">}</span>
+    <span class="c1"># If no positions are provided, choose uniformly random vectors in</span>
+    <span class="c1"># Euclidean space of the specified dimension.</span>
+    <span class="k">if</span> <span class="n">pos</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="p">[</span><span class="n">seed</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dim</span><span class="p">)]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G</span><span class="p">}</span>
+    <span class="c1"># If no distance metric is provided, use Euclidean distance.</span>
+    <span class="k">if</span> <span class="n">metric</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">metric</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">dist</span>
+    <span class="n">nx</span><span class="o">.</span><span class="n">set_node_attributes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="p">,</span> <span class="s2">&quot;weight&quot;</span><span class="p">)</span>
+    <span class="n">nx</span><span class="o">.</span><span class="n">set_node_attributes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="s2">&quot;pos&quot;</span><span class="p">)</span>
+
+    <span class="c1"># if p_dist is not supplied, use default r^-2</span>
+    <span class="k">if</span> <span class="n">p_dist</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="k">def</span> <span class="nf">p_dist</span><span class="p">(</span><span class="n">r</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">r</span><span class="o">**-</span><span class="mi">2</span>
+
+    <span class="c1"># Returns ``True`` if and only if the nodes whose attributes are</span>
+    <span class="c1"># ``du`` and ``dv`` should be joined, according to the threshold</span>
+    <span class="c1"># condition.</span>
+    <span class="k">def</span> <span class="nf">should_join</span><span class="p">(</span><span class="n">pair</span><span class="p">):</span>
+        <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">pair</span>
+        <span class="n">u_pos</span><span class="p">,</span> <span class="n">v_pos</span> <span class="o">=</span> <span class="n">pos</span><span class="p">[</span><span class="n">u</span><span class="p">],</span> <span class="n">pos</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+        <span class="n">u_weight</span><span class="p">,</span> <span class="n">v_weight</span> <span class="o">=</span> <span class="n">weight</span><span class="p">[</span><span class="n">u</span><span class="p">],</span> <span class="n">weight</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">u_weight</span> <span class="o">+</span> <span class="n">v_weight</span><span class="p">)</span> <span class="o">*</span> <span class="n">p_dist</span><span class="p">(</span><span class="n">metric</span><span class="p">(</span><span class="n">u_pos</span><span class="p">,</span> <span class="n">v_pos</span><span class="p">))</span> <span class="o">&gt;=</span> <span class="n">theta</span>
+
+    <span class="n">G</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="n">should_join</span><span class="p">,</span> <span class="n">combinations</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="mi">2</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="n">G</span></div>
+
+
+<div class="viewcode-block" id="waxman_graph"><a class="viewcode-back" href="../../../reference/generated/networkx.generators.geometric.waxman_graph.html#networkx.generators.geometric.waxman_graph">[docs]</a><span class="nd">@py_random_state</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">waxman_graph</span><span class="p">(</span>
+    <span class="n">n</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">L</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">metric</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns a Waxman random graph.</span>
+
+<span class="sd">    The Waxman random graph model places `n` nodes uniformly at random</span>
+<span class="sd">    in a rectangular domain. Each pair of nodes at distance `d` is</span>
+<span class="sd">    joined by an edge with probability</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">            p = \beta \exp(-d / \alpha L).</span>
+
+<span class="sd">    This function implements both Waxman models, using the `L` keyword</span>
+<span class="sd">    argument.</span>
+
+<span class="sd">    * Waxman-1: if `L` is not specified, it is set to be the maximum distance</span>
+<span class="sd">      between any pair of nodes.</span>
+<span class="sd">    * Waxman-2: if `L` is specified, the distance between a pair of nodes is</span>
+<span class="sd">      chosen uniformly at random from the interval `[0, L]`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n : int or iterable</span>
+<span class="sd">        Number of nodes or iterable of nodes</span>
+<span class="sd">    beta: float</span>
+<span class="sd">        Model parameter</span>
+<span class="sd">    alpha: float</span>
+<span class="sd">        Model parameter</span>
+<span class="sd">    L : float, optional</span>
+<span class="sd">        Maximum distance between nodes.  If not specified, the actual distance</span>
+<span class="sd">        is calculated.</span>
+<span class="sd">    domain : four-tuple of numbers, optional</span>
+<span class="sd">        Domain size, given as a tuple of the form `(x_min, y_min, x_max,</span>
+<span class="sd">        y_max)`.</span>
+<span class="sd">    metric : function</span>
+<span class="sd">        A metric on vectors of numbers (represented as lists or</span>
+<span class="sd">        tuples). This must be a function that accepts two lists (or</span>
+<span class="sd">        tuples) as input and yields a number as output. The function</span>
+<span class="sd">        must also satisfy the four requirements of a `metric`_.</span>
+<span class="sd">        Specifically, if $d$ is the function and $x$, $y$,</span>
+<span class="sd">        and $z$ are vectors in the graph, then $d$ must satisfy</span>
+
+<span class="sd">        1. $d(x, y) \ge 0$,</span>
+<span class="sd">        2. $d(x, y) = 0$ if and only if $x = y$,</span>
+<span class="sd">        3. $d(x, y) = d(y, x)$,</span>
+<span class="sd">        4. $d(x, z) \le d(x, y) + d(y, z)$.</span>
+
+<span class="sd">        If this argument is not specified, the Euclidean distance metric is</span>
+<span class="sd">        used.</span>
+
+<span class="sd">        .. _metric: https://en.wikipedia.org/wiki/Metric_%28mathematics%29</span>
+
+<span class="sd">    seed : integer, random_state, or None (default)</span>
+<span class="sd">        Indicator of random number generation state.</span>
+<span class="sd">        See :ref:`Randomness&lt;randomness&gt;`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Graph</span>
+<span class="sd">        A random Waxman graph, undirected and without self-loops. Each</span>
+<span class="sd">        node has a node attribute ``&#39;pos&#39;`` that stores the position of</span>
+<span class="sd">        that node in Euclidean space as generated by this function.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Specify an alternate distance metric using the ``metric`` keyword</span>
+<span class="sd">    argument. For example, to use the &quot;`taxicab metric`_&quot; instead of the</span>
+<span class="sd">    default `Euclidean metric`_::</span>
+
+<span class="sd">        &gt;&gt;&gt; dist = lambda x, y: sum(abs(a - b) for a, b in zip(x, y))</span>
+<span class="sd">        &gt;&gt;&gt; G = nx.waxman_graph(10, 0.5, 0.1, metric=dist)</span>
+
+<span class="sd">    .. _taxicab metric: https://en.wikipedia.org/wiki/Taxicab_geometry</span>
+<span class="sd">    .. _Euclidean metric: https://en.wikipedia.org/wiki/Euclidean_distance</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Starting in NetworkX 2.0 the parameters alpha and beta align with their</span>
+<span class="sd">    usual roles in the probability distribution. In earlier versions their</span>
+<span class="sd">    positions in the expression were reversed. Their position in the calling</span>
+<span class="sd">    sequence reversed as well to minimize backward incompatibility.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1]  B. M. Waxman, *Routing of multipoint connections*.</span>
+<span class="sd">       IEEE J. Select. Areas Commun. 6(9),(1988) 1617--1622.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">empty_graph</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">ymax</span><span class="p">)</span> <span class="o">=</span> <span class="n">domain</span>
+    <span class="c1"># Each node gets a uniformly random position in the given rectangle.</span>
+    <span class="n">pos</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="p">(</span><span class="n">seed</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">),</span> <span class="n">seed</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">))</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G</span><span class="p">}</span>
+    <span class="n">nx</span><span class="o">.</span><span class="n">set_node_attributes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="s2">&quot;pos&quot;</span><span class="p">)</span>
+    <span class="c1"># If no distance metric is provided, use Euclidean distance.</span>
+    <span class="k">if</span> <span class="n">metric</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">metric</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">dist</span>
+    <span class="c1"># If the maximum distance L is not specified (that is, we are in the</span>
+    <span class="c1"># Waxman-1 model), then find the maximum distance between any pair</span>
+    <span class="c1"># of nodes.</span>
+    <span class="c1">#</span>
+    <span class="c1"># In the Waxman-1 model, join nodes randomly based on distance. In</span>
+    <span class="c1"># the Waxman-2 model, join randomly based on random l.</span>
+    <span class="k">if</span> <span class="n">L</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">L</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">metric</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">combinations</span><span class="p">(</span><span class="n">pos</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="mi">2</span><span class="p">))</span>
+
+        <span class="k">def</span> <span class="nf">dist</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">metric</span><span class="p">(</span><span class="n">pos</span><span class="p">[</span><span class="n">u</span><span class="p">],</span> <span class="n">pos</span><span class="p">[</span><span class="n">v</span><span class="p">])</span>
+
+    <span class="k">else</span><span class="p">:</span>
+
+        <span class="k">def</span> <span class="nf">dist</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">seed</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="n">L</span>
+
+    <span class="c1"># `pair` is the pair of nodes to decide whether to join.</span>
+    <span class="k">def</span> <span class="nf">should_join</span><span class="p">(</span><span class="n">pair</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">seed</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">beta</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">dist</span><span class="p">(</span><span class="o">*</span><span class="n">pair</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">alpha</span> <span class="o">*</span> <span class="n">L</span><span class="p">))</span>
+
+    <span class="n">G</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="n">should_join</span><span class="p">,</span> <span class="n">combinations</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="mi">2</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="n">G</span></div>
+
+
+<div class="viewcode-block" id="navigable_small_world_graph"><a class="viewcode-back" href="../../../reference/generated/networkx.generators.geometric.navigable_small_world_graph.html#networkx.generators.geometric.navigable_small_world_graph">[docs]</a><span class="nd">@py_random_state</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">navigable_small_world_graph</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns a navigable small-world graph.</span>
+
+<span class="sd">    A navigable small-world graph is a directed grid with additional long-range</span>
+<span class="sd">    connections that are chosen randomly.</span>
+
+<span class="sd">      [...] we begin with a set of nodes [...] that are identified with the set</span>
+<span class="sd">      of lattice points in an $n \times n$ square,</span>
+<span class="sd">      $\{(i, j): i \in \{1, 2, \ldots, n\}, j \in \{1, 2, \ldots, n\}\}$,</span>
+<span class="sd">      and we define the *lattice distance* between two nodes $(i, j)$ and</span>
+<span class="sd">      $(k, l)$ to be the number of &quot;lattice steps&quot; separating them:</span>
+<span class="sd">      $d((i, j), (k, l)) = |k - i| + |l - j|$.</span>
+
+<span class="sd">      For a universal constant $p &gt;= 1$, the node $u$ has a directed edge to</span>
+<span class="sd">      every other node within lattice distance $p$---these are its *local</span>
+<span class="sd">      contacts*. For universal constants $q &gt;= 0$ and $r &gt;= 0$ we also</span>
+<span class="sd">      construct directed edges from $u$ to $q$ other nodes (the *long-range</span>
+<span class="sd">      contacts*) using independent random trials; the $i$th directed edge from</span>
+<span class="sd">      $u$ has endpoint $v$ with probability proportional to $[d(u,v)]^{-r}$.</span>
+
+<span class="sd">      -- [1]_</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n : int</span>
+<span class="sd">        The length of one side of the lattice; the number of nodes in</span>
+<span class="sd">        the graph is therefore $n^2$.</span>
+<span class="sd">    p : int</span>
+<span class="sd">        The diameter of short range connections. Each node is joined with every</span>
+<span class="sd">        other node within this lattice distance.</span>
+<span class="sd">    q : int</span>
+<span class="sd">        The number of long-range connections for each node.</span>
+<span class="sd">    r : float</span>
+<span class="sd">        Exponent for decaying probability of connections.  The probability of</span>
+<span class="sd">        connecting to a node at lattice distance $d$ is $1/d^r$.</span>
+<span class="sd">    dim : int</span>
+<span class="sd">        Dimension of grid</span>
+<span class="sd">    seed : integer, random_state, or None (default)</span>
+<span class="sd">        Indicator of random number generation state.</span>
+<span class="sd">        See :ref:`Randomness&lt;randomness&gt;`.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] J. Kleinberg. The small-world phenomenon: An algorithmic</span>
+<span class="sd">       perspective. Proc. 32nd ACM Symposium on Theory of Computing, 2000.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">p</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXException</span><span class="p">(</span><span class="s2">&quot;p must be &gt;= 1&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">q</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXException</span><span class="p">(</span><span class="s2">&quot;q must be &gt;= 0&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">r</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXException</span><span class="p">(</span><span class="s2">&quot;r must be &gt;= 1&quot;</span><span class="p">)</span>
+
+    <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">product</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="n">repeat</span><span class="o">=</span><span class="n">dim</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">p1</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
+        <span class="n">probs</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">p2</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">p1</span> <span class="o">==</span> <span class="n">p2</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">((</span><span class="nb">abs</span><span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">)))</span>
+            <span class="k">if</span> <span class="n">d</span> <span class="o">&lt;=</span> <span class="n">p</span><span class="p">:</span>
+                <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">)</span>
+            <span class="n">probs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="o">**-</span><span class="n">r</span><span class="p">)</span>
+        <span class="n">cdf</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">accumulate</span><span class="p">(</span><span class="n">probs</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">q</span><span class="p">):</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="n">nodes</span><span class="p">[</span><span class="n">bisect_left</span><span class="p">(</span><span class="n">cdf</span><span class="p">,</span> <span class="n">seed</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">cdf</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))]</span>
+            <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">G</span></div>
+
+
+<div class="viewcode-block" id="thresholded_random_geometric_graph"><a class="viewcode-back" href="../../../reference/generated/networkx.generators.geometric.thresholded_random_geometric_graph.html#networkx.generators.geometric.thresholded_random_geometric_graph">[docs]</a><span class="nd">@py_random_state</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">thresholded_random_geometric_graph</span><span class="p">(</span>
+    <span class="n">n</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns a thresholded random geometric graph in the unit cube.</span>
+
+<span class="sd">    The thresholded random geometric graph [1] model places `n` nodes</span>
+<span class="sd">    uniformly at random in the unit cube of dimensions `dim`. Each node</span>
+<span class="sd">    `u` is assigned a weight :math:`w_u`. Two nodes `u` and `v` are</span>
+<span class="sd">    joined by an edge if they are within the maximum connection distance,</span>
+<span class="sd">    `radius` computed by the `p`-Minkowski distance and the summation of</span>
+<span class="sd">    weights :math:`w_u` + :math:`w_v` is greater than or equal</span>
+<span class="sd">    to the threshold parameter `theta`.</span>
+
+<span class="sd">    Edges within `radius` of each other are determined using a KDTree when</span>
+<span class="sd">    SciPy is available. This reduces the time complexity from :math:`O(n^2)`</span>
+<span class="sd">    to :math:`O(n)`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n : int or iterable</span>
+<span class="sd">        Number of nodes or iterable of nodes</span>
+<span class="sd">    radius: float</span>
+<span class="sd">        Distance threshold value</span>
+<span class="sd">    theta: float</span>
+<span class="sd">        Threshold value</span>
+<span class="sd">    dim : int, optional</span>
+<span class="sd">        Dimension of graph</span>
+<span class="sd">    pos : dict, optional</span>
+<span class="sd">        A dictionary keyed by node with node positions as values.</span>
+<span class="sd">    weight : dict, optional</span>
+<span class="sd">        Node weights as a dictionary of numbers keyed by node.</span>
+<span class="sd">    p : float, optional (default 2)</span>
+<span class="sd">        Which Minkowski distance metric to use.  `p` has to meet the condition</span>
+<span class="sd">        ``1 &lt;= p &lt;= infinity``.</span>
+
+<span class="sd">        If this argument is not specified, the :math:`L^2` metric</span>
+<span class="sd">        (the Euclidean distance metric), p = 2 is used.</span>
+
+<span class="sd">        This should not be confused with the `p` of an Erdős-Rényi random</span>
+<span class="sd">        graph, which represents probability.</span>
+<span class="sd">    seed : integer, random_state, or None (default)</span>
+<span class="sd">        Indicator of random number generation state.</span>
+<span class="sd">        See :ref:`Randomness&lt;randomness&gt;`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Graph</span>
+<span class="sd">        A thresholded random geographic graph, undirected and without</span>
+<span class="sd">        self-loops.</span>
+
+<span class="sd">        Each node has a node attribute ``&#39;pos&#39;`` that stores the</span>
+<span class="sd">        position of that node in Euclidean space as provided by the</span>
+<span class="sd">        ``pos`` keyword argument or, if ``pos`` was not provided, as</span>
+<span class="sd">        generated by this function. Similarly, each node has a nodethre</span>
+<span class="sd">        attribute ``&#39;weight&#39;`` that stores the weight of that node as</span>
+<span class="sd">        provided or as generated.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Default Graph:</span>
+
+<span class="sd">    G = nx.thresholded_random_geometric_graph(50, 0.2, 0.1)</span>
+
+<span class="sd">    Custom Graph:</span>
+
+<span class="sd">    Create a thresholded random geometric graph on 50 uniformly distributed</span>
+<span class="sd">    nodes where nodes are joined by an edge if their sum weights drawn from</span>
+<span class="sd">    a exponential distribution with rate = 5 are &gt;= theta = 0.1 and their</span>
+<span class="sd">    Euclidean distance is at most 0.2.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This uses a *k*-d tree to build the graph.</span>
+
+<span class="sd">    The `pos` keyword argument can be used to specify node positions so you</span>
+<span class="sd">    can create an arbitrary distribution and domain for positions.</span>
+
+<span class="sd">    For example, to use a 2D Gaussian distribution of node positions with mean</span>
+<span class="sd">    (0, 0) and standard deviation 2</span>
+
+<span class="sd">    If weights are not specified they are assigned to nodes by drawing randomly</span>
+<span class="sd">    from the exponential distribution with rate parameter :math:`\lambda=1`.</span>
+<span class="sd">    To specify weights from a different distribution, use the `weight` keyword</span>
+<span class="sd">    argument::</span>
+
+<span class="sd">    ::</span>
+
+<span class="sd">    &gt;&gt;&gt; import random</span>
+<span class="sd">    &gt;&gt;&gt; import math</span>
+<span class="sd">    &gt;&gt;&gt; n = 50</span>
+<span class="sd">    &gt;&gt;&gt; pos = {i: (random.gauss(0, 2), random.gauss(0, 2)) for i in range(n)}</span>
+<span class="sd">    &gt;&gt;&gt; w = {i: random.expovariate(5.0) for i in range(n)}</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.thresholded_random_geometric_graph(n, 0.2, 0.1, 2, pos, w)</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] http://cole-maclean.github.io/blog/files/thesis.pdf</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">empty_graph</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;thresholded_random_geometric_graph(</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">radius</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">theta</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">dim</span><span class="si">}</span><span class="s2">)&quot;</span>
+    <span class="c1"># If no weights are provided, choose them from an exponential</span>
+    <span class="c1"># distribution.</span>
+    <span class="k">if</span> <span class="n">weight</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">weight</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">seed</span><span class="o">.</span><span class="n">expovariate</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G</span><span class="p">}</span>
+    <span class="c1"># If no positions are provided, choose uniformly random vectors in</span>
+    <span class="c1"># Euclidean space of the specified dimension.</span>
+    <span class="k">if</span> <span class="n">pos</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="p">[</span><span class="n">seed</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dim</span><span class="p">)]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G</span><span class="p">}</span>
+    <span class="c1"># If no distance metric is provided, use Euclidean distance.</span>
+    <span class="n">nx</span><span class="o">.</span><span class="n">set_node_attributes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="p">,</span> <span class="s2">&quot;weight&quot;</span><span class="p">)</span>
+    <span class="n">nx</span><span class="o">.</span><span class="n">set_node_attributes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="s2">&quot;pos&quot;</span><span class="p">)</span>
+
+    <span class="n">edges</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">_geometric_edges</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">weight</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="o">+</span> <span class="n">weight</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">theta</span>
+    <span class="p">)</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span><span class="n">edges</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">G</span></div>
+</pre></div>
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

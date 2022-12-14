@@ -1,0 +1,1354 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>networkx.algorithms.connectivity.connectivity &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/algorithms/connectivity/connectivity';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/algorithms/connectivity/connectivity.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../../../../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../../../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../../../../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <h1>Source code for networkx.algorithms.connectivity.connectivity</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Flow based connectivity algorithms</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">from</span> <span class="nn">operator</span> <span class="kn">import</span> <span class="n">itemgetter</span>
+
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+
+<span class="c1"># Define the default maximum flow function to use in all flow based</span>
+<span class="c1"># connectivity algorithms.</span>
+<span class="kn">from</span> <span class="nn">networkx.algorithms.flow</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">boykov_kolmogorov</span><span class="p">,</span>
+    <span class="n">build_residual_network</span><span class="p">,</span>
+    <span class="n">dinitz</span><span class="p">,</span>
+    <span class="n">edmonds_karp</span><span class="p">,</span>
+    <span class="n">shortest_augmenting_path</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">default_flow_func</span> <span class="o">=</span> <span class="n">edmonds_karp</span>
+
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">build_auxiliary_edge_connectivity</span><span class="p">,</span> <span class="n">build_auxiliary_node_connectivity</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;average_node_connectivity&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;local_node_connectivity&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;node_connectivity&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;local_edge_connectivity&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;edge_connectivity&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;all_pairs_node_connectivity&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="local_node_connectivity"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.connectivity.connectivity.local_node_connectivity.html#networkx.algorithms.connectivity.connectivity.local_node_connectivity">[docs]</a><span class="k">def</span> <span class="nf">local_node_connectivity</span><span class="p">(</span>
+    <span class="n">G</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">flow_func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">auxiliary</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">residual</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Computes local node connectivity for nodes s and t.</span>
+
+<span class="sd">    Local node connectivity for two non adjacent nodes s and t is the</span>
+<span class="sd">    minimum number of nodes that must be removed (along with their incident</span>
+<span class="sd">    edges) to disconnect them.</span>
+
+<span class="sd">    This is a flow based implementation of node connectivity. We compute the</span>
+<span class="sd">    maximum flow on an auxiliary digraph build from the original input</span>
+<span class="sd">    graph (see below for details).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+<span class="sd">        Undirected graph</span>
+
+<span class="sd">    s : node</span>
+<span class="sd">        Source node</span>
+
+<span class="sd">    t : node</span>
+<span class="sd">        Target node</span>
+
+<span class="sd">    flow_func : function</span>
+<span class="sd">        A function for computing the maximum flow among a pair of nodes.</span>
+<span class="sd">        The function has to accept at least three parameters: a Digraph,</span>
+<span class="sd">        a source node, and a target node. And return a residual network</span>
+<span class="sd">        that follows NetworkX conventions (see :meth:`maximum_flow` for</span>
+<span class="sd">        details). If flow_func is None, the default maximum flow function</span>
+<span class="sd">        (:meth:`edmonds_karp`) is used. See below for details. The choice</span>
+<span class="sd">        of the default function may change from version to version and</span>
+<span class="sd">        should not be relied on. Default value: None.</span>
+
+<span class="sd">    auxiliary : NetworkX DiGraph</span>
+<span class="sd">        Auxiliary digraph to compute flow based node connectivity. It has</span>
+<span class="sd">        to have a graph attribute called mapping with a dictionary mapping</span>
+<span class="sd">        node names in G and in the auxiliary digraph. If provided</span>
+<span class="sd">        it will be reused instead of recreated. Default value: None.</span>
+
+<span class="sd">    residual : NetworkX DiGraph</span>
+<span class="sd">        Residual network to compute maximum flow. If provided it will be</span>
+<span class="sd">        reused instead of recreated. Default value: None.</span>
+
+<span class="sd">    cutoff : integer, float, or None (default: None)</span>
+<span class="sd">        If specified, the maximum flow algorithm will terminate when the</span>
+<span class="sd">        flow value reaches or exceeds the cutoff. This only works for flows</span>
+<span class="sd">        that support the cutoff parameter (most do) and is ignored otherwise.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    K : integer</span>
+<span class="sd">        local node connectivity for nodes s and t</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    This function is not imported in the base NetworkX namespace, so you</span>
+<span class="sd">    have to explicitly import it from the connectivity package:</span>
+
+<span class="sd">    &gt;&gt;&gt; from networkx.algorithms.connectivity import local_node_connectivity</span>
+
+<span class="sd">    We use in this example the platonic icosahedral graph, which has node</span>
+<span class="sd">    connectivity 5.</span>
+
+<span class="sd">    &gt;&gt;&gt; G = nx.icosahedral_graph()</span>
+<span class="sd">    &gt;&gt;&gt; local_node_connectivity(G, 0, 6)</span>
+<span class="sd">    5</span>
+
+<span class="sd">    If you need to compute local connectivity on several pairs of</span>
+<span class="sd">    nodes in the same graph, it is recommended that you reuse the</span>
+<span class="sd">    data structures that NetworkX uses in the computation: the</span>
+<span class="sd">    auxiliary digraph for node connectivity, and the residual</span>
+<span class="sd">    network for the underlying maximum flow computation.</span>
+
+<span class="sd">    Example of how to compute local node connectivity among</span>
+<span class="sd">    all pairs of nodes of the platonic icosahedral graph reusing</span>
+<span class="sd">    the data structures.</span>
+
+<span class="sd">    &gt;&gt;&gt; import itertools</span>
+<span class="sd">    &gt;&gt;&gt; # You also have to explicitly import the function for</span>
+<span class="sd">    &gt;&gt;&gt; # building the auxiliary digraph from the connectivity package</span>
+<span class="sd">    &gt;&gt;&gt; from networkx.algorithms.connectivity import build_auxiliary_node_connectivity</span>
+<span class="sd">    ...</span>
+<span class="sd">    &gt;&gt;&gt; H = build_auxiliary_node_connectivity(G)</span>
+<span class="sd">    &gt;&gt;&gt; # And the function for building the residual network from the</span>
+<span class="sd">    &gt;&gt;&gt; # flow package</span>
+<span class="sd">    &gt;&gt;&gt; from networkx.algorithms.flow import build_residual_network</span>
+<span class="sd">    &gt;&gt;&gt; # Note that the auxiliary digraph has an edge attribute named capacity</span>
+<span class="sd">    &gt;&gt;&gt; R = build_residual_network(H, &quot;capacity&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; result = dict.fromkeys(G, dict())</span>
+<span class="sd">    &gt;&gt;&gt; # Reuse the auxiliary digraph and the residual network by passing them</span>
+<span class="sd">    &gt;&gt;&gt; # as parameters</span>
+<span class="sd">    &gt;&gt;&gt; for u, v in itertools.combinations(G, 2):</span>
+<span class="sd">    ...     k = local_node_connectivity(G, u, v, auxiliary=H, residual=R)</span>
+<span class="sd">    ...     result[u][v] = k</span>
+<span class="sd">    ...</span>
+<span class="sd">    &gt;&gt;&gt; all(result[u][v] == 5 for u, v in itertools.combinations(G, 2))</span>
+<span class="sd">    True</span>
+
+<span class="sd">    You can also use alternative flow algorithms for computing node</span>
+<span class="sd">    connectivity. For instance, in dense networks the algorithm</span>
+<span class="sd">    :meth:`shortest_augmenting_path` will usually perform better than</span>
+<span class="sd">    the default :meth:`edmonds_karp` which is faster for sparse</span>
+<span class="sd">    networks with highly skewed degree distributions. Alternative flow</span>
+<span class="sd">    functions have to be explicitly imported from the flow package.</span>
+
+<span class="sd">    &gt;&gt;&gt; from networkx.algorithms.flow import shortest_augmenting_path</span>
+<span class="sd">    &gt;&gt;&gt; local_node_connectivity(G, 0, 6, flow_func=shortest_augmenting_path)</span>
+<span class="sd">    5</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This is a flow based implementation of node connectivity. We compute the</span>
+<span class="sd">    maximum flow using, by default, the :meth:`edmonds_karp` algorithm (see:</span>
+<span class="sd">    :meth:`maximum_flow`) on an auxiliary digraph build from the original</span>
+<span class="sd">    input graph:</span>
+
+<span class="sd">    For an undirected graph G having `n` nodes and `m` edges we derive a</span>
+<span class="sd">    directed graph H with `2n` nodes and `2m+n` arcs by replacing each</span>
+<span class="sd">    original node `v` with two nodes `v_A`, `v_B` linked by an (internal)</span>
+<span class="sd">    arc in H. Then for each edge (`u`, `v`) in G we add two arcs</span>
+<span class="sd">    (`u_B`, `v_A`) and (`v_B`, `u_A`) in H. Finally we set the attribute</span>
+<span class="sd">    capacity = 1 for each arc in H [1]_ .</span>
+
+<span class="sd">    For a directed graph G having `n` nodes and `m` arcs we derive a</span>
+<span class="sd">    directed graph H with `2n` nodes and `m+n` arcs by replacing each</span>
+<span class="sd">    original node `v` with two nodes `v_A`, `v_B` linked by an (internal)</span>
+<span class="sd">    arc (`v_A`, `v_B`) in H. Then for each arc (`u`, `v`) in G we add one arc</span>
+<span class="sd">    (`u_B`, `v_A`) in H. Finally we set the attribute capacity = 1 for</span>
+<span class="sd">    each arc in H.</span>
+
+<span class="sd">    This is equal to the local node connectivity because the value of</span>
+<span class="sd">    a maximum s-t-flow is equal to the capacity of a minimum s-t-cut.</span>
+
+<span class="sd">    See also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :meth:`local_edge_connectivity`</span>
+<span class="sd">    :meth:`node_connectivity`</span>
+<span class="sd">    :meth:`minimum_node_cut`</span>
+<span class="sd">    :meth:`maximum_flow`</span>
+<span class="sd">    :meth:`edmonds_karp`</span>
+<span class="sd">    :meth:`preflow_push`</span>
+<span class="sd">    :meth:`shortest_augmenting_path`</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Kammer, Frank and Hanjo Taubig. Graph Connectivity. in Brandes and</span>
+<span class="sd">        Erlebach, &#39;Network Analysis: Methodological Foundations&#39;, Lecture</span>
+<span class="sd">        Notes in Computer Science, Volume 3418, Springer-Verlag, 2005.</span>
+<span class="sd">        http://www.informatik.uni-augsburg.de/thi/personen/kammer/Graph_Connectivity.pdf</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">flow_func</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">flow_func</span> <span class="o">=</span> <span class="n">default_flow_func</span>
+
+    <span class="k">if</span> <span class="n">auxiliary</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">H</span> <span class="o">=</span> <span class="n">build_auxiliary_node_connectivity</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">H</span> <span class="o">=</span> <span class="n">auxiliary</span>
+
+    <span class="n">mapping</span> <span class="o">=</span> <span class="n">H</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mapping&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">mapping</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;Invalid auxiliary digraph.&quot;</span><span class="p">)</span>
+
+    <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">flow_func</span><span class="o">=</span><span class="n">flow_func</span><span class="p">,</span> <span class="n">residual</span><span class="o">=</span><span class="n">residual</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">flow_func</span> <span class="ow">is</span> <span class="n">shortest_augmenting_path</span><span class="p">:</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;cutoff&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cutoff</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;two_phase&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">elif</span> <span class="n">flow_func</span> <span class="ow">is</span> <span class="n">edmonds_karp</span><span class="p">:</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;cutoff&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cutoff</span>
+    <span class="k">elif</span> <span class="n">flow_func</span> <span class="ow">is</span> <span class="n">dinitz</span><span class="p">:</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;cutoff&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cutoff</span>
+    <span class="k">elif</span> <span class="n">flow_func</span> <span class="ow">is</span> <span class="n">boykov_kolmogorov</span><span class="p">:</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;cutoff&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cutoff</span>
+
+    <span class="k">return</span> <span class="n">nx</span><span class="o">.</span><span class="n">maximum_flow_value</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mapping</span><span class="p">[</span><span class="n">s</span><span class="p">]</span><span class="si">}</span><span class="s2">B&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mapping</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="si">}</span><span class="s2">A&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="node_connectivity"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.connectivity.connectivity.node_connectivity.html#networkx.algorithms.connectivity.connectivity.node_connectivity">[docs]</a><span class="k">def</span> <span class="nf">node_connectivity</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">flow_func</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns node connectivity for a graph or digraph G.</span>
+
+<span class="sd">    Node connectivity is equal to the minimum number of nodes that</span>
+<span class="sd">    must be removed to disconnect G or render it trivial. If source</span>
+<span class="sd">    and target nodes are provided, this function returns the local node</span>
+<span class="sd">    connectivity: the minimum number of nodes that must be removed to break</span>
+<span class="sd">    all paths from source to target in G.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+<span class="sd">        Undirected graph</span>
+
+<span class="sd">    s : node</span>
+<span class="sd">        Source node. Optional. Default value: None.</span>
+
+<span class="sd">    t : node</span>
+<span class="sd">        Target node. Optional. Default value: None.</span>
+
+<span class="sd">    flow_func : function</span>
+<span class="sd">        A function for computing the maximum flow among a pair of nodes.</span>
+<span class="sd">        The function has to accept at least three parameters: a Digraph,</span>
+<span class="sd">        a source node, and a target node. And return a residual network</span>
+<span class="sd">        that follows NetworkX conventions (see :meth:`maximum_flow` for</span>
+<span class="sd">        details). If flow_func is None, the default maximum flow function</span>
+<span class="sd">        (:meth:`edmonds_karp`) is used. See below for details. The</span>
+<span class="sd">        choice of the default function may change from version</span>
+<span class="sd">        to version and should not be relied on. Default value: None.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    K : integer</span>
+<span class="sd">        Node connectivity of G, or local node connectivity if source</span>
+<span class="sd">        and target are provided.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; # Platonic icosahedral graph is 5-node-connected</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.icosahedral_graph()</span>
+<span class="sd">    &gt;&gt;&gt; nx.node_connectivity(G)</span>
+<span class="sd">    5</span>
+
+<span class="sd">    You can use alternative flow algorithms for the underlying maximum</span>
+<span class="sd">    flow computation. In dense networks the algorithm</span>
+<span class="sd">    :meth:`shortest_augmenting_path` will usually perform better</span>
+<span class="sd">    than the default :meth:`edmonds_karp`, which is faster for</span>
+<span class="sd">    sparse networks with highly skewed degree distributions. Alternative</span>
+<span class="sd">    flow functions have to be explicitly imported from the flow package.</span>
+
+<span class="sd">    &gt;&gt;&gt; from networkx.algorithms.flow import shortest_augmenting_path</span>
+<span class="sd">    &gt;&gt;&gt; nx.node_connectivity(G, flow_func=shortest_augmenting_path)</span>
+<span class="sd">    5</span>
+
+<span class="sd">    If you specify a pair of nodes (source and target) as parameters,</span>
+<span class="sd">    this function returns the value of local node connectivity.</span>
+
+<span class="sd">    &gt;&gt;&gt; nx.node_connectivity(G, 3, 7)</span>
+<span class="sd">    5</span>
+
+<span class="sd">    If you need to perform several local computations among different</span>
+<span class="sd">    pairs of nodes on the same graph, it is recommended that you reuse</span>
+<span class="sd">    the data structures used in the maximum flow computations. See</span>
+<span class="sd">    :meth:`local_node_connectivity` for details.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This is a flow based implementation of node connectivity. The</span>
+<span class="sd">    algorithm works by solving $O((n-\delta-1+\delta(\delta-1)/2))$</span>
+<span class="sd">    maximum flow problems on an auxiliary digraph. Where $\delta$</span>
+<span class="sd">    is the minimum degree of G. For details about the auxiliary</span>
+<span class="sd">    digraph and the computation of local node connectivity see</span>
+<span class="sd">    :meth:`local_node_connectivity`. This implementation is based</span>
+<span class="sd">    on algorithm 11 in [1]_.</span>
+
+<span class="sd">    See also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :meth:`local_node_connectivity`</span>
+<span class="sd">    :meth:`edge_connectivity`</span>
+<span class="sd">    :meth:`maximum_flow`</span>
+<span class="sd">    :meth:`edmonds_karp`</span>
+<span class="sd">    :meth:`preflow_push`</span>
+<span class="sd">    :meth:`shortest_augmenting_path`</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Abdol-Hossein Esfahanian. Connectivity Algorithms.</span>
+<span class="sd">        http://www.cse.msu.edu/~cse835/Papers/Graph_connectivity_revised.pdf</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">s</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">t</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">s</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">t</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;Both source and target must be specified.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Local node connectivity</span>
+    <span class="k">if</span> <span class="n">s</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">t</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">s</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">G</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;node </span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s2"> not in graph&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">t</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">G</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;node </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2"> not in graph&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">local_node_connectivity</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">flow_func</span><span class="o">=</span><span class="n">flow_func</span><span class="p">)</span>
+
+    <span class="c1"># Global node connectivity</span>
+    <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">nx</span><span class="o">.</span><span class="n">is_weakly_connected</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="n">iter_func</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">permutations</span>
+        <span class="c1"># It is necessary to consider both predecessors</span>
+        <span class="c1"># and successors for directed graphs</span>
+
+        <span class="k">def</span> <span class="nf">neighbors</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">([</span><span class="n">G</span><span class="o">.</span><span class="n">predecessors</span><span class="p">(</span><span class="n">v</span><span class="p">),</span> <span class="n">G</span><span class="o">.</span><span class="n">successors</span><span class="p">(</span><span class="n">v</span><span class="p">)])</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">nx</span><span class="o">.</span><span class="n">is_connected</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="n">iter_func</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">combinations</span>
+        <span class="n">neighbors</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">neighbors</span>
+
+    <span class="c1"># Reuse the auxiliary digraph and the residual network</span>
+    <span class="n">H</span> <span class="o">=</span> <span class="n">build_auxiliary_node_connectivity</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="n">build_residual_network</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="s2">&quot;capacity&quot;</span><span class="p">)</span>
+    <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">flow_func</span><span class="o">=</span><span class="n">flow_func</span><span class="p">,</span> <span class="n">auxiliary</span><span class="o">=</span><span class="n">H</span><span class="p">,</span> <span class="n">residual</span><span class="o">=</span><span class="n">R</span><span class="p">)</span>
+
+    <span class="c1"># Pick a node with minimum degree</span>
+    <span class="c1"># Node connectivity is bounded by degree.</span>
+    <span class="n">v</span><span class="p">,</span> <span class="n">K</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">degree</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="n">itemgetter</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+    <span class="c1"># compute local node connectivity with all its non-neighbors nodes</span>
+    <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">G</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">neighbors</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="o">-</span> <span class="p">{</span><span class="n">v</span><span class="p">}:</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;cutoff&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">K</span>
+        <span class="n">K</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">local_node_connectivity</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+    <span class="c1"># Also for non adjacent pairs of neighbors of v</span>
+    <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">iter_func</span><span class="p">(</span><span class="n">neighbors</span><span class="p">(</span><span class="n">v</span><span class="p">),</span> <span class="mi">2</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">G</span><span class="p">[</span><span class="n">x</span><span class="p">]:</span>
+            <span class="k">continue</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;cutoff&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">K</span>
+        <span class="n">K</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">local_node_connectivity</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">K</span></div>
+
+
+<div class="viewcode-block" id="average_node_connectivity"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.connectivity.connectivity.average_node_connectivity.html#networkx.algorithms.connectivity.connectivity.average_node_connectivity">[docs]</a><span class="k">def</span> <span class="nf">average_node_connectivity</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">flow_func</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns the average connectivity of a graph G.</span>
+
+<span class="sd">    The average connectivity `\bar{\kappa}` of a graph G is the average</span>
+<span class="sd">    of local node connectivity over all pairs of nodes of G [1]_ .</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        \bar{\kappa}(G) = \frac{\sum_{u,v} \kappa_{G}(u,v)}{{n \choose 2}}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    G : NetworkX graph</span>
+<span class="sd">        Undirected graph</span>
+
+<span class="sd">    flow_func : function</span>
+<span class="sd">        A function for computing the maximum flow among a pair of nodes.</span>
+<span class="sd">        The function has to accept at least three parameters: a Digraph,</span>
+<span class="sd">        a source node, and a target node. And return a residual network</span>
+<span class="sd">        that follows NetworkX conventions (see :meth:`maximum_flow` for</span>
+<span class="sd">        details). If flow_func is None, the default maximum flow function</span>
+<span class="sd">        (:meth:`edmonds_karp`) is used. See :meth:`local_node_connectivity`</span>
+<span class="sd">        for details. The choice of the default function may change from</span>
+<span class="sd">        version to version and should not be relied on. Default value: None.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    K : float</span>
+<span class="sd">        Average node connectivity</span>
+
+<span class="sd">    See also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :meth:`local_node_connectivity`</span>
+<span class="sd">    :meth:`node_connectivity`</span>
+<span class="sd">    :meth:`edge_connectivity`</span>
+<span class="sd">    :meth:`maximum_flow`</span>
+<span class="sd">    :meth:`edmonds_karp`</span>
+<span class="sd">    :meth:`preflow_push`</span>
+<span class="sd">    :meth:`shortest_augmenting_path`</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1]  Beineke, L., O. Oellermann, and R. Pippert (2002). The average</span>
+<span class="sd">            connectivity of a graph. Discrete mathematics 252(1-3), 31-45.</span>
+<span class="sd">            http://www.sciencedirect.com/science/article/pii/S0012365X01001807</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+        <span class="n">iter_func</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">permutations</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">iter_func</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">combinations</span>
+
+    <span class="c1"># Reuse the auxiliary digraph and the residual network</span>
+    <span class="n">H</span> <span class="o">=</span> <span class="n">build_auxiliary_node_connectivity</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="n">build_residual_network</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="s2">&quot;capacity&quot;</span><span class="p">)</span>
+    <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">flow_func</span><span class="o">=</span><span class="n">flow_func</span><span class="p">,</span> <span class="n">auxiliary</span><span class="o">=</span><span class="n">H</span><span class="p">,</span> <span class="n">residual</span><span class="o">=</span><span class="n">R</span><span class="p">)</span>
+
+    <span class="n">num</span><span class="p">,</span> <span class="n">den</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iter_func</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+        <span class="n">num</span> <span class="o">+=</span> <span class="n">local_node_connectivity</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">den</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">if</span> <span class="n">den</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># Null Graph</span>
+        <span class="k">return</span> <span class="mi">0</span>
+    <span class="k">return</span> <span class="n">num</span> <span class="o">/</span> <span class="n">den</span></div>
+
+
+<div class="viewcode-block" id="all_pairs_node_connectivity"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.connectivity.connectivity.all_pairs_node_connectivity.html#networkx.algorithms.connectivity.connectivity.all_pairs_node_connectivity">[docs]</a><span class="k">def</span> <span class="nf">all_pairs_node_connectivity</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">nbunch</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">flow_func</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Compute node connectivity between all pairs of nodes of G.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+<span class="sd">        Undirected graph</span>
+
+<span class="sd">    nbunch: container</span>
+<span class="sd">        Container of nodes. If provided node connectivity will be computed</span>
+<span class="sd">        only over pairs of nodes in nbunch.</span>
+
+<span class="sd">    flow_func : function</span>
+<span class="sd">        A function for computing the maximum flow among a pair of nodes.</span>
+<span class="sd">        The function has to accept at least three parameters: a Digraph,</span>
+<span class="sd">        a source node, and a target node. And return a residual network</span>
+<span class="sd">        that follows NetworkX conventions (see :meth:`maximum_flow` for</span>
+<span class="sd">        details). If flow_func is None, the default maximum flow function</span>
+<span class="sd">        (:meth:`edmonds_karp`) is used. See below for details. The</span>
+<span class="sd">        choice of the default function may change from version</span>
+<span class="sd">        to version and should not be relied on. Default value: None.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    all_pairs : dict</span>
+<span class="sd">        A dictionary with node connectivity between all pairs of nodes</span>
+<span class="sd">        in G, or in nbunch if provided.</span>
+
+<span class="sd">    See also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :meth:`local_node_connectivity`</span>
+<span class="sd">    :meth:`edge_connectivity`</span>
+<span class="sd">    :meth:`local_edge_connectivity`</span>
+<span class="sd">    :meth:`maximum_flow`</span>
+<span class="sd">    :meth:`edmonds_karp`</span>
+<span class="sd">    :meth:`preflow_push`</span>
+<span class="sd">    :meth:`shortest_augmenting_path`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">nbunch</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">nbunch</span> <span class="o">=</span> <span class="n">G</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">nbunch</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">nbunch</span><span class="p">)</span>
+
+    <span class="n">directed</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">is_directed</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">directed</span><span class="p">:</span>
+        <span class="n">iter_func</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">permutations</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">iter_func</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">combinations</span>
+
+    <span class="n">all_pairs</span> <span class="o">=</span> <span class="p">{</span><span class="n">n</span><span class="p">:</span> <span class="p">{}</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nbunch</span><span class="p">}</span>
+
+    <span class="c1"># Reuse auxiliary digraph and residual network</span>
+    <span class="n">H</span> <span class="o">=</span> <span class="n">build_auxiliary_node_connectivity</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+    <span class="n">mapping</span> <span class="o">=</span> <span class="n">H</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="s2">&quot;mapping&quot;</span><span class="p">]</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="n">build_residual_network</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="s2">&quot;capacity&quot;</span><span class="p">)</span>
+    <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">flow_func</span><span class="o">=</span><span class="n">flow_func</span><span class="p">,</span> <span class="n">auxiliary</span><span class="o">=</span><span class="n">H</span><span class="p">,</span> <span class="n">residual</span><span class="o">=</span><span class="n">R</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iter_func</span><span class="p">(</span><span class="n">nbunch</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+        <span class="n">K</span> <span class="o">=</span> <span class="n">local_node_connectivity</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">all_pairs</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">K</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">directed</span><span class="p">:</span>
+            <span class="n">all_pairs</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="n">u</span><span class="p">]</span> <span class="o">=</span> <span class="n">K</span>
+
+    <span class="k">return</span> <span class="n">all_pairs</span></div>
+
+
+<div class="viewcode-block" id="local_edge_connectivity"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.connectivity.connectivity.local_edge_connectivity.html#networkx.algorithms.connectivity.connectivity.local_edge_connectivity">[docs]</a><span class="k">def</span> <span class="nf">local_edge_connectivity</span><span class="p">(</span>
+    <span class="n">G</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">flow_func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">auxiliary</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">residual</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns local edge connectivity for nodes s and t in G.</span>
+
+<span class="sd">    Local edge connectivity for two nodes s and t is the minimum number</span>
+<span class="sd">    of edges that must be removed to disconnect them.</span>
+
+<span class="sd">    This is a flow based implementation of edge connectivity. We compute the</span>
+<span class="sd">    maximum flow on an auxiliary digraph build from the original</span>
+<span class="sd">    network (see below for details). This is equal to the local edge</span>
+<span class="sd">    connectivity because the value of a maximum s-t-flow is equal to the</span>
+<span class="sd">    capacity of a minimum s-t-cut (Ford and Fulkerson theorem) [1]_ .</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+<span class="sd">        Undirected or directed graph</span>
+
+<span class="sd">    s : node</span>
+<span class="sd">        Source node</span>
+
+<span class="sd">    t : node</span>
+<span class="sd">        Target node</span>
+
+<span class="sd">    flow_func : function</span>
+<span class="sd">        A function for computing the maximum flow among a pair of nodes.</span>
+<span class="sd">        The function has to accept at least three parameters: a Digraph,</span>
+<span class="sd">        a source node, and a target node. And return a residual network</span>
+<span class="sd">        that follows NetworkX conventions (see :meth:`maximum_flow` for</span>
+<span class="sd">        details). If flow_func is None, the default maximum flow function</span>
+<span class="sd">        (:meth:`edmonds_karp`) is used. See below for details. The</span>
+<span class="sd">        choice of the default function may change from version</span>
+<span class="sd">        to version and should not be relied on. Default value: None.</span>
+
+<span class="sd">    auxiliary : NetworkX DiGraph</span>
+<span class="sd">        Auxiliary digraph for computing flow based edge connectivity. If</span>
+<span class="sd">        provided it will be reused instead of recreated. Default value: None.</span>
+
+<span class="sd">    residual : NetworkX DiGraph</span>
+<span class="sd">        Residual network to compute maximum flow. If provided it will be</span>
+<span class="sd">        reused instead of recreated. Default value: None.</span>
+
+<span class="sd">    cutoff : integer, float, or None (default: None)</span>
+<span class="sd">        If specified, the maximum flow algorithm will terminate when the</span>
+<span class="sd">        flow value reaches or exceeds the cutoff. This only works for flows</span>
+<span class="sd">        that support the cutoff parameter (most do) and is ignored otherwise.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    K : integer</span>
+<span class="sd">        local edge connectivity for nodes s and t.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    This function is not imported in the base NetworkX namespace, so you</span>
+<span class="sd">    have to explicitly import it from the connectivity package:</span>
+
+<span class="sd">    &gt;&gt;&gt; from networkx.algorithms.connectivity import local_edge_connectivity</span>
+
+<span class="sd">    We use in this example the platonic icosahedral graph, which has edge</span>
+<span class="sd">    connectivity 5.</span>
+
+<span class="sd">    &gt;&gt;&gt; G = nx.icosahedral_graph()</span>
+<span class="sd">    &gt;&gt;&gt; local_edge_connectivity(G, 0, 6)</span>
+<span class="sd">    5</span>
+
+<span class="sd">    If you need to compute local connectivity on several pairs of</span>
+<span class="sd">    nodes in the same graph, it is recommended that you reuse the</span>
+<span class="sd">    data structures that NetworkX uses in the computation: the</span>
+<span class="sd">    auxiliary digraph for edge connectivity, and the residual</span>
+<span class="sd">    network for the underlying maximum flow computation.</span>
+
+<span class="sd">    Example of how to compute local edge connectivity among</span>
+<span class="sd">    all pairs of nodes of the platonic icosahedral graph reusing</span>
+<span class="sd">    the data structures.</span>
+
+<span class="sd">    &gt;&gt;&gt; import itertools</span>
+<span class="sd">    &gt;&gt;&gt; # You also have to explicitly import the function for</span>
+<span class="sd">    &gt;&gt;&gt; # building the auxiliary digraph from the connectivity package</span>
+<span class="sd">    &gt;&gt;&gt; from networkx.algorithms.connectivity import build_auxiliary_edge_connectivity</span>
+<span class="sd">    &gt;&gt;&gt; H = build_auxiliary_edge_connectivity(G)</span>
+<span class="sd">    &gt;&gt;&gt; # And the function for building the residual network from the</span>
+<span class="sd">    &gt;&gt;&gt; # flow package</span>
+<span class="sd">    &gt;&gt;&gt; from networkx.algorithms.flow import build_residual_network</span>
+<span class="sd">    &gt;&gt;&gt; # Note that the auxiliary digraph has an edge attribute named capacity</span>
+<span class="sd">    &gt;&gt;&gt; R = build_residual_network(H, &quot;capacity&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; result = dict.fromkeys(G, dict())</span>
+<span class="sd">    &gt;&gt;&gt; # Reuse the auxiliary digraph and the residual network by passing them</span>
+<span class="sd">    &gt;&gt;&gt; # as parameters</span>
+<span class="sd">    &gt;&gt;&gt; for u, v in itertools.combinations(G, 2):</span>
+<span class="sd">    ...     k = local_edge_connectivity(G, u, v, auxiliary=H, residual=R)</span>
+<span class="sd">    ...     result[u][v] = k</span>
+<span class="sd">    &gt;&gt;&gt; all(result[u][v] == 5 for u, v in itertools.combinations(G, 2))</span>
+<span class="sd">    True</span>
+
+<span class="sd">    You can also use alternative flow algorithms for computing edge</span>
+<span class="sd">    connectivity. For instance, in dense networks the algorithm</span>
+<span class="sd">    :meth:`shortest_augmenting_path` will usually perform better than</span>
+<span class="sd">    the default :meth:`edmonds_karp` which is faster for sparse</span>
+<span class="sd">    networks with highly skewed degree distributions. Alternative flow</span>
+<span class="sd">    functions have to be explicitly imported from the flow package.</span>
+
+<span class="sd">    &gt;&gt;&gt; from networkx.algorithms.flow import shortest_augmenting_path</span>
+<span class="sd">    &gt;&gt;&gt; local_edge_connectivity(G, 0, 6, flow_func=shortest_augmenting_path)</span>
+<span class="sd">    5</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This is a flow based implementation of edge connectivity. We compute the</span>
+<span class="sd">    maximum flow using, by default, the :meth:`edmonds_karp` algorithm on an</span>
+<span class="sd">    auxiliary digraph build from the original input graph:</span>
+
+<span class="sd">    If the input graph is undirected, we replace each edge (`u`,`v`) with</span>
+<span class="sd">    two reciprocal arcs (`u`, `v`) and (`v`, `u`) and then we set the attribute</span>
+<span class="sd">    &#39;capacity&#39; for each arc to 1. If the input graph is directed we simply</span>
+<span class="sd">    add the &#39;capacity&#39; attribute. This is an implementation of algorithm 1</span>
+<span class="sd">    in [1]_.</span>
+
+<span class="sd">    The maximum flow in the auxiliary network is equal to the local edge</span>
+<span class="sd">    connectivity because the value of a maximum s-t-flow is equal to the</span>
+<span class="sd">    capacity of a minimum s-t-cut (Ford and Fulkerson theorem).</span>
+
+<span class="sd">    See also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :meth:`edge_connectivity`</span>
+<span class="sd">    :meth:`local_node_connectivity`</span>
+<span class="sd">    :meth:`node_connectivity`</span>
+<span class="sd">    :meth:`maximum_flow`</span>
+<span class="sd">    :meth:`edmonds_karp`</span>
+<span class="sd">    :meth:`preflow_push`</span>
+<span class="sd">    :meth:`shortest_augmenting_path`</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Abdol-Hossein Esfahanian. Connectivity Algorithms.</span>
+<span class="sd">        http://www.cse.msu.edu/~cse835/Papers/Graph_connectivity_revised.pdf</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">flow_func</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">flow_func</span> <span class="o">=</span> <span class="n">default_flow_func</span>
+
+    <span class="k">if</span> <span class="n">auxiliary</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">H</span> <span class="o">=</span> <span class="n">build_auxiliary_edge_connectivity</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">H</span> <span class="o">=</span> <span class="n">auxiliary</span>
+
+    <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">flow_func</span><span class="o">=</span><span class="n">flow_func</span><span class="p">,</span> <span class="n">residual</span><span class="o">=</span><span class="n">residual</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">flow_func</span> <span class="ow">is</span> <span class="n">shortest_augmenting_path</span><span class="p">:</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;cutoff&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cutoff</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;two_phase&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">elif</span> <span class="n">flow_func</span> <span class="ow">is</span> <span class="n">edmonds_karp</span><span class="p">:</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;cutoff&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cutoff</span>
+    <span class="k">elif</span> <span class="n">flow_func</span> <span class="ow">is</span> <span class="n">dinitz</span><span class="p">:</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;cutoff&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cutoff</span>
+    <span class="k">elif</span> <span class="n">flow_func</span> <span class="ow">is</span> <span class="n">boykov_kolmogorov</span><span class="p">:</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;cutoff&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cutoff</span>
+
+    <span class="k">return</span> <span class="n">nx</span><span class="o">.</span><span class="n">maximum_flow_value</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="edge_connectivity"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.connectivity.connectivity.edge_connectivity.html#networkx.algorithms.connectivity.connectivity.edge_connectivity">[docs]</a><span class="k">def</span> <span class="nf">edge_connectivity</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">flow_func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns the edge connectivity of the graph or digraph G.</span>
+
+<span class="sd">    The edge connectivity is equal to the minimum number of edges that</span>
+<span class="sd">    must be removed to disconnect G or render it trivial. If source</span>
+<span class="sd">    and target nodes are provided, this function returns the local edge</span>
+<span class="sd">    connectivity: the minimum number of edges that must be removed to</span>
+<span class="sd">    break all paths from source to target in G.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+<span class="sd">        Undirected or directed graph</span>
+
+<span class="sd">    s : node</span>
+<span class="sd">        Source node. Optional. Default value: None.</span>
+
+<span class="sd">    t : node</span>
+<span class="sd">        Target node. Optional. Default value: None.</span>
+
+<span class="sd">    flow_func : function</span>
+<span class="sd">        A function for computing the maximum flow among a pair of nodes.</span>
+<span class="sd">        The function has to accept at least three parameters: a Digraph,</span>
+<span class="sd">        a source node, and a target node. And return a residual network</span>
+<span class="sd">        that follows NetworkX conventions (see :meth:`maximum_flow` for</span>
+<span class="sd">        details). If flow_func is None, the default maximum flow function</span>
+<span class="sd">        (:meth:`edmonds_karp`) is used. See below for details. The</span>
+<span class="sd">        choice of the default function may change from version</span>
+<span class="sd">        to version and should not be relied on. Default value: None.</span>
+
+<span class="sd">    cutoff : integer, float, or None (default: None)</span>
+<span class="sd">        If specified, the maximum flow algorithm will terminate when the</span>
+<span class="sd">        flow value reaches or exceeds the cutoff. This only works for flows</span>
+<span class="sd">        that support the cutoff parameter (most do) and is ignored otherwise.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    K : integer</span>
+<span class="sd">        Edge connectivity for G, or local edge connectivity if source</span>
+<span class="sd">        and target were provided</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; # Platonic icosahedral graph is 5-edge-connected</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.icosahedral_graph()</span>
+<span class="sd">    &gt;&gt;&gt; nx.edge_connectivity(G)</span>
+<span class="sd">    5</span>
+
+<span class="sd">    You can use alternative flow algorithms for the underlying</span>
+<span class="sd">    maximum flow computation. In dense networks the algorithm</span>
+<span class="sd">    :meth:`shortest_augmenting_path` will usually perform better</span>
+<span class="sd">    than the default :meth:`edmonds_karp`, which is faster for</span>
+<span class="sd">    sparse networks with highly skewed degree distributions.</span>
+<span class="sd">    Alternative flow functions have to be explicitly imported</span>
+<span class="sd">    from the flow package.</span>
+
+<span class="sd">    &gt;&gt;&gt; from networkx.algorithms.flow import shortest_augmenting_path</span>
+<span class="sd">    &gt;&gt;&gt; nx.edge_connectivity(G, flow_func=shortest_augmenting_path)</span>
+<span class="sd">    5</span>
+
+<span class="sd">    If you specify a pair of nodes (source and target) as parameters,</span>
+<span class="sd">    this function returns the value of local edge connectivity.</span>
+
+<span class="sd">    &gt;&gt;&gt; nx.edge_connectivity(G, 3, 7)</span>
+<span class="sd">    5</span>
+
+<span class="sd">    If you need to perform several local computations among different</span>
+<span class="sd">    pairs of nodes on the same graph, it is recommended that you reuse</span>
+<span class="sd">    the data structures used in the maximum flow computations. See</span>
+<span class="sd">    :meth:`local_edge_connectivity` for details.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This is a flow based implementation of global edge connectivity.</span>
+<span class="sd">    For undirected graphs the algorithm works by finding a &#39;small&#39;</span>
+<span class="sd">    dominating set of nodes of G (see algorithm 7 in [1]_ ) and</span>
+<span class="sd">    computing local maximum flow (see :meth:`local_edge_connectivity`)</span>
+<span class="sd">    between an arbitrary node in the dominating set and the rest of</span>
+<span class="sd">    nodes in it. This is an implementation of algorithm 6 in [1]_ .</span>
+<span class="sd">    For directed graphs, the algorithm does n calls to the maximum</span>
+<span class="sd">    flow function. This is an implementation of algorithm 8 in [1]_ .</span>
+
+<span class="sd">    See also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :meth:`local_edge_connectivity`</span>
+<span class="sd">    :meth:`local_node_connectivity`</span>
+<span class="sd">    :meth:`node_connectivity`</span>
+<span class="sd">    :meth:`maximum_flow`</span>
+<span class="sd">    :meth:`edmonds_karp`</span>
+<span class="sd">    :meth:`preflow_push`</span>
+<span class="sd">    :meth:`shortest_augmenting_path`</span>
+<span class="sd">    :meth:`k_edge_components`</span>
+<span class="sd">    :meth:`k_edge_subgraphs`</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Abdol-Hossein Esfahanian. Connectivity Algorithms.</span>
+<span class="sd">        http://www.cse.msu.edu/~cse835/Papers/Graph_connectivity_revised.pdf</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">s</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">t</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">s</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">t</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;Both source and target must be specified.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Local edge connectivity</span>
+    <span class="k">if</span> <span class="n">s</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">t</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">s</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">G</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;node </span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s2"> not in graph&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">t</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">G</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;node </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2"> not in graph&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">local_edge_connectivity</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">flow_func</span><span class="o">=</span><span class="n">flow_func</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="n">cutoff</span><span class="p">)</span>
+
+    <span class="c1"># Global edge connectivity</span>
+    <span class="c1"># reuse auxiliary digraph and residual network</span>
+    <span class="n">H</span> <span class="o">=</span> <span class="n">build_auxiliary_edge_connectivity</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="n">build_residual_network</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="s2">&quot;capacity&quot;</span><span class="p">)</span>
+    <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">flow_func</span><span class="o">=</span><span class="n">flow_func</span><span class="p">,</span> <span class="n">auxiliary</span><span class="o">=</span><span class="n">H</span><span class="p">,</span> <span class="n">residual</span><span class="o">=</span><span class="n">R</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+        <span class="c1"># Algorithm 8 in [1]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">nx</span><span class="o">.</span><span class="n">is_weakly_connected</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+            <span class="k">return</span> <span class="mi">0</span>
+
+        <span class="c1"># initial value for \lambda is minimum degree</span>
+        <span class="n">L</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">d</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">degree</span><span class="p">())</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">cutoff</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">L</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">cutoff</span><span class="p">,</span> <span class="n">L</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;cutoff&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">L</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">L</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">local_edge_connectivity</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">nodes</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>  <span class="c1"># last node!</span>
+                <span class="n">L</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">local_edge_connectivity</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">L</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># undirected</span>
+        <span class="c1"># Algorithm 6 in [1]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">nx</span><span class="o">.</span><span class="n">is_connected</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+            <span class="k">return</span> <span class="mi">0</span>
+
+        <span class="c1"># initial value for \lambda is minimum degree</span>
+        <span class="n">L</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">d</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">degree</span><span class="p">())</span>
+
+        <span class="k">if</span> <span class="n">cutoff</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">L</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">cutoff</span><span class="p">,</span> <span class="n">L</span><span class="p">)</span>
+
+        <span class="c1"># A dominating set is \lambda-covering</span>
+        <span class="c1"># We need a dominating set with at least two nodes</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">G</span><span class="p">:</span>
+            <span class="n">D</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">dominating_set</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">start_with</span><span class="o">=</span><span class="n">node</span><span class="p">)</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">D</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">D</span><span class="p">:</span>
+                <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># in complete graphs the dominating sets will always be of one node</span>
+            <span class="c1"># thus we return min degree</span>
+            <span class="k">return</span> <span class="n">L</span>
+
+        <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">D</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;cutoff&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">L</span>
+            <span class="n">L</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">local_edge_connectivity</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">L</span></div>
+</pre></div>
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

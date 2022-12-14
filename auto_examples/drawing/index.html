@@ -1,0 +1,664 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Drawing &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/drawing/index';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/auto_examples/drawing/index.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          href="../../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Custom Node Position" href="plot_center_node.html" />
+    <link rel="prev" title="Simple graph" href="../basic/plot_simple_graph.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.0rc2.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">
+    Section Navigation
+  </p>
+  <div class="bd-toc-item navbar-nav">
+    <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../basic/index.html">Basic</a></li>
+<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">Drawing</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="plot_center_node.html">Custom Node Position</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_chess_masters.html">Chess Masters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_custom_node_icons.html">Custom node icons</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_degree.html">Degree Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_directed.html">Directed Graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_edge_colormap.html">Edge Colormap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_ego_graph.html">Ego Graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_eigenvalues.html">Eigenvalues</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_four_grids.html">Four Grids</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_house_with_colors.html">House With Colors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_knuth_miles.html">Knuth Miles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_labels_and_colors.html">Labels And Colors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_multipartite_graph.html">Multipartite Layout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_node_colormap.html">Node Colormap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_rainbow_coloring.html">Rainbow Coloring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_random_geometric_graph.html">Random Geometric Graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_sampson.html">Sampson</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_selfloops.html">Self-loops</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_simple_path.html">Simple Path</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_spectral_grid.html">Spectral Embedding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_tsp.html">Traveling Salesman Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_unix_email.html">Unix Email</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_weighted_graph.html">Weighted Graph</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../3d_drawing/index.html">3D Drawing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../graphviz_layout/index.html">Graphviz Layout</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../graphviz_drawing/index.html">Graphviz Drawing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../graph/index.html">Graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../algorithms/index.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../external/index.html">External libraries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../geospatial/index.html">Geospatial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../subclass/index.html">Subclass</a></li>
+</ul>
+
+  </div>
+</nav>
+    </div>
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <section id="drawing">
+<span id="sphx-glr-auto-examples-drawing"></span><h1>Drawing<a class="headerlink" href="#drawing" title="Permalink to this heading">#</a></h1>
+<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="Draw a graph with node(s) located at user-defined positions."><img alt="Custom Node Position" src="../../_images/sphx_glr_plot_center_node_thumb.png" />
+<p><a class="reference internal" href="plot_center_node.html#sphx-glr-auto-examples-drawing-plot-center-node-py"><span class="std std-ref">Custom Node Position</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Custom Node Position</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="An example of the MultiDiGraph class."><img alt="Chess Masters" src="../../_images/sphx_glr_plot_chess_masters_thumb.png" />
+<p><a class="reference internal" href="plot_chess_masters.html#sphx-glr-auto-examples-drawing-plot-chess-masters-py"><span class="std std-ref">Chess Masters</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Chess Masters</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Example of using custom icons to represent nodes with matplotlib."><img alt="Custom node icons" src="../../_images/sphx_glr_plot_custom_node_icons_thumb.png" />
+<p><a class="reference internal" href="plot_custom_node_icons.html#sphx-glr-auto-examples-drawing-plot-custom-node-icons-py"><span class="std std-ref">Custom node icons</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Custom node icons</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This example shows several ways to visualize the distribution of the degree of nodes with two c..."><img alt="Degree Analysis" src="../../_images/sphx_glr_plot_degree_thumb.png" />
+<p><a class="reference internal" href="plot_degree.html#sphx-glr-auto-examples-drawing-plot-degree-py"><span class="std std-ref">Degree Analysis</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Degree Analysis</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Draw a graph with directed edges using a colormap and different node sizes."><img alt="Directed Graph" src="../../_images/sphx_glr_plot_directed_thumb.png" />
+<p><a class="reference internal" href="plot_directed.html#sphx-glr-auto-examples-drawing-plot-directed-py"><span class="std std-ref">Directed Graph</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Directed Graph</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Draw a graph with matplotlib, color edges."><img alt="Edge Colormap" src="../../_images/sphx_glr_plot_edge_colormap_thumb.png" />
+<p><a class="reference internal" href="plot_edge_colormap.html#sphx-glr-auto-examples-drawing-plot-edge-colormap-py"><span class="std std-ref">Edge Colormap</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Edge Colormap</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Example using the NetworkX ego_graph() function to return the main egonet of the largest hub in..."><img alt="Ego Graph" src="../../_images/sphx_glr_plot_ego_graph_thumb.png" />
+<p><a class="reference internal" href="plot_ego_graph.html#sphx-glr-auto-examples-drawing-plot-ego-graph-py"><span class="std std-ref">Ego Graph</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Ego Graph</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Create an G{n,m} random graph and compute the eigenvalues."><img alt="Eigenvalues" src="../../_images/sphx_glr_plot_eigenvalues_thumb.png" />
+<p><a class="reference internal" href="plot_eigenvalues.html#sphx-glr-auto-examples-drawing-plot-eigenvalues-py"><span class="std std-ref">Eigenvalues</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Eigenvalues</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Draw a 4x4 graph with matplotlib."><img alt="Four Grids" src="../../_images/sphx_glr_plot_four_grids_thumb.png" />
+<p><a class="reference internal" href="plot_four_grids.html#sphx-glr-auto-examples-drawing-plot-four-grids-py"><span class="std std-ref">Four Grids</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Four Grids</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Draw a graph with matplotlib."><img alt="House With Colors" src="../../_images/sphx_glr_plot_house_with_colors_thumb.png" />
+<p><a class="reference internal" href="plot_house_with_colors.html#sphx-glr-auto-examples-drawing-plot-house-with-colors-py"><span class="std std-ref">House With Colors</span></a></p>
+  <div class="sphx-glr-thumbnail-title">House With Colors</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="miles_graph() returns an undirected graph over 128 US cities. The cities each have location and..."><img alt="Knuth Miles" src="../../_images/sphx_glr_plot_knuth_miles_thumb.png" />
+<p><a class="reference internal" href="plot_knuth_miles.html#sphx-glr-auto-examples-drawing-plot-knuth-miles-py"><span class="std std-ref">Knuth Miles</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Knuth Miles</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Use nodelist and edgelist to apply custom coloring and labels to various components of a graph."><img alt="Labels And Colors" src="../../_images/sphx_glr_plot_labels_and_colors_thumb.png" />
+<p><a class="reference internal" href="plot_labels_and_colors.html#sphx-glr-auto-examples-drawing-plot-labels-and-colors-py"><span class="std std-ref">Labels And Colors</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Labels And Colors</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Multipartite Layout"><img alt="Multipartite Layout" src="../../_images/sphx_glr_plot_multipartite_graph_thumb.png" />
+<p><a class="reference internal" href="plot_multipartite_graph.html#sphx-glr-auto-examples-drawing-plot-multipartite-graph-py"><span class="std std-ref">Multipartite Layout</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Multipartite Layout</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Draw a graph with matplotlib, color by degree."><img alt="Node Colormap" src="../../_images/sphx_glr_plot_node_colormap_thumb.png" />
+<p><a class="reference internal" href="plot_node_colormap.html#sphx-glr-auto-examples-drawing-plot-node-colormap-py"><span class="std std-ref">Node Colormap</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Node Colormap</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Generate a complete graph with 13 nodes in a circular layout with the edges colored by node dis..."><img alt="Rainbow Coloring" src="../../_images/sphx_glr_plot_rainbow_coloring_thumb.png" />
+<p><a class="reference internal" href="plot_rainbow_coloring.html#sphx-glr-auto-examples-drawing-plot-rainbow-coloring-py"><span class="std std-ref">Rainbow Coloring</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Rainbow Coloring</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Example"><img alt="Random Geometric Graph" src="../../_images/sphx_glr_plot_random_geometric_graph_thumb.png" />
+<p><a class="reference internal" href="plot_random_geometric_graph.html#sphx-glr-auto-examples-drawing-plot-random-geometric-graph-py"><span class="std std-ref">Random Geometric Graph</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Random Geometric Graph</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Sampson&#x27;s monastery data."><img alt="Sampson" src="../../_images/sphx_glr_plot_sampson_thumb.png" />
+<p><a class="reference internal" href="plot_sampson.html#sphx-glr-auto-examples-drawing-plot-sampson-py"><span class="std std-ref">Sampson</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Sampson</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="A self-loop is an edge that originates from and terminates the same node. This example shows ho..."><img alt="Self-loops" src="../../_images/sphx_glr_plot_selfloops_thumb.png" />
+<p><a class="reference internal" href="plot_selfloops.html#sphx-glr-auto-examples-drawing-plot-selfloops-py"><span class="std std-ref">Self-loops</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Self-loops</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Draw a graph with matplotlib."><img alt="Simple Path" src="../../_images/sphx_glr_plot_simple_path_thumb.png" />
+<p><a class="reference internal" href="plot_simple_path.html#sphx-glr-auto-examples-drawing-plot-simple-path-py"><span class="std std-ref">Simple Path</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Simple Path</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="The spectral layout positions the nodes of the graph based on the eigenvectors of the graph Lap..."><img alt="Spectral Embedding" src="../../_images/sphx_glr_plot_spectral_grid_thumb.png" />
+<p><a class="reference internal" href="plot_spectral_grid.html#sphx-glr-auto-examples-drawing-plot-spectral-grid-py"><span class="std std-ref">Spectral Embedding</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Spectral Embedding</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This is an example of a drawing solution of the traveling salesman problem"><img alt="Traveling Salesman Problem" src="../../_images/sphx_glr_plot_tsp_thumb.png" />
+<p><a class="reference internal" href="plot_tsp.html#sphx-glr-auto-examples-drawing-plot-tsp-py"><span class="std std-ref">Traveling Salesman Problem</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Traveling Salesman Problem</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Create a directed graph, allowing multiple edges and self loops, from a unix mailbox.  The node..."><img alt="Unix Email" src="../../_images/sphx_glr_plot_unix_email_thumb.png" />
+<p><a class="reference internal" href="plot_unix_email.html#sphx-glr-auto-examples-drawing-plot-unix-email-py"><span class="std std-ref">Unix Email</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Unix Email</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="An example using Graph as a weighted network."><img alt="Weighted Graph" src="../../_images/sphx_glr_plot_weighted_graph_thumb.png" />
+<p><a class="reference internal" href="plot_weighted_graph.html#sphx-glr-auto-examples-drawing-plot-weighted-graph-py"><span class="std std-ref">Weighted Graph</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Weighted Graph</div>
+</div></div><div class="toctree-wrapper compound">
+</div>
+</section>
+
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>
