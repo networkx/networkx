@@ -16,9 +16,9 @@ Please send comments and questions to the `networkx-discuss mailing list
 Highlights
 ----------
 
-This release is the result of 4 months of work with over 217 pull requests by
-37 contributors. We also have a :ref:`guide for people moving from NetworkX 2.X
-to NetworkX 3.0 <migration_guide_from_2.x_to_3.0>`. Highlights include:
+This release is the result of 8 months of work with over 217 pull requests by
+37 contributors. We also have a `guide for people moving from NetworkX 2.X
+to NetworkX 3.0 <https://networkx.org/documentation/latest/release/migration_guide_from_2.x_to_3.0.html>`. Highlights include:
 
 - Better syncing between G._succ and G._adj for directed G.
   And slightly better speed from all the core adjacency data structures.
@@ -42,8 +42,7 @@ to NetworkX 3.0 <migration_guide_from_2.x_to_3.0>`. Highlights include:
 - We have added an experimental plugin feature which let users choose alternate
   backends like GraphBLAS, CuGraph for computation. This is an opt-in feature and
   may change in future releases.
-- Improved integration with the general Scientific Python ecosystem: <link to
-  the migration guide section?>
+- Improved integration with the general `Scientific Python ecosystem <https://networkx.org/documentation/latest/release/migration_guide_from_2.x_to_3.0.html#improved-integration-with-scientific-python>`
 
 Improvements
 ------------
