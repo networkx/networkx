@@ -174,6 +174,12 @@ class TestGeneratorInverseLine:
         G.add_edges_from(G_edges)
         pytest.raises(nx.NetworkXError, nx.inverse_line_graph, G)
 
+    def test_edgeless_graph(self):
+        G = nx.Graph()
+        G.add_nodes_from([0, 1])
+        with pytest.raises(nx.NetworkXError, match=".*edgeless graph"):
+            nx.inverse_line_graph(G)
+
     def test_non_line_graph(self):
         # These are other non-line graphs
 
