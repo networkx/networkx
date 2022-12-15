@@ -49,8 +49,8 @@ def get_contiguous_oriented_labeling(graph):
     Returns
     -------
     a contiguous oriented labeling.
-    First dicionary of each edge and it's labaling.
-    Second dictionary of each vertex and its oriantations.
+    First value is a list of each edge ordered by its labeling.
+    Second value is a dictionary of each vertex and its oriantations.
 
     Notes
     -------
@@ -76,14 +76,15 @@ def get_contiguous_oriented_labeling(graph):
 
     Example 1:
     >>> get_contiguous_oriented_labeling(graph_example1())
-    {(1, 2): 2, (1, 3): 1, (2, 3): 3, (2, 4): 4, (4, 6): 7, (4, 5): 6, (5, 6): 5},
+    [(3,1), (1,2), (3,2), (2,4), (4,5), (5,6), (4,6)],
     {1: [-1,-2], 2: [2,3,-4], 3: [-1,-3], 4: [4,-5,-7], 5: [5,-6], 6: [6,7]}
     Example 2:
     >>> get_contiguous_oriented_labeling(graph_example2())
-    {(1, 2): 5, (2, 3): 4, (2, 5): 1, (5, 4): 2, (4, 3): 3}, {1: [5], 2: [1,4,-5], 3: [3,-4], 4: [2, -3], 5: [-1, -2]}
+    [(2,5), (4,5), (3,4), (2,3), (1,2)],
+    {1: [5], 2: [1,4,-5], 3: [3,-4], 4: [2, -3], 5: [-1, -2]}
     Example 3:
     >>> get_contiguous_oriented_labeling(graph_example3())
-     {(1, 2): 1, (2, 3): 2, (2, 5): 5, (4, 5): 4, (3, 4): 3, (5, 6): 6},
+     [(1, 2), (2,3), (3,4), (4,5), (2,5), (5,6)],
     {1: [-1], 2: [1,-2,-5], 3: [2,-3], 4: [3,-4], 5: [4,5,-6], 6: [6]}
 
     """
