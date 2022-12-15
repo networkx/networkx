@@ -88,5 +88,5 @@ def get_contiguous_oriented_labeling(graph):
     {1: [-1], 2: [1,-2,-5], 3: [2,-3], 4: [3,-4], 5: [4,5,-6], 6: [6]}
 
     """
-    return {}, {}
+    return [], {}
 
