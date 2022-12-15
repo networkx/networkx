@@ -9,8 +9,8 @@ def graph_example1():
     g = nx.Graph()
     g.add_nodes_from([1, 2, 3, 4, 5, 6])
     g.add_edges_from([(1, 2), (1, 3), (2, 3), (2, 4), (4, 6), (4, 5), (5, 6)])
-    nx.draw(g)
-    plt.show()
+    # nx.draw(g)
+    # plt.show()
     return g
 
 
@@ -21,8 +21,8 @@ def graph_example2():
     g = nx.Graph()
     g.add_nodes_from([1, 2, 3, 4, 5])
     g.add_edges_from([(1, 2), (2, 3), (2, 5), (5, 4), (4, 3)])
-    nx.draw(g)
-    plt.show()
+    # nx.draw(g)
+    # plt.show()
     return g
 
 
@@ -33,8 +33,8 @@ def graph_example3():
     g = nx.Graph()
     g.add_nodes_from([1, 2, 3, 4, 5, 6])
     g.add_edges_from([(1, 2), (2, 3), (2, 5), (5, 4), (4, 3), (5, 6)])
-    nx.draw(g)
-    plt.show()
+    # nx.draw(g)
+    # plt.show()
     return g
 
 
@@ -48,7 +48,9 @@ def get_contiguous_oriented_labeling(graph):
 
     Returns
     -------
-    a contiguous oriented labeling
+    a contiguous oriented labeling.
+    First dicionary of each edge and it's labaling.
+    Second dictionary of each vertex and its oriantations.
 
     Notes
     -------
@@ -67,21 +69,23 @@ def get_contiguous_oriented_labeling(graph):
 
      References
     ----------
-    Bases on an article by Xiaohui Bei and Warut Suksompong
+    Based on an article by Xiaohui Bei and Warut Suksompong
     https://arxiv.org/pdf/1910.14129.pdf#subsection.4.1 - 2019
 
     Programmer : Eran Katz
 
     Example 1:
     >>> get_contiguous_oriented_labeling(graph_example1())
-    1
+    {(1, 2): 2, (1, 3): 1, (2, 3): 3, (2, 4): 4, (4, 6): 7, (4, 5): 6, (5, 6): 5},
+    {1: [-1,-2], 2: [2,3,-4], 3: [-1,-3], 4: [4,-5,-7], 5: [5,-6], 6: [6,7]}
     Example 2:
     >>> get_contiguous_oriented_labeling(graph_example2())
-    1
+    {(1, 2): 5, (2, 3): 4, (2, 5): 1, (5, 4): 2, (4, 3): 3}, {1: [5], 2: [1,4,-5], 3: [3,-4], 4: [2, -3], 5: [-1, -2]}
     Example 3:
     >>> get_contiguous_oriented_labeling(graph_example3())
-    1
+     {(1, 2): 1, (2, 3): 2, (2, 5): 5, (4, 5): 4, (3, 4): 3, (5, 6): 6},
+    {1: [-1], 2: [1,-2,-5], 3: [2,-3], 4: [3,-4], 5: [4,5,-6], 6: [6]}
 
     """
-    pass
+    return {}, {}
 
