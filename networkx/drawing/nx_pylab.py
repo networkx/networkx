@@ -433,20 +433,20 @@ def draw_networkx_nodes(
         alpha = None
 
     if isinstance(node_shape, list):
-        for i,s in enumerate(node_shape):
+        for i, s in enumerate(node_shape):
             node_collection = ax.scatter(
                 xy[i, 0],
                 xy[i, 1],
-                s=node_size[i] if isinstance(node_size,list) else node_size,
-                c=node_color[i] if isinstance(node_color,list) else node_color,
+                s=node_size[i] if isinstance(node_size, list) else node_size,
+                c=node_color[i] if isinstance(node_color, list) else node_color,
                 marker=s,
-                cmap=cmap[i] if isinstance(cmap,list) else cmap,
+                cmap=cmap[i] if isinstance(cmap, list) else cmap,
                 vmin=vmin,
                 vmax=vmax,
-                alpha=alpha[i] if isinstance(alpha,list) else alpha,
-                linewidths=linewidths[i] if isinstance(linewidths,list) else linewidths,
-                edgecolors=edgecolors[i] if isinstance(edgecolors,list) else edgecolors,
-                label=label[i] if isinstance(label,list) else label,
+                alpha=alpha[i] if isinstance(alpha, list) else alpha,
+                linewidths=linewidths[i] if isinstance(linewidths, list) else linewidths,
+                edgecolors=edgecolors[i] if isinstance(edgecolors, list) else edgecolors,
+                label=label[i] if isinstance(label, list) else label,
                 )
     else:
         node_collection = ax.scatter(
@@ -840,7 +840,7 @@ def draw_networkx_edges(
                 # Scale each factor of each arrow based on arrowsize list
                 mutation_scale = arrowsize[i]
 
-            if np.iterable(node_shape): #multiple node shapes
+            if np.iterable(node_shape): # multiple node shapes
                 source, target = edgelist[i][:2]
                 source_node_shape = node_shape[nodelist.index(source)]
                 target_node_shape = node_shape[nodelist.index(target)]
@@ -855,7 +855,9 @@ def draw_networkx_edges(
                 shrink_source = to_marker_edge(source_node_size, source_node_shape)
                 shrink_target = to_marker_edge(target_node_size, target_node_shape)
             else:
-                shrink_source = shrink_target = to_marker_edge(node_size, source_node_shape)
+                shrink_source = shrink_target = to_marker_edge(
+                    node_size, source_node_shape
+                )
 
             if shrink_source < min_source_margin:
                 shrink_source = min_source_margin
