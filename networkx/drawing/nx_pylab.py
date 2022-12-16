@@ -356,7 +356,7 @@ def draw_networkx_nodes(
     node_shape :  string or array of strings (default='o')
         The shape of the node.  Specification is as matplotlib.scatter
         marker, one of 'so^>v<dph8'. This can be a single shape, in which case
-        it will be applied to all nodes. Otherwise if it is an array, the 
+        it will be applied to all nodes. Otherwise if it is an array, the
         elements of node_shape will be applied to the shapes in order.
 
     alpha : float or array of floats (default=None)
