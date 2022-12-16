@@ -444,14 +444,14 @@ def draw_networkx_nodes(
                 vmin=vmin,
                 vmax=vmax,
                 alpha=alpha[i] if isinstance(alpha, list) else alpha,
-                linewidths=(linewidths[i]
-                    if isinstance(linewidths, list)
-                    else linewidths),
-                edgecolors=(edgecolors[i]
-                    if isinstance(edgecolors, list)
-                    else edgecolors),
+                linewidths=(
+                    linewidths[i] if isinstance(linewidths, list) else linewidths
+                ),
+                edgecolors=(
+                    edgecolors[i] if isinstance(edgecolors, list) else edgecolors
+                ),
                 label=label[i] if isinstance(label, list) else label,
-                )
+            )
     else:
         node_collection = ax.scatter(
             xy[:, 0],
