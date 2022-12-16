@@ -840,7 +840,7 @@ def draw_networkx_edges(
                 # Scale each factor of each arrow based on arrowsize list
                 mutation_scale = arrowsize[i]
 
-            if np.iterable(node_shape): # multiple node shapes
+            if np.iterable(node_shape):  # multiple node shapes
                 source, target = edgelist[i][:2]
                 source_node_shape = node_shape[nodelist.index(source)]
                 target_node_shape = node_shape[nodelist.index(target)]
