@@ -485,6 +485,7 @@ def draw_networkx_nodes(
     node_collection.set_zorder(2)
     return node_collection
 
+
 def draw_networkx_edges(
     G,
     pos,
