@@ -1,13 +1,14 @@
 """
-Finding the maximum subgraph isomorphism on two graphs.
+Finding the number of edges of the maximum subgraph isomorphism on two graphs.
 """
 
-__all__ = ["find_max_sub_isomorphism_graph"]
+__all__ = ["find_max__edges_of_sub_isomorphism_graph"]
 
-def find_max_sub_isomorphism_graph(G1, G2):
+
+def find_max__edges_of_sub_isomorphism_graph(G1, G2):
     """
-    Finding the maximum subgraph isomorphism on two given (directed) graphs: G1 and G2.
-    The function returns the maximum subgraph.
+    Finding the number of edges in the maximum subgraph isomorphism on two given (directed) graphs: G1 and G2.
+    The function returns the number of edges of the maximum subgraph.
 
     Parameters
     ----------
@@ -40,8 +41,8 @@ def find_max_sub_isomorphism_graph(G1, G2):
     -----------
     Stu L.Akirav & B.Schtalman
 
-    Example 1: finding the maximum subgraph isomorphism on two graphs 
-    -----------------------------------------------------------------
+    Example 1: finding the maximum subgraph isomorphism on two graphs (trivial)
+    ---------------------------------------------------------------------------
     >>> import networkx as nx
 
     # creates and builds G1 
@@ -57,7 +58,31 @@ def find_max_sub_isomorphism_graph(G1, G2):
     # creates and builds G2_tag
     >>> G2_tag = G1
 
-    >>> find_max_sub_isomorphism_graph(G1, G2)
-    DiGraph with 4 nodes and 4 edges
+    >>> find_max__edges_of_sub_isomorphism_graph(G1, G2)
+    4
+
+    Example 2: finding the maximum subgraph isomorphism on two graphs (non trivial)
+    -------------------------------------------------------------------------------
+    # creates and builds G3 
+    >>> G3 = nx.DiGraph()
+    >>> G3.add_nodes_from(range(1, 7))
+    >>> edges = [(1, 2), (2, 3)]
+    >>> G3.add_edges_from(edges)
+
+    # creates and builds G4 
+    >>> G4 = nx.DiGraph()
+    >>> G4.add_nodes_from(range(1, 15))
+    >>> edges = [(1, 4), (2, 6), (3, 5), (4, 7), (5, 8), (5, 10), (10, 10)]
+    >>> G4.add_edges_from(edges)
+
+    # creates and builds G4_tag
+    >>> G4_tag = nx.DiGraph()
+    >>> G4_tag.add_nodes_from(range(1, 6))
+    >>> G4_tag.add_node(7)
+    >>> edges = [(1, 4), (4, 7), (3, 5)]
+    >>> G4_tag.add_edges_from(edges)
+
+    >>> find_max__edges_of_sub_isomorphism_graph(G3, G4)
+    2
     """
     return 0  # Empty implementation

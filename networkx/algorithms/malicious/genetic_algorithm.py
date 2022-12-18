@@ -68,6 +68,7 @@ def two_vertex_exchange_heuristic(G):
     >>> G1.nodes == G2.nodes and G1.edges == G2.edges
     True
     """
+    
     return 0  # Empty implementation
 
 

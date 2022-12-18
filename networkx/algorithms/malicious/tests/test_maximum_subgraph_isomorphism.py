@@ -4,7 +4,7 @@
 
 import pytest
 import networkx as nx
-from networkx.algorithms.malicious.maximum_subgraph_isomorphism import find_max_sub_isomorphism_graph
+from networkx.algorithms.malicious.maximum_subgraph_isomorphism import find_max__edges_of_sub_isomorphism_graph
 
 
 class TestMaxumumSubgraphIsomorphism:
@@ -83,27 +83,24 @@ class TestMaxumumSubgraphIsomorphism:
         Checks the basic original code from the paper:
         http://rosaec.snu.ac.kr/publish/2010/T2/KiMo-GECCO-2010.pdf
         """
-
-        assert find_max_sub_isomorphism_graph(
-            self.basic_RG, self.basic_1_RG) == self.basic_RG
+        assert find_max__edges_of_sub_isomorphism_graph(
+            self.basic_RG, self.basic_RG_v1) == len(self.basic_RG.edges)
 
     def test_basic_code_vs_basic_code_v2(self):
         """
         Checks the first varient (Variable renaming) of the basic original code from the paper:
         http://rosaec.snu.ac.kr/publish/2010/T2/KiMo-GECCO-2010.pdf
         """
-
-        assert find_max_sub_isomorphism_graph(
-            self.basic_RG, self.basic_v2_RG) == self.basic_RG
+        assert find_max__edges_of_sub_isomorphism_graph(
+            self.basic_RG, self.basic_RG_v2) == len(self.basic_RG.edges)
 
     def test_basic_code_vs_basic_code_v3(self):
         """
         Checks the second varient (Statement reordering) of the basic original code from the paper:
         http://rosaec.snu.ac.kr/publish/2010/T2/KiMo-GECCO-2010.pdf
         """
-
-        assert find_max_sub_isomorphism_graph(
-            self.basic_RG, self.basic_v3_RG) == self.basic_RG
+        assert find_max__edges_of_sub_isomorphism_graph(
+            self.basic_RG, self.basic_RG_v3) == len(self.basic_RG.edges)
 
     def test_basic_code_vs_basic_code_v4(self):
         """
@@ -111,9 +108,8 @@ class TestMaxumumSubgraphIsomorphism:
         http://rosaec.snu.ac.kr/publish/2010/T2/KiMo-GECCO-2010.pdf
 
         """
-
-        assert find_max_sub_isomorphism_graph(
-            self.basic_RG, self.basic_v4_RG) == self.basic_RG
+        assert find_max__edges_of_sub_isomorphism_graph(
+            self.basic_RG, self.basic_RG_v4) == len(self.basic_RG.edges)
 
     def test_basic_code_vs_basic_code_v5(self):
         """
@@ -121,22 +117,19 @@ class TestMaxumumSubgraphIsomorphism:
         http://rosaec.snu.ac.kr/publish/2010/T2/KiMo-GECCO-2010.pdf
 
         """
-
-        assert find_max_sub_isomorphism_graph(
-            self.basic_RG, self.basic_v5_RG) == self.basic_RG
+        assert find_max__edges_of_sub_isomorphism_graph(
+            self.basic_RG, self.basic_RG_v5) == len(self.basic_RG.edges)
 
     def test_stupid_code_vs_stupid_code_v1(self):
         """
         Checks the stupid_code example that we made up:
         """
-
-        assert find_max_sub_isomorphism_graph(
-            self.stupid_RG, self.stupid_v1_RG) == self.stupid_RG
+        assert find_max__edges_of_sub_isomorphism_graph(
+            self.stupid_RG, self.stupid_RG_v1) == len(self.stupid_RG.edges)
 
     def test_fork_code_vs_fork_code_v1(self):
         """
         Checks the first variant of stupid_code:
         """
-
-        assert find_max_sub_isomorphism_graph(
-            self.fork_RG, self.fork_v1_RG) == self.fork_RG
+        assert find_max__edges_of_sub_isomorphism_graph(
+            self.fork_RG, self.fork_R1_RG) == len(self.fork_RG.edges)

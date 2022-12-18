@@ -47,7 +47,7 @@ def calculate_fitness(G1, G2):
     -----------
     Stu L.Akirav & B.Schtalman
 
-    Example 1: finding the maximum subgraph isomorphism on two graphs 
+    Example: finding the maximum subgraph isomorphism on two graphs 
     -----------------------------------------------------------------
     >>> import networkx as nx
 
@@ -65,4 +65,4 @@ def calculate_fitness(G1, G2):
     >>> calculate_fitness(G1, G2)
     2.5
     """
-    return 0  # Empty implementation
+    return -1  # Empty implementation
