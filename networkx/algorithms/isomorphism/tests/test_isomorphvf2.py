@@ -401,3 +401,9 @@ def test_monomorphism_edge_match():
 
     gm = iso.DiGraphMatcher(G, SG, edge_match=iso.categorical_edge_match("label", None))
     assert gm.subgraph_is_monomorphic()
+
+
+def test_isomorphvf2pp_multidigraphs():
+    g = nx.MultiDiGraph({0: [1, 1, 2, 2, 3], 1: [2, 3, 3], 2: [3]})
+    h = nx.MultiDiGraph({0: [1, 1, 2, 2, 3], 1: [2, 3, 3], 3: [2]})
+    assert not (nx.vf2pp_is_isomorphic(g, h))

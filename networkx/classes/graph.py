@@ -579,6 +579,16 @@ class Graph:
         --------
         add_node
 
+        Notes
+        -------
+        When adding nodes from an iterator over the graph you are changing,
+        a `RuntimeError` can be raised with message:
+        `RuntimeError: dictionary changed size during iteration`. This
+        happens when the graph's underlying dictionary is modified during
+        iteration. To avoid this error, evaluate the iterator into a separate
+        object, e.g. by using `list(iterator_of_nodes)`, and pass this
+        object to `G.add_nodes_from`.
+
         Examples
         --------
         >>> G = nx.Graph()  # or DiGraph, MultiGraph, MultiDiGraph, etc
@@ -603,6 +613,13 @@ class Graph:
         >>> H.nodes[1]["size"]
         11
 
+        Evaluate an iterator over a graph if using it to modify the same graph
+
+        >>> G = nx.Graph([(0, 1), (1, 2), (3, 4)])
+        >>> # wrong way - will raise RuntimeError
+        >>> # G.add_nodes_from(n + 1 for n in G.nodes)
+        >>> # correct way
+        >>> G.add_nodes_from(list(n + 1 for n in G.nodes))
         """
         for n in nodes_for_adding:
             try:
@@ -674,6 +691,16 @@ class Graph:
         --------
         remove_node
 
+        Notes
+        -------
+        When removing nodes from an iterator over the graph you are changing,
+        a `RuntimeError` will be raised with message:
+        `RuntimeError: dictionary changed size during iteration`. This
+        happens when the graph's underlying dictionary is modified during
+        iteration. To avoid this error, evaluate the iterator into a separate
+        object, e.g. by using `list(iterator_of_nodes)`, and pass this
+        object to `G.remove_nodes_from`.
+
         Examples
         --------
         >>> G = nx.path_graph(3)  # or DiGraph, MultiGraph, MultiDiGraph, etc
@@ -684,6 +711,13 @@ class Graph:
         >>> list(G.nodes)
         []
 
+        Evaluate an iterator over a graph if using it to modify the same graph
+
+        >>> G = nx.Graph([(0, 1), (1, 2), (3, 4)])
+        >>> # this command will fail, as the graph's dict is modified during iteration
+        >>> # G.remove_nodes_from(n for n in G.nodes if n < 2)
+        >>> # this command will work, since the dictionary underlying graph is not modified
+        >>> G.remove_nodes_from(list(n for n in G.nodes if n < 2))
         """
         adj = self._adj
         for n in nodes:
@@ -950,6 +984,14 @@ class Graph:
         Edge attributes specified in an ebunch take precedence over
         attributes specified via keyword arguments.
 
+        When adding edges from an iterator over the graph you are changing,
+        a `RuntimeError` can be raised with message:
+        `RuntimeError: dictionary changed size during iteration`. This
+        happens when the graph's underlying dictionary is modified during
+        iteration. To avoid this error, evaluate the iterator into a separate
+        object, e.g. by using `list(iterator_of_edges)`, and pass this
+        object to `G.add_edges_from`.
+
         Examples
         --------
         >>> G = nx.Graph()  # or DiGraph, MultiGraph, MultiDiGraph, etc
@@ -961,6 +1003,15 @@ class Graph:
 
         >>> G.add_edges_from([(1, 2), (2, 3)], weight=3)
         >>> G.add_edges_from([(3, 4), (1, 4)], label="WN2898")
+
+        Evaluate an iterator over a graph if using it to modify the same graph
+
+        >>> G = nx.Graph([(1, 2), (2, 3), (3, 4)])
+        >>> # Grow graph by one new node, adding edges to all existing nodes.
+        >>> # wrong way - will raise RuntimeError
+        >>> # G.add_edges_from(((5, n) for n in G.nodes))
+        >>> # correct way - note that there will be no self-edge for node 5
+        >>> G.add_edges_from(list((5, n) for n in G.nodes))
         """
         for e in ebunch_to_add:
             ne = len(e)
@@ -1012,10 +1063,28 @@ class Graph:
         the edge data. For MultiGraph/MultiDiGraph, duplicate edges
         are stored.
 
+        When adding edges from an iterator over the graph you are changing,
+        a `RuntimeError` can be raised with message:
+        `RuntimeError: dictionary changed size during iteration`. This
+        happens when the graph's underlying dictionary is modified during
+        iteration. To avoid this error, evaluate the iterator into a separate
+        object, e.g. by using `list(iterator_of_edges)`, and pass this
+        object to `G.add_weighted_edges_from`.
+
         Examples
         --------
         >>> G = nx.Graph()  # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_weighted_edges_from([(0, 1, 3.0), (1, 2, 7.5)])
+
+        Evaluate an iterator over edges before passing it
+
+        >>> G = nx.Graph([(1, 2), (2, 3), (3, 4)])
+        >>> weight = 0.1
+        >>> # Grow graph by one new node, adding edges to all existing nodes.
+        >>> # wrong way - will raise RuntimeError
+        >>> # G.add_weighted_edges_from(((5, n, weight) for n in G.nodes))
+        >>> # correct way - note that there will be no self-edge for node 5
+        >>> G.add_weighted_edges_from(list((5, n, weight) for n in G.nodes))
         """
         self.add_edges_from(((u, v, {weight: d}) for u, v, d in ebunch_to_add), **attr)
 
