@@ -40,6 +40,8 @@ def test_edge_betweenness_partition():
 
 
 def test_edge_current_flow_betweenness_partition():
+    pytest.importorskip("numpy")
+
     G = nx.barbell_graph(3, 0)
     C = nx.community.edge_current_flow_betweenness_partition(G, 2)
     answer = [{0, 1, 2}, {3, 4, 5}]
