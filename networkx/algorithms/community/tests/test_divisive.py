@@ -1,53 +1,100 @@
-import pytest
-
 import networkx as nx
-from networkx.algorithms.community import (
-    edge_betweenness_partition,
-    edge_current_flow_betweenness_partition,
-)
+import pytest
 
 
 def test_edge_betweenness_partition():
     G = nx.barbell_graph(3, 0)
-    C = edge_betweenness_partition(G, 2)
-    assert C == [{0, 1, 2}, {3, 4, 5}]
+    C = nx.community.edge_betweenness_partition(G, 2)
+    answer = [{0, 1, 2}, {3, 4, 5}]
+    assert len(C) == len(answer)
+    for s in answer:
+        assert s in C
 
     G = nx.barbell_graph(3, 1)
-    C = edge_betweenness_partition(G, 3)
-    assert C == [{0, 1, 2}, {4, 5, 6}, {3}]
+    C = nx.community.edge_betweenness_partition(G, 3)
+    answer = [{0, 1, 2}, {4, 5, 6}, {3}]
+    assert len(C) == len(answer)
+    for s in answer:
+        assert s in C
 
-    C = edge_betweenness_partition(G, 7)
-    assert C == list(map(set, [[n] for n in G]))
+    C = nx.community.edge_betweenness_partition(G, 7)
+    answer = [{n} for n in G]
+    assert len(C) == len(answer)
+    for s in answer:
+        assert s in C
 
-    C = edge_betweenness_partition(G, 1)
+    C = nx.community.edge_betweenness_partition(G, 1)
+    assert C == [set(G)]
+
+    C = nx.community.edge_betweenness_partition(G, 1, weight="weight")
     assert C == [set(G)]
 
     with pytest.raises(nx.NetworkXError):
-        edge_betweenness_partition(G, 0)
+        nx.community.edge_betweenness_partition(G, 0)
 
     with pytest.raises(nx.NetworkXError):
-        edge_betweenness_partition(G, -1)
+        nx.community.edge_betweenness_partition(G, -1)
 
     with pytest.raises(nx.NetworkXError):
-        edge_betweenness_partition(G, 10)
+        nx.community.edge_betweenness_partition(G, 10)
 
 
 def test_edge_current_flow_betweenness_partition():
     G = nx.barbell_graph(3, 0)
-    C = edge_current_flow_betweenness_partition(G, 2)
-    assert C == [{0, 1, 2}, {3, 4, 5}]
+    C = nx.community.edge_current_flow_betweenness_partition(G, 2)
+    answer = [{0, 1, 2}, {3, 4, 5}]
+    assert len(C) == len(answer)
+    for s in answer:
+        assert s in C
 
     G = nx.barbell_graph(3, 1)
-    C = edge_current_flow_betweenness_partition(G, 7)
-    assert C == [{n} for n in G]
+    C = nx.community.edge_current_flow_betweenness_partition(G, 2)
+    answer = [{0, 1, 2, 3}, {4, 5, 6}]
+    assert len(C) == len(answer)
+    for s in answer:
+        assert s in C
 
-    C = edge_current_flow_betweenness_partition(G, 1)
+    C = nx.community.edge_current_flow_betweenness_partition(G, 3)
+    answer = [{0, 1, 2}, {4, 5, 6}, {3}]
+    assert len(C) == len(answer)
+    for s in answer:
+        assert s in C
+
+    C = nx.community.edge_current_flow_betweenness_partition(G, 4)
+    answer = [{1, 2}, {4, 5, 6}, {3}, {0}]
+    assert len(C) == len(answer)
+    for s in answer:
+        assert s in C
+
+    C = nx.community.edge_current_flow_betweenness_partition(G, 5)
+    answer = [{1, 2}, {5, 6}, {3}, {0}, {4}]
+    assert len(C) == len(answer)
+    for s in answer:
+        assert s in C
+
+    C = nx.community.edge_current_flow_betweenness_partition(G, 6)
+    answer = [{2}, {5, 6}, {3}, {0}, {4}, {1}]
+    assert len(C) == len(answer)
+    for s in answer:
+        assert s in C
+
+    C = nx.community.edge_current_flow_betweenness_partition(G, 7)
+    answer = [{n} for n in G]
+    assert len(C) == len(answer)
+    for s in answer:
+        assert s in C
+
+    C = nx.community.edge_current_flow_betweenness_partition(G, 1)
     assert C == [set(G)]
-    with pytest.raises(nx.NetworkXError):
-        edge_current_flow_betweenness_partition(G, 0)
+
+    C = nx.community.edge_current_flow_betweenness_partition(G, 1, weight="weight")
+    assert C == [set(G)]
 
     with pytest.raises(nx.NetworkXError):
-        edge_current_flow_betweenness_partition(G, -1)
+        nx.community.edge_current_flow_betweenness_partition(G, 0)
 
     with pytest.raises(nx.NetworkXError):
-        edge_current_flow_betweenness_partition(G, 10)
+        nx.community.edge_current_flow_betweenness_partition(G, -1)
+
+    with pytest.raises(nx.NetworkXError):
+        nx.community.edge_current_flow_betweenness_partition(G, 10)

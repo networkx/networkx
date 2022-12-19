@@ -1,6 +1,4 @@
 import functools
-import random
-from operator import itemgetter
 
 import networkx as nx
 
@@ -10,54 +8,7 @@ __all__ = [
 ]
 
 
-def _divisive_partition(G, number_of_sets, edge_ranking):
-    """Partition created by iteratively removing the highest `edge_ranking` edge.
-
-    Parameters
-    ----------
-    G : NetworkX Graph
-      The graph to be partitioned
-
-    number_of_sets : int
-      Number of sets in the desired partition.
-
-    edge_ranking : function from NetworkXGraph to dict
-      A function that takes a NetworkXGraph as a single
-      parameter and returns a dictionary keyed by
-      edges. The values in the dictionary must be
-      comparable.
-
-    Returns
-    -------
-    partition : list of sets
-      Partition of the nodes of G
-
-    Raises
-    ------
-    NetworkXError
-      If number_of_sets is <= 0 or if number_of_sets > len(G)
-    """
-    if number_of_sets <= 0:
-        raise nx.NetworkXError("number_of_sets must be >0")
-    elif number_of_sets == 1:
-        return [set(G)]
-    elif number_of_sets == len(G):
-        return [{n} for n in G]
-    elif number_of_sets > len(G):
-        raise nx.NetworkXError("number_of_sets must be <= len(G)")
-
-    H = G.copy()
-    while True:
-        cc = list(nx.connected_components(H))
-        if len(cc) >= number_of_sets:
-            break
-        ranking = edge_ranking(H).items()
-        edge = max(ranking, key=itemgetter(1))[0]
-        H.remove_edge(*edge)
-    return cc
-
-
-def edge_betweenness_partition(G, number_of_sets, normalized=True, weight=None):
+def edge_betweenness_partition(G, number_of_sets, weight=None):
     """Partition created by iteratively removing the highest edge betweenness edge.
 
     This algorithm works by calculating the edge betweenness for all
@@ -73,9 +24,6 @@ def edge_betweenness_partition(G, number_of_sets, normalized=True, weight=None):
 
     number_of_sets : int
       Number of sets in the desired partition of the graph
-
-    normalized : boolean optional, default=True
-      Whether to normalize the edge betweenness calculation
 
     weight : key, optional, default=None
       The key to use if using weights for edge betweenness calculation
@@ -116,15 +64,26 @@ def edge_betweenness_partition(G, number_of_sets, normalized=True, weight=None):
        Volume 486, Issue 3-5 p. 75-174
        http://arxiv.org/abs/0906.0612
     """
-    ranking = functools.partial(
-        nx.edge_betweenness_centrality, normalized=normalized, weight=weight
-    )
-    return _divisive_partition(G, number_of_sets, ranking)
+    if number_of_sets <= 0:
+        raise nx.NetworkXError("number_of_sets must be >0")
+    if number_of_sets == 1:
+        return [set(G)]
+    if number_of_sets == len(G):
+        return [{n} for n in G]
+    if number_of_sets > len(G):
+        raise nx.NetworkXError("number_of_sets must be <= len(G)")
+
+    H = G.copy()
+    partition = list(nx.connected_components(H))
+    while len(partition) < number_of_sets:
+        ranking = nx.edge_betweenness_centrality(H, weight=weight)
+        edge = max(ranking, key=ranking.get)
+        H.remove_edge(*edge)
+        partition = list(nx.connected_components(H))
+    return partition
 
 
-def edge_current_flow_betweenness_partition(
-    G, number_of_sets, normalized=True, weight=None
-):
+def edge_current_flow_betweenness_partition(G, number_of_sets, weight=None):
     """Partition created by removing the highest edge current flow betweenness edge.
 
     This algorithm works by calculating the edge current flow
@@ -141,11 +100,9 @@ def edge_current_flow_betweenness_partition(
     number_of_sets : int
       Number of sets in the desired partition of the graph
 
-    normalized : boolean optional, default=True
-      Whether to normalize the edge betweenness calculation
-
-    weight : key, optional, default=None
-      The key to use if using weights for edge betweenness calculation
+    weight : key, optional (default=None)
+      The edge attribute key to use as weights for
+      edge current flow betweenness calculations
 
     Returns
     -------
@@ -182,9 +139,56 @@ def edge_current_flow_betweenness_partition(
        Volume 486, Issue 3-5 p. 75-174
        http://arxiv.org/abs/0906.0612
     """
-    ranking = functools.partial(
-        nx.edge_current_flow_betweenness_centrality,
-        normalized=normalized,
-        weight=weight,
+    if number_of_sets <= 0:
+        raise nx.NetworkXError("number_of_sets must be >0")
+    elif number_of_sets == 1:
+        return [set(G)]
+    elif number_of_sets == len(G):
+        return [{n} for n in G]
+    elif number_of_sets > len(G):
+        raise nx.NetworkXError("number_of_sets must be <= len(G)")
+
+    rank = functools.partial(
+        nx.edge_current_flow_betweenness_centrality, normalized=False, weight=weight
     )
-    return _divisive_partition(G, number_of_sets, ranking)
+
+    # current flow requires a connected network so we track the components explicitly
+    H = G.copy()
+    partition = list(nx.connected_components(H))
+    if len(partition) > 1:
+        Hcc_subgraphs = [H.subgraph(cc).copy() for cc in partition]
+    else:
+        Hcc_subgraphs = [H]
+
+    ranking = {}
+    for Hcc in Hcc_subgraphs:
+        ranking.update(rank(Hcc))
+
+    while len(partition) < number_of_sets:
+        edge = max(ranking, key=ranking.get)
+        for cc, Hcc in zip(partition, Hcc_subgraphs):
+            if edge[0] in cc:
+                Hcc.remove_edge(*edge)
+                del ranking[edge]
+                splitcc_list = list(nx.connected_components(Hcc))
+                if len(splitcc_list) > 1:
+                    # there are 2 connected components. split off smaller one
+                    cc_new = min(splitcc_list, key=len)
+                    Hcc_new = Hcc.subgraph(cc_new).copy()
+                    # update edge rankings for Hcc_new
+                    newranks = rank(Hcc_new)
+                    for e, r in newranks.items():
+                        ranking[e if e in ranking else e[::-1]] = r
+                    # append new cc and Hcc to their lists.
+                    partition.append(cc_new)
+                    Hcc_subgraphs.append(Hcc_new)
+
+                    # leave existing cc and Hcc in their lists, but shrink them
+                    Hcc.remove_nodes_from(cc_new)
+                    cc.difference_update(cc_new)
+                # update edge rankings for Hcc whether it was split or not
+                newranks = rank(Hcc)
+                for e, r in newranks.items():
+                    ranking[e if e in ranking else e[::-1]] = r
+                break
+    return partition
