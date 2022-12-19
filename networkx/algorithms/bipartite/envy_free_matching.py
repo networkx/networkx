@@ -3,7 +3,6 @@ import itertools
 
 import networkx as nx
 
-
 __all__ = [
     "envy_free_matching",
     "minimum_weight_envy_free_matching",
@@ -12,7 +11,7 @@ __all__ = [
 INFINITY = float("inf")
 
 
-def _EFM_partition(G, M: dict):
+def _EFM_partition(G, M=None):
     r"""Returns the unique EFM partition of bipartite graph.
 
     A matching in a bipartite graph with parts X and Y is called envy-free, if no unmatched
@@ -27,6 +26,7 @@ def _EFM_partition(G, M: dict):
       Undirected bipartite graph
     M: dict
        dictionary that represents a maximum matching in G.
+       If M is none, the function will find the maximum matching.
 
     Returns
     -------
@@ -53,11 +53,15 @@ def _EFM_partition(G, M: dict):
         >>> _EFM_partition(Graph,Matching)
         [{0,1,2},{},{3,4,5},{}]
 
+        Where there exists a perfect matching the maximum envy free matching is the perfect matching.
+
         Example 2: Non-empty envy-free matching
         >>> Graph=nx.Graph([(0,3),(3,0),(0,4),(4,0),(1,4),(4,1),(2,4),(4,2)])
         >>> Matching={0:3,3:0,1:4,4:1}
         >>> _EFM_partition(Graph,Matching)
         [{0},{1,2},{3},{4}]
+
+        Here the graph contains non-empty envy-free matching so X_L,Y_L are not empty.
 
         Example 3: Odd path
         >>> Graph=nx.Graph([(0,3),(3,0),(1,3),(3,1),(1,4),(4,1),(2,4),(4,2)])
@@ -65,11 +69,15 @@ def _EFM_partition(G, M: dict):
         >>> _EFM_partition(Graph,Matching)
         [{},{0,1,2},{},{3,4}]
 
+        Like presented in the article, odd path contains an empty envy-free matching so X_L and Y_L are empty in the partition.
+
         Example 4: Y-path-saturated graph
         >>> Graph=nx.Graph([(0,6),(6,0),(1,6),(6,1),(1,7),(7,1),(2,6),(6,2),(2,8),(8,2),(3,9),(9,3),(3,6),(6,3),(4,8),(8,4),(4,7),(7,4),(5,9),(9,5)])
         >>> Matching={0:6,6:0,1:7,7:1,2:8,8:2,3:9,9:3}
         >>> _EFM_partition(Graph,Matching)
         [{},{0,1,2,3,4,5},{},{6,7,8,9}]
+
+        Like presented in the article, Y-path-saturated graph contains an empty envy-free matching so X_L and Y_L are empty in the partition.
 
     """
     pass
@@ -88,7 +96,7 @@ def envy_free_matching(G):
     Returns
     -------
     Matching: dictionary
-        The matching is returned as a dictionary.
+        The Maximum cardinallity envy-free matching is returned as a dictionary.
     References
     ----------
     .. [1] "Envy-free Matchings in Bipartite Graphs and their Applications to Fair Division",
@@ -105,6 +113,8 @@ def envy_free_matching(G):
         >>> envy_free_matching(Graph)
         {0:3,3:0,1:4,4:1,2:5,5:2}
 
+        Where there exists a perfect matching the maximum envy free matching is the perfect matching.
+
         Example 2: Non-empty envy-free matching
         >>> Graph=nx.Graph([(0,3),(3,0),(0,4),(4,0),(1,4),(4,1),(2,4),(4,2)])
         >>> envy_free_matching(Graph)
@@ -115,15 +125,14 @@ def envy_free_matching(G):
         >>> envy_free_matching(Graph)
         {}
 
-        Example 3: Odd path
-        >>> Graph=nx.Graph([(0,3),(3,0),(1,3),(3,1),(1,4),(4,1),(2,4),(4,2)])
-        >>> envy_free_matching(Graph)
-        {}
+        Like presented in the article, odd path contains an empty envy-free matching so the returned matching is empty.
 
         Example 4: Y-path-saturated graph
         >>> Graph=nx.Graph([(0,6),(6,0),(1,6),(6,1),(1,7),(7,1),(2,6),(6,2),(2,8),(8,2),(3,9),(9,3),(3,6),(6,3),(4,8),(8,4),(4,7),(7,4),(5,9),(9,5)])
         >>> envy_free_matching(Graph)
         {}
+
+        Like presented in the article, Y-path-saturated graph contains an empty envy-free matching so X_L and Y_L are empty in the partition.
     """
     pass
 
@@ -141,7 +150,7 @@ def minimum_weight_envy_free_matching(G):
     Returns
     -------
     Matching: dictionary
-        The matching is returned as a dictionary.
+        The minimum cost maximum cardinallity matching is returned as a dictionary.
     References
     ----------
     .. [1] "Envy-free Matchings in Bipartite Graphs and their Applications to Fair Division",
@@ -175,6 +184,10 @@ def minimum_weight_envy_free_matching(G):
         >>> Graph.add_edge(5,3,weight=108)
         >>> minimum_weight_envy_free_matching(Graph)
         {0:5,5:0,1:4,4:1,2:3,3:2}
+
+        Where there exists a perfect matching the maximum envy free matching is the perfect matching this is the least cost perfect matching.
+
+
 
         Example 2: Non-empty envy-free matching
         >>> Graph=nx.Graph()
