@@ -52,15 +52,15 @@ You can change many features of the nodes and edges.
 >>> pos = {n: (n, n) for n in G}  # nodes set on a line
 
 >>> G.nodes[0]["style"] = "blue"
->>> G.nodes[2]["style"] = "line width=3"
+>>> G.nodes[2]["style"] = "line width=3,draw"
 >>> G.nodes[3]["label"] = "Stop"
->>> G.edges[(1, 2)]["style"] = "line width=3"
->>> G.edges[(2, 3)]["style"] = "green"
 >>> G.edges[(0, 1)]["label"] = "1st Step"
 >>> G.edges[(0, 1)]["label_opts"] = "near start"
+>>> G.edges[(1, 2)]["style"] = "line width=3"
+>>> G.edges[(1, 2)]["label"] = "2nd Step"
+>>> G.edges[(2, 3)]["style"] = "green"
 >>> G.edges[(2, 3)]["label"] = "3rd Step"
 >>> G.edges[(2, 3)]["label_opts"] = "near end"
->>> G.edges[(1, 2)]["label"] = "2nd Step"
 
 >>> nx.write_latex(G, "latex_graph.tex", pos=pos, as_document=True)
 
@@ -284,7 +284,7 @@ def to_latex_raw(
         # edge text is drawn using the TikZ node command inside curly brackets {}
         e_label = f" node{els} {{{edge_label[edge]}}}" if edge in edge_label else ""
 
-        result += i8 + f"\\draw ({u}) to{e_opts}{e_label} ({v});"
+        result += i8 + f"\\draw{e_opts} ({u}) to{e_label} ({v});"
 
     result += "\n      \\end{scope}\n    \\end{tikzpicture}\n"
     return result
