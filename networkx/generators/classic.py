@@ -165,7 +165,6 @@ def barbell_graph(m1, m2, create_using=None):
     Notes
     -----
 
-    For $m1 > 2$ and $m2 >= 0$.
 
     Two identical complete graphs $K_{m1}$ form the left and right bells,
     and are connected by a path $P_{m2}$.
