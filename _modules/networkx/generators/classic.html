@@ -608,7 +608,26 @@
 <div class="viewcode-block" id="barbell_graph"><a class="viewcode-back" href="../../../reference/generated/networkx.generators.classic.barbell_graph.html#networkx.generators.classic.barbell_graph">[docs]</a><span class="k">def</span> <span class="nf">barbell_graph</span><span class="p">(</span><span class="n">m1</span><span class="p">,</span> <span class="n">m2</span><span class="p">,</span> <span class="n">create_using</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Returns the Barbell Graph: two complete graphs connected by a path.</span>
 
-<span class="sd">    For $m1 &gt; 1$ and $m2 &gt;= 0$.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    m1 : int</span>
+<span class="sd">        Size of the left and right barbells, must be greater than 2.</span>
+
+<span class="sd">    m2 : int</span>
+<span class="sd">        Length of the path connecting the barbells.</span>
+
+<span class="sd">    create_using : NetworkX graph constructor, optional (default=nx.Graph)</span>
+<span class="sd">       Graph type to create. If graph instance, then cleared before populated.</span>
+<span class="sd">       Only undirected Graphs are supported.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    G : NetworkX graph</span>
+<span class="sd">        A barbell graph.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+
 
 <span class="sd">    Two identical complete graphs $K_{m1}$ form the left and right bells,</span>
 <span class="sd">    and are connected by a path $P_{m2}$.</span>
@@ -640,14 +659,17 @@
     <span class="n">G</span><span class="o">.</span><span class="n">add_nodes_from</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">m1</span><span class="p">,</span> <span class="n">m1</span> <span class="o">+</span> <span class="n">m2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">m2</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">G</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span><span class="n">pairwise</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">m1</span><span class="p">,</span> <span class="n">m1</span> <span class="o">+</span> <span class="n">m2</span><span class="p">)))</span>
+
     <span class="c1"># right barbell</span>
     <span class="n">G</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span>
         <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m1</span> <span class="o">+</span> <span class="n">m2</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">m1</span> <span class="o">+</span> <span class="n">m2</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">u</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">m1</span> <span class="o">+</span> <span class="n">m2</span><span class="p">)</span>
     <span class="p">)</span>
+
     <span class="c1"># connect it up</span>
     <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">m1</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">m1</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">m2</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">m1</span> <span class="o">+</span> <span class="n">m2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">m1</span> <span class="o">+</span> <span class="n">m2</span><span class="p">)</span>
+
     <span class="k">return</span> <span class="n">G</span></div>
 
 

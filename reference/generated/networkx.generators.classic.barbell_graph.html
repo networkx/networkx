@@ -630,7 +630,26 @@
 <dt class="sig sig-object py" id="networkx.generators.classic.barbell_graph">
 <span class="sig-name descname"><span class="pre">barbell_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">create_using</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/networkx/generators/classic.html#barbell_graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#networkx.generators.classic.barbell_graph" title="Permalink to this definition">#</a></dt>
 <dd><p>Returns the Barbell Graph: two complete graphs connected by a path.</p>
-<p>For <span class="math notranslate nohighlight">\(m1 &gt; 1\)</span> and <span class="math notranslate nohighlight">\(m2 &gt;= 0\)</span>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>m1</strong><span class="classifier">int</span></dt><dd><p>Size of the left and right barbells, must be greater than 2.</p>
+</dd>
+<dt><strong>m2</strong><span class="classifier">int</span></dt><dd><p>Length of the path connecting the barbells.</p>
+</dd>
+<dt><strong>create_using</strong><span class="classifier">NetworkX graph constructor, optional (default=nx.Graph)</span></dt><dd><p>Graph type to create. If graph instance, then cleared before populated.
+Only undirected Graphs are supported.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>G</strong><span class="classifier">NetworkX graph</span></dt><dd><p>A barbell graph.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
 <p>Two identical complete graphs <span class="math notranslate nohighlight">\(K_{m1}\)</span> form the left and right bells,
 and are connected by a path <span class="math notranslate nohighlight">\(P_{m2}\)</span>.</p>
 <dl class="simple">
