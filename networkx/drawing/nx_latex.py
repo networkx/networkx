@@ -101,13 +101,13 @@ If you want **subfigures** each containing one graph, you can input a list of gr
         (0.0, -1.0) node (6){6}
         (0.707, -0.707) node (7){7};
       \begin{scope}[-]
-        \draw (0) to[line width=1.5] (1);
-        \draw (1) to[line width=1.5] (2);
-        \draw (2) to[line width=1.5] (3);
-        \draw (3) to[line width=1.5] (4);
-        \draw (4) to[line width=1.5] (5);
-        \draw (5) to[line width=1.5] (6);
-        \draw (6) to[line width=1.5] (7);
+        \draw[line width=1.5] (0) to (1);
+        \draw[line width=1.5] (1) to (2);
+        \draw[line width=1.5] (2) to (3);
+        \draw[line width=1.5] (3) to (4);
+        \draw[line width=1.5] (4) to (5);
+        \draw[line width=1.5] (5) to (6);
+        \draw[line width=1.5] (6) to (7);
       \end{scope}
     \end{tikzpicture}
 \end{figure}
