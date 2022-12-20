@@ -138,6 +138,7 @@ __all__ = [
 ]
 
 
+@nx.utils.not_implemented_for("multigraph")
 def to_latex_raw(
     G,
     pos="pos",
