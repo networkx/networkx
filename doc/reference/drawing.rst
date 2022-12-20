@@ -103,7 +103,6 @@ LaTeX Code
 .. autosummary::
    :toctree: generated/
 
+   to_latex_raw
    to_latex
    write_latex
-   to_latex_tikz_raw
-   to_latex_tikz
