@@ -6,19 +6,23 @@ import networkx as nx
 
 def test_tikz_attributes():
     G = nx.path_graph(4, create_using=nx.DiGraph)
-    G.add_edge(0, 0)
     pos = {n: (n, n) for n in G}
 
+    G.add_edge(0, 0)
+    G.edges[(0, 0)]["label"] = "Loop"
+    G.edges[(0, 0)]["label_options"] = "midway"
+
     G.nodes[0]["style"] = "blue"
-    G.nodes[2]["style"] = "line width 3,blue!50"
+    G.nodes[2]["style"] = "circle,draw,blue!50"
     G.nodes[3]["label"] = "Stop"
-    G.edges[(1, 2)]["style"] = "line width 3,green!90"
-    G.edges[(2, 3)]["style"] = "green"
     G.edges[(0, 1)]["label"] = "1st Step"
-    G.edges[(0, 1)]["label_options"] = "near start"
+    G.edges[(0, 1)]["label_options"] = "near end"
     G.edges[(2, 3)]["label"] = "3rd Step"
-    G.edges[(2, 3)]["label_options"] = "near end"
+    G.edges[(2, 3)]["label_options"] = "near start"
+    G.edges[(2, 3)]["style"] = "bend left,green"
     G.edges[(1, 2)]["label"] = "2nd"
+    G.edges[(1, 2)]["label_options"] = "pos=0.5"
+    G.edges[(1, 2)]["style"] = "green!90"
 
     output_tex = nx.to_latex(
         G,
@@ -36,13 +40,13 @@ def test_tikz_attributes():
       \draw
         (0, 0) node[blue] (0){0}
         (1, 1) node (1){1}
-        (2, 2) node[line width 3,blue!50] (2){2}
+        (2, 2) node[circle,draw,blue!50] (2){2}
         (3, 3) node (3){Stop};
       \begin{scope}[->]
-        \draw (0) to (1) node[near start] {1st Step};
-        \draw (0) to[loop,] (0);
-        \draw (1) to[line width 3,green!90] (2) node[] {2nd};
-        \draw (2) to[green] (3) node[near end] {3rd Step};
+        \draw (0) to node[near end] {1st Step} (1);
+        \draw (0) to[loop,] node[midway] {Loop} (0);
+        \draw (1) to[green!90] node[pos=0.5] {2nd} (2);
+        \draw (2) to[bend left,green] node[near start] {3rd Step} (3);
       \end{scope}
     \end{tikzpicture}
 \end{figure}"""

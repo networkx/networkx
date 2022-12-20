@@ -284,7 +284,7 @@ def to_latex_raw(
         # edge text is drawn using the TikZ node command inside curly brackets {}
         e_label = f" node{els} {{{edge_label[edge]}}}" if edge in edge_label else ""
 
-        result += i8 + f"\\draw ({u}) to{e_opts} ({v}){e_label};"
+        result += i8 + f"\\draw ({u}) to{e_opts}{e_label} ({v});"
 
     result += "\n      \\end{scope}\n    \\end{tikzpicture}\n"
     return result
