@@ -567,7 +567,7 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>G</strong><span class="classifier">graph</span></dt><dd><p>An undirected graph with 4 or more nodes.</p>
+<dt><strong>G</strong><span class="classifier">graph</span></dt><dd><p>An undirected graph.</p>
 </dd>
 <dt><strong>niter</strong><span class="classifier">integer (optional, default=1)</span></dt><dd><p>An edge is rewired approximatively niter times.</p>
 </dd>
@@ -583,6 +583,12 @@ See <a class="reference internal" href="../../randomness.html#randomness"><span 
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
 <dt><strong>G</strong><span class="classifier">graph</span></dt><dd><p>The latticized graph.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt>NetworkXError</dt><dd><p>If there are fewer than 4 nodes or 2 edges in <code class="xref py py-obj docutils literal notranslate"><span class="pre">G</span></code></p>
 </dd>
 </dl>
 </dd>

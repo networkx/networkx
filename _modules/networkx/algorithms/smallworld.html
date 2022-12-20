@@ -509,6 +509,11 @@
 <span class="sd">    G : graph</span>
 <span class="sd">        The randomized graph.</span>
 
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NetworkXError</span>
+<span class="sd">        If there are fewer than 4 nodes or 2 edges in `G`</span>
+
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    The implementation is adapted from the algorithm by Maslov and Sneppen</span>
@@ -521,7 +526,9 @@
 <span class="sd">           Science 296.5569 (2002): 910-913.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;Graph has less than four nodes.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;Graph has fewer than four nodes.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;Graph has fewer that 2 edges&quot;</span><span class="p">)</span>
 
     <span class="kn">from</span> <span class="nn">networkx.utils</span> <span class="kn">import</span> <span class="n">cumulative_distribution</span><span class="p">,</span> <span class="n">discrete_sequence</span>
 
@@ -582,7 +589,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    G : graph</span>
-<span class="sd">        An undirected graph with 4 or more nodes.</span>
+<span class="sd">        An undirected graph.</span>
 
 <span class="sd">    niter : integer (optional, default=1)</span>
 <span class="sd">        An edge is rewired approximatively niter times.</span>
@@ -601,6 +608,11 @@
 <span class="sd">    -------</span>
 <span class="sd">    G : graph</span>
 <span class="sd">        The latticized graph.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NetworkXError</span>
+<span class="sd">        If there are fewer than 4 nodes or 2 edges in `G`</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -623,7 +635,9 @@
     <span class="n">local_conn</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">connectivity</span><span class="o">.</span><span class="n">local_edge_connectivity</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;Graph has less than four nodes.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;Graph has fewer than four nodes.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;Graph has fewer that 2 edges&quot;</span><span class="p">)</span>
     <span class="c1"># Instead of choosing uniformly at random from a generated edge list,</span>
     <span class="c1"># this algorithm chooses nonuniformly from the set of nodes with</span>
     <span class="c1"># probability weighted by degree.</span>

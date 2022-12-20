@@ -495,13 +495,13 @@ only available if these additional libraries are installed.</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="#matrix-to-array"><span class="std std-ref">Removal of matrix semantics</span></a>.</p>
 <ul>
-<li><p>Removing all uses of <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.matrix.html#numpy.matrix" title="(in NumPy v1.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.matrix</span></code></a> in favor of <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>.</p></li>
+<li><p>Removing all uses of <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.matrix.html#numpy.matrix" title="(in NumPy v1.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.matrix</span></code></a> in favor of <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>.</p></li>
 <li><p>Adoption of the scipy.sparse <strong>array</strong> interface.</p></li>
 </ul>
 </li>
 <li><p><a class="reference internal" href="#scipy-default-impl"><span class="std std-ref">NumPy or SciPy implementations of some algorithms by default
 (e.g. pagerank)</span></a>.</p></li>
-<li><p><a class="reference external" href="https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.Generator" title="(in NumPy v1.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.Generator</span></code></a> support for random number generation.</p></li>
+<li><p><a class="reference external" href="https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.Generator" title="(in NumPy v1.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.Generator</span></code></a> support for random number generation.</p></li>
 <li><p><a class="reference internal" href="#recarray-to-structured"><span class="std std-ref">Replace recarray  support</span></a> with more generic
 support for structured dtypes.</p></li>
 </ul>
@@ -546,17 +546,17 @@ purposes as <code class="docutils literal notranslate"><span class="pre">network
 but is not exposed publicly to discourage it’s use.</p>
 </section>
 <section id="supporting-numpy-random-generator">
-<h2>Supporting <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.Generator" title="(in NumPy v1.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.Generator</span></code></a><a class="headerlink" href="#supporting-numpy-random-generator" title="Permalink to this heading">#</a></h2>
+<h2>Supporting <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.Generator" title="(in NumPy v1.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.Generator</span></code></a><a class="headerlink" href="#supporting-numpy-random-generator" title="Permalink to this heading">#</a></h2>
 <p>NumPy v1.17 introduced a new interface for pseudo-random number generation.
 The <code class="xref py py-obj docutils literal notranslate"><span class="pre">py_random_state</span></code> and <code class="xref py py-obj docutils literal notranslate"><span class="pre">np_random_state</span></code>
-decorators have added support for the new <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.Generator" title="(in NumPy v1.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.Generator</span></code></a> instances;
-in other words, the <code class="docutils literal notranslate"><span class="pre">seed</span></code> argument now accepts <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.Generator" title="(in NumPy v1.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.Generator</span></code></a> instances:</p>
+decorators have added support for the new <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.Generator" title="(in NumPy v1.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.Generator</span></code></a> instances;
+in other words, the <code class="docutils literal notranslate"><span class="pre">seed</span></code> argument now accepts <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.Generator" title="(in NumPy v1.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.Generator</span></code></a> instances:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">barbell_graph</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pos</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">spring_layout</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">123456789</span><span class="p">))</span>
 </pre></div>
 </div>
-<p>The <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.Generator" title="(in NumPy v1.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.Generator</span></code></a> interface includes several improvements over the
-original <a class="reference external" href="https://numpy.org/doc/stable/reference/random/legacy.html#numpy.random.RandomState" title="(in NumPy v1.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.RandomState</span></code></a>, including better statistical properties
+<p>The <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.Generator" title="(in NumPy v1.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.Generator</span></code></a> interface includes several improvements over the
+original <a class="reference external" href="https://numpy.org/doc/stable/reference/random/legacy.html#numpy.random.RandomState" title="(in NumPy v1.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.RandomState</span></code></a>, including better statistical properties
 and improved performance.
 However <code class="docutils literal notranslate"><span class="pre">Generator</span></code> is not stream-compatibile with <code class="docutils literal notranslate"><span class="pre">RandomState</span></code> and
 does not guarantee stream-compatibility with future versions of NumPy.
@@ -584,7 +584,7 @@ possible but may require specific versions of numpy to be installed.</p>
 <span id="recarray-to-structured"></span><h2>NumPy structured dtypes for multi-attribute adjacency matrices<a class="headerlink" href="#numpy-structured-dtypes-for-multi-attribute-adjacency-matrices" title="Permalink to this heading">#</a></h2>
 <p>Prior to NetworkX 3.0, multi-attribute adjacency matrices were supported
 through the <code class="docutils literal notranslate"><span class="pre">nx.to_numpy_recarray</span></code> conversion function.
-<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.recarray.html#numpy.recarray" title="(in NumPy v1.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.recarray</span></code></a> is a convenience wrapper around <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> with structured
+<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.recarray.html#numpy.recarray" title="(in NumPy v1.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.recarray</span></code></a> is a convenience wrapper around <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> with structured
 dtypes.
 As such, thisconversion function has been removed in NetworkX 3.0 and support
 for structured dtypes has been added to <code class="docutils literal notranslate"><span class="pre">to_numpy_array</span></code> instead, generally
