@@ -59,7 +59,7 @@ def katz_centrality(
 
     beta : scalar or dictionary, optional (default=1.0)
       Weight attributed to the immediate neighborhood. If not a scalar, the
-      dictionary must have an value for every node.
+      dictionary must have a value for every node.
 
     max_iter : integer, optional (default=1000)
       Maximum number of iterations in power method.
@@ -128,7 +128,7 @@ def katz_centrality(
     The iteration will stop after ``max_iter`` iterations or an error tolerance of
     ``number_of_nodes(G) * tol`` has been reached.
 
-    When $\alpha = 1/\lambda_{\max}$ and $\beta=0$, Katz centrality is the same
+    When $\alpha = 1/\lambda_{\max}$ and $\beta=1$, Katz centrality is the same
     as eigenvector centrality.
 
     For directed graphs this finds "left" eigenvectors which corresponds
