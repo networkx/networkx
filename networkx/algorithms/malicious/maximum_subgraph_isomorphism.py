@@ -2,6 +2,9 @@
 Finding the number of edges of the maximum subgraph isomorphism on two graphs.
 """
 
+import networkx as nx
+from itertools import combinations
+
 __all__ = ["find_max__edges_of_sub_isomorphism_graph"]
 
 
@@ -13,14 +16,14 @@ def find_max__edges_of_sub_isomorphism_graph(G1, G2):
     Parameters
     ----------
     G1 : NetworkX DiGraph
-        G2 will compare its subgraphs to this (dirceted) dependency graph
+        This graph will be compare to all G2's subgraphs
     G2 : NetworkX DiGraph
         All Its subgraphs will be compared to G1 
 
     Returns
     -------
     G2_tag : NetworkX DiGraph
-        A maximum subgraph of G2 that isomorphic to G1
+        The number of edges of the maximum subgraph G2' that isomorphic to G1
 
     Notes
     -----
@@ -85,4 +88,39 @@ def find_max__edges_of_sub_isomorphism_graph(G1, G2):
     >>> find_max__edges_of_sub_isomorphism_graph(G3, G4)
     2
     """
+
+    # a list of mapping nodes
+    max_subgraph = find_max_isomorphism_function(G1, G2)
+    # extracts all the keys (G1's nodes) from the dict
+    nodes_g1 = list(max_subgraph.keys)
+    # extracts all the values (G2's nodes) from the dict
+    nodes_g2 = list(max_subgraph.values)
+    # calculates the max num of edges between the nodes ????
+    min(calculate_num_of_edges(nodes_g1), calculate_num_of_edges(nodes_g2))
+    
+
     return 0  # Empty implementation
+
+
+# isomorphism function that mapping each node in G1 to its its match node in G2
+def find_max_isomorphism_function(G1, G2):
+    max_subgraph = [0, 0]  # [0: the subgraph's len, 1: the subgraph]
+    subgraphs = nx.algorithms.isomorphism.GraphMatcher(G1, G2)
+    for subgraph in subgraphs:
+        sub_length = len(subgraph)
+        if sub_length > max_subgraph[0]:
+            max_subgraph[0] = sub_length
+            max_subgraph[1] = subgraph
+
+    return max_subgraph[1]
+
+
+# the function takes a graph G and a list of nodes, and returns the number of edges between the nodes according to the given graph 
+def calculate_num_of_edges(G, nodes):
+    num_of_edges = 0
+    # iterates over all the possible edges in the graph
+    for combo in combinations(nodes, 2):
+        if G.has_edge(combo[0], combo[1]):
+            num_of_edges += 1
+    
+    return num_of_edges
