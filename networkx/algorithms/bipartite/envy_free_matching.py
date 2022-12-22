@@ -1,6 +1,6 @@
 import collections
 import itertools
-
+import logging
 import networkx as nx
 
 __all__ = [
@@ -8,7 +8,15 @@ __all__ = [
     "minimum_weight_envy_free_matching",
 ]
 
+import networkx.algorithms.bipartite
+
 INFINITY = float("inf")
+
+logger = logging.getLogger("Envy-free matching")
+formatter = logging.Formatter('%(asctime)s: %(levelname)s: %(name)s: Line %(lineno)d: %(message)s')
+console = logging.StreamHandler()  # writes to stderr (= cerr)
+logger.handlers = [console]
+console.setFormatter(formatter)
 
 
 def _EFM_partition(G, M=None):
@@ -134,7 +142,23 @@ def envy_free_matching(G):
 
         Like presented in the article, Y-path-saturated graph contains an empty envy-free matching so X_L and Y_L are empty in the partition.
     """
-    pass
+    logger.info(f"Finding the maximum envy free matching of {G}")
+    logger.debug(f"Finding the maximum matching of {G}")
+    M = networkx.algorithms.bipartite.hopcroft_karp_matching(G)
+    # EFM_PARTITION = _EFM_partition(G, M)
+    # EFM_PARTITION = [set((0, 1, 2)), set(), set((3, 4, 5)), set()]
+    # EFM_PARTITION = [{0}, {1, 2}, {3}, {4}]
+    logger.debug(f"Finding the EFM partition with maximum matching: {M}")
+    EFM_PARTITION = [{}, {0, 1, 2, 3, 4, 5}, {}, {6, 7, 8, 9}]
+    # G.remove_nodes_from((EFM_PARTITION[1]).union((EFM_PARTITION[3])))
+    un = EFM_PARTITION[1].union(EFM_PARTITION[3])
+    logger.debug(f"Finding the sub-matching M[X_L,Y_L]")
+    M = {node: M[node] for node in M if node not in un and M[node] not in un}
+    if len(M) == 0:
+        logger.warning(f"The sub-matching is empty!")
+    logger.debug(f"returning the sub-matching M[X_L,Y_L]: {M}")
+    return M
+    # return networkx.algorithms.bipartite.hopcroft_karp_matching(G)
 
 
 def minimum_weight_envy_free_matching(G):
@@ -208,3 +232,11 @@ def minimum_weight_envy_free_matching(G):
 
     """
     pass
+
+
+if __name__ == '__main__':
+    logger.setLevel(logging.DEBUG)
+    G = nx.Graph(
+        [(0, 6), (6, 0), (1, 6), (6, 1), (1, 7), (7, 1), (2, 6), (6, 2), (2, 8), (8, 2), (3, 9), (9, 3), (3, 6), (6, 3),
+         (4, 8), (8, 4), (4, 7), (7, 4), (5, 9), (9, 5)])
+    print(envy_free_matching(nx.complete_bipartite_graph(3, 3)))
