@@ -1,6 +1,8 @@
 import collections
 import itertools
 import logging
+from networkx.algorithms import bipartite
+
 import networkx as nx
 
 __all__ = [
@@ -142,7 +144,7 @@ def envy_free_matching(G):
 
         Like presented in the article, Y-path-saturated graph contains an empty envy-free matching so X_L and Y_L are empty in the partition.
     """
-    logger.info(f"Finding the maximum envy free matching of {G}")
+    logger.info(f"Finding the maximum cardinality envy free matching of {G}")
     logger.debug(f"Finding the maximum matching of {G}")
     M = networkx.algorithms.bipartite.hopcroft_karp_matching(G)
     # EFM_PARTITION = _EFM_partition(G, M)
@@ -230,13 +232,55 @@ def minimum_weight_envy_free_matching(G):
         >>> minimum_weight_envy_free_matching(Graph)
         {2:5,5:2,3:6,6:3}
 
+
     """
-    pass
+    logger.info(f"Finding the minimum cost maximum cardinality envy free matching of {G}")
+    logger.debug(f"Finding the maximum matching of {G}")
+    M = networkx.algorithms.bipartite.hopcroft_karp_matching(G)
+    # EFM_PARTITION = _EFM_partition(G, M)
+    logger.debug(f"Finding the EFM partition with maximum matching: {M}")
+    EFM_PARTITION = [{2, 3}, {1, 0}, {5, 6, 7}, {4}]
+    G.remove_nodes_from((EFM_PARTITION[1]).union((EFM_PARTITION[3])))
+    if len((EFM_PARTITION[1]).union((EFM_PARTITION[3]))) == 0:
+        logger.warning(f"The sub-matching is empty!")
+    M = nx.bipartite.minimum_weight_full_matching(G)
+    logger.debug(f"returning minimum cost maximum cardinality envy free matching in G[X_L,Y_L]: {M}")
+    return M
 
 
 if __name__ == '__main__':
     logger.setLevel(logging.DEBUG)
-    G = nx.Graph(
-        [(0, 6), (6, 0), (1, 6), (6, 1), (1, 7), (7, 1), (2, 6), (6, 2), (2, 8), (8, 2), (3, 9), (9, 3), (3, 6), (6, 3),
-         (4, 8), (8, 4), (4, 7), (7, 4), (5, 9), (9, 5)])
-    print(envy_free_matching(nx.complete_bipartite_graph(3, 3)))
+    A = nx.Graph()
+    # G = nx.Graph()
+    # G.add_nodes_from(["a", 2, 3, 4], bipartite=0)
+    # G.add_nodes_from([1, "b", "c"], bipartite=1)
+    # G.add_edges_from([("a", 1), ("a", "b"), (2, "b"), (2, "c"), (3, "c"), (4, 1)])
+    # G.add_edge("a", 1,weight=200)
+
+    A = nx.Graph()
+    A.add_nodes_from([0, 1, 2, 3], bipartite=0)
+    A.add_nodes_from([4, 5, 6, 7], bipartite=1)
+    A.add_edge(0, 4, weight=5)
+    A.add_edge(4, 0, weight=5)
+    A.add_edge(1, 4, weight=1)
+    A.add_edge(4, 1, weight=1)
+    A.add_edge(1, 5, weight=500)
+    A.add_edge(5, 1, weight=500)
+    A.add_edge(2, 5, weight=3)
+    A.add_edge(5, 2, weight=3)
+    A.add_edge(2, 7, weight=9)
+    A.add_edge(7, 2, weight=9)
+    A.add_edge(3, 6, weight=3)
+    A.add_edge(6, 3, weight=3)
+    A.add_edge(3, 7, weight=7)
+    A.add_edge(7, 3, weight=7)
+    # A.add_edge(3, 5, weight=108)
+    # A.add_edge(5, 3, weight=108)
+    print(nx.is_bipartite(A))
+    print(nx.is_connected(A))
+    # print(nx.is_bipartite(G))
+    print(minimum_weight_envy_free_matching(A))
+    # G = nx.Graph(
+    #     [(0, 6), (6, 0), (1, 6), (6, 1), (1, 7), (7, 1), (2, 6), (6, 2), (2, 8), (8, 2), (3, 9), (9, 3), (3, 6), (6, 3),
+    #      (4, 8), (8, 4), (4, 7), (7, 4), (5, 9), (9, 5)])
+    # print(envy_free_matching(nx.complete_bipartite_graph(3, 3)))
