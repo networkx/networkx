@@ -133,7 +133,7 @@ class TestFitnessFunction:
         Calculates the fitness between basic-code to stupid-code:
         """
         actual_d = calculate_fitness(self.basic_RG, self.stupid_RG)
-        expected_d = 10/7
+        expected_d = 8/7
         assert actual_d == expected_d
 
     def test_basic_code_vs_stupid_code_v1(self):
@@ -141,7 +141,7 @@ class TestFitnessFunction:
         Calculates the fitness between basic-code to stupid-code.v1:
         """
         actual_d = calculate_fitness(self.basic_RG, self.stupid_RG_v1)
-        expected_d = 10/7
+        expected_d = 8/7
         assert actual_d == expected_d
 
     def test_basic_code_vs_fork_code(self):
@@ -167,7 +167,7 @@ class TestFitnessFunction:
         Calculates the fitness between stupid-code to basic-code.v1:
         """
         actual_d = calculate_fitness(self.stupid_RG, self.basic_RG_v1)
-        expected_d = 10/7
+        expected_d = 8/7
         assert actual_d == expected_d
 
     def test_stupid_code_vs_basic_code_v2(self):
@@ -175,7 +175,7 @@ class TestFitnessFunction:
         Calculates the fitness between stupid-code to basic-code.v2:
         """
         actual_d = calculate_fitness(self.stupid_RG, self.basic_RG_v2)
-        expected_d = 10/7
+        expected_d = 8/7
         assert actual_d == expected_d
 
     def test_stupid_code_vs_basic_code_v3(self):
@@ -183,7 +183,7 @@ class TestFitnessFunction:
         Calculates the fitness between stupid-code to basic-code.v3:
         """
         actual_d = calculate_fitness(self.stupid_RG, self.basic_RG_v3)
-        expected_d = 10/7
+        expected_d = 8/7
         assert actual_d == expected_d
 
     def test_stupid_code_vs_basic_code_v4(self):
@@ -191,7 +191,7 @@ class TestFitnessFunction:
         Calculates the fitness between stupid-code to basic-code.v4:
         """
         actual_d = calculate_fitness(self.stupid_RG, self.basic_RG_v4)
-        expected_d = 10/7
+        expected_d = 8/7
         assert actual_d == expected_d
 
     def test_stupid_code_vs_basic_code_v5(self):
@@ -199,7 +199,7 @@ class TestFitnessFunction:
         Calculates the fitness between stupid-code to basic-code.v5:
         """
         actual_d = calculate_fitness(self.stupid_RG, self.basic_RG_v5)
-        expected_d = 10/7
+        expected_d = 8/7
         assert actual_d == expected_d
 
     def test_stupid_code_vs_stupid_code(self):
