@@ -102,7 +102,7 @@ class TestDepndencyGraph:
         Checks the first varient (Variable renaming) of the basic original code from the paper:
         http://rosaec.snu.ac.kr/publish/2010/T2/KiMo-GECCO-2010.pdf
         """
-        basic_v1_RG = self.basic_v1_DG
+        basic_v1_RG = self.basic_DG_v1
         basic_v1_RG.remove_edges_from([(1,4),(2,5),(3,6),(4,7),(5,8)])
         basic_v1_RG.remove_nodes_from([1,2,3,4,5,10,11])
 
@@ -114,7 +114,7 @@ class TestDepndencyGraph:
         http://rosaec.snu.ac.kr/publish/2010/T2/KiMo-GECCO-2010.pdf
         """
 
-        basic_v2_RG = self.basic_v2_DG
+        basic_v2_RG = self.basic_DG_v2
         basic_v2_RG.remove_edges_from([(1,3),(2,6),(4,5),(3,8),(5,7)])
         basic_v2_RG.remove_nodes_from([1,2,3,4,5,10,11])
 
@@ -127,11 +127,11 @@ class TestDepndencyGraph:
         
         """
 
-        basic_v3_RG = self.basic_v3_DG
+        basic_v3_RG = self.basic_DG_v3
         basic_v3_RG.remove_edges_from([(1,4),(2,5),(3,6),(4,7),(5,8)])
         basic_v3_RG.remove_nodes_from([1,2,3,4,5,10,11])
 
-        assert build_RG_from_DG(self.basic_v3_DG) == basic_v3_RG
+        assert build_RG_from_DG(self.basic_DG_v3) == basic_v3_RG
 
     def test_basic_code_v4(self):
         """
@@ -140,11 +140,11 @@ class TestDepndencyGraph:
         
         """
 
-        basic_v4_RG = self.basic_v4_DG
+        basic_v4_RG = self.basic_DG_v4
         basic_v4_RG.remove_edges_from([(1,5),(2,6),(3,4),(4,5),(5,8)])
         basic_v4_RG.remove_nodes_from([1,2,3,4,5,10,11])
 
-        assert build_RG_from_DG(self.basic_v4_DG) == basic_v4_RG
+        assert build_RG_from_DG(self.basic_DG_v4) == basic_v4_RG
 
 
     def test_basic_code_v5(self):
@@ -153,11 +153,11 @@ class TestDepndencyGraph:
         http://rosaec.snu.ac.kr/publish/2010/T2/KiMo-GECCO-2010.pdf
         """
 
-        basic_v5_RG = self.basic_v5_DG
+        basic_v5_RG = self.basic_DG_v5
         basic_v5_RG.remove_edges_from([(1,11),(2,12),(3,10),(11,6),(10,5)])
         basic_v5_RG.remove_nodes_from([1,2,3,4,8,9,10,11,13])
 
-        assert build_RG_from_DG(self.basic_v5_DG) == basic_v5_RG
+        assert build_RG_from_DG(self.basic_DG_v5) == basic_v5_RG
 
     def test_stupid_code(self):
         """
@@ -172,9 +172,9 @@ class TestDepndencyGraph:
         Checks the first variant of stupid_code:
         """
         
-        stupid_v1_RG = self.stupid_v1_DG # no edges or nodes to reduce
+        stupid_v1_RG = self.stupid_DG_v1 # no edges or nodes to reduce
 
-        assert build_RG_from_DG(self.stupid_v1_DG) == stupid_v1_RG
+        assert build_RG_from_DG(self.stupid_DG_v1) == stupid_v1_RG
 
     def test_fork_code(self):
         """

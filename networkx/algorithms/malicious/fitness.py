@@ -65,4 +65,46 @@ def calculate_fitness(G1, G2):
     >>> calculate_fitness(G1, G2)
     2.5
     """
-    return -1  # Empty implementation
+
+    import networkx as nx
+    # calculate fitness function
+    # first, find isomoprphism between fork_v2 to fork_v1
+    subG = {}
+    GM = nx.algorithms.isomorphism.GraphMatcher(G2, G1)
+    for subgraph in GM.subgraph_isomorphisms_iter():
+        if len(subgraph) > len(subG):
+            subG = subgraph
+    # print(subG)
+
+    # extract the nodes
+    nG2 = list(subG.keys())
+    nG1 = list(subG.values())
+    # print(nG1, nG2)
+
+    # Extract a subgraph containing nodes the fit nodes from fork_v2 to fork_v1
+    subgraph = nx.subgraph(G1, nG1)
+    # print("-----------------\n", subgraph.edges)
+    # print(subgraph.nodes)
+
+    # Print the subgraph's edges
+    diff_1 = len(G2.edges) - len(subgraph.edges)
+    diff_2 = len(G1.edges) - len(subgraph.edges)
+    fitness = (diff_1 + diff_2) / len(G1.edges)
+
+    return fitness  
+
+
+import networkx as nx
+# create two graphs
+G1 = nx.DiGraph()
+G1.add_nodes_from(range(1, 7))
+edges = [(1, 2), (2, 3)]
+G1.add_edges_from(edges)
+G2 = nx.DiGraph()
+G2.add_nodes_from(range(1, 15))
+edges = [(1, 4), (2, 6), (3, 5), (4, 7), (5, 8), (5, 10), (10, 10)]
+G2.add_edges_from(edges)
+
+ans = calculate_fitness(G1, G2)
+print("ans:", ans)
+
