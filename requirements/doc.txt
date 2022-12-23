@@ -1,4 +1,4 @@
-sphinx>=5.2
+sphinx==5.2.3
 pydata-sphinx-theme>=0.11
 sphinx-gallery>=0.11
 numpydoc>=1.5
