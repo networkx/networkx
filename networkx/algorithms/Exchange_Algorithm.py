@@ -1,6 +1,7 @@
 import doctest
 import networkx as nx
-
+from itertools import permutations
+import numpy as np
 """REUT HADAD & TAL SOMECH"""
 
 """
@@ -16,6 +17,8 @@ authors:Biro, P. and Manlove, D.F. and Rizzi, R.
 year:(2009)
 link:http://eprints.gla.ac.uk/25732/
 """
+
+
 def ExactAlgorithm(graph: nx.DiGraph, k: int) -> list:
     """
     Algorithm - the algorithm finds the exact maximum weight k-way exchanges using reduction from directed graph to non directed
@@ -64,13 +67,37 @@ def ExactAlgorithm(graph: nx.DiGraph, k: int) -> list:
     ----------
     Algorithm 1 - 'MAXIMUM WEIGHT CYCLE PACKING IN DIRECTED GRAPHS, WITH APPLICATION TO KIDNEY EXCHANGE PROGRAMS' by Biro, P. and Manlove, D.F. and Rizzi, R. http://eprints.gla.ac.uk/25732/
     """
-    f = 5
-    return [f]
+    temp_cycles = nx.recursive_simple_cycles(graph)
+    cycles = []
+    for cycle in temp_cycles:
+        if len(cycle) == k:
+            cycles.append(cycle)
+    Y = create_Y(cycles,k)
+    return Y
+
+
+def create_Y(cycles,k):
+    arr = np.ndarray(shape=(len(cycles),k))
+    for permu in range(len(cycles)):
+        i = 0
+        for cyc in permutations(cycles[permu], 2):
+            if cyc not in arr[permu:]:
+                arr[permu][i] = cyc
+    return arr
 
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
+    # itertools.ne
+    Digraph = nx.DiGraph()
+    # #Digraph.add
+    Digraph.add_nodes_from([1, 2, 3, 4, 5, 6, 7, 8])
+    Digraph.add_weighted_edges_from(
+        [(1, 8, 2), (8, 1, 4), (2, 1, 5), (1, 3, 4), (3, 8, 2), (8, 2, 3), (8, 5, 4), (5, 7, 3), (7, 6, 2), (6, 5, 4)])
+    print(ExactAlgorithm(Digraph, 3))
     # print_hi('PyCharm')
-    doctest.testmod()
+    # print(permutations([1, 2, 3],2))
+    for i in permutations([1, 2, 3], 2):
+        print(i)
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
