@@ -1,7 +1,9 @@
 import doctest
 import networkx as nx
-from itertools import permutations
+from itertools import permutations,product
 import numpy as np
+from more_itertools import distinct_permutations as idp
+
 """REUT HADAD & TAL SOMECH"""
 
 """
@@ -72,18 +74,43 @@ def ExactAlgorithm(graph: nx.DiGraph, k: int) -> list:
     for cycle in temp_cycles:
         if len(cycle) == k:
             cycles.append(cycle)
-    Y = create_Y(cycles,k)
+    Y = create_Y(cycles, k)
+
     return Y
 
 
-def create_Y(cycles,k):
-    arr = np.ndarray(shape=(len(cycles),k))
+def create_Y(cycles, k):
+    arr = [[] for i in range(len(cycles)) for j in range(k)]  # * k * len(cycles)  # np.ndarray(shape=(len(cycles),k))
+    ns = [[None]*k]*len(cycles)**k
+    nk=[]
     for permu in range(len(cycles)):
         i = 0
+        # t=idp(cycles[permu], 2)
         for cyc in permutations(cycles[permu], 2):
-            if cyc not in arr[permu:]:
-                arr[permu][i] = cyc
-    return arr
+            cyc = sorted(list(cyc))
+            j=0
+            if cyc not in arr[permu * k:permu * k + k]:
+                ns[permu*k:permu*k+k][j]=cyc
+                j=j+1
+                arr[permu * k + i] = cyc
+                #nk.append(cyc)
+                i = i + 1
+        nk.append(arr[permu * k:permu * k + k])
+    #kn=[[i,j,k] for i in nk[0] for j in nk[1] for k in nk[2]]
+    return [[i,j,k] for i in nk[0] for j in nk[1] for k in nk[2]]
+
+
+# def get_pem(cycles,k):
+#     arr = [[]*k**len(cycles)]
+#     # a = list(range(0, 3))
+#     # b = list(range(3, 6))
+#     # c = list(range(6, 9))
+#     j=0
+#     for i in cycles:
+#         for n in range(len(cycles)):
+#             arr[]
+    # for an in permutations([a,b,c]):
+    #     t=a
 
 
 # Press the green button in the gutter to run the script.
@@ -95,9 +122,12 @@ if __name__ == '__main__':
     Digraph.add_weighted_edges_from(
         [(1, 8, 2), (8, 1, 4), (2, 1, 5), (1, 3, 4), (3, 8, 2), (8, 2, 3), (8, 5, 4), (5, 7, 3), (7, 6, 2), (6, 5, 4)])
     print(ExactAlgorithm(Digraph, 3))
+    # # for b in permutations([Dx[0:3],Dx[3:6],Dx[6:9]]):
+    #     print(b)
     # print_hi('PyCharm')
     # print(permutations([1, 2, 3],2))
-    for i in permutations([1, 2, 3], 2):
-        print(i)
+    # for i in idp([1, 2, 3], 2):
+    #     print(i)
+    #get_pem()
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
