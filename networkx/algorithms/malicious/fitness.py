@@ -2,9 +2,29 @@
 Calculates the fitness function between two graphs.
 """
 
-__all__ = ["calculate_fitness"]
+from networkx.algorithms.malicious.maximum_subgraph_isomorphism import find_max__edges_of_sub_isomorphism_graph
+import networkx as nx
 
-def calculate_fitness(G1, G2):
+__all__ = ["GA"]
+
+
+# def fitness(sub_G1, sub_G2, G1_nodes, G1_edges, G2_nodes, G2_edges):
+#     """
+#     fitness function to calculate the quality of the solution
+#     given two sub graphs, and the original graphs size
+#     """
+#     if nx.is_isomorphic(sub_G1, sub_G2):
+#         min_val = 0
+#         if G1_nodes < G2_nodes:
+#             min_val = G1_edges
+#         else:
+#             min_val = G2_edges
+#         mutual = len(sub_G2.edges)
+#         return (((G1_edges - mutual) + (G2_edges - mutual)) / min_val)
+#     else:
+#         return 999999
+
+def GA(G1, G2):
     """
     Measures the proportion of the number of different edges
     between two given graphs against the number of edges in the
@@ -36,7 +56,7 @@ def calculate_fitness(G1, G2):
     simulations towards optimal design solutions.
 
     https://en.wikipedia.org/wiki/Fitness_function
-    
+
     References
     ----------
     "Malware detection based on dependency graph using hybrid genetic algorithm",
@@ -66,45 +86,13 @@ def calculate_fitness(G1, G2):
     2.5
     """
 
-    import networkx as nx
-    # calculate fitness function
-    # first, find isomoprphism between fork_v2 to fork_v1
-    subG = {}
-    GM = nx.algorithms.isomorphism.GraphMatcher(G2, G1)
-    for subgraph in GM.subgraph_isomorphisms_iter():
-        if len(subgraph) > len(subG):
-            subG = subgraph
-    # print(subG)
-
-    # extract the nodes
-    nG2 = list(subG.keys())
-    nG1 = list(subG.values())
-    # print(nG1, nG2)
-
-    # Extract a subgraph containing nodes the fit nodes from fork_v2 to fork_v1
-    subgraph = nx.subgraph(G1, nG1)
-    # print("-----------------\n", subgraph.edges)
-    # print(subgraph.nodes)
-
-    # Print the subgraph's edges
-    diff_1 = len(G2.edges) - len(subgraph.edges)
-    diff_2 = len(G1.edges) - len(subgraph.edges)
-    fitness = (diff_1 + diff_2) / len(G1.edges)
-
-    return fitness  
-
-
-import networkx as nx
-# create two graphs
-G1 = nx.DiGraph()
-G1.add_nodes_from(range(1, 7))
-edges = [(1, 2), (2, 3)]
-G1.add_edges_from(edges)
-G2 = nx.DiGraph()
-G2.add_nodes_from(range(1, 15))
-edges = [(1, 4), (2, 6), (3, 5), (4, 7), (5, 8), (5, 10), (10, 10)]
-G2.add_edges_from(edges)
-
-ans = calculate_fitness(G1, G2)
-print("ans:", ans)
-
+    G1_edges = len(G1.edges)
+    G2_edges = len(G2.edges)
+    min_size = 0
+    if len(G1.nodes) < len(G2.nodes):
+        min_size = G1_edges
+    else:
+        min_size = G2_edges
+    mutual = find_max__edges_of_sub_isomorphism_graph(G1, G2)
+    ans = ((G1_edges - mutual) + (G2_edges - mutual)) / min_size
+    return ans

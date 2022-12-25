@@ -7,7 +7,6 @@ from itertools import combinations
 
 __all__ = ["find_max__edges_of_sub_isomorphism_graph"]
 
-
 def find_max__edges_of_sub_isomorphism_graph(G1, G2):
     """
     Finding the number of edges in the maximum subgraph isomorphism on two given (directed) graphs: G1 and G2.
@@ -88,39 +87,13 @@ def find_max__edges_of_sub_isomorphism_graph(G1, G2):
     >>> find_max__edges_of_sub_isomorphism_graph(G3, G4)
     2
     """
-
-    # a list of mapping nodes
-    max_subgraph = find_max_isomorphism_function(G1, G2)
-    # extracts all the keys (G1's nodes) from the dict
-    nodes_g1 = list(max_subgraph.keys)
-    # extracts all the values (G2's nodes) from the dict
-    nodes_g2 = list(max_subgraph.values)
-    # calculates the max num of edges between the nodes ????
-    min(calculate_num_of_edges(nodes_g1), calculate_num_of_edges(nodes_g2))
-    
-
-    return 0  # Empty implementation
-
-
-# isomorphism function that mapping each node in G1 to its its match node in G2
-def find_max_isomorphism_function(G1, G2):
-    max_subgraph = [0, 0]  # [0: the subgraph's len, 1: the subgraph]
-    subgraphs = nx.algorithms.isomorphism.GraphMatcher(G1, G2)
-    for subgraph in subgraphs:
-        sub_length = len(subgraph)
-        if sub_length > max_subgraph[0]:
-            max_subgraph[0] = sub_length
-            max_subgraph[1] = subgraph
-
-    return max_subgraph[1]
-
-
-# the function takes a graph G and a list of nodes, and returns the number of edges between the nodes according to the given graph 
-def calculate_num_of_edges(G, nodes):
-    num_of_edges = 0
-    # iterates over all the possible edges in the graph
-    for combo in combinations(nodes, 2):
-        if G.has_edge(combo[0], combo[1]):
-            num_of_edges += 1
-    
-    return num_of_edges
+    max_subgraph_size = 0
+    for subgraph_size in range(1, len(G1) + 1):
+        for subgraph_nodes_G1 in combinations(G1.nodes(), subgraph_size):
+            subgraph_G1 = G1.subgraph(subgraph_nodes_G1)
+            for subgraph_nodes_G2 in combinations(G2.nodes(), subgraph_size):
+                subgraph_G2 = G2.subgraph(subgraph_nodes_G2)
+                if nx.is_isomorphic(subgraph_G1, subgraph_G2):
+                    if len(subgraph_nodes_G1) > max_subgraph_size:
+                        max_subgraph_size = len(subgraph_G1.edges())
+    return max_subgraph_size

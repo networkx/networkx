@@ -78,14 +78,22 @@ def build_RG_from_DG(G):
   [(1, 2), (2, 3)]
   """
   
-  nodes_to_remove = [] # list taht will contain all the nodes that should be removed
+  nodes_to_remove = [] # contains all the nodes that should be removed
+  isolated_nodes = []  # contains all the nodes that does not has any edge 
   for v in G.nodes:
     edges_in = G.in_degree(v)
     edges_out = G.out_degree(v)
     if edges_in <= 1 and edges_out <= 1: # checks for each node if it should be removed
-        nodes_to_remove.append(v)
+        if edges_in == 0 and edges_out == 0:
+          isolated_nodes.append(v)
+        else:
+          nodes_to_remove.append(v)
+  # removes all the islolated nodes from G
+  G.remove_nodes_from(isolated_nodes)
+  # in case that all the nodes should be removed, we will return the original graph without the isolated nodes
   if len(nodes_to_remove) == len(G.nodes):
     return G
+  # otherwise, we will remove those nodes as well
   else:
     g_tag = G
     g_tag.remove_nodes_from(nodes_to_remove)

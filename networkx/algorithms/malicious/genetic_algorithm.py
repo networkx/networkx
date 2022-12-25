@@ -3,8 +3,29 @@ Hybrid GA for local optimisation.
 Two heuristics to improve the quality of arrangements for maximum subgraph isomorphism.
 """
 
+# from networkx.algorithms.malicious.fitness import fitness
+import random
+import networkx as nx
+
 # algorithms 1 and 2 in the paper
 __all__ = ["two_vertex_exchange_heuristic", "vertex_relocation_heuristic"]
+
+
+def fitness(sub_G1, sub_G2, G1_nodes, G1_edges, G2_nodes, G2_edges):
+    """
+    fitness function to calculate the quality of the solution
+    given two sub graphs, and the original graphs size
+    """
+    if nx.is_isomorphic(sub_G1, sub_G2):
+        min_val = 0
+        if G1_nodes < G2_nodes:
+            min_val = G1_edges
+        else:
+            min_val = G2_edges
+        mutual = len(sub_G2.edges)
+        return (((G1_edges - mutual) + (G2_edges - mutual)) / min_val)
+    else:
+        return 999999
 
 
 def two_vertex_exchange_heuristic(G):
@@ -135,3 +156,62 @@ def vertex_relocation_heuristic(G):
     True
     """
     return 0  # Empty implementation
+
+
+def GA(G1, G2, alpha=0.5):
+    G1_nodes = list(G1.nodes)
+    G2_nodes = list(G2.nodes)
+    # generate solutions
+    solutions = []
+    min_nodes = min(len(G1_nodes), len(G2_nodes))
+    NUM_OF_SOLUTIONS = 10
+    for s in range(NUM_OF_SOLUTIONS):
+        num = random.randint(1, min_nodes)
+        sub1 = set(random.sample(G1_nodes, num))
+        sub2 = set(random.sample(G2_nodes, num))
+        solutions.append((sub1, sub2))
+    # print(solutions)
+    NUM_OF_GENERATIONS = 100
+    for i in range(NUM_OF_GENERATIONS):
+        # print(solutions)
+        rankedsolutions = []  # [solution, fitness' score]
+        for s in solutions:
+            fitness_score = fitness(G1.subgraph(s[0]), G2.subgraph(s[1]), len(
+                G1.nodes), len(G1.edges), len(G2.nodes), len(G2.edges))
+            rankedsolutions.append((s, fitness_score))
+        # print(f"=== Gen {i+1} best solutions === ")
+        # print(rankedsolutions[0])
+        # checks if the best solution so fate is less or equals to alpha
+        if rankedsolutions[0][1] <= alpha:
+            # print('--------------------------------------------------------VIRUS-DETECTED--------------------------------------------------------')
+            return rankedsolutions[0][1]
+            # sorts the solutaions by thier fitness' score
+        rankedsolutions = sorted(rankedsolutions, key=lambda x: x[1])
+        # picks the smallest 100 solutions
+        bestsoutions = rankedsolutions[:100]
+        G1_elements = []
+        G2_elements = []
+        for s in bestsoutions:
+            # print("s:", s)
+            G1_sub = s[0][0]  # takes the solution for G1
+            G2_sub = s[0][1]  # takes the solution for G2
+            G1_elements.append(G1_sub)
+            G2_elements.append(G2_sub)
+        # print("G1_elements:", G1_elements)
+        # print("G2_elements:", G2_elements)
+        newGen = []
+        #[([1,2], [2,3]), fitness]
+        count_new_solutions = 0
+        TIME_OUT = 200
+        while (count_new_solutions < NUM_OF_SOLUTIONS or TIME_OUT != 0):
+            TIME_OUT = - 1
+            # print(count_new_solutions)
+            e1 = random.choice(list(G1_elements))
+            e2 = random.choice(list(G2_elements))
+            # print("e:", e1, e2)
+            if (len(e1) == len(e2)) and (e1, e2) not in newGen:
+                newGen.append((e1, e2))
+                count_new_solutions += 1
+        # print("newGen:", newGen)
+        solutions = newGen
+    return rankedsolutions[0][1]
