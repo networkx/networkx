@@ -204,7 +204,7 @@ def GA(G1, G2, alpha=0.5):
         count_new_solutions = 0
         TIME_OUT = 200
         while (count_new_solutions < NUM_OF_SOLUTIONS or TIME_OUT != 0):
-            TIME_OUT = - 1
+            TIME_OUT -= 1
             # print(count_new_solutions)
             e1 = random.choice(list(G1_elements))
             e2 = random.choice(list(G2_elements))
