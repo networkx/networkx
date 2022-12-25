@@ -4,7 +4,8 @@
 
 import pytest
 import networkx as nx
-from networkx.algorithms.malicious.fitness import calculate_fitness
+from networkx.algorithms.malicious.fitness import GA
+from networkx.algorithms.malicious.genetic_algorithm import GA
 
 
 class TestFitnessFunction:
@@ -84,7 +85,7 @@ class TestFitnessFunction:
         Calculates the fitness between basic-code to itself:
         http://rosaec.snu.ac.kr/publish/2010/T2/KiMo-GECCO-2010.pdf
         """
-        actual_d = calculate_fitness(self.basic_RG, self.basic_RG)
+        actual_d = GA(self.basic_RG, self.basic_RG)
         expected_d = 0
         assert actual_d == expected_d
 
@@ -92,7 +93,7 @@ class TestFitnessFunction:
         """
         Calculates the fitness between basic-code to basic-code.v1:
         """
-        actual_d = calculate_fitness(self.basic_RG, self.basic_RG_v1)
+        actual_d = GA(self.basic_RG, self.basic_RG_v1)
         expected_d = 0
         assert actual_d == expected_d
 
@@ -100,7 +101,7 @@ class TestFitnessFunction:
         """
         Calculates the fitness between basic-code to basic-code.v2:
         """
-        actual_d = calculate_fitness(self.basic_RG, self.basic_RG_v2)
+        actual_d = GA(self.basic_RG, self.basic_RG_v2)
         expected_d = 0
         assert actual_d == expected_d
 
@@ -108,7 +109,7 @@ class TestFitnessFunction:
         """
         Calculates the fitness between basic-code to basic-code.v3:
         """
-        actual_d = calculate_fitness(self.basic_RG, self.basic_RG_v3)
+        actual_d = GA(self.basic_RG, self.basic_RG_v3)
         expected_d = 0
         assert actual_d == expected_d
 
@@ -116,7 +117,7 @@ class TestFitnessFunction:
         """
         Calculates the fitness between basic-code to basic-code.v4:
         """
-        actual_d = calculate_fitness(self.basic_RG, self.basic_RG_v4)
+        actual_d = GA(self.basic_RG, self.basic_RG_v4)
         expected_d = 0
         assert actual_d == expected_d
 
@@ -124,7 +125,7 @@ class TestFitnessFunction:
         """
         Calculates the fitness between basic-code to basic-code.v5:
         """
-        actual_d = calculate_fitness(self.basic_RG, self.basic_RG_v5)
+        actual_d = GA(self.basic_RG, self.basic_RG_v5)
         expected_d = 0
         assert actual_d == expected_d
 
@@ -132,7 +133,7 @@ class TestFitnessFunction:
         """
         Calculates the fitness between basic-code to stupid-code:
         """
-        actual_d = calculate_fitness(self.basic_RG, self.stupid_RG)
+        actual_d = GA(self.basic_RG, self.stupid_RG)
         expected_d = 8/7
         assert actual_d == expected_d
 
@@ -140,7 +141,7 @@ class TestFitnessFunction:
         """
         Calculates the fitness between basic-code to stupid-code.v1:
         """
-        actual_d = calculate_fitness(self.basic_RG, self.stupid_RG_v1)
+        actual_d = GA(self.basic_RG, self.stupid_RG_v1)
         expected_d = 8/7
         assert actual_d == expected_d
 
@@ -148,7 +149,7 @@ class TestFitnessFunction:
         """
         Calculates the fitness between basic-code to fork-code:
         """
-        actual_d = calculate_fitness(self.basic_RG, self.fork_RG)
+        actual_d = GA(self.basic_RG, self.fork_RG)
         expected_d = 5/2
         assert actual_d == expected_d
 
@@ -156,17 +157,17 @@ class TestFitnessFunction:
         """
         Calculates the fitness between basic-code to fork-code.v1:
         """
-        actual_d = calculate_fitness(self.basic_RG, self.fork_R1_RG)
+        actual_d = GA(self.basic_RG, self.fork_R1_RG)
         expected_d = 3/7
         assert actual_d == expected_d
 
-
     # stupid-code tests
+
     def test_stupid_code_vs_basic_code_v1(self):
         """
         Calculates the fitness between stupid-code to basic-code.v1:
         """
-        actual_d = calculate_fitness(self.stupid_RG, self.basic_RG_v1)
+        actual_d = GA(self.stupid_RG, self.basic_RG_v1)
         expected_d = 8/7
         assert actual_d == expected_d
 
@@ -174,7 +175,7 @@ class TestFitnessFunction:
         """
         Calculates the fitness between stupid-code to basic-code.v2:
         """
-        actual_d = calculate_fitness(self.stupid_RG, self.basic_RG_v2)
+        actual_d = GA(self.stupid_RG, self.basic_RG_v2)
         expected_d = 8/7
         assert actual_d == expected_d
 
@@ -182,7 +183,7 @@ class TestFitnessFunction:
         """
         Calculates the fitness between stupid-code to basic-code.v3:
         """
-        actual_d = calculate_fitness(self.stupid_RG, self.basic_RG_v3)
+        actual_d = GA(self.stupid_RG, self.basic_RG_v3)
         expected_d = 8/7
         assert actual_d == expected_d
 
@@ -190,7 +191,7 @@ class TestFitnessFunction:
         """
         Calculates the fitness between stupid-code to basic-code.v4:
         """
-        actual_d = calculate_fitness(self.stupid_RG, self.basic_RG_v4)
+        actual_d = GA(self.stupid_RG, self.basic_RG_v4)
         expected_d = 8/7
         assert actual_d == expected_d
 
@@ -198,7 +199,7 @@ class TestFitnessFunction:
         """
         Calculates the fitness between stupid-code to basic-code.v5:
         """
-        actual_d = calculate_fitness(self.stupid_RG, self.basic_RG_v5)
+        actual_d = GA(self.stupid_RG, self.basic_RG_v5)
         expected_d = 8/7
         assert actual_d == expected_d
 
@@ -206,7 +207,7 @@ class TestFitnessFunction:
         """
         Calculates the fitness between stupid-code to itself:
         """
-        actual_d = calculate_fitness(self.stupid_RG, self.stupid_RG)
+        actual_d = GA(self.stupid_RG, self.stupid_RG)
         expected_d = 0
         assert actual_d == expected_d
 
@@ -214,7 +215,7 @@ class TestFitnessFunction:
         """
         Calculates the fitness between stupid-code to stupid-code.v1:
         """
-        actual_d = calculate_fitness(self.stupid_RG, self.stupid_RG_v1)
+        actual_d = GA(self.stupid_RG, self.stupid_RG_v1)
         expected_d = 0
         assert actual_d == expected_d
 
@@ -222,7 +223,7 @@ class TestFitnessFunction:
         """
         Calculates the fitness between stupid-code to fork-code:
         """
-        actual_d = calculate_fitness(self.stupid_RG, self.fork_RG)
+        actual_d = GA(self.stupid_RG, self.fork_RG)
         expected_d = 1
         assert actual_d == expected_d
 
@@ -230,6 +231,6 @@ class TestFitnessFunction:
         """
         Calculates the fitness between stupid-code to fork-code.v1:
         """
-        actual_d = calculate_fitness(self.stupid_RG, self.fork_R1_RG)
+        actual_d = GA(self.stupid_RG, self.fork_R1_RG)
         expected_d = 4/3
         assert actual_d == expected_d
