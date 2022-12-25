@@ -90,7 +90,32 @@ def _EFM_partition(G, M=None):
         Like presented in the article, Y-path-saturated graph contains an empty envy-free matching so X_L and Y_L are empty in the partition.
 
     """
-    pass
+    if M == None:
+        M = nx.bipartite.hopcroft_karp_matching(G)
+    X, Y = bipartite.sets(G)
+    X_0 = {i for i in X if i not in M.keys()}
+    G_M = nx.Graph(G)
+    G_M.remove_edges_from(M.items())
+    # if X_0 == None:
+    #     return [X, set(), Y, set()]
+    Y_i = set()
+    Y_i = {j for i in X_0 for j in G_M.neighbors(i)}
+    # for i in X_0:
+    #     for j in G_M.neighbors(i):
+    #         Y_i.add(j)
+    X_i = {M[i] for i in Y_i if i in M.keys()}
+    EFM_PARTITION = [set(), X_i.union(X_0), set(), Y_i]
+    while len(X_i) != 0 and len(Y_i) != 0:
+        # for i in X_i:
+        #     for j in G_M.neighbors(i):
+        #         Y_i.add(j)
+        Y_i = {j for i in X_i for j in G_M.neighbors(i)}
+        X_i = {M[i] for i in Y_i if i in M.keys()}
+        EFM_PARTITION[1] = EFM_PARTITION[1].union(X_i)
+        EFM_PARTITION[3] = EFM_PARTITION[3].union(Y_i)
+    Ux = EFM_PARTITION[1]
+    Uy = EFM_PARTITION[3]
+    return [X - Ux, Ux, Y - Uy, Uy]
 
 
 def envy_free_matching(G):
@@ -147,12 +172,8 @@ def envy_free_matching(G):
     logger.info(f"Finding the maximum cardinality envy free matching of {G}")
     logger.debug(f"Finding the maximum matching of {G}")
     M = networkx.algorithms.bipartite.hopcroft_karp_matching(G)
-    # EFM_PARTITION = _EFM_partition(G, M)
-    # EFM_PARTITION = [set((0, 1, 2)), set(), set((3, 4, 5)), set()]
-    # EFM_PARTITION = [{0}, {1, 2}, {3}, {4}]
+    EFM_PARTITION = _EFM_partition(G, M)
     logger.debug(f"Finding the EFM partition with maximum matching: {M}")
-    EFM_PARTITION = [{}, {0, 1, 2, 3, 4, 5}, {}, {6, 7, 8, 9}]
-    # G.remove_nodes_from((EFM_PARTITION[1]).union((EFM_PARTITION[3])))
     un = EFM_PARTITION[1].union(EFM_PARTITION[3])
     logger.debug(f"Finding the sub-matching M[X_L,Y_L]")
     M = {node: M[node] for node in M if node not in un and M[node] not in un}
@@ -237,9 +258,9 @@ def minimum_weight_envy_free_matching(G):
     logger.info(f"Finding the minimum cost maximum cardinality envy free matching of {G}")
     logger.debug(f"Finding the maximum matching of {G}")
     M = networkx.algorithms.bipartite.hopcroft_karp_matching(G)
-    # EFM_PARTITION = _EFM_partition(G, M)
+    EFM_PARTITION = _EFM_partition(G, M)
     logger.debug(f"Finding the EFM partition with maximum matching: {M}")
-    EFM_PARTITION = [{2, 3}, {1, 0}, {5, 6, 7}, {4}]
+    #EFM_PARTITION = [{2, 3}, {1, 0}, {5, 6, 7}, {4}]
     G.remove_nodes_from((EFM_PARTITION[1]).union((EFM_PARTITION[3])))
     if len((EFM_PARTITION[1]).union((EFM_PARTITION[3]))) == 0:
         logger.warning(f"The sub-matching is empty!")
@@ -274,13 +295,20 @@ if __name__ == '__main__':
     A.add_edge(6, 3, weight=3)
     A.add_edge(3, 7, weight=7)
     A.add_edge(7, 3, weight=7)
-    # A.add_edge(3, 5, weight=108)
-    # A.add_edge(5, 3, weight=108)
-    print(nx.is_bipartite(A))
-    print(nx.is_connected(A))
-    # print(nx.is_bipartite(G))
-    print(minimum_weight_envy_free_matching(A))
+    # print(nx.is_bipartite(A))
+    # print(nx.is_connected(A))
+    # # print(nx.is_bipartite(G))
+    # print(minimum_weight_envy_free_matching(A))
     # G = nx.Graph(
     #     [(0, 6), (6, 0), (1, 6), (6, 1), (1, 7), (7, 1), (2, 6), (6, 2), (2, 8), (8, 2), (3, 9), (9, 3), (3, 6), (6, 3),
     #      (4, 8), (8, 4), (4, 7), (7, 4), (5, 9), (9, 5)])
     # print(envy_free_matching(nx.complete_bipartite_graph(3, 3)))
+    # A = nx.Graph([(0, 3), (3, 0), (0, 4), (4, 0), (1, 4), (4, 1), (2, 4), (4, 2)])
+    # A = nx.complete_bipartite_graph(3, 3)
+    # A = nx.Graph([(0, 3), (3, 0), (1, 3), (3, 1), (1, 4), (4, 1), (2, 4), (4, 2)])
+    # A = nx.Graph(
+    #     [(0, 6), (6, 0), (1, 6), (6, 1), (1, 7), (7, 1), (2, 6), (6, 2), (2, 8), (8, 2), (3, 9), (9, 3), (3, 6), (6, 3),
+    #      (4, 8), (8, 4), (4, 7), (7, 4), (5, 9), (9, 5)])
+    print(nx.bipartite.hopcroft_karp_matching(A))
+    print(_EFM_partition(A))
+    print(envy_free_matching(A))
