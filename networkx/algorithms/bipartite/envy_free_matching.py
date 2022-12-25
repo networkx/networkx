@@ -90,31 +90,30 @@ def _EFM_partition(G, M=None):
         Like presented in the article, Y-path-saturated graph contains an empty envy-free matching so X_L and Y_L are empty in the partition.
 
     """
+    logger.info(f"Finding the EFM partition of {G}")
     if M == None:
+        logger.debug(f"Finding the maximum cardinality matching of {G}")
         M = nx.bipartite.hopcroft_karp_matching(G)
     X, Y = bipartite.sets(G)
+    logger.debug("Computing X_0")
     X_0 = {i for i in X if i not in M.keys()}
+    logger.debug("Computing G\M")
     G_M = nx.Graph(G)
     G_M.remove_edges_from(M.items())
-    # if X_0 == None:
-    #     return [X, set(), Y, set()]
-    Y_i = set()
+    logger.debug("Computing Y_i")
     Y_i = {j for i in X_0 for j in G_M.neighbors(i)}
-    # for i in X_0:
-    #     for j in G_M.neighbors(i):
-    #         Y_i.add(j)
+    logger.debug("Computing X_i")
     X_i = {M[i] for i in Y_i if i in M.keys()}
     EFM_PARTITION = [set(), X_i.union(X_0), set(), Y_i]
+    logger.debug("Computing X_S and Y_S")
     while len(X_i) != 0 and len(Y_i) != 0:
-        # for i in X_i:
-        #     for j in G_M.neighbors(i):
-        #         Y_i.add(j)
         Y_i = {j for i in X_i for j in G_M.neighbors(i)}
         X_i = {M[i] for i in Y_i if i in M.keys()}
         EFM_PARTITION[1] = EFM_PARTITION[1].union(X_i)
         EFM_PARTITION[3] = EFM_PARTITION[3].union(Y_i)
     Ux = EFM_PARTITION[1]
     Uy = EFM_PARTITION[3]
+    logger.debug(f"Returning the EFM partition: {[X - Ux, Ux, Y - Uy, Uy]}")
     return [X - Ux, Ux, Y - Uy, Uy]
 
 
