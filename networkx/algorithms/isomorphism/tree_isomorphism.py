@@ -24,6 +24,60 @@ from networkx.utils.decorators import not_implemented_for
 
 __all__ = ["rooted_tree_isomorphism", "tree_isomorphism"]
 
+def get_levels(T, root, height):
+    """
+    Returns a function (map or dict) M: N -> P(V) such that, for each i in
+    {0,...,h}, M(i) is the set of vertices that are found in the i-th level
+    of T.
+    
+    Let h be the height of the tree. The amount of levels a tree has is equal to
+    its height. If a vertex v is in the i-th level, then its childs are in the
+    (i-1)-th level. Thus, by definition, the only vertex in the h-th level is
+    the root of the tree and the only vertices in the level 0 are leaves.
+    
+    Parameters
+    ----------
+    T : NetworkX Graph
+        The rooted tree.
+    
+    root : node
+        The root of the tree.
+    
+    height : int
+        The height of the tree.
+    
+    Returns
+    -------
+    M : dictionary
+        A map M: N -> P(V) such that, for each i in {0,...,h}, M(i) is the set
+        of vertices that are found in the i-th level of T.
+    
+    Notes
+    -----
+    The algorithm runs in O(n) time and space.
+    """
+    # Map M such that M(i) is the set of vertices that are in the i-th level.
+    lvl = {}
+    
+    # Map in_lvl such that in_lvl(v) is the level where v is found.
+    in_lvl = {}
+    
+    # Define the root height.
+    in_lvl[root] = height
+    
+    # Perform a BFS traversal to fill the in_lvl function.
+    for (parent, child) in nx.bfs_edges(T, root):
+        in_lvl[child] = in_lvl[parent] - 1
+        
+    # Traverse all vertices and group them by levels.
+    for v in in_lvl.keys():
+        l = in_lvl[v]
+        if l in lvl:
+            lvl[l].add(v)
+        else:
+            lvl[l] = {v}
+            
+    return lvl
 
 def root_trees(t1, root1, t2, root2):
     """Create a single digraph dT of free trees t1 and t2
