@@ -4,6 +4,7 @@ import time
 import networkx as nx
 from networkx.algorithms.isomorphism.tree_isomorphism import (
     get_levels,
+    get_initial_values,
     rooted_tree_isomorphism,
     tree_isomorphism,
 )
@@ -47,6 +48,54 @@ def test_isomorphism_trees_get_levels():
     obtained_levels = get_levels(T2, "u3", 3)
     
     assert expected_levels == obtained_levels
+
+# Test the get_initial_values function. The returned function should behave like
+# a function M: N -> P(V) such that, such that, for every vertex v in the tree
+# T, if v is a leave then v's initial value is 0, otherwise its defined as -1.
+def test_isomorphism_trees_set_initial_values():
+    # Test for an arbitrary graph.
+    edges_t1 = [("v0", "v1"), ("v0", "v2"), ("v0", "v3"),
+                ("v1", "v4"), ("v1", "v5"), ("v3", "v6")]
+    T1 = nx.Graph(edges_t1)
+
+    # Expected level function.
+    expected_values = {
+        "v0" : -1,
+        "v1" : -1,
+        "v2" : 0,
+        "v3" : -1,
+        "v4" : 0,
+        "v5" : 0,
+        "v6" : 0,
+    }
+    
+    # Obtained level function.
+    obtained_values = get_initial_values(T1, "v0")
+
+    assert expected_values == obtained_values
+    
+    # Test for another arbitrary graph.
+    edges_t2 = [("u3", "u4"), ("u3", "u2"),
+                ("u4", "u5"), ("u4", "u6"), ("u4", "u7"),
+                ("u2", "u1"), ("u7", "u8"), ("u1", "u0")]
+    T2 = nx.Graph(edges_t2)
+    
+    # Expected level function.
+    expected_levels = {
+        "u3" : -1,
+        "u4" : -1,
+        "u2" : -1,
+        "u5" : 0,
+        "u6" : 0,
+        "u7" : -1,
+        "u1" : -1,
+        "u8" : 0,
+        "u0" : 0,
+    }
+    
+    obtained_levels = get_initial_values(T2, "u3")
+    
+    assert expected_values == obtained_values
 
 # have this work for graph
 # given two trees (either the directed or undirected)
