@@ -1,5 +1,3 @@
-from itertools import permutations
-
 import pytest
 
 import networkx as nx
@@ -183,7 +181,7 @@ class TestGeneratorInverseLine:
         # Adapted from L.W.Beineke, "Characterizations of derived graphs"
 
         # claw graph
-        claw = nx.complete_bipartite_graph(1, 3)
+        claw = nx.star_graph(3)
         pytest.raises(nx.NetworkXError, nx.inverse_line_graph, claw)
 
         # wheel graph with 6 nodes
