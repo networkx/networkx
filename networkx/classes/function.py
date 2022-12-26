@@ -915,14 +915,13 @@ def non_edges(graph):
                 yield (u, v)
 
 
-@not_implemented_for("directed")
 def common_neighbors(G, u, v):
-    """Returns the common neighbors of two nodes in a graph.
+    """Returns the common neighbors of two nodes in a graph. In directed graphs,
+    common neighbors refer to out-degree neighbor nodes.
 
     Parameters
     ----------
-    G : graph
-        A NetworkX undirected graph.
+    G : NetworkX graph
 
     u, v : nodes
         Nodes in the graph.
