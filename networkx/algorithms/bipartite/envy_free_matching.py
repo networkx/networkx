@@ -1,4 +1,3 @@
-
 import doctest
 
 import networkx as nx
@@ -19,6 +18,7 @@ formatter = logging.Formatter('%(asctime)s: %(levelname)s: %(name)s: Line %(line
 console = logging.StreamHandler()  # writes to stderr (= cerr)
 logger.handlers = [console]
 console.setFormatter(formatter)
+
 
 def __neighbours_of_set__(G, node_set):
     """
@@ -75,7 +75,12 @@ def __M_alternating_sequence__(G, M):
     (({4, 5}, {1, 2, 3}, {0}), ({8, 9, 7}, {6}))
 
     """
-    X, Y = nx.bipartite.sets(G)
+    X = set()
+    Y = set()
+    for component in nx.connected_components(G):
+        X_, Y_ = nx.bipartite.sets(G.subgraph(component))
+        X = X.union(X_)
+        Y = Y_.union(Y_)
 
     m_alternating_sequence_logger = logging.getLogger("M_alternating_sequence")
     m_alternating_sequence_logger.info(
@@ -126,6 +131,13 @@ def __M_alternating_sequence__(G, M):
         index += 1
 
     return tuple(X_subsets), tuple(Y_subsets)
+
+
+def _extract_matching(G):
+    M = {}
+    for component in nx.connected_components(G):
+        M.update(nx.algorithms.bipartite.hopcroft_karp_matching(G.subgraph(component)))
+    return M
 
 
 def _EFM_partition(G, M=None):
@@ -202,10 +214,14 @@ def _EFM_partition(G, M=None):
 
     if M is None:
         efm_logger.info("Input matching is None - calculating matching!")
+        M = _extract_matching(G)
 
-        M = nx.algorithms.bipartite.minimum_weight_full_matching(G)
-
-    X, Y = nx.bipartite.sets(G)
+    X = set()
+    Y = set()
+    for component in nx.connected_components(G):
+        X_, Y_ = nx.bipartite.sets(G.subgraph(component))
+        X = X.union(X_)
+        Y = Y_.union(Y_)
 
     efm_logger.info(f"Starting EFM_Partition calculation: G={G},\nedges={G.edges}\nX={X}, Y={Y},\nM={M}")
     X_subsets, Y_subsets = __M_alternating_sequence__(G, M)
@@ -269,7 +285,7 @@ def envy_free_matching(G):
     """
     logger.info(f"Finding the maximum cardinality envy free matching of {G}")
     logger.debug(f"Finding the maximum matching of {G}")
-    M = networkx.algorithms.bipartite.hopcroft_karp_matching(G)
+    M = _extract_matching(G)
     EFM_PARTITION = _EFM_partition(G, M)
     logger.debug(f"Finding the EFM partition with maximum matching: {M}")
     un = EFM_PARTITION[1].union(EFM_PARTITION[3])
@@ -351,19 +367,38 @@ def minimum_weight_envy_free_matching(G):
     """
     logger.info(f"Finding the minimum cost maximum cardinality envy free matching of {G}")
     logger.debug(f"Finding the maximum matching of {G}")
-    M = networkx.algorithms.bipartite.hopcroft_karp_matching(G)
+    M = _extract_matching(G)
+    # M = networkx.algorithms.bipartite.hopcroft_karp_matching(G)
     EFM_PARTITION = _EFM_partition(G, M)
     logger.debug(f"Finding the EFM partition with maximum matching: {M}")
     # EFM_PARTITION = [{2, 3}, {1, 0}, {5, 6, 7}, {4}]
     G.remove_nodes_from((EFM_PARTITION[1]).union((EFM_PARTITION[3])))
-    if len((EFM_PARTITION[1]).union((EFM_PARTITION[3]))) == 0:
-        logger.warning(f"The sub-matching is empty!")
-    M = nx.bipartite.minimum_weight_full_matching(G)
+    # if len((EFM_PARTITION[1]).union((EFM_PARTITION[3]))) == 0:
+    #     logger.warning(f"The sub-matching is empty!")
+    Union = EFM_PARTITION[0].union(EFM_PARTITION[2])
+    M = nx.bipartite.minimum_weight_full_matching(G.subgraph(Union))
     logger.debug(f"returning minimum cost maximum cardinality envy free matching in G[X_L,Y_L]: {M}")
     return M
 
 
 if __name__ == '__main__':
-    doctest.testmod()
-
-
+    # doctest.testmod()
+    A = nx.Graph()
+    A.add_nodes_from([0, 1, 2, 3], bipartite=0)
+    A.add_nodes_from([4, 5, 6, 7], bipartite=1)
+    A.add_edge(0, 4, weight=5)
+    A.add_edge(4, 0, weight=5)
+    A.add_edge(1, 4, weight=1)
+    A.add_edge(4, 1, weight=1)
+    A.add_edge(2, 5, weight=3)
+    A.add_edge(5, 2, weight=3)
+    A.add_edge(2, 7, weight=9)
+    A.add_edge(7, 2, weight=9)
+    A.add_edge(3, 6, weight=3)
+    A.add_edge(6, 3, weight=3)
+    A.add_edge(3, 7, weight=7)
+    A.add_edge(7, 3, weight=7)
+    print(_EFM_partition(A))
+    print(minimum_weight_envy_free_matching(A))
+    B = nx.Graph([(0, 4), (4, 0), (0, 5), (5, 0), (0, 8), (8, 0), (1, 6), (6, 1), (2, 7), (7, 2), (3, 7), (7, 3)])
+    print(envy_free_matching(B))
