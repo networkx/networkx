@@ -382,7 +382,7 @@ def minimum_weight_envy_free_matching(G):
 
 
 if __name__ == '__main__':
-    # doctest.testmod()
+    doctest.testmod()
     A = nx.Graph()
     A.add_nodes_from([0, 1, 2, 3], bipartite=0)
     A.add_nodes_from([4, 5, 6, 7], bipartite=1)
