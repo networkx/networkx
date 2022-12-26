@@ -6,6 +6,7 @@ from itertools import permutations, product
 import numpy as np
 from more_itertools import distinct_permutations as idp
 import matplotlib.pyplot as plt
+
 """REUT HADAD & TAL SOMECH"""
 
 """
@@ -51,18 +52,19 @@ def ExactAlgorithm(graph: nx.DiGraph, k: int) -> list:
     >>> Digraph=nx.DiGraph()
     >>> Digraph.add_nodes_from([1,2,3,4,5,6,7,8])
     >>> Digraph.add_weighted_edges_from([(1,8,2),(8,1,4),(2,1,5),(1,3,4),(3,8,2),(8,2,3),(8,5,4),(5,7,3),(7,6,2),(6,5,4)])
-    >>> print(ExactAlgorithm(Digraph,3))
-    [[5,6,7],[1,8,2]]||[[5,6,7],[1,3,8]]
+    >>> print(len(ExactAlgorithm(Digraph,3))) #[1,8,2] [6,5,7] [1,3,8] , can be only 2 but in any order
+    2
     >>> Digraph =nx.DiGraph()
     >>> Digraph.add_nodes_from([1,2,3,4])
     >>> Digraph.add_weighted_edges_from([(2,1,3),(1,3,1),(3,2,2),(3,4,5),(4,3,9)])
-    >>> print(ExactAlgorithm(Digraph,3))
-    [3,4]
+    >>> print(len(ExactAlgorithm(Digraph,2)))#[3,4] or [4,3]
+    1
     >>> graphEX3 = nx.DiGraph()
     >>> graphEX3.add_nodes_from([10,11,12,13,14,15,16])
     >>> Digraph.add_weighted_edges_from([(10,11,10),(11,12,5),(12,13,6),(13,10,4),(11,14,2),(14,16,3),(16,15,8),(15,14,6)])
-    >>> print(ExactAlgorithm(graphEX3, 2))
-    []
+    >>> print(ExactAlgorithm(graphEX3, 3))
+    None
+
     Notes
     -----------
     Algorithm - the algorithm finds maximum weight k-way exchanges using reduction from directed graph to not directed graph by
@@ -81,7 +83,7 @@ def ExactAlgorithm(graph: nx.DiGraph, k: int) -> list:
     X = []
     for Y in Ys:
         ans_graph = nx.Graph()
-
+        #   creating the nodes in the graph graph
         for edge in graph.edges:
             if edge in Y:
                 ans_graph.add_node(f"Y{edge[0]},{edge[1]}")
@@ -90,63 +92,75 @@ def ExactAlgorithm(graph: nx.DiGraph, k: int) -> list:
                     X.append(edge[0])
                 ans_graph.add_node(f"X{edge[0]}")
 
-        for i in range(len(X)):
-            for edge in Y:
-                if X[i] in edge:
-                    ans_graph.add_edge(f"X{X[i]}",f"Y{edge[0]},{edge[1]}")
+        for i in range(len(X)):  # creating the edges in the graph by going through the 2-circles
             for j in range(i + 1, len(X)):
                 if (X[i], X[j]) in graph.edges and (X[j], X[i]) in graph.edges:
-                    t = 5
                     weight = graph.get_edge_data(X[i], X[j])["weight"] + graph.get_edge_data(X[j], X[i])["weight"]
-                    ans_graph.add_edge(f"X{X[i]}", f"X{X[j]}", weight=weight)
+                    ans_graph.add_edge(f"X{X[i]}", f"X{X[j]}", weight=weight, cycle=[X[i], X[j]])
 
+        #   creating the edges in the graph by going through the 3-circles
         for k in range(len(X)):
-            for j,l in Y:
-                if [j, l, X[k]] in cycles:  # j == X[i] and (l, X[k]) in graph.edges and (X[k], X[i]) in graph.edges:
+            for j, l in Y:  # This deals with the normal case of Yi,j Xk
+                if [j, l, X[k]] in cycles:
                     weight = graph.get_edge_data(j, l)["weight"] + graph.get_edge_data(l, X[k])["weight"] + \
                              graph.get_edge_data(X[k], j)["weight"]
-                    ans_graph.add_edge(f"X{X[k]}", f"Y{j},{l}", weight=weight)
-        components = [ans_graph.subgraph(c).copy() for c in nx.connected_components(ans_graph)]
-        exchanges=[]
-        for comp in components:
-            exchanges.append(sorted(comp.edges(data=True), key=lambda t: t[2].get('weight', 1),reverse=True)[0])
-        return exchanges
+                    ans_graph.add_edge(f"X{X[k]}", f"Y{j},{l}", weight=weight, cycle=[j, l, X[k]])
+        exchanges = list(nx.max_weight_matching(ans_graph))
+        to_remove = set()
+        # now in this use-case we iterate over all the matching which we got back
+        # and we want to remove the ones with the same node , like (X8,Y1,3),(Y1,8,X2)
+        # by also preserving the highest weighted cycle
+        for i in range(len(exchanges)):
+            nodes_1 = [exchanges[i][0][1:], exchanges[i][1][1:]]
+            for j in range(i + 1, len(exchanges)):
+                nodes_2 = [exchanges[j][0][1:], exchanges[j][1][1:]]
+                for node in nodes_2:
+                    if node in nodes_1[0] or node in nodes_1[1] or nodes_1[0] in node or nodes_1[1] in node:
+                        ed1 = ans_graph.get_edge_data(*exchanges[i])
+                        ed2 = ans_graph.get_edge_data(*exchanges[j])
+                        if ed1["weight"] > ed2["weight"]:
+                            to_remove.add(exchanges[j])
+                        else:
+                            to_remove.add(exchanges[i])
+        # This last part is only for pretty printing and showing , instead of [('X8','Y1,2')] becomes [1,2,8]
+        if len(to_remove) > 0:
+            exchanges.remove(*to_remove)
+        result = []
+        for cyc in exchanges:
+            temp = []
+            for node in cyc:
+                if node[0] == 'Y':
+                    node1, node2 = node[1:].split(',')
+                    temp.append(int(node1))
+                    temp.append(int(node2))
+                else:
+                    temp.append(int(node[1:]))
+            result.append(temp)
+
+        return result  # exchanges
 
 
 def create_Ys(cycles, k):
-    arr2 = np.ndarray(shape=(len(cycles),k), dtype=list)
+    arr2 = np.ndarray(shape=(len(cycles), k), dtype=list)
     for cyc_idx in range(len(cycles)):
         cyc = cycles[cyc_idx]
         for ed_idx in range(len(cyc)):
             mid = (cyc[ed_idx], cyc[(ed_idx + 1) % len(cyc)])
             arr2[cyc_idx][ed_idx] = mid
-    temp=arr2[0]
-    for i in range(1,len(arr2)):
-        k=np.ndarray(list(temp))
-        temp=itertools.product(temp,arr2[i])
-    return list(temp) #[[i, j, k] for i in arr2[0] for j in arr2[1] for k in arr2[2]]
+    #d = np.array_split(arr2, len(arr2))
+    mesh=[]
+    if len(arr2)>0:
+        mesh = np.array(np.meshgrid(*arr2))
+        mesh = mesh.T.reshape(-1, len(mesh))
+    # temp = np.array(np.meshgrid(*d)).T.reshape(-1, 3)
+
+    return mesh
 
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     # itertools.ne
-    Digraph = nx.DiGraph()
-    Digraph.add_nodes_from([1, 2, 3, 5, 6, 7, 8])
-    Digraph.add_weighted_edges_from(
-        [(1, 8, 2), (8, 1, 4), (2, 1, 5), (1, 3, 4), (3, 8, 2), (8, 2, 3), (8, 5, 4), (5, 7, 3), (7, 6, 2), (6, 5, 4)])
-    # t = Digraph.edges
-    # Digraph =nx.DiGraph()
-    # Digraph.add_nodes_from([1,2,3,4])
-    # Digraph.add_weighted_edges_from([(2,1,3),(1,3,1),(3,2,2),(3,4,5),(4,3,9)])
-    # nx.draw_shell(ExactAlgorithm(Digraph, 3))
-    # plt.show()
-    print(ExactAlgorithm(Digraph, 3))
-    # # for b in permutations([Dx[0:3],Dx[3:6],Dx[6:9]]):
-    #     print(b)
-    # print_hi('PyCharm')
-    # print(permutations([1, 2, 3],2))
-    # for i in idp([1, 2, 3], 2):
-    #     print(i)
-    # get_pem()
+    doctest.testmod()
+
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
