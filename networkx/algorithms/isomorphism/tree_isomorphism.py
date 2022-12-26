@@ -1,21 +1,22 @@
 """
-An algorithm for finding if two undirected trees are isomorphic,
-and if so returns an isomorphism between the two sets of nodes.
+An algorithm for finding if two undirected trees are isomorphic, and if so 
+returns an isomorphism between the two sets of nodes.
 
 This algorithm uses a routine to tell if two rooted trees (trees with a
 specified root node) are isomorphic, which may be independently useful.
 
-This implements an algorithm from:
-The Design and Analysis of Computer Algorithms
-by Aho, Hopcroft, and Ullman
-Addison-Wesley Publishing 1974
-Example 3.2 pp. 84-86.
+References
+----------
+  .. [1] A. V. Aho, J. E. Hopcroft y J. D. Ullman, The Desing And Analysis of
+     Computer Algorithms, Addison Wesley Publishing Company, 1974.
 
-A more understandable version of this algorithm is described in:
-Homework Assignment 5
-McGill University SOCS 308-250B, Winter 2002
-by Matthew Suderman
-http://crypto.cs.mcgill.ca/~crepeau/CS250/2004/HW5+.pdf
+  .. [2] M. Suderman, Homework Assignment 5, McGill University SOCS 308-250B,
+     Winter 2002. http://crypto.cs.mcgill.ca/~crepeau/CS250/2004/HW5+.pdf
+
+  .. [3] G. Valiente, Algorithms on Trees and Graphs, Springer 2002.
+
+  .. [4] M. Carrasco-Ruiz, Herramientas para el Manejo Computacional de
+     Gráficas, Bachelor of Science Thesis, UNAM, 2021.
 """
 
 import networkx as nx
