@@ -95,7 +95,6 @@ def resource_allocation_index(G, ebunch=None):
 
 
 @nx._dispatch
-@not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def jaccard_coefficient(G, ebunch=None):
     r"""Compute the Jaccard coefficient of all node pairs in ebunch.
@@ -110,8 +109,7 @@ def jaccard_coefficient(G, ebunch=None):
 
     Parameters
     ----------
-    G : graph
-        A NetworkX undirected graph.
+    G : A NetworkX undirected or directed graph.
 
     ebunch : iterable of node pairs, optional (default = None)
         Jaccard coefficient will be computed for each pair of nodes
@@ -124,7 +122,8 @@ def jaccard_coefficient(G, ebunch=None):
     -------
     piter : iterator
         An iterator of 3-tuples in the form (u, v, p) where (u, v) is a
-        pair of nodes and p is their Jaccard coefficient.
+        pair of nodes and p is their Jaccard coefficient. For directed graphs,
+        this refers to out-degree neighbor nodes.
 
     Examples
     --------
