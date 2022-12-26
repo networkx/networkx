@@ -232,16 +232,16 @@ def _consistent_PT(u, v, graph_params, state_params):
 
     for predecessor in G1.pred[u]:
         if predecessor in mapping:
-            if G1.number_of_edges(u, predecessor) != G2.number_of_edges(
-                v, mapping[predecessor]
+            if G1.number_of_edges(predecessor, u) != G2.number_of_edges(
+                mapping[predecessor], v
             ):
                 return False
 
     for predecessor in G2.pred[v]:
         if predecessor in reverse_mapping:
             if G1.number_of_edges(
-                u, reverse_mapping[predecessor]
-            ) != G2.number_of_edges(v, predecessor):
+                reverse_mapping[predecessor], u
+            ) != G2.number_of_edges(predecessor, v):
                 return False
 
     return True

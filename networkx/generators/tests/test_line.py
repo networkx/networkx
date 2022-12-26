@@ -169,7 +169,8 @@ class TestGeneratorInverseLine:
 
     def test_edgeless_graph(self):
         G = nx.empty_graph(5)
-        pytest.raises(nx.NetworkXError, nx.inverse_line_graph, G)
+        with pytest.raises(nx.NetworkXError, match="edgeless graph"):
+            nx.inverse_line_graph(G)
 
     def test_selfloops_error(self):
         G = nx.cycle_graph(4)
