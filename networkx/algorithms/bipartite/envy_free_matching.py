@@ -1,8 +1,8 @@
-import collections
+
 import doctest
-import itertools
 
 import networkx as nx
+import networkx
 import logging
 
 logging.basicConfig(filename="envy_free_matching.log", level=logging.DEBUG)
@@ -14,6 +14,11 @@ __all__ = [
 
 INFINITY = float("inf")
 
+logger = logging.getLogger("Envy-free matching")
+formatter = logging.Formatter('%(asctime)s: %(levelname)s: %(name)s: Line %(lineno)d: %(message)s')
+console = logging.StreamHandler()  # writes to stderr (= cerr)
+logger.handlers = [console]
+console.setFormatter(formatter)
 
 def __neighbours_of_set__(G, node_set):
     """
@@ -57,6 +62,7 @@ def __M_alternating_sequence__(G, M):
     >>> G = nx.Graph([(0,3),(3,0),(1,3),(3,1),(1,4),(4,1),(2,4),(4,2)])
     >>> M = {0:3,3:0,4:1,1:4}
     >>> __M_alternating_sequence__(G, M)
+    (({2}, {1}, {0}), ({4}, {3}))
 
     >>> G = nx.Graph([(0,3),(3,0),(1,3),(3,1),(1,4),(4,1),(2,4),(4,2)])
     >>> M = {0:3,3:0,4:1,1:4}
@@ -217,14 +223,11 @@ def _EFM_partition(G, M=None):
 
 def envy_free_matching(G):
     r"""Return an envy-free matching of maximum cardinality
-
     Parameters
     ----------
     G
         NetworkX graph
-
         Undirected bipartite graph
-
     Returns
     -------
     Matching: dictionary
@@ -243,14 +246,13 @@ def envy_free_matching(G):
         Example 1: Perfect matching
         >>> Graph=nx.complete_bipartite_graph(3,3)
         >>> envy_free_matching(Graph)
-        {0:3,3:0,1:4,4:1,2:5,5:2}
+        {0: 3, 1: 4, 2: 5, 3: 0, 4: 1, 5: 2}
 
         Where there exists a perfect matching the maximum envy free matching is the perfect matching.
-
         Example 2: Non-empty envy-free matching
         >>> Graph=nx.Graph([(0,3),(3,0),(0,4),(4,0),(1,4),(4,1),(2,4),(4,2)])
         >>> envy_free_matching(Graph)
-        {0:3,3:0}
+        {0: 3, 3: 0}
 
         Example 3: Odd path
         >>> Graph=nx.Graph([(0,3),(3,0),(1,3),(3,1),(1,4),(4,1),(2,4),(4,2)])
@@ -258,7 +260,6 @@ def envy_free_matching(G):
         {}
 
         Like presented in the article, odd path contains an empty envy-free matching so the returned matching is empty.
-
         Example 4: Y-path-saturated graph
         >>> Graph=nx.Graph([(0,6),(6,0),(1,6),(6,1),(1,7),(7,1),(2,6),(6,2),(2,8),(8,2),(3,9),(9,3),(3,6),(6,3),(4,8),(8,4),(4,7),(7,4),(5,9),(9,5)])
         >>> envy_free_matching(Graph)
@@ -266,19 +267,28 @@ def envy_free_matching(G):
 
         Like presented in the article, Y-path-saturated graph contains an empty envy-free matching so X_L and Y_L are empty in the partition.
     """
-    pass
+    logger.info(f"Finding the maximum cardinality envy free matching of {G}")
+    logger.debug(f"Finding the maximum matching of {G}")
+    M = networkx.algorithms.bipartite.hopcroft_karp_matching(G)
+    EFM_PARTITION = _EFM_partition(G, M)
+    logger.debug(f"Finding the EFM partition with maximum matching: {M}")
+    un = EFM_PARTITION[1].union(EFM_PARTITION[3])
+    logger.debug(f"Finding the sub-matching M[X_L,Y_L]")
+    M = {node: M[node] for node in M if node not in un and M[node] not in un}
+    if len(M) == 0:
+        logger.warning(f"The sub-matching is empty!")
+    logger.debug(f"returning the sub-matching M[X_L,Y_L]: {M}")
+    return M
+    # return networkx.algorithms.bipartite.hopcroft_karp_matching(G)
 
 
 def minimum_weight_envy_free_matching(G):
     r"""Returns minimum-cost maximum-cardinality envy-free matching
-
     Parameters
     ----------
     G
         NetworkX graph
-
         Undirected bipartite graph
-
     Returns
     -------
     Matching: dictionary
@@ -296,6 +306,8 @@ def minimum_weight_envy_free_matching(G):
     --------
         Example 1: K 3,3 with weights
         >>> Graph=nx.Graph()
+        >>> Graph.add_nodes_from([0, 1, 2], bipartite=0)
+        >>> Graph.add_nodes_from([3, 4, 5], bipartite=1)
         >>> Graph.add_edge(0,3,weight=250)
         >>> Graph.add_edge(3,0,weight=250)
         >>> Graph.add_edge(0,4,weight=148)
@@ -312,21 +324,20 @@ def minimum_weight_envy_free_matching(G):
         >>> Graph.add_edge(3,2,weight=150)
         >>> Graph.add_edge(2,4,weight=125)
         >>> Graph.add_edge(4,2,weight=125)
-        >>> Graph.add_edge(3,5,weight=108)
-        >>> Graph.add_edge(5,3,weight=108)
         >>> minimum_weight_envy_free_matching(Graph)
-        {0:5,5:0,1:4,4:1,2:3,3:2}
+        {0: 5, 1: 4, 2: 3, 5: 0, 4: 1, 3: 2}
 
         Where there exists a perfect matching the maximum envy free matching is the perfect matching this is the least cost perfect matching.
-
-
-
         Example 2: Non-empty envy-free matching
         >>> Graph=nx.Graph()
+        >>> Graph.add_nodes_from([0, 1, 2, 3], bipartite=0)
+        >>> Graph.add_nodes_from([4, 5, 6, 7], bipartite=1)
         >>> Graph.add_edge(0,4,weight=5)
         >>> Graph.add_edge(4,0,weight=5)
         >>> Graph.add_edge(1,4,weight=1)
         >>> Graph.add_edge(4,1,weight=1)
+        >>> Graph.add_edge(1, 5, weight=500)
+        >>> Graph.add_edge(5, 1, weight=500)
         >>> Graph.add_edge(2,5,weight=3)
         >>> Graph.add_edge(5,2,weight=3)
         >>> Graph.add_edge(2,7,weight=9)
@@ -336,11 +347,23 @@ def minimum_weight_envy_free_matching(G):
         >>> Graph.add_edge(3,7,weight=7)
         >>> Graph.add_edge(7,3,weight=7)
         >>> minimum_weight_envy_free_matching(Graph)
-        {2:5,5:2,3:6,6:3}
-
+        {0: 4, 1: 5, 2: 7, 3: 6, 4: 0, 5: 1, 7: 2, 6: 3}
     """
-    pass
+    logger.info(f"Finding the minimum cost maximum cardinality envy free matching of {G}")
+    logger.debug(f"Finding the maximum matching of {G}")
+    M = networkx.algorithms.bipartite.hopcroft_karp_matching(G)
+    EFM_PARTITION = _EFM_partition(G, M)
+    logger.debug(f"Finding the EFM partition with maximum matching: {M}")
+    # EFM_PARTITION = [{2, 3}, {1, 0}, {5, 6, 7}, {4}]
+    G.remove_nodes_from((EFM_PARTITION[1]).union((EFM_PARTITION[3])))
+    if len((EFM_PARTITION[1]).union((EFM_PARTITION[3]))) == 0:
+        logger.warning(f"The sub-matching is empty!")
+    M = nx.bipartite.minimum_weight_full_matching(G)
+    logger.debug(f"returning minimum cost maximum cardinality envy free matching in G[X_L,Y_L]: {M}")
+    return M
 
 
 if __name__ == '__main__':
     doctest.testmod()
+
+
