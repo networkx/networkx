@@ -25,7 +25,7 @@ def could_be_isomorphic(G1, G2):
     -----
     Checks for matching degree, triangle, and number of cliques sequences.
     The triangle sequence contains the number of triangles each node is part of.
-    The clique sequence contains for each node the size of the maximal clique
+    The clique sequence contains for each node the number of maximal cliques
     involving that node.
 
     """
