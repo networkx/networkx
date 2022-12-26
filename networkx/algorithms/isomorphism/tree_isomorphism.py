@@ -20,9 +20,123 @@ References
 """
 
 import networkx as nx
+import numpy as np
 from networkx.utils.decorators import not_implemented_for
 
 __all__ = ["rooted_tree_isomorphism", "tree_isomorphism"]
+
+class NaturalMultiset():
+    """
+    Class to represent a multiset M of natural numbers (0, ..., n). Define a
+    multiset as a set where repetition of elements is allowed. Mathematically, a
+    multiset M is an ordered pair (X, m) where X is a set and m : X -> N such
+    that, for every x in X, m(x) is the number of ocurrences of x in M.
+    
+    This class only has the neccessary operations for the tree isomorphism
+    algorithm to work; it is not expected to be used anywhere else.
+    
+    Parameters
+    ----------
+    X : set
+        The set of elements of M.
+    
+    m : dictionary
+        The number of occurrences of the elements of X in M.
+
+    length : int
+        The amount of elements in M.
+    """
+    
+    def __init__(self):
+        """
+        Initializes an empty multiset.
+        """
+        self.X = set()
+        self.m = {}
+        self.length = 0
+        
+    def add(self, x):
+        """
+        Adds an element to the multiset. If the element is in the multiset,
+        then increase the number of occurrences of said element in the map.
+        
+        Parameters
+        ----------
+        x : any
+            The value to add to the multiset.
+
+        Notes
+        -----
+        This runs in O(1) time and space.
+        """
+        if x in self.X:
+            self.m[x] = self.m[x] + 1
+        else:
+            self.X.add(x)
+            self.m[x] = 1
+
+        self.length = self.length + 1
+            
+    def to_list(self):
+        """
+        Returns the elements of the multiset as an ordered list. The method
+        is basically a bucket sort.
+        
+        Returns
+        -------
+        A sorted list of the elements of the multiset.
+        
+        Notes
+        -----
+        This runs in O(|X| + k) where k = max(X).
+        """
+        # Max value of X.
+        m = max(self.X)
+        
+        # Define an array of size m.
+        A = np.empty(m+1, dtype='int')
+        
+        # The array S now keeps the number of occurrences.
+        for x in self.X:
+            A[x] = self.m[x]
+        
+        # Build a sorted list of elements.
+        S = []
+        for i in range(m+1):
+            for j in range(A[i]):
+                S.append(i)
+        
+        return S
+    
+    def from_list(self, L):
+        """
+        Adds the elements from the list to the multiset.
+        
+        Parameters
+        ----------
+        L : list
+            The list of naturals to add to the multiset.
+        
+        Notes
+        -----
+        This runs in O(|L|).
+        """
+        for x in l:
+            self.add(x)
+            
+    def __eq__(self, M):
+        """
+        Two multisets M1 = (X1, m1) and M2 = (X2, m2) are equal if and only
+        if X1 = X2 and m1 = m2.
+        """
+        return (self.X == M.X) and (self.m == M.m)
+
+    def __len__(self):
+        """
+        The length of a multiset is defined as the amount of elements it
+        contains.
+        """
+        return self.length
 
 def get_levels(T, root, height):
     """
