@@ -50,9 +50,9 @@ class TestEnvyFreeMatching:
         matching = algo.envy_free_matching(A)
         assert matching == {0: 3, 3: 0}
 
-        # B = nx.Graph([(0, 4), (4, 0), (0, 5), (5, 0), (0, 8), (8, 0), (1, 6), (6, 1), (2, 7), (7, 2), (3, 7), (7, 3)])
-        # matching = algo.envy_free_matching(B)
-        # assert matching == {0: 4, 4: 0, 1: 6, 6: 1}
+        B = nx.Graph([(0, 4), (4, 0), (0, 5), (5, 0), (0, 8), (8, 0), (1, 6), (6, 1), (2, 7), (7, 2), (3, 7), (7, 3)])
+        matching = algo.envy_free_matching(B)
+        assert matching == {0: 4, 4: 0, 1: 6, 6: 1}
 
     def test_empty_envy_free_matching(self):
         # def generate_odd_path(size: int):
@@ -114,7 +114,7 @@ class TestMinimumWeightEnvyFreeMatching:
         A.add_edge(3, 2, weight=150)
         A.add_edge(2, 4, weight=125)
         A.add_edge(4, 2, weight=125)
-        matching = algo.minimum_weight_full_matching(A)
+        matching = algo.minimum_weight_envy_free_matching(A)
         assert matching == {0: 5, 1: 4, 2: 3, 5: 0, 4: 1, 3: 2}
         B = nx.Graph()
         B.add_nodes_from([0, 1, 2], bipartite=0)
@@ -146,8 +146,6 @@ class TestMinimumWeightEnvyFreeMatching:
         A.add_edge(4, 0, weight=5)
         A.add_edge(1, 4, weight=1)
         A.add_edge(4, 1, weight=1)
-        A.add_edge(1, 5, weight=500)
-        A.add_edge(5, 1, weight=500)
         A.add_edge(2, 5, weight=3)
         A.add_edge(5, 2, weight=3)
         A.add_edge(2, 7, weight=9)
