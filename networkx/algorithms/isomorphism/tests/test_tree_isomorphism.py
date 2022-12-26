@@ -3,12 +3,74 @@ import time
 
 import networkx as nx
 from networkx.algorithms.isomorphism.tree_isomorphism import (
+    NaturalMultiset,
     get_levels,
     get_initial_values,
     rooted_tree_isomorphism,
     tree_isomorphism,
 )
 from networkx.classes.function import is_directed
+
+# Tests the function to_list from the Natural Multiset class.
+def test_multiset_to_list():
+    M = NaturalMultiset()
+    # Add the values (0, 1, 2, 0, 0, 1)
+    M.add(0)
+    M.add(1)
+    M.add(2)
+    M.add(0)
+    M.add(0)
+    M.add(1)
+    
+    expected_list = [0, 0, 0, 1, 1, 2]
+    
+    obtained_list = M.to_list()
+    
+    assert expected_list == obtained_list
+    
+# Tests the function __eq__ from the Natural Multiset class.
+def test_multiset__eq__():
+    M1 = NaturalMultiset()
+    M2 = NaturalMultiset()
+    
+    # Empty multisets should be equal.
+    assert M1 == M2
+    
+    # Add different elements to M1 and M2.
+    M1.add(1)
+    M2.add(2)
+    
+    assert M1 != M2
+    
+    # Add the values that are missing to each multiset.
+    M1.add(2)
+    M2.add(1)
+    
+    assert M1 == M2
+    
+    # Increase the occurrences of one element in each multiset.
+    M1.add(1)
+    assert M1 != M2
+    
+    M2.add(1)
+    assert M1 == M2
+
+# Tests the function __len__ from the Natural Multiset class.
+def test_multiset__len__():
+    M = NaturalMultiset()
+    
+    # An empty multiset length is 0.
+    assert len(M) == 0
+    
+    # Add different elements and check the length.
+    for i in range(10):
+        M.add(i)
+        assert len(M) == (i + 1)
+
+    # Add the same elements as before and check the length.
+    for i in range(10):
+        M.add(i)
+        assert len(M) == (11 + i)
 
 # Test the get_levels function. The returned function should behave like a
 # function M: N -> P(V) such that, for each i in {0,...,h}, M(i) is the set of
