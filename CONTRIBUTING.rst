@@ -77,6 +77,8 @@ Development Workflow
          pip install -e .
          # Test your installation
          PYTHONPATH=. pytest networkx
+         # If using Anaconda Prompt, just enter ``pytest networkx`` to run the
+         # test suite.
 
    * Finally, we recommend you use a pre-commit hook, which runs black when
      you type ``git commit``::
