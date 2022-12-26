@@ -3,11 +3,50 @@ import time
 
 import networkx as nx
 from networkx.algorithms.isomorphism.tree_isomorphism import (
+    get_levels,
     rooted_tree_isomorphism,
     tree_isomorphism,
 )
 from networkx.classes.function import is_directed
 
+# Test the get_levels function. The returned function should behave like a
+# function M: N -> P(V) such that, for each i in {0,...,h}, M(i) is the set of
+# vertices that are found in the i-th level of T.
+def test_isomorphism_trees_get_levels():
+    # Test for an arbitrary graph.
+    edges_t1 = [("v0", "v1"), ("v0", "v2"), ("v0", "v3"),
+                ("v1", "v4"), ("v1", "v5"), ("v3", "v6")]
+    T1 = nx.Graph(edges_t1)
+
+    # Expected level function.
+    expected_levels = {
+        2 : {"v0"},
+        1 : {"v1", "v2", "v3"},
+        0 : {"v4", "v5", "v6"},
+    }
+    
+    # Obtained level function.
+    obtained_levels = get_levels(T1, "v0", 2)
+
+    assert expected_levels == obtained_levels
+    
+    # Test for another arbitrary graph.
+    edges_t2 = [("u3", "u4"), ("u3", "u2"),
+                ("u4", "u5"), ("u4", "u6"), ("u4", "u7"),
+                ("u2", "u1"), ("u7", "u8"), ("u1", "u0")]
+    T2 = nx.Graph(edges_t2)
+    
+    # Expected level function.
+    expected_levels = {
+        3: {"u3"},
+        2: {"u2", "u4"},
+        1: {"u5", "u6", "u7", "u1"},
+        0: {"u8", "u0"},
+    }
+    
+    obtained_levels = get_levels(T2, "u3", 3)
+    
+    assert expected_levels == obtained_levels
 
 # have this work for graph
 # given two trees (either the directed or undirected)
