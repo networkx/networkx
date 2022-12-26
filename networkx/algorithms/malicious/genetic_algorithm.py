@@ -4,11 +4,34 @@ Two heuristics to improve the quality of arrangements for maximum subgraph isomo
 """
 
 # from networkx.algorithms.malicious.fitness import fitness
+from math import comb
 import random
 import networkx as nx
 
-# algorithms 1 and 2 in the paper
+# TODO: add all the functions
+# algorithms 1 and 2 in the paper 
 __all__ = ["two_vertex_exchange_heuristic", "vertex_relocation_heuristic"]
+
+
+def count_equal_size_combinations(G1_nodes, G2_nodes):
+    # Find the smaller of the two graphs
+    smaller_g = G1_nodes if len(G1_nodes) < len(G2_nodes) else G2_nodes
+
+    # Initialize the count to 0
+    count = 0
+
+    # Iterate over all subgraph sizes from 0 to the size of the smaller graph
+    for i in range(1, len(smaller_g) + 1):
+        # Calculate the number of combinations for g1
+        g1_combinations = comb(len(G1_nodes), i)
+
+        # Calculate the number of combinations for g2
+        g2_combinations = comb(len(G2_nodes), i)
+
+        # Add the total number of combinations for this size to the count
+        count += g1_combinations * g2_combinations
+
+    return count
 
 
 def fitness(sub_G1, sub_G2, G1_nodes, G1_edges, G2_nodes, G2_edges):
@@ -158,22 +181,23 @@ def vertex_relocation_heuristic(G):
     return 0  # Empty implementation
 
 
-def GA(G1, G2, alpha=0.5):
+def GA(G1, G2, ALPHA=0):
     G1_nodes = list(G1.nodes)
     G2_nodes = list(G2.nodes)
+    # calculates the num of combinations
+    num_of_combinations = count_equal_size_combinations(G1_nodes, G2_nodes)
     # generate solutions
     solutions = []
     min_nodes = min(len(G1_nodes), len(G2_nodes))
-    NUM_OF_SOLUTIONS = 10
+    NUM_OF_SOLUTIONS = int(num_of_combinations / 4)
     for s in range(NUM_OF_SOLUTIONS):
-        num = random.randint(1, min_nodes)
-        sub1 = set(random.sample(G1_nodes, num))
-        sub2 = set(random.sample(G2_nodes, num))
+        sub_graph_size = random.randint(1, min_nodes)
+        sub1 = random.sample(G1_nodes, sub_graph_size)
+        sub2 = random.sample(G2_nodes, sub_graph_size)
         solutions.append((sub1, sub2))
-    # print(solutions)
-    NUM_OF_GENERATIONS = 100
+    # print("solutions:", solutions)
+    NUM_OF_GENERATIONS = NUM_OF_SOLUTIONS * 10
     for i in range(NUM_OF_GENERATIONS):
-        # print(solutions)
         rankedsolutions = []  # [solution, fitness' score]
         for s in solutions:
             fitness_score = fitness(G1.subgraph(s[0]), G2.subgraph(s[1]), len(
@@ -182,13 +206,14 @@ def GA(G1, G2, alpha=0.5):
         # print(f"=== Gen {i+1} best solutions === ")
         # print(rankedsolutions[0])
         # checks if the best solution so fate is less or equals to alpha
-        if rankedsolutions[0][1] <= alpha:
+        if rankedsolutions[0][1] <= ALPHA:
             # print('--------------------------------------------------------VIRUS-DETECTED--------------------------------------------------------')
             return rankedsolutions[0][1]
             # sorts the solutaions by thier fitness' score
         rankedsolutions = sorted(rankedsolutions, key=lambda x: x[1])
-        # picks the smallest 100 solutions
-        bestsoutions = rankedsolutions[:100]
+        SOLUTIONS_TO_CHOOSE = int(NUM_OF_SOLUTIONS * 0.8)
+        # picks the smallest SOLUTIONS_TO_CHOOSE solutions
+        bestsoutions = rankedsolutions[:SOLUTIONS_TO_CHOOSE]
         G1_elements = []
         G2_elements = []
         for s in bestsoutions:
@@ -199,19 +224,38 @@ def GA(G1, G2, alpha=0.5):
             G2_elements.append(G2_sub)
         # print("G1_elements:", G1_elements)
         # print("G2_elements:", G2_elements)
+
+        G1_lengths = set([len(lst) for lst in G1_elements])
+        # print("G1_lengths:", G1_lengths)
+        G2_lengths = set([len(lst) for lst in G2_elements])
+        # print("G2_lengths:", G2_lengths)
+        intersection = list(G1_lengths.intersection(G2_lengths))
+
+        G1_sublists = {}
+        G2_sublists = {}
+
+        for length in intersection:
+            G1_sublists[length] = [
+                lst for lst in G1_elements if len(lst) == length]
+            G2_sublists[length] = [
+                lst for lst in G2_elements if len(lst) == length]
+
         newGen = []
         #[([1,2], [2,3]), fitness]
         count_new_solutions = 0
-        TIME_OUT = 200
-        while (count_new_solutions < NUM_OF_SOLUTIONS or TIME_OUT != 0):
-            TIME_OUT -= 1
-            # print(count_new_solutions)
-            e1 = random.choice(list(G1_elements))
-            e2 = random.choice(list(G2_elements))
-            # print("e:", e1, e2)
-            if (len(e1) == len(e2)) and (e1, e2) not in newGen:
+        while (count_new_solutions < NUM_OF_SOLUTIONS):
+            sub_graph_size = random.choice(intersection)
+            e1 = random.choice(G1_sublists[sub_graph_size])
+            e2 = random.choice(G2_sublists[sub_graph_size])
+            # print("(e1, e2):", (e1, e2))
+            if (e1, e2) not in newGen:
                 newGen.append((e1, e2))
-                count_new_solutions += 1
-        # print("newGen:", newGen)
+            else:
+                new_e1 = random.sample(G1_nodes, sub_graph_size)
+                new_e2 = random.sample(G2_nodes, sub_graph_size)
+                newGen.append((new_e1, new_e2))
+            count_new_solutions += 1
+
         solutions = newGen
+        # print("newGen: ", newGen)
     return rankedsolutions[0][1]

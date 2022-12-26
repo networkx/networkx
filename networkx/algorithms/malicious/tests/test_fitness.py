@@ -4,7 +4,7 @@
 
 import pytest
 import networkx as nx
-from networkx.algorithms.malicious.fitness import GA
+from networkx.algorithms.malicious.graph_reduction import build_RG_from_DG
 from networkx.algorithms.malicious.genetic_algorithm import GA
 
 
@@ -67,10 +67,12 @@ class TestFitnessFunction:
 
     # fork_code reduced garph
     # fork code
-    fork_RG = nx.DiGraph()
-    fork_RG.add_nodes_from(range(1, 7))
+    fork_DG = nx.DiGraph()
+    fork_DG.add_nodes_from(range(1, 7))
     edges = [(1, 2), (2, 3)]
-    fork_RG.add_edges_from(edges)
+    fork_DG.add_edges_from(edges)
+    fork_RG = build_RG_from_DG(fork_DG)
+    print(fork_RG)
 
     # fork_code_v1 reduced garph
     # junk code insertion
@@ -150,7 +152,7 @@ class TestFitnessFunction:
         Calculates the fitness between basic-code to fork-code:
         """
         actual_d = GA(self.basic_RG, self.fork_RG)
-        expected_d = 5/2
+        expected_d = 7/2
         assert actual_d == expected_d
 
     def test_basic_code_vs_fork_code_v1(self):
@@ -158,7 +160,7 @@ class TestFitnessFunction:
         Calculates the fitness between basic-code to fork-code.v1:
         """
         actual_d = GA(self.basic_RG, self.fork_R1_RG)
-        expected_d = 3/7
+        expected_d = 8/7
         assert actual_d == expected_d
 
     # stupid-code tests
@@ -224,7 +226,7 @@ class TestFitnessFunction:
         Calculates the fitness between stupid-code to fork-code:
         """
         actual_d = GA(self.stupid_RG, self.fork_RG)
-        expected_d = 1
+        expected_d = 3/2
         assert actual_d == expected_d
 
     def test_stupid_code_vs_fork_code_v1(self):
