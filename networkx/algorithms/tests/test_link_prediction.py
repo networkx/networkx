@@ -82,9 +82,6 @@ class TestJaccardCoefficient:
 
     def test_notimplemented(self):
         assert pytest.raises(
-            nx.NetworkXNotImplemented, self.func, nx.DiGraph([(0, 1), (1, 2)]), [(0, 2)]
-        )
-        assert pytest.raises(
             nx.NetworkXNotImplemented,
             self.func,
             nx.MultiGraph([(0, 1), (1, 2)]),

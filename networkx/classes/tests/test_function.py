@@ -441,12 +441,6 @@ class TestCommonNeighbors:
         G = nx.star_graph(4)
         self.test(G, 1, 2, [0])
 
-    def test_digraph(self):
-        with pytest.raises(nx.NetworkXNotImplemented):
-            G = nx.DiGraph()
-            G.add_edges_from([(0, 1), (1, 2)])
-            self.func(G, 0, 2)
-
     def test_nonexistent_nodes(self):
         G = nx.complete_graph(5)
         pytest.raises(nx.NetworkXError, nx.common_neighbors, G, 5, 4)
