@@ -79,6 +79,60 @@ def get_levels(T, root, height):
             
     return lvl
 
+def get_initial_values(T, root):
+    """
+    Returns a function (map or dict) M: N -> P(V) such that, for every
+    vertex v in the tree T, if v is a leave then v's initial value is 0,
+    otherwise its defined as -1.
+    
+    Parameters
+    ----------
+    T : NetworkX Graph
+        The rooted tree.
+    
+    root : node
+        The root of the tree.
+    
+    Returns
+    -------
+    M : dictionary
+        A map M: N -> P(V) such that, for each vertex v in the tree T, if v is 
+        a leave then v's initial value is 0, otherwise its defined as -1.
+    
+    Notes
+    -----
+    The algorithm runs in O(n) time and space.
+    """
+    # Map M such that M(v) is initial value of v.
+    vals = {}
+
+    # Define a set for leaves and non-leaves vertices of T.
+    non_leaves = set()
+    leaves = set()
+
+    # Perform a BFS traversal to determine which vertices are leaves and
+    # non-leaves.
+    for (parent, child) in nx.bfs_edges(T, root):
+        # A parent can't be a leave.
+        non_leaves.add(parent)
+
+        # If a vertex was thought to be a leave but has a child, then it is not
+        # a leave.
+        if parent in leaves:
+            leaves.remove(parent)
+        
+        leaves.add(child)
+
+    # Set the initial value of the non-leave vertices as -1.
+    for v in non_leaves:
+        vals[v] = -1
+    
+    # Set the initial value of the leaves as 0.    
+    for v in leaves:
+        vals[v] = 0
+        
+    return vals
+
 def root_trees(t1, root1, t2, root2):
     """Create a single digraph dT of free trees t1 and t2
     #   with roots root1 and root2 respectively
