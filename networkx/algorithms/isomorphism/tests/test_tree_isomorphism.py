@@ -6,6 +6,7 @@ from networkx.algorithms.isomorphism.tree_isomorphism import (
     NaturalMultiset,
     categorize_entries,
     categorize_lists,
+    sort_lists_of_naturals,
     get_levels,
     get_initial_values,
     rooted_tree_isomorphism,
@@ -127,6 +128,61 @@ def test_categorize_lists():
     obtained_LENGTH = categorize_lists(S)
     
     assert expected_LENGTH == obtained_LENGTH
+
+# Tests the function sort_lists_of_naturals. The expected sorted list should
+# have a lexicographical ordering.
+def test_sort_list_of_naturals():
+    # An arbitrary list of lists of natural numbers.
+    S = [
+        [0, 0, 1, 2, 3],
+        [1, 2, 3],
+        [0, 1, 1, 4],
+        [3, 3, 4],
+        [4],
+        [4, 4, 5],
+    ]
+    
+    expected_ordering = [
+        [0, 0, 1, 2, 3],
+        [0, 1, 1, 4],
+        [1, 2, 3],
+        [3, 3, 4],
+        [4],
+        [4, 4, 5],
+    ]
+    
+    obtained_ordering = sort_lists_of_naturals(S)
+    
+    assert expected_ordering == obtained_ordering
+    
+    # Test for another list of lists of natural numbers.
+    S = [
+        [1, 2, 3, 7, 8],
+        [2, 2, 3, 4],
+        [2, 2, 4, 3],
+        [0, 1],
+        [0, 0],
+        [1, 3, 4],
+        [2, 3, 4],
+        [7],
+        [8, 8],
+    ]
+    
+    expected_ordering = [
+        [0, 0],
+        [0, 1],
+        [1, 2, 3, 7, 8],
+        [1, 3, 4],
+        [2, 2, 3, 4],
+        [2, 2, 4, 3],
+        [2, 3, 4],
+        [7],
+        [8, 8],
+    ]
+
+    obtained_ordering = sort_lists_of_naturals(S)
+    
+    assert expected_ordering == obtained_ordering
 
 # Test the get_levels function. The returned function should behave like a
 # function M: N -> P(V) such that, for each i in {0,...,h}, M(i) is the set of
