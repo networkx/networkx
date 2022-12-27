@@ -97,13 +97,13 @@ def __M_alternating_sequence__(G, M):
         Y = Y_.union(Y_)
 
     m_alternating_sequence_logger = logging.getLogger("M_alternating_sequence")
-    m_alternating_sequence_logger.info(
+    m_alternating_sequence_logger.debug(
         "Starting M_alternating_sequence calculation, used by EFM partition calculation")
-    m_alternating_sequence_logger.info(f"G: nodes: {G.nodes}\tedges: {G.edges}")
-    m_alternating_sequence_logger.info(f"M: {str(M)}\n")
+    m_alternating_sequence_logger.debug(f"G: nodes: {G.nodes}\tedges: {G.edges}")
+    m_alternating_sequence_logger.debug(f"M: {str(M)}\n")
 
     X_0 = set(X) - set(M.keys())
-    m_alternating_sequence_logger.info(f"Setting X_0 = {X_0} - the vertices of X unmatched by M.")
+    m_alternating_sequence_logger.debug(f"Setting X_0 = {X_0} - the vertices of X unmatched by M.")
 
     if X_0 == set():
         return (), ()
@@ -115,23 +115,28 @@ def __M_alternating_sequence__(G, M):
     index = 1
 
     while len(X_subsets) == 1 or X_subsets[-1] != set() and Y_subsets[-1] != set():
-        m_alternating_sequence_logger.info(f"Y_groups accumulation so far: {Y_subgroups_accumulate}\n")
+        m_alternating_sequence_logger.debug(f"Y_groups accumulation so far: {Y_subgroups_accumulate}\n")
 
         GMinusM = nx.subgraph_view(G, filter_edge=lambda u, v: (u, v) not in M.items() and (v, u) not in M.items())
-        m_alternating_sequence_logger.info(f"G - M: nodes: {GMinusM.nodes}\tedges: {GMinusM.edges}")
+        m_alternating_sequence_logger.debug(f"G - M: nodes: {GMinusM.nodes}\tedges: {GMinusM.edges}")
 
-        m_alternating_sequence_logger.info(f"N_G - M(X_{index - 1}): {__neighbours_of_set__(GMinusM, X_subsets[-1])}")
+        m_alternating_sequence_logger.debug(f"N_G - M(X_{index - 1}): {__neighbours_of_set__(GMinusM, X_subsets[-1])}")
         Y_current = (__neighbours_of_set__(GMinusM, X_subsets[-1])) - Y_subgroups_accumulate
 
         if Y_current == set():
+            m_alternating_sequence_logger.debug(f"Y_{index} is empty, terminating.")
             break
 
-        m_alternating_sequence_logger.info(f"Setting Y_{index} = {Y_current} -> Neighbours of X_{index - 1} "
-                                           f"unmatched by M - subtracting from them the Y_groups accumulation.\n")
+        m_alternating_sequence_logger.debug(f"Y_current = {Y_current}")
 
         G_M = nx.subgraph_view(G, filter_edge=lambda u, v: (u, v) in M.items() and (v, u) in M.items())
-        m_alternating_sequence_logger.info(f"G_M: nodes: {G_M.nodes}\tedges: {G_M.edges}")
+        m_alternating_sequence_logger.debug(f"G_M: nodes: {G_M.nodes}\tedges: {G_M.edges}")
+
         X_current = __neighbours_of_set__(G_M, Y_current)
+        m_alternating_sequence_logger.debug(f"X_current = {X_current}")
+        if X_current == set():
+            m_alternating_sequence_logger.debug(f"X_{index} is empty, terminating.")
+            break
 
         Y_subsets.append(Y_current)
         X_subsets.append(X_current)
@@ -232,8 +237,9 @@ def _EFM_partition(G, M=None):
         X = X.union(X_)
         Y = Y_.union(Y_)
 
-    efm_logger.info(f"Starting EFM_Partition calculation: G={G},\nedges={G.edges}\nX={X}, Y={Y},\nM={M}")
+    efm_logger.debug(f"Starting EFM_Partition calculation: G={G},\nedges={G.edges}\nX={X}, Y={Y},\nM={M}\n")
     X_subsets, Y_subsets = __M_alternating_sequence__(G, M)
+    efm_logger.debug(f"X subsets = {X_subsets}\nY subsets = {Y_subsets}")
     X_S = set()
     for subset in X_subsets:
         X_S.update(subset)
