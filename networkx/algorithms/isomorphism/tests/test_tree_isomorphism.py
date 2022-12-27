@@ -11,6 +11,7 @@ from networkx.algorithms.isomorphism.tree_isomorphism import (
     get_levels,
     get_initial_values,
     assign_structure,
+    get_multisets_list_of_level,
     rooted_tree_isomorphism,
     tree_isomorphism,
 )
@@ -370,6 +371,74 @@ def test_assign_values():
     
     assert obtained_structure_lvl_1 == expected_structure_lvl_1
     assert obtained_structure_lvl_2 == expected_structure_lvl_2
+
+# Tests the function get_multisets_list_of_level. The returned list should
+# correspond to the structures of the vertices found on the i-th level, and the
+# map should correspond to a mapping of structures to the vertices that have
+# said structure.
+def test_get_multisets_list_of_level():
+    # Test for an specific scenario.
+    levels = {
+        2 : {"v0"},
+        1 : {"v1", "v2", "v3", "v7"},
+        0 : {"v4", "v5", "v6", "v8"},
+    }
+    
+    values = {
+        "v0" : 1,
+        "v1" : 2,
+        "v2" : 0,
+        "v3" : 1,
+        "v7" : 1,
+        "v4" : 0,
+        "v5" : 0,
+        "v6" : 0,
+        "v8" : 0,
+    }
+    
+    parenthood = {
+        "v1" : "v0",
+        "v2" : "v0",
+        "v3" : "v0",
+        "v7" : "v0",
+        "v4" : "v1",
+        "v5" : "v1",
+        "v6" : "v3",
+        "v8" : "v7",
+    }
+    
+    structures_lvl_2 = {
+        "v0" : NaturalMultiset([0, 1, 2]),
+    }
+
+    structures_lvl_1 = {
+        "v1" : NaturalMultiset([0, 0]),
+        "v3" : NaturalMultiset([0]),
+        "v7" : NaturalMultiset([0]),
+    }
+
+    expected_mapping_lvl_2 = {
+        NaturalMultiset([0, 1, 2]) : {"v0"},
+    }
+
+    expected_mapping_lvl_1 = {
+        NaturalMultiset([0, 0]) : {"v1"},
+        NaturalMultiset([0]) : {"v3", "v7"},
+    }
+    
+    obt_list_lvl_1, obt_mapping_lvl_1 = get_multisets_list_of_level(levels, values, structures_lvl_1, 1)
+    obt_list_lvl_2, obt_mapping_lvl_2 = get_multisets_list_of_level(levels, values, structures_lvl_2, 2)
+
+    assert len(structures_lvl_1) == len(obt_list_lvl_1)
+    for key in structures_lvl_1:
+        assert structures_lvl_1[key] in obt_list_lvl_1
+
+    assert len(structures_lvl_2) == len(obt_list_lvl_2)
+    for key in structures_lvl_2:
+        assert structures_lvl_2[key] in obt_list_lvl_2
+    
+    assert obt_mapping_lvl_1 == expected_mapping_lvl_1
+    assert obt_mapping_lvl_2 == expected_mapping_lvl_2
 
 
 # have this work for graph
