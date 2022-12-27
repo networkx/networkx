@@ -94,11 +94,6 @@ def __M_alternating_sequence__(G, M):
     if X_0 == set():
         return (), ()
 
-    # GMinusM = nx.subgraph_view(G, filter_edge=lambda u, v: (u,v) not in M.items() and (v, u) not in M.items())
-    # Y_0 = __neighbours_of_set__(GMinusM, X_0)
-    # m_alternating_sequence_logger.info(f"Setting Y_0 = {Y_0} - Neighbours of X_0 unmatched by M.\n")
-    # m_alternating_sequence_logger.info(f"neighbours_of_set__(G, X_0): {str(__neighbours_of_set__(G, X_0))}\n")
-
     X_subsets = [X_0]
     Y_subsets = []
 
@@ -233,7 +228,6 @@ def _EFM_partition(G, M=None):
     for subset in Y_subsets:
         Y_S.update(subset)
 
-    # return (X_L, X_S, Y_L, Y_S)
     return [set(X) - X_S, X_S, set(Y) - Y_S, Y_S]
 
 
@@ -380,7 +374,7 @@ def minimum_weight_envy_free_matching(G):
 
 
 if __name__ == '__main__':
-    doctest.testmod()
+    doctest.testmod(verbose=True)
     A = nx.Graph()
     A.add_nodes_from([0, 1, 2, 3], bipartite=0)
     A.add_nodes_from([4, 5, 6, 7], bipartite=1)

@@ -10,8 +10,6 @@ from networkx.algorithms.bipartite.matching import (
     maximum_matching,
     minimum_weight_full_matching,
     to_vertex_cover,
-    envy_free_matching,
-    minimum_weight_envy_free_matching,
 )
 
 
