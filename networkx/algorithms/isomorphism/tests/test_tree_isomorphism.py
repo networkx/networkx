@@ -5,6 +5,7 @@ import networkx as nx
 from networkx.algorithms.isomorphism.tree_isomorphism import (
     NaturalMultiset,
     categorize_entries,
+    categorize_lists,
     get_levels,
     get_initial_values,
     rooted_tree_isomorphism,
@@ -100,6 +101,32 @@ def test_categorize_entries():
     obtained_NONEMPTY = categorize_entries(S)
     
     assert expected_NONEMPTY == obtained_NONEMPTY
+
+# Tests the function categorize_lists. The returned function should behave like
+# a function LENGTH such that LENGTH(i) are the lists of S with length i.
+def test_categorize_lists():
+    # An arbitrary list of lists of natural numbers.
+    S = [
+        [0, 0, 1, 2, 3],
+        [1, 2, 3],
+        [0, 1, 1, 4],
+        [3, 3, 4],
+        [4],
+        [4, 4, 5],
+    ]
+    
+    # Expected LENGTH function.
+    expected_LENGTH = {
+        1: [[4]],
+        3: [[1, 2, 3], [3, 3, 4], [4, 4, 5]],
+        4: [[0, 1, 1, 4]],
+        5: [[0, 0, 1, 2, 3]],
+    }
+    
+    # Obtained LENGTH function.
+    obtained_LENGTH = categorize_lists(S)
+    
+    assert expected_LENGTH == obtained_LENGTH
 
 # Test the get_levels function. The returned function should behave like a
 # function M: N -> P(V) such that, for each i in {0,...,h}, M(i) is the set of
