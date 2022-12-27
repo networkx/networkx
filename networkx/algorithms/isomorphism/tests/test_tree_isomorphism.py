@@ -4,6 +4,7 @@ import time
 import networkx as nx
 from networkx.algorithms.isomorphism.tree_isomorphism import (
     NaturalMultiset,
+    categorize_entries,
     get_levels,
     get_initial_values,
     rooted_tree_isomorphism,
@@ -71,6 +72,34 @@ def test_multiset__len__():
     for i in range(10):
         M.add(i)
         assert len(M) == (11 + i)
+
+# Tests the function categorize_entries. The returned function should behave
+# like a function NONEMPTY : N -> P(N) such that NONEMPTY(i) are the numbers in
+# the i-th position of some list in S; this numbers are sorted
+def test_categorize_entries():
+    # An arbitrary list of lists of natural numbers.
+    S = [
+        [0, 0, 1, 2, 3],
+        [1, 2, 3],
+        [0, 1, 1, 4],
+        [3, 3, 4],
+        [4],
+        [4, 4, 5],
+    ]
+    
+    # Expected NONEMPTY function.
+    expected_NONEMPTY = {
+        0 : [0, 1, 3, 4],
+        1 : [0, 1, 2, 3, 4],
+        2 : [1, 3, 4, 5],
+        3 : [2, 4],
+        4 : [3],
+    }
+    
+    # Obtained NONEMPTY function.
+    obtained_NONEMPTY = categorize_entries(S)
+    
+    assert expected_NONEMPTY == obtained_NONEMPTY
 
 # Test the get_levels function. The returned function should behave like a
 # function M: N -> P(V) such that, for each i in {0,...,h}, M(i) is the set of
