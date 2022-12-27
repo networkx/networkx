@@ -58,3 +58,6 @@ networkx.egg-info/
 networkx-dev/
 .venv
 networkx.venv
+
+# logging
+.log

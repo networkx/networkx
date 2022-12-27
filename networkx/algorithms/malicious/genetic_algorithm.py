@@ -3,15 +3,37 @@ Hybrid GA for local optimisation.
 Two heuristics to improve the quality of arrangements for maximum subgraph isomorphism.
 """
 
+__all__ = ["GA", "count_equal_size_combinations"]
+
 from networkx.algorithms.malicious.fitness import fitness
 from math import comb
-import random
 import networkx as nx
+import logging
+import random
 
-__all__ = ["GA", "count_equal_size_combinations"]
+LOGֹ_FORMAT = "%(levelname)s, time: %(asctime)s , line: %(lineno)d- %(message)s "
+# create and configure logger
+logging.basicConfig(filename='malicious_algo_logging.log', level=logging.DEBUG)
+logger = logging.getLogger()
 
 
 def count_equal_size_combinations(G1_nodes, G2_nodes):
+    """
+    this is helper method for calculating the number of distinct groups of nodes in equal size
+    parameter:
+    G1_nodes: list of Graph1 nodes
+    G2_nodes: list of Graph2 nodes
+    return:
+    number of disticint possible options
+    >>> count_equal_size_combinations(g1,g2)
+    34
+    >>> count_equal_size_combinations(g1,g3)
+    55
+    >>> count_equal_size_combinations(g3,g2)
+    125
+    """
+
+    logging.info('Started counting equal size combinations')
     # Find the smaller of the two graphs
     smaller_g = G1_nodes if len(G1_nodes) < len(G2_nodes) else G2_nodes
 
@@ -20,6 +42,7 @@ def count_equal_size_combinations(G1_nodes, G2_nodes):
 
     # Iterate over all subgraph sizes from 0 to the size of the smaller graph
     for i in range(1, len(smaller_g) + 1):
+        logging.debug(f'Calculating combinations for size {i}')
         # Calculate the number of combinations for g1
         g1_combinations = comb(len(G1_nodes), i)
 
@@ -28,7 +51,7 @@ def count_equal_size_combinations(G1_nodes, G2_nodes):
 
         # Add the total number of combinations for this size to the count
         count += g1_combinations * g2_combinations
-
+    logging.debug(f'Total number of equal size combinations: {count}')
     return count
 
 
@@ -39,8 +62,7 @@ def GA(G1, G2, ALPHA):
     and lets them evolve over a number of iterations. When GA
     meets some condition, the best solution is returned and the
     algorithm terminates. Our algorithm replaces 20 percent
-    of the population per generation and uses local optimisation heuristics after crossover and mutation (hybrid or
-    memetic GA).
+    of the population per generation and uses local optimisation heuristics after mutation.
 
     Parameters
     ----------
@@ -99,6 +121,7 @@ def GA(G1, G2, ALPHA):
     True
     """
 
+    logging.info('Started genetic algorithm')
     G1_nodes = list(G1.nodes)
     G2_nodes = list(G2.nodes)
     # calculates the num of combinations
@@ -107,30 +130,42 @@ def GA(G1, G2, ALPHA):
     solutions = []
     min_nodes = min(len(G1_nodes), len(G2_nodes))
     NUM_OF_SOLUTIONS = int(num_of_combinations / 4)
+    logging.debug(f'Generating {NUM_OF_SOLUTIONS} solutions')
     for s in range(NUM_OF_SOLUTIONS):
         sub_graph_size = random.randint(1, min_nodes)
         sub1 = random.sample(G1_nodes, sub_graph_size)
         sub2 = random.sample(G2_nodes, sub_graph_size)
         solutions.append((sub1, sub2))
+
+    num_of_nodes_G1 = len(G1.nodes)
+    num_of_edges_G1 = len(G1.edges)
+    num_of_nodes_G2 = len(G2.nodes)
+    num_of_edges_G2 = len(G2.edges)
+
     NUM_OF_GENERATIONS = NUM_OF_SOLUTIONS * 2
     for i in range(NUM_OF_GENERATIONS):
         rankedsolutions = []  # [solution, fitness' score]
+        logging.debug(f'Evaluating solutions in generation {i+1}')
         for s in solutions:
-            fitness_score = fitness(G1.subgraph(s[0]), G2.subgraph(s[1]), len(
-                G1.nodes), len(G1.edges), len(G2.nodes), len(G2.edges))
+            fitness_score = fitness(G1.subgraph(s[0]), G2.subgraph(
+                s[1]), num_of_nodes_G1, num_of_edges_G1, num_of_nodes_G2, num_of_edges_G2)
             rankedsolutions.append((s, fitness_score))
         # checks if the best solution so fate is less or equals to alpha
         if rankedsolutions[0][1] <= ALPHA:
+            logging.warning(
+                f'Found solution with fitness score <= ALPHA ({ALPHA}) in generation {i+1}')
             return True
             # sorts the solutaions by thier fitness' score
         rankedsolutions = sorted(rankedsolutions, key=lambda x: x[1])
+        logging.debug(f'Sorting solutions in generation {i+1}')
         SOLUTIONS_TO_CHOOSE = int(NUM_OF_SOLUTIONS * 0.8)
         # picks the smallest SOLUTIONS_TO_CHOOSE solutions
         bestsoutions = rankedsolutions[:SOLUTIONS_TO_CHOOSE]
+        logging.debug(
+            f'Choosing top {SOLUTIONS_TO_CHOOSE} solutions in generation {i+1}')
         G1_elements = []
         G2_elements = []
         for s in bestsoutions:
-            # print("s:", s)
             G1_sub = s[0][0]  # takes the solution for G1
             G2_sub = s[0][1]  # takes the solution for G2
             G1_elements.append(G1_sub)
@@ -162,6 +197,7 @@ def GA(G1, G2, ALPHA):
                 new_e2 = random.sample(G2_nodes, sub_graph_size)
                 newGen.append((new_e1, new_e2))
             count_new_solutions += 1
+        logging.debug(f'Generating new solutions in generation {i+1}')
         solutions = newGen
 
     return False

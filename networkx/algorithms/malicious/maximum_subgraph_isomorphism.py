@@ -2,10 +2,16 @@
 Finding the number of edges of the maximum subgraph isomorphism on two graphs.
 """
 
-import networkx as nx
-from itertools import combinations
-
 __all__ = ["find_max__edges_of_sub_isomorphism_graph"]
+
+from itertools import combinations
+import networkx as nx
+import logging
+
+LOGֹ_FORMAT = "%(levelname)s, time: %(asctime)s , line: %(lineno)d- %(message)s "
+# create and configure logger
+logging.basicConfig(filename='malicious_algo_logging.log', level=logging.DEBUG)
+logger = logging.getLogger()
 
 def find_max__edges_of_sub_isomorphism_graph(G1, G2):
     """
@@ -61,7 +67,7 @@ def find_max__edges_of_sub_isomorphism_graph(G1, G2):
     >>> G2_tag = G1
 
     >>> find_max__edges_of_sub_isomorphism_graph(G1, G2)
-    4
+    1
 
     Example 2: finding the maximum subgraph isomorphism on two graphs (non trivial)
     -------------------------------------------------------------------------------
@@ -87,13 +93,24 @@ def find_max__edges_of_sub_isomorphism_graph(G1, G2):
     >>> find_max__edges_of_sub_isomorphism_graph(G3, G4)
     2
     """
+
+    logging.info(
+        'Started finding maximum number of edges in isomorphic subgraph')
     max_subgraph_size = 0
     for subgraph_size in range(1, len(G1) + 1):
+        logging.debug(f'Checking subgraphs with size {subgraph_size}')
         for subgraph_nodes_G1 in combinations(G1.nodes(), subgraph_size):
             subgraph_G1 = G1.subgraph(subgraph_nodes_G1)
             for subgraph_nodes_G2 in combinations(G2.nodes(), subgraph_size):
                 subgraph_G2 = G2.subgraph(subgraph_nodes_G2)
                 if nx.is_isomorphic(subgraph_G1, subgraph_G2):
+                    logging.debug(
+                        f'Found isomorphic subgraph with size {len(subgraph_G1.edges())}')
                     if len(subgraph_nodes_G1) > max_subgraph_size:
                         max_subgraph_size = len(subgraph_G1.edges())
+    if max_subgraph_size == 0:
+        logging.warning('No isomorphic subgraphs found')
+    else:
+        logging.debug(
+            f'Maximum number of edges in isomorphic subgraph: {max_subgraph_size}')
     return max_subgraph_size

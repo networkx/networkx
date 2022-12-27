@@ -4,6 +4,13 @@ Building a reduced graph from a dependency graph.
 
 __all__ = ["build_GR_from_DG"]
 
+import logging
+
+LOGֹ_FORMAT = "%(levelname)s, time: %(asctime)s , line: %(lineno)d- %(message)s "
+# create and configure logger
+logging.basicConfig(filename='malicious_algo_logging.log', level=logging.DEBUG)
+logger = logging.getLogger()
+
 def build_RG_from_DG(G):
   """
   Building a reduced graph (RG) from a dependency graph (DG).
@@ -62,8 +69,7 @@ def build_RG_from_DG(G):
   >>> reduction_G1.remove_edges_from([(1,4),(2,5),(3,6),(4, 7),(5, 8)])
   >>> reduction_G1.remove_nodes_from([1,2,3,4,5,10,11])
 
-  # runs the function
-  >>> build_RG_from_DG(directed_G1)
+  >>> print(build_RG_from_DG(directed_G1).edges)
   [(6, 7), (6, 8), (6, 9), (8, 8), (9, 7), (9, 8), (9, 9)]
   
   Example 2: a graph that can not be reduced (the original graph will be returned)
@@ -72,29 +78,38 @@ def build_RG_from_DG(G):
   >>> directed_G2 = nx.DiGraph()
   >>> directed_G2.add_nodes_from(range(1,7))
   >>> directed_G2.add_edges_from([(1,2),(2,3)])
-
-  # runs the function
-  >>> build_RG_from_DG(directed_G2)
+  >>> print(build_RG_from_DG(directed_G2).edges)
   [(1, 2), (2, 3)]
   """
   
-  nodes_to_remove = [] # contains all the nodes that should be removed
-  isolated_nodes = []  # contains all the nodes that does not has any edge 
+  logging.info('Started building reduced graph from directed graph')
+
+  nodes_to_remove = []  # contains all the nodes that should be removed
+  isolated_nodes = []  # contains all the nodes that does not has any edge
   for v in G.nodes:
     edges_in = G.in_degree(v)
     edges_out = G.out_degree(v)
-    if edges_in <= 1 and edges_out <= 1: # checks for each node if it should be removed
-        if edges_in == 0 and edges_out == 0:
-          isolated_nodes.append(v)
-        else:
-          nodes_to_remove.append(v)
-  # removes all the islolated nodes from G
-  G.remove_nodes_from(isolated_nodes)
-  # in case that all the nodes should be removed, we will return the original graph without the isolated nodes
-  if len(nodes_to_remove) == len(G.nodes):
-    return G
-  # otherwise, we will remove those nodes as well
-  else:
-    g_tag = G
-    g_tag.remove_nodes_from(nodes_to_remove)
-    return g_tag
+    if edges_in <= 1 and edges_out <= 1:  # checks for each node if it should be removed
+      if edges_in == 0 and edges_out == 0:
+        isolated_nodes.append(v)
+      else:
+        nodes_to_remove.append(v)
+    # removes all the islolated nodes from G
+    G.remove_nodes_from(isolated_nodes)
+    logging.debug(
+        f'Removed {len(isolated_nodes)} isolated nodes from the graph')
+    # in case that all the nodes should be removed, we will return the original graph without the isolated nodes
+    if len(nodes_to_remove) == len(G.nodes):
+        logging.debug(
+            'All nodes were marked for removal. Returning original graph without isolated nodes')
+        return G
+    # otherwise, we will remove those nodes as well
+    else:
+        g_tag = G
+        g_tag.remove_nodes_from(nodes_to_remove)
+        logging.debug(f'Removed {len(nodes_to_remove)} nodes from the graph')
+        return g_tag
+
+
+# Set the logging level to INFO
+logging.basicConfig(level=logging.INFO)

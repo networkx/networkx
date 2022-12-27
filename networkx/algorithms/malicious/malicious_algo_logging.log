@@ -1,0 +1,131 @@
+INFO:root:Started calculating fitness
+DEBUG:root:Graphs are isomorphic
+DEBUG:root:Calculating fitness value: 0.0
+INFO:root:Started finding maximum number of edges in isomorphic subgraph
+DEBUG:root:Checking subgraphs with size 1
+DEBUG:root:Found isomorphic subgraph with size 0
+DEBUG:root:Found isomorphic subgraph with size 0
+DEBUG:root:Found isomorphic subgraph with size 0
+DEBUG:root:Found isomorphic subgraph with size 0
+DEBUG:root:Found isomorphic subgraph with size 1
+DEBUG:root:Found isomorphic subgraph with size 1
+DEBUG:root:Found isomorphic subgraph with size 1
+DEBUG:root:Found isomorphic subgraph with size 1
+DEBUG:root:Checking subgraphs with size 2
+DEBUG:root:Found isomorphic subgraph with size 1
+DEBUG:root:Found isomorphic subgraph with size 2
+DEBUG:root:Found isomorphic subgraph with size 2
+DEBUG:root:Found isomorphic subgraph with size 2
+DEBUG:root:Found isomorphic subgraph with size 2
+DEBUG:root:Found isomorphic subgraph with size 1
+DEBUG:root:Found isomorphic subgraph with size 2
+DEBUG:root:Found isomorphic subgraph with size 3
+DEBUG:root:Checking subgraphs with size 3
+DEBUG:root:Found isomorphic subgraph with size 3
+DEBUG:root:Found isomorphic subgraph with size 4
+DEBUG:root:Found isomorphic subgraph with size 5
+DEBUG:root:Found isomorphic subgraph with size 4
+DEBUG:root:Checking subgraphs with size 4
+DEBUG:root:Found isomorphic subgraph with size 7
+DEBUG:root:Maximum number of edges in isomorphic subgraph: 7
+INFO:root:Started genetic algorithm
+INFO:root:Started counting equal size combinations
+DEBUG:root:Calculating combinations for size 1
+DEBUG:root:Calculating combinations for size 2
+DEBUG:root:Calculating combinations for size 3
+DEBUG:root:Calculating combinations for size 4
+DEBUG:root:Total number of equal size combinations: 69
+DEBUG:root:Generating 17 solutions
+DEBUG:root:Evaluating solutions in generation 1
+INFO:root:Started genetic algorithm
+INFO:root:Started counting equal size combinations
+DEBUG:root:Calculating combinations for size 1
+DEBUG:root:Calculating combinations for size 2
+DEBUG:root:Calculating combinations for size 3
+DEBUG:root:Calculating combinations for size 4
+DEBUG:root:Total number of equal size combinations: 69
+DEBUG:root:Generating 17 solutions
+DEBUG:root:Evaluating solutions in generation 1
+INFO:root:Started counting equal size combinations
+DEBUG:root:Calculating combinations for size 1
+DEBUG:root:Calculating combinations for size 2
+DEBUG:root:Calculating combinations for size 3
+DEBUG:root:Total number of equal size combinations: 34
+INFO:root:Started counting equal size combinations
+DEBUG:root:Calculating combinations for size 1
+DEBUG:root:Calculating combinations for size 2
+DEBUG:root:Calculating combinations for size 3
+DEBUG:root:Total number of equal size combinations: 55
+INFO:root:Started counting equal size combinations
+DEBUG:root:Calculating combinations for size 1
+DEBUG:root:Calculating combinations for size 2
+DEBUG:root:Calculating combinations for size 3
+DEBUG:root:Calculating combinations for size 4
+DEBUG:root:Total number of equal size combinations: 125
+INFO:root:Started genetic algorithm
+INFO:root:Started counting equal size combinations
+DEBUG:root:Calculating combinations for size 1
+DEBUG:root:Calculating combinations for size 2
+DEBUG:root:Calculating combinations for size 3
+DEBUG:root:Calculating combinations for size 4
+DEBUG:root:Total number of equal size combinations: 69
+DEBUG:root:Generating 17 solutions
+DEBUG:root:Evaluating solutions in generation 1
+INFO:root:Started calculating fitness
+DEBUG:root:Graphs are isomorphic
+DEBUG:root:Calculating fitness value: 0.0
+INFO:root:Started calculating fitness
+WARNING:root:Graphs are not isomorphic
+INFO:root:Started calculating fitness
+DEBUG:root:Graphs are isomorphic
+DEBUG:root:Calculating fitness value: 0.0
+INFO:root:Started calculating fitness
+DEBUG:root:Graphs are isomorphic
+DEBUG:root:Calculating fitness value: 2.0
+INFO:root:Started calculating fitness
+DEBUG:root:Graphs are isomorphic
+DEBUG:root:Calculating fitness value: 0.0
+INFO:root:Started calculating fitness
+WARNING:root:Graphs are not isomorphic
+INFO:root:Started calculating fitness
+WARNING:root:Graphs are not isomorphic
+INFO:root:Started calculating fitness
+DEBUG:root:Graphs are isomorphic
+DEBUG:root:Calculating fitness value: 0.0
+INFO:root:Started calculating fitness
+WARNING:root:Graphs are not isomorphic
+INFO:root:Started calculating fitness
+WARNING:root:Graphs are not isomorphic
+INFO:root:Started calculating fitness
+DEBUG:root:Graphs are isomorphic
+DEBUG:root:Calculating fitness value: 1.4285714285714286
+INFO:root:Started calculating fitness
+WARNING:root:Graphs are not isomorphic
+INFO:root:Started calculating fitness
+WARNING:root:Graphs are not isomorphic
+INFO:root:Started calculating fitness
+DEBUG:root:Graphs are isomorphic
+DEBUG:root:Calculating fitness value: 1.7142857142857142
+INFO:root:Started calculating fitness
+WARNING:root:Graphs are not isomorphic
+INFO:root:Started calculating fitness
+WARNING:root:Graphs are not isomorphic
+INFO:root:Started calculating fitness
+WARNING:root:Graphs are not isomorphic
+WARNING:root:Found solution with fitness score <= ALPHA (0) in generation 1
+INFO:root:Started counting equal size combinations
+DEBUG:root:Calculating combinations for size 1
+DEBUG:root:Calculating combinations for size 2
+DEBUG:root:Calculating combinations for size 3
+DEBUG:root:Total number of equal size combinations: 34
+INFO:root:Started counting equal size combinations
+DEBUG:root:Calculating combinations for size 1
+DEBUG:root:Calculating combinations for size 2
+DEBUG:root:Calculating combinations for size 3
+DEBUG:root:Total number of equal size combinations: 55
+INFO:root:Started counting equal size combinations
+DEBUG:root:Calculating combinations for size 1
+DEBUG:root:Calculating combinations for size 2
+DEBUG:root:Calculating combinations for size 3
+DEBUG:root:Calculating combinations for size 4
+DEBUG:root:Total number of equal size combinations: 125

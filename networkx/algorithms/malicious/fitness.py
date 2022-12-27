@@ -2,9 +2,15 @@
 Calculates the fitness function between two graphs.
 """
 
-import networkx as nx
-
 __all__ = ["fitness"]
+
+import networkx as nx
+import logging
+
+LOGֹ_FORMAT = "%(levelname)s, time: %(asctime)s , line: %(lineno)d- %(message)s "
+# create and configure logger
+logging.basicConfig(filename='malicious_algo_logging.log', level=logging.DEBUG)
+logger = logging.getLogger()
 
 
 def fitness(sub_G1, sub_G2, G1_num_of_nodes, G1_num_of_edges, G2_num_of_nodes, G2_num_of_edges):
@@ -79,17 +85,22 @@ def fitness(sub_G1, sub_G2, G1_num_of_nodes, G1_num_of_edges, G2_num_of_nodes, G
     >>> basic_num_of_edges = len(basic_RG.edges)
 
     # runs the function
-    >>> fitness(self.basic_RG, self.basic_RG_v1, self.basic_num_of_nodes, self.basic_num_of_edges, self.basic_num_of_nodes, self.basic_num_of_edges)
-    0
+    >>> fitness(basic_RG, basic_RG_v1, basic_num_of_nodes, basic_num_of_edges, basic_num_of_nodes, basic_num_of_edges)
+    0.0
     """
 
+    logging.info('Started calculating fitness')
     if nx.is_isomorphic(sub_G1, sub_G2):
+        logging.debug('Graphs are isomorphic')
         min_val = 0
         if G1_num_of_nodes < G2_num_of_nodes:
             min_val = G1_num_of_edges
         else:
             min_val = G2_num_of_edges
         mutual = len(sub_G2.edges)
+        logging.debug(f'Calculating fitness value: {(((G1_num_of_edges - mutual) + (G2_num_of_edges - mutual)) / min_val)}')
         return (((G1_num_of_edges - mutual) + (G2_num_of_edges - mutual)) / min_val)
     else:
-        return 999999 # arbitrary high number 
+        logging.warning('Graphs are not isomorphic')
+        return 999999 # arbitrary high number
+
