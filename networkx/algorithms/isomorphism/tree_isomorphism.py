@@ -603,6 +603,47 @@ def get_multisets_list_of_level(levels, values, struct, i):
     
     return S, MS
 
+def update_values(S, MS, values):
+    """
+    Given a sorted list of multisets, a mapping of structures to vertices
+    that have said structure, and a value function. The previous function
+    updates the values of the vertices found on the map MS. The previous
+    function should behave like: Two vertices on the same level have the same
+    value if and only if they have the same structure.
+    
+    Parameters
+    ----------
+    S : list
+        The sorted list of multisets.
+    
+    MS : dictionary
+        A mapping of structures to vertices that have said structure.
+    
+    values : dictionary
+        The values function such that values(v) is the value defined for the v
+        vertex.
+    
+    Note
+    ----
+    This algorithm runs in O(m_{i-1} + m_i) time and space where m_{j} are the
+    vertices found on the j-th level of the rooted tree.
+    """
+    # The current value can't be 0 as this value is reserved to leaves.
+    current_val = 1
+    
+    for j in range(len(S)):
+        # Ignore repeated multistructures.
+        if j > 0 and (S[j] == S[j-1]):
+            continue
+
+        # For each vertex that have the current structure, assing the current
+        # value.
+        for v in MS[S[j]]:
+            values[v] = current_val
+            
+        # For the next unique structure, assign a new value.
+        current_val += 1
+
 def root_trees(t1, root1, t2, root2):
     """Create a single digraph dT of free trees t1 and t2
     #   with roots root1 and root2 respectively
