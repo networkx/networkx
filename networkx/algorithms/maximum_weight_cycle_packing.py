@@ -81,6 +81,8 @@ def ExactAlgorithm(graph: nx.DiGraph, k: int) -> list:
     Ys = create_Ys(cycles, k)
 
     X = []
+    max_cycles=[]
+    max_weight=0
     for Y in Ys:
         ans_graph = nx.Graph()
         #   creating the nodes in the graph graph
@@ -122,37 +124,43 @@ def ExactAlgorithm(graph: nx.DiGraph, k: int) -> list:
                             to_remove.add(exchanges[j])
                         else:
                             to_remove.add(exchanges[i])
-        # This last part is only for pretty printing and showing , instead of [('X8','Y1,2')] becomes [1,2,8]
         if len(to_remove) > 0:
             exchanges.remove(*to_remove)
-        result = []
+        #   This next part is used to get the max exchange.
+        temp_max=0
         for cyc in exchanges:
-            temp = []
-            for node in cyc:
-                if node[0] == 'Y':
-                    node1, node2 = node[1:].split(',')
-                    temp.append(int(node1))
-                    temp.append(int(node2))
-                else:
-                    temp.append(int(node[1:]))
-            result.append(temp)
+            temp_max=temp_max+cyc["weight"]
+        if temp_max>max_weight:
+            max_weight=temp_max
+            max_cycles=exchanges
+    # This last part is only for pretty printing and showing , instead of [('X8','Y1,2')] becomes [1,2,8]
+
+    result = []
+    for cyc in max_cycles:
+        temp = []
+        for node in cyc:
+            if node[0] == 'Y':
+                node1, node2 = node[1:].split(',')
+                temp.append(int(node1))
+                temp.append(int(node2))
+            else:
+                temp.append(int(node[1:]))
+        result.append(temp)
 
         return result  # exchanges
 
 
 def create_Ys(cycles, k):
-    arr2 = np.ndarray(shape=(len(cycles), k), dtype=list)
+    perm_arr = np.ndarray(shape=(len(cycles), k), dtype=list)
     for cyc_idx in range(len(cycles)):
         cyc = cycles[cyc_idx]
         for ed_idx in range(len(cyc)):
             mid = (cyc[ed_idx], cyc[(ed_idx + 1) % len(cyc)])
-            arr2[cyc_idx][ed_idx] = mid
-    #d = np.array_split(arr2, len(arr2))
+            perm_arr[cyc_idx][ed_idx] = mid
     mesh=[]
-    if len(arr2)>0:
-        mesh = np.array(np.meshgrid(*arr2))
+    if len(perm_arr)>0:
+        mesh = np.array(np.meshgrid(*perm_arr))
         mesh = mesh.T.reshape(-1, len(mesh))
-    # temp = np.array(np.meshgrid(*d)).T.reshape(-1, 3)
 
     return mesh
 
