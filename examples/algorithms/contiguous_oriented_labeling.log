@@ -1,0 +1,120 @@
+INFO:contiguous_oriented_labeling:Gets a path from u to v
+INFO:contiguous_oriented_labeling:Find an edge legal for an ear
+INFO:contiguous_oriented_labeling:Find an edge legal for an ear
+INFO:contiguous_oriented_labeling:Find ear
+INFO:contiguous_oriented_labeling:Find ear
+DEBUG:contiguous_oriented_labeling:A legal ear [1, 3, 2]
+INFO:contiguous_oriented_labeling:Insert the edges of the ear
+INFO:contiguous_oriented_labeling:Insert the edges of the ear
+INFO:contiguous_oriented_labeling:Find ear
+INFO:contiguous_oriented_labeling:Find ear
+INFO:contiguous_oriented_labeling:Find ear
+INFO:contiguous_oriented_labeling:Find ear
+INFO:contiguous_oriented_labeling:Find an edge legal for an ear
+INFO:contiguous_oriented_labeling:Find an edge legal for an ear
+INFO:contiguous_oriented_labeling:Find an edge legal for an ear
+INFO:contiguous_oriented_labeling:Find ear
+INFO:contiguous_oriented_labeling:Find ear
+INFO:contiguous_oriented_labeling:Find ear
+INFO:contiguous_oriented_labeling:Find ear
+INFO:contiguous_oriented_labeling:Find ear
+INFO:contiguous_oriented_labeling:If its a cycle
+INFO:contiguous_oriented_labeling:Find an edge legal for an ear
+INFO:contiguous_oriented_labeling:Find an edge legal for an ear
+INFO:proportional_allocation:Get an increasing order path
+INFO:proportional_allocation:Evaluate the path
+DEBUG:proportional_allocation:Sum of path this far 0
+DEBUG:proportional_allocation:Sum of path this far 10.0
+INFO:proportional_allocation:Evaluate the path
+DEBUG:proportional_allocation:Sum of path this far 0
+DEBUG:proportional_allocation:Sum of path this far 10.0
+DEBUG:proportional_allocation:Sum of path this far 30.0
+DEBUG:proportional_allocation:Sum of path this far 40.0
+INFO:proportional_allocation:Evaluate the path
+DEBUG:proportional_allocation:Sum of path this far 0
+DEBUG:proportional_allocation:Sum of path this far 10.0
+DEBUG:proportional_allocation:Sum of path this far 30.0
+INFO:proportional_allocation:Evaluate the path
+DEBUG:proportional_allocation:Sum of path this far 0
+DEBUG:proportional_allocation:Sum of path this far 10.0
+DEBUG:proportional_allocation:Sum of path this far 30.0
+DEBUG:proportional_allocation:Sum of path this far 40.0
+INFO:proportional_allocation:Evaluate the path
+DEBUG:proportional_allocation:Sum of path this far 0
+DEBUG:proportional_allocation:Sum of path this far 10.0
+DEBUG:proportional_allocation:Sum of path this far 30.0
+INFO:proportional_allocation:Evaluate the path
+DEBUG:proportional_allocation:Sum of path this far 0
+DEBUG:proportional_allocation:Sum of path this far 10.0
+DEBUG:proportional_allocation:Sum of path this far 30.0
+DEBUG:proportional_allocation:Sum of path this far 40.0
+DEBUG:proportional_allocation:Sum of path this far 45.0
+DEBUG:proportional_allocation:Sum of path this far 55.0
+INFO:proportional_allocation:Get the allocation for the 2nd agent
+DEBUG:proportional_allocation:The allocation for agent 1 (55.0, <networkx.classes.graph.Graph object at 0x12145ed40>, 0.5)
+DEBUG:proportional_allocation:The allocation for agent 2 Graph with 2 nodes and 1 edges
+DEBUG:proportional_allocation:The allocation for agent 2 Graph with 3 nodes and 2 edges
+DEBUG:proportional_allocation:The allocation for agent 2 Graph with 3 nodes and 3 edges
+INFO:contiguous_oriented_labeling:Gets a path from u to v
+INFO:contiguous_oriented_labeling:Find an edge legal for an ear
+INFO:contiguous_oriented_labeling:Find an edge legal for an ear
+INFO:contiguous_oriented_labeling:Find an edge legal for an ear
+INFO:contiguous_oriented_labeling:Find ear
+INFO:contiguous_oriented_labeling:Find ear
+INFO:contiguous_oriented_labeling:Find ear
+DEBUG:contiguous_oriented_labeling:A legal ear [2, 5, 4, 3]
+INFO:contiguous_oriented_labeling:Insert the edges of the ear
+DEBUG:contiguous_oriented_labeling:Ordered Edges [(1, 2), (2, 5), (2, 3)]
+DEBUG:contiguous_oriented_labeling:Oriented Graph DiGraph with 4 nodes and 3 edges
+INFO:contiguous_oriented_labeling:Insert the edges of the ear
+DEBUG:contiguous_oriented_labeling:Ordered Edges [(1, 2), (2, 5), (5, 4), (2, 3)]
+DEBUG:contiguous_oriented_labeling:Oriented Graph DiGraph with 5 nodes and 4 edges
+INFO:contiguous_oriented_labeling:Insert the edges of the ear
+DEBUG:contiguous_oriented_labeling:Ordered Edges [(1, 2), (2, 5), (5, 4), (4, 3), (2, 3)]
+DEBUG:contiguous_oriented_labeling:Oriented Graph DiGraph with 5 nodes and 5 edges
+INFO:contiguous_oriented_labeling:Find ear
+INFO:contiguous_oriented_labeling:Find ear
+INFO:contiguous_oriented_labeling:Find ear
+INFO:contiguous_oriented_labeling:Find ear
+INFO:contiguous_oriented_labeling:Find an edge legal for an ear
+INFO:contiguous_oriented_labeling:Find an edge legal for an ear
+INFO:proportional_allocation:Get an increasing order path
+INFO:proportional_allocation:Evaluate the path
+DEBUG:proportional_allocation:Sum of path this far 0
+INFO:proportional_allocation:Evaluate the path
+DEBUG:proportional_allocation:Sum of path this far 0
+DEBUG:proportional_allocation:Sum of path this far 1.0
+DEBUG:proportional_allocation:Sum of path this far 2.0
+DEBUG:proportional_allocation:Sum of path this far 4.0
+DEBUG:proportional_allocation:Sum of path this far 7.0
+INFO:proportional_allocation:Evaluate the path
+DEBUG:proportional_allocation:Sum of path this far 0
+DEBUG:proportional_allocation:Sum of path this far 1.0
+DEBUG:proportional_allocation:Sum of path this far 2.0
+DEBUG:proportional_allocation:Sum of path this far 4.0
+DEBUG:proportional_allocation:Sum of path this far 7.0
+DEBUG:proportional_allocation:Sum of path this far 11.0
+INFO:proportional_allocation:Get the allocation for the 2nd agent
+DEBUG:proportional_allocation:The allocation for agent 1 (21.0, <networkx.classes.graph.Graph object at 0x12145f970>, 1)
+DEBUG:proportional_allocation:The allocation for agent 2 Graph with 2 nodes and 1 edges
+DEBUG:proportional_allocation:The allocation for agent 2 Graph with 3 nodes and 2 edges
+INFO:contiguous_oriented_labeling:Gets a path from u to v
+INFO:contiguous_oriented_labeling:Find an edge legal for an ear
+INFO:contiguous_oriented_labeling:Find an edge legal for an ear
+INFO:contiguous_oriented_labeling:Find an edge legal for an ear
+INFO:contiguous_oriented_labeling:If both vertices already in an ear
+INFO:contiguous_oriented_labeling:Find an edge legal for an ear
+INFO:contiguous_oriented_labeling:Find an edge legal for an ear
+INFO:contiguous_oriented_labeling:Find an edge legal for an ear
+INFO:proportional_allocation:Get an increasing order path
+INFO:proportional_allocation:Evaluate the path
+DEBUG:proportional_allocation:Sum of path this far 0
+DEBUG:proportional_allocation:Sum of path this far 5.0
+DEBUG:proportional_allocation:Sum of path this far 15.0
+INFO:proportional_allocation:Get the allocation for the 2nd agent
+DEBUG:proportional_allocation:The allocation for agent 1 (30.0, <networkx.classes.graph.Graph object at 0x12145f280>, 1)
+DEBUG:proportional_allocation:The allocation for agent 2 Graph with 2 nodes and 1 edges
+DEBUG:proportional_allocation:The allocation for agent 2 Graph with 3 nodes and 2 edges
+DEBUG:proportional_allocation:The allocation for agent 2 Graph with 4 nodes and 3 edges
+DEBUG:proportional_allocation:The allocation for agent 2 Graph with 4 nodes and 4 edges
+DEBUG:proportional_allocation:The allocation for agent 2 Graph with 5 nodes and 5 edges
