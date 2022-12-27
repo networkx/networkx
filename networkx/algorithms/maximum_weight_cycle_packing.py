@@ -21,7 +21,7 @@ link:http://eprints.gla.ac.uk/25732/
 """
 
 
-def ExactAlgorithm(graph: nx.DiGraph, k: int) -> list:
+def maximum_weight_cycle_packing(graph: nx.DiGraph, k: int) -> list:
     """
     Algorithm - the algorithm finds the exact maximum weight k-way exchanges using reduction from directed graph to non directed
     graph
@@ -49,17 +49,17 @@ def ExactAlgorithm(graph: nx.DiGraph, k: int) -> list:
     >>> Digraph=nx.DiGraph()
     >>> Digraph.add_nodes_from([1,2,3,4,5,6,7,8])
     >>> Digraph.add_weighted_edges_from([(1,8,2),(8,1,4),(2,1,5),(1,3,4),(3,8,2),(8,2,3),(8,5,4),(5,7,3),(7,6,2),(6,5,4)])
-    >>> print(len(ExactAlgorithm(Digraph,3))) #[1,8,2] [6,5,7] [1,3,8] , can be only 2 but in any order
+    >>> print(len(maximum_weight_cycle_packing(Digraph,3))) #[1,8,2] [6,5,7] [1,3,8] , can be only 2 but in any order
     2
     >>> Digraph =nx.DiGraph()
     >>> Digraph.add_nodes_from([1,2,3,4])
     >>> Digraph.add_weighted_edges_from([(2,1,3),(1,3,1),(3,2,2),(3,4,5),(4,3,9)])
-    >>> print(len(ExactAlgorithm(Digraph,2)))#[3,4] or [4,3]
+    >>> print(len(maximum_weight_cycle_packing(Digraph,2)))#[3,4] or [4,3]
     1
     >>> graphEX3 = nx.DiGraph()
     >>> graphEX3.add_nodes_from([10,11,12,13,14,15,16])
     >>> Digraph.add_weighted_edges_from([(10,11,10),(11,12,5),(12,13,6),(13,10,4),(11,14,2),(14,16,3),(16,15,8),(15,14,6)])
-    >>> print(ExactAlgorithm(graphEX3, 3))
+    >>> print(maximum_weight_cycle_packing(graphEX3, 3))
     []
 
     Notes
