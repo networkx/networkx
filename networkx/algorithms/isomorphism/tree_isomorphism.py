@@ -100,7 +100,7 @@ class NaturalMultiset():
         m = max(self.X)
         
         # Define an array of size m.
-        A = np.empty(m+1, dtype='int')
+        A = np.zeros(m+1, dtype='int')
         
         # The array S now keeps the number of occurrences.
         for x in self.X:
