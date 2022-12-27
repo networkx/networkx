@@ -286,8 +286,10 @@ def envy_free_matching(G):
     logger.info(f"Finding the maximum cardinality envy free matching of {G}")
     logger.debug(f"Finding the maximum matching of {G}")
     M = _extract_matching(G)
-    EFM_PARTITION = _EFM_partition(G, M)
+    logger.debug(f"Got matching: {M}")
     logger.debug(f"Finding the EFM partition with maximum matching: {M}")
+    EFM_PARTITION = _EFM_partition(G, M)
+    logger.debug(f"The partition is: {EFM_PARTITION}")
     un = EFM_PARTITION[1].union(EFM_PARTITION[3])
     logger.debug(f"Finding the sub-matching M[X_L,Y_L]")
     M = {node: M[node] for node in M if node not in un and M[node] not in un}
@@ -368,13 +370,10 @@ def minimum_weight_envy_free_matching(G):
     logger.info(f"Finding the minimum cost maximum cardinality envy free matching of {G}")
     logger.debug(f"Finding the maximum matching of {G}")
     M = _extract_matching(G)
-    # M = networkx.algorithms.bipartite.hopcroft_karp_matching(G)
-    EFM_PARTITION = _EFM_partition(G, M)
+    logger.debug(f"Got matching: {M}")
     logger.debug(f"Finding the EFM partition with maximum matching: {M}")
-    # EFM_PARTITION = [{2, 3}, {1, 0}, {5, 6, 7}, {4}]
-    G.remove_nodes_from((EFM_PARTITION[1]).union((EFM_PARTITION[3])))
-    # if len((EFM_PARTITION[1]).union((EFM_PARTITION[3]))) == 0:
-    #     logger.warning(f"The sub-matching is empty!")
+    EFM_PARTITION = _EFM_partition(G, M)
+    logger.debug(f"The partition is: {EFM_PARTITION}")
     Union = EFM_PARTITION[0].union(EFM_PARTITION[2])
     M = nx.bipartite.minimum_weight_full_matching(G.subgraph(Union))
     logger.debug(f"returning minimum cost maximum cardinality envy free matching in G[X_L,Y_L]: {M}")
