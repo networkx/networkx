@@ -1,11 +1,8 @@
 import doctest
-import itertools
 
 import networkx as nx
-from itertools import permutations, product
 import numpy as np
-from more_itertools import distinct_permutations as idp
-import matplotlib.pyplot as plt
+from networkx.algorithms import cycles
 
 """REUT HADAD & TAL SOMECH"""
 
@@ -63,7 +60,7 @@ def ExactAlgorithm(graph: nx.DiGraph, k: int) -> list:
     >>> graphEX3.add_nodes_from([10,11,12,13,14,15,16])
     >>> Digraph.add_weighted_edges_from([(10,11,10),(11,12,5),(12,13,6),(13,10,4),(11,14,2),(14,16,3),(16,15,8),(15,14,6)])
     >>> print(ExactAlgorithm(graphEX3, 3))
-    None
+    []
 
     Notes
     -----------
@@ -73,12 +70,8 @@ def ExactAlgorithm(graph: nx.DiGraph, k: int) -> list:
     ----------
     Algorithm 1 - 'MAXIMUM WEIGHT CYCLE PACKING IN DIRECTED GRAPHS, WITH APPLICATION TO KIDNEY EXCHANGE PROGRAMS' by Biro, P. and Manlove, D.F. and Rizzi, R. http://eprints.gla.ac.uk/25732/
     """
-    temp_cycles = nx.recursive_simple_cycles(graph)
-    cycles = []
-    for cycle in temp_cycles:
-        if len(cycle) == k:
-            cycles.append(cycle)
-    Ys = create_Ys(cycles, k)
+
+    Ys,cycles = create_Ys(graph,k)
 
     X = []
     max_cycles=[]
@@ -129,7 +122,8 @@ def ExactAlgorithm(graph: nx.DiGraph, k: int) -> list:
         #   This next part is used to get the max exchange.
         temp_max=0
         for cyc in exchanges:
-            temp_max=temp_max+cyc["weight"]
+            #ed=ans_graph.get_edge_data(cyc[0],cyc[1])["weight"]
+            temp_max=temp_max+ans_graph.get_edge_data(cyc[0],cyc[1])["weight"]
         if temp_max>max_weight:
             max_weight=temp_max
             max_cycles=exchanges
@@ -147,10 +141,28 @@ def ExactAlgorithm(graph: nx.DiGraph, k: int) -> list:
                 temp.append(int(node[1:]))
         result.append(temp)
 
-        return result  # exchanges
+    return result  # exchanges
 
 
-def create_Ys(cycles, k):
+def create_Ys(graph,k):
+    """This function is used to create the cartesian product of the 3-cycles
+    >>> Digraph=nx.DiGraph()
+    >>> Digraph.add_nodes_from([1,2,3,4,5,6,7,8])
+    >>> Digraph.add_weighted_edges_from([(1,8,2),(8,1,4),(2,1,5),(1,3,4),(3,8,2),(8,2,3),(8,5,4),(5,7,3),(7,6,2),(6,5,4)])
+    >>> Ys,_=create_Ys(Digraph,3)
+    >>> print(len(Ys)) #- the known product is supposed to be composed of 27 permutation
+    27
+    >>> Digraph =nx.DiGraph()
+    >>> Digraph.add_nodes_from([1,2,3,4])
+    >>> Digraph.add_weighted_edges_from([(2,1,3),(1,3,1),(3,2,2),(3,4,5),(4,3,9)])
+    >>> print(len(create_Ys(Digraph,3))) #- the known product is supposed to be composed of 1 permutation
+    2
+    """
+    temp_cycles = nx.recursive_simple_cycles(graph)
+    cycles = []
+    for cycle in temp_cycles:
+        if len(cycle) == k:
+            cycles.append(cycle)
     perm_arr = np.ndarray(shape=(len(cycles), k), dtype=list)
     for cyc_idx in range(len(cycles)):
         cyc = cycles[cyc_idx]
@@ -162,7 +174,7 @@ def create_Ys(cycles, k):
         mesh = np.array(np.meshgrid(*perm_arr))
         mesh = mesh.T.reshape(-1, len(mesh))
 
-    return mesh
+    return mesh,cycles
 
 
 # Press the green button in the gutter to run the script.
