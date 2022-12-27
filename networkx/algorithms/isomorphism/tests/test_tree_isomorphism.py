@@ -7,6 +7,7 @@ from networkx.algorithms.isomorphism.tree_isomorphism import (
     categorize_entries,
     categorize_lists,
     sort_lists_of_naturals,
+    sort_natural_multisets,
     get_levels,
     get_initial_values,
     rooted_tree_isomorphism,
@@ -181,6 +182,60 @@ def test_sort_list_of_naturals():
     ]
 
     obtained_ordering = sort_lists_of_naturals(S)
+    
+    assert expected_ordering == obtained_ordering
+
+# Tests the function sort_natural_multisets. The expected sorted list should
+# follow the lexicographical ordering of the multiset representation.
+def test_sort_natural_multisets():
+    # An arbitrary list of lists of multisets.
+    M1 = NaturalMultiset()
+    M2 = NaturalMultiset()
+    M3 = NaturalMultiset()
+    M4 = NaturalMultiset()
+    M5 = NaturalMultiset()
+    M6 = NaturalMultiset()
+    
+    M1.from_list([0, 0, 1, 2, 3])
+    M2.from_list([1, 2, 3])
+    M3.from_list([0, 1, 1, 4])
+    M4.from_list([3, 3, 4])
+    M5.from_list([4])
+    M6.from_list([4, 4, 5])
+    
+    S = [M1, M2, M3, M4, M5, M6]
+    
+    expected_ordering = [M1, M3, M2, M4, M5, M6]
+    
+    obtained_ordering = sort_natural_multisets(S)
+    
+    assert expected_ordering == obtained_ordering
+    
+    # Test for another list of lists of natural numbers.
+    M1 = NaturalMultiset()
+    M2 = NaturalMultiset()
+    M3 = NaturalMultiset()
+    M4 = NaturalMultiset()
+    M5 = NaturalMultiset()
+    M6 = NaturalMultiset()
+    M7 = NaturalMultiset()
+    M8 = NaturalMultiset()
+    M9 = NaturalMultiset()
+    
+    M1.from_list([1, 2, 3, 7, 8])
+    M2.from_list([2, 2, 3, 4])
+    M3.from_list([2, 2, 4, 3])
+    M4.from_list([0, 1])
+    M5.from_list([0, 0])
+    M6.from_list([1, 3, 4])
+    M7.from_list([2, 3, 4])
+    M8.from_list([7])
+    M9.from_list([8, 8])
+    
+    S = [M1, M2, M3, M4, M5, M6, M7, M8, M9]
+    expected_ordering = [M5, M4, M1, M6, M2, M3, M7, M8, M9]
+
+    obtained_ordering = sort_natural_multisets(S)
     
     assert expected_ordering == obtained_ordering
 
