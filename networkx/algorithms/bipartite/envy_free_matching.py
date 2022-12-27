@@ -49,6 +49,20 @@ def __neighbours_of_set__(G, node_set):
 
 def __M_alternating_sequence__(G, M):
     """
+    Generates M-alternating-sequence for a graph G with regard to a matching M
+    We generate two sets with the following recursive definition:
+    X_0 = nodes in G unmatched by M.
+    for i>=1:
+        Latex:
+            Y_i = N_{G\M}(X_{i-1})
+            X_i = N_M(Y_i)
+        English:
+            Y_i -> neighbours of X_{i-1} that were not matched by M group-subtracting all the previous Y_k's we've seen
+            X_i -> neighbours of Y_i that were matched by M
+
+    The recursive pattern stops when either Y_k or X_k are an empty set for a certain k, forever staying an empty set from k onward
+    the alternating sequece is proven to always stop in the article.
+
     >>> G = nx.complete_bipartite_graph(3,3)
     >>> M = nx.bipartite.hopcroft_karp_matching(G)
     >>> __M_alternating_sequence__(G, M)
