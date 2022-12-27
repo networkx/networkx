@@ -47,13 +47,17 @@ class NaturalMultiset():
         The amount of elements in M.
     """
     
-    def __init__(self):
+    def __init__(self, S = []):
         """
-        Initializes an empty multiset.
+        Initializes an empty multiset. If a list of naturals is passed, then
+        initialize the multiset with the values contained in the list.
         """
         self.X = set()
         self.m = {}
         self.length = 0
+        
+        if len(S) > 0:
+            self.from_list(S)
         
     def add(self, x):
         """
@@ -478,6 +482,63 @@ def get_initial_values(T, root):
         vals[v] = 0
         
     return vals
+
+def assign_structure(p, levels, values, i):
+    """
+    Assign to all the vertices found on the i-th level a structure. The
+    structure of a vertex is defined as the natural multiset that contains the
+    values of all its child. Informally, the structure of a vertex can be
+    thought as the structure or "form" the sub-tree rooted on v has.
+    
+    Parameters
+    ----------
+    p : dictionary
+        The parenthood function defined for the rooted tree.
+
+    levels: dictionary
+        The level function such that level(i) are the verticed found on the i-th
+        level of the rooted tree.
+    
+    vals: dictionary
+        The vals function such that vals(v) is the value defined for the v 
+        vertex.
+    
+    i : int
+        The current level of the rooted tree.
+    
+    Returns
+    -------
+    The struct function such that struct(v) is the structure corresponding to 
+    the vertex v.
+    
+    Note
+    ----
+    This algorithm runs in O(m_{i-1} + m_i) time and space where m_{j} are the
+    vertices found on the j-th level of the rooted tree.
+    """
+    # Define an empty function struct.
+    struct = {}
+    
+    # Traverse all the vertices on the i-th level and define an empty multiset
+    # for each non-leave vertex.
+    for v in levels[i]:
+        if values[v] != 0:
+            struct[v] = NaturalMultiset()
+        
+    # Traverse all the vertices on the (i-1)-th level and append them to its
+    # father multiset.
+    for u in levels[i-1]:
+        # Obtain u's father.
+        v = p[u]
+        
+        # Obtain u's value.
+        uval = values[u]
+        
+        # Add u's value to the father's multiset.
+        struct[v].add(uval)
+    
+    # Return the defined function.
+    return struct
 
 def root_trees(t1, root1, t2, root2):
     """Create a single digraph dT of free trees t1 and t2
