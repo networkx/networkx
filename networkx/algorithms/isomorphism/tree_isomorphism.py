@@ -147,6 +147,16 @@ class NaturalMultiset():
         contains.
         """
         return self.length
+    
+    def __hash__(self):
+        """
+        Hash function for the multiset class.
+        """
+        h = 0
+        for x in self.X:
+            h += (self.m[x] * x)
+            
+        return h
 
 def categorize_entries(S):
     """
@@ -539,6 +549,59 @@ def assign_structure(p, levels, values, i):
     
     # Return the defined function.
     return struct
+
+def get_multisets_list_of_level(levels, values, struct, i):
+    """
+    Build a list of multisets that correspond to the structures of the
+    vertices found on the i-th level and a mapping of structures to the vertices
+    that have said structure.
+    
+    Parameters
+    ----------
+    levels: dictionary
+        The level function such that level(i) are the verticed found on the i-th
+        level of the rooted tree.
+    
+    vals: dictionary
+        The vals function such that vals(v) is the value defined for the v 
+        vertex.
+    
+    struct : dictionary
+        The struct function such that struct(v) is the structure corresponding
+        to the vertex v.
+    
+    i : int
+        The current level of the rooted tree.
+    
+    Returns
+    -------
+    A list of multisets that correspond to the structures of the vertices found
+    on the i-th level and a mapping of structures to the vertices that have said
+    structure.
+    
+    Note
+    ----
+    This algorithm runs in O(m_{i-1} + m_i) time and space where m_{j} are the
+    vertices found on the j-th level of the rooted tree.
+    """
+    # Define an empty list of multisets.
+    S = []
+    
+    # Define a mapping of structures to the vertices that have said structure.
+    MS = {}
+    
+    # Traverse each non-leave vertex on the i-th level and append its structure
+    # to the list.
+    for u in levels[i]:
+        if values[u] != 0:
+            S.append(struct[u])
+            
+            if struct[u] in MS:
+                MS[struct[u]].add(u)
+            else:
+                MS[struct[u]] = {u}
+    
+    return S, MS
 
 def root_trees(t1, root1, t2, root2):
     """Create a single digraph dT of free trees t1 and t2
