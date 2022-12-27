@@ -164,9 +164,12 @@ def categorize_entries(S):
     
     References
     ----------
-        .. [1] A. V. Aho, J. E. Hopcroft y J. D. Ullman, The Desing And Analysis 
+        .. [1] A. V. Aho, J. E. Hopcroft y J. D. Ullman, The Desing And Analysis
                of Computer Algorithms, Addison Wesley Publishing Company, 1974.
                Pages 80-82.
+
+        .. [4] M. Carrasco-Ruiz, Herramientas para el Manejo Computacional de
+               Gráficas, Bachelor of Science Thesis, UNAM, 2021.
     
     Notes
     -----
@@ -186,7 +189,6 @@ def categorize_entries(S):
         M = NaturalMultiset()
         
         for s in S:
-            print(s, i)
             # Only consider lists of length greater or equal than i, and whose
             # i-th entry is not already contained in the multiset.
             if len(s) < (i+1) or M.contains(s[i]):
@@ -220,6 +222,9 @@ def categorize_lists(S):
         .. [1] A. V. Aho, J. E. Hopcroft y J. D. Ullman, The Desing And Analysis 
                of Computer Algorithms, Addison Wesley Publishing Company, 1974.
                Pages 80-82.
+
+        .. [4] M. Carrasco-Ruiz, Herramientas para el Manejo Computacional de
+               Gráficas, Bachelor of Science Thesis, UNAM, 2021.
     
     Notes
     -----
