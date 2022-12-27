@@ -10,6 +10,7 @@ from networkx.algorithms.isomorphism.tree_isomorphism import (
     sort_natural_multisets,
     get_levels,
     get_initial_values,
+    assign_structure,
     rooted_tree_isomorphism,
     tree_isomorphism,
 )
@@ -325,6 +326,51 @@ def test_isomorphism_trees_set_initial_values():
     obtained_levels = get_initial_values(T2, "u3")
     
     assert expected_values == obtained_values
+
+# Tests the function assign_values. The returned function should assign to all
+# the vertices found on the i-th level a structure.
+def test_assign_values():
+    # Test for an specific scenario.
+    levels = {
+        2 : {"v0"},
+        1 : {"v1", "v2", "v3"},
+        0 : {"v4", "v5", "v6"},
+    }
+    
+    values = {
+        "v0" : 1,
+        "v1" : 2,
+        "v2" : 0,
+        "v3" : 1,
+        "v4" : 0,
+        "v5" : 0,
+        "v6" : 0,
+    }
+    
+    parenthood = {
+        "v1" : "v0",
+        "v2" : "v0",
+        "v3" : "v0",
+        "v4" : "v1",
+        "v5" : "v1",
+        "v6" : "v3",
+    }
+    
+    expected_structure_lvl_2 = {
+        "v0" : NaturalMultiset([0, 1, 2]),
+    }
+
+    expected_structure_lvl_1 = {
+        "v1" : NaturalMultiset([0, 0]),
+        "v3" : NaturalMultiset([0]),
+    }
+
+    obtained_structure_lvl_1 = assign_structure(parenthood, levels, values, 1)
+    obtained_structure_lvl_2 = assign_structure(parenthood, levels, values, 2)
+    
+    assert obtained_structure_lvl_1 == expected_structure_lvl_1
+    assert obtained_structure_lvl_2 == expected_structure_lvl_2
+
 
 # have this work for graph
 # given two trees (either the directed or undirected)
