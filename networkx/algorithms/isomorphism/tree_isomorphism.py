@@ -127,7 +127,7 @@ class NaturalMultiset():
         -----
         This runs in O(|L|).
         """
-        for x in l:
+        for x in L:
             self.add(x)
             
     def __eq__(self, M):
@@ -315,6 +315,60 @@ def sort_lists_of_naturals(S):
     
     # Q now contains all of the elements of S sorted lexicographically.
     return Q
+
+def sort_natural_multisets(S):
+    """
+    Given a list of multisets whose entries are numbers between 0 and m. The
+    function sort_natural_multisets returns a sorted list with the elements of
+    S. If each multiset is represented as a string or a list of naturals, the
+    expected order is a lexicographical order taking into consideration the
+    previous representation.
+    
+    Parameters
+    ----------
+    S : list
+        The list of natural multisets.
+    
+    Returns
+    -------
+    A sorted list with the elements of S.
+    
+    References
+    ----------
+        .. [1] A. V. Aho, J. E. Hopcroft y J. D. Ullman, The Desing And Analysis 
+               of Computer Algorithms, Addison Wesley Publishing Company, 1974.
+               Pages 80-82.
+
+        .. [4] M. Carrasco-Ruiz, Herramientas para el Manejo Computacional de
+               Gráficas, Bachelor of Science Thesis, UNAM, 2021.
+    
+    Notes
+    -----
+    This algorithm runs in O(M_total + k) time and O(M_total) space, where 
+    M_total is the sum of the lengths of the multisets in S and k is the max 
+    value of all the multisets in S.
+    """
+    # Define a list of lists.
+    L = []
+    
+    # For each multiset in S, add its list representation to S.
+    for m in S:
+        lm = m.to_list()
+        L.append(lm)
+        
+    # Obtain an ordering of S.
+    sorted_L = sort_lists_of_naturals(L)
+    
+    # Transform each list into a multiset.
+    sorted_S = []
+    for l in sorted_L:
+        m = NaturalMultiset()
+        m.from_list(l)
+        sorted_S.append(m)
+    
+    # Return the sorted multisets.
+    return sorted_S
+        
 
 def get_levels(T, root, height):
     """
