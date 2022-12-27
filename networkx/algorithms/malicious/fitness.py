@@ -2,29 +2,12 @@
 Calculates the fitness function between two graphs.
 """
 
-from networkx.algorithms.malicious.maximum_subgraph_isomorphism import find_max__edges_of_sub_isomorphism_graph
 import networkx as nx
 
-__all__ = ["GA"]
+__all__ = ["fitness"]
 
 
-# def fitness(sub_G1, sub_G2, G1_nodes, G1_edges, G2_nodes, G2_edges):
-#     """
-#     fitness function to calculate the quality of the solution
-#     given two sub graphs, and the original graphs size
-#     """
-#     if nx.is_isomorphic(sub_G1, sub_G2):
-#         min_val = 0
-#         if G1_nodes < G2_nodes:
-#             min_val = G1_edges
-#         else:
-#             min_val = G2_edges
-#         mutual = len(sub_G2.edges)
-#         return (((G1_edges - mutual) + (G2_edges - mutual)) / min_val)
-#     else:
-#         return 999999
-
-def GA(G1, G2):
+def fitness(sub_G1, sub_G2, G1_num_of_nodes, G1_num_of_edges, G2_num_of_nodes, G2_num_of_edges):
     """
     Measures the proportion of the number of different edges
     between two given graphs against the number of edges in the
@@ -36,10 +19,18 @@ def GA(G1, G2):
     Parameters
     ----------
     G1 = (V1, E1), G2 = (V2, E2), and |V1|≤|V2|.
-    G1 : NetworkX DiGraph
-        G1 is a dirceted graph, G1 = (V1, E1), G1 is the smaller garph
-    G2 : NetworkX DiGraph
-        G2 is a dirceted graph, G2 = (V2, E2), G2 is the bigger graph
+    sub_G1 : NetworkX DiGraph
+        sub_G1 is a dirceted subgraph of G1
+    sub_G2 : NetworkX DiGraph
+        sub_G2 is a dirceted subgraph of G2
+    G1_num_of_nodes: int
+        the number of nodes in the original graph (G1)
+    G1_num_of_edges: int
+        the number of edges in the original graph (G1)
+    G2_num_of_nodes: int
+        the number of nodes in the original graph (G2)
+    G2_num_of_edges: int
+        the number of edges in the original graph (G2)
     Note: |V1|≤|V2|.
 
     Returns
@@ -71,28 +62,34 @@ def GA(G1, G2):
     -----------------------------------------------------------------
     >>> import networkx as nx
 
-    # creates and builds G1 
-    >>> G1 = nx.DiGraph()
-    >>> directed_G1.add_nodes_from(range(1, 7))
-    >>> directed_G1.add_edges_from([(1, 2),(2, 3),(3, 4)])
+    # basic_code
+    >>> basic_RG = nx.DiGraph()
+    >>> basic_RG.add_nodes_from(range(6, 10))
+    >>> edges = [(6, 7), (6, 8), (6, 9), (8, 8), (9, 7), (9, 8), (9, 9)]
+    >>> basic_RG.add_edges_from(edges)
 
-    # creates and builds G2 
-    >>> G2 = nx.DiGraph()
-    >>> G2.add_nodes_from(range(1,15))
-    >>> G2.add_edges_from([(1, 4),(2, 6),(3, 5),(4, 7),(5, 8),(5, 10),(10,10)])
+    # basic_code_v1 
+    >>> basic_RG_v1 = nx.DiGraph()
+    >>> basic_RG_v1.add_nodes_from(range(6, 10))
+    >>> edges = [(6, 7), (6, 8), (6, 9), (8, 8), (9, 7), (9, 8), (9, 9)]
+    >>> basic_RG_v1.add_edges_from(edges)
+
+    # calculates the number of nodes and edges of the originl graphs 
+    >>> basic_num_of_nodes = len(basic_RG.nodes)
+    >>> basic_num_of_edges = len(basic_RG.edges)
 
     # runs the function
-    >>> calculate_fitness(G1, G2)
-    2.5
+    >>> fitness(self.basic_RG, self.basic_RG_v1, self.basic_num_of_nodes, self.basic_num_of_edges, self.basic_num_of_nodes, self.basic_num_of_edges)
+    0
     """
 
-    G1_edges = len(G1.edges)
-    G2_edges = len(G2.edges)
-    min_size = 0
-    if len(G1.nodes) < len(G2.nodes):
-        min_size = G1_edges
+    if nx.is_isomorphic(sub_G1, sub_G2):
+        min_val = 0
+        if G1_num_of_nodes < G2_num_of_nodes:
+            min_val = G1_num_of_edges
+        else:
+            min_val = G2_num_of_edges
+        mutual = len(sub_G2.edges)
+        return (((G1_num_of_edges - mutual) + (G2_num_of_edges - mutual)) / min_val)
     else:
-        min_size = G2_edges
-    mutual = find_max__edges_of_sub_isomorphism_graph(G1, G2)
-    ans = ((G1_edges - mutual) + (G2_edges - mutual)) / min_size
-    return ans
+        return 999999 # arbitrary high number 
