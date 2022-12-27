@@ -297,7 +297,6 @@ def envy_free_matching(G):
         logger.warning(f"The sub-matching is empty!")
     logger.debug(f"returning the sub-matching M[X_L,Y_L]: {M}")
     return M
-    # return networkx.algorithms.bipartite.hopcroft_karp_matching(G)
 
 
 def minimum_weight_envy_free_matching(G):
