@@ -144,6 +144,63 @@ class NaturalMultiset():
         """
         return self.length
 
+def categorize_entries(S):
+    """
+    Given a list of lists whose entries are numbers between 0 and m. The
+    function categorize_entries returns a function (map or dict) NONEMPTY : N ->
+    P(N) such that NONEMPTY(i) are the numbers in the i-th position of some list
+    in S; this numbers are sorted. For example, given ((1), (1, 2, 3), (1, 2,
+    2)), NONEMPTY(2) = [2, 3].
+    
+    Parameters
+    ----------
+    S : list
+        The list of lists of natural numbers.
+    
+    Returns
+    -------
+    A NONEMPTY: N -> P(N) function such that NONEMPTY(i) are the numbers in the 
+    i-th position of some list in S; this numbers are sorted.
+    
+    References
+    ----------
+        .. [1] A. V. Aho, J. E. Hopcroft y J. D. Ullman, The Desing And Analysis 
+               of Computer Algorithms, Addison Wesley Publishing Company, 1974.
+               Pages 80-82.
+    
+    Notes
+    -----
+    This algorithm runs in O(l_total + m) time and O(l_total) space, where 
+    l_total is the sum of the lengths of the lists in S and m is the max value
+    of all the lists in S.
+    """
+    # Define the function NONEMPTY.
+    NONEMPTY = {}
+    
+    # The max length found in S.
+    l_max = max([len(s) for s in S])
+    
+    # Traverse all the entries contained in the lists of S.
+    for i in range(l_max):
+        # Define a multiset to keep the entries found in the i-th position.
+        M = NaturalMultiset()
+        
+        for s in S:
+            print(s, i)
+            # Only consider lists of length greater or equal than i, and whose
+            # i-th entry is not already contained in the multiset.
+            if len(s) < (i+1) or M.contains(s[i]):
+                continue
+            else:
+                M.add(s[i])
+
+        # Obtain a sorted representation of M.
+        NONEMPTY[i] = M.to_list()
+
+    return NONEMPTY
+        
+        
+
 def get_levels(T, root, height):
     """
     Returns a function (map or dict) M: N -> P(V) such that, for each i in
