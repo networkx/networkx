@@ -54,7 +54,7 @@ class TestEnvyFreeMatching:
             """
             generate_odd_path
 
-            input: positive number
+            input: positive odd(!!) number
             output: bipartite graph with one set of cardinality = size and one set of cardinality = size - 1
             with the shape of an odd path.
 
@@ -62,6 +62,8 @@ class TestEnvyFreeMatching:
             [(0, 3), (1, 3), (1, 4), (2, 4), (3, 0), (3, 1), (4, 1), (4, 2)]
 
             """
+            if size % 2 == 0: raise Exception
+
             edges = [(0, size)]
 
             actions = {
@@ -80,10 +82,10 @@ class TestEnvyFreeMatching:
             [(0, 6), (6, 0), (1, 6), (6, 1), (1, 7), (7, 1), (2, 6), (6, 2), (2, 8), (8, 2), (3, 9), (9, 3), (3, 6),
              (6, 3), (4, 8), (8, 4), (4, 7), (7, 4), (5, 9), (9, 5)])  # more intricate graph
 
-        C = generate_odd_path(100)  # check big inputs
-        D = generate_odd_path(10000)  # check even bigger inputs
+        C = generate_odd_path(11)  # check big inputs
+        D = generate_odd_path(501)  # check even bigger inputs, may take too long, adjust the given value as needed
 
-        graphs = {A, B, C}
+        graphs = {A, B, C, D}
         for graph in graphs:
             assert algo.envy_free_matching(G=graph) == {}
 
