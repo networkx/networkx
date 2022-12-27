@@ -487,6 +487,10 @@
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    Checks for matching degree, triangle, and number of cliques sequences.</span>
+<span class="sd">    The triangle sequence contains the number of triangles each node is part of.</span>
+<span class="sd">    The clique sequence contains for each node the number of maximal cliques</span>
+<span class="sd">    involving that node.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># Check global properties</span>
@@ -528,7 +532,8 @@
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    Checks for matching degree and triangle sequences.</span>
+<span class="sd">    Checks for matching degree and triangle sequences. The triangle</span>
+<span class="sd">    sequence contains the number of triangles each node is part of.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Check global properties</span>
     <span class="k">if</span> <span class="n">G1</span><span class="o">.</span><span class="n">order</span><span class="p">()</span> <span class="o">!=</span> <span class="n">G2</span><span class="o">.</span><span class="n">order</span><span class="p">():</span>
