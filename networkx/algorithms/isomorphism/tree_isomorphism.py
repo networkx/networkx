@@ -198,8 +198,44 @@ def categorize_entries(S):
         NONEMPTY[i] = M.to_list()
 
     return NONEMPTY
-        
-        
+
+def categorize_lists(S):
+    """
+    Given a list of lists whose entries are numbers between 0 and m. The
+    function categorize_lists returns a function (map or dict) LENGTH such that
+    LENGTH(i) are the lists of S with length i. For example, given ((1), (1, 2,
+    3), (1, 2, 2)), NONEMPTY(3) = [(1, 2, 3), (1, 2, 2)].
+    
+    Parameters
+    ----------
+    S : list
+        The list of lists of natural numbers.
+    
+    Returns
+    -------
+    A LENGTH function such that LENGTH(i) are the lists of S with length i.
+    
+    References
+    ----------
+        .. [1] A. V. Aho, J. E. Hopcroft y J. D. Ullman, The Desing And Analysis 
+               of Computer Algorithms, Addison Wesley Publishing Company, 1974.
+               Pages 80-82.
+    
+    Notes
+    -----
+    This algorithm runs in O(|S|) time and space.
+    """
+    # Define the function LENGTH.
+    LENGTH = {}
+    
+    # Traverse the lists in S and add them to the LENGTH.
+    for s in S:
+        if len(s) in LENGTH:
+            LENGTH[len(s)].append(s)
+        else:
+            LENGTH[len(s)] = [s]
+            
+    return LENGTH
 
 def get_levels(T, root, height):
     """
