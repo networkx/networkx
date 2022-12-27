@@ -76,6 +76,12 @@ class NaturalMultiset():
             self.m[x] = 1
 
         self.length = self.length + 1
+        
+    def contains(self, x):
+        """
+        Returns whether the multiset contains a given element.
+        """
+        return (x in self.X)
             
     def to_list(self):
         """
