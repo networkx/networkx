@@ -12,6 +12,7 @@ from networkx.algorithms.isomorphism.tree_isomorphism import (
     get_initial_values,
     assign_structure,
     get_multisets_list_of_level,
+    update_values,
     rooted_tree_isomorphism,
     tree_isomorphism,
 )
@@ -440,6 +441,71 @@ def test_get_multisets_list_of_level():
     assert obt_mapping_lvl_1 == expected_mapping_lvl_1
     assert obt_mapping_lvl_2 == expected_mapping_lvl_2
 
+def test_get_multisets_list_of_level():
+    # Test for an specific scenario.
+    # Starting values.
+    values = {
+        "v0" : -1,
+        "v1" : -1,
+        "v2" : 0,
+        "v3" : -1,
+        "v7" : -1,
+        "v4" : 0,
+        "v5" : 0,
+        "v6" : 0,
+        "v8" : 0,
+    }
+
+    mapping_lvl_1 = {
+        NaturalMultiset([0, 0]) : {"v1"},
+        NaturalMultiset([0]) : {"v3", "v7"},
+    }
+    
+    structures_list_lvl_1 = (
+        NaturalMultiset([0]),
+        NaturalMultiset([0]),
+        NaturalMultiset([0, 0]),
+    )
+
+    expected_values_after_lvl_1 = {
+        "v0" : -1,
+        "v1" : 2,
+        "v2" : 0,
+        "v3" : 1,
+        "v7" : 1,
+        "v4" : 0,
+        "v5" : 0,
+        "v6" : 0,
+        "v8" : 0,
+    }
+    
+    update_values(structures_list_lvl_1, mapping_lvl_1, values)
+    
+    assert expected_values_after_lvl_1 == values
+
+    structures_list_lvl_2 = (
+        NaturalMultiset([2, 0, 1]),
+    )
+    
+    mapping_lvl_2 = {
+        NaturalMultiset([0, 1, 2]) : {"v0"},
+    }
+
+    expected_values_after_lvl_2 = {
+        "v0" : 1,
+        "v1" : 2,
+        "v2" : 0,
+        "v3" : 1,
+        "v7" : 1,
+        "v4" : 0,
+        "v5" : 0,
+        "v6" : 0,
+        "v8" : 0,
+    }
+
+    update_values(structures_list_lvl_2, mapping_lvl_2, values)
+    
+    assert expected_values_after_lvl_2 == values
 
 # have this work for graph
 # given two trees (either the directed or undirected)
