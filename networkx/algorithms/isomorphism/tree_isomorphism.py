@@ -242,6 +242,80 @@ def categorize_lists(S):
             
     return LENGTH
 
+def sort_lists_of_naturals(S):
+    """
+    Given a list of lists whose entries are numbers between 0 and m. The
+    function sort_lists_of_naturals performs an algorithm similar to bucket sort
+    to return a sorted list with the elements of S. The expected order is a
+    lexicographical order.
+    
+    Parameters
+    ----------
+    S : list
+        The list of lists of natural numbers.
+    
+    Returns
+    -------
+    A sorted list with the elements of S.
+    
+    References
+    ----------
+        .. [1] A. V. Aho, J. E. Hopcroft y J. D. Ullman, The Desing And Analysis 
+               of Computer Algorithms, Addison Wesley Publishing Company, 1974.
+               Pages 80-82.
+
+        .. [4] M. Carrasco-Ruiz, Herramientas para el Manejo Computacional de
+               Gráficas, Bachelor of Science Thesis, UNAM, 2021.
+    
+    Notes
+    -----
+    This algorithm runs in O(l_total + m) time and O(l_total) space, where 
+    l_total is the sum of the lengths of the lists in S and m is the max value
+    of all the lists in S.
+    """
+    # Get the maximum value contained in S.
+    m = max([max(s) for s in S])
+
+    # Define a list that will behave like a queue.
+    Q = []
+
+    # Define an empty array of size m whose entries are empty queues.
+    A = [[] for i in range(m+1)]
+    
+    print(A)
+    
+    # The max length found in S.
+    l_max = max([len(s) for s in S])
+    
+    # Obtain the NONEMPTY and LENGTH functions.
+    NONEMPTY = categorize_entries(S)
+    LENGTH = categorize_lists(S)
+    
+    l = l_max
+    while (l >= 1):
+        # All of the elements in Q have length greater than l. For each element
+        # s in Q, append q to the queue A[s[l]].
+        while (len(Q) > 0):
+            s = Q.pop()
+            A[s[l-1]].append(s)
+
+        # Add the lists s of size l to the queue A[s[l]] if there are any.
+        if l in LENGTH:
+            for s in LENGTH[l]:
+                A[s[l-1]].append(s)
+            
+        # Sort the elements of A according to its l-th entry.
+        for i in NONEMPTY[l-1]:
+            while (len(A[i]) > 0):
+                s = A[i].pop()
+                Q.append(s)
+        
+        # Proceed with the lists of size l-1.
+        l = l - 1
+    
+    # Q now contains all of the elements of S sorted lexicographically.
+    return Q
+
 def get_levels(T, root, height):
     """
     Returns a function (map or dict) M: N -> P(V) such that, for each i in
