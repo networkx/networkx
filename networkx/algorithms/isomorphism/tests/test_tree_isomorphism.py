@@ -745,6 +745,11 @@ def generate_isomorphism(T1):
     
     return T2
 
+# The function nonisomorphic_trees generates all the non-isomorphic trees of a
+# given order. Take each tree, make a "copy" of it, and its copy should be
+# isomorphic to the original; verify that the function tree_isomorphism_n
+# returns True and a proper isomorphism. For k=4 the test takes around 2.83
+# seconds, ando for k=5 it takes around 7.57 seconds.
 def test_tree_isomorphism_n_positive(maxk=15):
     print("\nPositive test with new function\n")
 
@@ -760,6 +765,28 @@ def test_tree_isomorphism_n_positive(maxk=15):
             assert is_valid_isomorphism(T1, T2, isomorphism)
 
             trial += 1
+
+        print(k, trial, time.time() - start_time)
+
+# The function nonisomorphic_trees generates all the non-isomorphic trees of a
+# given order. Take each pair of trees verify that the function
+# tree_isomorphism_n returns False and an empty isomorphism.
+def test_tree_isomorphism_n_negative(maxk=13):
+    print("\nNegative test with new function\n")
+
+    for k in range(4, maxk + 1):
+        test_trees = list(nx.nonisomorphic_trees(k))
+        start_time = time.time()
+        trial = 0
+        for i in range(len(test_trees) - 1):
+            T1 = test_trees[i]
+            for j in range(i + 1, len(test_trees)):
+                trial += 1
+                
+                T2 = test_trees[j]
+                is_iso, isomorphism = tree_isomorphism_n(T1, T2)
+                
+                assert not is_iso
 
         print(k, trial, time.time() - start_time)
 
@@ -1028,7 +1055,7 @@ def test_trivial_2():
 # k = 11 takes about 4.76 seconds to run on my laptop
 # larger values run slow down significantly
 # as the number of trees grows rapidly
-def test_negative(maxk=11):
+def test_negative(maxk=13):
 
     print("negative test")
 
