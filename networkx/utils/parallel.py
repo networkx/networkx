@@ -3,12 +3,7 @@ from typing import Any, Callable, Iterable, List, Optional, Tuple, Union
 
 from networkx.utils.misc import optional_package
 
-try:
-    import joblib
-except ImportError:
-    raise ImportError(
-        "joblib is not installed. Install joblib using 'pip install joblib'."
-    )
+joblib, has_joblib, _ = optional_package("joblib")
 
 SUPPORTED_BACKENDS = [
     "multiprocessing",

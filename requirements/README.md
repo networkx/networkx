@@ -6,6 +6,8 @@
   Default requirements
 - [`extra.txt`](extra.txt)
   Optional requirements that may require extra steps to install
+- [`extra.txt`](extra.txt)
+  Optional requirements that may require extra steps to install
 - [`example.txt`](example.txt)
   Requirements for gallery examples
 - [`test.txt`](test.txt)
@@ -16,6 +18,8 @@
   Requirements for developers
 - [`release.txt`](release.txt)
   Requirements for making releases
+- [`parallel.txt`](parallel.txt)
+  Optional requirements for parallel computing with dask, ray, or ipyparallel backends.
 
 ## Examples
 
