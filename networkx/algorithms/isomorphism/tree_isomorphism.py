@@ -157,6 +157,12 @@ class NaturalMultiset():
             h += (self.m[x] * x)
             
         return h
+    
+    def __str__(self):
+        """
+        The string representation of a multiset is the list representation.
+        """
+        return "{" + ", ".join(self.to_list()) + "}"
 
 def categorize_entries(S):
     """
@@ -295,8 +301,6 @@ def sort_lists_of_naturals(S):
 
     # Define an empty array of size m whose entries are empty queues.
     A = [[] for i in range(m+1)]
-    
-    print(A)
     
     # The max length found in S.
     l_max = max([len(s) for s in S])
@@ -493,7 +497,51 @@ def get_initial_values(T, root):
         
     return vals
 
-def assign_structure(p, levels, values, i):
+def get_initial_children(parenthood, levels):
+    """
+    Defines a function children where children(v) are the ordered list of
+    children of v in the rooted tree. This function sets who are the parents of
+    the leaves found on the level 0.
+    
+    Parameters
+    ----------
+    parenthood : dictionary
+        The parenthood function defined for the rooted tree.
+
+    levels: dictionary
+        The level function such that level(i) are the verticed found on the i-th
+        level of the rooted tree.
+    
+    Returns
+    -------
+    The function children where children(v) are the ordered list of children of 
+    v in the rooted tree. This function sets who are the parents of the leaves 
+    found on the level 0.
+    
+    Note
+    ----
+    This algorithm runs in O(m_0) time and space where m_0 are the
+    vertices found on the 0-th level of the rooted tree.
+    """
+    # Define an empty function children.
+    children = {}
+
+    # Traverse all the vertices found on the 0-th level.
+    for v in levels[0]:
+        # If the current vertex has a parent, add the children to the parent's
+        # list of children.            
+        if v in parenthood:
+            u = parenthood[v]
+            
+            # Add the children to the list of children of the parent.
+            if u in children:
+                children[u].append(v)
+            else:
+                children[u] = [v]
+                
+    return children
+
+def assign_structure(parenthood, levels, values, i):
     """
     Assign to all the vertices found on the i-th level a structure. The
     structure of a vertex is defined as the natural multiset that contains the
@@ -502,7 +550,7 @@ def assign_structure(p, levels, values, i):
     
     Parameters
     ----------
-    p : dictionary
+    parenthood : dictionary
         The parenthood function defined for the rooted tree.
 
     levels: dictionary
@@ -519,7 +567,7 @@ def assign_structure(p, levels, values, i):
     Returns
     -------
     The struct function such that struct(v) is the structure corresponding to 
-    the vertex v.
+    the vertex v, and the leaves of the current level.
     
     Note
     ----
@@ -529,17 +577,22 @@ def assign_structure(p, levels, values, i):
     # Define an empty function struct.
     struct = {}
     
+    # Define an empty set to keep track of the leaves in the current level.
+    leaves = set()
+    
     # Traverse all the vertices on the i-th level and define an empty multiset
     # for each non-leave vertex.
     for v in levels[i]:
         if values[v] != 0:
             struct[v] = NaturalMultiset()
+        else:
+            leaves.add(v)
         
     # Traverse all the vertices on the (i-1)-th level and append them to its
     # father multiset.
     for u in levels[i-1]:
         # Obtain u's father.
-        v = p[u]
+        v = parenthood[u]
         
         # Obtain u's value.
         uval = values[u]
@@ -548,7 +601,7 @@ def assign_structure(p, levels, values, i):
         struct[v].add(uval)
     
     # Return the defined function.
-    return struct
+    return struct, leaves
 
 def get_multisets_list_of_level(levels, values, struct, i):
     """
@@ -603,13 +656,14 @@ def get_multisets_list_of_level(levels, values, struct, i):
     
     return S, MS
 
-def update_values(S, MS, values):
+def update_values(S, MS, values, children, parenthood, leaves):
     """
     Given a sorted list of multisets, a mapping of structures to vertices
     that have said structure, and a value function. The previous function
     updates the values of the vertices found on the map MS. The previous
     function should behave like: Two vertices on the same level have the same
-    value if and only if they have the same structure.
+    value if and only if they have the same structure. It also defines an order
+    for the children of the vertices in the next level.
     
     Parameters
     ----------
@@ -623,11 +677,34 @@ def update_values(S, MS, values):
         The values function such that values(v) is the value defined for the v
         vertex.
     
+    children : dictionary
+        The children function such that children(v) are the children of v in the
+        rooted tree in an specified order.
+
+    parenthood : dictionary
+        The parenthood function defined for the rooted tree.
+    
+    leaves : set
+        The set of leaves of the current level.
+    
     Note
     ----
     This algorithm runs in O(m_{i-1} + m_i) time and space where m_{j} are the
     vertices found on the j-th level of the rooted tree.
     """
+    # The first vertices in the order of children are the leaves.
+    for v in leaves:
+        # If it exists, get the leave's parent; the previous case is considered
+        # for the root, who doesn't have a parent.
+        if v in parenthood:
+            u = parenthood[v]
+            
+            # Add the children to the list of children of the parent.
+            if u in children:
+                children[u].append(v)
+            else:
+                children[u] = [v]
+
     # The current value can't be 0 as this value is reserved to leaves.
     current_val = 1
     
@@ -640,11 +717,71 @@ def update_values(S, MS, values):
         # value.
         for v in MS[S[j]]:
             values[v] = current_val
+
+            # If the current vertex has a parent, get the parent.
+            if v in parenthood:
+                u = parenthood[v]
+                
+                # Add the children to the parent's list of children.
+                if u in children:
+                    children[u].append(v)
+                else:
+                    children[u] = [v]
             
         # For the next unique structure, assign a new value.
         current_val += 1
 
-def levels_verification(values_T1, values_T2, levels_T1, levels_T2, parenthood_T1, parenthood_T2, height):
+def build_isomorphism(root_T1, root_T2, children_T1, children_T2):
+    """
+    Given two isomorph rooted trees. Build an isomorphism between the
+    vertices of T1 and T2.
+    
+    Parameters
+    ----------
+    root_T1 : node
+        The root of the rooted tree T1.
+
+    root_T2 : node
+        The root of the rooted tree T2.
+    
+    children_T1 : dictionary
+        The children function for T1 such that children(v) are the children of v
+        in the rooted tree T1 in an specified order.
+
+    children_T2 : dictionary
+        The children function for T2 such that children(v) are the children of v
+        in the rooted tree T2 in an specified order.
+
+    Returns
+    -------
+    An isomorphism between the vertices of T1 and T2.
+    
+    Note
+    ----
+    This algorithm runs in O(n) time and space.
+    """
+    # Empty isomorphism
+    isomorphism = {}
+
+    # Perform a DFS traversal to define the isomorphism.
+    Q = [(root_T1, root_T2)]
+    
+    while (len(Q) > 0):
+        # Get the head of the stack.
+        (v_T1, v_T2) = Q.pop()
+        
+        isomorphism[v_T1] = v_T2
+        
+        if v_T1 in children_T1:
+            for i in range(len(children_T1[v_T1])):
+                u_T1 = children_T1[v_T1][i]
+                u_T2 = children_T2[v_T2][i]
+
+                Q.append((u_T1, u_T2))
+                
+    return isomorphism
+
+def levels_verification(root_T1, root_T2, values_T1, values_T2, levels_T1, levels_T2, parenthood_T1, parenthood_T2, height):
     """
     For each level i in T1, check that all the structures present in the
     i-th level are also present in i-th level of T2. If all the levels are the
@@ -677,6 +814,10 @@ def levels_verification(values_T1, values_T2, levels_T1, levels_T2, parenthood_T
     ----
     This algorithm runs in O(n) time and space.
     """
+    # Get the initial children found on the 0-th level.
+    children_T1 = get_initial_children(parenthood_T1, levels_T1)
+    children_T2 = get_initial_children(parenthood_T2, levels_T2)
+
     # Start at level 1 as all the vertices at level 0 are leaves.
     current_level = 1
     
@@ -685,11 +826,11 @@ def levels_verification(values_T1, values_T2, levels_T1, levels_T2, parenthood_T
     while current_level <= height:
         # Assign the structures for the vertices of the current level for T1 and
         # T2.
-        struct_T1 = assign_structure(parenthood_T1, levels_T1, 
-                                     values_T1, current_level)
+        struct_T1, leaves_T1 = assign_structure(parenthood_T1, levels_T1,
+                                                values_T1, current_level)
 
-        struct_T2 = assign_structure(parenthood_T2, levels_T2, 
-                                     values_T2, current_level)
+        struct_T2, leaves_T2 = assign_structure(parenthood_T2, levels_T2, 
+                                                values_T2, current_level)
         
         # Build the list of structures and the mapping.
         S_T1, MS_T1 = get_multisets_list_of_level(levels_T1, values_T1, 
@@ -704,16 +845,23 @@ def levels_verification(values_T1, values_T2, levels_T1, levels_T2, parenthood_T
 
         # If the sorted lists are different, return false.
         if sorted_S_T1 != sorted_S_T2:
-            return False
+            return False, {}
         
-        # Update the values.
-        update_values(sorted_S_T1, MS_T1, values_T1)
-        update_values(sorted_S_T2, MS_T2, values_T2)
+        # Update the values and the children.
+        update_values(sorted_S_T1, MS_T1, values_T1, 
+                      children_T1, parenthood_T1, leaves_T1)
+
+        update_values(sorted_S_T2, MS_T2, values_T2, 
+                      children_T2, parenthood_T2, leaves_T2)
         
         # Move to the next level.
         current_level += 1
-        
-    return True
+
+    # If all the previous levels are equal, then build an isomorphism with the
+    # previous information.
+    isomorphism = build_isomorphism(root_T1, root_T2, children_T1, children_T2)
+    
+    return True, isomorphism
 
 def get_height(T, root):
     """
@@ -726,6 +874,10 @@ def get_height(T, root):
     
     root : node
         The root of the tree.
+    
+    Returns
+    -------
+    The height of the rooted tree.
     
     Note
     ----
@@ -759,6 +911,10 @@ def get_parenthood(T, root):
     
     root : node
         The root of the tree.
+
+    Returns
+    -------
+    The parenthood function of the rooted tree.
     
     Note
     ----
@@ -768,7 +924,7 @@ def get_parenthood(T, root):
     parenthood = {}
 
     # Perform a BFS traversal to determine the parenthood function.
-    for (parent, child) in nx.bfs_edges(T, root):    
+    for (parent, child) in nx.bfs_edges(T, root):
         parenthood[child] = parent
         
     return parenthood
@@ -792,17 +948,27 @@ def rooted_tree_isomorphism_n(T1, root_T1, T2, root_T2):
     root_t2 : node
         The root of T2.
     
+    Returns
+    -------
+    bool
+        Returns True if the given rooted trees are isomorph, False otherwise.
+    
+    dictionary of nodes to nodes
+        The isomorphism function f (or dictionary) such that (u, v) is in E_T1
+        if and only if (f(u), f(v)) is in E_T2. This dictionary is empty when
+        there is no isomorphism between the trees.
+    
     Note
     ----
     This algorithm runs in O(n) time and space.
     """
     # If both trees have different amount of vertices, return false.
     if T1.order() != T2.order():
-        return False
+        return False, {}
     
     # If both trees are empty, return true.
     if T1.order() == 0:
-        return True
+        return True, {}
     
     # Get the height's of the trees.
     height_T1 = get_height(T1, root_T1)
@@ -810,11 +976,11 @@ def rooted_tree_isomorphism_n(T1, root_T1, T2, root_T2):
     
     # If the trees differ in height, return false.
     if height_T1 != height_T2:
-        return False
+        return False, {}
     elif height_T1 == 0:
         # If both trees have height 0, then there are only conformed by the
         # roots, they're isomorph.
-        return True
+        return True, {root_T1 : root_T2}
     else:
         # If they have the same amount of levels, check that all levels coincide
         # in structure.
@@ -826,7 +992,7 @@ def rooted_tree_isomorphism_n(T1, root_T1, T2, root_T2):
         # false.
         for i in range(height_T1):
             if len(levels_T1[i]) != len(levels_T2[i]):
-                return False
+                return False, {}
         
         # Set the initial values for T1 and T2.
         values_T1 = get_initial_values(T1, root_T1)
@@ -836,7 +1002,8 @@ def rooted_tree_isomorphism_n(T1, root_T1, T2, root_T2):
         parenthood_T1 = get_parenthood(T1, root_T1)
         parenthood_T2 = get_parenthood(T2, root_T2)
         
-        return levels_verification(values_T1, values_T2,
+        return levels_verification(root_T1, root_T2,
+                                   values_T1, values_T2,
                                    levels_T1, levels_T2,
                                    parenthood_T1, parenthood_T2,
                                    height_T1)
