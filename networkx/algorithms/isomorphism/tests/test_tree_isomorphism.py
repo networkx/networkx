@@ -368,8 +368,14 @@ def test_assign_values():
         "v3" : NaturalMultiset([0]),
     }
 
-    obtained_structure_lvl_1 = assign_structure(parenthood, levels, values, 1)
-    obtained_structure_lvl_2 = assign_structure(parenthood, levels, values, 2)
+    obtained_structure_lvl_1, leaves_lvl_1 = assign_structure(parenthood, 
+                                                              levels, values, 1)
+
+    obtained_structure_lvl_2, leaves_lvl_2 = assign_structure(parenthood, 
+                                                              levels, values, 2)
+    
+    assert leaves_lvl_1 == {"v2"}
+    assert leaves_lvl_2 == set()
     
     assert obtained_structure_lvl_1 == expected_structure_lvl_1
     assert obtained_structure_lvl_2 == expected_structure_lvl_2
@@ -479,8 +485,15 @@ def test_get_multisets_list_of_level():
         "v6" : 0,
         "v8" : 0,
     }
+
+    # Dummy functions.
+    parenthood = {}
+    children = {}
+    leaves = set()
+
     
-    update_values(structures_list_lvl_1, mapping_lvl_1, values)
+    update_values(structures_list_lvl_1, mapping_lvl_1, values,
+                  children, parenthood, leaves)
     
     assert expected_values_after_lvl_1 == values
 
@@ -504,9 +517,34 @@ def test_get_multisets_list_of_level():
         "v8" : 0,
     }
 
-    update_values(structures_list_lvl_2, mapping_lvl_2, values)
+    update_values(structures_list_lvl_2, mapping_lvl_2, values,
+                  children, parenthood, leaves)
     
     assert expected_values_after_lvl_2 == values
+
+# Auxiliary function to determine if an isomorphism is valid.  Let f be an
+# isomorphism, then u and v are adjacent if and only if f(u) and f(v) are
+# adjacent.
+def is_valid_isomorphism(T1, T2, isomorphism):
+    # Test that for all (u, v) in E_T1 then (f(u), f(v)) in E_T2.
+    for (u, v) in T1.edges():
+        if not T2.has_edge(isomorphism[u], isomorphism[v]):
+            return False
+
+    # Define the inverse mapping of the isomorphism.
+    inverse_iso = {}
+    
+    for v in isomorphism:
+        inverse_iso[isomorphism[v]] = v
+    
+    # Test that for all (u, v) in E_T2 then (f^-1(u), f^-1(v)) in E_T1.
+    for (u, v) in T2.edges():
+        if not T1.has_edge(inverse_iso[u], inverse_iso[v]):
+            return False
+        
+    # If both conditions are satisfied, return true.
+    return True
+    
 
 # Tests the function rooted_tree_isomorphism_n.
 def test_rooted_tree_isomorphism_n_hardcoded():
@@ -523,8 +561,11 @@ def test_rooted_tree_isomorphism_n_hardcoded():
                 ("w8", "w10"), ("w8", "w11"), ("w10", "w12")]
     
     T2 = nx.Graph(edged_t2)
+
+    are_iso, iso = rooted_tree_isomorphism_n(T1, "v0", T2, "w0")
     
-    assert rooted_tree_isomorphism_n(T1, "v0", T2, "w0")
+    assert are_iso
+    assert is_valid_isomorphism(T1, T2, iso)
 
 # have this work for graph
 # given two trees (either the directed or undirected)
