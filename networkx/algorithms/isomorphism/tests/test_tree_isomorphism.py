@@ -14,6 +14,8 @@ from networkx.algorithms.isomorphism.tree_isomorphism import (
     get_multisets_list_of_level,
     update_values,
     rooted_tree_isomorphism_n,
+    get_centers_of_tree,
+    tree_isomorphism_n,
     rooted_tree_isomorphism,
     tree_isomorphism,
 )
@@ -567,6 +569,200 @@ def test_rooted_tree_isomorphism_n_hardcoded():
     assert are_iso
     assert is_valid_isomorphism(T1, T2, iso)
 
+
+# Tests the function get_centers_of_tree.
+def test_get_centers_of_tree():
+    # Hardcoded trees.
+    edges_t1 = [("v0", "v1"), ("v1", "v3"), ("v3", "v2"),
+                ("v3", "v4"), ("v3", "v5"), ("v5", "v6"),
+                ("v6", "v7"), ("v7", "v8")]
+    T1 = nx.Graph(edges_t1)
+    
+    centers_t1 = get_centers_of_tree(T1)
+    assert centers_t1 == {"v5"}
+
+    edges_t2 = [("u0", "u1"), ("u1", "u2"), ("u2", "u3"),
+                ("u3", "u4"), ("u4", "u5"), ("u4", "u6"),
+                ("u4", "u7"), ("u7", "u8")]
+    T2 = nx.Graph(edges_t2)
+    
+    centers_t2 = get_centers_of_tree(T2)
+    assert centers_t2 == {"u3"}
+    
+    edges_t3 = [("w0", "w1"), ("w1", "w2"), ("w2", "w3"),
+                ("w3", "w4"), ("w4", "w5")]
+    T3 = nx.Graph(edges_t3)
+
+    centers_t3 = get_centers_of_tree(T3)
+    assert centers_t3 == {"w2", "w3"}
+
+# Tests the function tree_isomorphism_n.
+def test_tree_isomorphism_n_hardcoded():
+    # Hardcoded trees.
+    edges_t1 = [("v0", "v1"), ("v1", "v3"), ("v3", "v2"),
+                ("v3", "v4"), ("v3", "v5"), ("v5", "v6"),
+                ("v6", "v7"), ("v7", "v8")]
+    T1 = nx.Graph(edges_t1)
+    
+    edges_t2 = [("u0", "u1"), ("u1", "u2"), ("u2", "u3"),
+                ("u3", "u4"), ("u4", "u5"), ("u4", "u6"),
+                ("u4", "u7"), ("u7", "u8")]
+    T2 = nx.Graph(edges_t2)
+    
+    is_iso, isomorphism = tree_isomorphism_n(T1, T2)
+    assert is_iso
+    assert is_valid_isomorphism(T1, T2, isomorphism)
+
+    # Previous hardcoded test
+    edges_1 = [("a", "b"), ("a", "c"), ("a", "d"),
+               ("b", "e"), ("b", "f"), ("e", "j"),
+               ("e", "k"), ("c", "g"), ("c", "h"),
+               ("g", "m"), ("d", "i"), ("f", "l")]
+    T1 = nx.Graph(edges_1)
+
+    edges_2 = [("v", "y"), ("v", "z"), ("u", "x"),
+               ("q", "u"), ("q", "v"), ("p", "t"),
+               ("n", "p"), ("n", "q"), ("n", "o"),
+               ("o", "r"), ("o", "s"), ("s", "w")]
+    T2 = nx.Graph(edges_2)
+    
+    # Possible isomorphisms.
+    isomorphism1 = {
+        "a" :  "n",
+        "b" :  "q",
+        "c" :  "o",
+        "d" :  "p",
+        "e" :  "v",
+        "f" :  "u",
+        "g" :  "s",
+        "h" :  "r",
+        "i" :  "t",
+        "j" :  "y",
+        "k" :  "z",
+        "l" :  "x",
+        "m" :  "w",
+    }
+
+    # could swap y and z
+    isomorphism2 = {
+        "a" : "n",
+        "b" : "q",
+        "c" : "o",
+        "d" : "p",
+        "e" : "v",
+        "f" : "u",
+        "g" : "s",
+        "h" : "r",
+        "i" : "t",
+        "j" : "z",
+        "k" : "y",
+        "l" : "x",
+        "m" : "w",
+    }
+    
+    is_iso, isomorphism = tree_isomorphism_n(T1, T2)
+    
+    assert is_iso
+    assert (isomorphism == isomorphism1) or (isomorphism == isomorphism2)
+    assert is_valid_isomorphism(T1, T2, isomorphism)
+
+# Tests the function tree_isomorphism_n with some trivial graphs.
+def test_tree_isomorphism_n_trivials():
+    # Test the trivial case of empty trees, i.e. no nodes.
+    T1 = nx.Graph()
+    T2 = nx.Graph()
+
+    is_iso, isomorphism = tree_isomorphism_n(T1, T2)
+    assert is_iso
+    assert isomorphism == {}
+
+    # Test the trivial case of a single node in each tree.
+    T1 = nx.Graph()
+    T1.add_node("a")
+
+    T2 = nx.Graph()
+    T2.add_node("n")
+    
+    is_iso, isomorphism = tree_isomorphism_n(T1, T2)
+    
+    assert is_iso
+    assert isomorphism == { "a" : "n" }
+    assert is_valid_isomorphism(T1, T2, isomorphism)
+
+
+    # Test another trivial case where the two graphs have different numbers of
+    # nodes.
+
+    edges_1 = [("a", "b"), ("a", "c")]
+
+    edges_2 = [("v", "y")]
+
+    T1 = nx.Graph(edges_1)
+    T2 = nx.Graph(edges_2)
+
+    is_iso, isomorphism = tree_isomorphism_n(T1, T2)
+
+    assert not is_iso
+    assert isomorphism == {}
+
+    # Test another trivial case where the two graphs have the same different
+    # numbers of nodes but differ in structure.
+    edges_1 = [("a", "b"), ("b", "c"), ("c", "d"), ("d", "e")]
+    edges_2 = [("a", "b"), ("b", "c"), ("b", "d"), ("c", "e")]
+    
+    T1 = nx.Graph(edges_1)
+    T2 = nx.Graph(edges_2)
+
+    is_iso, isomorphism = tree_isomorphism_n(T1, T2)
+
+    assert not is_iso
+    assert isomorphism == {}
+
+# Given a tree T1, create a new tree T2 that is isomorphic to T1.
+def generate_isomorphism(T1):
+
+    assert nx.is_tree(T1)
+
+    # Get a random permutation of the nodes of T1.
+    nodes1 = list(T1)
+    nodes2 = nodes1.copy()
+    random.shuffle(nodes2)
+
+    # this is one isomorphism, however they may be multiple
+    # so we don't necessarily get this one back
+    someisomorphism = [(u, v) for (u, v) in zip(nodes1, nodes2)]
+
+    # map from old to new
+    map1to2 = {u: v for (u, v) in someisomorphism}
+
+    # get the edges with the transformed names
+    edges2 = [random_swap((map1to2[u], map1to2[v])) for (u, v) in T1.edges()]
+    # randomly permute, to ensure we're not relying on edge order somehow
+    random.shuffle(edges2)
+
+    # so t2 is isomorphic to t1
+    T2 = nx.Graph(edges2)
+    
+    return T2
+
+def test_tree_isomorphism_n_positive(maxk=15):
+    print("\nPositive test with new function\n")
+
+    for k in range(2, maxk + 1):
+        start_time = time.time()
+        trial = 0
+        for T1 in nx.nonisomorphic_trees(k):
+            T2 = generate_isomorphism(T1)
+            
+            is_iso, isomorphism = tree_isomorphism_n(T1, T2)
+            
+            assert is_iso
+            assert is_valid_isomorphism(T1, T2, isomorphism)
+
+            trial += 1
+
+        print(k, trial, time.time() - start_time)
+
 # have this work for graph
 # given two trees (either the directed or undirected)
 # transform t2 according to the isomorphism
@@ -679,7 +875,7 @@ def test_hardcoded():
         ("k", "y"),
         ("l", "x"),
         ("m", "w"),
-    ]
+    ] 
 
     t1 = nx.Graph()
     t1.add_edges_from(edges_1)
@@ -767,7 +963,7 @@ def positive_single_tree(t1):
 # k = 13 takes about 2.86 seconds to run on my laptop
 # larger values run slow down significantly
 # as the number of trees grows rapidly
-def test_positive(maxk=14):
+def test_positive(maxk=15):
 
     print("positive test")
 
