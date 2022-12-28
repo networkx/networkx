@@ -644,6 +644,204 @@ def update_values(S, MS, values):
         # For the next unique structure, assign a new value.
         current_val += 1
 
+def levels_verification(values_T1, values_T2, levels_T1, levels_T2, parenthood_T1, parenthood_T2, height):
+    """
+    For each level i in T1, check that all the structures present in the
+    i-th level are also present in i-th level of T2. If all the levels are the
+    same for both trees, return true.
+    
+    Parameters
+    ----------
+    values_T1 : dictionary
+        The value function for the vertices of the tree T1.
+
+    values_T2 : dictionary
+        The value function for the vertices of the tree T2.
+    
+    levels_T1 : dictionary
+        The level function for the tree T1.
+
+    levels_T2 : dictionary
+        The level function for the tree T2.
+    
+    parenthood_T1 : dictionary
+        The parenthood function defined for T1.
+
+    parenthood_T2 : dictionary
+        The parenthood function defined for T2.
+    
+    height : int
+        The height of the trees T1 and T2.
+    
+    Note
+    ----
+    This algorithm runs in O(n) time and space.
+    """
+    # Start at level 1 as all the vertices at level 0 are leaves.
+    current_level = 1
+    
+    # check that all the structures present in the i-th level are also present
+    # in i-th level of T2.
+    while current_level <= height:
+        # Assign the structures for the vertices of the current level for T1 and
+        # T2.
+        struct_T1 = assign_structure(parenthood_T1, levels_T1, 
+                                     values_T1, current_level)
+
+        struct_T2 = assign_structure(parenthood_T2, levels_T2, 
+                                     values_T2, current_level)
+        
+        # Build the list of structures and the mapping.
+        S_T1, MS_T1 = get_multisets_list_of_level(levels_T1, values_T1, 
+                                                  struct_T1, current_level)
+
+        S_T2, MS_T2 = get_multisets_list_of_level(levels_T2, values_T2, 
+                                                  struct_T2, current_level)
+        
+        # Sort the list of structures.
+        sorted_S_T1 = sort_natural_multisets(S_T1)
+        sorted_S_T2 = sort_natural_multisets(S_T2)
+
+        # If the sorted lists are different, return false.
+        if sorted_S_T1 != sorted_S_T2:
+            return False
+        
+        # Update the values.
+        update_values(sorted_S_T1, MS_T1, values_T1)
+        update_values(sorted_S_T2, MS_T2, values_T2)
+        
+        # Move to the next level.
+        current_level += 1
+        
+    return True
+
+def get_height(T, root):
+    """
+    Returns the height of a rooted tree.
+    
+    Parameters
+    ----------
+    T : NetworkX Graph
+        A rooted tree.
+    
+    root : node
+        The root of the tree.
+    
+    Note
+    ----
+    This algorithm runs in O(n) time and space.
+    """
+    # Define a map for the distance to the root.
+    distance_to_root = {}
+    
+    # The max distance between a root and another vertex.
+    max_distance = 0
+    
+    distance_to_root[root] = 0
+    
+    # Perform a BFS traversal to determine the distances.
+    for (parent, child) in nx.bfs_edges(T, root):
+        distance_to_root[child] = distance_to_root[parent] + 1
+        
+        if max_distance < distance_to_root[child]:
+            max_distance = distance_to_root[child]
+            
+    return max_distance
+
+def get_parenthood(T, root):
+    """
+    Returns the parenthood function of a rooted tree.
+    
+    Parameters
+    ----------
+    T : NetworkX Graph
+        A rooted tree.
+    
+    root : node
+        The root of the tree.
+    
+    Note
+    ----
+    This algorithm runs in O(n) time and space.
+    """
+    # Define an empty parenthood function.
+    parenthood = {}
+
+    # Perform a BFS traversal to determine the parenthood function.
+    for (parent, child) in nx.bfs_edges(T, root):    
+        parenthood[child] = parent
+        
+    return parenthood
+        
+
+def rooted_tree_isomorphism_n(T1, root_T1, T2, root_T2):
+    """
+    Returns if two rooted trees are isomorph.
+    
+    Parameters
+    ----------
+    T1 : NetworkX Graph
+        A rooted tree.
+    
+    root_T1 : node
+        The root of T1.
+
+    T2 : NetworkX Graph
+        A rooted tree.
+    
+    root_t2 : node
+        The root of T2.
+    
+    Note
+    ----
+    This algorithm runs in O(n) time and space.
+    """
+    # If both trees have different amount of vertices, return false.
+    if T1.order() != T2.order():
+        return False
+    
+    # If both trees are empty, return true.
+    if T1.order() == 0:
+        return True
+    
+    # Get the height's of the trees.
+    height_T1 = get_height(T1, root_T1)
+    height_T2 = get_height(T2, root_T2)
+    
+    # If the trees differ in height, return false.
+    if height_T1 != height_T2:
+        return False
+    elif height_T1 == 0:
+        # If both trees have height 0, then there are only conformed by the
+        # roots, they're isomorph.
+        return True
+    else:
+        # If they have the same amount of levels, check that all levels coincide
+        # in structure.
+        levels_T1 = get_levels(T1, root_T1, height_T1)
+        levels_T2 = get_levels(T2, root_T2, height_T2)
+        
+        # For every level i, check that both trees have the same amount of
+        # vertices on the i-th level. If they differ for some level, return
+        # false.
+        for i in range(height_T1):
+            if len(levels_T1[i]) != len(levels_T2[i]):
+                return False
+        
+        # Set the initial values for T1 and T2.
+        values_T1 = get_initial_values(T1, root_T1)
+        values_T2 = get_initial_values(T2, root_T2)
+        
+        # Set the parenthood function for T1 and T2.
+        parenthood_T1 = get_parenthood(T1, root_T1)
+        parenthood_T2 = get_parenthood(T2, root_T2)
+        
+        return levels_verification(values_T1, values_T2,
+                                   levels_T1, levels_T2,
+                                   parenthood_T1, parenthood_T2,
+                                   height_T1)
+    
+
 def root_trees(t1, root1, t2, root2):
     """Create a single digraph dT of free trees t1 and t2
     #   with roots root1 and root2 respectively
