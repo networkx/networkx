@@ -17,7 +17,11 @@ from networkx.utils import (
     pairwise,
     powerlaw_sequence,
 )
-from networkx.utils.misc import _dict_to_numpy_array1, _dict_to_numpy_array2
+from networkx.utils.misc import (
+    _dict_to_numpy_array1,
+    _dict_to_numpy_array2,
+    optional_package,
+)
 
 nested_depth = (
     1,
@@ -253,3 +257,22 @@ def test_arbitrary_element_raises(iterator):
     """Value error is raised when input is an iterator."""
     with pytest.raises(ValueError, match="from an iterator"):
         arbitrary_element(iterator)
+
+
+def test_optional_package():
+    # Test importing a package that exists
+    pkg, has_pkg, pkg_version = optional_package("itertools")
+    assert pkg is not None
+    assert has_pkg is True
+    assert pkg_version is None
+
+    pkg, has_pkg, pkg_version = optional_package("numpy")
+    assert pkg is not None
+    assert has_pkg is True
+    assert pkg_version is not None
+
+    # Test importing a package that does not exist
+    pkg, has_pkg, pkg_version = optional_package("non_existent_package")
+    assert pkg is None
+    assert has_pkg is False
+    assert pkg_version is None

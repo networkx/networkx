@@ -1,6 +1,7 @@
 import itertools
-import importlib
-from typing import Callable, Iterable, Any, Optional
+from typing import Any, Callable, Iterable, List, Optional, Tuple, Union
+
+from networkx.utils.misc import optional_package
 
 try:
     import joblib
@@ -18,37 +19,13 @@ SUPPORTED_BACKENDS = [
     "ipyparallel",
 ]
 
-
-def optional_package(pkg_name):
-    """Import an optional package and return the package and whether it was found.
-
-    Parameters
-    ----------
-    pkg_name : str
-        The name of the package to import.
-
-    Returns
-    -------
-    pkg : module
-        The imported package.
-    has_pkg : bool
-        Whether the package was found.
-    pkg_version : str
-        The version of the package.
-
-    """
-    try:
-        pkg = importlib.import_module(pkg_name)
-        has_pkg = True
-        pkg_version = pkg.__version__
-    except ImportError:
-        pkg = None
-        has_pkg = False
-        pkg_version = None
-    return pkg, has_pkg, pkg_version
+__all__ = [
+    "chunks",
+    "NxParallel",
+]
 
 
-def chunks(l, n):
+def chunks(l: Union[List, Tuple], n: int) -> Iterable:
     """Divide a list `l` of nodes or edges into `n` chunks"""
     l_c = iter(l)
     while 1:
@@ -135,20 +112,12 @@ class NxParallel:
                 f"Invalid backend specified. Choose from {SUPPORTED_BACKENDS}."
             )
 
-    def __call__(self, func: Callable, iterable: Iterable[Any], **kwargs):
+    def __call__(self, func: Callable, iterable: Iterable[Any], **kwargs) -> Any:
         """Call the class instance with a function and an iterable.
         The function will be called on each element of the iterable in parallel."""
         import inspect
 
         params = list(inspect.signature(func).parameters.keys())
-
-        # Check that the number of elements in the iterable is equal to the number of
-        # parameters in the function.
-        if func.__code__.co_argcount != len(iterable):
-            raise ValueError(
-                "The number of elements in the iterable must be equal to the number of "
-                " parameters in the function."
-            )
 
         with joblib.parallel_backend(self.backend):
             return joblib.Parallel(n_jobs=self.processes, **kwargs)(
