@@ -31,47 +31,49 @@ def test_multiset_to_list():
     M.add(0)
     M.add(0)
     M.add(1)
-    
+
     expected_list = [0, 0, 0, 1, 1, 2]
-    
+
     obtained_list = M.to_list()
-    
+
     assert expected_list == obtained_list
-    
+
+
 # Tests the function __eq__ from the Natural Multiset class.
 def test_multiset__eq__():
     M1 = NaturalMultiset()
     M2 = NaturalMultiset()
-    
+
     # Empty multisets should be equal.
     assert M1 == M2
-    
+
     # Add different elements to M1 and M2.
     M1.add(1)
     M2.add(2)
-    
+
     assert M1 != M2
-    
+
     # Add the values that are missing to each multiset.
     M1.add(2)
     M2.add(1)
-    
+
     assert M1 == M2
-    
+
     # Increase the occurrences of one element in each multiset.
     M1.add(1)
     assert M1 != M2
-    
+
     M2.add(1)
     assert M1 == M2
+
 
 # Tests the function __len__ from the Natural Multiset class.
 def test_multiset__len__():
     M = NaturalMultiset()
-    
+
     # An empty multiset length is 0.
     assert len(M) == 0
-    
+
     # Add different elements and check the length.
     for i in range(10):
         M.add(i)
@@ -81,6 +83,7 @@ def test_multiset__len__():
     for i in range(10):
         M.add(i)
         assert len(M) == (11 + i)
+
 
 # Tests the function categorize_entries. The returned function should behave
 # like a function NONEMPTY : N -> P(N) such that NONEMPTY(i) are the numbers in
@@ -95,20 +98,21 @@ def test_categorize_entries():
         [4],
         [4, 4, 5],
     ]
-    
+
     # Expected NONEMPTY function.
     expected_NONEMPTY = {
-        0 : [0, 1, 3, 4],
-        1 : [0, 1, 2, 3, 4],
-        2 : [1, 3, 4, 5],
-        3 : [2, 4],
-        4 : [3],
+        0: [0, 1, 3, 4],
+        1: [0, 1, 2, 3, 4],
+        2: [1, 3, 4, 5],
+        3: [2, 4],
+        4: [3],
     }
-    
+
     # Obtained NONEMPTY function.
     obtained_NONEMPTY = categorize_entries(S)
-    
+
     assert expected_NONEMPTY == obtained_NONEMPTY
+
 
 # Tests the function categorize_lists. The returned function should behave like
 # a function LENGTH such that LENGTH(i) are the lists of S with length i.
@@ -122,7 +126,7 @@ def test_categorize_lists():
         [4],
         [4, 4, 5],
     ]
-    
+
     # Expected LENGTH function.
     expected_LENGTH = {
         1: [[4]],
@@ -130,11 +134,12 @@ def test_categorize_lists():
         4: [[0, 1, 1, 4]],
         5: [[0, 0, 1, 2, 3]],
     }
-    
+
     # Obtained LENGTH function.
     obtained_LENGTH = categorize_lists(S)
-    
+
     assert expected_LENGTH == obtained_LENGTH
+
 
 # Tests the function sort_lists_of_naturals. The expected sorted list should
 # have a lexicographical ordering.
@@ -148,7 +153,7 @@ def test_sort_list_of_naturals():
         [4],
         [4, 4, 5],
     ]
-    
+
     expected_ordering = [
         [0, 0, 1, 2, 3],
         [0, 1, 1, 4],
@@ -157,11 +162,11 @@ def test_sort_list_of_naturals():
         [4],
         [4, 4, 5],
     ]
-    
+
     obtained_ordering = sort_lists_of_naturals(S)
-    
+
     assert expected_ordering == obtained_ordering
-    
+
     # Test for another list of lists of natural numbers.
     S = [
         [1, 2, 3, 7, 8],
@@ -174,7 +179,7 @@ def test_sort_list_of_naturals():
         [7],
         [8, 8],
     ]
-    
+
     expected_ordering = [
         [0, 0],
         [0, 1],
@@ -188,8 +193,9 @@ def test_sort_list_of_naturals():
     ]
 
     obtained_ordering = sort_lists_of_naturals(S)
-    
+
     assert expected_ordering == obtained_ordering
+
 
 # Tests the function sort_natural_multisets. The expected sorted list should
 # follow the lexicographical ordering of the multiset representation.
@@ -201,22 +207,22 @@ def test_sort_natural_multisets():
     M4 = NaturalMultiset()
     M5 = NaturalMultiset()
     M6 = NaturalMultiset()
-    
+
     M1.from_list([0, 0, 1, 2, 3])
     M2.from_list([1, 2, 3])
     M3.from_list([0, 1, 1, 4])
     M4.from_list([3, 3, 4])
     M5.from_list([4])
     M6.from_list([4, 4, 5])
-    
+
     S = [M1, M2, M3, M4, M5, M6]
-    
+
     expected_ordering = [M1, M3, M2, M4, M5, M6]
-    
+
     obtained_ordering = sort_natural_multisets(S)
-    
+
     assert expected_ordering == obtained_ordering
-    
+
     # Test for another list of lists of natural numbers.
     M1 = NaturalMultiset()
     M2 = NaturalMultiset()
@@ -227,7 +233,7 @@ def test_sort_natural_multisets():
     M7 = NaturalMultiset()
     M8 = NaturalMultiset()
     M9 = NaturalMultiset()
-    
+
     M1.from_list([1, 2, 3, 7, 8])
     M2.from_list([2, 2, 3, 4])
     M3.from_list([2, 2, 4, 3])
@@ -237,41 +243,55 @@ def test_sort_natural_multisets():
     M7.from_list([2, 3, 4])
     M8.from_list([7])
     M9.from_list([8, 8])
-    
+
     S = [M1, M2, M3, M4, M5, M6, M7, M8, M9]
     expected_ordering = [M5, M4, M1, M6, M2, M3, M7, M8, M9]
 
     obtained_ordering = sort_natural_multisets(S)
-    
+
     assert expected_ordering == obtained_ordering
+
 
 # Test the get_levels function. The returned function should behave like a
 # function M: N -> P(V) such that, for each i in {0,...,h}, M(i) is the set of
 # vertices that are found in the i-th level of T.
 def test_isomorphism_trees_get_levels():
     # Test for an arbitrary graph.
-    edges_t1 = [("v0", "v1"), ("v0", "v2"), ("v0", "v3"),
-                ("v1", "v4"), ("v1", "v5"), ("v3", "v6")]
+    edges_t1 = [
+        ("v0", "v1"),
+        ("v0", "v2"),
+        ("v0", "v3"),
+        ("v1", "v4"),
+        ("v1", "v5"),
+        ("v3", "v6"),
+    ]
     T1 = nx.Graph(edges_t1)
 
     # Expected level function.
     expected_levels = {
-        2 : {"v0"},
-        1 : {"v1", "v2", "v3"},
-        0 : {"v4", "v5", "v6"},
+        2: {"v0"},
+        1: {"v1", "v2", "v3"},
+        0: {"v4", "v5", "v6"},
     }
-    
+
     # Obtained level function.
     obtained_levels = get_levels(T1, "v0", 2)
 
     assert expected_levels == obtained_levels
-    
+
     # Test for another arbitrary graph.
-    edges_t2 = [("u3", "u4"), ("u3", "u2"),
-                ("u4", "u5"), ("u4", "u6"), ("u4", "u7"),
-                ("u2", "u1"), ("u7", "u8"), ("u1", "u0")]
+    edges_t2 = [
+        ("u3", "u4"),
+        ("u3", "u2"),
+        ("u4", "u5"),
+        ("u4", "u6"),
+        ("u4", "u7"),
+        ("u2", "u1"),
+        ("u7", "u8"),
+        ("u1", "u0"),
+    ]
     T2 = nx.Graph(edges_t2)
-    
+
     # Expected level function.
     expected_levels = {
         3: {"u3"},
@@ -279,108 +299,126 @@ def test_isomorphism_trees_get_levels():
         1: {"u5", "u6", "u7", "u1"},
         0: {"u8", "u0"},
     }
-    
+
     obtained_levels = get_levels(T2, "u3", 3)
-    
+
     assert expected_levels == obtained_levels
+
 
 # Test the get_initial_values function. The returned function should behave like
 # a function M: N -> P(V) such that, such that, for every vertex v in the tree
 # T, if v is a leave then v's initial value is 0, otherwise its defined as -1.
 def test_isomorphism_trees_set_initial_values():
     # Test for an arbitrary graph.
-    edges_t1 = [("v0", "v1"), ("v0", "v2"), ("v0", "v3"),
-                ("v1", "v4"), ("v1", "v5"), ("v3", "v6")]
+    edges_t1 = [
+        ("v0", "v1"),
+        ("v0", "v2"),
+        ("v0", "v3"),
+        ("v1", "v4"),
+        ("v1", "v5"),
+        ("v3", "v6"),
+    ]
     T1 = nx.Graph(edges_t1)
 
     # Expected level function.
     expected_values = {
-        "v0" : -1,
-        "v1" : -1,
-        "v2" : 0,
-        "v3" : -1,
-        "v4" : 0,
-        "v5" : 0,
-        "v6" : 0,
+        "v0": -1,
+        "v1": -1,
+        "v2": 0,
+        "v3": -1,
+        "v4": 0,
+        "v5": 0,
+        "v6": 0,
     }
-    
+
     # Obtained level function.
     obtained_values = get_initial_values(T1, "v0")
 
     assert expected_values == obtained_values
-    
+
     # Test for another arbitrary graph.
-    edges_t2 = [("u3", "u4"), ("u3", "u2"),
-                ("u4", "u5"), ("u4", "u6"), ("u4", "u7"),
-                ("u2", "u1"), ("u7", "u8"), ("u1", "u0")]
+    edges_t2 = [
+        ("u3", "u4"),
+        ("u3", "u2"),
+        ("u4", "u5"),
+        ("u4", "u6"),
+        ("u4", "u7"),
+        ("u2", "u1"),
+        ("u7", "u8"),
+        ("u1", "u0"),
+    ]
     T2 = nx.Graph(edges_t2)
-    
+
     # Expected level function.
     expected_levels = {
-        "u3" : -1,
-        "u4" : -1,
-        "u2" : -1,
-        "u5" : 0,
-        "u6" : 0,
-        "u7" : -1,
-        "u1" : -1,
-        "u8" : 0,
-        "u0" : 0,
+        "u3": -1,
+        "u4": -1,
+        "u2": -1,
+        "u5": 0,
+        "u6": 0,
+        "u7": -1,
+        "u1": -1,
+        "u8": 0,
+        "u0": 0,
     }
-    
+
     obtained_levels = get_initial_values(T2, "u3")
-    
+
     assert expected_values == obtained_values
+
 
 # Tests the function assign_values. The returned function should assign to all
 # the vertices found on the i-th level a structure.
 def test_assign_values():
     # Test for an specific scenario.
     levels = {
-        2 : {"v0"},
-        1 : {"v1", "v2", "v3"},
-        0 : {"v4", "v5", "v6"},
+        2: {"v0"},
+        1: {"v1", "v2", "v3"},
+        0: {"v4", "v5", "v6"},
     }
-    
+
     values = {
-        "v0" : 1,
-        "v1" : 2,
-        "v2" : 0,
-        "v3" : 1,
-        "v4" : 0,
-        "v5" : 0,
-        "v6" : 0,
+        "v0": 1,
+        "v1": 2,
+        "v2": 0,
+        "v3": 1,
+        "v4": 0,
+        "v5": 0,
+        "v6": 0,
     }
-    
+
     parenthood = {
-        "v1" : "v0",
-        "v2" : "v0",
-        "v3" : "v0",
-        "v4" : "v1",
-        "v5" : "v1",
-        "v6" : "v3",
+        "v1": "v0",
+        "v2": "v0",
+        "v3": "v0",
+        "v4": "v1",
+        "v5": "v1",
+        "v6": "v3",
     }
-    
+
     expected_structure_lvl_2 = {
-        "v0" : NaturalMultiset([0, 1, 2]),
+        "v0": NaturalMultiset([0, 1, 2]),
     }
 
     expected_structure_lvl_1 = {
-        "v1" : NaturalMultiset([0, 0]),
-        "v3" : NaturalMultiset([0]),
+        "v1": NaturalMultiset([0, 0]),
+        "v3": NaturalMultiset([0]),
     }
 
-    obtained_structure_lvl_1, leaves_lvl_1 = assign_structure(parenthood, 
-                                                              levels, values, 1)
+    obtained_structure_lvl_1, leaves_lvl_1 = assign_structure(
+        parenthood, levels, values, 1
+    )
 
-    obtained_structure_lvl_2, leaves_lvl_2 = assign_structure(parenthood, 
-                                                              levels, values, 2)
-    
+    obtained_structure_lvl_2, leaves_lvl_2 = assign_structure(
+        parenthood, levels, values, 2
+    )
+
     assert leaves_lvl_1 == {"v2"}
     assert leaves_lvl_2 == set()
-    
+
     assert obtained_structure_lvl_1 == expected_structure_lvl_1
     assert obtained_structure_lvl_2 == expected_structure_lvl_2
+
 
 # Tests the function get_multisets_list_of_level. The returned list should
 # correspond to the structures of the vertices found on the i-th level, and the
@@ -389,55 +427,59 @@ def test_assign_values():
 def test_get_multisets_list_of_level():
     # Test for an specific scenario.
     levels = {
-        2 : {"v0"},
-        1 : {"v1", "v2", "v3", "v7"},
-        0 : {"v4", "v5", "v6", "v8"},
+        2: {"v0"},
+        1: {"v1", "v2", "v3", "v7"},
+        0: {"v4", "v5", "v6", "v8"},
     }
-    
+
     values = {
-        "v0" : 1,
-        "v1" : 2,
-        "v2" : 0,
-        "v3" : 1,
-        "v7" : 1,
-        "v4" : 0,
-        "v5" : 0,
-        "v6" : 0,
-        "v8" : 0,
+        "v0": 1,
+        "v1": 2,
+        "v2": 0,
+        "v3": 1,
+        "v7": 1,
+        "v4": 0,
+        "v5": 0,
+        "v6": 0,
+        "v8": 0,
     }
-    
+
     parenthood = {
-        "v1" : "v0",
-        "v2" : "v0",
-        "v3" : "v0",
-        "v7" : "v0",
-        "v4" : "v1",
-        "v5" : "v1",
-        "v6" : "v3",
-        "v8" : "v7",
+        "v1": "v0",
+        "v2": "v0",
+        "v3": "v0",
+        "v7": "v0",
+        "v4": "v1",
+        "v5": "v1",
+        "v6": "v3",
+        "v8": "v7",
     }
-    
+
     structures_lvl_2 = {
-        "v0" : NaturalMultiset([0, 1, 2]),
+        "v0": NaturalMultiset([0, 1, 2]),
     }
 
     structures_lvl_1 = {
-        "v1" : NaturalMultiset([0, 0]),
-        "v3" : NaturalMultiset([0]),
-        "v7" : NaturalMultiset([0]),
+        "v1": NaturalMultiset([0, 0]),
+        "v3": NaturalMultiset([0]),
+        "v7": NaturalMultiset([0]),
     }
 
     expected_mapping_lvl_2 = {
-        NaturalMultiset([0, 1, 2]) : {"v0"},
+        NaturalMultiset([0, 1, 2]): {"v0"},
     }
 
     expected_mapping_lvl_1 = {
-        NaturalMultiset([0, 0]) : {"v1"},
-        NaturalMultiset([0]) : {"v3", "v7"},
+        NaturalMultiset([0, 0]): {"v1"},
+        NaturalMultiset([0]): {"v3", "v7"},
     }
-    
-    obt_list_lvl_1, obt_mapping_lvl_1 = get_multisets_list_of_level(levels, values, structures_lvl_1, 1)
-    obt_list_lvl_2, obt_mapping_lvl_2 = get_multisets_list_of_level(levels, values, structures_lvl_2, 2)
+
+    obt_list_lvl_1, obt_mapping_lvl_1 = get_multisets_list_of_level(
+        levels, values, structures_lvl_1, 1
+    )
+    obt_list_lvl_2, obt_mapping_lvl_2 = get_multisets_list_of_level(
+        levels, values, structures_lvl_2, 2
+    )
 
     assert len(structures_lvl_1) == len(obt_list_lvl_1)
     for key in structures_lvl_1:
@@ -446,30 +488,31 @@ def test_get_multisets_list_of_level():
     assert len(structures_lvl_2) == len(obt_list_lvl_2)
     for key in structures_lvl_2:
         assert structures_lvl_2[key] in obt_list_lvl_2
-    
+
     assert obt_mapping_lvl_1 == expected_mapping_lvl_1
     assert obt_mapping_lvl_2 == expected_mapping_lvl_2
+
 
 def test_get_multisets_list_of_level():
     # Test for an specific scenario.
     # Starting values.
     values = {
-        "v0" : -1,
-        "v1" : -1,
-        "v2" : 0,
-        "v3" : -1,
-        "v7" : -1,
-        "v4" : 0,
-        "v5" : 0,
-        "v6" : 0,
-        "v8" : 0,
+        "v0": -1,
+        "v1": -1,
+        "v2": 0,
+        "v3": -1,
+        "v7": -1,
+        "v4": 0,
+        "v5": 0,
+        "v6": 0,
+        "v8": 0,
     }
 
     mapping_lvl_1 = {
-        NaturalMultiset([0, 0]) : {"v1"},
-        NaturalMultiset([0]) : {"v3", "v7"},
+        NaturalMultiset([0, 0]): {"v1"},
+        NaturalMultiset([0]): {"v3", "v7"},
     }
-    
+
     structures_list_lvl_1 = (
         NaturalMultiset([0]),
         NaturalMultiset([0]),
@@ -477,15 +520,15 @@ def test_get_multisets_list_of_level():
     )
 
     expected_values_after_lvl_1 = {
-        "v0" : -1,
-        "v1" : 2,
-        "v2" : 0,
-        "v3" : 1,
-        "v7" : 1,
-        "v4" : 0,
-        "v5" : 0,
-        "v6" : 0,
-        "v8" : 0,
+        "v0": -1,
+        "v1": 2,
+        "v2": 0,
+        "v3": 1,
+        "v7": 1,
+        "v4": 0,
+        "v5": 0,
+        "v6": 0,
+        "v8": 0,
     }
 
     # Dummy functions.
@@ -493,36 +536,36 @@ def test_get_multisets_list_of_level():
     children = {}
     leaves = set()
 
-    
-    update_values(structures_list_lvl_1, mapping_lvl_1, values,
-                  children, parenthood, leaves)
-    
+    update_values(
+        structures_list_lvl_1, mapping_lvl_1, values, children, parenthood, leaves
+    )
+
     assert expected_values_after_lvl_1 == values
 
-    structures_list_lvl_2 = (
-        NaturalMultiset([2, 0, 1]),
-    )
-    
+    structures_list_lvl_2 = (NaturalMultiset([2, 0, 1]),)
+
     mapping_lvl_2 = {
-        NaturalMultiset([0, 1, 2]) : {"v0"},
+        NaturalMultiset([0, 1, 2]): {"v0"},
     }
 
     expected_values_after_lvl_2 = {
-        "v0" : 1,
-        "v1" : 2,
-        "v2" : 0,
-        "v3" : 1,
-        "v7" : 1,
-        "v4" : 0,
-        "v5" : 0,
-        "v6" : 0,
-        "v8" : 0,
+        "v0": 1,
+        "v1": 2,
+        "v2": 0,
+        "v3": 1,
+        "v7": 1,
+        "v4": 0,
+        "v5": 0,
+        "v6": 0,
+        "v8": 0,
     }
 
-    update_values(structures_list_lvl_2, mapping_lvl_2, values,
-                  children, parenthood, leaves)
-    
+    update_values(
+        structures_list_lvl_2, mapping_lvl_2, values, children, parenthood, leaves
+    )
+
     assert expected_values_after_lvl_2 == values
+
 
 # Auxiliary function to determine if an isomorphism is valid.  Let f be an
 # isomorphism, then u and v are adjacent if and only if f(u) and f(v) are
@@ -535,37 +578,57 @@ def is_valid_isomorphism(T1, T2, isomorphism):
 
     # Define the inverse mapping of the isomorphism.
     inverse_iso = {}
-    
+
     for v in isomorphism:
         inverse_iso[isomorphism[v]] = v
-    
+
     # Test that for all (u, v) in E_T2 then (f^-1(u), f^-1(v)) in E_T1.
     for (u, v) in T2.edges():
         if not T1.has_edge(inverse_iso[u], inverse_iso[v]):
             return False
-        
+
     # If both conditions are satisfied, return true.
     return True
-    
+
 
 # Tests the function rooted_tree_isomorphism_n.
 def test_rooted_tree_isomorphism_n_hardcoded():
     # The following trees are isomorph.
-    edges_t1 = [("v0", "v1"), ("v0", "v2"), ("v0", "v3"),
-                ("v1", "v4"), ("v1", "v5"), ("v3", "v6"), 
-                ("v4", "v7"), ("v4", "v8"), ("v4", "v9"), 
-                ("v6", "v10"), ("v6", "v11"), ("v9", "v12")]
+    edges_t1 = [
+        ("v0", "v1"),
+        ("v0", "v2"),
+        ("v0", "v3"),
+        ("v1", "v4"),
+        ("v1", "v5"),
+        ("v3", "v6"),
+        ("v4", "v7"),
+        ("v4", "v8"),
+        ("v4", "v9"),
+        ("v6", "v10"),
+        ("v6", "v11"),
+        ("v9", "v12"),
+    ]
     T1 = nx.Graph(edges_t1)
-    
-    edged_t2 = [("w0", "w1"), ("w0", "w2"), ("w0", "w3"),
-                ("w2", "w4"), ("w4", "w5"), ("w4", "w6"),
-                ("w3", "w7"), ("w3", "w8"), ("w8", "w9"), 
-                ("w8", "w10"), ("w8", "w11"), ("w10", "w12")]
-    
+
+    edged_t2 = [
+        ("w0", "w1"),
+        ("w0", "w2"),
+        ("w0", "w3"),
+        ("w2", "w4"),
+        ("w4", "w5"),
+        ("w4", "w6"),
+        ("w3", "w7"),
+        ("w3", "w8"),
+        ("w8", "w9"),
+        ("w8", "w10"),
+        ("w8", "w11"),
+        ("w10", "w12"),
+    ]
+
     T2 = nx.Graph(edged_t2)
 
     are_iso, iso = rooted_tree_isomorphism_n(T1, "v0", T2, "w0")
-    
+
     assert are_iso
     assert is_valid_isomorphism(T1, T2, iso)
 
@@ -573,98 +636,147 @@ def test_rooted_tree_isomorphism_n_hardcoded():
 # Tests the function get_centers_of_tree.
 def test_get_centers_of_tree():
     # Hardcoded trees.
-    edges_t1 = [("v0", "v1"), ("v1", "v3"), ("v3", "v2"),
-                ("v3", "v4"), ("v3", "v5"), ("v5", "v6"),
-                ("v6", "v7"), ("v7", "v8")]
+    edges_t1 = [
+        ("v0", "v1"),
+        ("v1", "v3"),
+        ("v3", "v2"),
+        ("v3", "v4"),
+        ("v3", "v5"),
+        ("v5", "v6"),
+        ("v6", "v7"),
+        ("v7", "v8"),
+    ]
     T1 = nx.Graph(edges_t1)
-    
+
     centers_t1 = get_centers_of_tree(T1)
     assert centers_t1 == {"v5"}
 
-    edges_t2 = [("u0", "u1"), ("u1", "u2"), ("u2", "u3"),
-                ("u3", "u4"), ("u4", "u5"), ("u4", "u6"),
-                ("u4", "u7"), ("u7", "u8")]
+    edges_t2 = [
+        ("u0", "u1"),
+        ("u1", "u2"),
+        ("u2", "u3"),
+        ("u3", "u4"),
+        ("u4", "u5"),
+        ("u4", "u6"),
+        ("u4", "u7"),
+        ("u7", "u8"),
+    ]
     T2 = nx.Graph(edges_t2)
-    
+
     centers_t2 = get_centers_of_tree(T2)
     assert centers_t2 == {"u3"}
-    
-    edges_t3 = [("w0", "w1"), ("w1", "w2"), ("w2", "w3"),
-                ("w3", "w4"), ("w4", "w5")]
+
+    edges_t3 = [("w0", "w1"), ("w1", "w2"), ("w2", "w3"), ("w3", "w4"), ("w4", "w5")]
     T3 = nx.Graph(edges_t3)
 
     centers_t3 = get_centers_of_tree(T3)
     assert centers_t3 == {"w2", "w3"}
 
+
 # Tests the function tree_isomorphism_n.
 def test_tree_isomorphism_n_hardcoded():
     # Hardcoded trees.
-    edges_t1 = [("v0", "v1"), ("v1", "v3"), ("v3", "v2"),
-                ("v3", "v4"), ("v3", "v5"), ("v5", "v6"),
-                ("v6", "v7"), ("v7", "v8")]
+    edges_t1 = [
+        ("v0", "v1"),
+        ("v1", "v3"),
+        ("v3", "v2"),
+        ("v3", "v4"),
+        ("v3", "v5"),
+        ("v5", "v6"),
+        ("v6", "v7"),
+        ("v7", "v8"),
+    ]
     T1 = nx.Graph(edges_t1)
-    
-    edges_t2 = [("u0", "u1"), ("u1", "u2"), ("u2", "u3"),
-                ("u3", "u4"), ("u4", "u5"), ("u4", "u6"),
-                ("u4", "u7"), ("u7", "u8")]
+
+    edges_t2 = [
+        ("u0", "u1"),
+        ("u1", "u2"),
+        ("u2", "u3"),
+        ("u3", "u4"),
+        ("u4", "u5"),
+        ("u4", "u6"),
+        ("u4", "u7"),
+        ("u7", "u8"),
+    ]
     T2 = nx.Graph(edges_t2)
-    
+
     is_iso, isomorphism = tree_isomorphism_n(T1, T2)
     assert is_iso
     assert is_valid_isomorphism(T1, T2, isomorphism)
 
     # Previous hardcoded test
-    edges_1 = [("a", "b"), ("a", "c"), ("a", "d"),
-               ("b", "e"), ("b", "f"), ("e", "j"),
-               ("e", "k"), ("c", "g"), ("c", "h"),
-               ("g", "m"), ("d", "i"), ("f", "l")]
+    edges_1 = [
+        ("a", "b"),
+        ("a", "c"),
+        ("a", "d"),
+        ("b", "e"),
+        ("b", "f"),
+        ("e", "j"),
+        ("e", "k"),
+        ("c", "g"),
+        ("c", "h"),
+        ("g", "m"),
+        ("d", "i"),
+        ("f", "l"),
+    ]
     T1 = nx.Graph(edges_1)
 
-    edges_2 = [("v", "y"), ("v", "z"), ("u", "x"),
-               ("q", "u"), ("q", "v"), ("p", "t"),
-               ("n", "p"), ("n", "q"), ("n", "o"),
-               ("o", "r"), ("o", "s"), ("s", "w")]
+    edges_2 = [
+        ("v", "y"),
+        ("v", "z"),
+        ("u", "x"),
+        ("q", "u"),
+        ("q", "v"),
+        ("p", "t"),
+        ("n", "p"),
+        ("n", "q"),
+        ("n", "o"),
+        ("o", "r"),
+        ("o", "s"),
+        ("s", "w"),
+    ]
     T2 = nx.Graph(edges_2)
-    
+
     # Possible isomorphisms.
     isomorphism1 = {
-        "a" :  "n",
-        "b" :  "q",
-        "c" :  "o",
-        "d" :  "p",
-        "e" :  "v",
-        "f" :  "u",
-        "g" :  "s",
-        "h" :  "r",
-        "i" :  "t",
-        "j" :  "y",
-        "k" :  "z",
-        "l" :  "x",
-        "m" :  "w",
+        "a": "n",
+        "b": "q",
+        "c": "o",
+        "d": "p",
+        "e": "v",
+        "f": "u",
+        "g": "s",
+        "h": "r",
+        "i": "t",
+        "j": "y",
+        "k": "z",
+        "l": "x",
+        "m": "w",
     }
 
     # could swap y and z
     isomorphism2 = {
-        "a" : "n",
-        "b" : "q",
-        "c" : "o",
-        "d" : "p",
-        "e" : "v",
-        "f" : "u",
-        "g" : "s",
-        "h" : "r",
-        "i" : "t",
-        "j" : "z",
-        "k" : "y",
-        "l" : "x",
-        "m" : "w",
+        "a": "n",
+        "b": "q",
+        "c": "o",
+        "d": "p",
+        "e": "v",
+        "f": "u",
+        "g": "s",
+        "h": "r",
+        "i": "t",
+        "j": "z",
+        "k": "y",
+        "l": "x",
+        "m": "w",
     }
-    
+
     is_iso, isomorphism = tree_isomorphism_n(T1, T2)
-    
+
     assert is_iso
     assert (isomorphism == isomorphism1) or (isomorphism == isomorphism2)
     assert is_valid_isomorphism(T1, T2, isomorphism)
+
 
 # Tests the function tree_isomorphism_n with some trivial graphs.
 def test_tree_isomorphism_n_trivials():
@@ -682,13 +794,12 @@ def test_tree_isomorphism_n_trivials():
 
     T2 = nx.Graph()
     T2.add_node("n")
-    
-    is_iso, isomorphism = tree_isomorphism_n(T1, T2)
-    
-    assert is_iso
-    assert isomorphism == { "a" : "n" }
-    assert is_valid_isomorphism(T1, T2, isomorphism)
 
+    is_iso, isomorphism = tree_isomorphism_n(T1, T2)
+
+    assert is_iso
+    assert isomorphism == {"a": "n"}
+    assert is_valid_isomorphism(T1, T2, isomorphism)
 
     # Test another trivial case where the two graphs have different numbers of
     # nodes.
@@ -709,7 +820,7 @@ def test_tree_isomorphism_n_trivials():
     # numbers of nodes but differ in structure.
     edges_1 = [("a", "b"), ("b", "c"), ("c", "d"), ("d", "e")]
     edges_2 = [("a", "b"), ("b", "c"), ("b", "d"), ("c", "e")]
-    
+
     T1 = nx.Graph(edges_1)
     T2 = nx.Graph(edges_2)
 
@@ -717,6 +828,7 @@ def test_tree_isomorphism_n_trivials():
 
     assert not is_iso
     assert isomorphism == {}
+
 
 # Given a tree T1, create a new tree T2 that is isomorphic to T1.
 def generate_isomorphism(T1):
@@ -742,15 +854,16 @@ def generate_isomorphism(T1):
 
     # so t2 is isomorphic to t1
     T2 = nx.Graph(edges2)
-    
+
     return T2
+
 
 # The function nonisomorphic_trees generates all the non-isomorphic trees of a
 # given order. Take each tree, make a "copy" of it, and its copy should be
 # isomorphic to the original; verify that the function tree_isomorphism_n
 # returns True and a proper isomorphism. For k=4 the test takes around 2.83
-# seconds, ando for k=5 it takes around 7.57 seconds.
-def test_tree_isomorphism_n_positive(maxk=15):
+# seconds, and for k=15 it takes around 7.57 seconds.
+def test_tree_isomorphism_n_positive(maxk=13):
     print("\nPositive test with new function\n")
 
     for k in range(2, maxk + 1):
@@ -758,9 +871,9 @@ def test_tree_isomorphism_n_positive(maxk=15):
         trial = 0
         for T1 in nx.nonisomorphic_trees(k):
             T2 = generate_isomorphism(T1)
-            
+
             is_iso, isomorphism = tree_isomorphism_n(T1, T2)
-            
+
             assert is_iso
             assert is_valid_isomorphism(T1, T2, isomorphism)
 
@@ -768,10 +881,11 @@ def test_tree_isomorphism_n_positive(maxk=15):
 
         print(k, trial, time.time() - start_time)
 
+
 # The function nonisomorphic_trees generates all the non-isomorphic trees of a
 # given order. Take each pair of trees verify that the function
 # tree_isomorphism_n returns False and an empty isomorphism.
-def test_tree_isomorphism_n_negative(maxk=13):
+def test_tree_isomorphism_n_negative(maxk=11):
     print("\nNegative test with new function\n")
 
     for k in range(4, maxk + 1):
@@ -782,13 +896,14 @@ def test_tree_isomorphism_n_negative(maxk=13):
             T1 = test_trees[i]
             for j in range(i + 1, len(test_trees)):
                 trial += 1
-                
+
                 T2 = test_trees[j]
                 is_iso, isomorphism = tree_isomorphism_n(T1, T2)
-                
+
                 assert not is_iso
 
         print(k, trial, time.time() - start_time)
+
 
 # have this work for graph
 # given two trees (either the directed or undirected)
@@ -902,7 +1017,7 @@ def test_hardcoded():
         ("k", "y"),
         ("l", "x"),
         ("m", "w"),
-    ] 
+    ]
 
     t1 = nx.Graph()
     t1.add_edges_from(edges_1)
@@ -990,7 +1105,7 @@ def positive_single_tree(t1):
 # k = 13 takes about 2.86 seconds to run on my laptop
 # larger values run slow down significantly
 # as the number of trees grows rapidly
-def test_positive(maxk=15):
+def test_positive(maxk=13):
 
     print("positive test")
 
@@ -1055,7 +1170,7 @@ def test_trivial_2():
 # k = 11 takes about 4.76 seconds to run on my laptop
 # larger values run slow down significantly
 # as the number of trees grows rapidly
-def test_negative(maxk=13):
+def test_negative(maxk=11):
 
     print("negative test")
 

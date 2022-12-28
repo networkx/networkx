@@ -1,22 +1,22 @@
-"""
-An algorithm for finding if two undirected trees are isomorphic, and if so 
-returns an isomorphism between the two sets of nodes.
+"""An algorithm for finding if two undirected trees are isomorphic. 
 
 This algorithm uses a routine to tell if two rooted trees (trees with a
 specified root node) are isomorphic, which may be independently useful.
 
 References
 ----------
-  .. [1] A. V. Aho, J. E. Hopcroft y J. D. Ullman, The Desing And Analysis of
-     Computer Algorithms, Addison Wesley Publishing Company, 1974.
+  .. [1] A. V. Aho, J. E. Hopcroft y J. D. Ullman, "The Desing And Analysis of
+     Computer Algorithms", Addison Wesley Publishing Company, (1974): 78-86.
 
-  .. [2] M. Suderman, Homework Assignment 5, McGill University SOCS 308-250B,
-     Winter 2002. http://crypto.cs.mcgill.ca/~crepeau/CS250/2004/HW5+.pdf
+  .. [2] M. Suderman, "Homework Assignment 5", McGill University SOCS 308-250B,
+     (Winter 2002): http://crypto.cs.mcgill.ca/~crepeau/CS250/2004/HW5+.pdf
 
-  .. [3] G. Valiente, Algorithms on Trees and Graphs, Springer 2002.
+  .. [3] G. Valiente, "Algorithms on Trees and Graphs", Springer (2002): 
+     151-166.
 
-  .. [4] M. Carrasco-Ruiz, Herramientas para el Manejo Computacional de
-     Gráficas, Bachelor of Science Thesis, UNAM, 2021.
+  .. [4] M. Carrasco-Ruiz, "Herramientas para el Manejo Computacional de
+     Gráficas", Bachelor of Science Thesis, UNAM, (2022): 55-77.
+
 """
 
 import networkx as nx
@@ -25,53 +25,66 @@ from networkx.utils.decorators import not_implemented_for
 
 __all__ = ["rooted_tree_isomorphism", "tree_isomorphism"]
 
-class NaturalMultiset():
-    """
-    Class to represent a multiset M of natural numbers (0, ..., n). Define a
-    multiset as a set where repetition of elements is allowed. Mathematically, a
-    multiset M is an ordered pair (X, m) where X is a set and m : X -> N such
-    that, for every x in X, m(x) is the number of ocurrences of x in M.
-    
+
+class NaturalMultiset:
+    """Class to represent a multiset M of natural numbers (0, ..., n).
+
+    Define a multiset as a set where repetition of elements is allowed.
+    Mathematically, a multiset M is an ordered pair (X, m) where X is a set of
+    natural numbers and m is a map m: X -> N such that, for every x in X, m(x)
+    is the number of ocurrences of x in M.
+
     This class only has the neccessary operations for the tree isomorphism
     algorithm to work; it is not expected to be used anywhere else.
-    
+
     Parameters
     ----------
-    X : set
+    X : set of ints (natural numbers)
         The set of elements of M.
-    
-    m : dictionary
+
+    m : dict of int: int
         The number of occurrences of the elements of X in M.
 
     length : int
         The amount of elements in M.
+
     """
-    
-    def __init__(self, S = []):
-        """
-        Initializes an empty multiset. If a list of naturals is passed, then
-        initialize the multiset with the values contained in the list.
+
+    def __init__(self, L=[]):
+        """Initializes a multiset.
+
+        If a list of naturals is passed, then initialize the multiset with the
+        values contained in the list. If no list is passed, then initialize an
+        empty multiset.
+
+        Parameters
+        ----------
+        L : list of ints (natural numbers)
+            The list of naturals that the multiset will contain.
+
         """
         self.X = set()
         self.m = {}
         self.length = 0
-        
-        if len(S) > 0:
-            self.from_list(S)
-        
+
+        if len(L) > 0:
+            self.from_list(L)
+
     def add(self, x):
-        """
-        Adds an element to the multiset. If the element is in the multiset,
-        then increase the number of occurrences of said element in the map.
-        
+        """Adds an element to the multiset.
+
+        If the element is in the multiset, then increase the number of
+        occurrences of said element in the map.
+
         Parameters
         ----------
-        x : any
+        x : int
             The value to add to the multiset.
 
         Notes
         -----
         This runs in O(1) time and space.
+
         """
         if x in self.X:
             self.m[x] = self.m[x] + 1
@@ -80,138 +93,187 @@ class NaturalMultiset():
             self.m[x] = 1
 
         self.length = self.length + 1
-        
+
     def contains(self, x):
-        """
-        Returns whether the multiset contains a given element.
-        """
-        return (x in self.X)
-            
-    def to_list(self):
-        """
-        Returns the elements of the multiset as an ordered list. The method
-        is basically a bucket sort.
-        
+        """Returns whether the multiset contains a given element.
+
+        Parameters
+        ----------
+        x : int
+            The value to check if its contained in the multiset.
+
         Returns
         -------
-        A sorted list of the elements of the multiset.
-        
+        contains : bool
+            Returns True if the value is in the multiset, False otherwise.
+
+        """
+        return x in self.X
+
+    def to_list(self):
+        """Returns the elements of the multiset as a sorted list.
+
+        This method is basically a bucket sort.
+
+        Returns
+        -------
+        sorted_contents : list of ints (natural numbers)
+            A sorted list of the elements of the multiset.
+
         Notes
         -----
         This runs in O(|X| + k) where k = max(X).
+
         """
         # Max value of X.
         m = max(self.X)
-        
+
         # Define an array of size m.
-        A = np.zeros(m+1, dtype='int')
-        
+        A = np.zeros(m + 1, dtype="int")
+
         # The array S now keeps the number of occurrences.
         for x in self.X:
             A[x] = self.m[x]
-        
+
         # Build a sorted list of elements.
         S = []
-        for i in range(m+1):
+        for i in range(m + 1):
             for j in range(A[i]):
                 S.append(i)
-        
+
         return S
-    
+
     def from_list(self, L):
-        """
-        Adds the elements from the list to the multiset.
-        
+        """Adds the elements from a list to the multiset.
+
         Parameters
         ----------
-        L : list
-            The list of naturals to add to the multiset.
-        
+        L : list of ints (natural numbers)
+            List of naturals to add to the multiset.
+
         Notes
         -----
         This runs in O(|L|).
+
         """
         for x in L:
             self.add(x)
-            
+
     def __eq__(self, M):
-        """
-        Two multisets M1 = (X1, m1) and M2 = (X2, m2) are equal if and only
-        if X1 = X2 and m1 = m2.
+        """Checks if two mutisets are equal.
+
+        Two multisets M1 = (X1, m1) and M2 = (X2, m2) are equal if and only if
+        X1 = X2 and m1 = m2.
+
+        Parameters
+        ----------
+        M : Natural Multiset
+            The other multiset to compare.
+
+        Returns
+        -------
+        are_equal : bool
+            Returns True if the multisets are equal, False otherwise.
+
         """
         return (self.X == M.X) and (self.m == M.m)
 
     def __len__(self):
-        """
-        The length of a multiset is defined as the amount of elements it
+        """Returns the length of the multiset.
+
+        The length of a multiset is defined by the amount of elements it
         contains.
+
+        Returns
+        -------
+        length : int
+            The amount of elements contained in the multiset.
+
         """
         return self.length
-    
+
     def __hash__(self):
-        """
-        Hash function for the multiset class.
+        """Hash value for the multiset class.
+
+        A multiset does not have an specified order, thus, two multisets that
+        are equal must yield the same hash value even if their values are in
+        different order. The current hash function is simply the sum of its
+        elements, where each element is multiplied by the amount of times it
+        occurs in the multiset. As the sum is associative then two equal
+        multisets will always yield the same hash value. Unfortunately the
+        amount of collisions this can produce are relatively high, but its still
+        a very fast hash function.
+
+        Returns
+        -------
+        hash_value : int
+            The hash value that represents the multiset.
+
         """
         h = 0
         for x in self.X:
-            h += (self.m[x] * x)
-            
+            h += self.m[x] * x
+
         return h
-    
+
     def __str__(self):
-        """
-        The string representation of a multiset is the list representation.
+        """String representation of a multiset.
+
+        The string representation of a multiset is simply the string
+        representation of the list replacing the first and last characters by
+        "{", "}".
+
+        Returns
+        -------
+        str_representation : string
+            The string representation of a multiset.
+
         """
         return "{" + ", ".join(self.to_list()) + "}"
 
+
 def categorize_entries(S):
-    """
-    Given a list of lists whose entries are numbers between 0 and m. The
-    function categorize_entries returns a function (map or dict) NONEMPTY : N ->
-    P(N) such that NONEMPTY(i) are the numbers in the i-th position of some list
-    in S; this numbers are sorted. For example, given ((1), (1, 2, 3), (1, 2,
-    2)), NONEMPTY(2) = [2, 3].
-    
+    """Groups the entries of the lists by its position.
+
+    Given a list of lists whose entries are numbers between 0 and m. Define a
+    NONEMPTY map such that NONEMPTY(i) are the numbers in the i-th position of
+    some list in S; this numbers are sorted.
+
+    For example, given ((1), (1, 2, 3), (1, 2, 2)), NONEMPTY(2) = [2, 3].
+
     Parameters
     ----------
-    S : list
+    S : list of lists of ints (natural numbers)
         The list of lists of natural numbers.
-    
+
     Returns
     -------
-    A NONEMPTY: N -> P(N) function such that NONEMPTY(i) are the numbers in the 
-    i-th position of some list in S; this numbers are sorted.
-    
-    References
-    ----------
-        .. [1] A. V. Aho, J. E. Hopcroft y J. D. Ullman, The Desing And Analysis
-               of Computer Algorithms, Addison Wesley Publishing Company, 1974.
-               Pages 80-82.
+    NONEMPTY : dict of int: list of ints
+        The NONEMPTY map such that NONEMPTY(i) are the numbers in the i-th
+        position of some list in S; this list of numbers is sorted.
 
-        .. [4] M. Carrasco-Ruiz, Herramientas para el Manejo Computacional de
-               Gráficas, Bachelor of Science Thesis, UNAM, 2021.
-    
     Notes
     -----
-    This algorithm runs in O(l_total + m) time and O(l_total) space, where 
+    This algorithm runs in O(l_total + m) time and O(l_total) space, where
     l_total is the sum of the lengths of the lists in S and m is the max value
     of all the lists in S.
+
     """
-    # Define the function NONEMPTY.
+    # Define the an empty NONEMPTY map.
     NONEMPTY = {}
-    
+
     # The max length found in S.
     l_max = max([len(s) for s in S])
-    
+
     # Traverse all the entries contained in the lists of S.
     for i in range(l_max):
         # Define a multiset to keep the entries found in the i-th position.
         M = NaturalMultiset()
-        
+
         for s in S:
             # Only consider lists of length greater or equal than i, and whose
             # i-th entry is not already contained in the multiset.
-            if len(s) < (i+1) or M.contains(s[i]):
+            if len(s) < (i + 1) or M.contains(s[i]):
                 continue
             else:
                 M.add(s[i])
@@ -221,77 +283,67 @@ def categorize_entries(S):
 
     return NONEMPTY
 
+
 def categorize_lists(S):
-    """
-    Given a list of lists whose entries are numbers between 0 and m. The
-    function categorize_lists returns a function (map or dict) LENGTH such that
-    LENGTH(i) are the lists of S with length i. For example, given ((1), (1, 2,
-    3), (1, 2, 2)), NONEMPTY(3) = [(1, 2, 3), (1, 2, 2)].
-    
+    """Groups the lists by its length.
+
+    Given a list of lists whose entries are numbers between 0 and m. Define a
+    LENGTH map such that LENGTH(i) are the lists of S with length i.
+
+    For example, given ((1), (1, 2, 3), (1, 2, 2)), NONEMPTY(3) = [(1, 2, 3),
+    (1, 2, 2)].
+
     Parameters
     ----------
-    S : list
+    S : list of lists of ints (natural numbers)
         The list of lists of natural numbers.
-    
+
     Returns
     -------
-    A LENGTH function such that LENGTH(i) are the lists of S with length i.
-    
-    References
-    ----------
-        .. [1] A. V. Aho, J. E. Hopcroft y J. D. Ullman, The Desing And Analysis 
-               of Computer Algorithms, Addison Wesley Publishing Company, 1974.
-               Pages 80-82.
+    LENGTH : dict of int: list of lists of ints
+        The LENGTH map such that LENGTH(i) are the lists of S with length i.
 
-        .. [4] M. Carrasco-Ruiz, Herramientas para el Manejo Computacional de
-               Gráficas, Bachelor of Science Thesis, UNAM, 2021.
-    
     Notes
     -----
     This algorithm runs in O(|S|) time and space.
+
     """
-    # Define the function LENGTH.
+    # Define an empty LENGTH map.
     LENGTH = {}
-    
+
     # Traverse the lists in S and add them to the LENGTH.
     for s in S:
         if len(s) in LENGTH:
             LENGTH[len(s)].append(s)
         else:
             LENGTH[len(s)] = [s]
-            
+
     return LENGTH
 
+
 def sort_lists_of_naturals(S):
-    """
-    Given a list of lists whose entries are numbers between 0 and m. The
-    function sort_lists_of_naturals performs an algorithm similar to bucket sort
-    to return a sorted list with the elements of S. The expected order is a
-    lexicographical order.
-    
+    """Lexicographically sort a list of lists of natural numbers.
+
+    Given a list of lists whose entries are numbers between 0 and m. Perform an
+    algorithm similar to bucket sort to return a sorted list with the elements
+    of S. The expected order is a lexicographical order.
+
     Parameters
     ----------
-    S : list
+    S : list of lists of ints (natural numbers)
         The list of lists of natural numbers.
-    
+
     Returns
     -------
-    A sorted list with the elements of S.
-    
-    References
-    ----------
-        .. [1] A. V. Aho, J. E. Hopcroft y J. D. Ullman, The Desing And Analysis 
-               of Computer Algorithms, Addison Wesley Publishing Company, 1974.
-               Pages 80-82.
+    sorted_list : list of lists of ints (natural numbers)
+        A lexicographically sorted list with the elements of S.
 
-        .. [4] M. Carrasco-Ruiz, Herramientas para el Manejo Computacional de
-               Gráficas, Bachelor of Science Thesis, UNAM, 2021.
-    
     Notes
     -----
-    This algorithm runs in O(l_total + m) time and O(l_total) space, where 
+    This algorithm runs in O(l_total + m) time and O(l_total) space, where
     l_total is the sum of the lengths of the lists in S and m is the max value
     of all the lists in S.
+
     """
     # Get the maximum value contained in S.
     m = max([max(s) for s in S])
@@ -300,175 +352,173 @@ def sort_lists_of_naturals(S):
     Q = []
 
     # Define an empty array of size m whose entries are empty queues.
-    A = [[] for i in range(m+1)]
-    
+    A = [[] for i in range(m + 1)]
+
     # The max length found in S.
     l_max = max([len(s) for s in S])
-    
-    # Obtain the NONEMPTY and LENGTH functions.
+
+    # Obtain the NONEMPTY and LENGTH maps.
     NONEMPTY = categorize_entries(S)
     LENGTH = categorize_lists(S)
-    
+
     l = l_max
-    while (l >= 1):
+    while l >= 1:
         # All of the elements in Q have length greater than l. For each element
         # s in Q, append q to the queue A[s[l]].
-        while (len(Q) > 0):
+        while len(Q) > 0:
             s = Q.pop()
-            A[s[l-1]].append(s)
+            A[s[l - 1]].append(s)
 
         # Add the lists s of size l to the queue A[s[l]] if there are any.
         if l in LENGTH:
             for s in LENGTH[l]:
-                A[s[l-1]].append(s)
-            
+                A[s[l - 1]].append(s)
+
         # Sort the elements of A according to its l-th entry.
-        for i in NONEMPTY[l-1]:
-            while (len(A[i]) > 0):
+        for i in NONEMPTY[l - 1]:
+            while len(A[i]) > 0:
                 s = A[i].pop()
                 Q.append(s)
-        
+
         # Proceed with the lists of size l-1.
         l = l - 1
-    
+
     # Q now contains all of the elements of S sorted lexicographically.
     return Q
 
+
 def sort_natural_multisets(S):
-    """
-    Given a list of multisets whose entries are numbers between 0 and m. The
-    function sort_natural_multisets returns a sorted list with the elements of
-    S. If each multiset is represented as a string or a list of naturals, the
-    expected order is a lexicographical order taking into consideration the
-    previous representation.
-    
+    """Lexicographically sort a list of multisets.
+
+    Given a list of multisets whose entries are numbers between 0 and m. Sort
+    the list of multisets. If each multiset is represented as a string or a list
+    of naturals, then the expected order is a lexicographical order taking into
+    consideration the previous representation.
+
     Parameters
     ----------
-    S : list
+    S : list of natural multisets
         The list of natural multisets.
-    
+
     Returns
     -------
-    A sorted list with the elements of S.
-    
-    References
-    ----------
-        .. [1] A. V. Aho, J. E. Hopcroft y J. D. Ullman, The Desing And Analysis 
-               of Computer Algorithms, Addison Wesley Publishing Company, 1974.
-               Pages 80-82.
+    sorted_list : list of natural multisets
+        A sorted list with the elements of S.
 
-        .. [4] M. Carrasco-Ruiz, Herramientas para el Manejo Computacional de
-               Gráficas, Bachelor of Science Thesis, UNAM, 2021.
-    
     Notes
     -----
-    This algorithm runs in O(M_total + k) time and O(M_total) space, where 
-    M_total is the sum of the lengths of the multisets in S and k is the max 
+    This algorithm runs in O(M_total + k) time and O(M_total) space, where
+    M_total is the sum of the lengths of the multisets in S and k is the max
     value of all the multisets in S.
+
     """
     # Define a list of lists.
     L = []
-    
+
     # For each multiset in S, add its list representation to S.
     for m in S:
         lm = m.to_list()
         L.append(lm)
-        
+
     # Obtain an ordering of S.
     sorted_L = sort_lists_of_naturals(L)
-    
+
     # Transform each list into a multiset.
     sorted_S = []
     for l in sorted_L:
         m = NaturalMultiset()
         m.from_list(l)
         sorted_S.append(m)
-    
+
     # Return the sorted multisets.
     return sorted_S
-        
+
 
 def get_levels(T, root, height):
-    """
-    Returns a function (map or dict) M: N -> P(V) such that, for each i in
-    {0,...,h}, M(i) is the set of vertices that are found in the i-th level
-    of T.
-    
+    """Groups the vertices by the level they're on the rooted tree.
+
+
+    Define a LEVELS map such that, for each i in {0,...,h}, LEVELS(i) is the set
+    of vertices found on the i-th level of T.
+
     Let h be the height of the tree. The amount of levels a tree has is equal to
-    its height. If a vertex v is in the i-th level, then its childs are in the
+    its height. If a vertex v is on the i-th level, then its childs are on the
     (i-1)-th level. Thus, by definition, the only vertex in the h-th level is
-    the root of the tree and the only vertices in the level 0 are leaves.
-    
+    the root of the tree and the only vertices on the level 0 are leaves.
+
     Parameters
     ----------
     T : NetworkX Graph
         The rooted tree.
-    
+
     root : node
         The root of the tree.
-    
+
     height : int
         The height of the tree.
-    
+
     Returns
     -------
-    M : dictionary
-        A map M: N -> P(V) such that, for each i in {0,...,h}, M(i) is the set
-        of vertices that are found in the i-th level of T.
-    
+    LEVELS : dict of int: set of nodes
+        A LEVELS map such that, for each i in {0,...,h}, LEVELS(i) is the set of
+        vertices found on the i-th level of T.
+
     Notes
     -----
     The algorithm runs in O(n) time and space.
+
     """
-    # Map M such that M(i) is the set of vertices that are in the i-th level.
-    lvl = {}
-    
-    # Map in_lvl such that in_lvl(v) is the level where v is found.
+    # Define an empty LEVELS map.
+    LEVELS = {}
+
+    # Define a map in_lvl such that in_lvl(v) is the level where v is found.
     in_lvl = {}
-    
+
     # Define the root height.
     in_lvl[root] = height
-    
-    # Perform a BFS traversal to fill the in_lvl function.
+
+    # Perform a BFS traversal to fill the in_lvl map.
     for (parent, child) in nx.bfs_edges(T, root):
         in_lvl[child] = in_lvl[parent] - 1
-        
+
     # Traverse all vertices and group them by levels.
     for v in in_lvl.keys():
         l = in_lvl[v]
-        if l in lvl:
-            lvl[l].add(v)
+        if l in LEVELS:
+            LEVELS[l].add(v)
         else:
-            lvl[l] = {v}
-            
-    return lvl
+            LEVELS[l] = {v}
+
+    return LEVELS
+
 
 def get_initial_values(T, root):
-    """
-    Returns a function (map or dict) M: N -> P(V) such that, for every
-    vertex v in the tree T, if v is a leave then v's initial value is 0,
-    otherwise its defined as -1.
-    
+    """Returns a map with the initial values of the nodes.
+
+    Returns a map VALUES such that, for every vertex v in the rooted tree, if v
+    is a leaf then v's initial value is 0, otherwise its defined as -1.
+
     Parameters
     ----------
     T : NetworkX Graph
         The rooted tree.
-    
+
     root : node
         The root of the tree.
-    
+
     Returns
     -------
-    M : dictionary
-        A map M: N -> P(V) such that, for each vertex v in the tree T, if v is 
-        a leave then v's initial value is 0, otherwise its defined as -1.
-    
+    VALUES : dict of node: int
+        A map VALUES such that, for each vertex v in the rooted tree, if v is a
+        leaf then v's initial value is 0, otherwise its defined as -1.
+
     Notes
     -----
     The algorithm runs in O(n) time and space.
+
     """
-    # Map M such that M(v) is initial value of v.
-    vals = {}
+    # Define an empty map VALUES.
+    VALUES = {}
 
     # Define a set for leaves and non-leaves vertices of T.
     non_leaves = set()
@@ -484,213 +534,233 @@ def get_initial_values(T, root):
         # a leave.
         if parent in leaves:
             leaves.remove(parent)
-        
+
         leaves.add(child)
 
     # Set the initial value of the non-leave vertices as -1.
     for v in non_leaves:
-        vals[v] = -1
-    
-    # Set the initial value of the leaves as 0.    
+        VALUES[v] = -1
+
+    # Set the initial value of the leaves as 0.
     for v in leaves:
-        vals[v] = 0
-        
-    return vals
+        VALUES[v] = 0
+
+    return VALUES
+
 
 def get_initial_children(parenthood, levels):
-    """
-    Defines a function children where children(v) are the ordered list of
-    children of v in the rooted tree. This function sets who are the parents of
-    the leaves found on the level 0.
-    
+    """Returns a map with the initial children defined by the parenthood map.
+
+    Defines a map CHILDREN where CHILDREN(v) is the ordered list of children of
+    v in the rooted tree. This map determines who are the parents of the leaves
+    found on the 0-th level.
+
     Parameters
     ----------
-    parenthood : dictionary
-        The parenthood function defined for the rooted tree.
+    parenthood : dict of node: node
+        The parenthood map defined for the rooted tree.
 
-    levels: dictionary
-        The level function such that level(i) are the verticed found on the i-th
+    levels: dict of int: set of nodes
+        The LEVELS map such that LEVELS(i) are the vertices found on the i-th
         level of the rooted tree.
-    
+
     Returns
     -------
-    The function children where children(v) are the ordered list of children of 
-    v in the rooted tree. This function sets who are the parents of the leaves 
-    found on the level 0.
-    
+    CHILDREN : dict of node: set of nodes
+        A mapping CHILDREN such that CHILDREN(v) is the ordered list of children
+        of v in the rooted tree. This map determines who are the parents of the
+        leaves found on the 0-th level.
+
     Note
     ----
-    This algorithm runs in O(m_0) time and space where m_0 are the
-    vertices found on the 0-th level of the rooted tree.
+    This algorithm runs in O(m_0) time and space where m_0 are the vertices
+    found on the 0-th level of the rooted tree.
+
     """
-    # Define an empty function children.
-    children = {}
+    # Define an empty map CHILDREN.
+    CHILDREN = {}
 
     # Traverse all the vertices found on the 0-th level.
     for v in levels[0]:
-        # If the current vertex has a parent, add the children to the parent's
-        # list of children.            
+        # If the current vertex has a parent, add the child to the parent's
+        # list of children.
         if v in parenthood:
             u = parenthood[v]
-            
-            # Add the children to the list of children of the parent.
-            if u in children:
-                children[u].append(v)
+
+            # Add the child to the list of children of the parent.
+            if u in CHILDREN:
+                CHILDREN[u].append(v)
             else:
-                children[u] = [v]
-                
-    return children
+                CHILDREN[u] = [v]
+
+    return CHILDREN
+
 
 def assign_structure(parenthood, levels, values, i):
-    """
-    Assign to all the vertices found on the i-th level a structure. The
-    structure of a vertex is defined as the natural multiset that contains the
-    values of all its child. Informally, the structure of a vertex can be
-    thought as the structure or "form" the sub-tree rooted on v has.
-    
+    """Assign a structure to all the vertices found on the i-th level.
+
+    The structure of a vertex is defined as the natural multiset that contains
+    the values of all its child; thus, a leaf has no structure. Informally, the
+    structure of a vertex can be thought as the structure or "form" the sub-tree
+    rooted on v has.
+
     Parameters
     ----------
-    parenthood : dictionary
-        The parenthood function defined for the rooted tree.
+    parenthood : dict of node: node
+        The parenthood map defined for the rooted tree.
 
-    levels: dictionary
-        The level function such that level(i) are the verticed found on the i-th
+    levels: dict of int: set of nodes
+        The LEVELS map such that LEVELS(i) are the vertices found on the i-th
         level of the rooted tree.
-    
-    vals: dictionary
-        The vals function such that vals(v) is the value defined for the v 
-        vertex.
-    
+
+    values : dict of node: int
+        The VALUES map such that, for each vertex v in the rooted tree,
+        VALUES(v) is the value associated to v.
+
     i : int
         The current level of the rooted tree.
-    
+
     Returns
     -------
-    The struct function such that struct(v) is the structure corresponding to 
-    the vertex v, and the leaves of the current level.
-    
+    STRUCT : dict of node: natural multiset
+        A STRUCT map such that struct(v) is the structure (natural multiset)
+        corresponding to vertex v.
+
+    leaves : set of nodes
+        The leaves of the current level.
+
     Note
     ----
     This algorithm runs in O(m_{i-1} + m_i) time and space where m_{j} are the
     vertices found on the j-th level of the rooted tree.
+
     """
-    # Define an empty function struct.
-    struct = {}
-    
-    # Define an empty set to keep track of the leaves in the current level.
+    # Define an empty map STRUCT.
+    STRUCT = {}
+
+    # Define an empty set to keep track of the leaves on the current level.
     leaves = set()
-    
+
     # Traverse all the vertices on the i-th level and define an empty multiset
     # for each non-leave vertex.
     for v in levels[i]:
         if values[v] != 0:
-            struct[v] = NaturalMultiset()
+            STRUCT[v] = NaturalMultiset()
         else:
             leaves.add(v)
-        
+
     # Traverse all the vertices on the (i-1)-th level and append them to its
     # father multiset.
-    for u in levels[i-1]:
+    for u in levels[i - 1]:
         # Obtain u's father.
         v = parenthood[u]
-        
+
         # Obtain u's value.
         uval = values[u]
-        
+
         # Add u's value to the father's multiset.
-        struct[v].add(uval)
-    
-    # Return the defined function.
-    return struct, leaves
+        STRUCT[v].add(uval)
+
+    # Return the defined STRUCT map and leaves.
+    return STRUCT, leaves
+
 
 def get_multisets_list_of_level(levels, values, struct, i):
-    """
-    Build a list of multisets that correspond to the structures of the
-    vertices found on the i-th level and a mapping of structures to the vertices
-    that have said structure.
-    
+    """Obtain the structures found on the i-th level as a list.
+
+    Build a list of multisets that correspond to the structures of the vertices
+    found on the i-th level and a mapping of structures to the vertices that
+    have said structure.
+
     Parameters
     ----------
-    levels: dictionary
-        The level function such that level(i) are the verticed found on the i-th
+    levels: dict of int: set of nodes
+        The LEVELS map such that LEVELS(i) are the vertices found on the i-th
         level of the rooted tree.
-    
-    vals: dictionary
-        The vals function such that vals(v) is the value defined for the v 
-        vertex.
-    
-    struct : dictionary
-        The struct function such that struct(v) is the structure corresponding
-        to the vertex v.
-    
+
+    values : dict of node: int
+        The VALUES map such that, for each vertex v in the rooted tree,
+        VALUES(v) is the value associated to v.
+
+    struct : dict of node: natural multiset
+        The STRUCT map such that struct(v) is the structure (natural multiset)
+        corresponding to vertex v.
+
     i : int
         The current level of the rooted tree.
-    
+
     Returns
     -------
-    A list of multisets that correspond to the structures of the vertices found
-    on the i-th level and a mapping of structures to the vertices that have said
-    structure.
-    
+    list_multisets : list of natural multisets
+        A list of multisets that correspond to the structures of the vertices
+        found on the i-th level.
+
+    MS : dict of natural multiset: set of nodes
+        A mapping of structures to the vertices that have said structure.
+
     Note
     ----
     This algorithm runs in O(m_{i-1} + m_i) time and space where m_{j} are the
     vertices found on the j-th level of the rooted tree.
+
     """
     # Define an empty list of multisets.
     S = []
-    
+
     # Define a mapping of structures to the vertices that have said structure.
     MS = {}
-    
+
     # Traverse each non-leave vertex on the i-th level and append its structure
     # to the list.
     for u in levels[i]:
         if values[u] != 0:
             S.append(struct[u])
-            
+
             if struct[u] in MS:
                 MS[struct[u]].add(u)
             else:
                 MS[struct[u]] = {u}
-    
+
     return S, MS
 
+
 def update_values(S, MS, values, children, parenthood, leaves):
-    """
-    Given a sorted list of multisets, a mapping of structures to vertices
-    that have said structure, and a value function. The previous function
-    updates the values of the vertices found on the map MS. The previous
-    function should behave like: Two vertices on the same level have the same
-    value if and only if they have the same structure. It also defines an order
-    for the children of the vertices in the next level.
-    
+    """Updates the values of current level.
+
+    Given a sorted list of multisets. Updates the values of the vertices found
+    on the map MS in the order specifies by the list.
+
+    Two vertices on the same level have the same value if and only if they have
+    the same structure. It also defines an order for the children of the
+    vertices in the next level.
+
     Parameters
     ----------
-    S : list
+    S : list of natural multisets
         The sorted list of multisets.
-    
-    MS : dictionary
-        A mapping of structures to vertices that have said structure.
-    
-    values : dictionary
-        The values function such that values(v) is the value defined for the v
-        vertex.
-    
-    children : dictionary
-        The children function such that children(v) are the children of v in the
-        rooted tree in an specified order.
 
-    parenthood : dictionary
-        The parenthood function defined for the rooted tree.
-    
-    leaves : set
-        The set of leaves of the current level.
-    
+    MS : dict of natural multiset: set of nodes
+        A mapping of structures to the vertices that have said structure.
+
+    values : dict of node: int
+        The VALUES map such that, for each vertex v in the rooted tree,
+        VALUES(v) is the value associated to v.
+
+    children : dict of node: set of nodes
+        A mapping CHILDREN such that CHILDREN(v) is the ordered list of children
+        of v in the rooted tree.
+
+    parenthood : dict of node: node
+        The parenthood map defined for the rooted tree.
+
+    leaves : set of nodes
+        The leaves of the current level.
+
     Note
     ----
     This algorithm runs in O(m_{i-1} + m_i) time and space where m_{j} are the
     vertices found on the j-th level of the rooted tree.
+
     """
     # The first vertices in the order of children are the leaves.
     for v in leaves:
@@ -698,8 +768,8 @@ def update_values(S, MS, values, children, parenthood, leaves):
         # for the root, who doesn't have a parent.
         if v in parenthood:
             u = parenthood[v]
-            
-            # Add the children to the list of children of the parent.
+
+            # Add the child to the list of children of the parent.
             if u in children:
                 children[u].append(v)
             else:
@@ -707,10 +777,10 @@ def update_values(S, MS, values, children, parenthood, leaves):
 
     # The current value can't be 0 as this value is reserved to leaves.
     current_val = 1
-    
+
     for j in range(len(S)):
         # Ignore repeated multistructures.
-        if j > 0 and (S[j] == S[j-1]):
+        if j > 0 and (S[j] == S[j - 1]):
             continue
 
         # For each vertex that have the current structure, assing the current
@@ -721,21 +791,23 @@ def update_values(S, MS, values, children, parenthood, leaves):
             # If the current vertex has a parent, get the parent.
             if v in parenthood:
                 u = parenthood[v]
-                
-                # Add the children to the parent's list of children.
+
+                # Add the child to the parent's list of children.
                 if u in children:
                     children[u].append(v)
                 else:
                     children[u] = [v]
-            
+
         # For the next unique structure, assign a new value.
         current_val += 1
 
+
 def build_isomorphism(root_T1, root_T2, children_T1, children_T2):
-    """
-    Given two isomorph rooted trees. Build an isomorphism between the
-    vertices of T1 and T2.
-    
+    """Return an isomorphism between two rooted trees.
+
+    Given two isomorph rooted trees. Build an isomorphism between the vertices
+    of T1 and T2.
+
     Parameters
     ----------
     root_T1 : node
@@ -743,76 +815,101 @@ def build_isomorphism(root_T1, root_T2, children_T1, children_T2):
 
     root_T2 : node
         The root of the rooted tree T2.
-    
-    children_T1 : dictionary
-        The children function for T1 such that children(v) are the children of v
-        in the rooted tree T1 in an specified order.
 
-    children_T2 : dictionary
-        The children function for T2 such that children(v) are the children of v
-        in the rooted tree T2 in an specified order.
+    children_T1 : dict of node: set of nodes
+        A mapping CHILDREN such that CHILDREN(v) is the ordered list of children
+        of v in the rooted tree T1.
+
+    children_T2 : dict of node: set of nodes
+        A mapping CHILDREN such that CHILDREN(v) is the ordered list of children
+        of v in the rooted tree T_2.
 
     Returns
     -------
-    An isomorphism between the vertices of T1 and T2.
-    
+    isomorphism : dict of node: node
+        An isomorphism map of the vertices T1 to the vertices of T2.
+
     Note
     ----
     This algorithm runs in O(n) time and space.
+
     """
     # Empty isomorphism
     isomorphism = {}
 
     # Perform a DFS traversal to define the isomorphism.
     Q = [(root_T1, root_T2)]
-    
-    while (len(Q) > 0):
+
+    while len(Q) > 0:
         # Get the head of the stack.
         (v_T1, v_T2) = Q.pop()
-        
+
         isomorphism[v_T1] = v_T2
-        
+
         if v_T1 in children_T1:
             for i in range(len(children_T1[v_T1])):
                 u_T1 = children_T1[v_T1][i]
                 u_T2 = children_T2[v_T2][i]
 
                 Q.append((u_T1, u_T2))
-                
+
     return isomorphism
 
-def levels_verification(root_T1, root_T2, values_T1, values_T2, levels_T1, levels_T2, parenthood_T1, parenthood_T2, height):
-    """
-    For each level i in T1, check that all the structures present in the
-    i-th level are also present in i-th level of T2. If all the levels are the
-    same for both trees, return true.
-    
+
+def levels_verification(
+    root_T1,
+    root_T2,
+    values_T1,
+    values_T2,
+    levels_T1,
+    levels_T2,
+    parenthood_T1,
+    parenthood_T2,
+    height,
+):
+    """Check for all levels that both trees share the same structure.
+
+    For each level i in T1, check that all the structures present on the i-th
+    level are also present in i-th level of T2. If all the levels are the same
+    for both trees, return true.
+
     Parameters
     ----------
-    values_T1 : dictionary
-        The value function for the vertices of the tree T1.
+    root_T1 : node
+        The root of the rooted tree T1.
 
-    values_T2 : dictionary
-        The value function for the vertices of the tree T2.
-    
-    levels_T1 : dictionary
-        The level function for the tree T1.
+    root_T2 : node
+        The root of the rooted tree T2.
 
-    levels_T2 : dictionary
-        The level function for the tree T2.
-    
-    parenthood_T1 : dictionary
-        The parenthood function defined for T1.
+    values_T1 : dict of node: int
+        The VALUES map such that, for each vertex v in the rooted tree T1,
+        VALUES(v) is the value associated to v.
 
-    parenthood_T2 : dictionary
-        The parenthood function defined for T2.
-    
+    values_T2 : dict of node: int
+        The VALUES map such that, for each vertex v in the rooted tree T2,
+        VALUES(v) is the value associated to v.
+
+    levels_T1: dict of int: set of nodes
+        The LEVELS map such that LEVELS(i) are the vertices found on the i-th
+        level of the rooted tree T1.
+
+    levels_T2: dict of int: set of nodes
+        The LEVELS map such that LEVELS(i) are the vertices found on the i-th
+        level of the rooted tree T2.
+
+    parenthood_T1 : dict of node: node
+        The parenthood map defined for the rooted tree T1.
+
+    parenthood_T2 : dict of node: node
+        The parenthood map defined for the rooted tree T2.
+
     height : int
         The height of the trees T1 and T2.
-    
+
     Note
     ----
     This algorithm runs in O(n) time and space.
+
     """
     # Get the initial children found on the 0-th level.
     children_T1 = get_initial_children(parenthood_T1, levels_T1)
@@ -820,25 +917,29 @@ def levels_verification(root_T1, root_T2, values_T1, values_T2, levels_T1, level
 
     # Start at level 1 as all the vertices at level 0 are leaves.
     current_level = 1
-    
-    # check that all the structures present in the i-th level are also present
+
+    # check that all the structures present on the i-th level are also present
     # in i-th level of T2.
     while current_level <= height:
         # Assign the structures for the vertices of the current level for T1 and
         # T2.
-        struct_T1, leaves_T1 = assign_structure(parenthood_T1, levels_T1,
-                                                values_T1, current_level)
+        struct_T1, leaves_T1 = assign_structure(
+            parenthood_T1, levels_T1, values_T1, current_level
+        )
 
-        struct_T2, leaves_T2 = assign_structure(parenthood_T2, levels_T2, 
-                                                values_T2, current_level)
-        
+        struct_T2, leaves_T2 = assign_structure(
+            parenthood_T2, levels_T2, values_T2, current_level
+        )
+
         # Build the list of structures and the mapping.
-        S_T1, MS_T1 = get_multisets_list_of_level(levels_T1, values_T1, 
-                                                  struct_T1, current_level)
+        S_T1, MS_T1 = get_multisets_list_of_level(
+            levels_T1, values_T1, struct_T1, current_level
+        )
 
-        S_T2, MS_T2 = get_multisets_list_of_level(levels_T2, values_T2, 
-                                                  struct_T2, current_level)
-        
+        S_T2, MS_T2 = get_multisets_list_of_level(
+            levels_T2, values_T2, struct_T2, current_level
+        )
+
         # Sort the list of structures.
         sorted_S_T1 = sort_natural_multisets(S_T1)
         sorted_S_T2 = sort_natural_multisets(S_T2)
@@ -846,126 +947,132 @@ def levels_verification(root_T1, root_T2, values_T1, values_T2, levels_T1, level
         # If the sorted lists are different, return false.
         if sorted_S_T1 != sorted_S_T2:
             return False, {}
-        
-        # Update the values and the children.
-        update_values(sorted_S_T1, MS_T1, values_T1, 
-                      children_T1, parenthood_T1, leaves_T1)
 
-        update_values(sorted_S_T2, MS_T2, values_T2, 
-                      children_T2, parenthood_T2, leaves_T2)
-        
+        # Update the values and the children.
+        update_values(
+            sorted_S_T1, MS_T1, values_T1, children_T1, parenthood_T1, leaves_T1
+        )
+
+        update_values(
+            sorted_S_T2, MS_T2, values_T2, children_T2, parenthood_T2, leaves_T2
+        )
+
         # Move to the next level.
         current_level += 1
 
     # If all the previous levels are equal, then build an isomorphism with the
     # previous information.
     isomorphism = build_isomorphism(root_T1, root_T2, children_T1, children_T2)
-    
+
     return True, isomorphism
 
+
 def get_height(T, root):
-    """
-    Returns the height of a rooted tree.
-    
+    """Returns the height of a rooted tree.
+
     Parameters
     ----------
     T : NetworkX Graph
         A rooted tree.
-    
+
     root : node
         The root of the tree.
-    
+
     Returns
     -------
-    The height of the rooted tree.
-    
+    height : int
+        The height of the rooted tree.
+
     Note
     ----
     This algorithm runs in O(n) time and space.
+
     """
     # Define a map for the distance to the root.
     distance_to_root = {}
-    
+
     # The max distance between a root and another vertex.
     max_distance = 0
-    
+
     distance_to_root[root] = 0
-    
+
     # Perform a BFS traversal to determine the distances.
     for (parent, child) in nx.bfs_edges(T, root):
         distance_to_root[child] = distance_to_root[parent] + 1
-        
+
         if max_distance < distance_to_root[child]:
             max_distance = distance_to_root[child]
-            
+
     return max_distance
 
+
 def get_parenthood(T, root):
-    """
-    Returns the parenthood function of a rooted tree.
-    
+    """Returns the parenthood map of a rooted tree.
+
     Parameters
     ----------
     T : NetworkX Graph
         A rooted tree.
-    
+
     root : node
         The root of the tree.
 
     Returns
     -------
-    The parenthood function of the rooted tree.
-    
+    parenthood : dict of node: node
+        The parenthood map of the rooted tree.
+
     Note
     ----
     This algorithm runs in O(n) time and space.
+
     """
-    # Define an empty parenthood function.
+    # Define an empty parenthood map.
     parenthood = {}
 
-    # Perform a BFS traversal to determine the parenthood function.
+    # Perform a BFS traversal to determine the parenthood map.
     for (parent, child) in nx.bfs_edges(T, root):
         parenthood[child] = parent
-        
+
     return parenthood
-        
+
 
 def rooted_tree_isomorphism_n(T1, root_T1, T2, root_T2):
-    """
-    Returns if two rooted trees are isomorph.
-    
+    """Returns an isomorphism between two rooted trees, if it exists.
+
     Parameters
     ----------
     T1 : NetworkX Graph
         A rooted tree.
-    
+
     root_T1 : node
-        The root of T1.
+        The root of the rooted tree T1.
 
     T2 : NetworkX Graph
         A rooted tree.
-    
+
     root_t2 : node
-        The root of T2.
-    
+        The root of the rooted tree T2.
+
     Returns
     -------
-    bool
+    are_iso : bool
         Returns True if the given rooted trees are isomorphic, False otherwise.
-    
-    dictionary of nodes to nodes
-        The isomorphism function f (or dictionary) such that (u, v) is in E_T1
-        if and only if (f(u), f(v)) is in E_T2. This dictionary is empty when
-        there is no isomorphism between the trees.
-    
+
+    isomorphism : dict of node of T1: node of T2
+        The isomorphism mapping f such that (u, v) is in E_T1 if and only if
+        (f(u), f(v)) is in E_T2. This dictionary is empty when there is no
+        isomorphism between the trees.
+
     Note
     ----
     This algorithm runs in O(n) time and space.
+
     """
     # If both trees have different amount of vertices, return false.
     if T1.order() != T2.order():
         return False, {}
-    
+
     # If both trees are empty, return true.
     if T1.order() == 0:
         return True, {}
@@ -973,71 +1080,79 @@ def rooted_tree_isomorphism_n(T1, root_T1, T2, root_T2):
     # If trees have more than one node, verify that they're indeed trees.
     assert nx.is_tree(T1)
     assert nx.is_tree(T2)
-    
+
     # Get the height's of the trees.
     height_T1 = get_height(T1, root_T1)
     height_T2 = get_height(T2, root_T2)
-    
+
     # If the trees differ in height, return false.
     if height_T1 != height_T2:
         return False, {}
     elif height_T1 == 0:
         # If both trees have height 0, then there are only conformed by the
         # roots, they're isomorph.
-        return True, {root_T1 : root_T2}
+        return True, {root_T1: root_T2}
     else:
         # If they have the same amount of levels, check that all levels coincide
         # in structure.
         levels_T1 = get_levels(T1, root_T1, height_T1)
         levels_T2 = get_levels(T2, root_T2, height_T2)
-        
+
         # For every level i, check that both trees have the same amount of
         # vertices on the i-th level. If they differ for some level, return
         # false.
         for i in range(height_T1):
             if len(levels_T1[i]) != len(levels_T2[i]):
                 return False, {}
-        
+
         # Set the initial values for T1 and T2.
         values_T1 = get_initial_values(T1, root_T1)
         values_T2 = get_initial_values(T2, root_T2)
-        
-        # Set the parenthood function for T1 and T2.
+
+        # Define the parenthood map for T1 and T2.
         parenthood_T1 = get_parenthood(T1, root_T1)
         parenthood_T2 = get_parenthood(T2, root_T2)
-        
-        return levels_verification(root_T1, root_T2,
-                                   values_T1, values_T2,
-                                   levels_T1, levels_T2,
-                                   parenthood_T1, parenthood_T2,
-                                   height_T1)
+
+        # Check that all levels have the same structure.
+        return levels_verification(
+            root_T1,
+            root_T2,
+            values_T1,
+            values_T2,
+            levels_T1,
+            levels_T2,
+            parenthood_T1,
+            parenthood_T2,
+            height_T1,
+        )
+
 
 def get_centers_of_tree(T):
-    """
-    Returns the center (or centers) of the tree.
-    
+    """Returns the center (or centers) of the tree.
+
     Parameters
     ----------
     T : NetworkX Graph
         A tree.
-    
+
     Returns
     -------
-    set of nodes
+    centers : set of nodes
         Returns the center or centers of the tree as a set.
-    
+
     Note
     ----
     This algorithm runs in O(n) time and space.
+
     """
     # Get a random node.
     v = list(T)[0]
-    
+
     # Perform a BFS with v as a root and save the last explored vertex.
     x = v
     for (parent, child) in nx.bfs_edges(T, x):
         x = child
-    
+
     # Perform again a BFS with x now as a root and save the last explored
     # vertex.
     y = x
@@ -1045,36 +1160,38 @@ def get_centers_of_tree(T):
     for (parent, child) in nx.bfs_edges(T, x):
         parenthood[child] = parent
         y = child
-        
-    # Build the xy-path found in T using the parenthood function defined in the
+
+    # Build the xy-path found in T using the parenthood map defined in the
     # previous traversal. This path's length is the tree's diameter.
     P = [y]
     current = y
     while current in parenthood:
         current = parenthood[current]
         P.append(current)
-    
+
+    # The vertices found on the middle of this path are the centers.
     n = len(P)
-    if (n % 2 == 0):
+    if n % 2 == 0:
         # If the xy-path has even length, then the vertices found in the
         # (n/2)-th and ((n/2)-1)-th position are the centers.
-        p0 = int(n/2)
-        p1 = int((n/2) - 1)
+        p0 = int(n / 2)
+        p1 = int((n / 2) - 1)
         centers = {P[p0], P[p1]}
     else:
         # If the xy-path has odd length, then the vertex found in the
         # ((n-1)/2)-th position is the center.
-        p0 = int((n-1)/2)
+        p0 = int((n - 1) / 2)
         centers = {P[p0]}
-        
+
     return centers
 
+
 def tree_isomorphism_n(T1, T2):
-    """
-    Given two undirected (or free) trees `T1` and `T2`, this function
-    determines if they are isomorphic. It returns the a boolean, indicating if
-    they are isomorphic, and the isomorphism, a mapping of the nodes of `t1`
-    onto the nodes of `t2`, such that two trees are then identical.
+    """Returns an isomorphism between two rooted trees, if it exists.
+
+    Given two undirected trees T1 and T2. This function determines if they are
+    isomorphic. It returns the a boolean, indicating if they are isomorphic. And
+    the isomorphism, a mapping of the nodes of T1 onto the nodes of T2.
 
     Note that two trees may have more than one isomorphism, and this
     routine just returns one valid mapping.
@@ -1089,24 +1206,23 @@ def tree_isomorphism_n(T1, T2):
 
     Returns
     -------
-    is_isomorphic : bool
+    are_isomorphic : bool
         Returns True if the given rooted trees are isomorph, False otherwise.
-    
-    
-    isomorphism : dictionary of nodes of T1 to nodes of T2
-        A dictionary f which maps the nodes of T1 to the nodes of T2, such that
-        (u, v) is in E_T1 if and only if (f(u), f(v)) is in E_T2. This 
-        dictionary is empty when there is no isomorphism between the given 
-        trees.
+
+    isomorphism : dict of node of T1: node of T2
+        The isomorphism mapping f such that (u, v) is in E_T1 if and only if
+        (f(u), f(v)) is in E_T2. This dictionary is empty when there is no
+        isomorphism between the trees.
 
     Notes
     -----
     This runs in O(n) time for trees with n nodes.
+
     """
     # If the trees differ in order, return false.
     if T1.order() != T2.order():
         return False, {}
-    
+
     # If the trees are emtpy graphs, then they're isomorphic by definition.
     if T1.order() == 0:
         return True, {}
@@ -1120,15 +1236,15 @@ def tree_isomorphism_n(T1, T2):
     D_T2 = NaturalMultiset([d for (n, d) in T2.degree()])
     if D_T1 != D_T2:
         return False, {}
-    
+
     # Find the centers of T1 and T2.
     centers_T1 = get_centers_of_tree(T1)
     centers_T2 = get_centers_of_tree(T2)
-    
+
     # If they differ on the amount of centers, return false.
     if len(centers_T1) != len(centers_T2):
         return False, {}
-    
+
     # Otherwise, form every posible pairs of centers of T1 with centers of T2
     # and check if the rooted trees are isomorphic. If one of them are, return
     # the found isomorphism.
@@ -1140,7 +1256,7 @@ def tree_isomorphism_n(T1, T2):
 
         # If none of the previous trees were isomorphic, then return false.
         return False, {}
-    
+
 
 def root_trees(t1, root1, t2, root2):
     """Create a single digraph dT of free trees t1 and t2
