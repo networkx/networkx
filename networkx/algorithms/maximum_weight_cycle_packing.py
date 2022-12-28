@@ -1,9 +1,12 @@
 import doctest
+import logging
 
 import networkx as nx
 import numpy as np
 from networkx.algorithms import cycles
-
+import logger
+logging.basicConfig(filemode="Logs.log",level=logging.INFO)
+log=logging.getLogger()
 """REUT HADAD & TAL SOMECH"""
 
 """
@@ -72,7 +75,7 @@ def maximum_weight_cycle_packing(graph: nx.DiGraph, k: int) -> list:
     """
 
     Ys,cycles = create_Ys(graph,k)
-
+    logging.info("Created Ys")
     X = []
     max_cycles=[]
     max_weight=0
@@ -86,12 +89,14 @@ def maximum_weight_cycle_packing(graph: nx.DiGraph, k: int) -> list:
                 if edge[0] not in X:
                     X.append(edge[0])
                 ans_graph.add_node(f"X{edge[0]}")
+        logging.info("Created nodes")
 
         for i in range(len(X)):  # creating the edges in the graph by going through the 2-circles
             for j in range(i + 1, len(X)):
                 if (X[i], X[j]) in graph.edges and (X[j], X[i]) in graph.edges:
                     weight = graph.get_edge_data(X[i], X[j])["weight"] + graph.get_edge_data(X[j], X[i])["weight"]
                     ans_graph.add_edge(f"X{X[i]}", f"X{X[j]}", weight=weight, cycle=[X[i], X[j]])
+        logging.info("Created 2-edges")
 
         #   creating the edges in the graph by going through the 3-circles
         for k in range(len(X)):
@@ -101,6 +106,8 @@ def maximum_weight_cycle_packing(graph: nx.DiGraph, k: int) -> list:
                              graph.get_edge_data(X[k], j)["weight"]
                     ans_graph.add_edge(f"X{X[k]}", f"Y{j},{l}", weight=weight, cycle=[j, l, X[k]])
         exchanges = list(nx.max_weight_matching(ans_graph))
+        logging.info("Created 3-edges")
+
         to_remove = set()
         # now in this use-case we iterate over all the matching which we got back
         # and we want to remove the ones with the same node , like (X8,Y1,3),(Y1,8,X2)
@@ -119,6 +126,8 @@ def maximum_weight_cycle_packing(graph: nx.DiGraph, k: int) -> list:
                             to_remove.add(exchanges[i])
         if len(to_remove) > 0:
             exchanges.remove(*to_remove)
+        logging.info("removed redundant")
+
         #   This next part is used to get the max exchange.
         temp_max=0
         for cyc in exchanges:
@@ -140,6 +149,7 @@ def maximum_weight_cycle_packing(graph: nx.DiGraph, k: int) -> list:
             else:
                 temp.append(int(node[1:]))
         result.append(temp)
+    logging.info("Finished algorithm")
 
     return result  # exchanges
 
