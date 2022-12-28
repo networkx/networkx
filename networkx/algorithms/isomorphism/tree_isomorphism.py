@@ -969,6 +969,10 @@ def rooted_tree_isomorphism_n(T1, root_T1, T2, root_T2):
     # If both trees are empty, return true.
     if T1.order() == 0:
         return True, {}
+
+    # If trees have more than one node, verify that they're indeed trees.
+    assert nx.is_tree(T1)
+    assert nx.is_tree(T2)
     
     # Get the height's of the trees.
     height_T1 = get_height(T1, root_T1)
@@ -1106,6 +1110,16 @@ def tree_isomorphism_n(T1, T2):
     # If the trees are emtpy graphs, then they're isomorphic by definition.
     if T1.order() == 0:
         return True, {}
+
+    # If trees have more than one node, verify that they're indeed trees.
+    assert nx.is_tree(T1)
+    assert nx.is_tree(T2)
+
+    # Another shortcut is that the degree sequences need to be the same.
+    D_T1 = NaturalMultiset([d for (n, d) in T1.degree()])
+    D_T2 = NaturalMultiset([d for (n, d) in T2.degree()])
+    if D_T1 != D_T2:
+        return False, {}
     
     # Find the centers of T1 and T2.
     centers_T1 = get_centers_of_tree(T1)
@@ -1123,9 +1137,9 @@ def tree_isomorphism_n(T1, T2):
             is_iso, iso = rooted_tree_isomorphism_n(T1, u, T2, v)
             if is_iso:
                 return is_iso, iso
-    
-    # If none of the previous trees were isomorphic, then return false.
-    return False, {}
+
+        # If none of the previous trees were isomorphic, then return false.
+        return False, {}
     
 
 def root_trees(t1, root1, t2, root2):
