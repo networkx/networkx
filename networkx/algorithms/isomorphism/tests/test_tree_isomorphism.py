@@ -13,6 +13,7 @@ from networkx.algorithms.isomorphism.tree_isomorphism import (
     assign_structure,
     get_multisets_list_of_level,
     update_values,
+    rooted_tree_isomorphism_n,
     rooted_tree_isomorphism,
     tree_isomorphism,
 )
@@ -506,6 +507,24 @@ def test_get_multisets_list_of_level():
     update_values(structures_list_lvl_2, mapping_lvl_2, values)
     
     assert expected_values_after_lvl_2 == values
+
+# Tests the function rooted_tree_isomorphism_n.
+def test_rooted_tree_isomorphism_n_hardcoded():
+    # The following trees are isomorph.
+    edges_t1 = [("v0", "v1"), ("v0", "v2"), ("v0", "v3"),
+                ("v1", "v4"), ("v1", "v5"), ("v3", "v6"), 
+                ("v4", "v7"), ("v4", "v8"), ("v4", "v9"), 
+                ("v6", "v10"), ("v6", "v11"), ("v9", "v12")]
+    T1 = nx.Graph(edges_t1)
+    
+    edged_t2 = [("w0", "w1"), ("w0", "w2"), ("w0", "w3"),
+                ("w2", "w4"), ("w4", "w5"), ("w4", "w6"),
+                ("w3", "w7"), ("w3", "w8"), ("w8", "w9"), 
+                ("w8", "w10"), ("w8", "w11"), ("w10", "w12")]
+    
+    T2 = nx.Graph(edged_t2)
+    
+    assert rooted_tree_isomorphism_n(T1, "v0", T2, "w0")
 
 # have this work for graph
 # given two trees (either the directed or undirected)
