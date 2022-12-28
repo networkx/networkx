@@ -83,7 +83,8 @@ class NxParallel:
                 distributed, has_distributed, _ = optional_package("distributed")
                 if not has_dask or not has_distributed:
                     raise ImportError(
-                        "dask[distributed] is not installed. Install dask using 'pip install dask distributed'."
+                        "dask[distributed] is not installed. Install dask using 'pip"
+                        " install dask distributed'."
                     )
                 client = distributed.Client(**kwargs)
                 joblib.register_parallel_backend(
