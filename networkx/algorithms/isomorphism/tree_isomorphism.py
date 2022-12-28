@@ -951,7 +951,7 @@ def rooted_tree_isomorphism_n(T1, root_T1, T2, root_T2):
     Returns
     -------
     bool
-        Returns True if the given rooted trees are isomorph, False otherwise.
+        Returns True if the given rooted trees are isomorphic, False otherwise.
     
     dictionary of nodes to nodes
         The isomorphism function f (or dictionary) such that (u, v) is in E_T1
@@ -1007,6 +1007,125 @@ def rooted_tree_isomorphism_n(T1, root_T1, T2, root_T2):
                                    levels_T1, levels_T2,
                                    parenthood_T1, parenthood_T2,
                                    height_T1)
+
+def get_centers_of_tree(T):
+    """
+    Returns the center (or centers) of the tree.
+    
+    Parameters
+    ----------
+    T : NetworkX Graph
+        A tree.
+    
+    Returns
+    -------
+    set of nodes
+        Returns the center or centers of the tree as a set.
+    
+    Note
+    ----
+    This algorithm runs in O(n) time and space.
+    """
+    # Get a random node.
+    v = list(T)[0]
+    
+    # Perform a BFS with v as a root and save the last explored vertex.
+    x = v
+    for (parent, child) in nx.bfs_edges(T, x):
+        x = child
+    
+    # Perform again a BFS with x now as a root and save the last explored
+    # vertex.
+    y = x
+    parenthood = {}
+    for (parent, child) in nx.bfs_edges(T, x):
+        parenthood[child] = parent
+        y = child
+        
+    # Build the xy-path found in T using the parenthood function defined in the
+    # previous traversal. This path's length is the tree's diameter.
+    P = [y]
+    current = y
+    while current in parenthood:
+        current = parenthood[current]
+        P.append(current)
+    
+    n = len(P)
+    if (n % 2 == 0):
+        # If the xy-path has even length, then the vertices found in the
+        # (n/2)-th and ((n/2)-1)-th position are the centers.
+        p0 = int(n/2)
+        p1 = int((n/2) - 1)
+        centers = {P[p0], P[p1]}
+    else:
+        # If the xy-path has odd length, then the vertex found in the
+        # ((n-1)/2)-th position is the center.
+        p0 = int((n-1)/2)
+        centers = {P[p0]}
+        
+    return centers
+
+def tree_isomorphism_n(T1, T2):
+    """
+    Given two undirected (or free) trees `T1` and `T2`, this function
+    determines if they are isomorphic. It returns the a boolean, indicating if
+    they are isomorphic, and the isomorphism, a mapping of the nodes of `t1`
+    onto the nodes of `t2`, such that two trees are then identical.
+
+    Note that two trees may have more than one isomorphism, and this
+    routine just returns one valid mapping.
+
+    Parameters
+    ----------
+    T1 : undirected NetworkX graph
+        One of the trees being compared
+
+    T2 : undirected NetworkX graph
+        The other tree being compared
+
+    Returns
+    -------
+    is_isomorphic : bool
+        Returns True if the given rooted trees are isomorph, False otherwise.
+    
+    
+    isomorphism : dictionary of nodes of T1 to nodes of T2
+        A dictionary f which maps the nodes of T1 to the nodes of T2, such that
+        (u, v) is in E_T1 if and only if (f(u), f(v)) is in E_T2. This 
+        dictionary is empty when there is no isomorphism between the given 
+        trees.
+
+    Notes
+    -----
+    This runs in O(n) time for trees with n nodes.
+    """
+    # If the trees differ in order, return false.
+    if T1.order() != T2.order():
+        return False, {}
+    
+    # If the trees are emtpy graphs, then they're isomorphic by definition.
+    if T1.order() == 0:
+        return True, {}
+    
+    # Find the centers of T1 and T2.
+    centers_T1 = get_centers_of_tree(T1)
+    centers_T2 = get_centers_of_tree(T2)
+    
+    # If they differ on the amount of centers, return false.
+    if len(centers_T1) != len(centers_T2):
+        return False, {}
+    
+    # Otherwise, form every posible pairs of centers of T1 with centers of T2
+    # and check if the rooted trees are isomorphic. If one of them are, return
+    # the found isomorphism.
+    for u in centers_T1:
+        for v in centers_T2:
+            is_iso, iso = rooted_tree_isomorphism_n(T1, u, T2, v)
+            if is_iso:
+                return is_iso, iso
+    
+    # If none of the previous trees were isomorphic, then return false.
+    return False, {}
     
 
 def root_trees(t1, root1, t2, root2):
