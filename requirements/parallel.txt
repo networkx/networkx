@@ -1,4 +1,1 @@
-dask>=2022.12.1
-distributed>=2022.12.1
-ipyparallel>=8.4.1
-ray>=2.2.0
+joblib>=1.2.0

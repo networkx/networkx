@@ -1,3 +1,5 @@
+from functools import reduce
+
 import pytest
 
 import networkx as nx
@@ -76,10 +78,6 @@ def test_NxParallel_call():
     # Create an instance of the NxParallel class
     nxp = NxParallel(backend="multiprocessing", processes=4)
 
-    G_ba = nx.barabasi_albert_graph(1000, 3)
-    G_er = nx.gnp_random_graph(1000, 0.01)
-    G_ws = nx.connected_watts_strogatz_graph(1000, 4, 0.1)
-
     def betweenness_centrality(G, parallel_callable=nxp):
         """Parallel betweenness centrality function"""
         node_divisor = parallel_callable.processes * 4
@@ -95,10 +93,9 @@ def test_NxParallel_call():
         bt_sc = parallel_callable(nx.betweenness_centrality_subset, iterable)
 
         # Reduce the partial solutions
-        bt_c = bt_sc[0]
-        for bt in bt_sc[1:]:
-            for n in bt:
-                bt_c[n] += bt[n]
+        bt_c = reduce(
+            lambda x, y: {k: x.get(k, 0) + y.get(k, 0) for k in set(x) | set(y)}, bt_sc
+        )
         return bt_c
 
     G_ba = nx.barabasi_albert_graph(1000, 3, seed=42)
