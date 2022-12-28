@@ -36,7 +36,8 @@ def chunks(l: Union[List, Tuple], n: int) -> Iterable:
 
 
 class NxParallel:
-    """A class to instantiate a callable object for handling parallelization of functions in NetworkX. The class is initialized by specifying a backend and the
+    """A class to instantiate a callable object for handling parallelization of
+    functions in NetworkX. The class is initialized by specifying a backend and the
     number of processes to use, and can then be called with a function object and an
     associated iterable as input. The function will be called on each element of the
     iterable in parallel. The class can be used with the multiprocessing, ipyparallel,
@@ -45,10 +46,11 @@ class NxParallel:
     Attributes
     ----------
     backend : str
-        The backend to use. Choose from 'multiprocessing', 'dask', 'ray', 'loky', 'threading', or 'ipyparallel'.
+        The backend to use. Choose from 'multiprocessing', 'dask', 'ray', 'loky',
+        'threading', or 'ipyparallel'.
     processes : int
-        The number of processes to use. If None, the number of processes will be set to the number
-        of CPUs on the machine.
+        The number of processes to use. If None, the number of processes will be set to
+        the number of CPUs on the machine.
 
     Raises
     ------
