@@ -934,6 +934,7 @@ def draw_networkx_labels(
     font_family="sans-serif",
     font_weight="normal",
     alpha=None,
+    node_color=None,
     bbox=None,
     horizontalalignment="center",
     verticalalignment="center",
@@ -970,6 +971,13 @@ def draw_networkx_labels(
 
     alpha : float or None (default=None)
         The text transparency
+
+    node_color : color or array of colors (default='#1f78b4')
+        Node color. Can be a single color or a sequence of colors with the same
+        length as nodelist. Color can be string or rgb (or rgba) tuple of
+        floats from 0-1. If numeric values are specified they will be
+        mapped to colors using the cmap and vmin,vmax parameters. See
+        matplotlib.scatter for more details.
 
     bbox : Matplotlib bbox, (default is Matplotlib's ax.text default)
         Specify text box properties (e.g. shape, color etc.) for node labels.
@@ -1020,6 +1028,11 @@ def draw_networkx_labels(
         (x, y) = pos[n]
         if not isinstance(label, str):
             label = str(label)  # this makes "1" and 1 labeled the same
+        if node_color is not None and bbox is not None:
+            color = node_color[idx]
+            if isinstance(color, Number):
+                color = [color, color, color]
+            bbox["facecolor"] = color
         t = ax.text(
             x,
             y,
