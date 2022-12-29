@@ -4,22 +4,23 @@ import time
 import networkx as nx
 from networkx.algorithms.isomorphism.tree_isomorphism import (
     NaturalMultiset,
+    assign_structure,
     categorize_entries,
     categorize_lists,
+    get_centers_of_tree,
+    get_initial_values,
+    get_levels,
+    get_multisets_list_of_level,
+    rooted_tree_isomorphism,
+    rooted_tree_isomorphism_n,
     sort_lists_of_naturals,
     sort_natural_multisets,
-    get_levels,
-    get_initial_values,
-    assign_structure,
-    get_multisets_list_of_level,
-    update_values,
-    rooted_tree_isomorphism_n,
-    get_centers_of_tree,
-    tree_isomorphism_n,
-    rooted_tree_isomorphism,
     tree_isomorphism,
+    tree_isomorphism_n,
+    update_values,
 )
 from networkx.classes.function import is_directed
+
 
 # Tests the function to_list from the Natural Multiset class.
 def test_multiset_to_list():
