@@ -315,9 +315,9 @@ def draw_networkx_nodes(
     node_color="#1f78b4",
     node_shape="o",
     alpha=None,
-    node_cmap=None,
-    node_vmin=None,
-    node_vmax=None,
+    cmap=None,
+    vmin=None,
+    vmax=None,
     ax=None,
     linewidths=None,
     edgecolors=None,
@@ -427,12 +427,10 @@ def draw_networkx_nodes(
         raise nx.NetworkXError(f"Node {err} has no position.") from err
 
     if isinstance(alpha, Iterable):
-        node_color = apply_alpha(
-            node_color, alpha, nodelist, node_cmap, node_vmin, node_vmax
-        )
+        node_color = apply_alpha(node_color, alpha, nodelist, cmap, vmin, vmax)
         alpha = None
 
-    node_color = get_colormapped_value(node_color, pos, node_cmap, node_vmin, node_vmax)
+    node_color = get_colormapped_value(node_color, pos, cmap, vmin, vmax)
 
     node_collection = ax.scatter(
         xy[:, 0],
@@ -440,9 +438,9 @@ def draw_networkx_nodes(
         s=node_size,
         c=node_color,
         marker=node_shape,
-        cmap=node_cmap,
-        vmin=node_vmin,
-        vmax=node_vmax,
+        cmap=cmap,
+        vmin=vmin,
+        vmax=vmax,
         alpha=alpha,
         linewidths=linewidths,
         edgecolors=edgecolors,
@@ -951,9 +949,9 @@ def draw_networkx_labels(
     font_weight="normal",
     alpha=None,
     node_color=None,
-    node_cmap=None,
-    node_vmin=None,
-    node_vmax=None,
+    cmap=None,
+    vmin=None,
+    vmax=None,
     bbox=None,
     horizontalalignment="center",
     verticalalignment="center",
@@ -1056,7 +1054,7 @@ def draw_networkx_labels(
             label = str(label)  # this makes "1" and 1 labeled the same
         if node_color is not None and bbox is not None:
             bbox["facecolor"] = get_colormapped_value(
-                node_color, pos, node_cmap, node_vmin, node_vmax
+                node_color, pos, cmap, vmin, vmax
             )[idx]
         t = ax.text(
             x,
