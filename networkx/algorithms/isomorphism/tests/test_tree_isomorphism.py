@@ -493,7 +493,7 @@ def test_get_multisets_list_of_level():
     assert obt_mapping_lvl_2 == expected_mapping_lvl_2
 
 
-def test_get_multisets_list_of_level():
+def test_update_values():
     # Test for an specific scenario.
     # Starting values.
     values = {
