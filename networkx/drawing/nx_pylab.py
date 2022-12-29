@@ -315,9 +315,9 @@ def draw_networkx_nodes(
     node_color="#1f78b4",
     node_shape="o",
     alpha=None,
-    cmap=None,
-    vmin=None,
-    vmax=None,
+    node_cmap=None,
+    node_vmin=None,
+    node_vmax=None,
     ax=None,
     linewidths=None,
     edgecolors=None,
@@ -427,8 +427,12 @@ def draw_networkx_nodes(
         raise nx.NetworkXError(f"Node {err} has no position.") from err
 
     if isinstance(alpha, Iterable):
-        node_color = apply_alpha(node_color, alpha, nodelist, cmap, vmin, vmax)
+        node_color = apply_alpha(
+            node_color, alpha, nodelist, node_cmap, node_vmin, node_vmax
+        )
         alpha = None
+
+    node_color = get_colormapped_value(node_color, pos, node_cmap, node_vmin, node_vmax)
 
     node_collection = ax.scatter(
         xy[:, 0],
@@ -436,9 +440,9 @@ def draw_networkx_nodes(
         s=node_size,
         c=node_color,
         marker=node_shape,
-        cmap=cmap,
-        vmin=vmin,
-        vmax=vmax,
+        cmap=node_cmap,
+        vmin=node_vmin,
+        vmax=node_vmax,
         alpha=alpha,
         linewidths=linewidths,
         edgecolors=edgecolors,
@@ -461,6 +465,32 @@ def draw_networkx_nodes(
 
     node_collection.set_zorder(2)
     return node_collection
+
+
+def get_colormapped_value(color, pos, cmap=None, vmin=None, vmax=None):
+    # Check if edge_color is an array of floats and map to edge_cmap.
+    # This is the only case handled differently from matplotlib
+
+    import matplotlib as mpl
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    if (
+        np.iterable(color)
+        and (len(color) == len(pos))
+        and np.alltrue([isinstance(c, Number) for c in color])
+    ):
+        if cmap is not None:
+            assert isinstance(cmap, mpl.colors.Colormap)
+        else:
+            cmap = plt.get_cmap()
+        if vmin is None:
+            vmin = min(color)
+        if vmax is None:
+            vmax = max(color)
+        color_normal = mpl.colors.Normalize(vmin=vmin, vmax=vmax, clip=True)
+        color = [cmap(color_normal(e)) for e in color]
+    return color
 
 
 def draw_networkx_edges(
@@ -716,23 +746,9 @@ def draw_networkx_edges(
     # set edge positions
     edge_pos = np.asarray([(pos[e[0]], pos[e[1]]) for e in edgelist])
 
-    # Check if edge_color is an array of floats and map to edge_cmap.
-    # This is the only case handled differently from matplotlib
-    if (
-        np.iterable(edge_color)
-        and (len(edge_color) == len(edge_pos))
-        and np.alltrue([isinstance(c, Number) for c in edge_color])
-    ):
-        if edge_cmap is not None:
-            assert isinstance(edge_cmap, mpl.colors.Colormap)
-        else:
-            edge_cmap = plt.get_cmap()
-        if edge_vmin is None:
-            edge_vmin = min(edge_color)
-        if edge_vmax is None:
-            edge_vmax = max(edge_color)
-        color_normal = mpl.colors.Normalize(vmin=edge_vmin, vmax=edge_vmax)
-        edge_color = [edge_cmap(color_normal(e)) for e in edge_color]
+    edge_color = get_colormapped_value(
+        edge_color, edge_pos, edge_cmap, edge_vmin, edge_vmax
+    )
 
     def _draw_networkx_edges_line_collection():
         edge_collection = mpl.collections.LineCollection(
@@ -935,6 +951,9 @@ def draw_networkx_labels(
     font_weight="normal",
     alpha=None,
     node_color=None,
+    node_cmap=None,
+    node_vmin=None,
+    node_vmax=None,
     bbox=None,
     horizontalalignment="center",
     verticalalignment="center",
@@ -978,6 +997,12 @@ def draw_networkx_labels(
         floats from 0-1. If numeric values are specified they will be
         mapped to colors using the cmap and vmin,vmax parameters. See
         matplotlib.scatter for more details.
+
+    node_cmap : Matplotlib colormap, optional
+        Colormap for mapping intensities of nodes
+
+    node_vmin,node_vmax : floats, optional
+        Minimum and maximum for node colormap scaling
 
     bbox : Matplotlib bbox, (default is Matplotlib's ax.text default)
         Specify text box properties (e.g. shape, color etc.) for node labels.
@@ -1024,15 +1049,15 @@ def draw_networkx_labels(
         labels = {n: n for n in G.nodes()}
 
     text_items = {}  # there is no text collection so we'll fake one
+    idx = 0
     for n, label in labels.items():
         (x, y) = pos[n]
         if not isinstance(label, str):
             label = str(label)  # this makes "1" and 1 labeled the same
         if node_color is not None and bbox is not None:
-            color = node_color[idx]
-            if isinstance(color, Number):
-                color = [color, color, color]
-            bbox["facecolor"] = color
+            bbox["facecolor"] = get_colormapped_value(
+                node_color, pos, node_cmap, node_vmin, node_vmax
+            )[idx]
         t = ax.text(
             x,
             y,
@@ -1049,6 +1074,8 @@ def draw_networkx_labels(
             clip_on=clip_on,
         )
         text_items[n] = t
+
+        idx += 1
 
     ax.tick_params(
         axis="both",
