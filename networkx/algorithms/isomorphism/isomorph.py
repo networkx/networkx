@@ -24,6 +24,10 @@ def could_be_isomorphic(G1, G2):
     Notes
     -----
     Checks for matching degree, triangle, and number of cliques sequences.
+    The triangle sequence contains the number of triangles each node is part of.
+    The clique sequence contains for each node the number of maximal cliques
+    involving that node.
+
     """
 
     # Check global properties
@@ -65,7 +69,8 @@ def fast_could_be_isomorphic(G1, G2):
 
     Notes
     -----
-    Checks for matching degree and triangle sequences.
+    Checks for matching degree and triangle sequences. The triangle
+    sequence contains the number of triangles each node is part of.
     """
     # Check global properties
     if G1.order() != G2.order():
