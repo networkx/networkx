@@ -20,7 +20,6 @@ References
 """
 
 import networkx as nx
-import numpy as np
 from networkx.utils.decorators import not_implemented_for
 
 __all__ = ["rooted_tree_isomorphism", "tree_isomorphism"]
@@ -129,7 +128,7 @@ class NaturalMultiset:
         m = max(self.X)
 
         # Define an array of size m.
-        A = np.zeros(m + 1, dtype="int")
+        A = [0 for i in range(m + 1)]
 
         # The array S now keeps the number of occurrences.
         for x in self.X:
