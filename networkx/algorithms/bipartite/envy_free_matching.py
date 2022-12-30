@@ -1,6 +1,7 @@
 import doctest
 
 import networkx as nx
+import networkx
 import logging
 
 logging.basicConfig(filename="envy_free_matching.log", level=logging.DEBUG)
@@ -44,6 +45,16 @@ def __neighbours_of_set__(G, node_set):
         ret_set.update(G[node])
 
     return set(ret_set)
+
+
+def _get_sets(G):
+    X = set()
+    Y = set()
+    for component in nx.connected_components(G):
+        X_, Y_ = nx.bipartite.sets(G.subgraph(component))
+        X = X.union(X_)
+        Y = Y.union(Y_)
+    return X, Y
 
 
 def __M_alternating_sequence__(G, M, top_nodes=None):
@@ -230,7 +241,7 @@ def _EFM_partition(G, M=None, top_nodes=None):
     for subset in Y_subsets:
         Y_S.update(subset)
 
-    return [set(X) - X_S, X_S, set(Y) - Y_S, Y_S]
+    return (set(X) - X_S, X_S, set(Y) - Y_S, Y_S)
 
 
 def envy_free_matching(G, top_nodes=None):
@@ -318,25 +329,9 @@ def minimum_weight_envy_free_matching(G, top_nodes=None):
     Examples
     --------
         Example 1: K 3,3 with weights
-        >>> Graph=nx.Graph()
-        >>> Graph.add_nodes_from([0, 1, 2], bipartite=0)
-        >>> Graph.add_nodes_from([3, 4, 5], bipartite=1)
-        >>> Graph.add_edge(0,3,weight=250)
-        >>> Graph.add_edge(3,0,weight=250)
-        >>> Graph.add_edge(0,4,weight=148)
-        >>> Graph.add_edge(4,0,weight=148)
-        >>> Graph.add_edge(0,5,weight=122)
-        >>> Graph.add_edge(5,0,weight=122)
-        >>> Graph.add_edge(1,3,weight=175)
-        >>> Graph.add_edge(3,0,weight=175)
-        >>> Graph.add_edge(1,4,weight=135)
-        >>> Graph.add_edge(4,1,weight=135)
-        >>> Graph.add_edge(1,5,weight=150)
-        >>> Graph.add_edge(5,1,weight=150)
-        >>> Graph.add_edge(2,3,weight=150)
-        >>> Graph.add_edge(3,2,weight=150)
-        >>> Graph.add_edge(2,4,weight=125)
-        >>> Graph.add_edge(4,2,weight=125)
+        >>> G = nx.Graph()
+        >>> weights = [(0,3,250), (0,4,148), (0,5,122), (1,3,175), (1,4,135), (1,5,150), (2,3,150), (2,4,125)]
+        >>> G.add_weighted_edges_from(weights)
         >>> minimum_weight_envy_free_matching(Graph)
         {0: 5, 1: 4, 2: 3, 5: 0, 4: 1, 3: 2}
 
@@ -348,6 +343,7 @@ def minimum_weight_envy_free_matching(G, top_nodes=None):
         {2: 5, 3: 6, 5: 2, 6: 3}
     """
     logger.info(f"Finding the minimum cost maximum cardinality envy free matching of {G}")
+    logger.debug(f"Finding the maximum matching of {G}")
     M = nx.bipartite.maximum_matching(G, top_nodes=top_nodes)
     logger.debug(f"Got matching: {M}")
     logger.debug(f"Finding the EFM partition with maximum matching: {M}")
@@ -360,33 +356,5 @@ def minimum_weight_envy_free_matching(G, top_nodes=None):
 
 
 if __name__ == '__main__':
-    # doctest.testmod(verbose=True)
-    A = nx.Graph()
-    A.add_nodes_from([0, 1, 2, 3])
-    A.add_nodes_from([4, 5, 6, 7])
-    A.add_edge(0, 4, weight=5)
-    A.add_edge(4, 0, weight=5)
-    A.add_edge(1, 4, weight=1)
-    A.add_edge(4, 1, weight=1)
-    A.add_edge(2, 5, weight=3)
-    A.add_edge(5, 2, weight=3)
-    A.add_edge(2, 7, weight=9)
-    A.add_edge(7, 2, weight=9)
-    A.add_edge(3, 6, weight=3)
-    A.add_edge(6, 3, weight=3)
-    A.add_edge(3, 7, weight=7)
-    A.add_edge(7, 3, weight=7)
-    # print(nx.bipartite.sets(A))
-    # print(_EFM_partition(A))
-    print(minimum_weight_envy_free_matching(A, top_nodes=[0, 1, 2, 3]))
-    B = nx.Graph([(0, 4), (4, 0), (0, 5), (5, 0), (0, 8), (8, 0), (1, 6), (6, 1), (2, 7), (7, 2), (3, 7), (7, 3)])
-    print(envy_free_matching(B, top_nodes=[0, 1, 2, 3]))
-    A = nx.Graph([(0, 3), (3, 0), (0, 4), (4, 0), (1, 4), (4, 1), (2, 4), (4, 2)])
-    matching = envy_free_matching(A)
-    print(matching)
-    B = nx.Graph([(0, 4), (4, 0), (0, 5), (5, 0), (0, 8), (8, 0), (1, 6), (6, 1), (2, 7), (7, 2), (3, 7), (7, 3)])
-    matching = envy_free_matching(B, top_nodes=[0, 1, 2, 3])
-    print(matching)
-    Graph = nx.Graph()
-    Graph.add_weighted_edges_from([(0, 4, 5), (1, 4, 1), (1, 5, 500), (2, 5, 3), (2, 7, 9), (3, 6, 3), (3, 7, 7)])
-    print(nx.is_connected(Graph))
+    doctest.testmod(verbose=True)
+
