@@ -47,6 +47,16 @@ def __neighbours_of_set__(G, node_set):
     return set(ret_set)
 
 
+def _get_sets(G):
+    X = set()
+    Y = set()
+    for component in nx.connected_components(G):
+        X_, Y_ = nx.bipartite.sets(G.subgraph(component))
+        X = X.union(X_)
+        Y = Y.union(Y_)
+    return X, Y
+
+
 def __M_alternating_sequence__(G, M):
     """
     Generates M-alternating-sequence for a graph G with regard to a matching M
@@ -89,12 +99,7 @@ def __M_alternating_sequence__(G, M):
     (({4, 5}, {1, 2, 3}, {0}), ({8, 9, 7}, {6}))
 
     """
-    X = set()
-    Y = set()
-    for component in nx.connected_components(G):
-        X_, Y_ = nx.bipartite.sets(G.subgraph(component))
-        X = X.union(X_)
-        Y = Y.union(Y_)
+    X, Y = _get_sets(G)
 
     m_alternating_sequence_logger = logging.getLogger("M_alternating_sequence")
     m_alternating_sequence_logger.debug(
@@ -146,11 +151,14 @@ def __M_alternating_sequence__(G, M):
 
     return tuple(X_subsets), tuple(Y_subsets)
 
+
 def _get_left_sets(G):
     sets = set()
     for component in nx.connected_components(G):
         sets = sets.union(nx.bipartite.sets(G.subgraph(component))[0])
     return list(sets)
+
+
 def _extract_matching(G):
     M = {}
     for component in nx.connected_components(G):
@@ -232,14 +240,10 @@ def _EFM_partition(G, M=None):
 
     if M is None:
         efm_logger.info("Input matching is None - calculating matching!")
-        M = _extract_matching(G)
+        top_nodes = _get_left_sets(G)
+        M = nx.bipartite.maximum_matching(G, top_nodes=top_nodes)
 
-    X = set()
-    Y = set()
-    for component in nx.connected_components(G):
-        X_, Y_ = nx.bipartite.sets(G.subgraph(component))
-        X = X.union(X_)
-        Y = Y.union(Y_)
+    X, Y = _get_sets(G)
 
     efm_logger.debug(f"Starting EFM_Partition calculation: G={G},\nedges={G.edges}\nX={X}, Y={Y},\nM={M}\n")
     X_subsets, Y_subsets = __M_alternating_sequence__(G, M)
@@ -253,9 +257,6 @@ def _EFM_partition(G, M=None):
         Y_S.update(subset)
 
     return [set(X) - X_S, X_S, set(Y) - Y_S, Y_S]
-
-
-
 
 
 def envy_free_matching(G, top_nodes=None):
