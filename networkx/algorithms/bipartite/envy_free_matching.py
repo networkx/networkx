@@ -94,7 +94,7 @@ def __M_alternating_sequence__(G, M):
     for component in nx.connected_components(G):
         X_, Y_ = nx.bipartite.sets(G.subgraph(component))
         X = X.union(X_)
-        Y = Y_.union(Y_)
+        Y = Y.union(Y_)
 
     m_alternating_sequence_logger = logging.getLogger("M_alternating_sequence")
     m_alternating_sequence_logger.debug(
@@ -146,7 +146,11 @@ def __M_alternating_sequence__(G, M):
 
     return tuple(X_subsets), tuple(Y_subsets)
 
-
+def _get_left_sets(G):
+    sets = set()
+    for component in nx.connected_components(G):
+        sets = sets.union(nx.bipartite.sets(G.subgraph(component))[0])
+    return list(sets)
 def _extract_matching(G):
     M = {}
     for component in nx.connected_components(G):
@@ -235,7 +239,7 @@ def _EFM_partition(G, M=None):
     for component in nx.connected_components(G):
         X_, Y_ = nx.bipartite.sets(G.subgraph(component))
         X = X.union(X_)
-        Y = Y_.union(Y_)
+        Y = Y.union(Y_)
 
     efm_logger.debug(f"Starting EFM_Partition calculation: G={G},\nedges={G.edges}\nX={X}, Y={Y},\nM={M}\n")
     X_subsets, Y_subsets = __M_alternating_sequence__(G, M)
@@ -251,7 +255,10 @@ def _EFM_partition(G, M=None):
     return [set(X) - X_S, X_S, set(Y) - Y_S, Y_S]
 
 
-def envy_free_matching(G):
+
+
+
+def envy_free_matching(G, top_nodes=None):
     r"""Return an envy-free matching of maximum cardinality
     Parameters
     ----------
@@ -299,7 +306,9 @@ def envy_free_matching(G):
     """
     logger.info(f"Finding the maximum cardinality envy free matching of {G}")
     logger.debug(f"Finding the maximum matching of {G}")
-    M = _extract_matching(G)
+    if top_nodes == None:
+        top_nodes = _get_left_sets(G)
+    M = nx.bipartite.maximum_matching(G, top_nodes=top_nodes)
     logger.debug(f"Got matching: {M}")
     logger.debug(f"Finding the EFM partition with maximum matching: {M}")
     EFM_PARTITION = _EFM_partition(G, M)
@@ -313,7 +322,7 @@ def envy_free_matching(G):
     return M
 
 
-def minimum_weight_envy_free_matching(G):
+def minimum_weight_envy_free_matching(G, top_nodes=None):
     r"""Returns minimum-cost maximum-cardinality envy-free matching
     Parameters
     ----------
@@ -382,7 +391,9 @@ def minimum_weight_envy_free_matching(G):
     """
     logger.info(f"Finding the minimum cost maximum cardinality envy free matching of {G}")
     logger.debug(f"Finding the maximum matching of {G}")
-    M = _extract_matching(G)
+    if top_nodes == None:
+        top_nodes = _get_left_sets(G)
+    M = nx.bipartite.maximum_matching(G, top_nodes=top_nodes)
     logger.debug(f"Got matching: {M}")
     logger.debug(f"Finding the EFM partition with maximum matching: {M}")
     EFM_PARTITION = _EFM_partition(G, M)
@@ -394,10 +405,10 @@ def minimum_weight_envy_free_matching(G):
 
 
 if __name__ == '__main__':
-    doctest.testmod(verbose=True)
+    # doctest.testmod(verbose=True)
     A = nx.Graph()
-    A.add_nodes_from([0, 1, 2, 3], bipartite=0)
-    A.add_nodes_from([4, 5, 6, 7], bipartite=1)
+    A.add_nodes_from([0, 1, 2, 3])
+    A.add_nodes_from([4, 5, 6, 7])
     A.add_edge(0, 4, weight=5)
     A.add_edge(4, 0, weight=5)
     A.add_edge(1, 4, weight=1)
@@ -410,6 +421,7 @@ if __name__ == '__main__':
     A.add_edge(6, 3, weight=3)
     A.add_edge(3, 7, weight=7)
     A.add_edge(7, 3, weight=7)
+    # print(nx.bipartite.sets(A))
     print(_EFM_partition(A))
     print(minimum_weight_envy_free_matching(A))
     B = nx.Graph([(0, 4), (4, 0), (0, 5), (5, 0), (0, 8), (8, 0), (1, 6), (6, 1), (2, 7), (7, 2), (3, 7), (7, 3)])
