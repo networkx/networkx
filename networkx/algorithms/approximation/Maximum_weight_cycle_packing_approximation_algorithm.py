@@ -1,8 +1,12 @@
 import doctest
+import logging
 
 import networkx as nx
 import hypernetx as hnx
 import matplotlib.pyplot as plt
+
+logging.basicConfig(filemode="Logs.log",level=logging.INFO)
+log=logging.getLogger()
 
 EPS = 1e-6
 
@@ -24,6 +28,37 @@ link:http://eprints.gla.ac.uk/25732/
 
 
 def find_cycles(graph, k):
+    """find relevent cycles according to chosen K
+
+    Parameters
+    -----------
+    graph : NetworkX DiGraph
+        Directed graph with weights
+    k : size of cycles (according to article - max size is 3 and min size is 2)
+
+    Returns
+    -----------
+    cycles: cycles on graph according to chosen K
+
+    Examples
+    -----------
+    >>> Digraph=nx.DiGraph()
+    >>> Digraph.add_nodes_from([1,2,3,4,5,6,7,8])
+    >>> Digraph.add_weighted_edges_from([(1,8,2),(8,1,4),(2,1,5),(1,3,4),(3,8,2),(8,2,3),(8,5,4),(5,7,3),(7,6,2),(6,5,4)])
+    >>> print(find_cycles(Digraph, 3))
+    [[1, 8], [1, 8, 2], [1, 3, 8], [5, 7, 6]]
+    >>> Digraph =nx.DiGraph()
+    >>> Digraph.add_nodes_from([1,2,3,4])
+    >>> Digraph.add_weighted_edges_from([(2,1,3),(1,3,1),(3,2,2),(3,4,5),(4,3,9)])
+    >>> print(find_cycles(Digraph, 2))
+    [[3, 4]]
+    >>> Digraph=nx.DiGraph()
+    >>> Digraph.add_nodes_from([1,2,3,4,5,6,7,8])
+    >>> Digraph.add_weighted_edges_from([(8,1,4),(2,1,5),(1,3,4),(3,8,2),(8,2,3),(8,5,4),(5,7,3),(7,6,2),(6,5,4)])
+    >>> print(find_cycles(Digraph, 2))
+    []
+
+    """
     temp_cycles = nx.recursive_simple_cycles(graph)
     cycles = []
     for cycle in temp_cycles:
@@ -36,6 +71,26 @@ def find_cycles(graph, k):
 
 
 def build_hypergraph_format(cycles):
+    """Creating a format for the hypergraph. According to hypernetx libraryץ
+
+        Parameters
+        -----------
+        cycles : cycles on graph according to chosen K
+
+        Returns
+        -----------
+        buildHype: format for the hypergraph
+
+        Examples
+        -----------
+        >>> print(build_hypergraph_format([[1, 8], [1, 8, 2], [1, 3, 8], [5, 7, 6]]))
+        {0: ('1', '8'), 1: ('1', '8', '2'), 2: ('1', '3', '8'), 3: ('5', '7', '6')}
+        >>> print(build_hypergraph_format([[1, 8], [1, 8, 2], [1, 3, 8], [5, 7, 6]]))
+        {0: ('1', '8'), 1: ('1', '8', '2'), 2: ('1', '3', '8'), 3: ('5', '7', '6')}
+        >>> print(build_hypergraph_format([]))
+        {}
+
+        """
     i = 0
     buildHype = {}
     for cycle in cycles:
@@ -46,6 +101,37 @@ def build_hypergraph_format(cycles):
 
 
 def get_weights_of_cycles(graph, cycles):
+    """find edges weights in a cycle and returns a format of all cycles with their edges.
+
+    Parameters
+    -----------
+    graph : NetworkX DiGraph
+        Directed graph with weights
+    cycles : cycles on graph according to chosen K
+
+    Returns
+    -----------
+    weight_of_cycles: dict of cycles and its edges weights
+
+    Examples
+    -----------
+    >>> Digraph=nx.DiGraph()
+    >>> Digraph.add_nodes_from([1,2,3,4,5,6,7,8])
+    >>> Digraph.add_weighted_edges_from([(1,8,2),(8,1,4),(2,1,5),(1,3,4),(3,8,2),(8,2,3),(8,5,4),(5,7,3),(7,6,2),(6,5,4)])
+    >>> print(get_weights_of_cycles(Digraph, [[1, 8], [1, 8, 2], [1, 3, 8], [5, 7, 6]]))
+    {(1, 8): "{'weight': 2}{'weight': 4}", (1, 8, 2): "{'weight': 2}{'weight': 3}{'weight': 5}", (1, 3, 8): "{'weight': 4}{'weight': 2}{'weight': 4}", (5, 7, 6): "{'weight': 3}{'weight': 2}{'weight': 4}"}
+    >>> Digraph =nx.DiGraph()
+    >>> Digraph.add_nodes_from([1,2,3,4])
+    >>> Digraph.add_weighted_edges_from([(2,1,3),(1,3,1),(3,2,2),(3,4,5),(4,3,9)])
+    >>> print(get_weights_of_cycles(Digraph, [[3, 4]]))
+    {(3, 4): "{'weight': 5}{'weight': 9}"}
+    >>> Digraph=nx.DiGraph()
+    >>> Digraph.add_nodes_from([1,2,3,4,5,6,7,8])
+    >>> Digraph.add_weighted_edges_from([(8,1,4),(2,1,5),(1,3,4),(3,8,2),(8,2,3),(8,5,4),(5,7,3),(7,6,2),(6,5,4)])
+    >>> print(get_weights_of_cycles(Digraph, []))
+    {}
+
+    """
     weight_of_cycles = {}
     for cycle in cycles:
         if len(cycle) < 3:
@@ -63,6 +149,28 @@ def get_weights_of_cycles(graph, cycles):
 
 
 def weights_of_each_cycle(weight_of_cycles):
+    """find total weight for each cycle.
+
+        Parameters
+        -----------
+        weight_of_cycles : dict of cycles and its edges weights
+
+        Returns
+        -----------
+        weight_cycles: total weight for each cycle
+
+        Examples
+        -----------
+        >>> print(weights_of_each_cycle({(1, 8): "{'weight': 2}{'weight': 4}", (1, 8, 2): "{'weight': 2}{'weight': 3}{'weight': 5}", (1, 3, 8): "{'weight': 4}{'weight': 2}{'weight': 4}", (5, 7, 6): "{'weight': 3}{'weight': 2}{'weight': 4}"}))
+        [6, 10, 10, 9]
+
+        >>> print(weights_of_each_cycle({(3, 4): "{'weight': 5}{'weight': 9}"}))
+        [14]
+
+        >>> print(weights_of_each_cycle({}))
+        []
+
+        """
     weight_cycles = []
     temp = "0"
     for weight_of_cycle in weight_of_cycles.values():
@@ -80,6 +188,18 @@ def weights_of_each_cycle(weight_of_cycles):
 
 
 def set_weights_to_hypergarphs_edges(h, weight_cycles):
+    """find total weight for each cycle.
+
+        Parameters
+        -----------
+        h = an hypergraph
+        weight_cycles : dict of cycles and its edges weights
+
+        Returns
+        -----------
+        weight_cycles: total weight for each cycle
+
+        """
     i = 0
     edge_labels = {}
     for e in h.edges:
@@ -99,8 +219,20 @@ def set_weights_to_hypergarphs_edges(h, weight_cycles):
 
 
 def get_undirected_graph_for_independent_weight_set_algo(h, graphL, buildHype, edge_labels):
-    num_of_edges = h.number_of_edges()
-    count = 0
+    """get a format of undirected graph for independent weight set algorithm
+
+        Parameters
+        -----------
+        h = an hypergraph
+        graphL = an undirected graph
+        buildHype = format for the hypergraph
+        edge_labels = hypergraph's edges weights for drawing
+
+        Returns
+        -----------
+        graphL: an undirected graph that implements hypergraph h
+
+        """
     for e in h.edges:
         if len(h.edge_neighbors(e)) == 0:
             graphL.add_node(buildHype[e], weight=edge_labels[e])
@@ -112,6 +244,18 @@ def get_undirected_graph_for_independent_weight_set_algo(h, graphL, buildHype, e
 
 
 def transform_h_to_g(buildHype, weight_cycles):
+    """get a format of undirected graph for independent weight set algorithm
+
+        Parameters
+        -----------
+        buildHype = format for the hypergraph
+        weight_cycles = a list of weights of cycles
+
+        Returns
+        -----------
+        transformHtoG: a dict of vertices of hipergraph and weights of each hypergraph's edge weight.
+
+        """
     i = 0
     transformHtoG = {}
     for v in buildHype.values():
@@ -256,51 +400,51 @@ def Maximum_weight_cycle_packing_approximation_algorithm(graph: nx.DiGraph, k: i
     :param graph: graph that simulates donors-Patients for kidney exchange programs.
 
     """
-    # find cycles in graph
+    logging.info("Finds cycles in graph")
     cycles = find_cycles(graph, k)
 
-    # create hypergraph according to hypergraph's format
+    logging.info("create hypergraph according to hypergraph's format")
     buildHype = build_hypergraph_format(cycles)
     h = hnx.Hypergraph(buildHype)
     # print(h)
 
-    # get weights of cycles to implement on hypergrap's edges weights:
+    logging.info("get weights of cycles to implement on hypergrap's edges weights")
     weight_of_cycles = get_weights_of_cycles(graph, cycles)
     # print("weight_of_cycles: ", weight_of_cycles)
 
-    # find weights of each cycle in the graph! :*****
+    logging.info("find weights of each cycle in the graph!")
     weight_cycles = weights_of_each_cycle(weight_of_cycles)
     # print("weight_cycles: ", weight_cycles)
 
-    # set weights to each hypergraph's edge
+    logging.info("set weights to each hypergraph's edge")
     edge_labels = set_weights_to_hypergarphs_edges(h, weight_cycles)
     # print("edge_labels: ", edge_labels)
 
-    # draw hypergraph h
+    logging.info("draw hypergraph h")
     hnx.draw(h, edge_labels=edge_labels)
     plt.title('HyperGraph')
     plt.show()
 
-    # create a new graph for maximum weight independent set algorithm
+    logging.info("create a new graph for maximum weight independent set algorithm")
     graphL = nx.Graph()
     graphL = get_undirected_graph_for_independent_weight_set_algo(h, graphL, buildHype,
                                                                   edge_labels)
     # print("GraphL nodes: ", graphL.nodes)
     # print("GraphL edges: ", graphL.edges)
 
-    # draw undirected graphL
+    logging.info("draw undirected graphL")
     nx.draw(graphL, pos=nx.spring_layout(graphL), font_size=12, with_labels=True)
     plt.title('graphL')
     plt.show()
 
-    # Get all edges of H and weights
+    logging.info("Get all edges of H and weights")
     transformHtoG = transform_h_to_g(buildHype, weight_cycles)
     # print("transformHtoG: ", transformHtoG)
 
     if len(transformHtoG) == 0:
         return []
 
-    # find maximum weight independent set
+    logging.info("find maximum weight independent set")
     pi = dict(zip(graphL.nodes(), (transformHtoG[i] for i in transformHtoG.keys())))
     mwis_set, mwis_weight = set(), 0
     mwis_set, mwis_weight = exact_MWIS(graphL, pi, 0)
