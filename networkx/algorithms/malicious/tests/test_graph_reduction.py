@@ -181,7 +181,8 @@ class TestDepndencyGraph:
         Checks the fork_code virus code:
         """
         
-        fork_RG = self.fork_DG # no edges or nodes to reduce
+        fork_RG = self.fork_DG
+        fork_RG.remove_nodes_from([4, 5, 6])
 
         assert build_RG_from_DG(self.fork_DG) == fork_RG
 
@@ -191,6 +192,7 @@ class TestDepndencyGraph:
         """
         
         fork_v1_RG = self.fork_v1_DG
+        fork_v1_RG.remove_nodes_from([1, 2, 3, 4, 6, 7, 8, 9, 11, 12, 13, 14])
 
         assert build_RG_from_DG(self.fork_v1_DG) == fork_v1_RG
 

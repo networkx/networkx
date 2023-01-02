@@ -71,14 +71,14 @@ class TestFitnessFunction:
     edges = [(1, 2), (2, 3)]
     fork_DG.add_edges_from(edges)
     fork_RG = build_RG_from_DG(fork_DG)
-    print(fork_RG)
 
     # fork_code_v1 reduced garph
     # junk code insertion
-    fork_R1_RG = nx.DiGraph()
-    fork_R1_RG.add_nodes_from(range(1, 15))
+    fork_R1_DG = nx.DiGraph()
+    fork_R1_DG.add_nodes_from(range(1, 15))
     edges = [(1, 4), (2, 6), (3, 5), (4, 7), (5, 8), (5, 10), (10, 10)]
-    fork_R1_RG.add_edges_from(edges)
+    fork_R1_DG.add_edges_from(edges)
+    fork_R1_RG = build_RG_from_DG(fork_R1_DG)
 
 # basic-code tests
     # alpha = 0
