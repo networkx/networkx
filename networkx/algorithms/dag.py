@@ -1088,7 +1088,7 @@ def dag_longest_path_between(
     >>> list(nx.all_simple_paths(DG, 0, 2))
     [[0, 1, 2], [0, 2]]
     >>> nx.dag_longest_path_between(DG, 0, 2, "cost", 1)
-    [0, 1, 2]
+    [0, 2]
     >>> nx.dag_longest_path_between(DG, 0, None, weight="cost")
     [0, 2]
 
