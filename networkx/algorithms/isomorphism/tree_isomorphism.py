@@ -184,53 +184,6 @@ def sort_lists_of_naturals(S):
     return Q
 
 
-def sort_natural_multisets(S):
-    """Lexicographically sort a list of multisets.
-
-    Given a list of multisets whose entries are numbers between 0 and m. Sort
-    the list of multisets. If each multiset is represented as a string or a list
-    of naturals, then the expected order is a lexicographical order taking into
-    consideration the previous representation.
-
-    Parameters
-    ----------
-    S : list of natural multisets
-        The list of natural multisets.
-
-    Returns
-    -------
-    sorted_list : list of natural multisets
-        A sorted list with the elements of S.
-
-    Notes
-    -----
-    This algorithm runs in O(M_total + k) time and O(M_total) space, where
-    M_total is the sum of the lengths of the multisets in S and k is the max
-    value of all the multisets in S.
-
-    """
-    # Define a list of lists.
-    L = []
-
-    # For each multiset in S, add its list representation to S.
-    for m in S:
-        lm = m.to_list()
-        L.append(lm)
-
-    # Obtain an ordering of S.
-    sorted_L = sort_lists_of_naturals(L)
-
-    # Transform each list into a multiset.
-    sorted_S = []
-    for l in sorted_L:
-        m = NaturalMultiset()
-        m.from_list(l)
-        sorted_S.append(m)
-
-    # Return the sorted multisets.
-    return sorted_S
-
-
 def get_levels(T, root, height):
     """Groups the vertices by the level they're on the rooted tree.
 

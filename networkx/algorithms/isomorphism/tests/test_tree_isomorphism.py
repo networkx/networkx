@@ -15,7 +15,6 @@ from networkx.algorithms.isomorphism.tree_isomorphism import (
     rooted_tree_isomorphism,
     rooted_tree_isomorphism_n,
     sort_lists_of_naturals,
-    sort_natural_multisets,
     tree_isomorphism,
     tree_isomorphism_n,
     update_values,
