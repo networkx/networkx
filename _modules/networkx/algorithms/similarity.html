@@ -515,7 +515,7 @@
     <span class="n">upper_bound</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns GED (graph edit distance) between graphs G1 and G2.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns GED (graph edit distance) between graphs G1 and G2.</span>
 
 <span class="sd">    Graph edit distance is a graph similarity measure analogous to</span>
 <span class="sd">    Levenshtein distance for strings.  It is defined as minimum cost</span>
@@ -684,7 +684,7 @@
     <span class="n">edge_ins_cost</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">upper_bound</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns all minimum-cost edit paths transforming G1 to G2.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns all minimum-cost edit paths transforming G1 to G2.</span>
 
 <span class="sd">    Graph edit path is a sequence of node and edge edit operations</span>
 <span class="sd">    transforming graph G1 to graph isomorphic to G2.  Edit operations</span>
@@ -846,7 +846,7 @@
     <span class="n">edge_ins_cost</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">upper_bound</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns consecutive approximations of GED (graph edit distance)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns consecutive approximations of GED (graph edit distance)</span>
 <span class="sd">    between graphs G1 and G2.</span>
 
 <span class="sd">    Graph edit distance is a graph similarity measure analogous to</span>
@@ -999,7 +999,7 @@
     <span class="n">roots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;GED (graph edit distance) calculation: advanced interface.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;GED (graph edit distance) calculation: advanced interface.</span>
 
 <span class="sd">    Graph edit path is a sequence of node and edge edit operations</span>
 <span class="sd">    transforming graph G1 to graph isomorphic to G2.  Edit operations</span>
@@ -1188,7 +1188,7 @@
         <span class="k">return</span> <span class="n">rind</span>
 
     <span class="k">def</span> <span class="nf">match_edges</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">pending_g</span><span class="p">,</span> <span class="n">pending_h</span><span class="p">,</span> <span class="n">Ce</span><span class="p">,</span> <span class="n">matched_uv</span><span class="o">=</span><span class="p">[]):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters:</span>
 <span class="sd">            u, v: matched vertices, u=None or v=None for</span>
 <span class="sd">               deletion/insertion</span>
@@ -1291,7 +1291,7 @@
     <span class="k">def</span> <span class="nf">get_edit_ops</span><span class="p">(</span>
         <span class="n">matched_uv</span><span class="p">,</span> <span class="n">pending_u</span><span class="p">,</span> <span class="n">pending_v</span><span class="p">,</span> <span class="n">Cv</span><span class="p">,</span> <span class="n">pending_g</span><span class="p">,</span> <span class="n">pending_h</span><span class="p">,</span> <span class="n">Ce</span><span class="p">,</span> <span class="n">matched_cost</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters:</span>
 <span class="sd">            matched_uv: partial vertex edit path</span>
 <span class="sd">                list of tuples (u, v) of vertex mappings u&lt;-&gt;v,</span>
@@ -1398,7 +1398,7 @@
         <span class="n">Ce</span><span class="p">,</span>
         <span class="n">matched_cost</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters:</span>
 <span class="sd">            matched_uv: partial vertex edit path</span>
 <span class="sd">                list of tuples (u, v) of vertex mappings u&lt;-&gt;v,</span>
@@ -1679,7 +1679,7 @@
     <span class="n">max_iterations</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
     <span class="n">tolerance</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns the SimRank similarity of nodes in the graph ``G``.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the SimRank similarity of nodes in the graph ``G``.</span>
 
 <span class="sd">    SimRank is a similarity metric that says &quot;two objects are considered</span>
 <span class="sd">    to be similar if they are referenced by similar objects.&quot; [1]_.</span>
@@ -1801,7 +1801,7 @@
     <span class="n">max_iterations</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
     <span class="n">tolerance</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns the SimRank similarity of nodes in the graph ``G``.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the SimRank similarity of nodes in the graph ``G``.</span>
 
 <span class="sd">    This pure Python version is provided for pedagogical purposes.</span>
 
@@ -1861,7 +1861,7 @@
     <span class="n">max_iterations</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
     <span class="n">tolerance</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Calculate SimRank of nodes in ``G`` using matrices with ``numpy``.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate SimRank of nodes in ``G`` using matrices with ``numpy``.</span>
 
 <span class="sd">    The SimRank algorithm for determining node similarity is defined in</span>
 <span class="sd">    [1]_.</span>
@@ -1963,7 +1963,7 @@
 
 
 <div class="viewcode-block" id="panther_similarity"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.similarity.panther_similarity.html#networkx.algorithms.similarity.panther_similarity">[docs]</a><span class="k">def</span> <span class="nf">panther_similarity</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">path_length</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns the Panther similarity of nodes in the graph `G` to node ``v``.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns the Panther similarity of nodes in the graph `G` to node ``v``.</span>
 
 <span class="sd">    Panther is a similarity metric that says &quot;two objects are considered</span>
 <span class="sd">    to be similar if they frequently appear on the same paths.&quot; [1]_.</span>
@@ -2068,7 +2068,7 @@
 
 
 <div class="viewcode-block" id="generate_random_paths"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.similarity.generate_random_paths.html#networkx.algorithms.similarity.generate_random_paths">[docs]</a><span class="k">def</span> <span class="nf">generate_random_paths</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">sample_size</span><span class="p">,</span> <span class="n">path_length</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">index_map</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Randomly generate `sample_size` paths of length `path_length`.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Randomly generate `sample_size` paths of length `path_length`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -2214,7 +2214,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+    &copy; Copyright 2004-2023, NetworkX Developers.<br>
 
 </p>
 

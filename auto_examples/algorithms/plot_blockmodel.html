@@ -531,7 +531,7 @@ used is the Hartford, CT drug users network:</p>
 
 
 <span class="k">def</span> <span class="nf">create_hc</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Creates hierarchical cluster of graph G from distance matrix&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates hierarchical cluster of graph G from distance matrix&quot;&quot;&quot;</span>
     <span class="n">path_length</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">all_pairs_shortest_path_length</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
     <span class="n">distances</span> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.zeros.html#numpy.zeros" title="numpy.zeros" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">zeros</span></a><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">)))</span>
     <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">path_length</span><span class="p">:</span>
@@ -579,7 +579,7 @@ used is the Hartford, CT drug users network:</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.366 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.518 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-algorithms-plot-blockmodel-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/efbe368eaa1e457c6c03d3f5a636063a/plot_blockmodel.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_blockmodel.py</span></code></a></p>
@@ -641,7 +641,7 @@ used is the Hartford, CT drug users network:</p>
     
 <p class="copyright">
 
-    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+    &copy; Copyright 2004-2023, NetworkX Developers.<br>
 
 </p>
 

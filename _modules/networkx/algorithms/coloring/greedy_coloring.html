@@ -484,7 +484,7 @@
 
 
 <div class="viewcode-block" id="strategy_largest_first"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.coloring.strategy_largest_first.html#networkx.algorithms.coloring.strategy_largest_first">[docs]</a><span class="k">def</span> <span class="nf">strategy_largest_first</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">colors</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns a list of the nodes of ``G`` in decreasing order by</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a list of the nodes of ``G`` in decreasing order by</span>
 <span class="sd">    degree.</span>
 
 <span class="sd">    ``G`` is a NetworkX graph. ``colors`` is ignored.</span>
@@ -495,7 +495,7 @@
 
 <div class="viewcode-block" id="strategy_random_sequential"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.coloring.strategy_random_sequential.html#networkx.algorithms.coloring.strategy_random_sequential">[docs]</a><span class="nd">@py_random_state</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">strategy_random_sequential</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">colors</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns a random permutation of the nodes of ``G`` as a list.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a random permutation of the nodes of ``G`` as a list.</span>
 
 <span class="sd">    ``G`` is a NetworkX graph. ``colors`` is ignored.</span>
 
@@ -509,7 +509,7 @@
 
 
 <div class="viewcode-block" id="strategy_smallest_last"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.coloring.strategy_smallest_last.html#networkx.algorithms.coloring.strategy_smallest_last">[docs]</a><span class="k">def</span> <span class="nf">strategy_smallest_last</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">colors</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns a deque of the nodes of ``G``, &quot;smallest&quot; last.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a deque of the nodes of ``G``, &quot;smallest&quot; last.</span>
 
 <span class="sd">    Specifically, the degrees of each node are tracked in a bucket queue.</span>
 <span class="sd">    From this, the node of minimum degree is repeatedly popped from the</span>
@@ -566,7 +566,7 @@
 
 
 <span class="k">def</span> <span class="nf">_maximal_independent_set</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns a maximal independent set of nodes in ``G`` by repeatedly</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a maximal independent set of nodes in ``G`` by repeatedly</span>
 <span class="sd">    choosing an independent node of minimum degree (with respect to the</span>
 <span class="sd">    subgraph of unchosen nodes).</span>
 
@@ -582,7 +582,7 @@
 
 
 <div class="viewcode-block" id="strategy_independent_set"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.coloring.strategy_independent_set.html#networkx.algorithms.coloring.strategy_independent_set">[docs]</a><span class="k">def</span> <span class="nf">strategy_independent_set</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">colors</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Uses a greedy independent set removal strategy to determine the</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Uses a greedy independent set removal strategy to determine the</span>
 <span class="sd">    colors.</span>
 
 <span class="sd">    This function updates ``colors`` **in-place** and return ``None``,</span>
@@ -606,7 +606,7 @@
 
 
 <div class="viewcode-block" id="strategy_connected_sequential_bfs"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.coloring.strategy_connected_sequential_bfs.html#networkx.algorithms.coloring.strategy_connected_sequential_bfs">[docs]</a><span class="k">def</span> <span class="nf">strategy_connected_sequential_bfs</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">colors</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns an iterable over nodes in ``G`` in the order given by a</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns an iterable over nodes in ``G`` in the order given by a</span>
 <span class="sd">    breadth-first traversal.</span>
 
 <span class="sd">    The generated sequence has the property that for each node except</span>
@@ -619,7 +619,7 @@
 
 
 <div class="viewcode-block" id="strategy_connected_sequential_dfs"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.coloring.strategy_connected_sequential_dfs.html#networkx.algorithms.coloring.strategy_connected_sequential_dfs">[docs]</a><span class="k">def</span> <span class="nf">strategy_connected_sequential_dfs</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">colors</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns an iterable over nodes in ``G`` in the order given by a</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns an iterable over nodes in ``G`` in the order given by a</span>
 <span class="sd">    depth-first traversal.</span>
 
 <span class="sd">    The generated sequence has the property that for each node except</span>
@@ -632,7 +632,7 @@
 
 
 <div class="viewcode-block" id="strategy_connected_sequential"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.coloring.strategy_connected_sequential.html#networkx.algorithms.coloring.strategy_connected_sequential">[docs]</a><span class="k">def</span> <span class="nf">strategy_connected_sequential</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">colors</span><span class="p">,</span> <span class="n">traversal</span><span class="o">=</span><span class="s2">&quot;bfs&quot;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns an iterable over nodes in ``G`` in the order given by a</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns an iterable over nodes in ``G`` in the order given by a</span>
 <span class="sd">    breadth-first or depth-first traversal.</span>
 
 <span class="sd">    ``traversal`` must be one of the strings ``&#39;dfs&#39;`` or ``&#39;bfs&#39;``,</span>
@@ -664,7 +664,7 @@
 
 
 <div class="viewcode-block" id="strategy_saturation_largest_first"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.coloring.strategy_saturation_largest_first.html#networkx.algorithms.coloring.strategy_saturation_largest_first">[docs]</a><span class="k">def</span> <span class="nf">strategy_saturation_largest_first</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">colors</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Iterates over all the nodes of ``G`` in &quot;saturation order&quot; (also</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Iterates over all the nodes of ``G`` in &quot;saturation order&quot; (also</span>
 <span class="sd">    known as &quot;DSATUR&quot;).</span>
 
 <span class="sd">    ``G`` is a NetworkX graph. ``colors`` is a dictionary mapping nodes of</span>
@@ -725,7 +725,7 @@
 
 
 <div class="viewcode-block" id="greedy_color"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.coloring.greedy_color.html#networkx.algorithms.coloring.greedy_color">[docs]</a><span class="k">def</span> <span class="nf">greedy_color</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">strategy</span><span class="o">=</span><span class="s2">&quot;largest_first&quot;</span><span class="p">,</span> <span class="n">interchange</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Color a graph using various strategies of greedy graph coloring.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Color a graph using various strategies of greedy graph coloring.</span>
 
 <span class="sd">    Attempts to color a graph using as few colors as possible, where no</span>
 <span class="sd">    neighbours of a node can have same color as the node itself. The</span>
@@ -901,7 +901,7 @@
 
 
 <span class="k">def</span> <span class="nf">_greedy_coloring_with_interchange</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">nodes</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Return a coloring for `orginal_graph` using interchange approach</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a coloring for `orginal_graph` using interchange approach</span>
 
 <span class="sd">    This procedure is an adaption of the algorithm described by [1]_,</span>
 <span class="sd">    and is an implementation of coloring with interchange. Please be</span>
@@ -1075,7 +1075,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+    &copy; Copyright 2004-2023, NetworkX Developers.<br>
 
 </p>
 

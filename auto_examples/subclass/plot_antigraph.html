@@ -509,7 +509,7 @@ algorithms.</p>
 
 
 <span class="k">class</span> <span class="nc">AntiGraph</span><span class="p">(</span><span class="n">Graph</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for complement graphs.</span>
 
 <span class="sd">    The main goal is to be able to work with big and dense graphs with</span>
@@ -529,7 +529,7 @@ algorithms.</p>
     <span class="n">edge_attr_dict_factory</span> <span class="o">=</span> <span class="n">single_edge_dict</span>
 
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return a dict of neighbors of node n in the dense graph.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a dict of neighbors of node n in the dense graph.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -547,7 +547,7 @@ algorithms.</p>
         <span class="p">}</span>
 
     <span class="k">def</span> <span class="nf">neighbors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return an iterator over all neighbors of node n in the</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return an iterator over all neighbors of node n in the</span>
 <span class="sd">        dense graph.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -557,7 +557,7 @@ algorithms.</p>
             <span class="k">raise</span> <a href="https://docs.python.org/3/library/exceptions.html#Exception" title="builtins.Exception" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-exception"><span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span></a><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The node </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2"> is not in the graph.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">err</span>
 
     <span class="k">def</span> <span class="nf">degree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nbunch</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return an iterator for (node, degree) in the dense graph.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return an iterator for (node, degree) in the dense graph.</span>
 
 <span class="sd">        The node degree is the number of edges adjacent to the node.</span>
 
@@ -626,7 +626,7 @@ algorithms.</p>
             <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">adjacency</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return an iterator of (node, adjacency set) tuples for all nodes</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return an iterator of (node, adjacency set) tuples for all nodes</span>
 <span class="sd">           in the dense graph.</span>
 
 <span class="sd">        This is the fastest way to look at every edge.</span>
@@ -680,7 +680,7 @@ algorithms.</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.090 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.122 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-subclass-plot-antigraph-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/652afbfc3c52c8cdd7689321df2e696a/plot_antigraph.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_antigraph.py</span></code></a></p>
@@ -742,7 +742,7 @@ algorithms.</p>
     
 <p class="copyright">
 
-    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+    &copy; Copyright 2004-2023, NetworkX Developers.<br>
 
 </p>
 

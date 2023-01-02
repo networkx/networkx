@@ -486,7 +486,7 @@
 
 
 <span class="k">def</span> <span class="nf">_to_stublist</span><span class="p">(</span><span class="n">degree_sequence</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns a list of degree-repeated node numbers.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a list of degree-repeated node numbers.</span>
 
 <span class="sd">    ``degree_sequence`` is a list of nonnegative integers representing</span>
 <span class="sd">    the degrees of nodes in a graph.</span>
@@ -520,7 +520,7 @@
 <span class="k">def</span> <span class="nf">_configuration_model</span><span class="p">(</span>
     <span class="n">deg_sequence</span><span class="p">,</span> <span class="n">create_using</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">in_deg_sequence</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Helper function for generating either undirected or directed</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper function for generating either undirected or directed</span>
 <span class="sd">    configuration model graphs.</span>
 
 <span class="sd">    ``deg_sequence`` is a list of nonnegative integers representing the</span>
@@ -588,7 +588,7 @@
 
 <div class="viewcode-block" id="configuration_model"><a class="viewcode-back" href="../../../reference/generated/networkx.generators.degree_seq.configuration_model.html#networkx.generators.degree_seq.configuration_model">[docs]</a><span class="nd">@py_random_state</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">configuration_model</span><span class="p">(</span><span class="n">deg_sequence</span><span class="p">,</span> <span class="n">create_using</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns a random graph with the given degree sequence.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a random graph with the given degree sequence.</span>
 
 <span class="sd">    The configuration model generates a random pseudograph (graph with</span>
 <span class="sd">    parallel edges and self loops) by randomly assigning edges to</span>
@@ -692,7 +692,7 @@
 <span class="k">def</span> <span class="nf">directed_configuration_model</span><span class="p">(</span>
     <span class="n">in_degree_sequence</span><span class="p">,</span> <span class="n">out_degree_sequence</span><span class="p">,</span> <span class="n">create_using</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns a directed_random graph with the given degree sequences.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a directed_random graph with the given degree sequences.</span>
 
 <span class="sd">    The configuration model generates a random directed pseudograph</span>
 <span class="sd">    (graph with parallel edges and self loops) by randomly assigning</span>
@@ -792,7 +792,7 @@
 
 <div class="viewcode-block" id="expected_degree_graph"><a class="viewcode-back" href="../../../reference/generated/networkx.generators.degree_seq.expected_degree_graph.html#networkx.generators.degree_seq.expected_degree_graph">[docs]</a><span class="nd">@py_random_state</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">expected_degree_graph</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">selfloops</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns a random graph with given expected degrees.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns a random graph with given expected degrees.</span>
 
 <span class="sd">    Given a sequence of expected degrees $W=(w_0,w_1,\ldots,w_{n-1})$</span>
 <span class="sd">    of length $n$ this algorithm assigns an edge between node $u$ and</span>
@@ -900,7 +900,7 @@
 
 
 <div class="viewcode-block" id="havel_hakimi_graph"><a class="viewcode-back" href="../../../reference/generated/networkx.generators.degree_seq.havel_hakimi_graph.html#networkx.generators.degree_seq.havel_hakimi_graph">[docs]</a><span class="k">def</span> <span class="nf">havel_hakimi_graph</span><span class="p">(</span><span class="n">deg_sequence</span><span class="p">,</span> <span class="n">create_using</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns a simple graph with given degree sequence constructed</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a simple graph with given degree sequence constructed</span>
 <span class="sd">    using the Havel-Hakimi algorithm.</span>
 
 <span class="sd">    Parameters</span>
@@ -992,7 +992,7 @@
 
 
 <div class="viewcode-block" id="directed_havel_hakimi_graph"><a class="viewcode-back" href="../../../reference/generated/networkx.generators.degree_seq.directed_havel_hakimi_graph.html#networkx.generators.degree_seq.directed_havel_hakimi_graph">[docs]</a><span class="k">def</span> <span class="nf">directed_havel_hakimi_graph</span><span class="p">(</span><span class="n">in_deg_sequence</span><span class="p">,</span> <span class="n">out_deg_sequence</span><span class="p">,</span> <span class="n">create_using</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns a directed graph with the given degree sequences.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a directed graph with the given degree sequences.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1103,7 +1103,7 @@
 
 
 <div class="viewcode-block" id="degree_sequence_tree"><a class="viewcode-back" href="../../../reference/generated/networkx.generators.degree_seq.degree_sequence_tree.html#networkx.generators.degree_seq.degree_sequence_tree">[docs]</a><span class="k">def</span> <span class="nf">degree_sequence_tree</span><span class="p">(</span><span class="n">deg_sequence</span><span class="p">,</span> <span class="n">create_using</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Make a tree for the given degree sequence.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Make a tree for the given degree sequence.</span>
 
 <span class="sd">    A tree has #nodes-#edges=1 so</span>
 <span class="sd">    the degree sequence must have</span>
@@ -1149,7 +1149,7 @@
 
 <div class="viewcode-block" id="random_degree_sequence_graph"><a class="viewcode-back" href="../../../reference/generated/networkx.generators.degree_seq.random_degree_sequence_graph.html#networkx.generators.degree_seq.random_degree_sequence_graph">[docs]</a><span class="nd">@py_random_state</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">random_degree_sequence_graph</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tries</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns a simple random graph with the given degree sequence.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns a simple random graph with the given degree sequence.</span>
 
 <span class="sd">    If the maximum degree $d_m$ in the sequence is $O(m^{1/4})$ then the</span>
 <span class="sd">    algorithm produces almost uniform random graphs in $O(m d_m)$ time</span>
@@ -1270,7 +1270,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">remaining_degree</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">remaining_degree</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">/</span> <span class="n">norm</span>
 
     <span class="k">def</span> <span class="nf">suitable_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns True if and only if an arbitrary remaining node can</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns True if and only if an arbitrary remaining node can</span>
 <span class="sd">        potentially be joined with some other remaining node.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1373,7 +1373,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+    &copy; Copyright 2004-2023, NetworkX Developers.<br>
 
 </p>
 

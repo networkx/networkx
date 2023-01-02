@@ -513,7 +513,7 @@
 
 
 <span class="k">def</span> <span class="nf">swap_two_nodes</span><span class="p">(</span><span class="n">soln</span><span class="p">,</span> <span class="n">seed</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Swap two nodes in `soln` to give a neighbor solution.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Swap two nodes in `soln` to give a neighbor solution.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -548,7 +548,7 @@
 
 
 <span class="k">def</span> <span class="nf">move_one_node</span><span class="p">(</span><span class="n">soln</span><span class="p">,</span> <span class="n">seed</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Move one node to another position to give a neighbor solution.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Move one node to another position to give a neighbor solution.</span>
 
 <span class="sd">    The node to move and the position to move to are chosen randomly.</span>
 <span class="sd">    The first and last nodes are left untouched as soln must be a cycle</span>
@@ -588,7 +588,7 @@
 
 <div class="viewcode-block" id="christofides"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.approximation.traveling_salesman.christofides.html#networkx.algorithms.approximation.traveling_salesman.christofides">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;directed&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">christofides</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="n">tree</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Approximate a solution of the traveling salesman problem</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Approximate a solution of the traveling salesman problem</span>
 
 <span class="sd">    Compute a 3/2-approximation of the traveling salesman problem</span>
 <span class="sd">    in a complete undirected graph using Christofides [1]_ algorithm.</span>
@@ -647,7 +647,7 @@
 
 
 <span class="k">def</span> <span class="nf">_shortcutting</span><span class="p">(</span><span class="n">circuit</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Remove duplicate nodes in the path&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove duplicate nodes in the path&quot;&quot;&quot;</span>
     <span class="n">nodes</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">circuit</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
@@ -660,7 +660,7 @@
 
 
 <div class="viewcode-block" id="traveling_salesman_problem"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.approximation.traveling_salesman.traveling_salesman_problem.html#networkx.algorithms.approximation.traveling_salesman.traveling_salesman_problem">[docs]</a><span class="k">def</span> <span class="nf">traveling_salesman_problem</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Find the shortest path in `G` connecting specified nodes</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Find the shortest path in `G` connecting specified nodes</span>
 
 <span class="sd">    This function allows approximate solution to the traveling salesman</span>
 <span class="sd">    problem on networks that are not complete graphs and/or where the</span>
@@ -799,7 +799,7 @@
 <div class="viewcode-block" id="asadpour_atsp"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.approximation.traveling_salesman.asadpour_atsp.html#networkx.algorithms.approximation.traveling_salesman.asadpour_atsp">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;undirected&quot;</span><span class="p">)</span>
 <span class="nd">@py_random_state</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">asadpour_atsp</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns an approximate solution to the traveling salesman problem.</span>
 
 <span class="sd">    This approximate solution is one of the best known approximations for the</span>
@@ -948,7 +948,7 @@
 
 
 <span class="k">def</span> <span class="nf">held_karp_ascent</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Minimizes the Held-Karp relaxation of the TSP for `G`</span>
 
 <span class="sd">    Solves the Held-Karp relaxation of the input complete digraph and scales</span>
@@ -996,7 +996,7 @@
     <span class="kn">import</span> <span class="nn">scipy.optimize</span> <span class="k">as</span> <span class="nn">optimize</span>
 
     <span class="k">def</span> <span class="nf">k_pi</span><span class="p">():</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Find the set of minimum 1-Arborescences for G at point pi.</span>
 
 <span class="sd">        Returns</span>
@@ -1080,7 +1080,7 @@
         <span class="k">return</span> <span class="n">minimum_1_arborescences</span>
 
     <span class="k">def</span> <span class="nf">direction_of_ascent</span><span class="p">():</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Find the direction of ascent at point pi.</span>
 
 <span class="sd">        See [1]_ for more information.</span>
@@ -1146,7 +1146,7 @@
             <span class="c1"># 5. GO TO 2</span>
 
     <span class="k">def</span> <span class="nf">find_epsilon</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Given the direction of ascent at pi, find the maximum distance we can go</span>
 <span class="sd">        in that direction.</span>
 
@@ -1258,7 +1258,7 @@
 
 
 <span class="k">def</span> <span class="nf">spanning_tree_distribution</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find the asadpour exponential distribution of spanning trees.</span>
 
 <span class="sd">    Solves the Maximum Entropy Convex Program in the Asadpour algorithm [1]_</span>
@@ -1289,7 +1289,7 @@
     <span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">log</span> <span class="k">as</span> <span class="n">ln</span>
 
     <span class="k">def</span> <span class="nf">q</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The value of q(e) is described in the Asadpour paper is &quot;the</span>
 <span class="sd">        probability that edge e will be included in a spanning tree T that is</span>
 <span class="sd">        chosen with probability proportional to exp(gamma(T))&quot; which</span>
@@ -1368,7 +1368,7 @@
 
 
 <div class="viewcode-block" id="greedy_tsp"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.approximation.traveling_salesman.greedy_tsp.html#networkx.algorithms.approximation.traveling_salesman.greedy_tsp">[docs]</a><span class="k">def</span> <span class="nf">greedy_tsp</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Return a low cost cycle starting at `source` and its cost.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a low cost cycle starting at `source` and its cost.</span>
 
 <span class="sd">    This approximates a solution to the traveling salesman problem.</span>
 <span class="sd">    It finds a cycle of all the nodes that a salesman can visit in order</span>
@@ -1471,7 +1471,7 @@
     <span class="n">alpha</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
     <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns an approximate solution to the traveling salesman problem.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns an approximate solution to the traveling salesman problem.</span>
 
 <span class="sd">    This function uses simulated annealing to approximate the minimal cost</span>
 <span class="sd">    cycle through the nodes. Starting from a suboptimal solution, simulated</span>
@@ -1689,7 +1689,7 @@
     <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
     <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns an approximate solution to the traveling salesman problem.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns an approximate solution to the traveling salesman problem.</span>
 
 <span class="sd">    This function uses threshold accepting methods to approximate the minimal cost</span>
 <span class="sd">    cycle through the nodes. Starting from a suboptimal solution, threshold</span>
@@ -1946,7 +1946,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+    &copy; Copyright 2004-2023, NetworkX Developers.<br>
 
 </p>
 

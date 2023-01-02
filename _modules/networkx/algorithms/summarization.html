@@ -529,7 +529,7 @@
 
 
 <div class="viewcode-block" id="dedensify"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.summarization.dedensify.html#networkx.algorithms.summarization.dedensify">[docs]</a><span class="k">def</span> <span class="nf">dedensify</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">threshold</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Compresses neighborhoods around high-degree nodes</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compresses neighborhoods around high-degree nodes</span>
 
 <span class="sd">    Reduces the number of edges to high-degree nodes by adding compressor nodes</span>
 <span class="sd">    that summarize multiple edges of the same type to high-degree nodes (nodes</span>
@@ -686,7 +686,7 @@
     <span class="n">supernode_attribute</span><span class="p">,</span>
     <span class="n">superedge_attribute</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Build the summary graph from the data structures produced in the SNAP aggregation algorithm</span>
 
 <span class="sd">    Used in the SNAP aggregation algorithm to build the output summary graph and supernode</span>
@@ -766,7 +766,7 @@
 
 
 <span class="k">def</span> <span class="nf">_snap_eligible_group</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">group_lookup</span><span class="p">,</span> <span class="n">edge_types</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Determines if a group is eligible to be split.</span>
 
 <span class="sd">    A group is eligible to be split if all nodes in the group have edges of the same type(s)</span>
@@ -818,7 +818,7 @@
 
 
 <span class="k">def</span> <span class="nf">_snap_split</span><span class="p">(</span><span class="n">groups</span><span class="p">,</span> <span class="n">neighbor_info</span><span class="p">,</span> <span class="n">group_lookup</span><span class="p">,</span> <span class="n">group_id</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Splits a group based on edge types and updates the groups accordingly</span>
 
 <span class="sd">    Splits the group with the given group_id based on the edge types</span>
@@ -874,7 +874,7 @@
     <span class="n">supernode_attribute</span><span class="o">=</span><span class="s2">&quot;group&quot;</span><span class="p">,</span>
     <span class="n">superedge_attribute</span><span class="o">=</span><span class="s2">&quot;types&quot;</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Creates a summary graph based on attributes and connectivity.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates a summary graph based on attributes and connectivity.</span>
 
 <span class="sd">    This function uses the Summarization by Grouping Nodes on Attributes</span>
 <span class="sd">    and Pairwise edges (SNAP) algorithm for summarizing a given</span>
@@ -1068,7 +1068,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+    &copy; Copyright 2004-2023, NetworkX Developers.<br>
 
 </p>
 

@@ -475,7 +475,7 @@
 
 
 <div class="viewcode-block" id="is_valid_joint_degree"><a class="viewcode-back" href="../../../reference/generated/networkx.generators.joint_degree_seq.is_valid_joint_degree.html#networkx.generators.joint_degree_seq.is_valid_joint_degree">[docs]</a><span class="k">def</span> <span class="nf">is_valid_joint_degree</span><span class="p">(</span><span class="n">joint_degrees</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Checks whether the given joint degree dictionary is realizable.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Checks whether the given joint degree dictionary is realizable.</span>
 
 <span class="sd">    A *joint degree dictionary* is a dictionary of dictionaries, in</span>
 <span class="sd">    which entry ``joint_degrees[k][l]`` is an integer representing the</span>
@@ -541,7 +541,7 @@
 
 
 <span class="k">def</span> <span class="nf">_neighbor_switch</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">unsat</span><span class="p">,</span> <span class="n">h_node_residual</span><span class="p">,</span> <span class="n">avoid_node_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Releases one free stub for ``w``, while preserving joint degree in G.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Releases one free stub for ``w``, while preserving joint degree in G.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -605,7 +605,7 @@
 
 <div class="viewcode-block" id="joint_degree_graph"><a class="viewcode-back" href="../../../reference/generated/networkx.generators.joint_degree_seq.joint_degree_graph.html#networkx.generators.joint_degree_seq.joint_degree_graph">[docs]</a><span class="nd">@py_random_state</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">joint_degree_graph</span><span class="p">(</span><span class="n">joint_degrees</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Generates a random simple graph with the given joint degree dictionary.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generates a random simple graph with the given joint degree dictionary.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -751,7 +751,7 @@
 
 
 <div class="viewcode-block" id="is_valid_directed_joint_degree"><a class="viewcode-back" href="../../../reference/generated/networkx.generators.joint_degree_seq.is_valid_directed_joint_degree.html#networkx.generators.joint_degree_seq.is_valid_directed_joint_degree">[docs]</a><span class="k">def</span> <span class="nf">is_valid_directed_joint_degree</span><span class="p">(</span><span class="n">in_degrees</span><span class="p">,</span> <span class="n">out_degrees</span><span class="p">,</span> <span class="n">nkk</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Checks whether the given directed joint degree input is realizable</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Checks whether the given directed joint degree input is realizable</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -826,7 +826,7 @@
 <span class="k">def</span> <span class="nf">_directed_neighbor_switch</span><span class="p">(</span>
     <span class="n">G</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">unsat</span><span class="p">,</span> <span class="n">h_node_residual_out</span><span class="p">,</span> <span class="n">chords</span><span class="p">,</span> <span class="n">h_partition_in</span><span class="p">,</span> <span class="n">partition</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Releases one free stub for node w, while preserving joint degree in G.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Releases one free stub for node w, while preserving joint degree in G.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -889,7 +889,7 @@
 <span class="k">def</span> <span class="nf">_directed_neighbor_switch_rev</span><span class="p">(</span>
     <span class="n">G</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">unsat</span><span class="p">,</span> <span class="n">h_node_residual_in</span><span class="p">,</span> <span class="n">chords</span><span class="p">,</span> <span class="n">h_partition_out</span><span class="p">,</span> <span class="n">partition</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;The reverse of directed_neighbor_switch.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The reverse of directed_neighbor_switch.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -940,7 +940,7 @@
 
 <div class="viewcode-block" id="directed_joint_degree_graph"><a class="viewcode-back" href="../../../reference/generated/networkx.generators.joint_degree_seq.directed_joint_degree_graph.html#networkx.generators.joint_degree_seq.directed_joint_degree_graph">[docs]</a><span class="nd">@py_random_state</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">directed_joint_degree_graph</span><span class="p">(</span><span class="n">in_degrees</span><span class="p">,</span> <span class="n">out_degrees</span><span class="p">,</span> <span class="n">nkk</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Generates a random simple directed graph with the joint degree.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generates a random simple directed graph with the joint degree.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1182,7 +1182,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+    &copy; Copyright 2004-2023, NetworkX Developers.<br>
 
 </p>
 

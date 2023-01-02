@@ -476,7 +476,7 @@
 
 
 <div class="viewcode-block" id="nonisomorphic_trees"><a class="viewcode-back" href="../../../reference/generated/networkx.generators.nonisomorphic_trees.nonisomorphic_trees.html#networkx.generators.nonisomorphic_trees.nonisomorphic_trees">[docs]</a><span class="k">def</span> <span class="nf">nonisomorphic_trees</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">create</span><span class="o">=</span><span class="s2">&quot;graph&quot;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns a list of nonisomporphic trees</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a list of nonisomporphic trees</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -515,7 +515,7 @@
 
 
 <div class="viewcode-block" id="number_of_nonisomorphic_trees"><a class="viewcode-back" href="../../../reference/generated/networkx.generators.nonisomorphic_trees.number_of_nonisomorphic_trees.html#networkx.generators.nonisomorphic_trees.number_of_nonisomorphic_trees">[docs]</a><span class="k">def</span> <span class="nf">number_of_nonisomorphic_trees</span><span class="p">(</span><span class="n">order</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns the number of nonisomorphic trees</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the number of nonisomorphic trees</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -534,7 +534,7 @@
 
 
 <span class="k">def</span> <span class="nf">_next_rooted_tree</span><span class="p">(</span><span class="n">predecessor</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;One iteration of the Beyer-Hedetniemi algorithm.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;One iteration of the Beyer-Hedetniemi algorithm.&quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="n">p</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">p</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">predecessor</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
@@ -553,7 +553,7 @@
 
 
 <span class="k">def</span> <span class="nf">_next_tree</span><span class="p">(</span><span class="n">candidate</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;One iteration of the Wright, Richmond, Odlyzko and McKay</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;One iteration of the Wright, Richmond, Odlyzko and McKay</span>
 <span class="sd">    algorithm.&quot;&quot;&quot;</span>
 
     <span class="c1"># valid representation of a free tree if:</span>
@@ -592,7 +592,7 @@
 
 
 <span class="k">def</span> <span class="nf">_split_tree</span><span class="p">(</span><span class="n">layout</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns a tuple of two layouts, one containing the left</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a tuple of two layouts, one containing the left</span>
 <span class="sd">    subtree of the root vertex, and one containing the original tree</span>
 <span class="sd">    with the left subtree removed.&quot;&quot;&quot;</span>
 
@@ -615,7 +615,7 @@
 
 
 <span class="k">def</span> <span class="nf">_layout_to_matrix</span><span class="p">(</span><span class="n">layout</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Create the adjacency matrix for the tree specified by the</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create the adjacency matrix for the tree specified by the</span>
 <span class="sd">    given layout (level sequence).&quot;&quot;&quot;</span>
 
     <span class="n">result</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">layout</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">layout</span><span class="p">))]</span>
@@ -635,7 +635,7 @@
 
 
 <span class="k">def</span> <span class="nf">_layout_to_graph</span><span class="p">(</span><span class="n">layout</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Create a NetworkX Graph for the tree specified by the</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a NetworkX Graph for the tree specified by the</span>
 <span class="sd">    given layout(level sequence)&quot;&quot;&quot;</span>
     <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
     <span class="n">stack</span> <span class="o">=</span> <span class="p">[]</span>
@@ -702,7 +702,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+    &copy; Copyright 2004-2023, NetworkX Developers.<br>
 
 </p>
 

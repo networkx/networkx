@@ -470,7 +470,7 @@
 
 
 <span class="k">class</span> <span class="nc">_HeapElement</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;This proxy class separates the heap element from its priority.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;This proxy class separates the heap element from its priority.</span>
 
 <span class="sd">    The idea is that using a 2-tuple (priority, element) works</span>
 <span class="sd">    for sorting, but not for dict lookup because priorities are</span>
@@ -553,7 +553,7 @@
 
 
 <div class="viewcode-block" id="MappedQueue"><a class="viewcode-back" href="../../../reference/generated/networkx.utils.mapped_queue.MappedQueue.html#networkx.utils.mapped_queue.MappedQueue">[docs]</a><span class="k">class</span> <span class="nc">MappedQueue</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;The MappedQueue class implements a min-heap with removal and update-priority.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The MappedQueue class implements a min-heap with removal and update-priority.</span>
 
 <span class="sd">    The min heap uses heapq as well as custom written _siftup and _siftdown</span>
 <span class="sd">    methods to allow the heap positions to be tracked by an additional dict</span>
@@ -615,7 +615,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="MappedQueue.__init__"><a class="viewcode-back" href="../../../reference/generated/networkx.utils.mapped_queue.MappedQueue.html#networkx.utils.mapped_queue.MappedQueue.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Priority queue class with updatable priorities.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Priority queue class with updatable priorities.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">heap</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
@@ -626,7 +626,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_heapify</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="nf">_heapify</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Restore heap invariant and recalculate map.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Restore heap invariant and recalculate map.&quot;&quot;&quot;</span>
         <span class="n">heapq</span><span class="o">.</span><span class="n">heapify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">heap</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="p">{</span><span class="n">elt</span><span class="p">:</span> <span class="n">pos</span> <span class="k">for</span> <span class="n">pos</span><span class="p">,</span> <span class="n">elt</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">heap</span><span class="p">)}</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">heap</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="p">):</span>
@@ -636,7 +636,7 @@
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">heap</span><span class="p">)</span>
 
 <div class="viewcode-block" id="MappedQueue.push"><a class="viewcode-back" href="../../../reference/generated/generated/networkx.utils.mapped_queue.MappedQueue.push.html#networkx.utils.mapped_queue.MappedQueue.push">[docs]</a>    <span class="k">def</span> <span class="nf">push</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">elt</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Add an element to the queue.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add an element to the queue.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">priority</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">elt</span> <span class="o">=</span> <span class="n">_HeapElement</span><span class="p">(</span><span class="n">priority</span><span class="p">,</span> <span class="n">elt</span><span class="p">)</span>
         <span class="c1"># If element is already in queue, do nothing</span>
@@ -651,7 +651,7 @@
         <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="MappedQueue.pop"><a class="viewcode-back" href="../../../reference/generated/generated/networkx.utils.mapped_queue.MappedQueue.pop.html#networkx.utils.mapped_queue.MappedQueue.pop">[docs]</a>    <span class="k">def</span> <span class="nf">pop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Remove and return the smallest element in the queue.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove and return the smallest element in the queue.&quot;&quot;&quot;</span>
         <span class="c1"># Remove smallest element</span>
         <span class="n">elt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">heap</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="n">elt</span><span class="p">]</span>
@@ -669,7 +669,7 @@
         <span class="k">return</span> <span class="n">elt</span></div>
 
 <div class="viewcode-block" id="MappedQueue.update"><a class="viewcode-back" href="../../../reference/generated/generated/networkx.utils.mapped_queue.MappedQueue.update.html#networkx.utils.mapped_queue.MappedQueue.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">elt</span><span class="p">,</span> <span class="n">new</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Replace an element in the queue with a new one.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Replace an element in the queue with a new one.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">priority</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">new</span> <span class="o">=</span> <span class="n">_HeapElement</span><span class="p">(</span><span class="n">priority</span><span class="p">,</span> <span class="n">new</span><span class="p">)</span>
         <span class="c1"># Replace</span>
@@ -681,7 +681,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_siftup</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="MappedQueue.remove"><a class="viewcode-back" href="../../../reference/generated/generated/networkx.utils.mapped_queue.MappedQueue.remove.html#networkx.utils.mapped_queue.MappedQueue.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">elt</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Remove an element from the queue.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove an element from the queue.&quot;&quot;&quot;</span>
         <span class="c1"># Find and remove element</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="n">elt</span><span class="p">]</span>
@@ -701,7 +701,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_siftup</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_siftup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Move smaller child up until hitting a leaf.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Move smaller child up until hitting a leaf.</span>
 
 <span class="sd">        Built to mimic code for heapq._siftup</span>
 <span class="sd">        only updating position dict too.</span>
@@ -740,7 +740,7 @@
         <span class="n">position</span><span class="p">[</span><span class="n">newitem</span><span class="p">]</span> <span class="o">=</span> <span class="n">pos</span>
 
     <span class="k">def</span> <span class="nf">_siftdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_pos</span><span class="p">,</span> <span class="n">pos</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Restore invariant. keep swapping with parent until smaller.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Restore invariant. keep swapping with parent until smaller.</span>
 
 <span class="sd">        Built to mimic code for heapq._siftdown</span>
 <span class="sd">        only updating position dict too.</span>
@@ -810,7 +810,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+    &copy; Copyright 2004-2023, NetworkX Developers.<br>
 
 </p>
 

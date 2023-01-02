@@ -537,7 +537,7 @@ in this way may be infeasible if the circuit is large.</p>
         <span class="c1"># If one child, the label must be a NOT operator.</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">children</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">child</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">arbitrary_element</span><span class="p">(</span><span class="n">children</span><span class="p">)</span>
-            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="n">_to_string</span><span class="p">(</span><span class="n">formula</span><span class="p">,</span> <span class="n">child</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="n">_to_string</span><span class="p">(</span><span class="n">formula</span><span class="p">,</span><span class="w"> </span><span class="n">child</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
         <span class="c1"># NB &quot;left&quot; and &quot;right&quot; here are a little misleading: there is</span>
         <span class="c1"># no order on the children of a node. That&#39;s okay because the</span>
         <span class="c1"># Boolean AND and OR operators are symmetric. It just means that</span>
@@ -603,7 +603,7 @@ fourth layer.</p>
 <img src="../../_images/sphx_glr_plot_circuits_001.png" srcset="../../_images/sphx_glr_plot_circuits_001.png" alt="((x ∨ y) ∧ (y ∨ ¬(z)))" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>((x ∨ y) ∧ (y ∨ ¬(z)))
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.105 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.151 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-algorithms-plot-circuits-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/bd2ce07c5ba253eb7b45764c94237a4c/plot_circuits.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_circuits.py</span></code></a></p>
@@ -683,7 +683,7 @@ fourth layer.</p>
     
 <p class="copyright">
 
-    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+    &copy; Copyright 2004-2023, NetworkX Developers.<br>
 
 </p>
 

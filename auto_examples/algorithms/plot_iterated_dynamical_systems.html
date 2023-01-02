@@ -578,7 +578,7 @@ fixed points are []
 
 
 <span class="k">def</span> <span class="nf">digitsrep</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Return list of digits comprising n represented in base b.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return list of digits comprising n represented in base b.</span>
 <span class="sd">    n must be a nonnegative integer&quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
@@ -594,7 +594,7 @@ fixed points are []
 
 
 <span class="k">def</span> <span class="nf">powersum</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">p</span></a><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Return sum of digits of n (in base b) raised to the power p.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return sum of digits of n (in base b) raised to the power p.&quot;&quot;&quot;</span>
     <span class="n">dlist</span> <span class="o">=</span> <span class="n">digitsrep</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
     <span class="nb">sum</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">dlist</span><span class="p">:</span>
@@ -603,7 +603,7 @@ fixed points are []
 
 
 <span class="k">def</span> <span class="nf">attractor153_graph</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">p</span></a><span class="p">,</span> <span class="n">multiple</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Return digraph of iterations of powersum(n,3,10).&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return digraph of iterations of powersum(n,3,10).&quot;&quot;&quot;</span>
     <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">k</span> <span class="o">%</span> <span class="n">multiple</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">G</span><span class="p">:</span>
@@ -617,7 +617,7 @@ fixed points are []
 
 
 <span class="k">def</span> <span class="nf">squaring_cycle_graph_old</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Return digraph of iterations of powersum(n,2,10).&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return digraph of iterations of powersum(n,2,10).&quot;&quot;&quot;</span>
     <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
         <span class="n">k1</span> <span class="o">=</span> <span class="n">k</span>
@@ -684,7 +684,7 @@ fixed points are []
 
 
 <span class="k">def</span> <span class="nf">fixed_points</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Return a list of fixed points for the discrete dynamical</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a list of fixed points for the discrete dynamical</span>
 <span class="sd">    system represented by the digraph G.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">G</span> <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">out_degree</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span>
@@ -699,7 +699,7 @@ fixed points are []
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;fixed points are </span><span class="si">{</span><span class="n">fixed_points</span><span class="p">(</span><span class="n">G</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.094 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.127 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-algorithms-plot-iterated-dynamical-systems-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/d947686c24b50c278c1228ff766cda27/plot_iterated_dynamical_systems.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_iterated_dynamical_systems.py</span></code></a></p>
@@ -789,7 +789,7 @@ fixed points are []
     
 <p class="copyright">
 
-    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+    &copy; Copyright 2004-2023, NetworkX Developers.<br>
 
 </p>
 

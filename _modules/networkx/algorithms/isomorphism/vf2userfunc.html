@@ -500,7 +500,7 @@
 
 
 <span class="k">def</span> <span class="nf">_semantic_feasibility</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">G1_node</span><span class="p">,</span> <span class="n">G2_node</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns True if mapping G1_node to G2_node is semantically feasible.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns True if mapping G1_node to G2_node is semantically feasible.&quot;&quot;&quot;</span>
     <span class="c1"># Make sure the nodes match</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_match</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">nm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_match</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">G1</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">G1_node</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">G2</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">G2_node</span><span class="p">])</span>
@@ -535,10 +535,10 @@
 
 
 <span class="k">class</span> <span class="nc">GraphMatcher</span><span class="p">(</span><span class="n">vf2</span><span class="o">.</span><span class="n">GraphMatcher</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;VF2 isomorphism checker for undirected graphs.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;VF2 isomorphism checker for undirected graphs.&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="GraphMatcher.__init__"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.isomorphism.GraphMatcher.__init__.html#networkx.algorithms.isomorphism.GraphMatcher.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">G1</span><span class="p">,</span> <span class="n">G2</span><span class="p">,</span> <span class="n">node_match</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">edge_match</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Initialize graph matcher.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize graph matcher.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -582,10 +582,10 @@
 
 
 <span class="k">class</span> <span class="nc">DiGraphMatcher</span><span class="p">(</span><span class="n">vf2</span><span class="o">.</span><span class="n">DiGraphMatcher</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;VF2 isomorphism checker for directed graphs.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;VF2 isomorphism checker for directed graphs.&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="DiGraphMatcher.__init__"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.isomorphism.DiGraphMatcher.__init__.html#networkx.algorithms.isomorphism.DiGraphMatcher.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">G1</span><span class="p">,</span> <span class="n">G2</span><span class="p">,</span> <span class="n">node_match</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">edge_match</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Initialize graph matcher.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize graph matcher.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -626,7 +626,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">G2_adj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">G2</span><span class="o">.</span><span class="n">adj</span></div>
 
 <div class="viewcode-block" id="DiGraphMatcher.semantic_feasibility"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.isomorphism.DiGraphMatcher.semantic_feasibility.html#networkx.algorithms.isomorphism.DiGraphMatcher.semantic_feasibility">[docs]</a>    <span class="k">def</span> <span class="nf">semantic_feasibility</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">G1_node</span><span class="p">,</span> <span class="n">G2_node</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns True if mapping G1_node to G2_node is semantically feasible.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns True if mapping G1_node to G2_node is semantically feasible.&quot;&quot;&quot;</span>
 
         <span class="c1"># Test node_match and also test edge_match on successors</span>
         <span class="n">feasible</span> <span class="o">=</span> <span class="n">_semantic_feasibility</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">G1_node</span><span class="p">,</span> <span class="n">G2_node</span><span class="p">)</span>
@@ -649,13 +649,13 @@
 
 
 <span class="k">class</span> <span class="nc">MultiGraphMatcher</span><span class="p">(</span><span class="n">GraphMatcher</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;VF2 isomorphism checker for undirected multigraphs.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;VF2 isomorphism checker for undirected multigraphs.&quot;&quot;&quot;</span>
 
     <span class="k">pass</span>
 
 
 <span class="k">class</span> <span class="nc">MultiDiGraphMatcher</span><span class="p">(</span><span class="n">DiGraphMatcher</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;VF2 isomorphism checker for directed multigraphs.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;VF2 isomorphism checker for directed multigraphs.&quot;&quot;&quot;</span>
 
     <span class="k">pass</span>
 </pre></div>
@@ -709,7 +709,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+    &copy; Copyright 2004-2023, NetworkX Developers.<br>
 
 </p>
 

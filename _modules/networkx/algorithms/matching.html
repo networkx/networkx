@@ -481,7 +481,7 @@
 <div class="viewcode-block" id="maximal_matching"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.matching.maximal_matching.html#networkx.algorithms.matching.maximal_matching">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;multigraph&quot;</span><span class="p">)</span>
 <span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;directed&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">maximal_matching</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Find a maximal matching in the graph.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Find a maximal matching in the graph.</span>
 
 <span class="sd">    A matching is a subset of edges in which no node occurs more than once.</span>
 <span class="sd">    A maximal matching cannot add more edges and still be a matching.</span>
@@ -520,7 +520,7 @@
 
 
 <span class="k">def</span> <span class="nf">matching_dict_to_set</span><span class="p">(</span><span class="n">matching</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Converts matching dict format to matching set format</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Converts matching dict format to matching set format</span>
 
 <span class="sd">    Converts a dictionary representing a matching (as returned by</span>
 <span class="sd">    :func:`max_weight_matching`) to a set representing a matching (as</span>
@@ -545,7 +545,7 @@
 
 
 <div class="viewcode-block" id="is_matching"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.matching.is_matching.html#networkx.algorithms.matching.is_matching">[docs]</a><span class="k">def</span> <span class="nf">is_matching</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">matching</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Return True if ``matching`` is a valid matching of ``G``</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return True if ``matching`` is a valid matching of ``G``</span>
 
 <span class="sd">    A *matching* in a graph is a set of edges in which no two distinct</span>
 <span class="sd">    edges share a common endpoint. Each node is incident to at most one</span>
@@ -605,7 +605,7 @@
 
 
 <div class="viewcode-block" id="is_maximal_matching"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.matching.is_maximal_matching.html#networkx.algorithms.matching.is_maximal_matching">[docs]</a><span class="k">def</span> <span class="nf">is_maximal_matching</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">matching</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Return True if ``matching`` is a maximal matching of ``G``</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return True if ``matching`` is a maximal matching of ``G``</span>
 
 <span class="sd">    A *maximal matching* in a graph is a matching in which adding any</span>
 <span class="sd">    edge would cause the set to no longer be a valid matching.</span>
@@ -666,7 +666,7 @@
 
 
 <div class="viewcode-block" id="is_perfect_matching"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.matching.is_perfect_matching.html#networkx.algorithms.matching.is_perfect_matching">[docs]</a><span class="k">def</span> <span class="nf">is_perfect_matching</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">matching</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Return True if ``matching`` is a perfect matching for ``G``</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return True if ``matching`` is a perfect matching for ``G``</span>
 
 <span class="sd">    A *perfect matching* in a graph is a matching in which exactly one edge</span>
 <span class="sd">    is incident upon each vertex.</span>
@@ -719,7 +719,7 @@
 <div class="viewcode-block" id="min_weight_matching"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.matching.min_weight_matching.html#networkx.algorithms.matching.min_weight_matching">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;multigraph&quot;</span><span class="p">)</span>
 <span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;directed&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">min_weight_matching</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Computing a minimum-weight maximal matching of G.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Computing a minimum-weight maximal matching of G.</span>
 
 <span class="sd">    Use the maximum-weight algorithm with edge weights subtracted</span>
 <span class="sd">    from the maximum weight of all edges.</span>
@@ -779,7 +779,7 @@
 <div class="viewcode-block" id="max_weight_matching"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.matching.max_weight_matching.html#networkx.algorithms.matching.max_weight_matching">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;multigraph&quot;</span><span class="p">)</span>
 <span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;directed&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">max_weight_matching</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">maxcardinality</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Compute a maximum-weighted matching of G.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute a maximum-weighted matching of G.</span>
 
 <span class="sd">    A matching is a subset of edges in which no node occurs more than once.</span>
 <span class="sd">    The weight of a matching is the sum of the weights of its edges.</span>
@@ -852,12 +852,12 @@
     <span class="c1">#</span>
 
     <span class="k">class</span> <span class="nc">NoNode</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Dummy value which is different from any node.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Dummy value which is different from any node.&quot;&quot;&quot;</span>
 
         <span class="k">pass</span>
 
     <span class="k">class</span> <span class="nc">Blossom</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Representation of a non-trivial blossom or sub-blossom.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Representation of a non-trivial blossom or sub-blossom.&quot;&quot;&quot;</span>
 
         <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;childs&quot;</span><span class="p">,</span> <span class="s2">&quot;edges&quot;</span><span class="p">,</span> <span class="s2">&quot;mybestedges&quot;</span><span class="p">]</span>
 
@@ -1620,7 +1620,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+    &copy; Copyright 2004-2023, NetworkX Developers.<br>
 
 </p>
 

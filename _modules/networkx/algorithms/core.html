@@ -509,7 +509,7 @@
 <div class="viewcode-block" id="core_number"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.core.core_number.html#networkx.algorithms.core.core_number">[docs]</a><span class="nd">@nx</span><span class="o">.</span><span class="n">_dispatch</span>
 <span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;multigraph&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">core_number</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns the core number for each vertex.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the core number for each vertex.</span>
 
 <span class="sd">    A k-core is a maximal subgraph that contains nodes of degree k or more.</span>
 
@@ -579,7 +579,7 @@
 
 
 <span class="k">def</span> <span class="nf">_core_subgraph</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">k_filter</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">core</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns the subgraph induced by nodes passing filter `k_filter`.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the subgraph induced by nodes passing filter `k_filter`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -607,7 +607,7 @@
 
 <div class="viewcode-block" id="k_core"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.core.k_core.html#networkx.algorithms.core.k_core">[docs]</a><span class="nd">@nx</span><span class="o">.</span><span class="n">_dispatch</span>
 <span class="k">def</span> <span class="nf">k_core</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">core_number</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns the k-core of G.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the k-core of G.</span>
 
 <span class="sd">    A k-core is a maximal subgraph that contains nodes of degree k or more.</span>
 
@@ -659,7 +659,7 @@
 
 
 <div class="viewcode-block" id="k_shell"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.core.k_shell.html#networkx.algorithms.core.k_shell">[docs]</a><span class="k">def</span> <span class="nf">k_shell</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">core_number</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns the k-shell of G.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the k-shell of G.</span>
 
 <span class="sd">    The k-shell is the subgraph induced by nodes with core number k.</span>
 <span class="sd">    That is, nodes in the k-core that are not in the (k+1)-core.</span>
@@ -718,7 +718,7 @@
 
 
 <div class="viewcode-block" id="k_crust"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.core.k_crust.html#networkx.algorithms.core.k_crust">[docs]</a><span class="k">def</span> <span class="nf">k_crust</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">core_number</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns the k-crust of G.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the k-crust of G.</span>
 
 <span class="sd">    The k-crust is the graph G with the edges of the k-core removed</span>
 <span class="sd">    and isolated nodes found after the removal of edges are also removed.</span>
@@ -777,7 +777,7 @@
 
 
 <div class="viewcode-block" id="k_corona"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.core.k_corona.html#networkx.algorithms.core.k_corona">[docs]</a><span class="k">def</span> <span class="nf">k_corona</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">core_number</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns the k-corona of G.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the k-corona of G.</span>
 
 <span class="sd">    The k-corona is the subgraph of nodes in the k-core which have</span>
 <span class="sd">    exactly k neighbours in the k-core.</span>
@@ -834,7 +834,7 @@
 <span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;directed&quot;</span><span class="p">)</span>
 <span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;multigraph&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">k_truss</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns the k-truss of `G`.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the k-truss of `G`.</span>
 
 <span class="sd">    The k-truss is the maximal induced subgraph of `G` which contains at least</span>
 <span class="sd">    three vertices where every edge is incident to at least `k-2` triangles.</span>
@@ -903,7 +903,7 @@
 <div class="viewcode-block" id="onion_layers"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.core.onion_layers.html#networkx.algorithms.core.onion_layers">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;multigraph&quot;</span><span class="p">)</span>
 <span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;directed&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">onion_layers</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns the layer of each vertex in an onion decomposition of the graph.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the layer of each vertex in an onion decomposition of the graph.</span>
 
 <span class="sd">    The onion decomposition refines the k-core decomposition by providing</span>
 <span class="sd">    information on the internal organization of each k-shell. It is usually</span>
@@ -1046,7 +1046,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+    &copy; Copyright 2004-2023, NetworkX Developers.<br>
 
 </p>
 

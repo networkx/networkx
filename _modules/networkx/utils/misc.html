@@ -505,7 +505,7 @@
 
 
 <div class="viewcode-block" id="flatten"><a class="viewcode-back" href="../../../reference/generated/networkx.utils.misc.flatten.html#networkx.utils.misc.flatten">[docs]</a><span class="k">def</span> <span class="nf">flatten</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">result</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Return flattened version of (possibly nested) iterable object.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return flattened version of (possibly nested) iterable object.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">(</span><span class="n">Iterable</span><span class="p">,</span> <span class="n">Sized</span><span class="p">))</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">obj</span>
     <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -519,7 +519,7 @@
 
 
 <div class="viewcode-block" id="make_list_of_ints"><a class="viewcode-back" href="../../../reference/generated/networkx.utils.misc.make_list_of_ints.html#networkx.utils.misc.make_list_of_ints">[docs]</a><span class="k">def</span> <span class="nf">make_list_of_ints</span><span class="p">(</span><span class="n">sequence</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Return list of ints from sequence of integral numbers.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return list of ints from sequence of integral numbers.</span>
 
 <span class="sd">    All elements of the sequence must satisfy int(element) == element</span>
 <span class="sd">    or a ValueError is raised. Sequence is iterated through once.</span>
@@ -555,7 +555,7 @@
 
 
 <div class="viewcode-block" id="dict_to_numpy_array"><a class="viewcode-back" href="../../../reference/generated/networkx.utils.misc.dict_to_numpy_array.html#networkx.utils.misc.dict_to_numpy_array">[docs]</a><span class="k">def</span> <span class="nf">dict_to_numpy_array</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Convert a dictionary of dictionaries to a numpy array</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a dictionary of dictionaries to a numpy array</span>
 <span class="sd">    with optional mapping.&quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">_dict_to_numpy_array2</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">mapping</span><span class="p">)</span>
@@ -566,7 +566,7 @@
 
 
 <span class="k">def</span> <span class="nf">_dict_to_numpy_array2</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Convert a dictionary of dictionaries to a 2d numpy array</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a dictionary of dictionaries to a 2d numpy array</span>
 <span class="sd">    with optional mapping.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -589,7 +589,7 @@
 
 
 <span class="k">def</span> <span class="nf">_dict_to_numpy_array1</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Convert a dictionary of numbers to a 1d numpy array with optional mapping.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a dictionary of numbers to a 1d numpy array with optional mapping.&quot;&quot;&quot;</span>
     <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
     <span class="k">if</span> <span class="n">mapping</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -604,7 +604,7 @@
 
 
 <div class="viewcode-block" id="arbitrary_element"><a class="viewcode-back" href="../../../reference/generated/networkx.utils.misc.arbitrary_element.html#networkx.utils.misc.arbitrary_element">[docs]</a><span class="k">def</span> <span class="nf">arbitrary_element</span><span class="p">(</span><span class="n">iterable</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns an arbitrary element of `iterable` without removing it.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns an arbitrary element of `iterable` without removing it.</span>
 
 <span class="sd">    This is most useful for &quot;peeking&quot; at an arbitrary element of a set,</span>
 <span class="sd">    but can be used for any list, dictionary, etc., as well.</span>
@@ -683,7 +683,7 @@
 
 
 <div class="viewcode-block" id="groups"><a class="viewcode-back" href="../../../reference/generated/networkx.utils.misc.groups.html#networkx.utils.misc.groups">[docs]</a><span class="k">def</span> <span class="nf">groups</span><span class="p">(</span><span class="n">many_to_one</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Converts a many-to-one mapping into a one-to-many mapping.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Converts a many-to-one mapping into a one-to-many mapping.</span>
 
 <span class="sd">    `many_to_one` must be a dictionary whose keys and values are all</span>
 <span class="sd">    :term:`hashable`.</span>
@@ -705,7 +705,7 @@
 
 
 <div class="viewcode-block" id="create_random_state"><a class="viewcode-back" href="../../../reference/generated/networkx.utils.misc.create_random_state.html#networkx.utils.misc.create_random_state">[docs]</a><span class="k">def</span> <span class="nf">create_random_state</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns a numpy.random.RandomState or numpy.random.Generator instance</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a numpy.random.RandomState or numpy.random.Generator instance</span>
 <span class="sd">    depending on input.</span>
 
 <span class="sd">    Parameters</span>
@@ -811,7 +811,7 @@
 
 
 <div class="viewcode-block" id="create_py_random_state"><a class="viewcode-back" href="../../../reference/generated/networkx.utils.misc.create_py_random_state.html#networkx.utils.misc.create_py_random_state">[docs]</a><span class="k">def</span> <span class="nf">create_py_random_state</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns a random.Random instance depending on input.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a random.Random instance depending on input.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -851,7 +851,7 @@
 
 
 <div class="viewcode-block" id="nodes_equal"><a class="viewcode-back" href="../../../reference/generated/networkx.utils.misc.nodes_equal.html#networkx.utils.misc.nodes_equal">[docs]</a><span class="k">def</span> <span class="nf">nodes_equal</span><span class="p">(</span><span class="n">nodes1</span><span class="p">,</span> <span class="n">nodes2</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Check if nodes are equal.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if nodes are equal.</span>
 
 <span class="sd">    Equality here means equal as Python objects.</span>
 <span class="sd">    Node data must match if included.</span>
@@ -878,7 +878,7 @@
 
 
 <div class="viewcode-block" id="edges_equal"><a class="viewcode-back" href="../../../reference/generated/networkx.utils.misc.edges_equal.html#networkx.utils.misc.edges_equal">[docs]</a><span class="k">def</span> <span class="nf">edges_equal</span><span class="p">(</span><span class="n">edges1</span><span class="p">,</span> <span class="n">edges2</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Check if edges are equal.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if edges are equal.</span>
 
 <span class="sd">    Equality here means equal as Python objects.</span>
 <span class="sd">    Edge data must match if included.</span>
@@ -933,7 +933,7 @@
 
 
 <div class="viewcode-block" id="graphs_equal"><a class="viewcode-back" href="../../../reference/generated/networkx.utils.misc.graphs_equal.html#networkx.utils.misc.graphs_equal">[docs]</a><span class="k">def</span> <span class="nf">graphs_equal</span><span class="p">(</span><span class="n">graph1</span><span class="p">,</span> <span class="n">graph2</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Check if graphs are equal.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if graphs are equal.</span>
 
 <span class="sd">    Equality here means equal as Python objects (not isomorphism).</span>
 <span class="sd">    Node, edge and graph data must match.</span>
@@ -1003,7 +1003,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+    &copy; Copyright 2004-2023, NetworkX Developers.<br>
 
 </p>
 

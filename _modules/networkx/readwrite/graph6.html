@@ -483,7 +483,7 @@
 
 
 <span class="k">def</span> <span class="nf">_generate_graph6_bytes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">header</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Yield bytes in the graph6 encoding of a graph.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Yield bytes in the graph6 encoding of a graph.</span>
 
 <span class="sd">    `G` is an undirected simple graph. `nodes` is the list of nodes for</span>
 <span class="sd">    which the node-induced subgraph will be encoded; if `nodes` is the</span>
@@ -524,7 +524,7 @@
 
 
 <div class="viewcode-block" id="from_graph6_bytes"><a class="viewcode-back" href="../../../reference/readwrite/generated/networkx.readwrite.graph6.from_graph6_bytes.html#networkx.readwrite.graph6.from_graph6_bytes">[docs]</a><span class="k">def</span> <span class="nf">from_graph6_bytes</span><span class="p">(</span><span class="n">bytes_in</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Read a simple undirected graph in graph6 format from bytes.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Read a simple undirected graph in graph6 format from bytes.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -562,7 +562,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">bits</span><span class="p">():</span>
-        <span class="sd">&quot;&quot;&quot;Returns sequence of individual bits from 6-bit-per-value</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns sequence of individual bits from 6-bit-per-value</span>
 <span class="sd">        list of data values.&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]:</span>
@@ -579,7 +579,7 @@
     <span class="n">nd</span> <span class="o">=</span> <span class="p">(</span><span class="n">n</span> <span class="o">*</span> <span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">5</span><span class="p">)</span> <span class="o">//</span> <span class="mi">6</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">!=</span> <span class="n">nd</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">NetworkXError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Expected </span><span class="si">{</span><span class="n">n</span> <span class="o">*</span> <span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="si">}</span><span class="s2"> bits but got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">*</span> <span class="mi">6</span><span class="si">}</span><span class="s2"> in graph6&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Expected </span><span class="si">{</span><span class="n">n</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">//</span><span class="w"> </span><span class="mi">2</span><span class="si">}</span><span class="s2"> bits but got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">6</span><span class="si">}</span><span class="s2"> in graph6&quot;</span>
         <span class="p">)</span>
 
     <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
@@ -594,7 +594,7 @@
 <div class="viewcode-block" id="to_graph6_bytes"><a class="viewcode-back" href="../../../reference/readwrite/generated/networkx.readwrite.graph6.to_graph6_bytes.html#networkx.readwrite.graph6.to_graph6_bytes">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;directed&quot;</span><span class="p">)</span>
 <span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;multigraph&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">to_graph6_bytes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Convert a simple undirected graph to bytes in graph6 format.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a simple undirected graph to bytes in graph6 format.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -647,7 +647,7 @@
 
 <div class="viewcode-block" id="read_graph6"><a class="viewcode-back" href="../../../reference/readwrite/generated/networkx.readwrite.graph6.read_graph6.html#networkx.readwrite.graph6.read_graph6">[docs]</a><span class="nd">@open_file</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;rb&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">read_graph6</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Read simple undirected graphs in graph6 format from path.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Read simple undirected graphs in graph6 format from path.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -712,7 +712,7 @@
 <span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;multigraph&quot;</span><span class="p">)</span>
 <span class="nd">@open_file</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wb&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">write_graph6</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Write a simple undirected graph to a path in graph6 format.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Write a simple undirected graph to a path in graph6 format.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -772,7 +772,7 @@
 <span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;directed&quot;</span><span class="p">)</span>
 <span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;multigraph&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">write_graph6_file</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Write a simple undirected graph to a file-like object in graph6 format.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Write a simple undirected graph to a file-like object in graph6 format.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -835,7 +835,7 @@
 
 
 <span class="k">def</span> <span class="nf">data_to_n</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Read initial one-, four- or eight-unit value from graph6</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Read initial one-, four- or eight-unit value from graph6</span>
 <span class="sd">    integer sequence.</span>
 
 <span class="sd">    Return (value, rest of seq.)&quot;&quot;&quot;</span>
@@ -855,7 +855,7 @@
 
 
 <span class="k">def</span> <span class="nf">n_to_data</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Convert an integer to one-, four- or eight-unit graph6 sequence.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert an integer to one-, four- or eight-unit graph6 sequence.</span>
 
 <span class="sd">    This function is undefined if `n` is not in ``range(2 ** 36)``.</span>
 
@@ -926,7 +926,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+    &copy; Copyright 2004-2023, NetworkX Developers.<br>
 
 </p>
 

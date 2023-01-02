@@ -488,7 +488,7 @@
 
 <div class="viewcode-block" id="k_edge_components"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.connectivity.edge_kcomponents.k_edge_components.html#networkx.algorithms.connectivity.edge_kcomponents.k_edge_components">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;multigraph&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">k_edge_components</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Generates nodes in each maximal k-edge-connected component in G.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generates nodes in each maximal k-edge-connected component in G.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -571,7 +571,7 @@
 
 <div class="viewcode-block" id="k_edge_subgraphs"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.connectivity.edge_kcomponents.k_edge_subgraphs.html#networkx.algorithms.connectivity.edge_kcomponents.k_edge_subgraphs">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;multigraph&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">k_edge_subgraphs</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Generates nodes in each maximal k-edge-connected subgraph in G.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generates nodes in each maximal k-edge-connected subgraph in G.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -648,7 +648,7 @@
 
 
 <span class="k">def</span> <span class="nf">_k_edge_subgraphs_nodes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Helper to get the nodes from the subgraphs.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper to get the nodes from the subgraphs.</span>
 
 <span class="sd">    This allows k_edge_subgraphs to return a generator.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -659,7 +659,7 @@
 <div class="viewcode-block" id="bridge_components"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.connectivity.edge_kcomponents.bridge_components.html#networkx.algorithms.connectivity.edge_kcomponents.bridge_components">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;directed&quot;</span><span class="p">)</span>
 <span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;multigraph&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">bridge_components</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Finds all bridge-connected components G.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Finds all bridge-connected components G.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -700,7 +700,7 @@
 
 
 <div class="viewcode-block" id="EdgeComponentAuxGraph"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.connectivity.edge_kcomponents.EdgeComponentAuxGraph.html#networkx.algorithms.connectivity.edge_kcomponents.EdgeComponentAuxGraph">[docs]</a><span class="k">class</span> <span class="nc">EdgeComponentAuxGraph</span><span class="p">:</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;A simple algorithm to find all k-edge-connected components in a graph.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;A simple algorithm to find all k-edge-connected components in a graph.</span>
 
 <span class="sd">    Constructing the AuxillaryGraph (which may take some time) allows for the</span>
 <span class="sd">    k-edge-ccs to be found in linear time for arbitrary k.</span>
@@ -774,7 +774,7 @@
     <span class="c1"># @not_implemented_for(&#39;multigraph&#39;)  # TODO: fix decor for classmethods</span>
 <div class="viewcode-block" id="EdgeComponentAuxGraph.construct"><a class="viewcode-back" href="../../../../reference/algorithms/generated/generated/networkx.algorithms.connectivity.edge_kcomponents.EdgeComponentAuxGraph.construct.html#networkx.algorithms.connectivity.edge_kcomponents.EdgeComponentAuxGraph.construct">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">construct</span><span class="p">(</span><span class="n">EdgeComponentAuxGraph</span><span class="p">,</span> <span class="n">G</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Builds an auxiliary graph encoding edge-connectivity between nodes.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Builds an auxiliary graph encoding edge-connectivity between nodes.</span>
 
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
@@ -841,7 +841,7 @@
         <span class="k">return</span> <span class="bp">self</span></div>
 
 <div class="viewcode-block" id="EdgeComponentAuxGraph.k_edge_components"><a class="viewcode-back" href="../../../../reference/algorithms/generated/generated/networkx.algorithms.connectivity.edge_kcomponents.EdgeComponentAuxGraph.k_edge_components.html#networkx.algorithms.connectivity.edge_kcomponents.EdgeComponentAuxGraph.k_edge_components">[docs]</a>    <span class="k">def</span> <span class="nf">k_edge_components</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Queries the auxiliary graph for k-edge-connected components.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Queries the auxiliary graph for k-edge-connected components.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -874,7 +874,7 @@
         <span class="k">yield from</span> <span class="n">nx</span><span class="o">.</span><span class="n">connected_components</span><span class="p">(</span><span class="n">R</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="EdgeComponentAuxGraph.k_edge_subgraphs"><a class="viewcode-back" href="../../../../reference/algorithms/generated/generated/networkx.algorithms.connectivity.edge_kcomponents.EdgeComponentAuxGraph.k_edge_subgraphs.html#networkx.algorithms.connectivity.edge_kcomponents.EdgeComponentAuxGraph.k_edge_subgraphs">[docs]</a>    <span class="k">def</span> <span class="nf">k_edge_subgraphs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Queries the auxiliary graph for k-edge-connected subgraphs.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Queries the auxiliary graph for k-edge-connected subgraphs.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -919,7 +919,7 @@
 
 
 <span class="k">def</span> <span class="nf">_low_degree_nodes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">nbunch</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Helper for finding nodes with degree less than k.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper for finding nodes with degree less than k.&quot;&quot;&quot;</span>
     <span class="c1"># Nodes with degree less than k cannot be k-edge-connected.</span>
     <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
         <span class="c1"># Consider both in and out degree in the directed case</span>
@@ -940,7 +940,7 @@
 
 
 <span class="k">def</span> <span class="nf">_high_degree_components</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Helper for filtering components that can&#39;t be k-edge-connected.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper for filtering components that can&#39;t be k-edge-connected.</span>
 
 <span class="sd">    Removes and generates each node with degree less than k.  Then generates</span>
 <span class="sd">    remaining components where all nodes have degree at least k.</span>
@@ -965,7 +965,7 @@
 
 
 <span class="k">def</span> <span class="nf">general_k_edge_subgraphs</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;General algorithm to find all maximal k-edge-connected subgraphs in G.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;General algorithm to find all maximal k-edge-connected subgraphs in G.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -1093,7 +1093,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+    &copy; Copyright 2004-2023, NetworkX Developers.<br>
 
 </p>
 

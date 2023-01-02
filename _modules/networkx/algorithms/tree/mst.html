@@ -489,7 +489,7 @@
 
 
 <span class="k">class</span> <span class="nc">EdgePartition</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An enum to store the state of an edge partition. The enum is written to the</span>
 <span class="sd">    edges of a graph before being pasted to `kruskal_mst_edges`. Options are:</span>
 
@@ -507,7 +507,7 @@
 <span class="k">def</span> <span class="nf">boruvka_mst_edges</span><span class="p">(</span>
     <span class="n">G</span><span class="p">,</span> <span class="n">minimum</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ignore_nan</span><span class="o">=</span><span class="kc">False</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Iterate over edges of a Borůvka&#39;s algorithm min/max spanning tree.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Iterate over edges of a Borůvka&#39;s algorithm min/max spanning tree.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -541,7 +541,7 @@
     <span class="n">forest</span> <span class="o">=</span> <span class="n">UnionFind</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">best_edge</span><span class="p">(</span><span class="n">component</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns the optimum (minimum or maximum) edge on the edge</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the optimum (minimum or maximum) edge on the edge</span>
 <span class="sd">        boundary of the given set of nodes.</span>
 
 <span class="sd">        A return value of ``None`` indicates an empty boundary.</span>
@@ -603,7 +603,7 @@
 <span class="k">def</span> <span class="nf">kruskal_mst_edges</span><span class="p">(</span>
     <span class="n">G</span><span class="p">,</span> <span class="n">minimum</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ignore_nan</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">partition</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Iterate over edge of a Kruskal&#39;s algorithm min/max spanning tree.</span>
 
 <span class="sd">    Parameters</span>
@@ -649,7 +649,7 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">edges</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Sort the edges of the graph with respect to the partition data. </span>
 <span class="sd">    Edges are returned in the following order:</span>
 
@@ -711,7 +711,7 @@
 
 
 <span class="k">def</span> <span class="nf">prim_mst_edges</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">minimum</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ignore_nan</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Iterate over edges of Prim&#39;s algorithm min/max spanning tree.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Iterate over edges of Prim&#39;s algorithm min/max spanning tree.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -758,7 +758,7 @@
                     <span class="k">if</span> <span class="n">isnan</span><span class="p">(</span><span class="n">wt</span><span class="p">):</span>
                         <span class="k">if</span> <span class="n">ignore_nan</span><span class="p">:</span>
                             <span class="k">continue</span>
-                        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;NaN found as an edge weight. Edge </span><span class="si">{</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;NaN found as an edge weight. Edge </span><span class="si">{</span><span class="p">(</span><span class="n">u</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="p">,</span><span class="w"> </span><span class="n">d</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
                         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
                     <span class="n">push</span><span class="p">(</span><span class="n">frontier</span><span class="p">,</span> <span class="p">(</span><span class="n">wt</span><span class="p">,</span> <span class="nb">next</span><span class="p">(</span><span class="n">c</span><span class="p">),</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">d</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
@@ -767,7 +767,7 @@
                 <span class="k">if</span> <span class="n">isnan</span><span class="p">(</span><span class="n">wt</span><span class="p">):</span>
                     <span class="k">if</span> <span class="n">ignore_nan</span><span class="p">:</span>
                         <span class="k">continue</span>
-                    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;NaN found as an edge weight. Edge </span><span class="si">{</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;NaN found as an edge weight. Edge </span><span class="si">{</span><span class="p">(</span><span class="n">u</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">d</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
                 <span class="n">push</span><span class="p">(</span><span class="n">frontier</span><span class="p">,</span> <span class="p">(</span><span class="n">wt</span><span class="p">,</span> <span class="nb">next</span><span class="p">(</span><span class="n">c</span><span class="p">),</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">d</span><span class="p">))</span>
         <span class="k">while</span> <span class="n">nodes</span> <span class="ow">and</span> <span class="n">frontier</span><span class="p">:</span>
@@ -818,7 +818,7 @@
 <span class="k">def</span> <span class="nf">minimum_spanning_edges</span><span class="p">(</span>
     <span class="n">G</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="s2">&quot;kruskal&quot;</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ignore_nan</span><span class="o">=</span><span class="kc">False</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Generate edges in a minimum spanning forest of an undirected</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate edges in a minimum spanning forest of an undirected</span>
 <span class="sd">    weighted graph.</span>
 
 <span class="sd">    A minimum spanning tree is a subgraph of the graph (a tree)</span>
@@ -912,7 +912,7 @@
 <span class="k">def</span> <span class="nf">maximum_spanning_edges</span><span class="p">(</span>
     <span class="n">G</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="s2">&quot;kruskal&quot;</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ignore_nan</span><span class="o">=</span><span class="kc">False</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Generate edges in a maximum spanning forest of an undirected</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate edges in a maximum spanning forest of an undirected</span>
 <span class="sd">    weighted graph.</span>
 
 <span class="sd">    A maximum spanning tree is a subgraph of the graph (a tree)</span>
@@ -1002,7 +1002,7 @@
 
 
 <div class="viewcode-block" id="minimum_spanning_tree"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.tree.mst.minimum_spanning_tree.html#networkx.algorithms.tree.mst.minimum_spanning_tree">[docs]</a><span class="k">def</span> <span class="nf">minimum_spanning_tree</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="s2">&quot;kruskal&quot;</span><span class="p">,</span> <span class="n">ignore_nan</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns a minimum spanning tree or forest on an undirected graph `G`.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a minimum spanning tree or forest on an undirected graph `G`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1063,7 +1063,7 @@
 <span class="k">def</span> <span class="nf">partition_spanning_tree</span><span class="p">(</span>
     <span class="n">G</span><span class="p">,</span> <span class="n">minimum</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="n">partition</span><span class="o">=</span><span class="s2">&quot;partition&quot;</span><span class="p">,</span> <span class="n">ignore_nan</span><span class="o">=</span><span class="kc">False</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find a spanning tree while respecting a partition of edges.</span>
 
 <span class="sd">    Edges can be flagged as either `INLCUDED` which are required to be in the</span>
@@ -1124,7 +1124,7 @@
 
 
 <div class="viewcode-block" id="maximum_spanning_tree"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.tree.mst.maximum_spanning_tree.html#networkx.algorithms.tree.mst.maximum_spanning_tree">[docs]</a><span class="k">def</span> <span class="nf">maximum_spanning_tree</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="s2">&quot;kruskal&quot;</span><span class="p">,</span> <span class="n">ignore_nan</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns a maximum spanning tree or forest on an undirected graph `G`.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a maximum spanning tree or forest on an undirected graph `G`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1187,7 +1187,7 @@
 
 <div class="viewcode-block" id="random_spanning_tree"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.tree.mst.random_spanning_tree.html#networkx.algorithms.tree.mst.random_spanning_tree">[docs]</a><span class="nd">@py_random_state</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">random_spanning_tree</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">multiplicative</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Sample a random spanning tree using the edges weights of `G`.</span>
 
 <span class="sd">    This function supports two different methods for determining the</span>
@@ -1231,7 +1231,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">find_node</span><span class="p">(</span><span class="n">merged_nodes</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        We can think of clusters of contracted nodes as having one</span>
 <span class="sd">        representative in the graph. Each node which is not in merged_nodes</span>
 <span class="sd">        is still its own representative. Since a representative can be later</span>
@@ -1263,7 +1263,7 @@
             <span class="k">return</span> <span class="n">rep</span>
 
     <span class="k">def</span> <span class="nf">prepare_graph</span><span class="p">():</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        For the graph `G`, remove all edges not in the set `V` and then</span>
 <span class="sd">        contract all edges in the set `U`.</span>
 
@@ -1306,7 +1306,7 @@
         <span class="k">return</span> <span class="n">merged_nodes</span><span class="p">,</span> <span class="n">result</span>
 
     <span class="k">def</span> <span class="nf">spanning_tree_total_weight</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Find the sum of weights of the spanning trees of `G` using the</span>
 <span class="sd">        approioate `method`.</span>
 
@@ -1408,7 +1408,7 @@
 
 
 <div class="viewcode-block" id="SpanningTreeIterator"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.tree.mst.SpanningTreeIterator.html#networkx.algorithms.tree.mst.SpanningTreeIterator">[docs]</a><span class="k">class</span> <span class="nc">SpanningTreeIterator</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Iterate over all spanning trees of a graph in either increasing or</span>
 <span class="sd">    decreasing cost.</span>
 
@@ -1429,7 +1429,7 @@
 
     <span class="nd">@dataclass</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">class</span> <span class="nc">Partition</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This dataclass represents a partition and stores a dict with the edge</span>
 <span class="sd">        data and the weight of the minimum spanning tree of the partition dict.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1443,7 +1443,7 @@
             <span class="p">)</span>
 
 <div class="viewcode-block" id="SpanningTreeIterator.__init__"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.tree.mst.SpanningTreeIterator.html#networkx.algorithms.tree.mst.SpanningTreeIterator.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="n">minimum</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ignore_nan</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize the iterator</span>
 
 <span class="sd">        Parameters</span>
@@ -1472,7 +1472,7 @@
         <span class="p">)</span></div>
 
     <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        SpanningTreeIterator</span>
@@ -1491,7 +1491,7 @@
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span> <span class="fm">__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        (multi)Graph</span>
@@ -1513,7 +1513,7 @@
         <span class="k">return</span> <span class="n">next_tree</span>
 
     <span class="k">def</span> <span class="nf">_partition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">partition</span><span class="p">,</span> <span class="n">partition_tree</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create new partitions based of the minimum spanning tree of the</span>
 <span class="sd">        current minimum partition.</span>
 
@@ -1550,7 +1550,7 @@
                 <span class="n">p1</span><span class="o">.</span><span class="n">partition_dict</span> <span class="o">=</span> <span class="n">p2</span><span class="o">.</span><span class="n">partition_dict</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_write_partition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">partition</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Writes the desired partition into the graph to calculate the minimum</span>
 <span class="sd">        spanning tree.</span>
 
@@ -1567,7 +1567,7 @@
                 <span class="n">d</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">partition_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">EdgePartition</span><span class="o">.</span><span class="n">OPEN</span>
 
     <span class="k">def</span> <span class="nf">_clear_partition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">G</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Removes partition data from the graph</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
@@ -1624,7 +1624,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+    &copy; Copyright 2004-2023, NetworkX Developers.<br>
 
 </p>
 

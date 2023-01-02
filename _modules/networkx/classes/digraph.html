@@ -482,7 +482,7 @@
 
 
 <span class="k">class</span> <span class="nc">_CachedPropertyResetterAdjAndSucc</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Data Descriptor class that syncs and resets cached properties adj and succ</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Data Descriptor class that syncs and resets cached properties adj and succ</span>
 
 <span class="sd">    The cached properties `adj` and `succ` are reset whenever `_adj` or `_succ`</span>
 <span class="sd">    are set to new objects. In addition, the attributes `_succ` and `_adj`</span>
@@ -509,7 +509,7 @@
 
 
 <span class="k">class</span> <span class="nc">_CachedPropertyResetterPred</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Data Descriptor class for _pred that resets ``pred`` cached_property when needed</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Data Descriptor class for _pred that resets ``pred`` cached_property when needed</span>
 
 <span class="sd">    This assumes that the ``cached_property`` ``G.pred`` should be reset whenever</span>
 <span class="sd">    ``G._pred`` is set to a new value.</span>
@@ -531,7 +531,7 @@
 
 
 <div class="viewcode-block" id="DiGraph"><a class="viewcode-back" href="../../../reference/classes/digraph.html#networkx.DiGraph">[docs]</a><span class="k">class</span> <span class="nc">DiGraph</span><span class="p">(</span><span class="n">Graph</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for directed graphs.</span>
 
 <span class="sd">    A DiGraph stores nodes and edges with optional data, or attributes.</span>
@@ -777,7 +777,7 @@
     <span class="n">_pred</span> <span class="o">=</span> <span class="n">_CachedPropertyResetterPred</span><span class="p">()</span>
 
 <div class="viewcode-block" id="DiGraph.__init__"><a class="viewcode-back" href="../../../reference/classes/generated/networkx.DiGraph.__init__.html#networkx.DiGraph.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">incoming_graph_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">attr</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Initialize a graph with edges, name, or graph attributes.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a graph with edges, name, or graph attributes.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -826,7 +826,7 @@
 
     <span class="nd">@cached_property</span>
     <span class="k">def</span> <span class="nf">adj</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Graph adjacency object holding the neighbors of each node.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Graph adjacency object holding the neighbors of each node.</span>
 
 <span class="sd">        This object is a read-only dict-like structure with node keys</span>
 <span class="sd">        and neighbor-dict values.  The neighbor-dict is keyed by neighbor</span>
@@ -845,7 +845,7 @@
 
     <span class="nd">@cached_property</span>
     <span class="k">def</span> <span class="nf">succ</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Graph adjacency object holding the successors of each node.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Graph adjacency object holding the successors of each node.</span>
 
 <span class="sd">        This object is a read-only dict-like structure with node keys</span>
 <span class="sd">        and neighbor-dict values.  The neighbor-dict is keyed by neighbor</span>
@@ -866,7 +866,7 @@
 
     <span class="nd">@cached_property</span>
     <span class="k">def</span> <span class="nf">pred</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Graph adjacency object holding the predecessors of each node.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Graph adjacency object holding the predecessors of each node.</span>
 
 <span class="sd">        This object is a read-only dict-like structure with node keys</span>
 <span class="sd">        and neighbor-dict values.  The neighbor-dict is keyed by neighbor</span>
@@ -881,7 +881,7 @@
         <span class="k">return</span> <span class="n">AdjacencyView</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pred</span><span class="p">)</span>
 
 <div class="viewcode-block" id="DiGraph.add_node"><a class="viewcode-back" href="../../../reference/classes/generated/networkx.DiGraph.add_node.html#networkx.DiGraph.add_node">[docs]</a>    <span class="k">def</span> <span class="nf">add_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_for_adding</span><span class="p">,</span> <span class="o">**</span><span class="n">attr</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Add a single node `node_for_adding` and update node attributes.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a single node `node_for_adding` and update node attributes.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -930,7 +930,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="p">[</span><span class="n">node_for_adding</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DiGraph.add_nodes_from"><a class="viewcode-back" href="../../../reference/classes/generated/networkx.DiGraph.add_nodes_from.html#networkx.DiGraph.add_nodes_from">[docs]</a>    <span class="k">def</span> <span class="nf">add_nodes_from</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes_for_adding</span><span class="p">,</span> <span class="o">**</span><span class="n">attr</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Add multiple nodes.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add multiple nodes.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1008,7 +1008,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">newdict</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DiGraph.remove_node"><a class="viewcode-back" href="../../../reference/classes/generated/networkx.DiGraph.remove_node.html#networkx.DiGraph.remove_node">[docs]</a>    <span class="k">def</span> <span class="nf">remove_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Remove node n.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove node n.</span>
 
 <span class="sd">        Removes the node n and all adjacent edges.</span>
 <span class="sd">        Attempting to remove a non-existent node will raise an exception.</span>
@@ -1050,7 +1050,7 @@
         <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pred</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>  <span class="c1"># remove node from pred</span></div>
 
 <div class="viewcode-block" id="DiGraph.remove_nodes_from"><a class="viewcode-back" href="../../../reference/classes/generated/networkx.DiGraph.remove_nodes_from.html#networkx.DiGraph.remove_nodes_from">[docs]</a>    <span class="k">def</span> <span class="nf">remove_nodes_from</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Remove multiple nodes.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove multiple nodes.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1104,7 +1104,7 @@
                 <span class="k">pass</span>  <span class="c1"># silent failure on remove</span></div>
 
 <div class="viewcode-block" id="DiGraph.add_edge"><a class="viewcode-back" href="../../../reference/classes/generated/networkx.DiGraph.add_edge.html#networkx.DiGraph.add_edge">[docs]</a>    <span class="k">def</span> <span class="nf">add_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u_of_edge</span><span class="p">,</span> <span class="n">v_of_edge</span><span class="p">,</span> <span class="o">**</span><span class="n">attr</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Add an edge between u and v.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add an edge between u and v.</span>
 
 <span class="sd">        The nodes u and v will be automatically added if they are</span>
 <span class="sd">        not already in the graph.</span>
@@ -1174,7 +1174,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_pred</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="n">u</span><span class="p">]</span> <span class="o">=</span> <span class="n">datadict</span></div>
 
 <div class="viewcode-block" id="DiGraph.add_edges_from"><a class="viewcode-back" href="../../../reference/classes/generated/networkx.DiGraph.add_edges_from.html#networkx.DiGraph.add_edges_from">[docs]</a>    <span class="k">def</span> <span class="nf">add_edges_from</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ebunch_to_add</span><span class="p">,</span> <span class="o">**</span><span class="n">attr</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Add all the edges in ebunch_to_add.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add all the edges in ebunch_to_add.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1256,7 +1256,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_pred</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="n">u</span><span class="p">]</span> <span class="o">=</span> <span class="n">datadict</span></div>
 
 <div class="viewcode-block" id="DiGraph.remove_edge"><a class="viewcode-back" href="../../../reference/classes/generated/networkx.DiGraph.remove_edge.html#networkx.DiGraph.remove_edge">[docs]</a>    <span class="k">def</span> <span class="nf">remove_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Remove the edge between u and v.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove the edge between u and v.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1289,7 +1289,7 @@
             <span class="k">raise</span> <span class="n">NetworkXError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The edge </span><span class="si">{</span><span class="n">u</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2"> not in graph.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">err</span></div>
 
 <div class="viewcode-block" id="DiGraph.remove_edges_from"><a class="viewcode-back" href="../../../reference/classes/generated/networkx.DiGraph.remove_edges_from.html#networkx.DiGraph.remove_edges_from">[docs]</a>    <span class="k">def</span> <span class="nf">remove_edges_from</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ebunch</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Remove all edges specified in ebunch.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove all edges specified in ebunch.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1321,21 +1321,21 @@
                 <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pred</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="n">u</span><span class="p">]</span></div>
 
     <span class="k">def</span> <span class="nf">has_successor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns True if node u has successor v.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns True if node u has successor v.</span>
 
 <span class="sd">        This is true if graph has the edge u-&gt;v.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">u</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_succ</span> <span class="ow">and</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_succ</span><span class="p">[</span><span class="n">u</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">has_predecessor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns True if node u has predecessor v.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns True if node u has predecessor v.</span>
 
 <span class="sd">        This is true if graph has the edge u&lt;-v.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">u</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pred</span> <span class="ow">and</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pred</span><span class="p">[</span><span class="n">u</span><span class="p">]</span>
 
 <div class="viewcode-block" id="DiGraph.successors"><a class="viewcode-back" href="../../../reference/classes/generated/networkx.DiGraph.successors.html#networkx.DiGraph.successors">[docs]</a>    <span class="k">def</span> <span class="nf">successors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns an iterator over successor nodes of n.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns an iterator over successor nodes of n.</span>
 
 <span class="sd">        A successor of n is a node m such that there exists a directed</span>
 <span class="sd">        edge from n to m.</span>
@@ -1367,7 +1367,7 @@
     <span class="n">neighbors</span> <span class="o">=</span> <span class="n">successors</span>
 
 <div class="viewcode-block" id="DiGraph.predecessors"><a class="viewcode-back" href="../../../reference/classes/generated/networkx.DiGraph.predecessors.html#networkx.DiGraph.predecessors">[docs]</a>    <span class="k">def</span> <span class="nf">predecessors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns an iterator over predecessor nodes of n.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns an iterator over predecessor nodes of n.</span>
 
 <span class="sd">        A predecessor of n is a node m such that there exists a directed</span>
 <span class="sd">        edge from m to n.</span>
@@ -1393,7 +1393,7 @@
 
     <span class="nd">@cached_property</span>
     <span class="k">def</span> <span class="nf">edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;An OutEdgeView of the DiGraph as G.edges or G.edges().</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;An OutEdgeView of the DiGraph as G.edges or G.edges().</span>
 
 <span class="sd">        edges(self, nbunch=None, data=False, default=None)</span>
 
@@ -1463,7 +1463,7 @@
 
     <span class="nd">@cached_property</span>
     <span class="k">def</span> <span class="nf">in_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;A view of the in edges of the graph as G.in_edges or G.in_edges().</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A view of the in edges of the graph as G.in_edges or G.in_edges().</span>
 
 <span class="sd">        in_edges(self, nbunch=None, data=False, default=None):</span>
 
@@ -1503,7 +1503,7 @@
 
     <span class="nd">@cached_property</span>
     <span class="k">def</span> <span class="nf">degree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;A DegreeView for the Graph as G.degree or G.degree().</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A DegreeView for the Graph as G.degree or G.degree().</span>
 
 <span class="sd">        The node degree is the number of edges adjacent to the node.</span>
 <span class="sd">        The weighted node degree is the sum of the edge weights for</span>
@@ -1547,7 +1547,7 @@
 
     <span class="nd">@cached_property</span>
     <span class="k">def</span> <span class="nf">in_degree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;An InDegreeView for (node, in_degree) or in_degree for single node.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;An InDegreeView for (node, in_degree) or in_degree for single node.</span>
 
 <span class="sd">        The node in_degree is the number of edges pointing to the node.</span>
 <span class="sd">        The weighted node degree is the sum of the edge weights for</span>
@@ -1594,7 +1594,7 @@
 
     <span class="nd">@cached_property</span>
     <span class="k">def</span> <span class="nf">out_degree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;An OutDegreeView for (node, out_degree)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;An OutDegreeView for (node, out_degree)</span>
 
 <span class="sd">        The node out_degree is the number of edges pointing out of the node.</span>
 <span class="sd">        The weighted node degree is the sum of the edge weights for</span>
@@ -1640,7 +1640,7 @@
         <span class="k">return</span> <span class="n">OutDegreeView</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
 <div class="viewcode-block" id="DiGraph.clear"><a class="viewcode-back" href="../../../reference/classes/generated/networkx.DiGraph.clear.html#networkx.DiGraph.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Remove all nodes and edges from the graph.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove all nodes and edges from the graph.</span>
 
 <span class="sd">        This also removes the name, and all graph, node, and edge attributes.</span>
 
@@ -1660,7 +1660,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="DiGraph.clear_edges"><a class="viewcode-back" href="../../../reference/classes/generated/networkx.DiGraph.clear_edges.html#networkx.DiGraph.clear_edges">[docs]</a>    <span class="k">def</span> <span class="nf">clear_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Remove all edges from the graph without altering nodes.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove all edges from the graph without altering nodes.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
@@ -1678,15 +1678,15 @@
             <span class="n">successor_dict</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="nf">is_multigraph</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns True if graph is a multigraph, False otherwise.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns True if graph is a multigraph, False otherwise.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">is_directed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns True if graph is directed, False otherwise.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns True if graph is directed, False otherwise.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="kc">True</span>
 
 <div class="viewcode-block" id="DiGraph.to_undirected"><a class="viewcode-back" href="../../../reference/classes/generated/networkx.DiGraph.to_undirected.html#networkx.DiGraph.to_undirected">[docs]</a>    <span class="k">def</span> <span class="nf">to_undirected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reciprocal</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">as_view</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns an undirected representation of the digraph.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns an undirected representation of the digraph.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1765,7 +1765,7 @@
         <span class="k">return</span> <span class="n">G</span></div>
 
 <div class="viewcode-block" id="DiGraph.reverse"><a class="viewcode-back" href="../../../reference/classes/generated/networkx.DiGraph.reverse.html#networkx.DiGraph.reverse">[docs]</a>    <span class="k">def</span> <span class="nf">reverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns the reverse of the graph.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the reverse of the graph.</span>
 
 <span class="sd">        The reverse is a graph with the same nodes and edges</span>
 <span class="sd">        but with the directions of the edges reversed.</span>
@@ -1835,7 +1835,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+    &copy; Copyright 2004-2023, NetworkX Developers.<br>
 
 </p>
 

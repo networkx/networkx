@@ -518,7 +518,7 @@
 
 
 <div class="viewcode-block" id="hopcroft_karp_matching"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.bipartite.matching.hopcroft_karp_matching.html#networkx.algorithms.bipartite.matching.hopcroft_karp_matching">[docs]</a><span class="k">def</span> <span class="nf">hopcroft_karp_matching</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">top_nodes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns the maximum cardinality matching of the bipartite graph `G`.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the maximum cardinality matching of the bipartite graph `G`.</span>
 
 <span class="sd">    A matching is a set of edges that do not share any nodes. A maximum</span>
 <span class="sd">    cardinality matching is a matching with the most edges possible. It</span>
@@ -643,7 +643,7 @@
 
 
 <div class="viewcode-block" id="eppstein_matching"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.bipartite.matching.eppstein_matching.html#networkx.algorithms.bipartite.matching.eppstein_matching">[docs]</a><span class="k">def</span> <span class="nf">eppstein_matching</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">top_nodes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns the maximum cardinality matching of the bipartite graph `G`.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the maximum cardinality matching of the bipartite graph `G`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -776,7 +776,7 @@
 
 
 <span class="k">def</span> <span class="nf">_is_connected_by_alternating_path</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">matched_edges</span><span class="p">,</span> <span class="n">unmatched_edges</span><span class="p">,</span> <span class="n">targets</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns True if and only if the vertex `v` is connected to one of</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns True if and only if the vertex `v` is connected to one of</span>
 <span class="sd">    the target vertices by an alternating path in `G`.</span>
 
 <span class="sd">    An *alternating path* is a path in which every other edge is in the</span>
@@ -799,7 +799,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">_alternating_dfs</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">along_matched</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns True if and only if `u` is connected to one of the</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns True if and only if `u` is connected to one of the</span>
 <span class="sd">        targets by an alternating path.</span>
 
 <span class="sd">        `u` is a vertex in the graph `G`.</span>
@@ -838,7 +838,7 @@
 
 
 <span class="k">def</span> <span class="nf">_connected_by_alternating_paths</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">matching</span><span class="p">,</span> <span class="n">targets</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns the set of vertices that are connected to one of the target</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the set of vertices that are connected to one of the target</span>
 <span class="sd">    vertices by an alternating path in `G` or are themselves a target.</span>
 
 <span class="sd">    An *alternating path* is a path in which every other edge is in the</span>
@@ -876,7 +876,7 @@
 
 
 <div class="viewcode-block" id="to_vertex_cover"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.bipartite.matching.to_vertex_cover.html#networkx.algorithms.bipartite.matching.to_vertex_cover">[docs]</a><span class="k">def</span> <span class="nf">to_vertex_cover</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">matching</span><span class="p">,</span> <span class="n">top_nodes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns the minimum vertex cover corresponding to the given maximum</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the minimum vertex cover corresponding to the given maximum</span>
 <span class="sd">    matching of the bipartite graph `G`.</span>
 
 <span class="sd">    Parameters</span>
@@ -956,7 +956,7 @@
 
 
 <div class="viewcode-block" id="minimum_weight_full_matching"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.bipartite.matching.minimum_weight_full_matching.html#networkx.algorithms.bipartite.matching.minimum_weight_full_matching">[docs]</a><span class="k">def</span> <span class="nf">minimum_weight_full_matching</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">top_nodes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns a minimum weight full matching of the bipartite graph `G`.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns a minimum weight full matching of the bipartite graph `G`.</span>
 
 <span class="sd">    Let :math:`G = ((U, V), E)` be a weighted bipartite graph with real weights</span>
 <span class="sd">    :math:`w : E \to \mathbb{R}`. This function then produces a matching</span>
@@ -1091,7 +1091,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+    &copy; Copyright 2004-2023, NetworkX Developers.<br>
 
 </p>
 

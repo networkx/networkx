@@ -483,7 +483,7 @@
 
 
 <div class="viewcode-block" id="AtlasView"><a class="viewcode-back" href="../../../reference/classes/generated/networkx.classes.coreviews.AtlasView.html#networkx.classes.coreviews.AtlasView">[docs]</a><span class="k">class</span> <span class="nc">AtlasView</span><span class="p">(</span><span class="n">Mapping</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;An AtlasView is a Read-only Mapping of Mappings.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;An AtlasView is a Read-only Mapping of Mappings.</span>
 
 <span class="sd">    It is a View into a dict-of-dict data structure.</span>
 <span class="sd">    The inner level of dict is read-write. But the</span>
@@ -526,7 +526,7 @@
 
 
 <div class="viewcode-block" id="AdjacencyView"><a class="viewcode-back" href="../../../reference/classes/generated/networkx.classes.coreviews.AdjacencyView.html#networkx.classes.coreviews.AdjacencyView">[docs]</a><span class="k">class</span> <span class="nc">AdjacencyView</span><span class="p">(</span><span class="n">AtlasView</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;An AdjacencyView is a Read-only Map of Maps of Maps.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;An AdjacencyView is a Read-only Map of Maps of Maps.</span>
 
 <span class="sd">    It is a View into a dict-of-dict-of-dict data structure.</span>
 <span class="sd">    The inner level of dict is read-write. But the</span>
@@ -548,7 +548,7 @@
 
 
 <div class="viewcode-block" id="MultiAdjacencyView"><a class="viewcode-back" href="../../../reference/classes/generated/networkx.classes.coreviews.MultiAdjacencyView.html#networkx.classes.coreviews.MultiAdjacencyView">[docs]</a><span class="k">class</span> <span class="nc">MultiAdjacencyView</span><span class="p">(</span><span class="n">AdjacencyView</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;An MultiAdjacencyView is a Read-only Map of Maps of Maps of Maps.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;An MultiAdjacencyView is a Read-only Map of Maps of Maps of Maps.</span>
 
 <span class="sd">    It is a View into a dict-of-dict-of-dict-of-dict data structure.</span>
 <span class="sd">    The inner level of dict is read-write. But the</span>
@@ -570,7 +570,7 @@
 
 
 <div class="viewcode-block" id="UnionAtlas"><a class="viewcode-back" href="../../../reference/classes/generated/networkx.classes.coreviews.UnionAtlas.html#networkx.classes.coreviews.UnionAtlas">[docs]</a><span class="k">class</span> <span class="nc">UnionAtlas</span><span class="p">(</span><span class="n">Mapping</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A read-only union of two atlases (dict-of-dict).</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A read-only union of two atlases (dict-of-dict).</span>
 
 <span class="sd">    The two dict-of-dicts represent the inner dict of</span>
 <span class="sd">    an Adjacency:  `G.succ[node]` and `G.pred[node]`.</span>
@@ -625,7 +625,7 @@
 
 
 <div class="viewcode-block" id="UnionAdjacency"><a class="viewcode-back" href="../../../reference/classes/generated/networkx.classes.coreviews.UnionAdjacency.html#networkx.classes.coreviews.UnionAdjacency">[docs]</a><span class="k">class</span> <span class="nc">UnionAdjacency</span><span class="p">(</span><span class="n">Mapping</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A read-only union of dict Adjacencies as a Map of Maps of Maps.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A read-only union of dict Adjacencies as a Map of Maps of Maps.</span>
 
 <span class="sd">    The two input dict-of-dict-of-dicts represent the union of</span>
 <span class="sd">    `G.succ` and `G.pred`. Return values are UnionAtlas</span>
@@ -677,7 +677,7 @@
 
 
 <div class="viewcode-block" id="UnionMultiInner"><a class="viewcode-back" href="../../../reference/classes/generated/networkx.classes.coreviews.UnionMultiInner.html#networkx.classes.coreviews.UnionMultiInner">[docs]</a><span class="k">class</span> <span class="nc">UnionMultiInner</span><span class="p">(</span><span class="n">UnionAtlas</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A read-only union of two inner dicts of MultiAdjacencies.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A read-only union of two inner dicts of MultiAdjacencies.</span>
 
 <span class="sd">    The two input dict-of-dict-of-dicts represent the union of</span>
 <span class="sd">    `G.succ[node]` and `G.pred[node]` for MultiDiGraphs.</span>
@@ -708,7 +708,7 @@
 
 
 <div class="viewcode-block" id="UnionMultiAdjacency"><a class="viewcode-back" href="../../../reference/classes/generated/networkx.classes.coreviews.UnionMultiAdjacency.html#networkx.classes.coreviews.UnionMultiAdjacency">[docs]</a><span class="k">class</span> <span class="nc">UnionMultiAdjacency</span><span class="p">(</span><span class="n">UnionAdjacency</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A read-only union of two dict MultiAdjacencies.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A read-only union of two dict MultiAdjacencies.</span>
 
 <span class="sd">    The two input dict-of-dict-of-dict-of-dicts represent the union of</span>
 <span class="sd">    `G.succ` and `G.pred` for MultiDiGraphs. Return values are UnionAdjacency.</span>
@@ -879,7 +879,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+    &copy; Copyright 2004-2023, NetworkX Developers.<br>
 
 </p>
 

@@ -476,7 +476,7 @@
 
 
 <span class="k">def</span> <span class="nf">_detect_unboundedness</span><span class="p">(</span><span class="n">R</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Detect infinite-capacity negative cycles.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Detect infinite-capacity negative cycles.&quot;&quot;&quot;</span>
     <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
     <span class="n">G</span><span class="o">.</span><span class="n">add_nodes_from</span><span class="p">(</span><span class="n">R</span><span class="p">)</span>
 
@@ -503,7 +503,7 @@
 
 <span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;undirected&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">_build_residual_network</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">demand</span><span class="p">,</span> <span class="n">capacity</span><span class="p">,</span> <span class="n">weight</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Build a residual network and initialize a zero flow.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build a residual network and initialize a zero flow.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">u</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">demand</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">G</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXUnfeasible</span><span class="p">(</span><span class="s2">&quot;Sum of the demands should be 0.&quot;</span><span class="p">)</span>
 
@@ -569,7 +569,7 @@
 
 
 <span class="k">def</span> <span class="nf">_build_flow_dict</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">capacity</span><span class="p">,</span> <span class="n">weight</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Build a flow dictionary from a residual network.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build a flow dictionary from a residual network.&quot;&quot;&quot;</span>
     <span class="n">inf</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span>
     <span class="n">flow_dict</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">is_multigraph</span><span class="p">():</span>
@@ -615,7 +615,7 @@
 <div class="viewcode-block" id="capacity_scaling"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.flow.capacity_scaling.html#networkx.algorithms.flow.capacity_scaling">[docs]</a><span class="k">def</span> <span class="nf">capacity_scaling</span><span class="p">(</span>
     <span class="n">G</span><span class="p">,</span> <span class="n">demand</span><span class="o">=</span><span class="s2">&quot;demand&quot;</span><span class="p">,</span> <span class="n">capacity</span><span class="o">=</span><span class="s2">&quot;capacity&quot;</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="n">heap</span><span class="o">=</span><span class="n">BinaryHeap</span>
 <span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Find a minimum cost flow satisfying all demands in digraph G.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Find a minimum cost flow satisfying all demands in digraph G.</span>
 
 <span class="sd">    This is a capacity scaling successive shortest augmenting path algorithm.</span>
 
@@ -916,7 +916,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+    &copy; Copyright 2004-2023, NetworkX Developers.<br>
 
 </p>
 

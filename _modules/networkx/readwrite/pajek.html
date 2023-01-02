@@ -486,7 +486,7 @@
 
 
 <div class="viewcode-block" id="generate_pajek"><a class="viewcode-back" href="../../../reference/readwrite/generated/networkx.readwrite.pajek.generate_pajek.html#networkx.readwrite.pajek.generate_pajek">[docs]</a><span class="k">def</span> <span class="nf">generate_pajek</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Generate lines in Pajek graph format.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate lines in Pajek graph format.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -536,7 +536,7 @@
                 <span class="n">s</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">make_qstr</span><span class="p">(</span><span class="n">k</span><span class="p">)</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">make_qstr</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Node attribute </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> is not processed. </span><span class="si">{</span><span class="p">(</span><span class="s1">&#39;Empty attribute&#39;</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;Non-string attribute&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Node attribute </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> is not processed. </span><span class="si">{</span><span class="p">(</span><span class="s1">&#39;Empty attribute&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="nb">str</span><span class="p">)</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;Non-string attribute&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
                 <span class="p">)</span>
         <span class="k">yield</span> <span class="n">s</span>
 
@@ -554,14 +554,14 @@
                 <span class="n">s</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">make_qstr</span><span class="p">(</span><span class="n">k</span><span class="p">)</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">make_qstr</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Edge attribute </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> is not processed. </span><span class="si">{</span><span class="p">(</span><span class="s1">&#39;Empty attribute&#39;</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;Non-string attribute&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Edge attribute </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> is not processed. </span><span class="si">{</span><span class="p">(</span><span class="s1">&#39;Empty attribute&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="nb">str</span><span class="p">)</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;Non-string attribute&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
                 <span class="p">)</span>
         <span class="k">yield</span> <span class="n">s</span></div>
 
 
 <div class="viewcode-block" id="write_pajek"><a class="viewcode-back" href="../../../reference/readwrite/generated/networkx.readwrite.pajek.write_pajek.html#networkx.readwrite.pajek.write_pajek">[docs]</a><span class="nd">@open_file</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wb&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">write_pajek</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;UTF-8&quot;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Write graph in Pajek format to path.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Write graph in Pajek format to path.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -594,7 +594,7 @@
 
 <div class="viewcode-block" id="read_pajek"><a class="viewcode-back" href="../../../reference/readwrite/generated/networkx.readwrite.pajek.read_pajek.html#networkx.readwrite.pajek.read_pajek">[docs]</a><span class="nd">@open_file</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;rb&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">read_pajek</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;UTF-8&quot;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Read graph in Pajek format from path.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Read graph in Pajek format from path.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -626,7 +626,7 @@
 
 
 <div class="viewcode-block" id="parse_pajek"><a class="viewcode-back" href="../../../reference/readwrite/generated/networkx.readwrite.pajek.parse_pajek.html#networkx.readwrite.pajek.parse_pajek">[docs]</a><span class="k">def</span> <span class="nf">parse_pajek</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Parse Pajek format graph from string or iterable.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse Pajek format graph from string or iterable.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -737,7 +737,7 @@
 
 
 <span class="k">def</span> <span class="nf">make_qstr</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns the string representation of t.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the string representation of t.</span>
 <span class="sd">    Add outer double-quotes if the string has a space.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
@@ -796,7 +796,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+    &copy; Copyright 2004-2023, NetworkX Developers.<br>
 
 </p>
 

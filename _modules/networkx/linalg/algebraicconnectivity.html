@@ -477,7 +477,7 @@
 
 
 <span class="k">class</span> <span class="nc">_PCGSolver</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Preconditioned conjugate gradient method.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Preconditioned conjugate gradient method.</span>
 
 <span class="sd">    To solve Ax = b:</span>
 <span class="sd">        M = A.diagonal() # or some other preconditioner</span>
@@ -535,7 +535,7 @@
 
 
 <span class="k">class</span> <span class="nc">_LUSolver</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;LU factorization.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;LU factorization.</span>
 
 <span class="sd">    To solve Ax = b:</span>
 <span class="sd">        solver = _LUSolver(A)</span>
@@ -567,7 +567,7 @@
 
 
 <span class="k">def</span> <span class="nf">_preprocess_graph</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Compute edge weights and eliminate zero-weight edges.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute edge weights and eliminate zero-weight edges.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
         <span class="n">H</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">MultiGraph</span><span class="p">()</span>
         <span class="n">H</span><span class="o">.</span><span class="n">add_nodes_from</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
@@ -593,7 +593,7 @@
 
 
 <span class="k">def</span> <span class="nf">_rcm_estimate</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Estimate the Fiedler vector using the reverse Cuthill-McKee ordering.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Estimate the Fiedler vector using the reverse Cuthill-McKee ordering.&quot;&quot;&quot;</span>
     <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
     <span class="n">G</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">subgraph</span><span class="p">(</span><span class="n">nodelist</span><span class="p">)</span>
@@ -608,7 +608,7 @@
 
 
 <span class="k">def</span> <span class="nf">_tracemin_fiedler</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">normalized</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Compute the Fiedler vector of L using the TraceMIN-Fiedler algorithm.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the Fiedler vector of L using the TraceMIN-Fiedler algorithm.</span>
 
 <span class="sd">    The Fiedler vector of a connected undirected graph is the eigenvector</span>
 <span class="sd">    corresponding to the second smallest eigenvalue of the Laplacian matrix</span>
@@ -661,7 +661,7 @@
     <span class="k">if</span> <span class="n">normalized</span><span class="p">:</span>
 
         <span class="k">def</span> <span class="nf">project</span><span class="p">(</span><span class="n">X</span><span class="p">):</span>
-            <span class="sd">&quot;&quot;&quot;Make X orthogonal to the nullspace of L.&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Make X orthogonal to the nullspace of L.&quot;&quot;&quot;</span>
             <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
                 <span class="n">X</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span> <span class="o">-=</span> <span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span> <span class="o">@</span> <span class="n">e</span><span class="p">)</span> <span class="o">*</span> <span class="n">e</span>
@@ -669,7 +669,7 @@
     <span class="k">else</span><span class="p">:</span>
 
         <span class="k">def</span> <span class="nf">project</span><span class="p">(</span><span class="n">X</span><span class="p">):</span>
-            <span class="sd">&quot;&quot;&quot;Make X orthogonal to the nullspace of L.&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Make X orthogonal to the nullspace of L.&quot;&quot;&quot;</span>
             <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
                 <span class="n">X</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span> <span class="o">-=</span> <span class="n">X</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">n</span>
@@ -719,7 +719,7 @@
 
 
 <span class="k">def</span> <span class="nf">_get_fiedler_func</span><span class="p">(</span><span class="n">method</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns a function that solves the Fiedler eigenvalue problem.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a function that solves the Fiedler eigenvalue problem.&quot;&quot;&quot;</span>
     <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
     <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;tracemin&quot;</span><span class="p">:</span>  <span class="c1"># old style keyword &lt;v2.1</span>
@@ -780,7 +780,7 @@
 <span class="k">def</span> <span class="nf">algebraic_connectivity</span><span class="p">(</span>
     <span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="n">normalized</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;tracemin_pcg&quot;</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns the algebraic connectivity of an undirected graph.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns the algebraic connectivity of an undirected graph.</span>
 
 <span class="sd">    The algebraic connectivity of a connected undirected graph is the second</span>
 <span class="sd">    smallest eigenvalue of its Laplacian matrix.</span>
@@ -875,7 +875,7 @@
 <span class="k">def</span> <span class="nf">fiedler_vector</span><span class="p">(</span>
     <span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="n">normalized</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;tracemin_pcg&quot;</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns the Fiedler vector of a connected undirected graph.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the Fiedler vector of a connected undirected graph.</span>
 
 <span class="sd">    The Fiedler vector of a connected undirected graph is the eigenvector</span>
 <span class="sd">    corresponding to the second smallest eigenvalue of the Laplacian matrix</span>
@@ -971,7 +971,7 @@
 <span class="k">def</span> <span class="nf">spectral_ordering</span><span class="p">(</span>
     <span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="n">normalized</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;tracemin_pcg&quot;</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Compute the spectral_ordering of a graph.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the spectral_ordering of a graph.</span>
 
 <span class="sd">    The spectral ordering of a graph is an ordering of its nodes where nodes</span>
 <span class="sd">    in the same weakly connected components appear contiguous and ordered by</span>
@@ -1099,7 +1099,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+    &copy; Copyright 2004-2023, NetworkX Developers.<br>
 
 </p>
 

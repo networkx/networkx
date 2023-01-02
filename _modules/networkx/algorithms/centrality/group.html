@@ -483,7 +483,7 @@
 
 
 <div class="viewcode-block" id="group_betweenness_centrality"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.centrality.group_betweenness_centrality.html#networkx.algorithms.centrality.group_betweenness_centrality">[docs]</a><span class="k">def</span> <span class="nf">group_betweenness_centrality</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">normalized</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">endpoints</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the group betweenness centrality for a group of nodes.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the group betweenness centrality for a group of nodes.</span>
 
 <span class="sd">    Group betweenness centrality of a group of nodes $C$ is the sum of the</span>
 <span class="sd">    fraction of all-pairs shortest paths that pass through any vertex in $C$</span>
@@ -583,7 +583,7 @@
         <span class="n">list_of_groups</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">set_v</span> <span class="o">=</span> <span class="p">{</span><span class="n">node</span> <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">C</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">group</span><span class="p">}</span>
     <span class="k">if</span> <span class="n">set_v</span> <span class="o">-</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>  <span class="c1"># element(s) of C not in G</span>
-        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NodeNotFound</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The node(s) </span><span class="si">{</span><span class="n">set_v</span> <span class="o">-</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="si">}</span><span class="s2"> are in C but not in G.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NodeNotFound</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The node(s) </span><span class="si">{</span><span class="n">set_v</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="si">}</span><span class="s2"> are in C but not in G.&quot;</span><span class="p">)</span>
 
     <span class="c1"># pre-processing</span>
     <span class="n">PB</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">D</span> <span class="o">=</span> <span class="n">_group_preprocessing</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">set_v</span><span class="p">,</span> <span class="n">weight</span><span class="p">)</span>
@@ -701,7 +701,7 @@
 <div class="viewcode-block" id="prominent_group"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.centrality.prominent_group.html#networkx.algorithms.centrality.prominent_group">[docs]</a><span class="k">def</span> <span class="nf">prominent_group</span><span class="p">(</span>
     <span class="n">G</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">endpoints</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">normalized</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">greedy</span><span class="o">=</span><span class="kc">False</span>
 <span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Find the prominent group of size $k$ in graph $G$. The prominence of the</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Find the prominent group of size $k$ in graph $G$. The prominence of the</span>
 <span class="sd">    group is evaluated by the group betweenness centrality.</span>
 
 <span class="sd">    Group betweenness centrality of a group of nodes $C$ is the sum of the</span>
@@ -806,7 +806,7 @@
     <span class="k">if</span> <span class="n">C</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">C</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">C</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">C</span> <span class="o">-</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>  <span class="c1"># element(s) of C not in G</span>
-            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NodeNotFound</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The node(s) </span><span class="si">{</span><span class="n">C</span> <span class="o">-</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="si">}</span><span class="s2"> are in C but not in G.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NodeNotFound</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The node(s) </span><span class="si">{</span><span class="n">C</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="si">}</span><span class="s2"> are in C but not in G.&quot;</span><span class="p">)</span>
         <span class="n">nodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span> <span class="o">-</span> <span class="n">C</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">nodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
@@ -1005,7 +1005,7 @@
 
 
 <div class="viewcode-block" id="group_closeness_centrality"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.centrality.group_closeness_centrality.html#networkx.algorithms.centrality.group_closeness_centrality">[docs]</a><span class="k">def</span> <span class="nf">group_closeness_centrality</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the group closeness centrality for a group of nodes.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the group closeness centrality for a group of nodes.</span>
 
 <span class="sd">    Group closeness centrality of a group of nodes $S$ is a measure</span>
 <span class="sd">    of how close the group is to the other nodes in the graph.</span>
@@ -1101,7 +1101,7 @@
 
 
 <div class="viewcode-block" id="group_degree_centrality"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.centrality.group_degree_centrality.html#networkx.algorithms.centrality.group_degree_centrality">[docs]</a><span class="k">def</span> <span class="nf">group_degree_centrality</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">S</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Compute the group degree centrality for a group of nodes.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the group degree centrality for a group of nodes.</span>
 
 <span class="sd">    Group degree centrality of a group of nodes $S$ is the fraction</span>
 <span class="sd">    of non-group members connected to group members.</span>
@@ -1152,7 +1152,7 @@
 
 <div class="viewcode-block" id="group_in_degree_centrality"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.centrality.group_in_degree_centrality.html#networkx.algorithms.centrality.group_in_degree_centrality">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;undirected&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">group_in_degree_centrality</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">S</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Compute the group in-degree centrality for a group of nodes.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the group in-degree centrality for a group of nodes.</span>
 
 <span class="sd">    Group in-degree centrality of a group of nodes $S$ is the fraction</span>
 <span class="sd">    of non-group members connected to group members by incoming edges.</span>
@@ -1198,7 +1198,7 @@
 
 <div class="viewcode-block" id="group_out_degree_centrality"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.centrality.group_out_degree_centrality.html#networkx.algorithms.centrality.group_out_degree_centrality">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;undirected&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">group_out_degree_centrality</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">S</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Compute the group out-degree centrality for a group of nodes.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the group out-degree centrality for a group of nodes.</span>
 
 <span class="sd">    Group out-degree centrality of a group of nodes $S$ is the fraction</span>
 <span class="sd">    of non-group members connected to group members by outgoing edges.</span>
@@ -1291,7 +1291,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+    &copy; Copyright 2004-2023, NetworkX Developers.<br>
 
 </p>
 

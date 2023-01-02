@@ -486,7 +486,7 @@
 
 
 <div class="viewcode-block" id="not_implemented_for"><a class="viewcode-back" href="../../../reference/generated/networkx.utils.decorators.not_implemented_for.html#networkx.utils.decorators.not_implemented_for">[docs]</a><span class="k">def</span> <span class="nf">not_implemented_for</span><span class="p">(</span><span class="o">*</span><span class="n">graph_types</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Decorator to mark algorithms as not implemented</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Decorator to mark algorithms as not implemented</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -564,7 +564,7 @@
 
 
 <div class="viewcode-block" id="open_file"><a class="viewcode-back" href="../../../reference/generated/networkx.utils.decorators.open_file.html#networkx.utils.decorators.open_file">[docs]</a><span class="k">def</span> <span class="nf">open_file</span><span class="p">(</span><span class="n">path_arg</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Decorator to ensure clean opening and closing of files.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Decorator to ensure clean opening and closing of files.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -656,7 +656,7 @@
 
 
 <div class="viewcode-block" id="nodes_or_number"><a class="viewcode-back" href="../../../reference/generated/networkx.utils.decorators.nodes_or_number.html#networkx.utils.decorators.nodes_or_number">[docs]</a><span class="k">def</span> <span class="nf">nodes_or_number</span><span class="p">(</span><span class="n">which_args</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Decorator to allow number of nodes or container of nodes.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Decorator to allow number of nodes or container of nodes.</span>
 
 <span class="sd">    With this decorator, the specified argument can be either a number or a container</span>
 <span class="sd">    of nodes. If it is a number, the nodes used are `range(n)`.</span>
@@ -720,7 +720,7 @@
 
 
 <div class="viewcode-block" id="np_random_state"><a class="viewcode-back" href="../../../reference/generated/networkx.utils.decorators.np_random_state.html#networkx.utils.decorators.np_random_state">[docs]</a><span class="k">def</span> <span class="nf">np_random_state</span><span class="p">(</span><span class="n">random_state_argument</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Decorator to generate a `numpy.random.RandomState` instance.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Decorator to generate a `numpy.random.RandomState` instance.</span>
 
 <span class="sd">    The decorator processes the argument indicated by `random_state_argument`</span>
 <span class="sd">    using :func:`nx.utils.create_random_state`.</span>
@@ -764,7 +764,7 @@
 
 
 <div class="viewcode-block" id="py_random_state"><a class="viewcode-back" href="../../../reference/generated/networkx.utils.decorators.py_random_state.html#networkx.utils.decorators.py_random_state">[docs]</a><span class="k">def</span> <span class="nf">py_random_state</span><span class="p">(</span><span class="n">random_state_argument</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Decorator to generate a random.Random instance (or equiv).</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Decorator to generate a random.Random instance (or equiv).</span>
 
 <span class="sd">    The decorator processes the argument indicated by `random_state_argument`</span>
 <span class="sd">    using :func:`nx.utils.create_py_random_state`.</span>
@@ -817,7 +817,7 @@
 
 
 <div class="viewcode-block" id="argmap"><a class="viewcode-back" href="../../../reference/generated/networkx.utils.decorators.argmap.html#networkx.utils.decorators.argmap">[docs]</a><span class="k">class</span> <span class="nc">argmap</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;A decorator to apply a map to arguments before calling the function</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A decorator to apply a map to arguments before calling the function</span>
 
 <span class="sd">    This class provides a decorator that maps (transforms) arguments of the function</span>
 <span class="sd">    before the function is called. Thus for example, we have similar code</span>
@@ -1159,7 +1159,7 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_lazy_compile</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Compile the source of a wrapped function</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compile the source of a wrapped function</span>
 
 <span class="sd">        Assemble and compile the decorated function, and intrusively replace its</span>
 <span class="sd">        code with the compiled version&#39;s.  The thinly wrapped function becomes</span>
@@ -1205,7 +1205,7 @@
         <span class="k">return</span> <span class="n">func</span>
 
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Construct a lazily decorated wrapper of f.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Construct a lazily decorated wrapper of f.</span>
 
 <span class="sd">        The decorated function will be compiled when it is called for the first time,</span>
 <span class="sd">        and it will replace its own __code__ object so subsequent calls are fast.</span>
@@ -1270,7 +1270,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_count</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Maintain a globally-unique identifier for function names and &quot;file&quot; names</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Maintain a globally-unique identifier for function names and &quot;file&quot; names</span>
 
 <span class="sd">        Note that this counter is a class method reporting a class variable</span>
 <span class="sd">        so the count is unique within a Python session. It could differ from</span>
@@ -1293,7 +1293,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Mangle the name of a function to be unique but somewhat human-readable</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Mangle the name of a function to be unique but somewhat human-readable</span>
 
 <span class="sd">        The names are unique within a Python session and set using `_count`.</span>
 
@@ -1312,7 +1312,7 @@
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;argmap_</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="n">_count</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
 
 <div class="viewcode-block" id="argmap.compile"><a class="viewcode-back" href="../../../reference/generated/generated/networkx.utils.decorators.argmap.compile.html#networkx.utils.decorators.argmap.compile">[docs]</a>    <span class="k">def</span> <span class="nf">compile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Compile the decorated function.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compile the decorated function.</span>
 
 <span class="sd">        Called once for a given decorated function -- collects the code from all</span>
 <span class="sd">        argmap decorators in the stack, and compiles the decorated function.</span>
@@ -1360,7 +1360,7 @@
         <span class="k">return</span> <span class="n">func</span></div>
 
 <div class="viewcode-block" id="argmap.assemble"><a class="viewcode-back" href="../../../reference/generated/generated/networkx.utils.decorators.argmap.assemble.html#networkx.utils.decorators.argmap.assemble">[docs]</a>    <span class="k">def</span> <span class="nf">assemble</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Collects components of the source for the decorated function wrapping f.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Collects components of the source for the decorated function wrapping f.</span>
 
 <span class="sd">        If `f` has multiple argmap decorators, we recursively assemble the stack of</span>
 <span class="sd">        decorators into a single flattened function.</span>
@@ -1472,7 +1472,7 @@
                         <span class="sa">f</span><span class="s2">&quot;index </span><span class="si">{</span><span class="n">arg</span><span class="si">}</span><span class="s2"> not a parameter index and this function doesn&#39;t have args&quot;</span>
                     <span class="p">)</span>
                 <span class="n">mutable_args</span> <span class="o">=</span> <span class="kc">True</span>
-                <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sig</span><span class="o">.</span><span class="n">args</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">arg</span> <span class="o">-</span> <span class="n">sig</span><span class="o">.</span><span class="n">n_positional</span><span class="si">}</span><span class="s2">]&quot;</span>
+                <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sig</span><span class="o">.</span><span class="n">args</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">arg</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">sig</span><span class="o">.</span><span class="n">n_positional</span><span class="si">}</span><span class="s2">]&quot;</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_finally</span><span class="p">:</span>
             <span class="c1"># here&#39;s where we handle try_finally decorators.  Such a decorator</span>
@@ -1503,7 +1503,7 @@
 
 <div class="viewcode-block" id="argmap.signature"><a class="viewcode-back" href="../../../reference/generated/generated/networkx.utils.decorators.argmap.signature.html#networkx.utils.decorators.argmap.signature">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">signature</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Construct a Signature object describing `f`</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Construct a Signature object describing `f`</span>
 
 <span class="sd">        Compute a Signature so that we can write a function wrapping f with</span>
 <span class="sd">        the same signature and call-type.</span>
@@ -1603,7 +1603,7 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_flatten</span><span class="p">(</span><span class="n">nestlist</span><span class="p">,</span> <span class="n">visited</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;flattens a recursive list of lists that doesn&#39;t have cyclic references</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;flattens a recursive list of lists that doesn&#39;t have cyclic references</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1633,7 +1633,7 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_indent</span><span class="p">(</span><span class="o">*</span><span class="n">lines</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Indent list of code lines to make executable Python code</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Indent list of code lines to make executable Python code</span>
 
 <span class="sd">        Indents a tree-recursive list of strings, following the rule that one</span>
 <span class="sd">        space is added to the tab after a line that ends in a colon, and one is</span>
@@ -1721,7 +1721,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+    &copy; Copyright 2004-2023, NetworkX Developers.<br>
 
 </p>
 

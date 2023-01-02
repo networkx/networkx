@@ -476,7 +476,7 @@
 <div class="viewcode-block" id="boykov_kolmogorov"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.flow.boykov_kolmogorov.html#networkx.algorithms.flow.boykov_kolmogorov">[docs]</a><span class="k">def</span> <span class="nf">boykov_kolmogorov</span><span class="p">(</span>
     <span class="n">G</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">capacity</span><span class="o">=</span><span class="s2">&quot;capacity&quot;</span><span class="p">,</span> <span class="n">residual</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">value_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Find a maximum single-commodity flow using Boykov-Kolmogorov algorithm.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Find a maximum single-commodity flow using Boykov-Kolmogorov algorithm.</span>
 
 <span class="sd">    This function returns the residual network resulting after computing</span>
 <span class="sd">    the maximum flow. See below for details about the conventions</span>
@@ -652,7 +652,7 @@
     <span class="n">R_pred</span> <span class="o">=</span> <span class="n">R</span><span class="o">.</span><span class="n">pred</span>
 
     <span class="k">def</span> <span class="nf">grow</span><span class="p">():</span>
-        <span class="sd">&quot;&quot;&quot;Bidirectional breadth-first search for the growth stage.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Bidirectional breadth-first search for the growth stage.</span>
 
 <span class="sd">        Returns a connecting edge, that is and edge that connects</span>
 <span class="sd">        a node from the source search tree with a node from the</span>
@@ -687,7 +687,7 @@
         <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">augment</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Augmentation stage.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Augmentation stage.</span>
 
 <span class="sd">        Reconstruct path and determine its residual capacity.</span>
 <span class="sd">        We start from a connecting edge, which links a node</span>
@@ -735,7 +735,7 @@
         <span class="k">return</span> <span class="n">flow</span>
 
     <span class="k">def</span> <span class="nf">adopt</span><span class="p">():</span>
-        <span class="sd">&quot;&quot;&quot;Adoption stage.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Adoption stage.</span>
 
 <span class="sd">        Reconstruct search trees by adopting or discarding orphans.</span>
 <span class="sd">        During augmentation stage some edges got saturated and thus</span>
@@ -879,7 +879,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+    &copy; Copyright 2004-2023, NetworkX Developers.<br>
 
 </p>
 

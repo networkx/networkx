@@ -515,7 +515,7 @@
     <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span>
     <span class="n">nonedge</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns the graph adjacency matrix as a Pandas DataFrame.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the graph adjacency matrix as a Pandas DataFrame.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -613,7 +613,7 @@
 
 
 <div class="viewcode-block" id="from_pandas_adjacency"><a class="viewcode-back" href="../../reference/generated/networkx.convert_matrix.from_pandas_adjacency.html#networkx.convert_matrix.from_pandas_adjacency">[docs]</a><span class="k">def</span> <span class="nf">from_pandas_adjacency</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">create_using</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns a graph from Pandas DataFrame.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns a graph from Pandas DataFrame.</span>
 
 <span class="sd">    The Pandas DataFrame is interpreted as an adjacency matrix for the graph.</span>
 
@@ -680,7 +680,7 @@
     <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">edge_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns the graph edge list as a Pandas DataFrame.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the graph edge list as a Pandas DataFrame.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -771,7 +771,7 @@
     <span class="n">create_using</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">edge_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns a graph from Pandas DataFrame containing an edge list.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a graph from Pandas DataFrame containing an edge list.</span>
 
 <span class="sd">    The Pandas DataFrame should contain at least two columns of node names and</span>
 <span class="sd">    zero or more columns of edge attributes. Each row will be processed as one</span>
@@ -927,7 +927,7 @@
 
 
 <div class="viewcode-block" id="to_scipy_sparse_array"><a class="viewcode-back" href="../../reference/generated/networkx.convert_matrix.to_scipy_sparse_array.html#networkx.convert_matrix.to_scipy_sparse_array">[docs]</a><span class="k">def</span> <span class="nf">to_scipy_sparse_array</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">nodelist</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;csr&quot;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns the graph adjacency matrix as a SciPy sparse array.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the graph adjacency matrix as a SciPy sparse array.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1061,7 +1061,7 @@
 
 
 <span class="k">def</span> <span class="nf">_csr_gen_triples</span><span class="p">(</span><span class="n">A</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Converts a SciPy sparse array in **Compressed Sparse Row** format to</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Converts a SciPy sparse array in **Compressed Sparse Row** format to</span>
 <span class="sd">    an iterable of weighted edge triples.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1073,7 +1073,7 @@
 
 
 <span class="k">def</span> <span class="nf">_csc_gen_triples</span><span class="p">(</span><span class="n">A</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Converts a SciPy sparse array in **Compressed Sparse Column** format to</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Converts a SciPy sparse array in **Compressed Sparse Column** format to</span>
 <span class="sd">    an iterable of weighted edge triples.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1085,7 +1085,7 @@
 
 
 <span class="k">def</span> <span class="nf">_coo_gen_triples</span><span class="p">(</span><span class="n">A</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Converts a SciPy sparse array in **Coordinate** format to an iterable</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Converts a SciPy sparse array in **Coordinate** format to an iterable</span>
 <span class="sd">    of weighted edge triples.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1094,7 +1094,7 @@
 
 
 <span class="k">def</span> <span class="nf">_dok_gen_triples</span><span class="p">(</span><span class="n">A</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Converts a SciPy sparse array in **Dictionary of Keys** format to an</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Converts a SciPy sparse array in **Dictionary of Keys** format to an</span>
 <span class="sd">    iterable of weighted edge triples.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1103,7 +1103,7 @@
 
 
 <span class="k">def</span> <span class="nf">_generate_weighted_edges</span><span class="p">(</span><span class="n">A</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns an iterable over (u, v, w) triples, where u and v are adjacent</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns an iterable over (u, v, w) triples, where u and v are adjacent</span>
 <span class="sd">    vertices and w is the weight of the edge joining u and v.</span>
 
 <span class="sd">    `A` is a SciPy sparse array (in any format).</span>
@@ -1122,7 +1122,7 @@
 <div class="viewcode-block" id="from_scipy_sparse_array"><a class="viewcode-back" href="../../reference/generated/networkx.convert_matrix.from_scipy_sparse_array.html#networkx.convert_matrix.from_scipy_sparse_array">[docs]</a><span class="k">def</span> <span class="nf">from_scipy_sparse_array</span><span class="p">(</span>
     <span class="n">A</span><span class="p">,</span> <span class="n">parallel_edges</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">create_using</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">edge_attribute</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Creates a new graph from an adjacency matrix given as a SciPy sparse</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates a new graph from an adjacency matrix given as a SciPy sparse</span>
 <span class="sd">    array.</span>
 
 <span class="sd">    Parameters</span>
@@ -1233,7 +1233,7 @@
     <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span>
     <span class="n">nonedge</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns the graph adjacency matrix as a NumPy array.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the graph adjacency matrix as a NumPy array.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1392,7 +1392,7 @@
     <span class="c1"># Input validation</span>
     <span class="n">nodeset</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">nodelist</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">nodeset</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Nodes </span><span class="si">{</span><span class="n">nodeset</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">G</span><span class="p">)</span><span class="si">}</span><span class="s2"> in nodelist is not in G&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Nodes </span><span class="si">{</span><span class="n">nodeset</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nb">set</span><span class="p">(</span><span class="n">G</span><span class="p">)</span><span class="si">}</span><span class="s2"> in nodelist is not in G&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodeset</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">nlen</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;nodelist contains duplicates.&quot;</span><span class="p">)</span>
 
@@ -1463,7 +1463,7 @@
 
 
 <div class="viewcode-block" id="from_numpy_array"><a class="viewcode-back" href="../../reference/generated/networkx.convert_matrix.from_numpy_array.html#networkx.convert_matrix.from_numpy_array">[docs]</a><span class="k">def</span> <span class="nf">from_numpy_array</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">parallel_edges</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">create_using</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns a graph from a 2D NumPy array.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a graph from a 2D NumPy array.</span>
 
 <span class="sd">    The 2D NumPy array is interpreted as an adjacency matrix for the graph.</span>
 
@@ -1674,7 +1674,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+    &copy; Copyright 2004-2023, NetworkX Developers.<br>
 
 </p>
 

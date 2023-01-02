@@ -608,13 +608,13 @@
 
 
 <span class="k">class</span> <span class="nc">GraphMatcher</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Implementation of VF2 algorithm for matching undirected graphs.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Implementation of VF2 algorithm for matching undirected graphs.</span>
 
 <span class="sd">    Suitable for Graph and MultiGraph instances.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">G1</span><span class="p">,</span> <span class="n">G2</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Initialize GraphMatcher.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize GraphMatcher.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -650,7 +650,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">reset_recursion_limit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Restores the recursion limit.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Restores the recursion limit.&quot;&quot;&quot;</span>
         <span class="c1"># TODO:</span>
         <span class="c1"># Currently, we use recursion and set the recursion level higher.</span>
         <span class="c1"># It would be nice to restore the level, but because the</span>
@@ -663,7 +663,7 @@
         <span class="n">sys</span><span class="o">.</span><span class="n">setrecursionlimit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">old_recursion_limit</span><span class="p">)</span>
 
 <div class="viewcode-block" id="GraphMatcher.candidate_pairs_iter"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.isomorphism.GraphMatcher.candidate_pairs_iter.html#networkx.algorithms.isomorphism.GraphMatcher.candidate_pairs_iter">[docs]</a>    <span class="k">def</span> <span class="nf">candidate_pairs_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Iterator over candidate pairs of nodes in G1 and G2.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Iterator over candidate pairs of nodes in G1 and G2.&quot;&quot;&quot;</span>
 
         <span class="c1"># All computations are done using the current state!</span>
 
@@ -696,7 +696,7 @@
         <span class="c1"># For all other cases, we don&#39;t have any candidate pairs.</span>
 
 <div class="viewcode-block" id="GraphMatcher.initialize"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.isomorphism.GraphMatcher.initialize.html#networkx.algorithms.isomorphism.GraphMatcher.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Reinitializes the state of the algorithm.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reinitializes the state of the algorithm.</span>
 
 <span class="sd">        This method should be redefined if using something other than GMState.</span>
 <span class="sd">        If only subclassing GraphMatcher, a redefinition is not necessary.</span>
@@ -727,7 +727,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">core_1</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="GraphMatcher.is_isomorphic"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.isomorphism.GraphMatcher.is_isomorphic.html#networkx.algorithms.isomorphism.GraphMatcher.is_isomorphic">[docs]</a>    <span class="k">def</span> <span class="nf">is_isomorphic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns True if G1 and G2 are isomorphic graphs.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns True if G1 and G2 are isomorphic graphs.&quot;&quot;&quot;</span>
 
         <span class="c1"># Let&#39;s do two very quick checks!</span>
         <span class="c1"># QUESTION: Should we call faster_graph_could_be_isomorphic(G1,G2)?</span>
@@ -750,14 +750,14 @@
             <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="GraphMatcher.isomorphisms_iter"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.isomorphism.GraphMatcher.isomorphisms_iter.html#networkx.algorithms.isomorphism.GraphMatcher.isomorphisms_iter">[docs]</a>    <span class="k">def</span> <span class="nf">isomorphisms_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Generator over isomorphisms between G1 and G2.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generator over isomorphisms between G1 and G2.&quot;&quot;&quot;</span>
         <span class="c1"># Declare that we are looking for a graph-graph isomorphism.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">test</span> <span class="o">=</span> <span class="s2">&quot;graph&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
         <span class="k">yield from</span> <span class="bp">self</span><span class="o">.</span><span class="n">match</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="GraphMatcher.match"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.isomorphism.GraphMatcher.match.html#networkx.algorithms.isomorphism.GraphMatcher.match">[docs]</a>    <span class="k">def</span> <span class="nf">match</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Extends the isomorphism mapping.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extends the isomorphism mapping.</span>
 
 <span class="sd">        This function is called recursively to determine if a complete</span>
 <span class="sd">        isomorphism can be found between G1 and G2.  It cleans up the class</span>
@@ -782,7 +782,7 @@
                         <span class="n">newstate</span><span class="o">.</span><span class="n">restore</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="nf">semantic_feasibility</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">G1_node</span><span class="p">,</span> <span class="n">G2_node</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns True if adding (G1_node, G2_node) is symantically feasible.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns True if adding (G1_node, G2_node) is symantically feasible.</span>
 
 <span class="sd">        The semantic feasibility function should return True if it is</span>
 <span class="sd">        acceptable to add the candidate pair (G1_node, G2_node) to the current</span>
@@ -822,7 +822,7 @@
         <span class="k">return</span> <span class="kc">True</span>
 
 <div class="viewcode-block" id="GraphMatcher.subgraph_is_isomorphic"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.isomorphism.GraphMatcher.subgraph_is_isomorphic.html#networkx.algorithms.isomorphism.GraphMatcher.subgraph_is_isomorphic">[docs]</a>    <span class="k">def</span> <span class="nf">subgraph_is_isomorphic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns True if a subgraph of G1 is isomorphic to G2.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns True if a subgraph of G1 is isomorphic to G2.&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">x</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subgraph_isomorphisms_iter</span><span class="p">())</span>
             <span class="k">return</span> <span class="kc">True</span>
@@ -830,7 +830,7 @@
             <span class="k">return</span> <span class="kc">False</span></div>
 
     <span class="k">def</span> <span class="nf">subgraph_is_monomorphic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns True if a subgraph of G1 is monomorphic to G2.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns True if a subgraph of G1 is monomorphic to G2.&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">x</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subgraph_monomorphisms_iter</span><span class="p">())</span>
             <span class="k">return</span> <span class="kc">True</span>
@@ -840,14 +840,14 @@
     <span class="c1">#    subgraph_is_isomorphic.__doc__ += &quot;\n&quot; + subgraph.replace(&#39;\n&#39;,&#39;\n&#39;+indent)</span>
 
 <div class="viewcode-block" id="GraphMatcher.subgraph_isomorphisms_iter"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.isomorphism.GraphMatcher.subgraph_isomorphisms_iter.html#networkx.algorithms.isomorphism.GraphMatcher.subgraph_isomorphisms_iter">[docs]</a>    <span class="k">def</span> <span class="nf">subgraph_isomorphisms_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Generator over isomorphisms between a subgraph of G1 and G2.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generator over isomorphisms between a subgraph of G1 and G2.&quot;&quot;&quot;</span>
         <span class="c1"># Declare that we are looking for graph-subgraph isomorphism.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">test</span> <span class="o">=</span> <span class="s2">&quot;subgraph&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
         <span class="k">yield from</span> <span class="bp">self</span><span class="o">.</span><span class="n">match</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="nf">subgraph_monomorphisms_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Generator over monomorphisms between a subgraph of G1 and G2.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generator over monomorphisms between a subgraph of G1 and G2.&quot;&quot;&quot;</span>
         <span class="c1"># Declare that we are looking for graph-subgraph monomorphism.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">test</span> <span class="o">=</span> <span class="s2">&quot;mono&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
@@ -856,7 +856,7 @@
     <span class="c1">#    subgraph_isomorphisms_iter.__doc__ += &quot;\n&quot; + subgraph.replace(&#39;\n&#39;,&#39;\n&#39;+indent)</span>
 
 <div class="viewcode-block" id="GraphMatcher.syntactic_feasibility"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.isomorphism.GraphMatcher.syntactic_feasibility.html#networkx.algorithms.isomorphism.GraphMatcher.syntactic_feasibility">[docs]</a>    <span class="k">def</span> <span class="nf">syntactic_feasibility</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">G1_node</span><span class="p">,</span> <span class="n">G2_node</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns True if adding (G1_node, G2_node) is syntactically feasible.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns True if adding (G1_node, G2_node) is syntactically feasible.</span>
 
 <span class="sd">        This function returns True if it is adding the candidate pair</span>
 <span class="sd">        to the current partial isomorphism/monomorphism mapping is allowable.</span>
@@ -980,13 +980,13 @@
 
 
 <span class="k">class</span> <span class="nc">DiGraphMatcher</span><span class="p">(</span><span class="n">GraphMatcher</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Implementation of VF2 algorithm for matching directed graphs.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Implementation of VF2 algorithm for matching directed graphs.</span>
 
 <span class="sd">    Suitable for DiGraph and MultiDiGraph instances.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">G1</span><span class="p">,</span> <span class="n">G2</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Initialize DiGraphMatcher.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize DiGraphMatcher.</span>
 
 <span class="sd">        G1 and G2 should be nx.Graph or nx.MultiGraph instances.</span>
 
@@ -1002,7 +1002,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">G1</span><span class="p">,</span> <span class="n">G2</span><span class="p">)</span>
 
 <div class="viewcode-block" id="DiGraphMatcher.candidate_pairs_iter"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.isomorphism.DiGraphMatcher.candidate_pairs_iter.html#networkx.algorithms.isomorphism.DiGraphMatcher.candidate_pairs_iter">[docs]</a>    <span class="k">def</span> <span class="nf">candidate_pairs_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Iterator over candidate pairs of nodes in G1 and G2.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Iterator over candidate pairs of nodes in G1 and G2.&quot;&quot;&quot;</span>
 
         <span class="c1"># All computations are done using the current state!</span>
 
@@ -1049,7 +1049,7 @@
         <span class="c1"># For all other cases, we don&#39;t have any candidate pairs.</span>
 
 <div class="viewcode-block" id="DiGraphMatcher.initialize"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.isomorphism.DiGraphMatcher.initialize.html#networkx.algorithms.isomorphism.DiGraphMatcher.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Reinitializes the state of the algorithm.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reinitializes the state of the algorithm.</span>
 
 <span class="sd">        This method should be redefined if using something other than DiGMState.</span>
 <span class="sd">        If only subclassing GraphMatcher, a redefinition is not necessary.</span>
@@ -1083,7 +1083,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">core_1</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="DiGraphMatcher.syntactic_feasibility"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.isomorphism.DiGraphMatcher.syntactic_feasibility.html#networkx.algorithms.isomorphism.DiGraphMatcher.syntactic_feasibility">[docs]</a>    <span class="k">def</span> <span class="nf">syntactic_feasibility</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">G1_node</span><span class="p">,</span> <span class="n">G2_node</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns True if adding (G1_node, G2_node) is syntactically feasible.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns True if adding (G1_node, G2_node) is syntactically feasible.</span>
 
 <span class="sd">        This function returns True if it is adding the candidate pair</span>
 <span class="sd">        to the current partial isomorphism/monomorphism mapping is allowable.</span>
@@ -1307,7 +1307,7 @@
 
 
 <span class="k">class</span> <span class="nc">GMState</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Internal representation of state for the GraphMatcher class.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Internal representation of state for the GraphMatcher class.</span>
 
 <span class="sd">    This class is used internally by the GraphMatcher class.  It is used</span>
 <span class="sd">    only to store state specific data. There will be at most G2.order() of</span>
@@ -1316,7 +1316,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">GM</span><span class="p">,</span> <span class="n">G1_node</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">G2_node</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Initializes GMState object.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initializes GMState object.</span>
 
 <span class="sd">        Pass in the GraphMatcher to which this GMState belongs and the</span>
 <span class="sd">        new node pair that will be added to the GraphMatcher&#39;s current</span>
@@ -1379,7 +1379,7 @@
                     <span class="n">GM</span><span class="o">.</span><span class="n">inout_2</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">depth</span>
 
     <span class="k">def</span> <span class="nf">restore</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Deletes the GMState object and restores the class variables.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Deletes the GMState object and restores the class variables.&quot;&quot;&quot;</span>
         <span class="c1"># First we remove the node that was added from the core vectors.</span>
         <span class="c1"># Watch out! G1_node == 0 should evaluate to True.</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">G1_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">G2_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1395,7 +1395,7 @@
 
 
 <span class="k">class</span> <span class="nc">DiGMState</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Internal representation of state for the DiGraphMatcher class.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Internal representation of state for the DiGraphMatcher class.</span>
 
 <span class="sd">    This class is used internally by the DiGraphMatcher class.  It is used</span>
 <span class="sd">    only to store state specific data. There will be at most G2.order() of</span>
@@ -1405,7 +1405,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">GM</span><span class="p">,</span> <span class="n">G1_node</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">G2_node</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Initializes DiGMState object.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initializes DiGMState object.</span>
 
 <span class="sd">        Pass in the DiGraphMatcher to which this DiGMState belongs and the</span>
 <span class="sd">        new node pair that will be added to the GraphMatcher&#39;s current</span>
@@ -1508,7 +1508,7 @@
                     <span class="n">GM</span><span class="o">.</span><span class="n">out_2</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">depth</span>
 
     <span class="k">def</span> <span class="nf">restore</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Deletes the DiGMState object and restores the class variables.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Deletes the DiGMState object and restores the class variables.&quot;&quot;&quot;</span>
 
         <span class="c1"># First we remove the node that was added from the core vectors.</span>
         <span class="c1"># Watch out! G1_node == 0 should evaluate to True.</span>
@@ -1573,7 +1573,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+    &copy; Copyright 2004-2023, NetworkX Developers.<br>
 
 </p>
 

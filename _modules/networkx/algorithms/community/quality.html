@@ -478,7 +478,7 @@
 
 
 <span class="k">class</span> <span class="nc">NotAPartition</span><span class="p">(</span><span class="n">NetworkXError</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Raised if a given collection is not a partition.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised if a given collection is not a partition.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">collection</span><span class="p">):</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">collection</span><span class="si">}</span><span class="s2"> is not a valid partition of the graph </span><span class="si">{</span><span class="n">G</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -486,7 +486,7 @@
 
 
 <span class="k">def</span> <span class="nf">_require_partition</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">partition</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Decorator to check that a valid partition is input to a function</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Decorator to check that a valid partition is input to a function</span>
 
 <span class="sd">    Raises :exc:`networkx.NetworkXError` if the partition is not valid.</span>
 
@@ -524,7 +524,7 @@
 
 <span class="nd">@nx</span><span class="o">.</span><span class="n">_dispatch</span>
 <span class="k">def</span> <span class="nf">intra_community_edges</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">partition</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns the number of intra-community edges for a partition of `G`.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the number of intra-community edges for a partition of `G`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -542,7 +542,7 @@
 
 <span class="nd">@nx</span><span class="o">.</span><span class="n">_dispatch</span>
 <span class="k">def</span> <span class="nf">inter_community_edges</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">partition</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns the number of inter-community edges for a partition of `G`.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the number of inter-community edges for a partition of `G`.</span>
 <span class="sd">    according to the given</span>
 <span class="sd">    partition of the nodes of `G`.</span>
 
@@ -573,7 +573,7 @@
 
 
 <span class="k">def</span> <span class="nf">inter_community_non_edges</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">partition</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns the number of inter-community non-edges according to the</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the number of inter-community non-edges according to the</span>
 <span class="sd">    given partition of the nodes of `G`.</span>
 
 <span class="sd">    Parameters</span>
@@ -605,7 +605,7 @@
 
 
 <div class="viewcode-block" id="modularity"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.community.quality.modularity.html#networkx.algorithms.community.quality.modularity">[docs]</a><span class="k">def</span> <span class="nf">modularity</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">communities</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns the modularity of the given partition of the graph.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns the modularity of the given partition of the graph.</span>
 
 <span class="sd">    Modularity is defined in [1]_ as</span>
 
@@ -717,7 +717,7 @@
 
 <div class="viewcode-block" id="partition_quality"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.community.quality.partition_quality.html#networkx.algorithms.community.quality.partition_quality">[docs]</a><span class="nd">@require_partition</span>
 <span class="k">def</span> <span class="nf">partition_quality</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">partition</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns the coverage and performance of a partition of G.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the coverage and performance of a partition of G.</span>
 
 <span class="sd">    The *coverage* of a partition is the ratio of the number of</span>
 <span class="sd">    intra-community edges to the total number of edges in the graph.</span>
@@ -854,7 +854,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+    &copy; Copyright 2004-2023, NetworkX Developers.<br>
 
 </p>
 

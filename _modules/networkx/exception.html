@@ -488,15 +488,15 @@
 
 
 <div class="viewcode-block" id="NetworkXException"><a class="viewcode-back" href="../../reference/exceptions.html#networkx.NetworkXException">[docs]</a><span class="k">class</span> <span class="nc">NetworkXException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Base class for exceptions in NetworkX.&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for exceptions in NetworkX.&quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="NetworkXError"><a class="viewcode-back" href="../../reference/exceptions.html#networkx.NetworkXError">[docs]</a><span class="k">class</span> <span class="nc">NetworkXError</span><span class="p">(</span><span class="n">NetworkXException</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Exception for a serious error in NetworkX&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Exception for a serious error in NetworkX&quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="NetworkXPointlessConcept"><a class="viewcode-back" href="../../reference/exceptions.html#networkx.NetworkXPointlessConcept">[docs]</a><span class="k">class</span> <span class="nc">NetworkXPointlessConcept</span><span class="p">(</span><span class="n">NetworkXException</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Raised when a null graph is provided as input to an algorithm</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when a null graph is provided as input to an algorithm</span>
 <span class="sd">    that cannot use it.</span>
 
 <span class="sd">    The null graph is sometimes considered a pointless concept [1]_,</span>
@@ -512,46 +512,46 @@
 
 
 <div class="viewcode-block" id="NetworkXAlgorithmError"><a class="viewcode-back" href="../../reference/exceptions.html#networkx.NetworkXAlgorithmError">[docs]</a><span class="k">class</span> <span class="nc">NetworkXAlgorithmError</span><span class="p">(</span><span class="n">NetworkXException</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Exception for unexpected termination of algorithms.&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Exception for unexpected termination of algorithms.&quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="NetworkXUnfeasible"><a class="viewcode-back" href="../../reference/exceptions.html#networkx.NetworkXUnfeasible">[docs]</a><span class="k">class</span> <span class="nc">NetworkXUnfeasible</span><span class="p">(</span><span class="n">NetworkXAlgorithmError</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Exception raised by algorithms trying to solve a problem</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Exception raised by algorithms trying to solve a problem</span>
 <span class="sd">    instance that has no feasible solution.&quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="NetworkXNoPath"><a class="viewcode-back" href="../../reference/exceptions.html#networkx.NetworkXNoPath">[docs]</a><span class="k">class</span> <span class="nc">NetworkXNoPath</span><span class="p">(</span><span class="n">NetworkXUnfeasible</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Exception for algorithms that should return a path when running</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Exception for algorithms that should return a path when running</span>
 <span class="sd">    on graphs where such a path does not exist.&quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="NetworkXNoCycle"><a class="viewcode-back" href="../../reference/exceptions.html#networkx.NetworkXNoCycle">[docs]</a><span class="k">class</span> <span class="nc">NetworkXNoCycle</span><span class="p">(</span><span class="n">NetworkXUnfeasible</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Exception for algorithms that should return a cycle when running</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Exception for algorithms that should return a cycle when running</span>
 <span class="sd">    on graphs where such a cycle does not exist.&quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="HasACycle"><a class="viewcode-back" href="../../reference/exceptions.html#networkx.HasACycle">[docs]</a><span class="k">class</span> <span class="nc">HasACycle</span><span class="p">(</span><span class="n">NetworkXException</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Raised if a graph has a cycle when an algorithm expects that it</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised if a graph has a cycle when an algorithm expects that it</span>
 <span class="sd">    will have no cycles.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="NetworkXUnbounded"><a class="viewcode-back" href="../../reference/exceptions.html#networkx.NetworkXUnbounded">[docs]</a><span class="k">class</span> <span class="nc">NetworkXUnbounded</span><span class="p">(</span><span class="n">NetworkXAlgorithmError</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Exception raised by algorithms trying to solve a maximization</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Exception raised by algorithms trying to solve a maximization</span>
 <span class="sd">    or a minimization problem instance that is unbounded.&quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="NetworkXNotImplemented"><a class="viewcode-back" href="../../reference/exceptions.html#networkx.NetworkXNotImplemented">[docs]</a><span class="k">class</span> <span class="nc">NetworkXNotImplemented</span><span class="p">(</span><span class="n">NetworkXException</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Exception raised by algorithms not implemented for a type of graph.&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Exception raised by algorithms not implemented for a type of graph.&quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="NodeNotFound"><a class="viewcode-back" href="../../reference/exceptions.html#networkx.NodeNotFound">[docs]</a><span class="k">class</span> <span class="nc">NodeNotFound</span><span class="p">(</span><span class="n">NetworkXException</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Exception raised if requested node is not present in the graph&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Exception raised if requested node is not present in the graph&quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="AmbiguousSolution"><a class="viewcode-back" href="../../reference/exceptions.html#networkx.AmbiguousSolution">[docs]</a><span class="k">class</span> <span class="nc">AmbiguousSolution</span><span class="p">(</span><span class="n">NetworkXException</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Raised if more than one valid solution exists for an intermediary step</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised if more than one valid solution exists for an intermediary step</span>
 <span class="sd">    of an algorithm.</span>
 
 <span class="sd">    In the face of ambiguity, refuse the temptation to guess.</span>
@@ -563,7 +563,7 @@
 
 
 <div class="viewcode-block" id="ExceededMaxIterations"><a class="viewcode-back" href="../../reference/exceptions.html#networkx.ExceededMaxIterations">[docs]</a><span class="k">class</span> <span class="nc">ExceededMaxIterations</span><span class="p">(</span><span class="n">NetworkXException</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Raised if a loop iterates too many times without breaking.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised if a loop iterates too many times without breaking.</span>
 
 <span class="sd">    This may occur, for example, in an algorithm that computes</span>
 <span class="sd">    progressively better approximations to a value but exceeds an</span>
@@ -573,7 +573,7 @@
 
 
 <div class="viewcode-block" id="PowerIterationFailedConvergence"><a class="viewcode-back" href="../../reference/exceptions.html#networkx.PowerIterationFailedConvergence">[docs]</a><span class="k">class</span> <span class="nc">PowerIterationFailedConvergence</span><span class="p">(</span><span class="n">ExceededMaxIterations</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Raised when the power iteration method fails to converge within a</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when the power iteration method fails to converge within a</span>
 <span class="sd">    specified iteration limit.</span>
 
 <span class="sd">    `num_iterations` is the number of iterations that have been</span>
@@ -637,7 +637,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+    &copy; Copyright 2004-2023, NetworkX Developers.<br>
 
 </p>
 

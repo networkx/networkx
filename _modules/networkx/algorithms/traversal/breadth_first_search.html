@@ -477,7 +477,7 @@
 
 
 <span class="k">def</span> <span class="nf">generic_bfs_edges</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">neighbors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">depth_limit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sort_neighbors</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Iterate over edges in a breadth-first search.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Iterate over edges in a breadth-first search.</span>
 
 <span class="sd">    The breadth-first search begins at `source` and enqueues the</span>
 <span class="sd">    neighbors of newly visited nodes specified by the `neighbors`</span>
@@ -553,7 +553,7 @@
 
 <div class="viewcode-block" id="bfs_edges"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.traversal.breadth_first_search.bfs_edges.html#networkx.algorithms.traversal.breadth_first_search.bfs_edges">[docs]</a><span class="nd">@nx</span><span class="o">.</span><span class="n">_dispatch</span>
 <span class="k">def</span> <span class="nf">bfs_edges</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">depth_limit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sort_neighbors</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Iterate over edges in a breadth-first-search starting at source.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Iterate over edges in a breadth-first-search starting at source.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -634,7 +634,7 @@
 
 
 <div class="viewcode-block" id="bfs_tree"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.traversal.breadth_first_search.bfs_tree.html#networkx.algorithms.traversal.breadth_first_search.bfs_tree">[docs]</a><span class="k">def</span> <span class="nf">bfs_tree</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">depth_limit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sort_neighbors</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns an oriented tree constructed from of a breadth-first-search</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns an oriented tree constructed from of a breadth-first-search</span>
 <span class="sd">    starting at source.</span>
 
 <span class="sd">    Parameters</span>
@@ -700,7 +700,7 @@
 
 
 <div class="viewcode-block" id="bfs_predecessors"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.traversal.breadth_first_search.bfs_predecessors.html#networkx.algorithms.traversal.breadth_first_search.bfs_predecessors">[docs]</a><span class="k">def</span> <span class="nf">bfs_predecessors</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">depth_limit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sort_neighbors</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns an iterator of predecessors in breadth-first-search from source.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns an iterator of predecessors in breadth-first-search from source.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -764,7 +764,7 @@
 
 
 <div class="viewcode-block" id="bfs_successors"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.traversal.breadth_first_search.bfs_successors.html#networkx.algorithms.traversal.breadth_first_search.bfs_successors">[docs]</a><span class="k">def</span> <span class="nf">bfs_successors</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">depth_limit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sort_neighbors</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns an iterator of successors in breadth-first-search from source.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns an iterator of successors in breadth-first-search from source.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -836,7 +836,7 @@
 
 
 <div class="viewcode-block" id="bfs_layers"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.traversal.breadth_first_search.bfs_layers.html#networkx.algorithms.traversal.breadth_first_search.bfs_layers">[docs]</a><span class="k">def</span> <span class="nf">bfs_layers</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">sources</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns an iterator of all the layers in breadth-first search traversal.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns an iterator of all the layers in breadth-first search traversal.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -887,7 +887,7 @@
 
 
 <div class="viewcode-block" id="descendants_at_distance"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.traversal.breadth_first_search.descendants_at_distance.html#networkx.algorithms.traversal.breadth_first_search.descendants_at_distance">[docs]</a><span class="k">def</span> <span class="nf">descendants_at_distance</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">distance</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns all nodes at a fixed `distance` from `source` in `G`.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns all nodes at a fixed `distance` from `source` in `G`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -974,7 +974,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+    &copy; Copyright 2004-2023, NetworkX Developers.<br>
 
 </p>
 

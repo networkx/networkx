@@ -483,7 +483,7 @@
 
 
 <div class="viewcode-block" id="geometric_edges"><a class="viewcode-back" href="../../../reference/generated/networkx.generators.geometric.geometric_edges.html#networkx.generators.geometric.geometric_edges">[docs]</a><span class="k">def</span> <span class="nf">geometric_edges</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns edge list of node pairs within `radius` of each other.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns edge list of node pairs within `radius` of each other.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -544,7 +544,7 @@
 
 
 <span class="k">def</span> <span class="nf">_geometric_edges</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Implements `geometric_edges` without input validation. See `geometric_edges`</span>
 <span class="sd">    for complete docstring.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -571,7 +571,7 @@
 
 <div class="viewcode-block" id="random_geometric_graph"><a class="viewcode-back" href="../../../reference/generated/networkx.generators.geometric.random_geometric_graph.html#networkx.generators.geometric.random_geometric_graph">[docs]</a><span class="nd">@py_random_state</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">random_geometric_graph</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns a random geometric graph in the unit cube of dimensions `dim`.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a random geometric graph in the unit cube of dimensions `dim`.</span>
 
 <span class="sd">    The random geometric graph model places `n` nodes uniformly at</span>
 <span class="sd">    random in the unit cube. Two nodes are joined by an edge if the</span>
@@ -661,7 +661,7 @@
 <span class="k">def</span> <span class="nf">soft_random_geometric_graph</span><span class="p">(</span>
     <span class="n">n</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">p_dist</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns a soft random geometric graph in the unit cube.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns a soft random geometric graph in the unit cube.</span>
 
 <span class="sd">    The soft random geometric graph [1] model places `n` nodes uniformly at</span>
 <span class="sd">    random in the unit cube in dimension `dim`. Two nodes of distance, `dist`,</span>
@@ -787,7 +787,7 @@
 <span class="k">def</span> <span class="nf">geographical_threshold_graph</span><span class="p">(</span>
     <span class="n">n</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">p_dist</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns a geographical threshold graph.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns a geographical threshold graph.</span>
 
 <span class="sd">    The geographical threshold graph model places $n$ nodes uniformly at</span>
 <span class="sd">    random in a rectangular domain.  Each node $u$ is assigned a weight</span>
@@ -937,7 +937,7 @@
 <span class="k">def</span> <span class="nf">waxman_graph</span><span class="p">(</span>
     <span class="n">n</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">L</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">metric</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns a Waxman random graph.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns a Waxman random graph.</span>
 
 <span class="sd">    The Waxman random graph model places `n` nodes uniformly at random</span>
 <span class="sd">    in a rectangular domain. Each pair of nodes at distance `d` is</span>
@@ -1056,7 +1056,7 @@
 
 <div class="viewcode-block" id="navigable_small_world_graph"><a class="viewcode-back" href="../../../reference/generated/networkx.generators.geometric.navigable_small_world_graph.html#networkx.generators.geometric.navigable_small_world_graph">[docs]</a><span class="nd">@py_random_state</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">navigable_small_world_graph</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns a navigable small-world graph.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns a navigable small-world graph.</span>
 
 <span class="sd">    A navigable small-world graph is a directed grid with additional long-range</span>
 <span class="sd">    connections that are chosen randomly.</span>
@@ -1130,7 +1130,7 @@
 <span class="k">def</span> <span class="nf">thresholded_random_geometric_graph</span><span class="p">(</span>
     <span class="n">n</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns a thresholded random geometric graph in the unit cube.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns a thresholded random geometric graph in the unit cube.</span>
 
 <span class="sd">    The thresholded random geometric graph [1] model places `n` nodes</span>
 <span class="sd">    uniformly at random in the unit cube of dimensions `dim`. Each node</span>
@@ -1298,7 +1298,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+    &copy; Copyright 2004-2023, NetworkX Developers.<br>
 
 </p>
 

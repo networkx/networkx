@@ -501,7 +501,7 @@
 
 <div class="viewcode-block" id="descendants"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.dag.descendants.html#networkx.algorithms.dag.descendants">[docs]</a><span class="nd">@nx</span><span class="o">.</span><span class="n">_dispatch</span>
 <span class="k">def</span> <span class="nf">descendants</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns all nodes reachable from `source` in `G`.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns all nodes reachable from `source` in `G`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -538,7 +538,7 @@
 
 <div class="viewcode-block" id="ancestors"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.dag.ancestors.html#networkx.algorithms.dag.ancestors">[docs]</a><span class="nd">@nx</span><span class="o">.</span><span class="n">_dispatch</span>
 <span class="k">def</span> <span class="nf">ancestors</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns all nodes having a path to `source` in `G`.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns all nodes having a path to `source` in `G`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -574,7 +574,7 @@
 
 
 <span class="k">def</span> <span class="nf">has_cycle</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Decides whether the directed graph has a cycle.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Decides whether the directed graph has a cycle.&quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="c1"># Feed the entire iterator into a zero-length deque.</span>
         <span class="n">deque</span><span class="p">(</span><span class="n">topological_sort</span><span class="p">(</span><span class="n">G</span><span class="p">),</span> <span class="n">maxlen</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
@@ -585,7 +585,7 @@
 
 
 <div class="viewcode-block" id="is_directed_acyclic_graph"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.dag.is_directed_acyclic_graph.html#networkx.algorithms.dag.is_directed_acyclic_graph">[docs]</a><span class="k">def</span> <span class="nf">is_directed_acyclic_graph</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns True if the graph `G` is a directed acyclic graph (DAG) or</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns True if the graph `G` is a directed acyclic graph (DAG) or</span>
 <span class="sd">    False if not.</span>
 
 <span class="sd">    Parameters</span>
@@ -625,7 +625,7 @@
 
 
 <div class="viewcode-block" id="topological_generations"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.dag.topological_generations.html#networkx.algorithms.dag.topological_generations">[docs]</a><span class="k">def</span> <span class="nf">topological_generations</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Stratifies a DAG into generations.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Stratifies a DAG into generations.</span>
 
 <span class="sd">    A topological generation is node collection in which ancestors of a node in each</span>
 <span class="sd">    generation are guaranteed to be in a previous generation, and any descendants of</span>
@@ -702,7 +702,7 @@
 
 
 <div class="viewcode-block" id="topological_sort"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.dag.topological_sort.html#networkx.algorithms.dag.topological_sort">[docs]</a><span class="k">def</span> <span class="nf">topological_sort</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns a generator of nodes in topologically sorted order.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a generator of nodes in topologically sorted order.</span>
 
 <span class="sd">    A topological sort is a nonunique permutation of the nodes of a</span>
 <span class="sd">    directed graph such that an edge from u to v implies that u</span>
@@ -770,7 +770,7 @@
 
 
 <div class="viewcode-block" id="lexicographical_topological_sort"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.dag.lexicographical_topological_sort.html#networkx.algorithms.dag.lexicographical_topological_sort">[docs]</a><span class="k">def</span> <span class="nf">lexicographical_topological_sort</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Generate the nodes in the unique lexicographical topological sort order.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate the nodes in the unique lexicographical topological sort order.</span>
 
 <span class="sd">    Generates a unique ordering of nodes by first sorting topologically (for which there are often</span>
 <span class="sd">    multiple valid orderings) and then additionally by sorting lexicographically.</span>
@@ -912,7 +912,7 @@
 
 <div class="viewcode-block" id="all_topological_sorts"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.dag.all_topological_sorts.html#networkx.algorithms.dag.all_topological_sorts">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;undirected&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">all_topological_sorts</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns a generator of _all_ topological sorts of the directed graph G.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a generator of _all_ topological sorts of the directed graph G.</span>
 
 <span class="sd">    A topological sort is a nonunique permutation of the nodes such that an</span>
 <span class="sd">    edge from u to v implies that u appears before v in the topological sort</span>
@@ -1030,7 +1030,7 @@
 
 
 <div class="viewcode-block" id="is_aperiodic"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.dag.is_aperiodic.html#networkx.algorithms.dag.is_aperiodic">[docs]</a><span class="k">def</span> <span class="nf">is_aperiodic</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns True if `G` is aperiodic.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns True if `G` is aperiodic.</span>
 
 <span class="sd">    A directed graph is aperiodic if there is no integer k &gt; 1 that</span>
 <span class="sd">    divides the length of every cycle in the graph.</span>
@@ -1121,7 +1121,7 @@
 
 
 <div class="viewcode-block" id="transitive_closure"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.dag.transitive_closure.html#networkx.algorithms.dag.transitive_closure">[docs]</a><span class="k">def</span> <span class="nf">transitive_closure</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">reflexive</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns transitive closure of a graph</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns transitive closure of a graph</span>
 
 <span class="sd">    The transitive closure of G = (V,E) is a graph G+ = (V,E+) such that</span>
 <span class="sd">    for all v, w in V there is an edge (v, w) in E+ if and only if there</span>
@@ -1213,7 +1213,7 @@
 
 <div class="viewcode-block" id="transitive_closure_dag"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.dag.transitive_closure_dag.html#networkx.algorithms.dag.transitive_closure_dag">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;undirected&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">transitive_closure_dag</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">topo_order</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns the transitive closure of a directed acyclic graph.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the transitive closure of a directed acyclic graph.</span>
 
 <span class="sd">    This function is faster than the function `transitive_closure`, but fails</span>
 <span class="sd">    if the graph has a cycle.</span>
@@ -1269,7 +1269,7 @@
 
 <div class="viewcode-block" id="transitive_reduction"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.dag.transitive_reduction.html#networkx.algorithms.dag.transitive_reduction">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;undirected&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">transitive_reduction</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns transitive reduction of a directed graph</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns transitive reduction of a directed graph</span>
 
 <span class="sd">    The transitive reduction of G = (V,E) is a graph G- = (V,E-) such that</span>
 <span class="sd">    for all v,w in V there is an edge (v,w) in E- if and only if (v,w) is</span>
@@ -1341,7 +1341,7 @@
 
 <div class="viewcode-block" id="antichains"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.dag.antichains.html#networkx.algorithms.dag.antichains">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;undirected&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">antichains</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">topo_order</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Generates antichains from a directed acyclic graph (DAG).</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generates antichains from a directed acyclic graph (DAG).</span>
 
 <span class="sd">    An antichain is a subset of a partially ordered set such that any</span>
 <span class="sd">    two elements in the subset are incomparable.</span>
@@ -1407,7 +1407,7 @@
 
 <div class="viewcode-block" id="dag_longest_path"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.dag.dag_longest_path.html#networkx.algorithms.dag.dag_longest_path">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;undirected&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">dag_longest_path</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="n">default_weight</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">topo_order</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns the longest path in a directed acyclic graph (DAG).</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the longest path in a directed acyclic graph (DAG).</span>
 
 <span class="sd">    If `G` has edges with `weight` attribute the edge data are used as</span>
 <span class="sd">    weight values.</span>
@@ -1502,7 +1502,7 @@
 
 <div class="viewcode-block" id="dag_longest_path_length"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.dag.dag_longest_path_length.html#networkx.algorithms.dag.dag_longest_path_length">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;undirected&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">dag_longest_path_length</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="n">default_weight</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns the longest path length in a DAG</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the longest path length in a DAG</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1553,7 +1553,7 @@
 
 
 <span class="k">def</span> <span class="nf">root_to_leaf_paths</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Yields root-to-leaf paths in a directed acyclic graph.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Yields root-to-leaf paths in a directed acyclic graph.</span>
 
 <span class="sd">    `G` must be a directed acyclic graph. If not, the behavior of this</span>
 <span class="sd">    function is undefined. A &quot;root&quot; in this graph is a node of in-degree</span>
@@ -1573,7 +1573,7 @@
 <div class="viewcode-block" id="dag_to_branching"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.dag.dag_to_branching.html#networkx.algorithms.dag.dag_to_branching">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;multigraph&quot;</span><span class="p">)</span>
 <span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;undirected&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">dag_to_branching</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns a branching representing all (overlapping) paths from</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a branching representing all (overlapping) paths from</span>
 <span class="sd">    root nodes to leaf nodes in the given directed acyclic graph.</span>
 
 <span class="sd">    As described in :mod:`networkx.algorithms.tree.recognition`, a</span>
@@ -1670,7 +1670,7 @@
 
 <span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;undirected&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">compute_v_structures</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Iterate through the graph to compute all v-structures.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Iterate through the graph to compute all v-structures.</span>
 
 <span class="sd">    V-structures are triples in the directed graph where</span>
 <span class="sd">    two parent nodes point to the same child and the two parent nodes</span>
@@ -1747,7 +1747,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+    &copy; Copyright 2004-2023, NetworkX Developers.<br>
 
 </p>
 

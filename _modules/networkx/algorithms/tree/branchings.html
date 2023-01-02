@@ -536,7 +536,7 @@
 
 
 <div class="viewcode-block" id="branching_weight"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.tree.branchings.branching_weight.html#networkx.algorithms.tree.branchings.branching_weight">[docs]</a><span class="k">def</span> <span class="nf">branching_weight</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">attr</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the total weight of a branching.</span>
 
 <span class="sd">    You must access this function through the networkx.algorithms.tree module.</span>
@@ -570,7 +570,7 @@
 
 <div class="viewcode-block" id="greedy_branching"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.tree.branchings.greedy_branching.html#networkx.algorithms.tree.branchings.greedy_branching">[docs]</a><span class="nd">@py_random_state</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">greedy_branching</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">attr</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;max&quot;</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns a branching obtained through a greedy algorithm.</span>
 
 <span class="sd">    This algorithm is wrong, and cannot give a proper optimal branching.</span>
@@ -649,7 +649,7 @@
 
 
 <span class="k">class</span> <span class="nc">MultiDiGraph_EdgeKey</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">MultiDiGraph</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    MultiDiGraph which assigns unique keys to every edge.</span>
 
 <span class="sd">    Adds a dictionary edge_index which maps edge keys to (u, v, data) tuples.</span>
@@ -689,7 +689,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">remove_node</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">add_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u_for_edge</span><span class="p">,</span> <span class="n">v_for_edge</span><span class="p">,</span> <span class="n">key_for_edge</span><span class="p">,</span> <span class="o">**</span><span class="n">attr</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Key is now required.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -720,7 +720,7 @@
 
 
 <span class="k">def</span> <span class="nf">get_path</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the edge keys of the unique path between u and v.</span>
 
 <span class="sd">    This is not a generic function. G must be a branching and an instance of</span>
@@ -744,7 +744,7 @@
 
 
 <div class="viewcode-block" id="Edmonds"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.tree.branchings.Edmonds.html#networkx.algorithms.tree.branchings.Edmonds">[docs]</a><span class="k">class</span> <span class="nc">Edmonds</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Edmonds algorithm [1]_ for finding optimal branchings and spanning</span>
 <span class="sd">    arborescences.</span>
 
@@ -857,7 +857,7 @@
         <span class="n">partition</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a branching from G.</span>
 
 <span class="sd">        Parameters</span>
@@ -903,7 +903,7 @@
         <span class="n">G_pred</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">pred</span>
 
         <span class="k">def</span> <span class="nf">desired_edge</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
-            <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Find the edge directed toward v with maximal weight.</span>
 
 <span class="sd">            If an edge partition exists in this graph, return the included edge</span>
@@ -1081,7 +1081,7 @@
         <span class="n">H</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">G_original</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
 
         <span class="k">def</span> <span class="nf">is_root</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">edgekeys</span><span class="p">):</span>
-            <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Returns True if `u` is a root node in G.</span>
 
 <span class="sd">            Node `u` will be a root node if its in-degree, restricted to the</span>
@@ -1292,7 +1292,7 @@
 
 
 <div class="viewcode-block" id="ArborescenceIterator"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.tree.branchings.ArborescenceIterator.html#networkx.algorithms.tree.branchings.ArborescenceIterator">[docs]</a><span class="k">class</span> <span class="nc">ArborescenceIterator</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Iterate over all spanning arborescences of a graph in either increasing or</span>
 <span class="sd">    decreasing cost.</span>
 
@@ -1314,7 +1314,7 @@
 
     <span class="nd">@dataclass</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">class</span> <span class="nc">Partition</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This dataclass represents a partition and stores a dict with the edge</span>
 <span class="sd">        data and the weight of the minimum spanning arborescence of the</span>
 <span class="sd">        partition dict.</span>
@@ -1329,7 +1329,7 @@
             <span class="p">)</span>
 
 <div class="viewcode-block" id="ArborescenceIterator.__init__"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.tree.branchings.ArborescenceIterator.html#networkx.algorithms.tree.branchings.ArborescenceIterator.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="n">minimum</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">init_partition</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize the iterator</span>
 
 <span class="sd">        Parameters</span>
@@ -1372,7 +1372,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">init_partition</span> <span class="o">=</span> <span class="kc">None</span></div>
 
     <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        ArborescenceIterator</span>
@@ -1404,7 +1404,7 @@
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span> <span class="fm">__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        (multi)Graph</span>
@@ -1429,7 +1429,7 @@
         <span class="k">return</span> <span class="n">next_arborescence</span>
 
     <span class="k">def</span> <span class="nf">_partition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">partition</span><span class="p">,</span> <span class="n">partition_arborescence</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create new partitions based of the minimum spanning tree of the</span>
 <span class="sd">        current minimum partition.</span>
 
@@ -1469,7 +1469,7 @@
                 <span class="n">p1</span><span class="o">.</span><span class="n">partition_dict</span> <span class="o">=</span> <span class="n">p2</span><span class="o">.</span><span class="n">partition_dict</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_write_partition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">partition</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Writes the desired partition into the graph to calculate the minimum</span>
 <span class="sd">        spanning tree. Also, if one incoming edge is included, mark all others</span>
 <span class="sd">        as excluded so that if that vertex is merged during Edmonds&#39; algorithm</span>
@@ -1503,7 +1503,7 @@
                         <span class="n">d</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">partition_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">EdgePartition</span><span class="o">.</span><span class="n">EXCLUDED</span>
 
     <span class="k">def</span> <span class="nf">_clear_partition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">G</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Removes partition data from the graph</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
@@ -1560,7 +1560,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+    &copy; Copyright 2004-2023, NetworkX Developers.<br>
 
 </p>
 

@@ -470,7 +470,7 @@
 
 
 <span class="k">def</span> <span class="nf">newman_betweenness_centrality</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">normalized</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Compute load centrality for nodes.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute load centrality for nodes.</span>
 
 <span class="sd">    The load centrality of a node is the fraction of all shortest</span>
 <span class="sd">    paths that pass through that node.</span>
@@ -545,7 +545,7 @@
 
 
 <span class="k">def</span> <span class="nf">_node_betweenness</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">normalized</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Node betweenness_centrality helper:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Node betweenness_centrality helper:</span>
 
 <span class="sd">    See betweenness_centrality for what you probably want.</span>
 <span class="sd">    This actually computes &quot;load&quot; and not betweenness.</span>
@@ -599,7 +599,7 @@
 
 
 <div class="viewcode-block" id="edge_load_centrality"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.centrality.edge_load_centrality.html#networkx.algorithms.centrality.edge_load_centrality">[docs]</a><span class="k">def</span> <span class="nf">edge_load_centrality</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Compute edge load.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute edge load.</span>
 
 <span class="sd">    WARNING: This concept of edge load has not been analysed</span>
 <span class="sd">    or discussed outside of NetworkX that we know of.</span>
@@ -634,7 +634,7 @@
 
 
 <span class="k">def</span> <span class="nf">_edge_betweenness</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Edge betweenness helper.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Edge betweenness helper.&quot;&quot;&quot;</span>
     <span class="c1"># get the predecessor data</span>
     <span class="p">(</span><span class="n">pred</span><span class="p">,</span> <span class="n">length</span><span class="p">)</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">predecessor</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="n">cutoff</span><span class="p">,</span> <span class="n">return_seen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="c1"># order the nodes by path length</span>
@@ -709,7 +709,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+    &copy; Copyright 2004-2023, NetworkX Developers.<br>
 
 </p>
 

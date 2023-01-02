@@ -477,7 +477,7 @@
 
 
 <div class="viewcode-block" id="betweenness_centrality_subset"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.centrality.betweenness_centrality_subset.html#networkx.algorithms.centrality.betweenness_centrality_subset">[docs]</a><span class="k">def</span> <span class="nf">betweenness_centrality_subset</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">sources</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">normalized</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute betweenness centrality for a subset of nodes.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute betweenness centrality for a subset of nodes.</span>
 
 <span class="sd">    .. math::</span>
 
@@ -576,7 +576,7 @@
 <div class="viewcode-block" id="edge_betweenness_centrality_subset"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.centrality.edge_betweenness_centrality_subset.html#networkx.algorithms.centrality.edge_betweenness_centrality_subset">[docs]</a><span class="k">def</span> <span class="nf">edge_betweenness_centrality_subset</span><span class="p">(</span>
     <span class="n">G</span><span class="p">,</span> <span class="n">sources</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">normalized</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute betweenness centrality for edges for a subset of nodes.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute betweenness centrality for edges for a subset of nodes.</span>
 
 <span class="sd">    .. math::</span>
 
@@ -676,7 +676,7 @@
 
 
 <span class="k">def</span> <span class="nf">_accumulate_edges_subset</span><span class="p">(</span><span class="n">betweenness</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">targets</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;edge_betweenness_centrality_subset helper.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;edge_betweenness_centrality_subset helper.&quot;&quot;&quot;</span>
     <span class="n">delta</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
     <span class="n">target_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span>
     <span class="k">while</span> <span class="n">S</span><span class="p">:</span>
@@ -697,7 +697,7 @@
 
 
 <span class="k">def</span> <span class="nf">_rescale</span><span class="p">(</span><span class="n">betweenness</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">normalized</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;betweenness_centrality_subset helper.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;betweenness_centrality_subset helper.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">normalized</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="p">:</span>
             <span class="n">scale</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># no normalization b=0 for all nodes</span>
@@ -715,7 +715,7 @@
 
 
 <span class="k">def</span> <span class="nf">_rescale_e</span><span class="p">(</span><span class="n">betweenness</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">normalized</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;edge_betweenness_centrality_subset helper.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;edge_betweenness_centrality_subset helper.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">normalized</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">scale</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># no normalization b=0 for all nodes</span>
@@ -781,7 +781,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+    &copy; Copyright 2004-2023, NetworkX Developers.<br>
 
 </p>
 

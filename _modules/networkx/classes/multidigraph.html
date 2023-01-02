@@ -483,7 +483,7 @@
 
 
 <div class="viewcode-block" id="MultiDiGraph"><a class="viewcode-back" href="../../../reference/classes/multidigraph.html#networkx.MultiDiGraph">[docs]</a><span class="k">class</span> <span class="nc">MultiDiGraph</span><span class="p">(</span><span class="n">MultiGraph</span><span class="p">,</span> <span class="n">DiGraph</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A directed graph class that can store multiedges.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A directed graph class that can store multiedges.</span>
 
 <span class="sd">    Multiedges are multiple edges between two nodes.  Each edge</span>
 <span class="sd">    can hold optional data or attributes.</span>
@@ -762,7 +762,7 @@
     <span class="c1"># edge_attr_dict_factory = dict</span>
 
 <div class="viewcode-block" id="MultiDiGraph.__init__"><a class="viewcode-back" href="../../../reference/classes/generated/networkx.MultiDiGraph.__init__.html#networkx.MultiDiGraph.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">incoming_graph_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">multigraph_input</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">attr</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Initialize a graph with edges, name, or graph attributes.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a graph with edges, name, or graph attributes.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -826,7 +826,7 @@
 
     <span class="nd">@cached_property</span>
     <span class="k">def</span> <span class="nf">adj</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Graph adjacency object holding the neighbors of each node.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Graph adjacency object holding the neighbors of each node.</span>
 
 <span class="sd">        This object is a read-only dict-like structure with node keys</span>
 <span class="sd">        and neighbor-dict values.  The neighbor-dict is keyed by neighbor</span>
@@ -845,7 +845,7 @@
 
     <span class="nd">@cached_property</span>
     <span class="k">def</span> <span class="nf">succ</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Graph adjacency object holding the successors of each node.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Graph adjacency object holding the successors of each node.</span>
 
 <span class="sd">        This object is a read-only dict-like structure with node keys</span>
 <span class="sd">        and neighbor-dict values.  The neighbor-dict is keyed by neighbor</span>
@@ -864,7 +864,7 @@
 
     <span class="nd">@cached_property</span>
     <span class="k">def</span> <span class="nf">pred</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Graph adjacency object holding the predecessors of each node.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Graph adjacency object holding the predecessors of each node.</span>
 
 <span class="sd">        This object is a read-only dict-like structure with node keys</span>
 <span class="sd">        and neighbor-dict values.  The neighbor-dict is keyed by neighbor</span>
@@ -877,7 +877,7 @@
         <span class="k">return</span> <span class="n">MultiAdjacencyView</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pred</span><span class="p">)</span>
 
 <div class="viewcode-block" id="MultiDiGraph.add_edge"><a class="viewcode-back" href="../../../reference/classes/generated/networkx.MultiDiGraph.add_edge.html#networkx.MultiDiGraph.add_edge">[docs]</a>    <span class="k">def</span> <span class="nf">add_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u_for_edge</span><span class="p">,</span> <span class="n">v_for_edge</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">attr</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Add an edge between u and v.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add an edge between u and v.</span>
 
 <span class="sd">        The nodes u and v will be automatically added if they are</span>
 <span class="sd">        not already in the graph.</span>
@@ -974,7 +974,7 @@
         <span class="k">return</span> <span class="n">key</span></div>
 
 <div class="viewcode-block" id="MultiDiGraph.remove_edge"><a class="viewcode-back" href="../../../reference/classes/generated/networkx.MultiDiGraph.remove_edge.html#networkx.MultiDiGraph.remove_edge">[docs]</a>    <span class="k">def</span> <span class="nf">remove_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Remove an edge between u and v.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove an edge between u and v.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1049,7 +1049,7 @@
 
     <span class="nd">@cached_property</span>
     <span class="k">def</span> <span class="nf">edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;An OutMultiEdgeView of the Graph as G.edges or G.edges().</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;An OutMultiEdgeView of the Graph as G.edges or G.edges().</span>
 
 <span class="sd">        edges(self, nbunch=None, data=False, keys=False, default=None)</span>
 
@@ -1137,7 +1137,7 @@
 
     <span class="nd">@cached_property</span>
     <span class="k">def</span> <span class="nf">in_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;A view of the in edges of the graph as G.in_edges or G.in_edges().</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A view of the in edges of the graph as G.in_edges or G.in_edges().</span>
 
 <span class="sd">        in_edges(self, nbunch=None, data=False, keys=False, default=None)</span>
 
@@ -1171,7 +1171,7 @@
 
     <span class="nd">@cached_property</span>
     <span class="k">def</span> <span class="nf">degree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;A DegreeView for the Graph as G.degree or G.degree().</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A DegreeView for the Graph as G.degree or G.degree().</span>
 
 <span class="sd">        The node degree is the number of edges adjacent to the node.</span>
 <span class="sd">        The weighted node degree is the sum of the edge weights for</span>
@@ -1219,7 +1219,7 @@
 
     <span class="nd">@cached_property</span>
     <span class="k">def</span> <span class="nf">in_degree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;A DegreeView for (node, in_degree) or in_degree for single node.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A DegreeView for (node, in_degree) or in_degree for single node.</span>
 
 <span class="sd">        The node in-degree is the number of edges pointing in to the node.</span>
 <span class="sd">        The weighted node degree is the sum of the edge weights for</span>
@@ -1270,7 +1270,7 @@
 
     <span class="nd">@cached_property</span>
     <span class="k">def</span> <span class="nf">out_degree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns an iterator for (node, out-degree) or out-degree for single node.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns an iterator for (node, out-degree) or out-degree for single node.</span>
 
 <span class="sd">        out_degree(self, nbunch=None, weight=None)</span>
 
@@ -1319,15 +1319,15 @@
         <span class="k">return</span> <span class="n">OutMultiDegreeView</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">is_multigraph</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns True if graph is a multigraph, False otherwise.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns True if graph is a multigraph, False otherwise.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="kc">True</span>
 
     <span class="k">def</span> <span class="nf">is_directed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns True if graph is directed, False otherwise.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns True if graph is directed, False otherwise.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="kc">True</span>
 
 <div class="viewcode-block" id="MultiDiGraph.to_undirected"><a class="viewcode-back" href="../../../reference/classes/generated/networkx.MultiDiGraph.to_undirected.html#networkx.MultiDiGraph.to_undirected">[docs]</a>    <span class="k">def</span> <span class="nf">to_undirected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reciprocal</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">as_view</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns an undirected representation of the digraph.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns an undirected representation of the digraph.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1402,7 +1402,7 @@
         <span class="k">return</span> <span class="n">G</span></div>
 
 <div class="viewcode-block" id="MultiDiGraph.reverse"><a class="viewcode-back" href="../../../reference/classes/generated/networkx.MultiDiGraph.reverse.html#networkx.MultiDiGraph.reverse">[docs]</a>    <span class="k">def</span> <span class="nf">reverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns the reverse of the graph.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the reverse of the graph.</span>
 
 <span class="sd">        The reverse is a graph with the same nodes and edges</span>
 <span class="sd">        but with the directions of the edges reversed.</span>
@@ -1475,7 +1475,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+    &copy; Copyright 2004-2023, NetworkX Developers.<br>
 
 </p>
 

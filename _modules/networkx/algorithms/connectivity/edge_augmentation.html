@@ -488,7 +488,7 @@
 <div class="viewcode-block" id="is_k_edge_connected"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.connectivity.edge_augmentation.is_k_edge_connected.html#networkx.algorithms.connectivity.edge_augmentation.is_k_edge_connected">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;directed&quot;</span><span class="p">)</span>
 <span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;multigraph&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">is_k_edge_connected</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Tests to see if a graph is k-edge-connected.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Tests to see if a graph is k-edge-connected.</span>
 
 <span class="sd">    Is it impossible to disconnect the graph by removing fewer than k edges?</span>
 <span class="sd">    If so, then G is k-edge-connected.</span>
@@ -538,7 +538,7 @@
 <div class="viewcode-block" id="is_locally_k_edge_connected"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.connectivity.edge_augmentation.is_locally_k_edge_connected.html#networkx.algorithms.connectivity.edge_augmentation.is_locally_k_edge_connected">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;directed&quot;</span><span class="p">)</span>
 <span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;multigraph&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">is_locally_k_edge_connected</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Tests to see if an edge in a graph is locally k-edge-connected.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Tests to see if an edge in a graph is locally k-edge-connected.</span>
 
 <span class="sd">    Is it impossible to disconnect s and t by removing fewer than k edges?</span>
 <span class="sd">    If so, then s and t are locally k-edge-connected in G.</span>
@@ -595,7 +595,7 @@
 <div class="viewcode-block" id="k_edge_augmentation"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.connectivity.edge_augmentation.k_edge_augmentation.html#networkx.algorithms.connectivity.edge_augmentation.k_edge_augmentation">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;directed&quot;</span><span class="p">)</span>
 <span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;multigraph&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">k_edge_augmentation</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">avail</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">partial</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Finds set of edges to k-edge-connect G.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Finds set of edges to k-edge-connect G.</span>
 
 <span class="sd">    Adding edges from the augmentation to G make it impossible to disconnect G</span>
 <span class="sd">    unless k or more edges are removed. This function uses the most efficient</span>
@@ -708,7 +708,7 @@
         <span class="k">if</span> <span class="n">k</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;k must be a positive integer, not </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">G</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;impossible to </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> connect in graph with less than </span><span class="si">{</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="s2"> nodes&quot;</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;impossible to </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> connect in graph with less than </span><span class="si">{</span><span class="n">k</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> nodes&quot;</span>
             <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXUnfeasible</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">avail</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">avail</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">nx</span><span class="o">.</span><span class="n">is_k_edge_connected</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
@@ -745,7 +745,7 @@
 
 
 <span class="k">def</span> <span class="nf">partial_k_edge_augmentation</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">avail</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Finds augmentation that k-edge-connects as much of the graph as possible.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Finds augmentation that k-edge-connects as much of the graph as possible.</span>
 
 <span class="sd">    When a k-edge-augmentation is not possible, we can still try to find a</span>
 <span class="sd">    small set of edges that partially k-edge-connects as much of the graph as</span>
@@ -798,7 +798,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">_edges_between_disjoint</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">only1</span><span class="p">,</span> <span class="n">only2</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;finds edges between disjoint nodes&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;finds edges between disjoint nodes&quot;&quot;&quot;</span>
         <span class="n">only1_adj</span> <span class="o">=</span> <span class="p">{</span><span class="n">u</span><span class="p">:</span> <span class="nb">set</span><span class="p">(</span><span class="n">H</span><span class="o">.</span><span class="n">adj</span><span class="p">[</span><span class="n">u</span><span class="p">])</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">only1</span><span class="p">}</span>
         <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">neighbs</span> <span class="ow">in</span> <span class="n">only1_adj</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="c1"># Find the neighbors of u in only1 that are also in only2</span>
@@ -847,7 +847,7 @@
 <span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;multigraph&quot;</span><span class="p">)</span>
 <span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;directed&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">one_edge_augmentation</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">avail</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">partial</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Finds minimum weight set of edges to connect G.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Finds minimum weight set of edges to connect G.</span>
 
 <span class="sd">    Equivalent to :func:`k_edge_augmentation` when k=1. Adding the resulting</span>
 <span class="sd">    edges to G will make it 1-edge-connected. The solution is optimal for both</span>
@@ -901,7 +901,7 @@
 <span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;multigraph&quot;</span><span class="p">)</span>
 <span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;directed&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">bridge_augmentation</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">avail</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Finds the a set of edges that bridge connects G.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Finds the a set of edges that bridge connects G.</span>
 
 <span class="sd">    Equivalent to :func:`k_edge_augmentation` when k=2, and partial=False.</span>
 <span class="sd">    Adding the resulting edges to G will make it 2-edge-connected.  If no</span>
@@ -953,12 +953,12 @@
 
 
 <span class="k">def</span> <span class="nf">_ordered</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns the nodes in an undirected edge in lower-triangular order&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the nodes in an undirected edge in lower-triangular order&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">if</span> <span class="n">u</span> <span class="o">&lt;</span> <span class="n">v</span> <span class="k">else</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_unpack_available_edges</span><span class="p">(</span><span class="n">avail</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">G</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Helper to separate avail into edges and corresponding weights&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper to separate avail into edges and corresponding weights&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">weight</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">weight</span> <span class="o">=</span> <span class="s2">&quot;weight&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">avail</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
@@ -987,7 +987,7 @@
 
 
 <span class="k">def</span> <span class="nf">_lightest_meta_edges</span><span class="p">(</span><span class="n">mapping</span><span class="p">,</span> <span class="n">avail_uv</span><span class="p">,</span> <span class="n">avail_w</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Maps available edges in the original graph to edges in the metagraph.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Maps available edges in the original graph to edges in the metagraph.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1036,7 +1036,7 @@
 
 
 <span class="k">def</span> <span class="nf">unconstrained_one_edge_augmentation</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Finds the smallest set of edges to connect G.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Finds the smallest set of edges to connect G.</span>
 
 <span class="sd">    This is a variant of the unweighted MST problem.</span>
 <span class="sd">    If G is not empty, a feasible solution always exists.</span>
@@ -1078,7 +1078,7 @@
 
 
 <span class="k">def</span> <span class="nf">weighted_one_edge_augmentation</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">avail</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">partial</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Finds the minimum weight set of edges to connect G if one exists.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Finds the minimum weight set of edges to connect G if one exists.</span>
 
 <span class="sd">    This is a variant of the weighted MST problem.</span>
 
@@ -1146,7 +1146,7 @@
 
 
 <span class="k">def</span> <span class="nf">unconstrained_bridge_augmentation</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Finds an optimal 2-edge-augmentation of G using the fewest edges.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Finds an optimal 2-edge-augmentation of G using the fewest edges.</span>
 
 <span class="sd">    This is an implementation of the algorithm detailed in [1]_.</span>
 <span class="sd">    The basic idea is to construct a meta-graph of bridge-ccs, connect leaf</span>
@@ -1300,7 +1300,7 @@
 
 
 <span class="k">def</span> <span class="nf">weighted_bridge_augmentation</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">avail</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Finds an approximate min-weight 2-edge-augmentation of G.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Finds an approximate min-weight 2-edge-augmentation of G.</span>
 
 <span class="sd">    This is an implementation of the approximation algorithm detailed in [1]_.</span>
 <span class="sd">    It chooses a set of edges from avail to add to G that renders it</span>
@@ -1470,7 +1470,7 @@
 
 
 <span class="k">def</span> <span class="nf">_minimum_rooted_branching</span><span class="p">(</span><span class="n">D</span><span class="p">,</span> <span class="n">root</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Helper function to compute a minimum rooted branching (aka rooted</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper function to compute a minimum rooted branching (aka rooted</span>
 <span class="sd">    arborescence)</span>
 
 <span class="sd">    Before the branching can be computed, the directed graph must be rooted by</span>
@@ -1494,7 +1494,7 @@
 
 
 <span class="k">def</span> <span class="nf">collapse</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">grouped_nodes</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Collapses each group of nodes into a single node.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Collapses each group of nodes into a single node.</span>
 
 <span class="sd">    This is similar to condensation, but works on undirected graphs.</span>
 
@@ -1565,7 +1565,7 @@
 
 
 <span class="k">def</span> <span class="nf">complement_edges</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns only the edges in the complement of G</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns only the edges in the complement of G</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1602,7 +1602,7 @@
 
 
 <span class="k">def</span> <span class="nf">_compat_shuffle</span><span class="p">(</span><span class="n">rng</span><span class="p">,</span> <span class="nb">input</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;wrapper around rng.shuffle for python 2 compatibility reasons&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;wrapper around rng.shuffle for python 2 compatibility reasons&quot;&quot;&quot;</span>
     <span class="n">rng</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
 
 
@@ -1610,7 +1610,7 @@
 <span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;multigraph&quot;</span><span class="p">)</span>
 <span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;directed&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">greedy_k_edge_augmentation</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">avail</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Greedy algorithm for finding a k-edge-augmentation</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Greedy algorithm for finding a k-edge-augmentation</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1768,7 +1768,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+    &copy; Copyright 2004-2023, NetworkX Developers.<br>
 
 </p>
 

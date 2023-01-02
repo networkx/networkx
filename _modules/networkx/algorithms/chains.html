@@ -472,7 +472,7 @@
 <div class="viewcode-block" id="chain_decomposition"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.chains.chain_decomposition.html#networkx.algorithms.chains.chain_decomposition">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;directed&quot;</span><span class="p">)</span>
 <span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;multigraph&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">chain_decomposition</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns the chain decomposition of a graph.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the chain decomposition of a graph.</span>
 
 <span class="sd">    The *chain decomposition* of a graph with respect a depth-first</span>
 <span class="sd">    search tree is a set of cycles or paths derived from the set of</span>
@@ -527,7 +527,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">_dfs_cycle_forest</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Builds a directed graph composed of cycles from the given graph.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Builds a directed graph composed of cycles from the given graph.</span>
 
 <span class="sd">        `G` is an undirected simple graph. `root` is a node in the graph</span>
 <span class="sd">        from which the depth-first search is started.</span>
@@ -583,7 +583,7 @@
         <span class="k">return</span> <span class="n">H</span><span class="p">,</span> <span class="n">nodes</span>
 
     <span class="k">def</span> <span class="nf">_build_chain</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">visited</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Generate the chain starting from the given nontree edge.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate the chain starting from the given nontree edge.</span>
 
 <span class="sd">        `G` is a DFS cycle graph as constructed by</span>
 <span class="sd">        :func:`_dfs_cycle_graph`. The edge (`u`, `v`) is a nontree edge</span>
@@ -683,7 +683,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+    &copy; Copyright 2004-2023, NetworkX Developers.<br>
 
 </p>
 

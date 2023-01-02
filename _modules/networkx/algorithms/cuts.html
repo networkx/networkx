@@ -486,7 +486,7 @@
 
 <div class="viewcode-block" id="cut_size"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.cuts.cut_size.html#networkx.algorithms.cuts.cut_size">[docs]</a><span class="nd">@nx</span><span class="o">.</span><span class="n">_dispatch</span>
 <span class="k">def</span> <span class="nf">cut_size</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns the size of the cut between two sets of nodes.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the size of the cut between two sets of nodes.</span>
 
 <span class="sd">    A *cut* is a partition of the nodes of a graph into two sets. The</span>
 <span class="sd">    *cut size* is the sum of the weights of the edges &quot;between&quot; the two</span>
@@ -549,7 +549,7 @@
 
 <div class="viewcode-block" id="volume"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.cuts.volume.html#networkx.algorithms.cuts.volume">[docs]</a><span class="nd">@nx</span><span class="o">.</span><span class="n">_dispatch</span>
 <span class="k">def</span> <span class="nf">volume</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns the volume of a set of nodes.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the volume of a set of nodes.</span>
 
 <span class="sd">    The *volume* of a set *S* is the sum of the (out-)degrees of nodes</span>
 <span class="sd">    in *S* (taking into account parallel edges in multigraphs). [1]</span>
@@ -592,7 +592,7 @@
 
 <div class="viewcode-block" id="normalized_cut_size"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.cuts.normalized_cut_size.html#networkx.algorithms.cuts.normalized_cut_size">[docs]</a><span class="nd">@nx</span><span class="o">.</span><span class="n">_dispatch</span>
 <span class="k">def</span> <span class="nf">normalized_cut_size</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns the normalized size of the cut between two sets of nodes.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the normalized size of the cut between two sets of nodes.</span>
 
 <span class="sd">    The *normalized cut size* is the cut size times the sum of the</span>
 <span class="sd">    reciprocal sizes of the volumes of the two sets. [1]</span>
@@ -645,7 +645,7 @@
 
 <div class="viewcode-block" id="conductance"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.cuts.conductance.html#networkx.algorithms.cuts.conductance">[docs]</a><span class="nd">@nx</span><span class="o">.</span><span class="n">_dispatch</span>
 <span class="k">def</span> <span class="nf">conductance</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns the conductance of two sets of nodes.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the conductance of two sets of nodes.</span>
 
 <span class="sd">    The *conductance* is the quotient of the cut size and the smaller of</span>
 <span class="sd">    the volumes of the two sets. [1]</span>
@@ -693,7 +693,7 @@
 
 <div class="viewcode-block" id="edge_expansion"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.cuts.edge_expansion.html#networkx.algorithms.cuts.edge_expansion">[docs]</a><span class="nd">@nx</span><span class="o">.</span><span class="n">_dispatch</span>
 <span class="k">def</span> <span class="nf">edge_expansion</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns the edge expansion between two node sets.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the edge expansion between two node sets.</span>
 
 <span class="sd">    The *edge expansion* is the quotient of the cut size and the smaller</span>
 <span class="sd">    of the cardinalities of the two sets. [1]</span>
@@ -740,7 +740,7 @@
 
 <div class="viewcode-block" id="mixing_expansion"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.cuts.mixing_expansion.html#networkx.algorithms.cuts.mixing_expansion">[docs]</a><span class="nd">@nx</span><span class="o">.</span><span class="n">_dispatch</span>
 <span class="k">def</span> <span class="nf">mixing_expansion</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns the mixing expansion between two node sets.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the mixing expansion between two node sets.</span>
 
 <span class="sd">    The *mixing expansion* is the quotient of the cut size and twice the</span>
 <span class="sd">    number of edges in the graph. [1]</span>
@@ -788,7 +788,7 @@
 <span class="c1"># denominator become `min(len(S), len(T))`?</span>
 <div class="viewcode-block" id="node_expansion"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.cuts.node_expansion.html#networkx.algorithms.cuts.node_expansion">[docs]</a><span class="nd">@nx</span><span class="o">.</span><span class="n">_dispatch</span>
 <span class="k">def</span> <span class="nf">node_expansion</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">S</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns the node expansion of the set `S`.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the node expansion of the set `S`.</span>
 
 <span class="sd">    The *node expansion* is the quotient of the size of the node</span>
 <span class="sd">    boundary of *S* and the cardinality of *S*. [1]</span>
@@ -828,7 +828,7 @@
 <span class="c1"># denominator become `min(len(S), len(T))`?</span>
 <div class="viewcode-block" id="boundary_expansion"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.cuts.boundary_expansion.html#networkx.algorithms.cuts.boundary_expansion">[docs]</a><span class="nd">@nx</span><span class="o">.</span><span class="n">_dispatch</span>
 <span class="k">def</span> <span class="nf">boundary_expansion</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">S</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns the boundary expansion of the set `S`.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the boundary expansion of the set `S`.</span>
 
 <span class="sd">    The *boundary expansion* is the quotient of the size</span>
 <span class="sd">    of the node boundary and the cardinality of *S*. [1]</span>
@@ -912,7 +912,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+    &copy; Copyright 2004-2023, NetworkX Developers.<br>
 
 </p>
 

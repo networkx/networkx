@@ -480,7 +480,7 @@
 
 
 <span class="k">class</span> <span class="nc">CurrentEdge</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Mechanism for iterating over out-edges incident to a node in a circular</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Mechanism for iterating over out-edges incident to a node in a circular</span>
 <span class="sd">    manner. StopIteration exception is raised when wraparound occurs.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -507,7 +507,7 @@
 
 
 <span class="k">class</span> <span class="nc">Level</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Active and inactive nodes in a level.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Active and inactive nodes in a level.&quot;&quot;&quot;</span>
 
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;active&quot;</span><span class="p">,</span> <span class="s2">&quot;inactive&quot;</span><span class="p">)</span>
 
@@ -517,7 +517,7 @@
 
 
 <span class="k">class</span> <span class="nc">GlobalRelabelThreshold</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Measurement of work before the global relabeling heuristic should be</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Measurement of work before the global relabeling heuristic should be</span>
 <span class="sd">    applied.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -536,7 +536,7 @@
 
 
 <div class="viewcode-block" id="build_residual_network"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.flow.build_residual_network.html#networkx.algorithms.flow.build_residual_network">[docs]</a><span class="k">def</span> <span class="nf">build_residual_network</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">capacity</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Build a residual network and initialize a zero flow.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build a residual network and initialize a zero flow.</span>
 
 <span class="sd">    The residual network :samp:`R` from an input graph :samp:`G` has the</span>
 <span class="sd">    same nodes as :samp:`G`. :samp:`R` is a DiGraph that contains a pair</span>
@@ -617,7 +617,7 @@
 
 
 <span class="k">def</span> <span class="nf">detect_unboundedness</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Detect an infinite-capacity s-t path in R.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Detect an infinite-capacity s-t path in R.&quot;&quot;&quot;</span>
     <span class="n">q</span> <span class="o">=</span> <span class="n">deque</span><span class="p">([</span><span class="n">s</span><span class="p">])</span>
     <span class="n">seen</span> <span class="o">=</span> <span class="p">{</span><span class="n">s</span><span class="p">}</span>
     <span class="n">inf</span> <span class="o">=</span> <span class="n">R</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="s2">&quot;inf&quot;</span><span class="p">]</span>
@@ -634,7 +634,7 @@
 
 
 <span class="k">def</span> <span class="nf">build_flow_dict</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">R</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Build a flow dictionary from a residual network.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build a flow dictionary from a residual network.&quot;&quot;&quot;</span>
     <span class="n">flow_dict</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">G</span><span class="p">:</span>
         <span class="n">flow_dict</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G</span><span class="p">[</span><span class="n">u</span><span class="p">]}</span>
@@ -693,7 +693,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+    &copy; Copyright 2004-2023, NetworkX Developers.<br>
 
 </p>
 

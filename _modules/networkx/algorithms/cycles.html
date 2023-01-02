@@ -484,7 +484,7 @@
 <div class="viewcode-block" id="cycle_basis"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.cycles.cycle_basis.html#networkx.algorithms.cycles.cycle_basis">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;directed&quot;</span><span class="p">)</span>
 <span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;multigraph&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">cycle_basis</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns a list of cycles which form a basis for cycles of G.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a list of cycles which form a basis for cycles of G.</span>
 
 <span class="sd">    A basis for cycles of a network is a minimal collection of</span>
 <span class="sd">    cycles such that any cycle in the network can be written</span>
@@ -560,7 +560,7 @@
 
 <div class="viewcode-block" id="simple_cycles"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.cycles.simple_cycles.html#networkx.algorithms.cycles.simple_cycles">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;undirected&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">simple_cycles</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Find simple cycles (elementary circuits) of a directed graph.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Find simple cycles (elementary circuits) of a directed graph.</span>
 
 <span class="sd">    A `simple cycle`, or `elementary circuit`, is a closed path where</span>
 <span class="sd">    no node appears twice. Two elementary circuits are distinct if they</span>
@@ -687,7 +687,7 @@
 
 <div class="viewcode-block" id="recursive_simple_cycles"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.cycles.recursive_simple_cycles.html#networkx.algorithms.cycles.recursive_simple_cycles">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;undirected&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">recursive_simple_cycles</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Find simple cycles (elementary circuits) of a directed graph.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Find simple cycles (elementary circuits) of a directed graph.</span>
 
 <span class="sd">    A `simple cycle`, or `elementary circuit`, is a closed path where</span>
 <span class="sd">    no node appears twice. Two elementary circuits are distinct if they</span>
@@ -734,7 +734,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Jon Olav Vik, 2010-08-09</span>
     <span class="k">def</span> <span class="nf">_unblock</span><span class="p">(</span><span class="n">thisnode</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Recursively unblock and remove nodes from B[thisnode].&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Recursively unblock and remove nodes from B[thisnode].&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">blocked</span><span class="p">[</span><span class="n">thisnode</span><span class="p">]:</span>
             <span class="n">blocked</span><span class="p">[</span><span class="n">thisnode</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">while</span> <span class="n">B</span><span class="p">[</span><span class="n">thisnode</span><span class="p">]:</span>
@@ -795,7 +795,7 @@
 
 
 <div class="viewcode-block" id="find_cycle"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.cycles.find_cycle.html#networkx.algorithms.cycles.find_cycle">[docs]</a><span class="k">def</span> <span class="nf">find_cycle</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">orientation</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns a cycle found via depth-first traversal.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a cycle found via depth-first traversal.</span>
 
 <span class="sd">    The cycle is a list of edges indicating the cyclic path.</span>
 <span class="sd">    Orientation of directed edges is controlled by `orientation`.</span>
@@ -956,7 +956,7 @@
 <div class="viewcode-block" id="minimum_cycle_basis"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.cycles.minimum_cycle_basis.html#networkx.algorithms.cycles.minimum_cycle_basis">[docs]</a><span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;directed&quot;</span><span class="p">)</span>
 <span class="nd">@not_implemented_for</span><span class="p">(</span><span class="s2">&quot;multigraph&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">minimum_cycle_basis</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns a minimum weight cycle basis for G</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a minimum weight cycle basis for G</span>
 
 <span class="sd">    Minimum weight means a cycle basis for which the total weight</span>
 <span class="sd">    (length for unweighted graphs) of all the cycles is minimum.</span>
@@ -1025,7 +1025,7 @@
 
 
 <span class="k">def</span> <span class="nf">_min_cycle</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">orth</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes the minimum weight cycle in G,</span>
 <span class="sd">    orthogonal to the vector orth as per [p. 338, 1]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1069,7 +1069,7 @@
 
 
 <span class="k">def</span> <span class="nf">_path_to_cycle</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Removes the edges from path that occur even number of times.</span>
 <span class="sd">    Returns a set of edges</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1129,7 +1129,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+    &copy; Copyright 2004-2023, NetworkX Developers.<br>
 
 </p>
 

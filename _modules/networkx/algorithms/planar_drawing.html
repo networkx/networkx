@@ -469,7 +469,7 @@
 
 
 <div class="viewcode-block" id="combinatorial_embedding_to_pos"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.planar_drawing.combinatorial_embedding_to_pos.html#networkx.algorithms.planar_drawing.combinatorial_embedding_to_pos">[docs]</a><span class="k">def</span> <span class="nf">combinatorial_embedding_to_pos</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="n">fully_triangulate</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Assigns every node a (x, y) position based on the given embedding</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Assigns every node a (x, y) position based on the given embedding</span>
 
 <span class="sd">    The algorithm iteratively inserts nodes of the input graph in a certain</span>
 <span class="sd">    order and rearranges previously inserted nodes so that the planar drawing</span>
@@ -589,7 +589,7 @@
 
 
 <span class="k">def</span> <span class="nf">set_position</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">tree</span><span class="p">,</span> <span class="n">remaining_nodes</span><span class="p">,</span> <span class="n">delta_x</span><span class="p">,</span> <span class="n">y_coordinate</span><span class="p">,</span> <span class="n">pos</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Helper method to calculate the absolute position of nodes.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper method to calculate the absolute position of nodes.&quot;&quot;&quot;</span>
     <span class="n">child</span> <span class="o">=</span> <span class="n">tree</span><span class="p">[</span><span class="n">parent</span><span class="p">]</span>
     <span class="n">parent_node_x</span> <span class="o">=</span> <span class="n">pos</span><span class="p">[</span><span class="n">parent</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">child</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -601,7 +601,7 @@
 
 
 <span class="k">def</span> <span class="nf">get_canonical_ordering</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="n">outer_face</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns a canonical ordering of the nodes</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a canonical ordering of the nodes</span>
 
 <span class="sd">    The canonical ordering of nodes (v1, ..., vn) must fulfill the following</span>
 <span class="sd">    conditions:</span>
@@ -768,7 +768,7 @@
 
 
 <span class="k">def</span> <span class="nf">triangulate_face</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Triangulates the face given by half edge (v, w)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Triangulates the face given by half edge (v, w)</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -797,7 +797,7 @@
 
 
 <span class="k">def</span> <span class="nf">triangulate_embedding</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="n">fully_triangulate</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Triangulates the embedding.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Triangulates the embedding.</span>
 
 <span class="sd">    Traverses faces of the embedding and adds edges to a copy of the</span>
 <span class="sd">    embedding to triangulate it.</span>
@@ -866,7 +866,7 @@
 
 
 <span class="k">def</span> <span class="nf">make_bi_connected</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="n">starting_node</span><span class="p">,</span> <span class="n">outgoing_node</span><span class="p">,</span> <span class="n">edges_counted</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Triangulate a face and make it 2-connected</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Triangulate a face and make it 2-connected</span>
 
 <span class="sd">    This method also adds all edges on the face to `edges_counted`.</span>
 
@@ -976,7 +976,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2004-2022, NetworkX Developers.<br>
+    &copy; Copyright 2004-2023, NetworkX Developers.<br>
 
 </p>
 
