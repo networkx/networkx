@@ -1,6 +1,5 @@
 import random
 import time
-
 from collections import Counter
 
 import networkx as nx
@@ -20,6 +19,7 @@ from networkx.algorithms.isomorphism.tree_isomorphism import (
     update_values,
 )
 from networkx.classes.function import is_directed
+
 
 # Tests the function categorize_entries. The returned function should behave
 # like a function NONEMPTY : N -> P(N) such that NONEMPTY(i) are the numbers in
