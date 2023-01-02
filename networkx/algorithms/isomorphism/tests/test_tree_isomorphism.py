@@ -5,7 +5,6 @@ from collections import Counter
 
 import networkx as nx
 from networkx.algorithms.isomorphism.tree_isomorphism import (
-    NaturalMultiset,
     assign_structure,
     categorize_entries,
     categorize_lists,
@@ -22,71 +21,6 @@ from networkx.algorithms.isomorphism.tree_isomorphism import (
     update_values,
 )
 from networkx.classes.function import is_directed
-
-
-# Tests the function to_list from the Natural Multiset class.
-def test_multiset_to_list():
-    M = NaturalMultiset()
-    # Add the values (0, 1, 2, 0, 0, 1)
-    M.add(0)
-    M.add(1)
-    M.add(2)
-    M.add(0)
-    M.add(0)
-    M.add(1)
-
-    expected_list = [0, 0, 0, 1, 1, 2]
-
-    obtained_list = M.to_list()
-
-    assert expected_list == obtained_list
-
-
-# Tests the function __eq__ from the Natural Multiset class.
-def test_multiset__eq__():
-    M1 = NaturalMultiset()
-    M2 = NaturalMultiset()
-
-    # Empty multisets should be equal.
-    assert M1 == M2
-
-    # Add different elements to M1 and M2.
-    M1.add(1)
-    M2.add(2)
-
-    assert M1 != M2
-
-    # Add the values that are missing to each multiset.
-    M1.add(2)
-    M2.add(1)
-
-    assert M1 == M2
-
-    # Increase the occurrences of one element in each multiset.
-    M1.add(1)
-    assert M1 != M2
-
-    M2.add(1)
-    assert M1 == M2
-
-
-# Tests the function __len__ from the Natural Multiset class.
-def test_multiset__len__():
-    M = NaturalMultiset()
-
-    # An empty multiset length is 0.
-    assert len(M) == 0
-
-    # Add different elements and check the length.
-    for i in range(10):
-        M.add(i)
-        assert len(M) == (i + 1)
-
-    # Add the same elements as before and check the length.
-    for i in range(10):
-        M.add(i)
-        assert len(M) == (11 + i)
-
 
 # Tests the function categorize_entries. The returned function should behave
 # like a function NONEMPTY : N -> P(N) such that NONEMPTY(i) are the numbers in
@@ -196,61 +130,6 @@ def test_sort_list_of_naturals():
     ]
 
     obtained_ordering = sort_lists_of_naturals(S)
-
-    assert expected_ordering == obtained_ordering
-
-
-# Tests the function sort_natural_multisets. The expected sorted list should
-# follow the lexicographical ordering of the multiset representation.
-def test_sort_natural_multisets():
-    # An arbitrary list of lists of multisets.
-    M1 = NaturalMultiset()
-    M2 = NaturalMultiset()
-    M3 = NaturalMultiset()
-    M4 = NaturalMultiset()
-    M5 = NaturalMultiset()
-    M6 = NaturalMultiset()
-
-    M1.from_list([0, 0, 1, 2, 3])
-    M2.from_list([1, 2, 3])
-    M3.from_list([0, 1, 1, 4])
-    M4.from_list([3, 3, 4])
-    M5.from_list([4])
-    M6.from_list([4, 4, 5])
-
-    S = [M1, M2, M3, M4, M5, M6]
-
-    expected_ordering = [M1, M3, M2, M4, M5, M6]
-
-    obtained_ordering = sort_natural_multisets(S)
-
-    assert expected_ordering == obtained_ordering
-
-    # Test for another list of lists of natural numbers.
-    M1 = NaturalMultiset()
-    M2 = NaturalMultiset()
-    M3 = NaturalMultiset()
-    M4 = NaturalMultiset()
-    M5 = NaturalMultiset()
-    M6 = NaturalMultiset()
-    M7 = NaturalMultiset()
-    M8 = NaturalMultiset()
-    M9 = NaturalMultiset()
-
-    M1.from_list([1, 2, 3, 7, 8])
-    M2.from_list([2, 2, 3, 4])
-    M3.from_list([2, 2, 4, 3])
-    M4.from_list([0, 1])
-    M5.from_list([0, 0])
-    M6.from_list([1, 3, 4])
-    M7.from_list([2, 3, 4])
-    M8.from_list([7])
-    M9.from_list([8, 8])
-
-    S = [M1, M2, M3, M4, M5, M6, M7, M8, M9]
-    expected_ordering = [M5, M4, M1, M6, M2, M3, M7, M8, M9]
-
-    obtained_ordering = sort_natural_multisets(S)
 
     assert expected_ordering == obtained_ordering
 
