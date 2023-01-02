@@ -1,6 +1,8 @@
 import random
 import time
 
+from collections import Counter
+
 import networkx as nx
 from networkx.algorithms.isomorphism.tree_isomorphism import (
     NaturalMultiset,
@@ -398,12 +400,12 @@ def test_assign_values():
     }
 
     expected_structure_lvl_2 = {
-        "v0": NaturalMultiset([0, 1, 2]),
+        "v0": Counter([0, 1, 2]),
     }
 
     expected_structure_lvl_1 = {
-        "v1": NaturalMultiset([0, 0]),
-        "v3": NaturalMultiset([0]),
+        "v1": Counter([0, 0]),
+        "v3": Counter([0]),
     }
 
     obtained_structure_lvl_1, leaves_lvl_1 = assign_structure(
@@ -457,22 +459,25 @@ def test_get_multisets_list_of_level():
     }
 
     structures_lvl_2 = {
-        "v0": NaturalMultiset([0, 1, 2]),
+        "v0": Counter([0, 1, 2]),
     }
 
     structures_lvl_1 = {
-        "v1": NaturalMultiset([0, 0]),
-        "v3": NaturalMultiset([0]),
-        "v7": NaturalMultiset([0]),
+        "v1": Counter([0, 0]),
+        "v3": Counter([0]),
+        "v7": Counter([0]),
     }
 
+    expected_list_lvl_2 = [(0, 1, 2)]
+    expected_list_lvl_1 = [(0, 0), (0,), (0,)]
+
     expected_mapping_lvl_2 = {
-        NaturalMultiset([0, 1, 2]): {"v0"},
+        (0, 1, 2): {"v0"},
     }
 
     expected_mapping_lvl_1 = {
-        NaturalMultiset([0, 0]): {"v1"},
-        NaturalMultiset([0]): {"v3", "v7"},
+        (0, 0): {"v1"},
+        (0,): {"v3", "v7"},
     }
 
     obt_list_lvl_1, obt_mapping_lvl_1 = get_multisets_list_of_level(
@@ -483,12 +488,12 @@ def test_get_multisets_list_of_level():
     )
 
     assert len(structures_lvl_1) == len(obt_list_lvl_1)
-    for key in structures_lvl_1:
-        assert structures_lvl_1[key] in obt_list_lvl_1
+    for struct in expected_list_lvl_1:
+        assert struct in obt_list_lvl_1
 
     assert len(structures_lvl_2) == len(obt_list_lvl_2)
-    for key in structures_lvl_2:
-        assert structures_lvl_2[key] in obt_list_lvl_2
+    for struct in expected_list_lvl_2:
+        assert struct in obt_list_lvl_2
 
     assert obt_mapping_lvl_1 == expected_mapping_lvl_1
     assert obt_mapping_lvl_2 == expected_mapping_lvl_2
@@ -510,15 +515,11 @@ def test_update_values():
     }
 
     mapping_lvl_1 = {
-        NaturalMultiset([0, 0]): {"v1"},
-        NaturalMultiset([0]): {"v3", "v7"},
+        (0, 0): {"v1"},
+        (0,): {"v3", "v7"},
     }
 
-    structures_list_lvl_1 = (
-        NaturalMultiset([0]),
-        NaturalMultiset([0]),
-        NaturalMultiset([0, 0]),
-    )
+    structures_list_lvl_1 = ((0,), (0,), (0, 0))
 
     expected_values_after_lvl_1 = {
         "v0": -1,
@@ -543,10 +544,12 @@ def test_update_values():
 
     assert expected_values_after_lvl_1 == values
 
-    structures_list_lvl_2 = (NaturalMultiset([2, 0, 1]),)
+    structures_list_lvl_2 = [
+        (0, 1, 2),
+    ]
 
     mapping_lvl_2 = {
-        NaturalMultiset([0, 1, 2]): {"v0"},
+        (0, 1, 2): {"v0"},
     }
 
     expected_values_after_lvl_2 = {

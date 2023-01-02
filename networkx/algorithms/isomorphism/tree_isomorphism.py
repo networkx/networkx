@@ -19,6 +19,8 @@ References
 
 """
 
+from collections import Counter
+
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
 
@@ -266,19 +268,21 @@ def categorize_entries(S):
 
     # Traverse all the entries contained in the lists of S.
     for i in range(l_max):
-        # Define a multiset to keep the entries found in the i-th position.
-        M = NaturalMultiset()
+        # Define a counter to keep track of the entries found in the i-th
+        # position.
+        C = Counter()
 
         for s in S:
             # Only consider lists of length greater or equal than i, and whose
             # i-th entry is not already contained in the multiset.
-            if len(s) < (i + 1) or M.contains(s[i]):
+            if len(s) < (i + 1) or s[i] in C:
                 continue
             else:
-                M.add(s[i])
+                C[s[i]] = 1
 
-        # Obtain a sorted representation of M.
-        NONEMPTY[i] = M.to_list()
+        # Obtain a sorted representation of the entries found in the i-th
+        # position.
+        NONEMPTY[i] = [x for x in range(max(C) + 1) for _ in range(C.get(x, 0))]
 
     return NONEMPTY
 
@@ -644,7 +648,7 @@ def assign_structure(parenthood, levels, values, i):
     # for each non-leave vertex.
     for v in levels[i]:
         if values[v] != 0:
-            STRUCT[v] = NaturalMultiset()
+            STRUCT[v] = Counter()
         else:
             leaves.add(v)
 
@@ -658,7 +662,7 @@ def assign_structure(parenthood, levels, values, i):
         uval = values[u]
 
         # Add u's value to the father's multiset.
-        STRUCT[v].add(uval)
+        STRUCT[v][uval] += 1
 
     # Return the defined STRUCT map and leaves.
     return STRUCT, leaves
@@ -703,7 +707,7 @@ def get_multisets_list_of_level(levels, values, struct, i):
     vertices found on the j-th level of the rooted tree.
 
     """
-    # Define an empty list of multisets.
+    # Define an empty list of list representations of counters.
     S = []
 
     # Define a mapping of structures to the vertices that have said structure.
@@ -713,12 +717,20 @@ def get_multisets_list_of_level(levels, values, struct, i):
     # to the list.
     for u in levels[i]:
         if values[u] != 0:
-            S.append(struct[u])
+            # Get the structure (counter) associated with u.
+            c = struct[u]
 
-            if struct[u] in MS:
-                MS[struct[u]].add(u)
+            # Get the list representation of the counter.
+            lc = tuple(x for x in range(max(c) + 1) for _ in range(c.get(x, 0)))
+
+            # Append the list representation to the list.
+            S.append(lc)
+
+            # Indicate that c is a structure u has.
+            if lc in MS:
+                MS[lc].add(u)
             else:
-                MS[struct[u]] = {u}
+                MS[lc] = {u}
 
     return S, MS
 
@@ -940,8 +952,8 @@ def levels_verification(
         )
 
         # Sort the list of structures.
-        sorted_S_T1 = sort_natural_multisets(S_T1)
-        sorted_S_T2 = sort_natural_multisets(S_T2)
+        sorted_S_T1 = sort_lists_of_naturals(S_T1)
+        sorted_S_T2 = sort_lists_of_naturals(S_T2)
 
         # If the sorted lists are different, return false.
         if sorted_S_T1 != sorted_S_T2:
@@ -1231,9 +1243,9 @@ def tree_isomorphism_n(T1, T2):
     assert nx.is_tree(T2)
 
     # Another shortcut is that the degree sequences need to be the same.
-    D_T1 = NaturalMultiset([d for (n, d) in T1.degree()])
-    D_T2 = NaturalMultiset([d for (n, d) in T2.degree()])
-    if D_T1 != D_T2:
+    degrees_T1 = Counter([d for (n, d) in T1.degree()])
+    degrees_T2 = Counter([d for (n, d) in T2.degree()])
+    if degrees_T1 != degrees_T2:
         return False, {}
 
     # Find the centers of T1 and T2.
