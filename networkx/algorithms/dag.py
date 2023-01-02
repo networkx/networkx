@@ -1087,9 +1087,9 @@ def dag_longest_path_between(
     >>> DG = nx.DiGraph([(0, 1, {'cost':1}), (1, 2, {'cost':1}), (0, 2, {'cost':42})])
     >>> list(nx.all_simple_paths(DG, 0, 2))
     [[0, 1, 2], [0, 2]]
-    >>> nx.dag_longest_path_between(DG, "cost", 1, source=0, target=2)
+    >>> nx.dag_longest_path_between(DG, 0, 2, "cost", 1)
     [0, 1, 2]
-    >>> nx.dag_longest_path_between(DG, weight="cost", source=0)
+    >>> nx.dag_longest_path_between(DG, 0, None, weight="cost")
     [0, 2]
 
     In the case where multiple valid topological orderings exist, `topo_order`
@@ -1098,9 +1098,9 @@ def dag_longest_path_between(
     >>> DG = nx.DiGraph([(0, 1), (0, 2)])
     >>> sorted(nx.all_topological_sorts(DG))  # Valid topological orderings
     [[0, 1, 2], [0, 2, 1]]
-    >>> nx.dag_longest_path_between(DG, topo_order=[0, 1, 2], source=0, target=1)
+    >>> nx.dag_longest_path_between(DG, 0, 1, topo_order=[0, 1, 2])
     [0, 1]
-    >>> nx.dag_longest_path_between(DG, topo_order=[0, 2, 1], source=0, target=1)
+    >>> nx.dag_longest_path_between(DG, 0, 2, topo_order=[0, 2, 1])
     [0, 2]
 
     See also
