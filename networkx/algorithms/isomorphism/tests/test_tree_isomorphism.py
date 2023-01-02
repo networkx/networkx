@@ -8,8 +8,7 @@ from networkx.algorithms.isomorphism.tree_isomorphism import (
     categorize_entries,
     categorize_lists,
     get_centers_of_tree,
-    get_initial_values,
-    get_levels,
+    get_initial_maps_and_height,
     get_multisets_list_of_level,
     rooted_tree_isomorphism,
     rooted_tree_isomorphism_n,
@@ -133,10 +132,8 @@ def test_sort_list_of_naturals():
     assert expected_ordering == obtained_ordering
 
 
-# Test the get_levels function. The returned function should behave like a
-# function M: N -> P(V) such that, for each i in {0,...,h}, M(i) is the set of
-# vertices that are found in the i-th level of T.
-def test_isomorphism_trees_get_levels():
+# Test the get_initial_maps_and_height function.
+def test_get_intial_maps_and_height():
     # Test for an arbitrary graph.
     edges_t1 = [
         ("v0", "v1"),
@@ -148,60 +145,12 @@ def test_isomorphism_trees_get_levels():
     ]
     T1 = nx.Graph(edges_t1)
 
-    # Expected level function.
     expected_levels = {
         2: {"v0"},
         1: {"v1", "v2", "v3"},
         0: {"v4", "v5", "v6"},
     }
 
-    # Obtained level function.
-    obtained_levels = get_levels(T1, "v0", 2)
-
-    assert expected_levels == obtained_levels
-
-    # Test for another arbitrary graph.
-    edges_t2 = [
-        ("u3", "u4"),
-        ("u3", "u2"),
-        ("u4", "u5"),
-        ("u4", "u6"),
-        ("u4", "u7"),
-        ("u2", "u1"),
-        ("u7", "u8"),
-        ("u1", "u0"),
-    ]
-    T2 = nx.Graph(edges_t2)
-
-    # Expected level function.
-    expected_levels = {
-        3: {"u3"},
-        2: {"u2", "u4"},
-        1: {"u5", "u6", "u7", "u1"},
-        0: {"u8", "u0"},
-    }
-
-    obtained_levels = get_levels(T2, "u3", 3)
-
-    assert expected_levels == obtained_levels
-
-
-# Test the get_initial_values function. The returned function should behave like
-# a function M: N -> P(V) such that, such that, for every vertex v in the tree
-# T, if v is a leave then v's initial value is 0, otherwise its defined as -1.
-def test_isomorphism_trees_set_initial_values():
-    # Test for an arbitrary graph.
-    edges_t1 = [
-        ("v0", "v1"),
-        ("v0", "v2"),
-        ("v0", "v3"),
-        ("v1", "v4"),
-        ("v1", "v5"),
-        ("v3", "v6"),
-    ]
-    T1 = nx.Graph(edges_t1)
-
-    # Expected level function.
     expected_values = {
         "v0": -1,
         "v1": -1,
@@ -212,40 +161,35 @@ def test_isomorphism_trees_set_initial_values():
         "v6": 0,
     }
 
-    # Obtained level function.
-    obtained_values = get_initial_values(T1, "v0")
-
-    assert expected_values == obtained_values
-
-    # Test for another arbitrary graph.
-    edges_t2 = [
-        ("u3", "u4"),
-        ("u3", "u2"),
-        ("u4", "u5"),
-        ("u4", "u6"),
-        ("u4", "u7"),
-        ("u2", "u1"),
-        ("u7", "u8"),
-        ("u1", "u0"),
-    ]
-    T2 = nx.Graph(edges_t2)
-
-    # Expected level function.
-    expected_levels = {
-        "u3": -1,
-        "u4": -1,
-        "u2": -1,
-        "u5": 0,
-        "u6": 0,
-        "u7": -1,
-        "u1": -1,
-        "u8": 0,
-        "u0": 0,
+    expected_intial_children = {
+        "v1": {"v4", "v5"},
+        "v3": {"v6"},
     }
 
-    obtained_levels = get_initial_values(T2, "u3")
+    expected_parenthood = {
+        "v1": "v0",
+        "v2": "v0",
+        "v3": "v0",
+        "v4": "v1",
+        "v5": "v1",
+        "v6": "v3",
+    }
 
-    assert expected_values == obtained_values
+    expected_height = 2
+
+    o_l, o_v, o_c, o_p, obt_h = get_initial_maps_and_height(T1, "v0")
+
+    assert expected_levels == o_l
+    assert expected_values == o_v
+
+    for v in expected_intial_children.keys():
+        assert v in o_c
+
+        for u in expected_intial_children[v]:
+            assert u in o_c[v]
+
+    assert expected_parenthood == o_p
+    assert expected_height == 2
 
 
 # Tests the function assign_values. The returned function should assign to all

@@ -19,7 +19,7 @@ References
 
 """
 
-from collections import Counter
+from collections import Counter, defaultdict
 
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
@@ -184,17 +184,31 @@ def sort_lists_of_naturals(S):
     return Q
 
 
-def get_levels(T, root, height):
-    """Groups the vertices by the level they're on the rooted tree.
+def get_initial_maps_and_height(T, root):
+    """Get the initial maps and height used by the rooted tree isomorphism alg.
 
+    Define and return the following maps: LEVELS, VALUES, PARENTHOOD and
+    CHILDREN. Also return the rooted tree's height.
 
-    Define a LEVELS map such that, for each i in {0,...,h}, LEVELS(i) is the set
-    of vertices found on the i-th level of T.
+    For the LEVELS map. Let h be the height of the tree. The amount of
+    levels a tree has is equal to its height. If a vertex v is on the i-th
+    level, then its childs are on the (i-1)-th level. Thus, by definition, the
+    only vertex in the h-th level is the root of the tree and the only vertices
+    on the level 0 are leaves. Define a LEVELS map such that, for each i in
+    {0,...,h}, LEVELS(i) is the set of vertices found on the i-th level of T.
 
-    Let h be the height of the tree. The amount of levels a tree has is equal to
-    its height. If a vertex v is on the i-th level, then its childs are on the
-    (i-1)-th level. Thus, by definition, the only vertex in the h-th level is
-    the root of the tree and the only vertices on the level 0 are leaves.
+    For the VALUES map. A value of a vertex corresponds to the structure it has
+    on the rooted tree. Informally, the structure of a vertex can be thought as
+    the structure or "form" the sub-tree rooted on v has. Define the initial
+    values of the VALUES map such that, for every vertex v in the rooted tree,
+    if v is a leaf then v's initial value is 0, otherwise its defined as -1.
+
+    The PARENTHOOD map is the parent-child relationship obtained when traversing
+    the rooted tree, in this case the algorithm used is BFS.
+
+    For the CHILDREN map. Defines a map CHILDREN where CHILDREN(v) is the
+    ordered list of children of v in the rooted tree. This map determines who
+    are the parents of the leaves found on the 0-th level.
 
     Parameters
     ----------
@@ -203,9 +217,6 @@ def get_levels(T, root, height):
 
     root : node
         The root of the tree.
-
-    height : int
-        The height of the tree.
 
     Returns
     -------
@@ -213,137 +224,98 @@ def get_levels(T, root, height):
         A LEVELS map such that, for each i in {0,...,h}, LEVELS(i) is the set of
         vertices found on the i-th level of T.
 
-    Notes
-    -----
-    The algorithm runs in O(n) time and space.
-
-    """
-    # Define an empty LEVELS map.
-    LEVELS = {}
-
-    # Define a map in_lvl such that in_lvl(v) is the level where v is found.
-    in_lvl = {}
-
-    # Define the root height.
-    in_lvl[root] = height
-
-    # Perform a BFS traversal to fill the in_lvl map.
-    for (parent, child) in nx.bfs_edges(T, root):
-        in_lvl[child] = in_lvl[parent] - 1
-
-    # Traverse all vertices and group them by levels.
-    for v in in_lvl.keys():
-        l = in_lvl[v]
-        if l in LEVELS:
-            LEVELS[l].add(v)
-        else:
-            LEVELS[l] = {v}
-
-    return LEVELS
-
-
-def get_initial_values(T, root):
-    """Returns a map with the initial values of the nodes.
-
-    Returns a map VALUES such that, for every vertex v in the rooted tree, if v
-    is a leaf then v's initial value is 0, otherwise its defined as -1.
-
-    Parameters
-    ----------
-    T : NetworkX Graph
-        The rooted tree.
-
-    root : node
-        The root of the tree.
-
-    Returns
-    -------
     VALUES : dict of node: int
-        A map VALUES such that, for each vertex v in the rooted tree, if v is a
+        A VALUES map such that, for each vertex v in the rooted tree, if v is a
         leaf then v's initial value is 0, otherwise its defined as -1.
 
-    Notes
-    -----
-    The algorithm runs in O(n) time and space.
-
-    """
-    # Define an empty map VALUES.
-    VALUES = {}
-
-    # Define a set for leaves and non-leaves vertices of T.
-    non_leaves = set()
-    leaves = set()
-
-    # Perform a BFS traversal to determine which vertices are leaves and
-    # non-leaves.
-    for (parent, child) in nx.bfs_edges(T, root):
-        # A parent can't be a leave.
-        non_leaves.add(parent)
-
-        # If a vertex was thought to be a leave but has a child, then it is not
-        # a leave.
-        if parent in leaves:
-            leaves.remove(parent)
-
-        leaves.add(child)
-
-    # Set the initial value of the non-leave vertices as -1.
-    for v in non_leaves:
-        VALUES[v] = -1
-
-    # Set the initial value of the leaves as 0.
-    for v in leaves:
-        VALUES[v] = 0
-
-    return VALUES
-
-
-def get_initial_children(parenthood, levels):
-    """Returns a map with the initial children defined by the parenthood map.
-
-    Defines a map CHILDREN where CHILDREN(v) is the ordered list of children of
-    v in the rooted tree. This map determines who are the parents of the leaves
-    found on the 0-th level.
-
-    Parameters
-    ----------
-    parenthood : dict of node: node
-        The parenthood map defined for the rooted tree.
-
-    levels: dict of int: set of nodes
-        The LEVELS map such that LEVELS(i) are the vertices found on the i-th
-        level of the rooted tree.
-
-    Returns
-    -------
-    CHILDREN : dict of node: set of nodes
-        A mapping CHILDREN such that CHILDREN(v) is the ordered list of children
+    CHILDREN : dict of node: list of nodes
+        A CHILDREN map such that CHILDREN(v) is the ordered list of children
         of v in the rooted tree. This map determines who are the parents of the
         leaves found on the 0-th level.
 
+    PARENTHOOD : dict of node: node
+        The parenthood map of the rooted tree.
+
+    height : int
+        The height of the rooted tree.
+
     Note
     ----
-    This algorithm runs in O(m_0) time and space where m_0 are the vertices
-    found on the 0-th level of the rooted tree.
+    This algorithm runs in O(n) time and space.
 
     """
-    # Define an empty map CHILDREN.
-    CHILDREN = {}
+    # Define an empty map for LEVELS, VALUES, CHILDREN and PARENTHOOD.
+    LEVELS = defaultdict(set)
+    CHILDREN = defaultdict(list)
+    VALUES = {}
+    PARENTHOOD = {}
 
-    # Traverse all the vertices found on the 0-th level.
-    for v in levels[0]:
+    # Auxiliary variables.
+    non_leaves = set()
+    leaves = set()
+
+    from_distance = defaultdict(set)
+    distance_to_root = {}
+    distance_to_root[root] = 0
+    from_distance[0].add(root)
+    max_distance_to_root = 0
+
+    # Perform a single BFS traversal to obtain the necessary information.
+    for (parent, child) in nx.bfs_edges(T, root):
+        # Define child's parent.
+        PARENTHOOD[child] = parent
+
+        # The parent can't be a leave.
+        non_leaves.add(parent)
+
+        # If a vertex was thought to be a leave but has a child, then it isn't a
+        # leave.
+        if parent in leaves:
+            leaves.remove(parent)
+
+        # The child can be a leave.
+        leaves.add(child)
+
+        # Define d(child, root) = d(parent, root) + 1
+        distance_to_root[child] = distance_to_root[parent] + 1
+
+        # Add the child to the set of vertices have the same distance to the
+        # root.
+        d_child = distance_to_root[child]
+        from_distance[d_child].add(child)
+
+        # If the previous distance is greater than the max, update it.
+        if max_distance_to_root < distance_to_root[child]:
+            max_distance_to_root = distance_to_root[child]
+
+    # The max distance to the root is the rooted tree's height.
+    height = max_distance_to_root
+
+    # Build the LEVELS map.
+    current_lvl = height
+    for d in range(height + 1):
+        for v in from_distance[d]:
+            LEVELS[current_lvl].add(v)
+
+        current_lvl -= 1
+
+    # Build the VALUES map.
+    for v in non_leaves:
+        VALUES[v] = -1
+
+    for v in leaves:
+        VALUES[v] = 0
+
+    # Traverse all the vertices found on the 0-th level and set the initial
+    # children for the CHILDREN map.
+    for v in LEVELS[0]:
         # If the current vertex has a parent, add the child to the parent's
         # list of children.
-        if v in parenthood:
-            u = parenthood[v]
+        if v in PARENTHOOD:
+            u = PARENTHOOD[v]
+            CHILDREN[u].append(v)
 
-            # Add the child to the list of children of the parent.
-            if u in CHILDREN:
-                CHILDREN[u].append(v)
-            else:
-                CHILDREN[u] = [v]
-
-    return CHILDREN
+    return LEVELS, VALUES, CHILDREN, PARENTHOOD, height
 
 
 def assign_structure(parenthood, levels, values, i):
@@ -614,17 +586,7 @@ def build_isomorphism(root_T1, root_T2, children_T1, children_T2):
     return isomorphism
 
 
-def levels_verification(
-    root_T1,
-    root_T2,
-    values_T1,
-    values_T2,
-    levels_T1,
-    levels_T2,
-    parenthood_T1,
-    parenthood_T2,
-    height,
-):
+def levels_verification(T1, root_T1, T2, root_T2):
     """Check for all levels that both trees share the same structure.
 
     For each level i in T1, check that all the structures present on the i-th
@@ -633,52 +595,62 @@ def levels_verification(
 
     Parameters
     ----------
+    T1 : NetworkX Graph
+        The rooted tree T1.
+
     root_T1 : node
         The root of the rooted tree T1.
 
+    T2 : NetworkX Graph
+        The rooted tree T2.
+
     root_T2 : node
         The root of the rooted tree T2.
-
-    values_T1 : dict of node: int
-        The VALUES map such that, for each vertex v in the rooted tree T1,
-        VALUES(v) is the value associated to v.
-
-    values_T2 : dict of node: int
-        The VALUES map such that, for each vertex v in the rooted tree T2,
-        VALUES(v) is the value associated to v.
-
-    levels_T1: dict of int: set of nodes
-        The LEVELS map such that LEVELS(i) are the vertices found on the i-th
-        level of the rooted tree T1.
-
-    levels_T2: dict of int: set of nodes
-        The LEVELS map such that LEVELS(i) are the vertices found on the i-th
-        level of the rooted tree T2.
-
-    parenthood_T1 : dict of node: node
-        The parenthood map defined for the rooted tree T1.
-
-    parenthood_T2 : dict of node: node
-        The parenthood map defined for the rooted tree T2.
-
-    height : int
-        The height of the trees T1 and T2.
 
     Note
     ----
     This algorithm runs in O(n) time and space.
 
     """
-    # Get the initial children found on the 0-th level.
-    children_T1 = get_initial_children(parenthood_T1, levels_T1)
-    children_T2 = get_initial_children(parenthood_T2, levels_T2)
+    # Get the intial maps and height for each tree.
+    (
+        levels_T1,
+        values_T1,
+        children_T1,
+        parenthood_T1,
+        height_T1,
+    ) = get_initial_maps_and_height(T1, root_T1)
+
+    (
+        levels_T2,
+        values_T2,
+        children_T2,
+        parenthood_T2,
+        height_T2,
+    ) = get_initial_maps_and_height(T2, root_T2)
+
+    # If the trees differ in height, return false.
+    if height_T1 != height_T2:
+        return False, {}
+
+    # If both trees have height 0, then there are only conformed by its roots,
+    # they're isomorphic.
+    if height_T1 == 0:
+        return True, {root_T1: root_T2}
+
+    # For every level i, check that both trees have the same amount of
+    # vertices on the i-th level. If they differ for some level, return
+    # false.
+    for i in range(height_T1):
+        if len(levels_T1[i]) != len(levels_T2[i]):
+            return False, {}
 
     # Start at level 1 as all the vertices at level 0 are leaves.
     current_level = 1
 
     # check that all the structures present on the i-th level are also present
     # in i-th level of T2.
-    while current_level <= height:
+    while current_level <= height_T1:
         # Assign the structures for the vertices of the current level for T1 and
         # T2.
         struct_T1, leaves_T1 = assign_structure(
@@ -725,76 +697,6 @@ def levels_verification(
     return True, isomorphism
 
 
-def get_height(T, root):
-    """Returns the height of a rooted tree.
-
-    Parameters
-    ----------
-    T : NetworkX Graph
-        A rooted tree.
-
-    root : node
-        The root of the tree.
-
-    Returns
-    -------
-    height : int
-        The height of the rooted tree.
-
-    Note
-    ----
-    This algorithm runs in O(n) time and space.
-
-    """
-    # Define a map for the distance to the root.
-    distance_to_root = {}
-
-    # The max distance between a root and another vertex.
-    max_distance = 0
-
-    distance_to_root[root] = 0
-
-    # Perform a BFS traversal to determine the distances.
-    for (parent, child) in nx.bfs_edges(T, root):
-        distance_to_root[child] = distance_to_root[parent] + 1
-
-        if max_distance < distance_to_root[child]:
-            max_distance = distance_to_root[child]
-
-    return max_distance
-
-
-def get_parenthood(T, root):
-    """Returns the parenthood map of a rooted tree.
-
-    Parameters
-    ----------
-    T : NetworkX Graph
-        A rooted tree.
-
-    root : node
-        The root of the tree.
-
-    Returns
-    -------
-    parenthood : dict of node: node
-        The parenthood map of the rooted tree.
-
-    Note
-    ----
-    This algorithm runs in O(n) time and space.
-
-    """
-    # Define an empty parenthood map.
-    parenthood = {}
-
-    # Perform a BFS traversal to determine the parenthood map.
-    for (parent, child) in nx.bfs_edges(T, root):
-        parenthood[child] = parent
-
-    return parenthood
-
-
 def rooted_tree_isomorphism_n(T1, root_T1, T2, root_T2):
     """Returns an isomorphism between two rooted trees, if it exists.
 
@@ -839,50 +741,8 @@ def rooted_tree_isomorphism_n(T1, root_T1, T2, root_T2):
     assert nx.is_tree(T1)
     assert nx.is_tree(T2)
 
-    # Get the height's of the trees.
-    height_T1 = get_height(T1, root_T1)
-    height_T2 = get_height(T2, root_T2)
-
-    # If the trees differ in height, return false.
-    if height_T1 != height_T2:
-        return False, {}
-    elif height_T1 == 0:
-        # If both trees have height 0, then there are only conformed by the
-        # roots, they're isomorph.
-        return True, {root_T1: root_T2}
-    else:
-        # If they have the same amount of levels, check that all levels coincide
-        # in structure.
-        levels_T1 = get_levels(T1, root_T1, height_T1)
-        levels_T2 = get_levels(T2, root_T2, height_T2)
-
-        # For every level i, check that both trees have the same amount of
-        # vertices on the i-th level. If they differ for some level, return
-        # false.
-        for i in range(height_T1):
-            if len(levels_T1[i]) != len(levels_T2[i]):
-                return False, {}
-
-        # Set the initial values for T1 and T2.
-        values_T1 = get_initial_values(T1, root_T1)
-        values_T2 = get_initial_values(T2, root_T2)
-
-        # Define the parenthood map for T1 and T2.
-        parenthood_T1 = get_parenthood(T1, root_T1)
-        parenthood_T2 = get_parenthood(T2, root_T2)
-
-        # Check that all levels have the same structure.
-        return levels_verification(
-            root_T1,
-            root_T2,
-            values_T1,
-            values_T2,
-            levels_T1,
-            levels_T2,
-            parenthood_T1,
-            parenthood_T2,
-            height_T1,
-        )
+    # Check that all levels have the same structure.
+    return levels_verification(T1, root_T1, T2, root_T2)
 
 
 def get_centers_of_tree(T):
