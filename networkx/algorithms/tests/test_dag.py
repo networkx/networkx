@@ -21,15 +21,10 @@ class TestDagLongestPath:
         G = nx.DiGraph()
         assert nx.dag_longest_path(G) == []
 
-    def test_unweighted1(self):
+    def test_unweighted(self):
         edges = [(1, 2), (2, 3), (2, 4), (3, 5), (5, 6), (3, 7)]
         G = nx.DiGraph(edges)
         assert nx.dag_longest_path(G) == [1, 2, 3, 5, 6]
-
-    def test_unweighted2(self):
-        edges = [(1, 2), (2, 3), (3, 4), (4, 5), (1, 3), (1, 5), (3, 5)]
-        G = nx.DiGraph(edges)
-        assert nx.dag_longest_path(G) == [1, 2, 3, 4, 5]
 
     def test_weighted(self):
         G = nx.DiGraph()
@@ -132,6 +127,450 @@ class TestDagLongestPathLength:
         ]
         G.add_weighted_edges_from(edges)
         assert nx.dag_longest_path_length(G) == 5
+
+
+class TestDagLongestPathBetween:
+    """Unit tests computing the longest path in a directed acyclic graph."""
+
+    def test_unweighted(self):
+        edges = [(1, 2), (2, 3), (3, 4), (4, 5), (1, 3), (1, 5), (3, 5)]
+        G = nx.DiGraph(edges)
+        assert nx.dag_longest_path_between(G, 1, 5) == [1, 2, 3, 4, 5]
+
+        edges = [
+            (1, 2),
+            (1, 3),
+            (1, 4),
+            (2, 10),
+            (2, 11),
+            (2, 28),
+            (3, 9),
+            (3, 15),
+            (3, 16),
+            (4, 5),
+            (4, 6),
+            (4, 7),
+            (5, 8),
+            (6, 18),
+            (6, 27),
+            (7, 14),
+            (7, 18),
+            (8, 12),
+            (8, 13),
+            (8, 19),
+            (9, 10),
+            (10, 22),
+            (11, 25),
+            (12, 30),
+            (13, 20),
+            (14, 31),
+            (15, 21),
+            (15, 24),
+            (16, 17),
+            (16, 27),
+            (16, 30),
+            (17, 18),
+            (18, 21),
+            (19, 29),
+            (20, 23),
+            (21, 26),
+            (22, 23),
+            (23, 26),
+            (24, 25),
+            (25, 26),
+            (25, 27),
+            (25, 30),
+            (26, 29),
+            (27, 31),
+            (28, 31),
+            (29, 32),
+            (30, 32),
+            (31, 32),
+        ]
+        G = nx.DiGraph(edges)
+        assert nx.dag_longest_path_between(G, 2, None, "weight", 1) == [
+            2,
+            10,
+            22,
+            23,
+            26,
+            29,
+            32,
+        ]
+
+        G = nx.DiGraph(edges)
+        topo_order = [
+            1,
+            4,
+            7,
+            14,
+            6,
+            5,
+            8,
+            19,
+            13,
+            20,
+            12,
+            3,
+            16,
+            17,
+            18,
+            15,
+            24,
+            21,
+            9,
+            2,
+            28,
+            11,
+            25,
+            30,
+            27,
+            31,
+            10,
+            22,
+            23,
+            26,
+            29,
+            32,
+        ]
+        assert nx.dag_longest_path_between(G, 2, 32, "weight", 1, topo_order) == [
+            2,
+            10,
+            22,
+            23,
+            26,
+            29,
+            32,
+        ]
+
+        G = nx.DiGraph(edges)
+        assert nx.dag_longest_path_between(G, 2, None, "weight", 1) == [
+            2,
+            10,
+            22,
+            23,
+            26,
+            29,
+            32,
+        ]
+
+        G = nx.DiGraph(edges)
+        assert nx.dag_longest_path_between(G, 1, None, "weight", 1) == [
+            1,
+            4,
+            5,
+            8,
+            13,
+            20,
+            23,
+            26,
+            29,
+            32,
+        ]
+
+        G = nx.DiGraph(edges)
+        assert nx.dag_longest_path_between(G, 2, 32, "weight", 1, topo_order) == [
+            2,
+            10,
+            22,
+            23,
+            26,
+            29,
+            32,
+        ]
+
+        G = nx.DiGraph(edges)
+        assert nx.dag_longest_path_between(G, 1, 32, "weight", 1, topo_order) == [
+            1,
+            4,
+            5,
+            8,
+            13,
+            20,
+            23,
+            26,
+            29,
+            32,
+        ]
+
+        G = nx.DiGraph(edges)
+        assert nx.dag_longest_path_between(G, 6, 29) == [6, 18, 21, 26, 29]
+
+        G = nx.DiGraph(edges)
+        assert nx.dag_longest_path_between(G, 32, 2) == []
+
+        G = nx.DiGraph(edges)
+        assert nx.dag_longest_path_between(G, 32, 32) == [32]
+
+        G = nx.DiGraph([(0, 1), (1, 2), (0, 2)])
+        assert nx.dag_longest_path_between(G, 0, 2) == [0, 1, 2]
+
+    def test_weighted(self):
+        G = nx.DiGraph()
+        edges = [
+            (1, 2, 0.0),
+            (1, 3, 0.0),
+            (1, 4, 0.0),
+            (2, 10, 2.0),
+            (2, 11, 2.0),
+            (2, 28, 2.0),
+            (3, 9, 5.0),
+            (3, 15, 5.0),
+            (3, 16, 5.0),
+            (4, 5, 6.0),
+            (4, 6, 6.0),
+            (4, 7, 6.0),
+            (5, 8, 4.0),
+            (6, 18, 2.0),
+            (6, 27, 2.0),
+            (7, 14, 9.0),
+            (7, 18, 9.0),
+            (8, 12, 9.0),
+            (8, 13, 9.0),
+            (8, 19, 9.0),
+            (9, 10, 4.0),
+            (10, 22, 8.0),
+            (11, 25, 7.0),
+            (12, 30, 10.0),
+            (13, 20, 1.0),
+            (14, 31, 1.0),
+            (15, 21, 1.0),
+            (15, 24, 1.0),
+            (16, 17, 5.0),
+            (16, 27, 5.0),
+            (16, 30, 5.0),
+            (17, 18, 2.0),
+            (18, 21, 5.0),
+            (19, 29, 5.0),
+            (20, 23, 9.0),
+            (21, 26, 10.0),
+            (22, 23, 1.0),
+            (23, 26, 5.0),
+            (24, 25, 4.0),
+            (25, 26, 10.0),
+            (25, 27, 10.0),
+            (25, 30, 10.0),
+            (26, 29, 5.0),
+            (27, 31, 9.0),
+            (28, 31, 10.0),
+            (29, 32, 2.0),
+            (30, 32, 10.0),
+            (31, 32, 3.0),
+        ]
+        G.add_weighted_edges_from(edges)
+        assert nx.dag_longest_path_between(G, 2, 32) == [2, 11, 25, 27, 31, 32]
+
+        G = nx.DiGraph()
+        G.add_weighted_edges_from(edges)
+        assert nx.dag_longest_path_between(
+            G,
+            2,
+            None,
+            "weight",
+            1,
+            [
+                1,
+                2,
+                3,
+                4,
+                11,
+                28,
+                9,
+                15,
+                16,
+                5,
+                6,
+                7,
+                10,
+                24,
+                17,
+                8,
+                14,
+                22,
+                25,
+                18,
+                12,
+                13,
+                19,
+                27,
+                21,
+                30,
+                20,
+                31,
+                23,
+                26,
+                29,
+                32,
+            ],
+        ) == [2, 11, 25, 27, 31, 32]
+
+        G = nx.DiGraph()
+        G.add_weighted_edges_from(edges)
+        assert nx.dag_longest_path_between(G, 4, 27) == [4, 6, 27]
+
+        G = nx.DiGraph()
+        G.add_weighted_edges_from(edges)
+        assert nx.dag_longest_path_between(
+            G,
+            4,
+            27,
+            "weight",
+            1,
+            [
+                1,
+                2,
+                3,
+                4,
+                11,
+                28,
+                9,
+                15,
+                16,
+                5,
+                6,
+                7,
+                10,
+                24,
+                17,
+                8,
+                14,
+                22,
+                25,
+                18,
+                12,
+                13,
+                19,
+                27,
+                21,
+                30,
+                20,
+                31,
+                23,
+                26,
+                29,
+                32,
+            ],
+        ) == [4, 6, 27]
+
+        G = nx.DiGraph([(0, 1, {"cost": 1}), (1, 2, {"cost": 1}), (0, 2, {"cost": 42})])
+        assert nx.dag_longest_path_between(G, None, 2, "cost") == [0, 2]
+
+    def test_multigraph_unweighted(self):
+        edges = [(1, 2), (2, 3), (2, 3), (3, 4), (4, 5), (1, 3), (1, 5), (3, 5)]
+        G = nx.MultiDiGraph(edges)
+        assert nx.dag_longest_path_between(G, 2, None) == [2, 3, 4, 5]
+
+        assert nx.dag_longest_path_between(G, 2, 4) == [2, 3, 4]
+
+    def test_multigraph_weighted(self):
+        G = nx.MultiDiGraph()
+        edges = [
+            (1, 2, 2),
+            (2, 3, 2),
+            (1, 3, 1),
+            (1, 3, 5),
+            (1, 3, 2),
+        ]
+        G.add_weighted_edges_from(edges)
+        assert nx.dag_longest_path_between(G, 1, None) == [1, 3]
+
+        assert nx.dag_longest_path_between(G, None, 3) == [1, 3]
+
+    def test_multigraph_weighted_default_weight(self):
+        G = nx.MultiDiGraph([(1, 2), (2, 3)])  # Unweighted edges
+        G.add_weighted_edges_from([(1, 3, 1), (1, 3, 5), (1, 3, 2)])
+
+        # Default value for default weight is 1
+        assert nx.dag_longest_path_between(G, 1, 3) == [1, 3]
+        assert nx.dag_longest_path_between(G, 1, 3, default_weight=3) == [1, 2, 3]
+
+
+class TestDagLongestPathLength:
+    """Unit tests for computing the length of a longest path in a
+    directed acyclic graph.
+
+    """
+
+    def test_unweighted(self):
+        edges = [(1, 2), (2, 3), (2, 4), (3, 5), (5, 6), (5, 7)]
+        G = nx.DiGraph(edges)
+        assert nx.dag_longest_path_length(G) == 4
+
+        edges = [(1, 2), (2, 3), (3, 4), (4, 5), (1, 3), (1, 5), (3, 5)]
+        G = nx.DiGraph(edges)
+        assert nx.dag_longest_path_length(G) == 4
+
+        # test degenerate graphs
+        G = nx.DiGraph()
+        G.add_node(1)
+        assert nx.dag_longest_path_length(G) == 0
+
+    def test_undirected_not_implemented(self):
+        G = nx.Graph()
+        pytest.raises(nx.NetworkXNotImplemented, nx.dag_longest_path_length, G)
+
+    def test_weighted(self):
+        edges = [(1, 2, -5), (2, 3, 1), (3, 4, 1), (4, 5, 0), (3, 5, 4), (1, 6, 2)]
+        G = nx.DiGraph()
+        G.add_weighted_edges_from(edges)
+        assert nx.dag_longest_path_length(G) == 5
+
+    def test_multigraph_unweighted(self):
+        edges = [(1, 2), (2, 3), (2, 3), (3, 4), (4, 5), (1, 3), (1, 5), (3, 5)]
+        G = nx.MultiDiGraph(edges)
+        assert nx.dag_longest_path_length(G) == 4
+
+    def test_multigraph_weighted(self):
+        G = nx.MultiDiGraph()
+        edges = [
+            (1, 2, 2),
+            (2, 3, 2),
+            (1, 3, 1),
+            (1, 3, 5),
+            (1, 3, 2),
+        ]
+        G.add_weighted_edges_from(edges)
+        assert nx.dag_longest_path_length(G) == 5
+
+
+class TestDagLongestPathBetweenLength:
+    """Unit tests for computing the length of a longest path in a
+    directed acyclic graph.
+
+    """
+
+    def test_unweighted(self):
+        edges = [(1, 2), (2, 3), (3, 4), (4, 5), (1, 3), (1, 5), (3, 5)]
+        G = nx.DiGraph(edges)
+        assert nx.dag_longest_path_between_length(G, 1, 5) == 4
+
+    def test_weighted(self):
+        edges = [(1, 2, -5), (2, 3, 1), (3, 4, 1), (4, 5, 0), (3, 5, 4), (1, 6, 2)]
+        G = nx.DiGraph()
+        G.add_weighted_edges_from(edges)
+        assert nx.dag_longest_path_between_length(G, 1, None) == 2
+
+        edges = [(1, 2, -5), (2, 3, 1), (3, 4, 1), (4, 5, 0), (3, 5, 4), (1, 6, 2)]
+        G = nx.DiGraph()
+        G.add_weighted_edges_from(edges)
+        assert nx.dag_longest_path_between_length(G, None, 5) == 5
+
+    def test_multigraph_unweighted(self):
+        edges = [(1, 2), (2, 3), (2, 3), (3, 4), (4, 5), (1, 3), (1, 5), (3, 5)]
+        G = nx.MultiDiGraph(edges)
+        assert nx.dag_longest_path_between_length(G, 1, None) == 4
+
+    def test_multigraph_weighted(self):
+        G = nx.MultiDiGraph()
+        edges = [
+            (1, 2, 2),
+            (2, 3, 2),
+            (1, 3, 1),
+            (1, 3, 5),
+            (1, 3, 2),
+        ]
+        G.add_weighted_edges_from(edges)
+        assert nx.dag_longest_path_between_length(G, None, 3) == 5
 
 
 class TestDAG:
