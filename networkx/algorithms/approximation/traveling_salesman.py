@@ -785,7 +785,7 @@ def held_karp_ascent(G, weight="weight"):
     # reference [1]
     z_star = {}
     scale_factor = (G.order() - 1) / G.order()
-    for u, v in x_star.keys():
+    for u, v in x_star:
         frequency = x_star[(u, v)] + x_star[(v, u)]
         if frequency > 0:
             z_star[(u, v)] = scale_factor * frequency

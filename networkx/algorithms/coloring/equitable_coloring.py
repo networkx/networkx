@@ -81,7 +81,7 @@ def change_color(u, X, Y, N, H, F, C, L):
     # Change the class of 'u' from X to Y
     F[u] = Y
 
-    for k in C.keys():
+    for k in C:
         # 'u' witnesses an edge from k -> Y instead of from k -> X now.
         if N[u, k] == 0:
             H[(X, k)] -= 1
@@ -166,7 +166,7 @@ def procedure_P(V_minus, V_plus, N, H, F, C, L, excluded_colors=None):
         # using a look-up table instead of testing for membership in a set by a
         # logarithmic factor.
         next_layer = []
-        for k in C.keys():
+        for k in C:
             if (
                 H[(k, pop)] > 0
                 and k not in A_cal
@@ -205,7 +205,7 @@ def procedure_P(V_minus, V_plus, N, H, F, C, L, excluded_colors=None):
             for v in C[W_1]:
                 X = None
 
-                for U in C.keys():
+                for U in C:
                     if N[(v, U)] == 0 and U in A_cal and U != W_1:
                         X = U
 
@@ -213,7 +213,7 @@ def procedure_P(V_minus, V_plus, N, H, F, C, L, excluded_colors=None):
                 if X is None:
                     continue
 
-                for U in C.keys():
+                for U in C:
                     # Note: Departing from the paper here.
                     if N[(v, U)] >= 1 and U not in A_cal:
                         X_prime = U

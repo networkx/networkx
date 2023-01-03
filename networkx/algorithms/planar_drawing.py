@@ -213,7 +213,7 @@ def get_canonical_ordering(embedding, outer_face):
         return outer_face_ccw_nbr[x] == y or outer_face_cw_nbr[x] == y
 
     def is_on_outer_face(x):
-        return x not in marked_nodes and (x in outer_face_ccw_nbr.keys() or x == v1)
+        return x not in marked_nodes and (x in outer_face_ccw_nbr or x == v1)
 
     # Initialize number of chords
     for v in outer_face:
