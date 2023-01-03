@@ -487,6 +487,16 @@ def levels_verification(T1, root_T1, T2, root_T2):
     root_T2 : node
         The root of the rooted tree T2.
 
+    Returns
+    -------
+    are_iso : bool
+        Returns True if the given rooted trees are isomorphic, False otherwise.
+
+    isomorphism : dict of node of T1: node of T2
+        The isomorphism mapping f such that (u, v) is in E_T1 if and only if
+        (f(u), f(v)) is in E_T2. This dictionary is empty when there is no
+        isomorphism between the trees.
+
     Note
     ----
     This algorithm runs in O(n) time and space.
