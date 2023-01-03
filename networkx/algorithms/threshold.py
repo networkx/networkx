@@ -1,5 +1,4 @@
-"""
-Threshold Graphs - Creation, manipulation and identification.
+"""Threshold Graphs - Creation, manipulation and identification.
 """
 from math import sqrt
 
@@ -10,8 +9,7 @@ __all__ = ["is_threshold_graph", "find_threshold_graph"]
 
 
 def is_threshold_graph(G):
-    """
-    Returns `True` if `G` is a threshold graph.
+    """Returns `True` if `G` is a threshold graph.
 
     Parameters
     ----------
@@ -20,8 +18,11 @@ def is_threshold_graph(G):
 
     Returns
     -------
-    bool
-        `True` if `G` is a threshold graph, `False` otherwise.
+    True if `G` is a threshold graph, `False` otherwise.
+
+    References
+    ----------
+        .. [1] Threshold graphs: https://en.wikipedia.org/wiki/Threshold_graph
 
     Examples
     --------
@@ -32,23 +33,28 @@ def is_threshold_graph(G):
     >>> G = nx.barbell_graph(3, 3)
     >>> is_threshold_graph(G)
     False
-
-    References
-    ----------
-    .. [1] Threshold graphs: https://en.wikipedia.org/wiki/Threshold_graph
     """
     return is_threshold_sequence(list(d for n, d in G.degree()))
 
 
 def is_threshold_sequence(degree_sequence):
-    """
-    Returns True if the sequence is a threshold degree seqeunce.
+    """Returns True if the sequence is a threshold degree sequence.
 
     Uses the property that a threshold graph must be constructed by
     adding either dominating or isolated nodes. Thus, it can be
     deconstructed iteratively by removing a node of degree zero or a
     node that connects to the remaining nodes.  If this deconstruction
-    failes then the sequence is not a threshold sequence.
+    fails then the sequence is not a threshold sequence.
+
+    Parameters
+    ----------
+    degree_sequence
+        The degree sequence
+
+    Returns
+    -------
+     bool
+        Whether 'degree_sequence' is a threshold sequence.
     """
     ds = degree_sequence[:]  # get a copy so we don't destroy original
     ds.sort()
@@ -64,8 +70,7 @@ def is_threshold_sequence(degree_sequence):
 
 
 def creation_sequence(degree_sequence, with_labels=False, compact=False):
-    """
-    Determines the creation sequence for the given threshold degree sequence.
+    """Determines the creation sequence for the given threshold degree sequence.
 
     The creation sequence is a list of single characters 'd'
     or 'i': 'd' for dominating or 'i' for isolated vertices.
@@ -73,13 +78,8 @@ def creation_sequence(degree_sequence, with_labels=False, compact=False):
     is added.  The first node added is by convention 'd'.
     This list can be converted to a string if desired using "".join(cs)
 
-    If with_labels==True:
-    Returns a list of 2-tuples containing the vertex number
-    and a character 'd' or 'i' which describes the type of vertex.
-
-    If compact==True:
-    Returns the creation sequence in a compact form that is the number
-    of 'i's and 'd's alternating.
+    Notes
+    -----
     Examples:
     [1,2,2,3] represents d,i,i,d,d,i,i,i
     [3,1,2] represents d,d,d,i,d,d
@@ -89,7 +89,20 @@ def creation_sequence(degree_sequence, with_labels=False, compact=False):
 
     with_labels and compact cannot both be True.
 
-    Returns None if the sequence is not a threshold sequence
+    Parameters
+    ----------
+    degree_sequence
+        The sequence containing the degrees of the Graph's nodes
+    with_labels
+        If with_labels==True: Returns a list of 2-tuples containing the vertex number and a character 'd' or 'i'
+        which describes the type of vertex.
+    compact
+        If compact==True: Returns the creation sequence in a compact form that is the number of 'i's and 'd's
+        alternating.
+
+    Returns
+    -------
+    None if the sequence is not a threshold sequence
     """
     if with_labels and compact:
         raise ValueError("compact sequences cannot be labeled")
@@ -123,9 +136,7 @@ def creation_sequence(degree_sequence, with_labels=False, compact=False):
 
 
 def make_compact(creation_sequence):
-    """
-    Returns the creation sequence in a compact form
-    that is the number of 'i's and 'd's alternating.
+    """Returns the creation sequence in a compact form that is the number of 'i's and 'd's alternating.
 
     Examples
     --------
@@ -143,6 +154,11 @@ def make_compact(creation_sequence):
 
     >>> make_compact([3, 1, 2])
     [3, 1, 2]
+
+    Returns
+    -------
+    css : list
+        The compact creation sequence.
     """
     first = creation_sequence[0]
     if isinstance(first, str):  # creation sequence
@@ -167,11 +183,22 @@ def make_compact(creation_sequence):
 
 
 def uncompact(creation_sequence):
-    """
-    Converts a compact creation sequence for a threshold
-    graph to a standard creation sequence (unlabeled).
+    """Converts a compact creation sequence for a threshold graph to a standard creation sequence (unlabeled).
+
+    Parameters
+    ----------
+    creation_sequence : list
+        The compact creation sequence to be converted.
+
+    Notes
+    -----
     If the creation_sequence is already standard, return it.
     See creation_sequence.
+
+    Returns
+    -------
+    cs : list
+        The standard creation sequence
     """
     first = creation_sequence[0]
     if isinstance(first, str):  # creation sequence
@@ -191,11 +218,21 @@ def uncompact(creation_sequence):
 
 
 def creation_sequence_to_weights(creation_sequence):
-    """
-    Returns a list of node weights which create the threshold
-    graph designated by the creation sequence.  The weights
-    are scaled so that the threshold is 1.0.  The order of the
-    nodes is the same as that in the creation sequence.
+    """Creates a list of node weights which form the threshold graph designated by the creation sequence.
+
+    Parameters
+    ----------
+    creation_sequence : list
+        The creation sequence which creates the threshold graph.
+
+    Notes
+    -----
+    The weights are scaled so that the threshold is 1.0. The order of the nodes is the same as that in the
+    creation sequence.
+
+    Returns
+    -------
+    List containing the node weights, which create the threshold graph.
     """
     # Turn input sequence into a labeled creation sequence
     first = creation_sequence[0]
@@ -240,9 +277,10 @@ def creation_sequence_to_weights(creation_sequence):
 def weights_to_creation_sequence(
     weights, threshold=1, with_labels=False, compact=False
 ):
-    """
-    Returns a creation sequence for a threshold graph
-    determined by the weights and threshold given as input.
+    """Returns a creation sequence for a threshold graph determined by the weights and threshold given as input.
+
+    Notes
+    -----
     If the sum of two node weights is greater than the
     threshold value, an edge is created between these nodes.
 
@@ -251,13 +289,6 @@ def weights_to_creation_sequence(
     Dominating vertices are connected to all vertices present
     when it is added.  The first node added is by convention 'd'.
 
-    If with_labels==True:
-    Returns a list of 2-tuples containing the vertex number
-    and a character 'd' or 'i' which describes the type of vertex.
-
-    If compact==True:
-    Returns the creation sequence in a compact form that is the number
-    of 'i's and 'd's alternating.
     Examples:
     [1,2,2,3] represents d,i,i,d,d,i,i,i
     [3,1,2] represents d,d,d,i,d,d
@@ -266,6 +297,22 @@ def weights_to_creation_sequence(
     construction and so is always 'd'.
 
     with_labels and compact cannot both be True.
+
+    Parameters
+    ----------
+    weights
+        The node weights
+    threshold : integer, optional
+        Determines the threshold which, if is smaller than the sum of two node weights, an edge is created
+    with_labels : bool, optional
+        If True, returns a list of 2-tuples containing the vertex number and a character 'd' or 'i' describing the
+        vertex type.
+    compact : bool, optional
+        If True, returns the creation sequence in a compact form that is the number of 'i's and 'd's alternating.
+
+    Returns
+    -------
+    List containing the creation sequence for the threshold graph
     """
     if with_labels and compact:
         raise ValueError("compact sequences cannot be labeled")
@@ -301,10 +348,10 @@ def weights_to_creation_sequence(
 
 # Manipulating NetworkX.Graphs in context of threshold graphs
 def threshold_graph(creation_sequence, create_using=None):
-    """
-    Create a threshold graph from the creation sequence or compact
-    creation_sequence.
+    """Create a threshold graph from the creation sequence or compact creation_sequence.
 
+    Notes
+    -----
     The input sequence can be a
 
     creation sequence (e.g. ['d','i','d','d','d','i'])
@@ -314,7 +361,18 @@ def threshold_graph(creation_sequence, create_using=None):
     Use cs=creation_sequence(degree_sequence,labeled=True)
     to convert a degree sequence to a creation sequence.
 
-    Returns None if the sequence is not valid
+    Parameters
+    ----------
+    creation_sequence
+        The degree sequence.
+    create_using : NetworkX graph container, optional
+        Use given NetworkX graph for holding nodes or edges.
+
+    Returns
+    -------
+    G : NetworkX graph
+        The threshold graph, if the sequence is valid.
+    None if the sequence is not valid
     """
     # Turn input sequence into a labeled creation sequence
     first = creation_sequence[0]
@@ -352,9 +410,17 @@ def threshold_graph(creation_sequence, create_using=None):
 
 
 def find_alternating_4_cycle(G):
-    """
-    Returns False if there aren't any alternating 4 cycles.
-    Otherwise returns the cycle as [a,b,c,d] where (a,b)
+    """Checks if there are any alternating 4 cycles.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        The graph to examine for existing, alternating 4 cycles.
+
+    Returns
+    -------
+    False if there aren't any alternating 4 cycles.
+    Otherwise, the cycle as [a,b,c,d] where (a,b)
     and (c,d) are edges and (a,c) and (b,d) are not.
     """
     for (u, v) in G.edges():
@@ -367,8 +433,7 @@ def find_alternating_4_cycle(G):
 
 
 def find_threshold_graph(G, create_using=None):
-    """
-    Returns a threshold subgraph that is close to largest in `G`.
+    """Returns a threshold subgraph that is close to largest in `G`.
 
     The threshold graph will contain the largest degree node in G.
 
@@ -379,11 +444,6 @@ def find_threshold_graph(G, create_using=None):
     create_using : NetworkX graph class or `None` (default), optional
         Type of graph to use when constructing the threshold graph.
         If `None`, infer the appropriate graph type from the input.
-
-    Returns
-    -------
-    graph :
-        A graph instance representing the threshold graph
 
     Examples
     --------
@@ -396,14 +456,26 @@ def find_threshold_graph(G, create_using=None):
     References
     ----------
     .. [1] Threshold graphs: https://en.wikipedia.org/wiki/Threshold_graph
+    Returns
+    -------
+    graph :
+        A graph instance representing the threshold graph
     """
     return threshold_graph(find_creation_sequence(G), create_using)
 
 
 def find_creation_sequence(G):
-    """
-    Find a threshold subgraph that is close to largest in G.
-    Returns the labeled creation sequence of that threshold graph.
+    """Find a threshold subgraph that is close to largest in G.
+
+    Parameters
+    ----------
+    G : NetworkX graph instance
+        An instance of `Graph`, or `MultiDiGraph`
+
+    Returns
+    -------
+    cs : list
+        The labeled creation sequence of that threshold graph.
     """
     cs = []
     # get a local pointer to the working part of the graph
@@ -433,9 +505,17 @@ def find_creation_sequence(G):
 
 # Properties of Threshold Graphs
 def triangles(creation_sequence):
-    """
-    Compute number of triangles in the threshold graph with the
-    given creation sequence.
+    """Compute number of triangles in the threshold graph with the given creation sequence.
+
+    Parameters
+    ----------
+    creation_sequence
+        The degree sequence.
+
+    Returns
+    -------
+    ntri : integer
+        Number of triangles
     """
     # shortcut algorithm that doesn't require computing number
     # of triangles at each node.
@@ -453,9 +533,17 @@ def triangles(creation_sequence):
 
 
 def triangle_sequence(creation_sequence):
-    """
-    Return triangle sequence for the given threshold graph creation sequence.
+    """Return triangle sequence for the given threshold graph creation sequence.
 
+    Parameters
+    ----------
+    creation_sequence
+        The degree sequence.
+
+    Returns
+    -------
+    seq : list
+        The triangle sequence
     """
     cs = creation_sequence
     seq = []
@@ -481,8 +569,17 @@ def triangle_sequence(creation_sequence):
 
 
 def cluster_sequence(creation_sequence):
-    """
-    Return cluster sequence for the given threshold graph creation sequence.
+    """Return cluster sequence for the given threshold graph creation sequence.
+
+    Parameters
+    ----------
+    creation_sequence
+        The degree sequence.
+
+    Returns
+    -------
+    cseq : list
+        The cluster sequence
     """
     triseq = triangle_sequence(creation_sequence)
     degseq = degree_sequence(creation_sequence)
@@ -498,9 +595,17 @@ def cluster_sequence(creation_sequence):
 
 
 def degree_sequence(creation_sequence):
-    """
-    Return degree sequence for the threshold graph with the given
-    creation sequence
+    """Return degree sequence for the threshold graph with the given creation sequence
+
+    Parameters
+    ----------
+    creation_sequence
+        The degree sequence
+
+    Returns
+    -------
+    seq : list
+        The degree sequence
     """
     cs = creation_sequence  # alias
     seq = []
@@ -515,9 +620,19 @@ def degree_sequence(creation_sequence):
 
 
 def density(creation_sequence):
-    """
-    Return the density of the graph with this creation_sequence.
+    """Return the density of the graph with this creation_sequence.
+
     The density is the fraction of possible edges present.
+
+    Parameters
+    ----------
+    creation_sequence
+        The degree sequence
+
+    Returns
+    -------
+    den : float
+        Density of the graph
     """
     N = len(creation_sequence)
     two_size = sum(degree_sequence(creation_sequence))
@@ -527,8 +642,16 @@ def density(creation_sequence):
 
 
 def degree_correlation(creation_sequence):
-    """
-    Return the degree-degree correlation over all edges.
+    """Return the degree-degree correlation over all edges.
+
+    Parameters
+    ----------
+    creation_sequence
+        The degree sequence
+
+    Returns
+    -------
+    The degree-degree correlation over all edges
     """
     cs = creation_sequence
     s1 = 0  # deg_i*deg_j
@@ -561,10 +684,10 @@ def degree_correlation(creation_sequence):
 
 
 def shortest_path(creation_sequence, u, v):
-    """
-    Find the shortest path between u and v in a
-    threshold graph G with the given creation_sequence.
+    """Find the shortest path between u and v in a threshold graph G with the given creation_sequence.
 
+    Notes
+    -----
     For an unlabeled creation_sequence, the vertices
     u and v must be integers in (0,len(sequence)) referring
     to the position of the desired vertices in the sequence.
@@ -574,8 +697,20 @@ def shortest_path(creation_sequence, u, v):
     Use cs=creation_sequence(degree_sequence,with_labels=True)
     to convert a degree sequence to a creation sequence.
 
-    Returns a list of vertices from u to v.
-    Example: if they are neighbors, it returns [u,v]
+    If u, v are neighbors, it returns [u,v]
+
+    Parameters
+    ----------
+    creation_sequence
+        The degree sequence
+    u
+        The starting node.
+    v
+        The ending node.
+
+    Returns
+    -------
+    List of vertices from u to v.
     """
     # Turn input sequence into a labeled creation sequence
     first = creation_sequence[0]
@@ -614,16 +749,27 @@ def shortest_path(creation_sequence, u, v):
 
 
 def shortest_path_length(creation_sequence, i):
-    """
-    Return the shortest path length from indicated node to
-    every other node for the threshold graph with the given
-    creation sequence.
-    Node is indicated by index i in creation_sequence unless
-    creation_sequence is labeled in which case, i is taken to
-    be the label of the node.
+    """Shortest path length from input node to every other, for the threshold graph with the given creation sequence.
+
+    Notes
+    -----
+    Node is indicated by index i in creation_sequence unless creation_sequence
+    is labeled in which case, i is taken to be the label of the node.
 
     Paths lengths in threshold graphs are at most 2.
     Length to unreachable nodes is set to -1.
+
+    Parameters
+    ----------
+    creation_sequence
+        The degree sequence
+    i
+        Node from which to calculate the shortest path.
+
+    Returns
+    -------
+    spl : list
+        Contains the shortest path length from the input node, to every other.
     """
     # Turn input sequence into a labeled creation sequence
     first = creation_sequence[0]
@@ -660,10 +806,23 @@ def shortest_path_length(creation_sequence, i):
 
 
 def betweenness_sequence(creation_sequence, normalized=True):
-    """
-    Return betweenness for the threshold graph with the given creation
-    sequence.  The result is unscaled.  To scale the values
-    to the iterval [0,1] divide by (n-1)*(n-2).
+    """Betweenness for the threshold graph with the given creation sequence.
+
+    Notes
+    -----
+    The result is unscaled.  To scale the values to the iterval [0,1] divide by (n-1)*(n-2).
+
+    Parameters
+    ----------
+    creation_sequence
+        The degree sequence
+    normalized : bool
+        Normalizes by the number of possible shortest paths
+
+    Returns
+    -------
+    seq : list
+        Betweenness of the graph
     """
     cs = creation_sequence
     seq = []  # betweenness
@@ -700,9 +859,10 @@ def betweenness_sequence(creation_sequence, normalized=True):
 
 
 def eigenvectors(creation_sequence):
-    """
-    Return a 2-tuple of Laplacian eigenvalues and eigenvectors
-    for the threshold network with creation_sequence.
+    """Return a 2-tuple of Laplacian eigenvalues and eigenvectors for the threshold network with creation_sequence.
+
+    Notes
+    -----
     The first value is a list of eigenvalues.
     The second value is a list of eigenvectors.
     The lists are in the same order so corresponding eigenvectors
@@ -710,6 +870,15 @@ def eigenvectors(creation_sequence):
 
     Notice that the order of the eigenvalues returned by eigenvalues(cs)
     may not correspond to the order of these eigenvectors.
+
+    Parameters
+    ----------
+    creation_sequence
+        The degree sequence
+
+    Returns
+    -------
+    2-tuple containing the eigenvalues and eigenvectors.
     """
     ccs = make_compact(creation_sequence)
     N = sum(ccs)
@@ -758,17 +927,29 @@ def eigenvectors(creation_sequence):
 
 
 def spectral_projection(u, eigenpairs):
-    """
-    Returns the coefficients of each eigenvector
-    in a projection of the vector u onto the normalized
+    """Returns the coefficients of each eigenvector in a projection of the vector u onto the normalized
     eigenvectors which are contained in eigenpairs.
 
+    Notes
+    -----
     eigenpairs should be a list of two objects.  The
     first is a list of eigenvalues and the second a list
     of eigenvectors.  The eigenvectors should be lists.
 
     There's not a lot of error checking on lengths of
     arrays, etc. so be careful.
+
+    Parameters
+    ----------
+    u
+        Vector being projected
+    eigenpairs
+        Eigenpairs containing the normalized eigenvectors.
+
+    Returns
+    -------
+    coeff : list
+        The coefficients of each eigenvector in the projection of the vector u.
     """
     coeff = []
     evect = eigenpairs[1]
@@ -779,15 +960,14 @@ def spectral_projection(u, eigenpairs):
 
 
 def eigenvalues(creation_sequence):
-    """
-    Return sequence of eigenvalues of the Laplacian of the threshold
-    graph for the given creation_sequence.
+    """Return sequence of eigenvalues of the Laplacian of the threshold graph for the given creation_sequence.
 
     Based on the Ferrer's diagram method.  The spectrum is integral
     and is the conjugate of the degree sequence.
 
+    Notes
+    -----
     See::
-
       @Article{degree-merris-1994,
        author = {Russel Merris},
        title = {Degree maximal graphs are Laplacian integral},
@@ -797,6 +977,15 @@ def eigenvalues(creation_sequence):
        pages = {381--389},
       }
 
+    Parameters
+    ----------
+    creation_sequence
+        The degree sequence
+
+    Returns
+    -------
+    eiglist : list
+        Contains the eigenvalues of the Laplacian of the threshold graph.
     """
     degseq = degree_sequence(creation_sequence)
     degseq.sort()
@@ -822,11 +1011,13 @@ def eigenvalues(creation_sequence):
 
 @py_random_state(2)
 def random_threshold_sequence(n, p, seed=None):
-    """
-    Create a random threshold sequence of size n.
-    A creation sequence is built by randomly choosing d's with
-    probabiliy p and i's with probability 1-p.
+    """Create a random threshold sequence of size n.
 
+    A creation sequence is built by randomly choosing d's with
+    probability p and i's with probability 1-p.
+
+    Notes
+    -----
     s=nx.random_threshold_sequence(10,0.5)
 
     returns a threshold sequence of length 10 with equal
@@ -836,9 +1027,20 @@ def random_threshold_sequence(n, p, seed=None):
 
     G=nx.threshold_graph(s)
 
+    Parameters
+    ----------
+    n : integer
+        The size of the threshold sequence.
+    p : float
+        Probability to choose a 'd' instead of an 'i'
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
+
+    Returns
+    -------
+    cs : list
+        The random threshold sequence.
     """
     if not (0 <= p <= 1):
         raise ValueError("p must be in [0,1]")
@@ -856,15 +1058,24 @@ def random_threshold_sequence(n, p, seed=None):
 # be (or be called from) a single routine with a more descriptive name
 # and a keyword parameter?
 def right_d_threshold_sequence(n, m):
-    """
-    Create a skewed threshold graph with a given number
-    of vertices (n) and a given number of edges (m).
+    """Create a skewed threshold graph with a given number of vertices (n) and a given number of edges (m).
 
     The routine returns an unlabeled creation sequence
     for the threshold graph.
 
+    Parameters
+    ----------
+    n : integer
+        Number of insolated nodes
+    m : integer
+        Number of edges
+
     FIXME: describe algorithm
 
+    Returns
+    -------
+    cs : list
+        The skewed threshold graph sequence.
     """
     cs = ["d"] + ["i"] * (n - 1)  # create sequence with n insolated nodes
 
@@ -890,15 +1101,24 @@ def right_d_threshold_sequence(n, m):
 
 
 def left_d_threshold_sequence(n, m):
-    """
-    Create a skewed threshold graph with a given number
-    of vertices (n) and a given number of edges (m).
+    """Create a skewed threshold graph with a given number of vertices (n) and a given number of edges (m).
 
     The routine returns an unlabeled creation sequence
     for the threshold graph.
 
+    Parameters
+    ----------
+    n : integer
+        Number of insolated nodes
+    m : integer
+        Number of edges
+
     FIXME: describe algorithm
 
+    Returns
+    -------
+    cs : list
+        The skewed threshold graph sequence.
     """
     cs = ["d"] + ["i"] * (n - 1)  # create sequence with n insolated nodes
 
@@ -926,8 +1146,7 @@ def left_d_threshold_sequence(n, m):
 
 @py_random_state(3)
 def swap_d(cs, p_split=1.0, p_combine=1.0, seed=None):
-    """
-    Perform a "swap" operation on a threshold sequence.
+    """Perform a "swap" operation on a threshold sequence.
 
     The swap preserves the number of nodes and edges
     in the graph for the given sequence.
@@ -939,9 +1158,22 @@ def swap_d(cs, p_split=1.0, p_combine=1.0, seed=None):
     in the graph, but shifts the edges from node to node
     maintaining the threshold quality of the graph.
 
+    Parameters
+    ----------
+    cs : list
+        The degree sequence.
+    p_split
+        The probability to split.
+    p_combine
+        The probability to combine.
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
+
+    Returns
+    -------
+    cs : list
+        The threshold sequence, after the "swap" operation.
     """
     # preprocess the creation sequence
     dlist = [i for (i, node_type) in enumerate(cs[1:-1]) if node_type == "d"]
