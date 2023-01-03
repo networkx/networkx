@@ -27,163 +27,6 @@ from networkx.utils.decorators import not_implemented_for
 __all__ = ["rooted_tree_isomorphism", "tree_isomorphism"]
 
 
-def categorize_entries(S):
-    """Groups the entries of the lists by its position.
-
-    Given a list of lists whose entries are numbers between 0 and m. Define a
-    NONEMPTY map such that NONEMPTY(i) are the numbers in the i-th position of
-    some list in S; this numbers are sorted.
-
-    For example, given ((1), (1, 2, 3), (1, 2, 2)), NONEMPTY(2) = [2, 3].
-
-    Parameters
-    ----------
-    S : list of lists of ints (natural numbers)
-        The list of lists of natural numbers.
-
-    Returns
-    -------
-    NONEMPTY : dict of int: list of ints
-        The NONEMPTY map such that NONEMPTY(i) are the numbers in the i-th
-        position of some list in S; this list of numbers is sorted.
-
-    Notes
-    -----
-    This algorithm runs in O(l_total + m) time and O(l_total) space, where
-    l_total is the sum of the lengths of the lists in S and m is the max value
-    of all the lists in S.
-
-    """
-    # Define the an empty NONEMPTY map.
-    NONEMPTY = {}
-
-    # The max length found in S.
-    l_max = max([len(s) for s in S])
-
-    # Traverse all the entries contained in the lists of S.
-    for i in range(l_max):
-        # Define a counter to keep track of the entries found in the i-th
-        # position.
-        C = Counter()
-
-        for s in S:
-            # Only consider lists of length greater or equal than i, and whose
-            # i-th entry is not already contained in the multiset.
-            if len(s) < (i + 1) or s[i] in C:
-                continue
-            else:
-                C[s[i]] = 1
-
-        # Obtain a sorted representation of the entries found in the i-th
-        # position.
-        NONEMPTY[i] = [x for x in range(max(C) + 1) for _ in range(C.get(x, 0))]
-
-    return NONEMPTY
-
-
-def categorize_lists(S):
-    """Groups the lists by its length.
-
-    Given a list of lists whose entries are numbers between 0 and m. Define a
-    LENGTH map such that LENGTH(i) are the lists of S with length i.
-
-    For example, given ((1), (1, 2, 3), (1, 2, 2)), NONEMPTY(3) = [(1, 2, 3),
-    (1, 2, 2)].
-
-    Parameters
-    ----------
-    S : list of lists of ints (natural numbers)
-        The list of lists of natural numbers.
-
-    Returns
-    -------
-    LENGTH : dict of int: list of lists of ints
-        The LENGTH map such that LENGTH(i) are the lists of S with length i.
-
-    Notes
-    -----
-    This algorithm runs in O(|S|) time and space.
-
-    """
-    # Define an empty LENGTH map.
-    LENGTH = {}
-
-    # Traverse the lists in S and add them to the LENGTH.
-    for s in S:
-        if len(s) in LENGTH:
-            LENGTH[len(s)].append(s)
-        else:
-            LENGTH[len(s)] = [s]
-
-    return LENGTH
-
-
-def sort_lists_of_naturals(S):
-    """Lexicographically sort a list of lists of natural numbers.
-
-    Given a list of lists whose entries are numbers between 0 and m. Perform an
-    algorithm similar to bucket sort to return a sorted list with the elements
-    of S. The expected order is a lexicographical order.
-
-    Parameters
-    ----------
-    S : list of lists of ints (natural numbers)
-        The list of lists of natural numbers.
-
-    Returns
-    -------
-    sorted_list : list of lists of ints (natural numbers)
-        A lexicographically sorted list with the elements of S.
-
-    Notes
-    -----
-    This algorithm runs in O(l_total + m) time and O(l_total) space, where
-    l_total is the sum of the lengths of the lists in S and m is the max value
-    of all the lists in S.
-
-    """
-    # Get the maximum value contained in S.
-    m = max([max(s) for s in S])
-
-    # Define a list that will behave like a queue.
-    Q = []
-
-    # Define an empty array of size m whose entries are empty queues.
-    A = [[] for i in range(m + 1)]
-
-    # The max length found in S.
-    l_max = max([len(s) for s in S])
-
-    # Obtain the NONEMPTY and LENGTH maps.
-    NONEMPTY = categorize_entries(S)
-    LENGTH = categorize_lists(S)
-
-    l = l_max
-    while l >= 1:
-        # All of the elements in Q have length greater than l. For each element
-        # s in Q, append q to the queue A[s[l]].
-        while len(Q) > 0:
-            s = Q.pop()
-            A[s[l - 1]].append(s)
-
-        # Add the lists s of size l to the queue A[s[l]] if there are any.
-        if l in LENGTH:
-            for s in LENGTH[l]:
-                A[s[l - 1]].append(s)
-
-        # Sort the elements of A according to its l-th entry.
-        for i in NONEMPTY[l - 1]:
-            while len(A[i]) > 0:
-                s = A[i].pop()
-                Q.append(s)
-
-        # Proceed with the lists of size l-1.
-        l = l - 1
-
-    # Q now contains all of the elements of S sorted lexicographically.
-    return Q
-
-
 def get_initial_maps_and_height(T, root):
     """Get the initial maps and height used by the rooted tree isomorphism alg.
 
@@ -344,8 +187,8 @@ def assign_structure(parenthood, levels, values, i):
 
     Returns
     -------
-    STRUCT : dict of node: natural multiset
-        A STRUCT map such that struct(v) is the structure (natural multiset)
+    STRUCT : dict of node: counter
+        A STRUCT map such that struct(v) is the structure (counter of ints)
         corresponding to vertex v.
 
     leaves : set of nodes
@@ -387,12 +230,12 @@ def assign_structure(parenthood, levels, values, i):
     return STRUCT, leaves
 
 
-def get_multisets_list_of_level(levels, values, struct, i):
-    """Obtain the structures found on the i-th level as a list.
+def group_structures_in_level(levels, values, struct, i):
+    """Obtain the structures found on the i-th level as a Counter.
 
-    Build a list of multisets that correspond to the structures of the vertices
-    found on the i-th level and a mapping of structures to the vertices that
-    have said structure.
+    Build a Counter which contains the list representation of the structures of
+    the vertices found on the i-th level. Also, define a mapping of structures
+    to the vertices that have said structure.
 
     Parameters
     ----------
@@ -404,18 +247,18 @@ def get_multisets_list_of_level(levels, values, struct, i):
         The VALUES map such that, for each vertex v in the rooted tree,
         VALUES(v) is the value associated to v.
 
-    struct : dict of node: natural multiset
-        The STRUCT map such that struct(v) is the structure (natural multiset)
-        corresponding to vertex v.
+    struct : dict of node: counter of natural numbers
+        The STRUCT map such that struct(v) is the structure corresponding to
+        vertex v.
 
     i : int
         The current level of the rooted tree.
 
     Returns
     -------
-    list_multisets : list of natural multisets
-        A list of multisets that correspond to the structures of the vertices
-        found on the i-th level.
+    structures_on_lvl : counter of lists of ints
+        A counter that correspond to the list representation of the structures
+        of the vertices found on the i-th level.
 
     MS : dict of natural multiset: set of nodes
         A mapping of structures to the vertices that have said structure.
@@ -426,109 +269,146 @@ def get_multisets_list_of_level(levels, values, struct, i):
     vertices found on the j-th level of the rooted tree.
 
     """
-    # Define an empty list of list representations of counters.
-    S = []
+    # Define an empty counter of lists of ints.
+    S = Counter()
 
     # Define a mapping of structures to the vertices that have said structure.
-    MS = {}
+    MS = defaultdict(set)
 
-    # Traverse each non-leave vertex on the i-th level and append its structure
-    # to the list.
+    # Traverse all vertices on the i-th level.
     for u in levels[i]:
+        # If the vertex is not leave, add its structure to the list.
         if values[u] != 0:
             # Get the structure (counter) associated with u.
             c = struct[u]
 
             # Get the list representation of the counter.
-            lc = tuple(x for x in range(max(c) + 1) for _ in range(c.get(x, 0)))
+            lc = tuple(x for x in range(max(c) + 1) for _ in range(c[x]))
 
-            # Append the list representation to the list.
-            S.append(lc)
+            # Add the list representation to the counter.
+            S[lc] += 1
 
-            # Indicate that c is a structure u has.
-            if lc in MS:
-                MS[lc].add(u)
-            else:
-                MS[lc] = {u}
+            # Indicate that c is a structure that u has.
+            MS[lc].add(u)
 
     return S, MS
 
 
-def update_values(S, MS, values, children, parenthood, leaves):
+def update_values(
+    C,
+    MS_T1,
+    MS_T2,
+    values_T1,
+    values_T2,
+    children_T1,
+    children_T2,
+    parenthood_T1,
+    parenthood_T2,
+    leaves_T1,
+    leaves_T2,
+):
     """Updates the values of current level.
 
-    Given a sorted list of multisets. Updates the values of the vertices found
-    on the map MS in the order specifies by the list.
-
+    Given a counter of multisets, which are the structures found on the current
+    level of both trees. Updates the values of the vertices found on the map MS.
     Two vertices on the same level have the same value if and only if they have
-    the same structure. It also defines an order for the children of the
-    vertices in the next level.
+    the same structure.
+
+    It also defines an order for the children of the vertices in the next level.
 
     Parameters
     ----------
-    S : list of natural multisets
-        The sorted list of multisets.
+    C : Counter of lists of ints
+        The counter of the list representation of the structures of the level.
 
-    MS : dict of natural multiset: set of nodes
-        A mapping of structures to the vertices that have said structure.
+    MS_T1 : dict of tuples of ints: set of nodes
+        A mapping of structures to the vertices of T1 that have said structure.
 
-    values : dict of node: int
-        The VALUES map such that, for each vertex v in the rooted tree,
+    MS_T2 : dict of tuples of ints: set of nodes
+        A mapping of structures to the vertices of T2 that have said structure.
+
+    values_T1 : dict of node: int
+        The VALUES map such that, for each vertex v in the rooted tree T1,
         VALUES(v) is the value associated to v.
 
-    children : dict of node: set of nodes
+    values_T2 : dict of node: int
+        The VALUES map such that, for each vertex v in the rooted tree T2,
+        VALUES(v) is the value associated to v.
+
+    children_T1 : dict of node: set of nodes
         A mapping CHILDREN such that CHILDREN(v) is the ordered list of children
-        of v in the rooted tree.
+        of v in the rooted tree T1.
 
-    parenthood : dict of node: node
-        The parenthood map defined for the rooted tree.
+    children_T2 : dict of node: set of nodes
+        A mapping CHILDREN such that CHILDREN(v) is the ordered list of children
+        of v in the rooted tree T1.
 
-    leaves : set of nodes
-        The leaves of the current level.
+    parenthood_T1 : dict of node: node
+        The parenthood map defined for the rooted tree T1.
+
+    parenthood_T2 : dict of node: node
+        The parenthood map defined for the rooted tree T2.
+
+    leaves_T1 : set of nodes
+        The leaves of the current level in the rooted tree T1.
+
+    leaves_T2 : set of nodes
+        The leaves of the current level in the rooted tree T1.
 
     Note
     ----
     This algorithm runs in O(m_{i-1} + m_i) time and space where m_{j} are the
-    vertices found on the j-th level of the rooted tree.
+    vertices found on the j-th level of both rooted trees.
 
     """
     # The first vertices in the order of children are the leaves.
-    for v in leaves:
+    for v in leaves_T1:
         # If it exists, get the leave's parent; the previous case is considered
         # for the root, who doesn't have a parent.
-        if v in parenthood:
-            u = parenthood[v]
+        if v in parenthood_T1:
+            u = parenthood_T1[v]
 
             # Add the child to the list of children of the parent.
-            if u in children:
-                children[u].append(v)
-            else:
-                children[u] = [v]
+            children_T1[u].append(v)
 
-    # The current value can't be 0 as this value is reserved to leaves.
+    # Repeat the process with the leaves of T2.
+    for v in leaves_T2:
+        # If it exists, get the leave's parent; the previous case is considered
+        # for the root, who doesn't have a parent.
+        if v in parenthood_T2:
+            u = parenthood_T2[v]
+
+            # Add the child to the list of children of the parent.
+            children_T2[u].append(v)
+
+    # Traverse all the structures contained in the counter. As the current level
+    # of both trees share the same structures in the same amount, we can use
+    # this traversal to update the vertices of both trees.
+
+    # The current value is 1 as the value 0 is reserved for leaves.
     current_val = 1
+    for struct in C:
+        # Get the vertices of T1 who have the current structure.
+        for v in MS_T1[struct]:
+            # Update the value of v.
+            values_T1[v] = current_val
 
-    for j in range(len(S)):
-        # Ignore repeated multistructures.
-        if j > 0 and (S[j] == S[j - 1]):
-            continue
+            # Add v to the list of children of his parent, if it has one.
+            if v in parenthood_T1:
+                u = parenthood_T1[v]
+                children_T1[u].append(v)
 
-        # For each vertex that have the current structure, assing the current
-        # value.
-        for v in MS[S[j]]:
-            values[v] = current_val
+        # Get the vertices of T2 who have the current structure.
+        for v in MS_T2[struct]:
+            # Update the value of v.
+            values_T2[v] = current_val
 
-            # If the current vertex has a parent, get the parent.
-            if v in parenthood:
-                u = parenthood[v]
+            # Add v to the list of children of his parent, if it has one.
+            if v in parenthood_T2:
+                u = parenthood_T2[v]
+                children_T2[u].append(v)
 
-                # Add the child to the parent's list of children.
-                if u in children:
-                    children[u].append(v)
-                else:
-                    children[u] = [v]
-
-        # For the next unique structure, assign a new value.
+        # The next unique structure should have a different value.
         current_val += 1
 
 
@@ -661,30 +541,32 @@ def levels_verification(T1, root_T1, T2, root_T2):
             parenthood_T2, levels_T2, values_T2, current_level
         )
 
-        # Build the list of structures and the mapping.
-        S_T1, MS_T1 = get_multisets_list_of_level(
+        # Build the counter of structures and the mapping.
+        C_T1, MS_T1 = group_structures_in_level(
             levels_T1, values_T1, struct_T1, current_level
         )
 
-        S_T2, MS_T2 = get_multisets_list_of_level(
+        C_T2, MS_T2 = group_structures_in_level(
             levels_T2, values_T2, struct_T2, current_level
         )
 
-        # Sort the list of structures.
-        sorted_S_T1 = sort_lists_of_naturals(S_T1)
-        sorted_S_T2 = sort_lists_of_naturals(S_T2)
-
-        # If the sorted lists are different, return false.
-        if sorted_S_T1 != sorted_S_T2:
+        # If the counters are different, return false.
+        if C_T1 != C_T2:
             return False, {}
 
-        # Update the values and the children.
+        # Otherwise, update the values and the children of both trees.
         update_values(
-            sorted_S_T1, MS_T1, values_T1, children_T1, parenthood_T1, leaves_T1
-        )
-
-        update_values(
-            sorted_S_T2, MS_T2, values_T2, children_T2, parenthood_T2, leaves_T2
+            C_T1,
+            MS_T1,
+            MS_T2,
+            values_T1,
+            values_T2,
+            children_T1,
+            children_T2,
+            parenthood_T1,
+            parenthood_T2,
+            leaves_T1,
+            leaves_T2,
         )
 
         # Move to the next level.

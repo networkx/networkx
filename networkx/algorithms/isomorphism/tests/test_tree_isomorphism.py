@@ -1,135 +1,20 @@
 import random
 import time
-from collections import Counter
+from collections import Counter, defaultdict
 
 import networkx as nx
 from networkx.algorithms.isomorphism.tree_isomorphism import (
     assign_structure,
-    categorize_entries,
-    categorize_lists,
     get_centers_of_tree,
     get_initial_maps_and_height,
-    get_multisets_list_of_level,
+    group_structures_in_level,
     rooted_tree_isomorphism,
     rooted_tree_isomorphism_n,
-    sort_lists_of_naturals,
     tree_isomorphism,
     tree_isomorphism_n,
     update_values,
 )
 from networkx.classes.function import is_directed
-
-
-# Tests the function categorize_entries. The returned function should behave
-# like a function NONEMPTY : N -> P(N) such that NONEMPTY(i) are the numbers in
-# the i-th position of some list in S; this numbers are sorted
-def test_categorize_entries():
-    # An arbitrary list of lists of natural numbers.
-    S = [
-        [0, 0, 1, 2, 3],
-        [1, 2, 3],
-        [0, 1, 1, 4],
-        [3, 3, 4],
-        [4],
-        [4, 4, 5],
-    ]
-
-    # Expected NONEMPTY function.
-    expected_NONEMPTY = {
-        0: [0, 1, 3, 4],
-        1: [0, 1, 2, 3, 4],
-        2: [1, 3, 4, 5],
-        3: [2, 4],
-        4: [3],
-    }
-
-    # Obtained NONEMPTY function.
-    obtained_NONEMPTY = categorize_entries(S)
-
-    assert expected_NONEMPTY == obtained_NONEMPTY
-
-
-# Tests the function categorize_lists. The returned function should behave like
-# a function LENGTH such that LENGTH(i) are the lists of S with length i.
-def test_categorize_lists():
-    # An arbitrary list of lists of natural numbers.
-    S = [
-        [0, 0, 1, 2, 3],
-        [1, 2, 3],
-        [0, 1, 1, 4],
-        [3, 3, 4],
-        [4],
-        [4, 4, 5],
-    ]
-
-    # Expected LENGTH function.
-    expected_LENGTH = {
-        1: [[4]],
-        3: [[1, 2, 3], [3, 3, 4], [4, 4, 5]],
-        4: [[0, 1, 1, 4]],
-        5: [[0, 0, 1, 2, 3]],
-    }
-
-    # Obtained LENGTH function.
-    obtained_LENGTH = categorize_lists(S)
-
-    assert expected_LENGTH == obtained_LENGTH
-
-
-# Tests the function sort_lists_of_naturals. The expected sorted list should
-# have a lexicographical ordering.
-def test_sort_list_of_naturals():
-    # An arbitrary list of lists of natural numbers.
-    S = [
-        [0, 0, 1, 2, 3],
-        [1, 2, 3],
-        [0, 1, 1, 4],
-        [3, 3, 4],
-        [4],
-        [4, 4, 5],
-    ]
-
-    expected_ordering = [
-        [0, 0, 1, 2, 3],
-        [0, 1, 1, 4],
-        [1, 2, 3],
-        [3, 3, 4],
-        [4],
-        [4, 4, 5],
-    ]
-
-    obtained_ordering = sort_lists_of_naturals(S)
-
-    assert expected_ordering == obtained_ordering
-
-    # Test for another list of lists of natural numbers.
-    S = [
-        [1, 2, 3, 7, 8],
-        [2, 2, 3, 4],
-        [2, 2, 4, 3],
-        [0, 1],
-        [0, 0],
-        [1, 3, 4],
-        [2, 3, 4],
-        [7],
-        [8, 8],
-    ]
-
-    expected_ordering = [
-        [0, 0],
-        [0, 1],
-        [1, 2, 3, 7, 8],
-        [1, 3, 4],
-        [2, 2, 3, 4],
-        [2, 2, 4, 3],
-        [2, 3, 4],
-        [7],
-        [8, 8],
-    ]
-
-    obtained_ordering = sort_lists_of_naturals(S)
-
-    assert expected_ordering == obtained_ordering
 
 
 # Test the get_initial_maps_and_height function.
@@ -245,11 +130,11 @@ def test_assign_values():
     assert obtained_structure_lvl_2 == expected_structure_lvl_2
 
 
-# Tests the function get_multisets_list_of_level. The returned list should
+# Tests the function group_structures_in_level. The returned counter should
 # correspond to the structures of the vertices found on the i-th level, and the
 # map should correspond to a mapping of structures to the vertices that have
 # said structure.
-def test_get_multisets_list_of_level():
+def test_group_structures_in_level():
     # Test for an specific scenario.
     levels = {
         2: {"v0"},
@@ -290,8 +175,8 @@ def test_get_multisets_list_of_level():
         "v7": Counter([0]),
     }
 
-    expected_list_lvl_2 = [(0, 1, 2)]
-    expected_list_lvl_1 = [(0, 0), (0,), (0,)]
+    expected_counter_lvl_2 = Counter([(0, 1, 2)])
+    expected_counter_lvl_1 = Counter([(0, 0), (0,), (0,)])
 
     expected_mapping_lvl_2 = {
         (0, 1, 2): {"v0"},
@@ -302,29 +187,23 @@ def test_get_multisets_list_of_level():
         (0,): {"v3", "v7"},
     }
 
-    obt_list_lvl_1, obt_mapping_lvl_1 = get_multisets_list_of_level(
+    obt_counter_lvl_1, obt_mapping_lvl_1 = group_structures_in_level(
         levels, values, structures_lvl_1, 1
     )
-    obt_list_lvl_2, obt_mapping_lvl_2 = get_multisets_list_of_level(
+    obt_counter_lvl_2, obt_mapping_lvl_2 = group_structures_in_level(
         levels, values, structures_lvl_2, 2
     )
 
-    assert len(structures_lvl_1) == len(obt_list_lvl_1)
-    for struct in expected_list_lvl_1:
-        assert struct in obt_list_lvl_1
-
-    assert len(structures_lvl_2) == len(obt_list_lvl_2)
-    for struct in expected_list_lvl_2:
-        assert struct in obt_list_lvl_2
-
+    assert expected_counter_lvl_1 == obt_counter_lvl_1
     assert obt_mapping_lvl_1 == expected_mapping_lvl_1
+
+    assert expected_counter_lvl_2 == obt_counter_lvl_2
     assert obt_mapping_lvl_2 == expected_mapping_lvl_2
 
 
 def test_update_values():
     # Test for an specific scenario.
-    # Starting values.
-    values = {
+    vals_T1 = {
         "v0": -1,
         "v1": -1,
         "v2": 0,
@@ -336,14 +215,67 @@ def test_update_values():
         "v8": 0,
     }
 
-    mapping_lvl_1 = {
+    parenthood_T1 = {
+        "v1": "v0",
+        "v2": "v0",
+        "v3": "v0",
+        "v7": "v0",
+        "v4": "v1",
+        "v5": "v1",
+        "v6": "v3",
+        "v8": "v7",
+    }
+
+    structures_lvl_1 = Counter([(0, 0), (0,)])
+
+    mapping_lvl_1_T1 = {
         (0, 0): {"v1"},
         (0,): {"v3", "v7"},
     }
 
-    structures_list_lvl_1 = ((0,), (0,), (0, 0))
+    children_T1 = defaultdict(list)
+    children_T1["v1"] = ["v4", "v5"]
+    children_T1["v3"] = ["v6"]
+    children_T1["v7"] = ["v8"]
 
-    expected_values_after_lvl_1 = {
+    leaves_lvl_1_T1 = {"v2"}
+
+    vals_T2 = {
+        "w0": -1,
+        "w1": 0,
+        "w2": -1,
+        "w3": -1,
+        "w4": -1,
+        "w5": 0,
+        "w6": 0,
+        "w7": 0,
+        "w8": 0,
+    }
+
+    parenthood_T2 = {
+        "w1": "w0",
+        "w2": "w0",
+        "w3": "w0",
+        "w4": "w0",
+        "w5": "w2",
+        "w6": "w3",
+        "w7": "w4",
+        "w8": "w4",
+    }
+
+    mapping_lvl_1_T2 = {
+        (0, 0): {"w4"},
+        (0,): {"w2", "w3"},
+    }
+
+    children_T2 = defaultdict(list)
+    children_T2["w4"] = ["w7", "w8"]
+    children_T2["w2"] = ["w5"]
+    children_T2["w3"] = ["w6"]
+
+    leaves_lvl_1_T2 = {"w1"}
+
+    possible_vals_T1_1 = {
         "v0": -1,
         "v1": 2,
         "v2": 0,
@@ -355,26 +287,75 @@ def test_update_values():
         "v8": 0,
     }
 
-    # Dummy functions.
-    parenthood = {}
-    children = {}
-    leaves = set()
+    possible_vals_T1_2 = {
+        "v0": -1,
+        "v1": 1,
+        "v2": 0,
+        "v3": 2,
+        "v7": 2,
+        "v4": 0,
+        "v5": 0,
+        "v6": 0,
+        "v8": 0,
+    }
+
+    possible_vals_T2_1 = {
+        "w0": -1,
+        "w1": 0,
+        "w2": 1,
+        "w3": 1,
+        "w4": 2,
+        "w5": 0,
+        "w6": 0,
+        "w7": 0,
+        "w8": 0,
+    }
+
+    possible_vals_T2_2 = {
+        "w0": -1,
+        "w1": 0,
+        "w2": 2,
+        "w3": 2,
+        "w4": 1,
+        "w5": 0,
+        "w6": 0,
+        "w7": 0,
+        "w8": 0,
+    }
 
     update_values(
-        structures_list_lvl_1, mapping_lvl_1, values, children, parenthood, leaves
+        structures_lvl_1,
+        mapping_lvl_1_T1,
+        mapping_lvl_1_T2,
+        vals_T1,
+        vals_T2,
+        children_T1,
+        children_T2,
+        parenthood_T1,
+        parenthood_T2,
+        leaves_lvl_1_T1,
+        leaves_lvl_1_T2,
     )
 
-    assert expected_values_after_lvl_1 == values
+    assert (vals_T1 == possible_vals_T1_1) or (vals_T1 == possible_vals_T1_2)
+    assert (vals_T2 == possible_vals_T2_1) or (vals_T2 == possible_vals_T2_2)
 
-    structures_list_lvl_2 = [
-        (0, 1, 2),
-    ]
+    for struct in structures_lvl_1:
+        for v_T1 in mapping_lvl_1_T1[struct]:
+            for v_T2 in mapping_lvl_1_T2[struct]:
+                assert vals_T1[v_T1] == vals_T2[v_T2]
 
-    mapping_lvl_2 = {
+    structures_lvl_2 = Counter([(0, 1, 2)])
+
+    mapping_lvl_2_T1 = {
         (0, 1, 2): {"v0"},
     }
 
-    expected_values_after_lvl_2 = {
+    mapping_lvl_2_T2 = {
+        (0, 1, 2): {"w0"},
+    }
+
+    possible_vals_T1_1 = {
         "v0": 1,
         "v1": 2,
         "v2": 0,
@@ -386,11 +367,63 @@ def test_update_values():
         "v8": 0,
     }
 
+    possible_vals_T1_2 = {
+        "v0": 1,
+        "v1": 1,
+        "v2": 0,
+        "v3": 2,
+        "v7": 2,
+        "v4": 0,
+        "v5": 0,
+        "v6": 0,
+        "v8": 0,
+    }
+
+    possible_vals_T2_1 = {
+        "w0": 1,
+        "w1": 0,
+        "w2": 1,
+        "w3": 1,
+        "w4": 2,
+        "w5": 0,
+        "w6": 0,
+        "w7": 0,
+        "w8": 0,
+    }
+
+    possible_vals_T2_2 = {
+        "w0": 1,
+        "w1": 0,
+        "w2": 2,
+        "w3": 2,
+        "w4": 1,
+        "w5": 0,
+        "w6": 0,
+        "w7": 0,
+        "w8": 0,
+    }
+
     update_values(
-        structures_list_lvl_2, mapping_lvl_2, values, children, parenthood, leaves
+        structures_lvl_2,
+        mapping_lvl_2_T1,
+        mapping_lvl_2_T2,
+        vals_T1,
+        vals_T2,
+        children_T1,
+        children_T2,
+        parenthood_T1,
+        parenthood_T2,
+        {},
+        {},
     )
 
-    assert expected_values_after_lvl_2 == values
+    assert (vals_T1 == possible_vals_T1_1) or (vals_T1 == possible_vals_T1_2)
+    assert (vals_T2 == possible_vals_T2_1) or (vals_T2 == possible_vals_T2_2)
+
+    for struct in structures_lvl_1:
+        for v_T1 in mapping_lvl_1_T1[struct]:
+            for v_T2 in mapping_lvl_1_T2[struct]:
+                assert vals_T1[v_T1] == vals_T2[v_T2]
 
 
 # Auxiliary function to determine if an isomorphism is valid.  Let f be an
