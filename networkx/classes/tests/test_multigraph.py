@@ -235,7 +235,7 @@ class TestMultiGraph(BaseMultiGraphTester, _TestGraph):
     dol = {"a": ["b"]}
 
     multiple_edge = [("a", "b", "traits", etraits), ("a", "b", "graphics", egraphics)]
-    single_edge = [("a", "b", 0, {})]  # type: ignore
+    single_edge = [("a", "b", 0, {})]  # type: ignore[var-annotated]
     single_edge1 = [("a", "b", 0, edata)]
     single_edge2 = [("a", "b", 0, etraits)]
     single_edge3 = [("a", "b", 0, {"traits": etraits, "s": "foo"})]
@@ -492,13 +492,13 @@ class CustomDictClass(UserDict):
 
 
 class MultiGraphSubClass(nx.MultiGraph):
-    node_dict_factory = CustomDictClass  # type: ignore
-    node_attr_dict_factory = CustomDictClass  # type: ignore
-    adjlist_outer_dict_factory = CustomDictClass  # type: ignore
-    adjlist_inner_dict_factory = CustomDictClass  # type: ignore
-    edge_key_dict_factory = CustomDictClass  # type: ignore
-    edge_attr_dict_factory = CustomDictClass  # type: ignore
-    graph_attr_dict_factory = CustomDictClass  # type: ignore
+    node_dict_factory = CustomDictClass  # type: ignore[assignment]
+    node_attr_dict_factory = CustomDictClass  # type: ignore[assignment]
+    adjlist_outer_dict_factory = CustomDictClass  # type: ignore[assignment]
+    adjlist_inner_dict_factory = CustomDictClass  # type: ignore[assignment]
+    edge_key_dict_factory = CustomDictClass  # type: ignore[assignment]
+    edge_attr_dict_factory = CustomDictClass  # type: ignore[assignment]
+    graph_attr_dict_factory = CustomDictClass  # type: ignore[assignment]
 
 
 class TestMultiGraphSubclass(TestMultiGraph):

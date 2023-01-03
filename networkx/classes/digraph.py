@@ -309,8 +309,8 @@ class DiGraph(Graph):
     True
     """
 
-    _adj = _CachedPropertyResetterAdjAndSucc()  # type: ignore
-    _succ = _adj  # type: ignore
+    _adj = _CachedPropertyResetterAdjAndSucc()  # type: ignore[assignment]
+    _succ = _adj  # type: ignore[has-type]
     _pred = _CachedPropertyResetterPred()
 
     def __init__(self, incoming_graph_data=None, **attr):

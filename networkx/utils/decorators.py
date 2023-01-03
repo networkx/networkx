@@ -97,7 +97,7 @@ fopeners = {
     ".gzip": gzip.open,
     ".bz2": bz2.BZ2File,
 }
-_dispatch_dict = defaultdict(lambda: open, **fopeners)  # type: ignore
+_dispatch_dict = defaultdict(lambda: open, **fopeners)
 
 
 def open_file(path_arg, mode="r"):

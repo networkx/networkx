@@ -1,0 +1,3 @@
+select = [
+    "PGH003",  # forbid blanket 'type: ignore' comments
+]

@@ -223,7 +223,7 @@ def get_canonical_ordering(embedding, outer_face):
                 ready_to_pick.discard(v)
 
     # Initialize canonical_ordering
-    canonical_ordering = [None] * len(embedding.nodes())  # type: list
+    canonical_ordering = [None] * len(embedding.nodes())
     canonical_ordering[0] = (v1, [])
     canonical_ordering[1] = (v2, [])
     ready_to_pick.discard(v1)
