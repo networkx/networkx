@@ -535,12 +535,10 @@ def levels_verification(T1, root_T1, T2, root_T2):
         if len(levels_T1[i]) != len(levels_T2[i]):
             return False, {}
 
-    # Start at level 1 as all the vertices at level 0 are leaves.
-    current_level = 1
-
-    # check that all the structures present on the i-th level are also present
-    # in i-th level of T2.
-    while current_level <= height_T1:
+    # Start at level 1 as all the vertices at level 0 are leaves. Check that
+    # all the structures present on the i-th level are also present in i-th
+    # level of T2.
+    for current_level in range(1, height_T1 + 1):
         # Assign the structures for the vertices of the current level for T1 and
         # T2.
         struct_T1, leaves_T1 = assign_structure(
