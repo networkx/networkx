@@ -632,7 +632,7 @@
     <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_iter</span><span class="p">):</span>
         <span class="n">xlast</span> <span class="o">=</span> <span class="n">x</span>
         <span class="n">x</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">xlast</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="c1"># do the multiplication y^T = Alpha * x^T A - Beta</span>
+        <span class="c1"># do the multiplication y^T = Alpha * x^T A + Beta</span>
         <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">x</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">nbr</span> <span class="ow">in</span> <span class="n">G</span><span class="p">[</span><span class="n">n</span><span class="p">]:</span>
                 <span class="n">x</span><span class="p">[</span><span class="n">nbr</span><span class="p">]</span> <span class="o">+=</span> <span class="n">xlast</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">*</span> <span class="n">G</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="n">nbr</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">weight</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
