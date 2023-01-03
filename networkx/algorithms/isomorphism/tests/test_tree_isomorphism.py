@@ -4,7 +4,6 @@ from collections import Counter, defaultdict
 
 import networkx as nx
 from networkx.algorithms.isomorphism.tree_isomorphism import (
-    assign_structure,
     get_centers_of_tree,
     get_initial_maps_and_height,
     group_structures_in_level,
@@ -73,59 +72,6 @@ def test_get_intial_maps_and_height():
 
     assert expected_parenthood == o_p
     assert expected_height == 2
-
-
-# Tests the function assign_values. The returned function should assign to all
-# the vertices found on the i-th level a structure.
-def test_assign_values():
-    # Test for an specific scenario.
-    levels = {
-        2: {"v0"},
-        1: {"v1", "v2", "v3"},
-        0: {"v4", "v5", "v6"},
-    }
-
-    values = {
-        "v0": 1,
-        "v1": 2,
-        "v2": 0,
-        "v3": 1,
-        "v4": 0,
-        "v5": 0,
-        "v6": 0,
-    }
-
-    parenthood = {
-        "v1": "v0",
-        "v2": "v0",
-        "v3": "v0",
-        "v4": "v1",
-        "v5": "v1",
-        "v6": "v3",
-    }
-
-    expected_structure_lvl_2 = {
-        "v0": Counter([0, 1, 2]),
-    }
-
-    expected_structure_lvl_1 = {
-        "v1": Counter([0, 0]),
-        "v3": Counter([0]),
-    }
-
-    obtained_structure_lvl_1, leaves_lvl_1 = assign_structure(
-        parenthood, levels, values, 1
-    )
-
-    obtained_structure_lvl_2, leaves_lvl_2 = assign_structure(
-        parenthood, levels, values, 2
-    )
-
-    assert leaves_lvl_1 == {"v2"}
-    assert leaves_lvl_2 == set()
-
-    assert obtained_structure_lvl_1 == expected_structure_lvl_1
-    assert obtained_structure_lvl_2 == expected_structure_lvl_2
 
 
 # Tests the function group_structures_in_level. The returned counter should
