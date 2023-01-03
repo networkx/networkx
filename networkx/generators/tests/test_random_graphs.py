@@ -47,8 +47,7 @@ def test_gnp_generators_basic(generator, directed):
 
 @pytest.mark.parametrize("generator", _gnp_generators)
 def test_gnp_generators_for_p_close_to_1(generator):
-    """If the edge probability `p` is close to 1, the resulting graph should have all edges.
-    """
+    """If the edge probability `p` is close to 1, the resulting graph should have all edges."""
     runs = 100
     edges = sum(
         generator(10, 0.99999, directed=True).number_of_edges() for _ in range(runs)
@@ -60,8 +59,7 @@ def test_gnp_generators_for_p_close_to_1(generator):
 @pytest.mark.parametrize("p", (0.2, 0.8))
 @pytest.mark.parametrize("directed", (True, False))
 def test_gnp_generators_edge_probability(generator, p, directed):
-    """Test that gnp generators generate edges according to the their probability `p`.
-    """
+    """Test that gnp generators generate edges according to the their probability `p`."""
     runs = 5000
     n = 5
     edge_counts = [[0] * n for _ in range(n)]
