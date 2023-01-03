@@ -5,7 +5,7 @@ specified root node) are isomorphic, which may be independently useful.
 
 References
 ----------
-  .. [1] A. V. Aho, J. E. Hopcroft y J. D. Ullman, "The Desing And Analysis of
+  .. [1] A. V. Aho, J. E. Hopcroft and J. D. Ullman, "The Desing And Analysis of
      Computer Algorithms", Addison Wesley Publishing Company, (1974): 78-86.
 
   .. [2] M. Suderman, "Homework Assignment 5", McGill University SOCS 308-250B,
