@@ -718,8 +718,7 @@ def generate_isomorphism(T1):
 # The function nonisomorphic_trees generates all the non-isomorphic trees of a
 # given order. Take each tree, make a "copy" of it, and its copy should be
 # isomorphic to the original; verify that the function tree_isomorphism returns
-# True and a proper isomorphism. For k=4 the test takes around 2.83 seconds, and
-# for k=15 it takes around 7.57 seconds.
+# True and a proper isomorphism. For k=15 the tests take 4.16 seconds aprox.
 def test_tree_isomorphism_n_positive(maxk=13):
     print("\nPositive test with new function\n")
 
@@ -741,7 +740,8 @@ def test_tree_isomorphism_n_positive(maxk=13):
 
 # The function nonisomorphic_trees generates all the non-isomorphic trees of a
 # given order. Take each pair of trees verify that the function tree_isomorphism
-# returns False and an empty isomorphism.
+# returns False and an empty isomorphism. For k = 11 the tests take 1.28 seconds
+# aprox.
 def test_tree_isomorphism_n_negative(maxk=11):
     print("\nNegative test with new function\n")
 
