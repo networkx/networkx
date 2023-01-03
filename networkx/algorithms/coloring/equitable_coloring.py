@@ -318,7 +318,7 @@ def procedure_P(V_minus, V_plus, N, H, F, C, L, excluded_colors=None):
 
                     I_set.add(z)
                     I_covered.add(z)
-                    I_covered.update([nbr for nbr in L[z]])
+                    I_covered.update(list(L[z]))
 
                     for w in L[z]:
                         if F[w] in A_cal_0 and N[(z, F[w])] == 1:

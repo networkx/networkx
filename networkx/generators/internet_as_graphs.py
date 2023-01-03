@@ -376,7 +376,7 @@ class AS_graph_generator:
         self.nodes = {"T": set(), "M": set(), "CP": set(), "C": set()}
 
         self.t_graph()
-        self.nodes["T"] = set(list(self.G.nodes()))
+        self.nodes["T"] = set(self.G.nodes())
 
         i = len(self.nodes["T"])
         for _ in range(self.n_m):

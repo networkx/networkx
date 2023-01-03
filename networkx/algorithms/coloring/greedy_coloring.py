@@ -499,7 +499,7 @@ def _greedy_coloring_with_interchange(G, nodes):
             while connected and col1 < k:
                 col1 += 1
                 neighbor_cols = graph[node].iter_neighbors_color(col1)
-                col1_adj = [it for it in neighbor_cols]
+                col1_adj = list(neighbor_cols)
 
                 col2 = col1
                 while connected and col2 < k:

@@ -346,7 +346,7 @@ def optimal_edit_paths(
        https://hal.archives-ouvertes.fr/hal-01168816
 
     """
-    paths = list()
+    paths = []
     bestcost = None
     for vertex_path, edge_path, cost in optimize_edit_paths(
         G1,
@@ -364,7 +364,7 @@ def optimal_edit_paths(
     ):
         # assert bestcost is None or cost <= bestcost
         if bestcost is not None and cost < bestcost:
-            paths = list()
+            paths = []
         paths.append((vertex_path, edge_path))
         bestcost = cost
     return paths, bestcost
@@ -694,9 +694,9 @@ def optimize_edit_paths(
         # NOTE: fast reduce of Cv relies on it
         # assert len(lsa_row_ind) == len(lsa_col_ind)
         indexes = zip(range(len(lsa_row_ind)), lsa_row_ind, lsa_col_ind)
-        subst_ind = list(k for k, i, j in indexes if i < m and j < n)
+        subst_ind = [k for k, i, j in indexes if i < m and j < n]
         indexes = zip(range(len(lsa_row_ind)), lsa_row_ind, lsa_col_ind)
-        dummy_ind = list(k for k, i, j in indexes if i >= m and j >= n)
+        dummy_ind = [k for k, i, j in indexes if i >= m and j >= n]
         # assert len(subst_ind) == len(dummy_ind)
         lsa_row_ind[dummy_ind] = lsa_col_ind[subst_ind] + m
         lsa_col_ind[dummy_ind] = lsa_row_ind[subst_ind] + n
@@ -801,14 +801,14 @@ def optimize_edit_paths(
                     C[k, l] = inf
 
             localCe = make_CostMatrix(C, m, n)
-            ij = list(
+            ij = [
                 (
                     g_ind[k] if k < m else M + h_ind[l],
                     h_ind[l] if l < n else N + g_ind[k],
                 )
                 for k, l in zip(localCe.lsa_row_ind, localCe.lsa_col_ind)
                 if k < m or l < n
-            )
+            ]
 
         else:
             ij = []
@@ -881,7 +881,7 @@ def optimize_edit_paths(
             yield (i, j), Cv_ij, xy, Ce_xy, Cv.C[i, j] + localCe.ls
 
         # 2) other candidates, sorted by lower-bound cost estimate
-        other = list()
+        other = []
         fixed_i, fixed_j = i, j
         if m <= n:
             candidates = (
@@ -1016,16 +1016,16 @@ def optimize_edit_paths(
                             pending_h[y] if y < len_h else None,
                         )
                     )
-                sortedx = list(sorted(x for x, y in xy))
-                sortedy = list(sorted(y for x, y in xy))
-                G = list(
+                sortedx = sorted(x for x, y in xy)
+                sortedy = sorted(y for x, y in xy)
+                G = [
                     (pending_g.pop(x) if x < len(pending_g) else None)
                     for x in reversed(sortedx)
-                )
-                H = list(
+                ]
+                H = [
                     (pending_h.pop(y) if y < len(pending_h) else None)
                     for y in reversed(sortedy)
-                )
+                ]
 
                 yield from get_edit_paths(
                     matched_uv,
@@ -1596,7 +1596,7 @@ def panther_similarity(G, source, k=5, path_length=5, c=0.5, delta=0.1, eps=None
     top_k_sorted = top_k_unsorted[np.argsort(S[top_k_unsorted])][::-1]
 
     # Add back the similarity scores
-    top_k_sorted_names = map(lambda n: node_map[n], top_k_sorted)
+    top_k_sorted_names = (node_map[n] for n in top_k_sorted)
     top_k_with_val = dict(zip(top_k_sorted_names, S[top_k_sorted]))
 
     # Remove the self-similarity

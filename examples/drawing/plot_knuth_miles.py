@@ -110,7 +110,7 @@ try:
     # NOTE: When using cartopy, use matplotlib directly rather than nx.draw
     # to take advantage of the cartopy transforms
     ax.scatter(
-        *np.array([v for v in G.position.values()]).T,
+        *np.array(list(G.position.values())).T,
         s=[G.population[v] for v in H],
         c=node_color,
         transform=ccrs.PlateCarree(),

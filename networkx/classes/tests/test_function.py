@@ -738,9 +738,9 @@ def test_pathweight():
     invalid_path = [1, 3, 2]
     graphs = [nx.Graph(), nx.DiGraph(), nx.MultiGraph(), nx.MultiDiGraph()]
     edges = [
-        (1, 2, dict(cost=5, dist=6)),
-        (2, 3, dict(cost=3, dist=4)),
-        (1, 2, dict(cost=1, dist=2)),
+        (1, 2, {"cost": 5, "dist": 6}),
+        (2, 3, {"cost": 3, "dist": 4}),
+        (1, 2, {"cost": 1, "dist": 2}),
     ]
     for graph in graphs:
         graph.add_edges_from(edges)

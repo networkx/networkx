@@ -173,7 +173,7 @@ def positive_single_tree(t1):
 
     assert nx.is_tree(t1)
 
-    nodes1 = [n for n in t1.nodes()]
+    nodes1 = list(t1.nodes())
     # get a random permutation of this
     nodes2 = nodes1.copy()
     random.shuffle(nodes2)

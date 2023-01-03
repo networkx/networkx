@@ -37,7 +37,7 @@ def is_threshold_graph(G):
     ----------
     .. [1] Threshold graphs: https://en.wikipedia.org/wiki/Threshold_graph
     """
-    return is_threshold_sequence(list(d for n, d in G.degree()))
+    return is_threshold_sequence([d for n, d in G.degree()])
 
 
 def is_threshold_sequence(degree_sequence):

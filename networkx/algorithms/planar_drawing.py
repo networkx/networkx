@@ -108,7 +108,7 @@ def combinatorial_embedding_to_pos(embedding, fully_triangulate=False):
             left_t_child[vk] = None
 
     # 2. Phase: Set absolute positions
-    pos = dict()
+    pos = {}
     pos[v1] = (0, y_coordinate[v1])
     remaining_nodes = [v1]
     while remaining_nodes:

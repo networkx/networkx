@@ -932,7 +932,7 @@ class ArborescenceIterator:
         self.partition_queue.put(
             self.Partition(
                 mst_weight if self.minimum else -mst_weight,
-                dict()
+                {}
                 if self.init_partition is None
                 else self.init_partition.partition_dict,
             )

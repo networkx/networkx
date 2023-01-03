@@ -67,7 +67,7 @@ def test_graph_from_pr_2053():
         ]
     )
     for flow_func in flow_funcs:
-        kwargs = dict(flow_func=flow_func)
+        kwargs = {"flow_func": flow_func}
         errmsg = f"Assertion failed in function: {flow_func.__name__}"
         # edge disjoint paths
         edge_paths = list(nx.edge_disjoint_paths(G, "A", "Z", **kwargs))
@@ -82,7 +82,7 @@ def test_graph_from_pr_2053():
 def test_florentine_families():
     G = nx.florentine_families_graph()
     for flow_func in flow_funcs:
-        kwargs = dict(flow_func=flow_func)
+        kwargs = {"flow_func": flow_func}
         errmsg = f"Assertion failed in function: {flow_func.__name__}"
         # edge disjoint paths
         edge_dpaths = list(nx.edge_disjoint_paths(G, "Medici", "Strozzi", **kwargs))
@@ -97,7 +97,7 @@ def test_florentine_families():
 def test_karate():
     G = nx.karate_club_graph()
     for flow_func in flow_funcs:
-        kwargs = dict(flow_func=flow_func)
+        kwargs = {"flow_func": flow_func}
         errmsg = f"Assertion failed in function: {flow_func.__name__}"
         # edge disjoint paths
         edge_dpaths = list(nx.edge_disjoint_paths(G, 0, 33, **kwargs))
@@ -112,7 +112,7 @@ def test_karate():
 def test_petersen_disjoint_paths():
     G = nx.petersen_graph()
     for flow_func in flow_funcs:
-        kwargs = dict(flow_func=flow_func)
+        kwargs = {"flow_func": flow_func}
         errmsg = f"Assertion failed in function: {flow_func.__name__}"
         # edge disjoint paths
         edge_dpaths = list(nx.edge_disjoint_paths(G, 0, 6, **kwargs))
@@ -127,7 +127,7 @@ def test_petersen_disjoint_paths():
 def test_octahedral_disjoint_paths():
     G = nx.octahedral_graph()
     for flow_func in flow_funcs:
-        kwargs = dict(flow_func=flow_func)
+        kwargs = {"flow_func": flow_func}
         errmsg = f"Assertion failed in function: {flow_func.__name__}"
         # edge disjoint paths
         edge_dpaths = list(nx.edge_disjoint_paths(G, 0, 5, **kwargs))
@@ -142,7 +142,7 @@ def test_octahedral_disjoint_paths():
 def test_icosahedral_disjoint_paths():
     G = nx.icosahedral_graph()
     for flow_func in flow_funcs:
-        kwargs = dict(flow_func=flow_func)
+        kwargs = {"flow_func": flow_func}
         errmsg = f"Assertion failed in function: {flow_func.__name__}"
         # edge disjoint paths
         edge_dpaths = list(nx.edge_disjoint_paths(G, 0, 6, **kwargs))
@@ -157,7 +157,7 @@ def test_icosahedral_disjoint_paths():
 def test_cutoff_disjoint_paths():
     G = nx.icosahedral_graph()
     for flow_func in flow_funcs:
-        kwargs = dict(flow_func=flow_func)
+        kwargs = {"flow_func": flow_func}
         errmsg = f"Assertion failed in function: {flow_func.__name__}"
         for cutoff in [2, 4]:
             kwargs["cutoff"] = cutoff

@@ -198,7 +198,7 @@ def _generate_partition(G, cuts, k):
 
 
 def _reconstruct_k_components(k_comps):
-    result = dict()
+    result = {}
     max_k = max(k_comps)
     for k in reversed(range(1, max_k + 1)):
         if k == max_k:

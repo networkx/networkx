@@ -682,7 +682,7 @@ def group_degree_centrality(G, S):
        Journal of Mathematical Sociology. 23(3): 181-201. 1999.
        http://www.analytictech.com/borgatti/group_centrality.htm
     """
-    centrality = len(set().union(*list(set(G.neighbors(i)) for i in S)) - set(S))
+    centrality = len(set().union(*[set(G.neighbors(i)) for i in S]) - set(S))
     centrality /= len(G.nodes()) - len(S)
     return centrality
 

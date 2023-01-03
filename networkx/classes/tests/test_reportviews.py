@@ -205,7 +205,7 @@ class TestNodeViewSetOps:
         cls.nv = cls.G.nodes
 
     def n_its(self, nodes):
-        return {node for node in nodes}
+        return set(nodes)
 
     def test_len(self):
         G = self.G.copy()
@@ -871,7 +871,7 @@ class TestMultiEdgeView(TestEdgeView):
         for e in ev:
             assert len(e) == 3
         elist = sorted([(i, i + 1, 0) for i in range(8)] + [(1, 2, 3)])
-        assert sorted(list(ev)) == elist
+        assert sorted(ev) == elist
         # test order of arguments:graph, nbunch, data, keys, default
         ev = evr((1, 2), "foo", True, 1)
         for e in ev:

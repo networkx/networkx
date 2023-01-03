@@ -202,8 +202,8 @@ class TestMultiGraph(BaseMultiGraphTester, _TestGraph):
 
     def test_data_multigraph_input(self):
         # standard case with edge keys and edge data
-        edata0 = dict(w=200, s="foo")
-        edata1 = dict(w=201, s="bar")
+        edata0 = {"w": 200, "s": "foo"}
+        edata1 = {"w": 201, "s": "bar"}
         keydict = {0: edata0, 1: edata1}
         dododod = {"a": {"b": keydict}}
 
