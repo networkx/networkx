@@ -144,9 +144,8 @@ def maximum_weight_cycle_packing(graph: nx.DiGraph, k: int) -> list:
             max_cycles = exchanges
             max_graph = ans_graph.copy()
 
-    result = [] #   exctract only the cycles
+    result = []  # exctract only the cycles
     for cyc in max_cycles:
-
         cycle = max_graph.get_edge_data(cyc[0], cyc[1])["cycle"]
         result.append(cycle)
 
@@ -154,6 +153,9 @@ def maximum_weight_cycle_packing(graph: nx.DiGraph, k: int) -> list:
 
 
 def simple_cycles(G, limit):
+    """"
+    >>>
+    """
     subG = type(G)(G.edges())
     sccs = list(nx.strongly_connected_components(subG))
     while sccs:
