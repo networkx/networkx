@@ -146,75 +146,6 @@ def get_initial_maps_and_height(T, root):
     return LEVELS, VALUES, CHILDREN, PARENTHOOD, height
 
 
-def assign_structure(parenthood, levels, values, i):
-    """Assign a structure to all the vertices found on the i-th level.
-
-    The structure of a vertex is defined as the natural multiset that contains
-    the values of all its child; thus, a leaf has no structure. Informally, the
-    structure of a vertex can be thought as the structure or "form" the sub-tree
-    rooted on v has.
-
-    Parameters
-    ----------
-    parenthood : dict of node: node
-        The parenthood map defined for the rooted tree.
-
-    levels: dict of int: set of nodes
-        The LEVELS map such that LEVELS(i) are the vertices found on the i-th
-        level of the rooted tree.
-
-    values : dict of node: int
-        The VALUES map such that, for each vertex v in the rooted tree,
-        VALUES(v) is the value associated to v.
-
-    i : int
-        The current level of the rooted tree.
-
-    Returns
-    -------
-    STRUCT : dict of node: counter
-        A STRUCT map such that struct(v) is the structure (counter of ints)
-        corresponding to vertex v.
-
-    leaves : set of nodes
-        The leaves of the current level.
-
-    Note
-    ----
-    This algorithm runs in O(m_{i-1} + m_i) time and space where m_{j} are the
-    vertices found on the j-th level of the rooted tree.
-
-    """
-    # Define an empty map STRUCT.
-    STRUCT = {}
-
-    # Define an empty set to keep track of the leaves on the current level.
-    leaves = set()
-
-    # Traverse all the vertices on the i-th level and define an empty multiset
-    # for each non-leave vertex.
-    for v in levels[i]:
-        if values[v] != 0:
-            STRUCT[v] = Counter()
-        else:
-            leaves.add(v)
-
-    # Traverse all the vertices on the (i-1)-th level and append them to its
-    # father multiset.
-    for u in levels[i - 1]:
-        # Obtain u's father.
-        v = parenthood[u]
-
-        # Obtain u's value.
-        uval = values[u]
-
-        # Add u's value to the father's multiset.
-        STRUCT[v][uval] += 1
-
-    # Return the defined STRUCT map and leaves.
-    return STRUCT, leaves
-
-
 def group_structures_in_level(levels, values, struct, i):
     """Obtain the structures found on the i-th level as a Counter.
 
@@ -526,13 +457,17 @@ def levels_verification(T1, root_T1, T2, root_T2):
     for current_level in range(1, height_T1 + 1):
         # Assign the structures for the vertices of the current level for T1 and
         # T2.
-        struct_T1, leaves_T1 = assign_structure(
-            parenthood_T1, levels_T1, values_T1, current_level
-        )
+        struct_T1 = {
+            v: Counter([values_T1[u] for u in children_T1[v]])
+            for v in levels_T1[current_level]
+        }
+        leaves_T1 = {v for v in levels_T1[current_level] if values_T1[v] == 0}
 
-        struct_T2, leaves_T2 = assign_structure(
-            parenthood_T2, levels_T2, values_T2, current_level
-        )
+        struct_T2 = {
+            v: Counter([values_T2[u] for u in children_T2[v]])
+            for v in levels_T2[current_level]
+        }
+        leaves_T2 = {v for v in levels_T2[current_level] if values_T2[v] == 0}
 
         # Build the counter of structures and the mapping.
         C_T1, MS_T1 = group_structures_in_level(
