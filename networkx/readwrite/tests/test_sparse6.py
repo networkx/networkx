@@ -66,7 +66,7 @@ class TestSparseGraph6:
 
     def test_read_many_graph6(self):
         # Read many graphs into list
-        data = b":Q___eDcdFcDeFcE`GaJ`IaHbKNbLM\n" b":Q___dCfDEdcEgcbEGbFIaJ`JaHN`IM"
+        data = b":Q___eDcdFcDeFcE`GaJ`IaHbKNbLM\n:Q___dCfDEdcEgcbEGbFIaJ`JaHN`IM"
         fh = BytesIO(data)
         glist = nx.read_sparse6(fh)
         assert len(glist) == 2

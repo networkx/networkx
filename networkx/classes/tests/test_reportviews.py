@@ -103,12 +103,12 @@ class TestNodeDataView:
         assert repr(self.nv) == expected
         expected = (
             "NodeDataView({0: {}, 1: {}, 2: {}, 3: {}, "
-            + "4: {}, 5: {}, 6: {}, 7: {}, 8: {}})"
+            "4: {}, 5: {}, 6: {}, 7: {}, 8: {}})"
         )
         assert repr(self.ndv) == expected
         expected = (
             "NodeDataView({0: None, 1: None, 2: None, 3: None, 4: None, "
-            + "5: None, 6: None, 7: None, 8: None}, data='foo')"
+            "5: None, 6: None, 7: None, 8: None}, data='foo')"
         )
         assert repr(self.nwv) == expected
 
@@ -295,9 +295,9 @@ class TestEdgeDataView:
         ev = self.eview(self.G)(data=True)
         rep = (
             "EdgeDataView([(0, 1, {}), (1, 2, {}), "
-            + "(2, 3, {}), (3, 4, {}), "
-            + "(4, 5, {}), (5, 6, {}), "
-            + "(6, 7, {}), (7, 8, {})])"
+            "(2, 3, {}), (3, 4, {}), "
+            "(4, 5, {}), (5, 6, {}), "
+            "(6, 7, {}), (7, 8, {})])"
         )
         assert repr(ev) == rep
 
@@ -400,9 +400,9 @@ class TestOutEdgeDataView(TestEdgeDataView):
         ev = self.eview(self.G)(data=True)
         rep = (
             "OutEdgeDataView([(0, 1, {}), (1, 2, {}), "
-            + "(2, 3, {}), (3, 4, {}), "
-            + "(4, 5, {}), (5, 6, {}), "
-            + "(6, 7, {}), (7, 8, {})])"
+            "(2, 3, {}), (3, 4, {}), "
+            "(4, 5, {}), (5, 6, {}), "
+            "(6, 7, {}), (7, 8, {})])"
         )
         assert repr(ev) == rep
 
@@ -446,9 +446,9 @@ class TestInEdgeDataView(TestOutEdgeDataView):
         ev = self.eview(self.G)(data=True)
         rep = (
             "InEdgeDataView([(0, 1, {}), (1, 2, {}), "
-            + "(2, 3, {}), (3, 4, {}), "
-            + "(4, 5, {}), (5, 6, {}), "
-            + "(6, 7, {}), (7, 8, {})])"
+            "(2, 3, {}), (3, 4, {}), "
+            "(4, 5, {}), (5, 6, {}), "
+            "(6, 7, {}), (7, 8, {})])"
         )
         assert repr(ev) == rep
 
@@ -478,9 +478,9 @@ class TestMultiEdgeDataView(TestEdgeDataView):
         ev = self.eview(self.G)(data=True)
         rep = (
             "MultiEdgeDataView([(0, 1, {}), (1, 2, {}), "
-            + "(2, 3, {}), (3, 4, {}), "
-            + "(4, 5, {}), (5, 6, {}), "
-            + "(6, 7, {}), (7, 8, {})])"
+            "(2, 3, {}), (3, 4, {}), "
+            "(4, 5, {}), (5, 6, {}), "
+            "(6, 7, {}), (7, 8, {})])"
         )
         assert repr(ev) == rep
 
@@ -510,9 +510,9 @@ class TestOutMultiEdgeDataView(TestOutEdgeDataView):
         ev = self.eview(self.G)(data=True)
         rep = (
             "OutMultiEdgeDataView([(0, 1, {}), (1, 2, {}), "
-            + "(2, 3, {}), (3, 4, {}), "
-            + "(4, 5, {}), (5, 6, {}), "
-            + "(6, 7, {}), (7, 8, {})])"
+            "(2, 3, {}), (3, 4, {}), "
+            "(4, 5, {}), (5, 6, {}), "
+            "(6, 7, {}), (7, 8, {})])"
         )
         assert repr(ev) == rep
 
@@ -539,9 +539,9 @@ class TestInMultiEdgeDataView(TestOutMultiEdgeDataView):
         ev = self.eview(self.G)(data=True)
         rep = (
             "InMultiEdgeDataView([(0, 1, {}), (1, 2, {}), "
-            + "(2, 3, {}), (3, 4, {}), "
-            + "(4, 5, {}), (5, 6, {}), "
-            + "(6, 7, {}), (7, 8, {})])"
+            "(2, 3, {}), (3, 4, {}), "
+            "(4, 5, {}), (5, 6, {}), "
+            "(6, 7, {}), (7, 8, {})])"
         )
         assert repr(ev) == rep
 
@@ -585,7 +585,7 @@ class TestEdgeView:
         ev = self.eview(self.G)
         rep = (
             "EdgeView([(0, 1), (1, 2), (2, 3), (3, 4), "
-            + "(4, 5), (5, 6), (6, 7), (7, 8)])"
+            "(4, 5), (5, 6), (6, 7), (7, 8)])"
         )
         assert repr(ev) == rep
 
@@ -718,7 +718,7 @@ class TestOutEdgeView(TestEdgeView):
         ev = self.eview(self.G)
         rep = (
             "OutEdgeView([(0, 1), (1, 2), (2, 3), (3, 4), "
-            + "(4, 5), (5, 6), (6, 7), (7, 8)])"
+            "(4, 5), (5, 6), (6, 7), (7, 8)])"
         )
         assert repr(ev) == rep
 
@@ -745,7 +745,7 @@ class TestInEdgeView(TestEdgeView):
         ev = self.eview(self.G)
         rep = (
             "InEdgeView([(0, 1), (1, 2), (2, 3), (3, 4), "
-            + "(4, 5), (5, 6), (6, 7), (7, 8)])"
+            "(4, 5), (5, 6), (6, 7), (7, 8)])"
         )
         assert repr(ev) == rep
 
@@ -795,7 +795,7 @@ class TestMultiEdgeView(TestEdgeView):
         ev = self.eview(self.G)
         rep = (
             "MultiEdgeView([(0, 1, 0), (1, 2, 0), (1, 2, 3), (2, 3, 0), "
-            + "(3, 4, 0), (4, 5, 0), (5, 6, 0), (6, 7, 0), (7, 8, 0)])"
+            "(3, 4, 0), (4, 5, 0), (5, 6, 0), (6, 7, 0), (7, 8, 0)])"
         )
         assert repr(ev) == rep
 
@@ -961,7 +961,7 @@ class TestOutMultiEdgeView(TestMultiEdgeView):
         ev = self.eview(self.G)
         rep = (
             "OutMultiEdgeView([(0, 1, 0), (1, 2, 0), (1, 2, 3), (2, 3, 0),"
-            + " (3, 4, 0), (4, 5, 0), (5, 6, 0), (6, 7, 0), (7, 8, 0)])"
+            " (3, 4, 0), (4, 5, 0), (5, 6, 0), (6, 7, 0), (7, 8, 0)])"
         )
         assert repr(ev) == rep
 
@@ -994,7 +994,7 @@ class TestInMultiEdgeView(TestMultiEdgeView):
         ev = self.eview(self.G)
         rep = (
             "InMultiEdgeView([(0, 1, 0), (1, 2, 0), (1, 2, 3), (2, 3, 0), "
-            + "(3, 4, 0), (4, 5, 0), (5, 6, 0), (6, 7, 0), (7, 8, 0)])"
+            "(3, 4, 0), (4, 5, 0), (5, 6, 0), (6, 7, 0), (7, 8, 0)])"
         )
         assert repr(ev) == rep
 

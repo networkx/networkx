@@ -346,7 +346,7 @@ def greedy_color(G, strategy="largest_first", interchange=False):
     strategy = STRATEGIES.get(strategy, strategy)
     if not callable(strategy):
         raise nx.NetworkXError(
-            "strategy must be callable or a valid string. " f"{strategy} not valid."
+            f"strategy must be callable or a valid string. {strategy} not valid."
         )
     # Perform some validation on the arguments before executing any
     # strategy functions.
@@ -355,7 +355,7 @@ def greedy_color(G, strategy="largest_first", interchange=False):
             msg = "interchange cannot be used with independent_set"
             raise nx.NetworkXPointlessConcept(msg)
         if strategy is strategy_saturation_largest_first:
-            msg = "interchange cannot be used with" " saturation_largest_first"
+            msg = "interchange cannot be used with saturation_largest_first"
             raise nx.NetworkXPointlessConcept(msg)
     colors = {}
     nodes = strategy(G, colors)

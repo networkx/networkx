@@ -153,8 +153,8 @@ def test_trophic_levels_singular_matrix():
         nx.trophic_levels(G)
     msg = (
         "Trophic levels are only defined for graphs where every node "
-        + "has a path from a basal node (basal nodes are nodes with no "
-        + "incoming edges)."
+        "has a path from a basal node (basal nodes are nodes with no "
+        "incoming edges)."
     )
     assert msg in str(e.value)
 
@@ -179,8 +179,8 @@ def test_trophic_levels_singular_with_basal():
         nx.trophic_levels(G)
     msg = (
         "Trophic levels are only defined for graphs where every node "
-        + "has a path from a basal node (basal nodes are nodes with no "
-        + "incoming edges)."
+        "has a path from a basal node (basal nodes are nodes with no "
+        "incoming edges)."
     )
     assert msg in str(e.value)
 
@@ -193,8 +193,8 @@ def test_trophic_levels_singular_with_basal():
         nx.trophic_levels(G)
     msg = (
         "Trophic levels are only defined for graphs where every node "
-        + "has a path from a basal node (basal nodes are nodes with no "
-        + "incoming edges)."
+        "has a path from a basal node (basal nodes are nodes with no "
+        "incoming edges)."
     )
     assert msg in str(e.value)
 

@@ -313,7 +313,7 @@ def eccentricity(G, v=None, sp=None, weight=None):
                     " strongly connected"
                 )
             else:
-                msg = "Found infinite path length because the graph is not" " connected"
+                msg = "Found infinite path length because the graph is not connected"
             raise nx.NetworkXError(msg)
 
         e[n] = max(length.values())

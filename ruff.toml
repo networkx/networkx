@@ -1,0 +1,3 @@
+select = [
+    "ISC",  # implicit str concatenation
+]

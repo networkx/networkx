@@ -554,7 +554,7 @@ graph
         )
         assert_parse_error(
             "graph [edge [ source u'u\4200' target u'u\4200' ] "
-            + "node [ id u'u\4200' label b ] ]"
+            "node [ id u'u\4200' label b ] ]"
         )
 
         def assert_generate_error(*args, **kwargs):
