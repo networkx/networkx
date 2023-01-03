@@ -397,8 +397,7 @@ def average_shortest_path_length(G, weight=None, method=None):
     # there are no paths in the null graph.
     if n == 0:
         msg = (
-            "the null graph has no paths, thus there is no average"
-            "shortest path length"
+            "the null graph has no paths, thus there is no averageshortest path length"
         )
         raise nx.NetworkXPointlessConcept(msg)
     # For the special case of the trivial graph, return zero immediately.

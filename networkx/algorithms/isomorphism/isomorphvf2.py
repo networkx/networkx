@@ -725,7 +725,6 @@ class DiGraphMatcher(GraphMatcher):
                         return False
 
         if self.test != "mono":
-
             # Look ahead 1
 
             # R_termin

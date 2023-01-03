@@ -43,7 +43,7 @@ def _generate_sparse6_bytes(G, nodes, header):
     n = len(G)
     if n >= 2**36:
         raise ValueError(
-            "sparse6 is only defined if number of nodes is less " "than 2 ** 36"
+            "sparse6 is only defined if number of nodes is less than 2 ** 36"
         )
     if header:
         yield b">>sparse6<<"
@@ -62,7 +62,7 @@ def _generate_sparse6_bytes(G, nodes, header):
     edges = sorted((max(u, v), min(u, v)) for u, v in G.edges())
     bits = []
     curv = 0
-    for (v, u) in edges:
+    for v, u in edges:
         if v == curv:  # current vertex edge
             bits.append(0)
             bits.extend(enc(u))

@@ -138,9 +138,9 @@ def is_bipartite_node_set(G, nodes):
     if len(S) < len(nodes):
         # this should maybe just return False?
         raise AmbiguousSolution(
-            "The input node set contains duplicates.\n"
-            "This may lead to incorrect results when using it in bipartite algorithms.\n"
-            "Consider using set(nodes) as the input"
+            "The input node set contains duplicates.\nThis may lead to incorrect"
+            " results when using it in bipartite algorithms.\nConsider using set(nodes)"
+            " as the input"
         )
 
     for CC in (G.subgraph(c).copy() for c in connected_components(G)):

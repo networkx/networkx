@@ -263,9 +263,11 @@ def scale_free_graph(
         import warnings
 
         warnings.warn(
-            "The create_using argument is deprecated and will be removed in the future.\n\n"
-            "To create a scale free graph from an existing MultiDiGraph, use\n"
-            "initial_graph instead.",
+            (
+                "The create_using argument is deprecated and will be removed in the"
+                " future.\n\nTo create a scale free graph from an existing"
+                " MultiDiGraph, use\ninitial_graph instead."
+            ),
             DeprecationWarning,
             stacklevel=2,
         )

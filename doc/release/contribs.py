@@ -7,7 +7,8 @@ import shlex
 
 if len(sys.argv) < 2 or len(sys.argv) > 3:
     print(
-        "Usage: ./contributors.py tag-of-previous-release tag-of-newer-release (optional)"
+        "Usage: ./contributors.py tag-of-previous-release tag-of-newer-release"
+        " (optional)"
     )
     sys.exit(-1)
 
@@ -30,7 +31,8 @@ print(f"Release {tag} was on {tag_date}\n")
 
 if compare_tag:
     merges = call(
-        f"git log --since='{tag_date}' --until='{compare_tag_date}' --merges --format='>>>%B' --reverse"
+        f"git log --since='{tag_date}' --until='{compare_tag_date}' --merges"
+        " --format='>>>%B' --reverse"
     )
 else:
     merges = call(f"git log --since='{tag_date}' --merges --format='>>>%B' --reverse")
@@ -51,7 +53,8 @@ if compare_tag:
     commits = filter(
         None,
         call(
-            f"git log --since='{tag_date}' --until='{compare_tag_date}' --pretty=%s --reverse"
+            f"git log --since='{tag_date}' --until='{compare_tag_date}' --pretty=%s"
+            " --reverse"
         ),
     )
 else:
@@ -63,7 +66,7 @@ for c in commits:
     print("- " + c)
 
 print(f"\nIt contained the following {len(merges)} merges:\n")
-for (merge, message) in merges:
+for merge, message in merges:
     if merge.startswith("Merge pull request #"):
         PR = f" ({merge.split()[3]})"
     else:

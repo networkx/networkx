@@ -374,7 +374,7 @@ def partial_k_edge_augmentation(G, k, avail, weight=None):
 
     # Generate all edges between CCs that could not be k-edge-connected
     for cc1, cc2 in it.combinations(k_edge_subgraphs, 2):
-        for (u, v) in _edges_between_disjoint(H, cc1, cc2):
+        for u, v in _edges_between_disjoint(H, cc1, cc2):
             d = H.get_edge_data(u, v)
             edge = d.get("generator", None)
             if edge is not None:
@@ -1223,7 +1223,7 @@ def greedy_k_edge_augmentation(G, k, avail=None, weight=None, seed=None):
 
     # Incrementally add edges in until we are k-connected
     H = G.copy()
-    for (u, v) in avail_uv:
+    for u, v in avail_uv:
         done = False
         if not is_locally_k_edge_connected(H, u, v, k=k):
             # Only add edges in parts that are not yet locally k-edge-connected
@@ -1241,7 +1241,7 @@ def greedy_k_edge_augmentation(G, k, avail=None, weight=None, seed=None):
 
     # Randomized attempt to reduce the size of the solution
     _compat_shuffle(seed, aug_edges)
-    for (u, v) in list(aug_edges):
+    for u, v in list(aug_edges):
         # Don't remove if we know it would break connectivity
         if H.degree(u) <= k or H.degree(v) <= k:
             continue

@@ -343,7 +343,7 @@ def newman_watts_strogatz_graph(n, k, p, seed=None):
     # for each edge u-v, with probability p, randomly select existing
     # node w and add new edge u-w
     e = list(G.edges())
-    for (u, v) in e:
+    for u, v in e:
         if seed.random() < p:
             w = seed.choice(nlist)
             # no self-loops and reject if edge u-w exists
@@ -751,7 +751,7 @@ def dual_barabasi_albert_graph(n, m1, m2, p, seed=None, initial_graph=None):
     else:
         if len(initial_graph) < max(m1, m2) or len(initial_graph) > n:
             raise nx.NetworkXError(
-                f"Barabási–Albert initial graph must have between "
+                "Barabási–Albert initial graph must have between "
                 f"max(m1, m2) = {max(m1, m2)} and n = {n} nodes"
             )
         G = initial_graph.copy()
@@ -1114,7 +1114,7 @@ def random_shell_graph(constructor, seed=None):
     intra_edges = []
     nnodes = 0
     # create gnm graphs for each shell
-    for (n, m, d) in constructor:
+    for n, m, d in constructor:
         inter_edges = int(m * d)
         intra_edges.append(m - inter_edges)
         g = nx.convert_node_labels_to_integers(

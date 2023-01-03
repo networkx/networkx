@@ -436,7 +436,8 @@ def lexicographical_topological_sort(G, key=None):
                     heapq.heappush(zero_indegree, create_tuple(child))
                 except TypeError as err:
                     raise TypeError(
-                        f"{err}\nConsider using `key=` parameter to resolve ambiguities in the sort order."
+                        f"{err}\nConsider using `key=` parameter to resolve ambiguities"
+                        " in the sort order."
                     )
                 del indegree_map[child]
 
@@ -1083,7 +1084,7 @@ def dag_longest_path_length(G, weight="weight", default_weight=1):
             i = max(G[u][v], key=lambda x: G[u][v][x].get(weight, default_weight))
             path_length += G[u][v][i].get(weight, default_weight)
     else:
-        for (u, v) in pairwise(path):
+        for u, v in pairwise(path):
             path_length += G[u][v].get(weight, default_weight)
 
     return path_length

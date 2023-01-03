@@ -172,7 +172,10 @@ def _extrema_bounding(G, compute="diameter", weight=None):
         elif compute == "eccentricities":
             ruled_out = set()
         else:
-            msg = "compute must be one of 'diameter', 'radius', 'periphery', 'center', 'eccentricities'"
+            msg = (
+                "compute must be one of 'diameter', 'radius', 'periphery', 'center',"
+                " 'eccentricities'"
+            )
             raise ValueError(msg)
 
         ruled_out.update(i for i in candidates if ecc_lower[i] == ecc_upper[i])
@@ -313,7 +316,7 @@ def eccentricity(G, v=None, sp=None, weight=None):
                     " strongly connected"
                 )
             else:
-                msg = "Found infinite path length because the graph is not" " connected"
+                msg = "Found infinite path length because the graph is not connected"
             raise nx.NetworkXError(msg)
 
         e[n] = max(length.values())
@@ -721,10 +724,10 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
 
     if invert_weight and weight is not None:
         if G.is_multigraph():
-            for (u, v, k, d) in G.edges(keys=True, data=True):
+            for u, v, k, d in G.edges(keys=True, data=True):
                 d[weight] = 1 / d[weight]
         else:
-            for (u, v, d) in G.edges(data=True):
+            for u, v, d in G.edges(data=True):
                 d[weight] = 1 / d[weight]
     # Replace with collapsing topology or approximated zero?
 

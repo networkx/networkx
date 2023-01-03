@@ -162,7 +162,7 @@ def katz_centrality(
         b = beta
         if set(beta) != set(G):
             raise nx.NetworkXError(
-                "beta dictionary " "must have a value for every node"
+                "beta dictionary must have a value for every node"
             ) from err
 
     # make up to max_iter iterations
@@ -312,9 +312,7 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True, weight=None):
     try:
         nodelist = beta.keys()
         if set(nodelist) != set(G):
-            raise nx.NetworkXError(
-                "beta dictionary " "must have a value for every node"
-            )
+            raise nx.NetworkXError("beta dictionary must have a value for every node")
         b = np.array(list(beta.values()), dtype=float)
     except AttributeError:
         nodelist = list(G)

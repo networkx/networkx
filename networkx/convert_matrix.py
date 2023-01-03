@@ -428,7 +428,8 @@ def from_pandas_edgelist(
         attr_col_headings = [edge_attr]
     if len(attr_col_headings) == 0:
         raise nx.NetworkXError(
-            f"Invalid edge_attr argument: No columns found with name: {attr_col_headings}"
+            "Invalid edge_attr argument: No columns found with name:"
+            f" {attr_col_headings}"
         )
 
     try:
@@ -947,8 +948,8 @@ def to_numpy_array(
             edge_attrs = dtype.names
         else:
             raise ValueError(
-                "Specifying `weight` not supported for structured dtypes\n."
-                "To create adjacency matrices from structured dtypes, use `weight=None`."
+                "Specifying `weight` not supported for structured dtypes\n.To create"
+                " adjacency matrices from structured dtypes, use `weight=None`."
             )
 
     # Map nodes to row/col in matrix

@@ -1000,13 +1000,15 @@ class argmap:
             elif isinstance(arg, str):
                 if sig.kwargs is None:
                     raise nx.NetworkXError(
-                        f"name {arg} is not a named parameter and this function doesn't have kwargs"
+                        f"name {arg} is not a named parameter and this function doesn't"
+                        " have kwargs"
                     )
                 return f"{sig.kwargs}[{arg!r}]"
             else:
                 if sig.args is None:
                     raise nx.NetworkXError(
-                        f"index {arg} not a parameter index and this function doesn't have args"
+                        f"index {arg} not a parameter index and this function doesn't"
+                        " have args"
                     )
                 mutable_args = True
                 return f"{sig.args}[{arg - sig.n_positional}]"

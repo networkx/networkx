@@ -543,7 +543,7 @@ class TestGeneratorClassic:
                 assert v not in G[u]
                 assert G.nodes[u] == G.nodes[v]
         # Across blocks, all vertices should be adjacent.
-        for (block1, block2) in itertools.combinations(blocks, 2):
+        for block1, block2 in itertools.combinations(blocks, 2):
             for u, v in itertools.product(block1, block2):
                 assert v in G[u]
                 assert G.nodes[u] != G.nodes[v]

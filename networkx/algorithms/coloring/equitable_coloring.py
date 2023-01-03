@@ -12,7 +12,7 @@ __all__ = ["equitable_color"]
 def is_coloring(G, coloring):
     """Determine if the coloring is a valid coloring for the graph G."""
     # Verify that the coloring is valid.
-    for (s, d) in G.edges:
+    for s, d in G.edges:
         if coloring[s] == coloring[d]:
             return False
     return True
@@ -201,7 +201,6 @@ def procedure_P(V_minus, V_plus, N, H, F, C, L, excluded_colors=None):
         made_equitable = False
 
         for W_1 in R_cal[::-1]:
-
             for v in C[W_1]:
                 X = None
 
@@ -482,7 +481,6 @@ def equitable_color(G, num_colors):
 
     for u in sorted(G.nodes):
         for v in sorted(G.neighbors(u)):
-
             # Do not double count edges if (v, u) has already been seen.
             if (v, u) in edges_seen:
                 continue

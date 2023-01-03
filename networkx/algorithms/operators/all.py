@@ -72,9 +72,11 @@ def union_all(graphs, rename=()):
         elif not seen_nodes.isdisjoint(G_nodes_set):
             raise nx.NetworkXError(
                 "The node sets of the graphs are not disjoint.",
-                "Use appropriate rename"
-                "=(G1prefix,G2prefix,...,GNprefix)"
-                "or use disjoint_union(G1,G2,...,GN).",
+                (
+                    "Use appropriate rename"
+                    "=(G1prefix,G2prefix,...,GNprefix)"
+                    "or use disjoint_union(G1,G2,...,GN)."
+                ),
             )
 
         seen_nodes |= G_nodes_set

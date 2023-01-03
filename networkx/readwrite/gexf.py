@@ -1042,9 +1042,7 @@ def relabel_gexf_graph(G):
     x, y = zip(*mapping)
     if len(set(y)) != len(G):
         raise nx.NetworkXError(
-            "Failed to relabel nodes: "
-            "duplicate node labels found. "
-            "Use relabel=False."
+            "Failed to relabel nodes: duplicate node labels found. Use relabel=False."
         )
     mapping = dict(mapping)
     H = nx.relabel_nodes(G, mapping)

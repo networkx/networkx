@@ -261,9 +261,10 @@ def to_pydot(N):
         )
         if raise_error:
             raise ValueError(
-                f'Node names and attributes should not contain ":" unless they are quoted with "".\
-                For example the string \'attribute:data1\' should be written as \'"attribute:data1"\'.\
-                Please refer https://github.com/pydot/pydot/issues/258'
+                f'Node names and attributes should not contain ":" unless they are'
+                f' quoted with "".                For example the string'
+                f" 'attribute:data1' should be written as '\"attribute:data1\"'.     "
+                f"           Please refer https://github.com/pydot/pydot/issues/258"
             )
         p = pydot.Node(n, **str_nodedata)
         P.add_node(p)
@@ -284,9 +285,11 @@ def to_pydot(N):
             )
             if raise_error:
                 raise ValueError(
-                    f'Node names and attributes should not contain ":" unless they are quoted with "".\
-                    For example the string \'attribute:data1\' should be written as \'"attribute:data1"\'.\
-                    Please refer https://github.com/pydot/pydot/issues/258'
+                    f'Node names and attributes should not contain ":" unless they are'
+                    f' quoted with "".                    For example the string'
+                    f" 'attribute:data1' should be written as '\"attribute:data1\"'. "
+                    f"                   Please refer"
+                    f" https://github.com/pydot/pydot/issues/258"
                 )
             edge = pydot.Edge(u, v, key=str(key), **str_edgedata)
             P.add_edge(edge)
@@ -307,9 +310,11 @@ def to_pydot(N):
             )
             if raise_error:
                 raise ValueError(
-                    f'Node names and attributes should not contain ":" unless they are quoted with "".\
-                    For example the string \'attribute:data1\' should be written as \'"attribute:data1"\'.\
-                    Please refer https://github.com/pydot/pydot/issues/258'
+                    f'Node names and attributes should not contain ":" unless they are'
+                    f' quoted with "".                    For example the string'
+                    f" 'attribute:data1' should be written as '\"attribute:data1\"'. "
+                    f"                   Please refer"
+                    f" https://github.com/pydot/pydot/issues/258"
                 )
             edge = pydot.Edge(u, v, **str_edgedata)
             P.add_edge(edge)
@@ -436,9 +441,10 @@ def pydot_layout(G, prog="neato", root=None):
         # Explicitly catch nodes with ":" in node names or nodedata.
         if _check_colon_quotes(str_n):
             raise ValueError(
-                f'Node names and node attributes should not contain ":" unless they are quoted with "".\
-                For example the string \'attribute:data1\' should be written as \'"attribute:data1"\'.\
-                Please refer https://github.com/pydot/pydot/issues/258'
+                f'Node names and node attributes should not contain ":" unless they are'
+                f' quoted with "".                For example the string'
+                f" 'attribute:data1' should be written as '\"attribute:data1\"'.     "
+                f"           Please refer https://github.com/pydot/pydot/issues/258"
             )
         pydot_node = pydot.Node(str_n).get_name()
         node = Q.get_node(pydot_node)

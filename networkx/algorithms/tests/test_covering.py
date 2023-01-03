@@ -20,7 +20,9 @@ class TestMinEdgeCover:
         G.add_node(1)
         with pytest.raises(
             nx.NetworkXException,
-            match="Graph has a node with no edge incident on it, so no edge cover exists.",
+            match=(
+                "Graph has a node with no edge incident on it, so no edge cover exists."
+            ),
         ):
             nx.min_edge_cover(G)
 

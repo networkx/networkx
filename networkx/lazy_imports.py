@@ -92,10 +92,10 @@ class DelayedImportErrorModule(types.ModuleType):
         else:
             fd = self.__frame_data
             raise ModuleNotFoundError(
-                f"No module named '{fd['spec']}'\n\n"
-                "This error is lazily reported, having originally occured in\n"
-                f'  File {fd["filename"]}, line {fd["lineno"]}, in {fd["function"]}\n\n'
-                f'----> {"".join(fd["code_context"]).strip()}'
+                f"No module named '{fd['spec']}'\n\nThis error is lazily reported,"
+                f' having originally occured in\n  File {fd["filename"]}, line'
+                f' {fd["lineno"]}, in {fd["function"]}\n\n---->'
+                f' {"".join(fd["code_context"]).strip()}'
             )
 
 

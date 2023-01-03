@@ -73,7 +73,8 @@ def generate_pajek(G):
                 s += f" {make_qstr(k)} {make_qstr(v)}"
             else:
                 warnings.warn(
-                    f"Node attribute {k} is not processed. {('Empty attribute' if isinstance(v, str) else 'Non-string attribute')}."
+                    f"Node attribute {k} is not processed."
+                    f" {('Empty attribute' if isinstance(v, str) else 'Non-string attribute')}."
                 )
         yield s
 
@@ -91,7 +92,8 @@ def generate_pajek(G):
                 s += f" {make_qstr(k)} {make_qstr(v)}"
             else:
                 warnings.warn(
-                    f"Edge attribute {k} is not processed. {('Empty attribute' if isinstance(v, str) else 'Non-string attribute')}."
+                    f"Edge attribute {k} is not processed."
+                    f" {('Empty attribute' if isinstance(v, str) else 'Non-string attribute')}."
                 )
         yield s
 

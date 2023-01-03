@@ -250,7 +250,7 @@ def test_to_numpy_array_multiweight_reduction(func, expected):
 
 
 @pytest.mark.parametrize(
-    ("G, expected"),
+    "G, expected",
     [
         (nx.Graph(), [[(0, 0), (10, 5)], [(10, 5), (0, 0)]]),
         (nx.DiGraph(), [[(0, 0), (10, 5)], [(0, 0), (0, 0)]]),

@@ -7,7 +7,8 @@ if sys.version_info[:2] < (3, 8):
     error = (
         "NetworkX 2.7+ requires Python 3.8 or later (%d.%d detected). \n"
         "For Python 2.7, please install version 2.2 using: \n"
-        "$ pip install 'networkx==2.2'" % sys.version_info[:2]
+        "$ pip install 'networkx==2.2'"
+        % sys.version_info[:2]
     )
     sys.stderr.write(error + "\n")
     sys.exit(1)
@@ -173,7 +174,6 @@ with open("README.rst") as fh:
     long_description = fh.read()
 
 if __name__ == "__main__":
-
     setup(
         name=name,
         version=version,

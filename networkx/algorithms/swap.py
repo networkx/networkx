@@ -90,7 +90,10 @@ def directed_edge_swap(G, *, nswap=1, max_tries=100, seed=None):
         tries += 1
 
         if tries > max_tries:
-            msg = f"Maximum number of swap attempts ({tries}) exceeded before desired swaps achieved ({nswap})."
+            msg = (
+                f"Maximum number of swap attempts ({tries}) exceeded before desired"
+                f" swaps achieved ({nswap})."
+            )
             raise nx.NetworkXAlgorithmError(msg)
 
         # If the given node doesn't have any out edges, then there isn't anything to swap
@@ -180,7 +183,8 @@ def double_edge_swap(G, nswap=1, max_tries=100, seed=None):
     """
     if G.is_directed():
         raise nx.NetworkXError(
-            "double_edge_swap() not defined for directed graphs. Use directed_edge_swap instead."
+            "double_edge_swap() not defined for directed graphs. Use directed_edge_swap"
+            " instead."
         )
     if nswap > max_tries:
         raise nx.NetworkXError("Number of swaps > number of tries allowed.")

@@ -97,7 +97,7 @@ class TestEdgelist:
         G.add_node(1, bipartite=0)
         G.add_node(2, bipartite=1)
         G.add_node(3, bipartite=0)
-        bipartite.write_edgelist(G, fh, data=[("weight")])
+        bipartite.write_edgelist(G, fh, data=["weight"])
         fh.seek(0)
         assert fh.read() == b"1 2 2.0\n3 2 3.0\n"
 

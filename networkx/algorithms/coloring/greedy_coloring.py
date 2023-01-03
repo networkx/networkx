@@ -196,7 +196,7 @@ def strategy_connected_sequential(G, colors, traversal="bfs"):
         # Yield the source node, then all the nodes in the specified
         # traversal order.
         yield source
-        for (_, end) in traverse(G.subgraph(component), source):
+        for _, end in traverse(G.subgraph(component), source):
             yield end
 
 
@@ -346,7 +346,7 @@ def greedy_color(G, strategy="largest_first", interchange=False):
     strategy = STRATEGIES.get(strategy, strategy)
     if not callable(strategy):
         raise nx.NetworkXError(
-            "strategy must be callable or a valid string. " f"{strategy} not valid."
+            f"strategy must be callable or a valid string. {strategy} not valid."
         )
     # Perform some validation on the arguments before executing any
     # strategy functions.
@@ -355,7 +355,7 @@ def greedy_color(G, strategy="largest_first", interchange=False):
             msg = "interchange cannot be used with independent_set"
             raise nx.NetworkXPointlessConcept(msg)
         if strategy is strategy_saturation_largest_first:
-            msg = "interchange cannot be used with" " saturation_largest_first"
+            msg = "interchange cannot be used with saturation_largest_first"
             raise nx.NetworkXPointlessConcept(msg)
     colors = {}
     nodes = strategy(G, colors)
@@ -470,7 +470,7 @@ def _greedy_coloring_with_interchange(G, nodes):
 
     graph = {node: _Node(node, n) for node in G}
 
-    for (node1, node2) in G.edges():
+    for node1, node2 in G.edges():
         adj_entry1 = _AdjEntry(node2)
         adj_entry2 = _AdjEntry(node1)
         adj_entry1.mate = adj_entry2

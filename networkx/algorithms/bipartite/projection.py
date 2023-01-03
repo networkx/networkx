@@ -197,8 +197,9 @@ def weighted_projected_graph(B, nodes, ratio=False):
 
     if n_top < 1:
         raise NetworkXAlgorithmError(
-            f"the size of the nodes to project onto ({len(nodes)}) is >= the graph size ({len(B)}).\n"
-            "They are either not a valid bipartite partition or contain duplicates"
+            f"the size of the nodes to project onto ({len(nodes)}) is >= the graph size"
+            f" ({len(B)}).\nThey are either not a valid bipartite partition or contain"
+            " duplicates"
         )
 
     for u in nodes:
