@@ -94,9 +94,6 @@ def get_initial_maps_and_height(T, root):
     PARENTHOOD = {}
 
     # Auxiliary variables.
-    non_leaves = set()
-    leaves = set()
-
     from_distance = defaultdict(set)
     distance_to_root = {}
     distance_to_root[root] = 0
@@ -108,16 +105,11 @@ def get_initial_maps_and_height(T, root):
         # Define child's parent.
         PARENTHOOD[child] = parent
 
-        # The parent can't be a leave.
-        non_leaves.add(parent)
+        # The parent can't be a leave, assign its value to -1.
+        VALUES[parent] = -1
 
-        # If a vertex was thought to be a leave but has a child, then it isn't a
-        # leave.
-        if parent in leaves:
-            leaves.remove(parent)
-
-        # The child can be a leave.
-        leaves.add(child)
+        # The child could be a leave, assing its value to 0.
+        VALUES[child] = 0
 
         # Define d(child, root) = d(parent, root) + 1
         distance_to_root[child] = distance_to_root[parent] + 1
@@ -141,13 +133,6 @@ def get_initial_maps_and_height(T, root):
             LEVELS[current_lvl].add(v)
 
         current_lvl -= 1
-
-    # Build the VALUES map.
-    for v in non_leaves:
-        VALUES[v] = -1
-
-    for v in leaves:
-        VALUES[v] = 0
 
     # Traverse all the vertices found on the 0-th level and set the initial
     # children for the CHILDREN map.
