@@ -48,7 +48,7 @@ Examples
 
 You can change many features of the nodes and edges.
 
->>> G=nx.path_graph(4, create_using=nx.DiGraph)
+>>> G = nx.path_graph(4, create_using=nx.DiGraph)
 >>> pos = {n: (n, n) for n in G}  # nodes set on a line
 
 >>> G.nodes[0]["style"] = "blue"
@@ -178,7 +178,7 @@ def to_latex_raw(
     node_label : string or dict
         The name of the node attribute on `G` that holds the node label (text)
         displayed for each node. If the attribute is "" or not present, the node
-        itself is drawn as a string. LaTeX processing such as `"$A_1$" is allowed.
+        itself is drawn as a string. LaTeX processing such as ``"$A_1$"`` is allowed.
         Or a dict keyed by node to a string holding the label for that node.
     default_edge_options : string
         The options for the scope drawing all edges. The default is "[-]" for
@@ -330,17 +330,17 @@ def to_latex(
     figure_wrapper=_FIG_WRAPPER,
     subfigure_wrapper=_SUBFIG_WRAPPER,
 ):
-    """Return latex code to draw the graph(s) in Gbunch
+    """Return latex code to draw the graph(s) in `Gbunch`
 
     The TikZ drawing utility in LaTeX is used to draw the graph(s).
-    If Gbunch is a graph, it is drawn in a figure environment.
-    If Gbunch is an iterable of graphs, each is drawn in a subfigure envionment
+    If `Gbunch` is a graph, it is drawn in a figure environment.
+    If `Gbunch` is an iterable of graphs, each is drawn in a subfigure envionment
     within a single figure environment.
 
     If `as_document` is True, the figure is wrapped inside a document environment
     so that the resulting string is ready to be compiled by LaTeX. Otherwise,
-    the string is ready for inclusion in a larger tex document using `\\include`
-    or `\\input` statements.
+    the string is ready for inclusion in a larger tex document using ``\\include``
+    or ``\\input`` statements.
 
     Parameters
     ==========
@@ -366,7 +366,7 @@ def to_latex(
     node_label : string or dict
         The name of the node attribute on `G` that holds the node label (text)
         displayed for each node. If the attribute is "" or not present, the node
-        itself is drawn as a string. LaTeX processing such as `"$A_1$" is allowed.
+        itself is drawn as a string. LaTeX processing such as ``"$A_1$"`` is allowed.
         Or a dict keyed by node to a string holding the label for that node.
     default_edge_options : string
         The options for the scope drawing all edges. The default is "[-]" for
@@ -484,7 +484,7 @@ def write_latex(Gbunch, path, **options):
     """Write the latex code to draw the graph(s) onto `path`.
 
     This convenience function creates the latex drawing code as a string
-    and writes that to a file ready to be compiled when `as_document is True`
+    and writes that to a file ready to be compiled when `as_document` is True
     or ready to be ``\\import``ed or `\\include``ed into your main LaTeX document.
 
     The `path` argument can be a string filename or a file handle to write to.
@@ -519,7 +519,7 @@ def write_latex(Gbunch, path, **options):
         node_label : string or dict
             The name of the node attribute on `G` that holds the node label (text)
             displayed for each node. If the attribute is "" or not present, the node
-            itself is drawn as a string. LaTeX processing such as `"$A_1$" is allowed.
+            itself is drawn as a string. LaTeX processing such as ``"$A_1$"`` is allowed.
             Or a dict keyed by node to a string holding the label for that node.
         default_edge_options : string
             The options for the scope drawing all edges. The default is "[-]" for
