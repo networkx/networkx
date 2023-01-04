@@ -47,7 +47,7 @@ def maximum_weight_cycle_packing(graph: nx.DiGraph, k: int) -> list:
 
 
     >>> Digraph=nx.DiGraph()
-    >>> Digraph.add_nodes_from([1,2,3,4,5,6,7,8])
+    >>> Digraph.add_nodes_from([1,2,3,5,6,7,8])
     >>> Digraph.add_weighted_edges_from([(1,8,2),(8,1,4),(2,1,5),(1,3,4),(3,8,2),(8,2,3),(8,5,4),(5,7,3),(7,6,2),(6,5,4)])
     >>> print(len(maximum_weight_cycle_packing(Digraph,3))) #[1,8,2] [6,5,7] [1,3,8] , can be only 2 but in any order
     2
@@ -81,61 +81,39 @@ def maximum_weight_cycle_packing(graph: nx.DiGraph, k: int) -> list:
     for Y in Ys:
         ans_graph = nx.Graph()
         #   creating the nodes in the graph graph
-        for edge in Y:  # in this for loop we want to iterate all over the Ys edges and we add them a list to avoid collisions
+        #   adding the nodes in the graph
+        for edge in Y:
             ans_graph.add_node((edge[0], edge[1]))
             seen_Y.add(edge[0])
             seen_Y.add(edge[1])
+            if (edge[0], edge[1]) in graph.edges and (edge[1], edge[0]) in graph.edges:
+                weight = graph.get_edge_data(edge[0], edge[1])["weight"] + graph.get_edge_data(edge[1], edge[0])[
+                    "weight"]
+                ans_graph.add_edge((edge[0], edge[1]), (edge[0], edge[1]), weight=weight, cycle=[edge[0], edge[1]])
         for edge in graph.edges:
-            if edge[0] not in X:
-                if edge[0] in seen_Y:
-                    for ed in Y:
-                        if edge[0] in ed:
-                            node = (edge[0], ed)
-                            if node not in X:
-                                X.append(node)  # [edge[0]] = ed
-                            break
-                else:
-                    X.append((edge[0]))
-                    ans_graph.add_node((edge[0]))
+            if edge[0] not in seen_Y and edge[0] not in X:
+                X.append((edge[0]))
+                ans_graph.add_node((edge[0]))
 
+        # X = list(X)
         for i in range(len(X)):  # creating the edges in the graph by going through the 2-circles
-            if isinstance(X[i], tuple):
-                for j in range(i + 1, len(X)):
-                    if isinstance(X[j], tuple):
-                        a = X[i][0]
-                        b = X[j][0]
-                        if (a, b) in graph.edges and (b, a) in graph.edges:
-                            weight = graph.get_edge_data(a, b)["weight"] + graph.get_edge_data(b, a)[
-                                "weight"]
-                            # ans_graph.add_edge(f"X{X[i]}", f"X{X[j]}", weight=weight, cycle=[X[i], X[j]])
-                            ans_graph.add_edge((X[i][1]), (X[j][1]), weight=weight, cycle=[a, b])
-            else:
-                for j in range(i + 1, len(X)):
-                    if isinstance(X[j], tuple):
-                        continue
-                    if (X[i], X[j]) in graph.edges and (X[j], X[i]) in graph.edges:
-                        weight = graph.get_edge_data(X[i], X[j])["weight"] + graph.get_edge_data(X[j], X[i])["weight"]
-                        # ans_graph.add_edge(f"X{X[i]}", f"X{X[j]}", weight=weight, cycle=[X[i], X[j]])
-                        ans_graph.add_edge((X[i]), (X[j]), weight=weight, cycle=[X[i], X[j]])
+            for j in range(i + 1, len(X)):
+                if (X[i], X[j]) in graph.edges and (X[j], X[i]) in graph.edges:
+                    weight = graph.get_edge_data(X[i], X[j])["weight"] + graph.get_edge_data(X[j], X[i])["weight"]
+                    # ans_graph.add_edge(f"X{X[i]}", f"X{X[j]}", weight=weight, cycle=[X[i], X[j]])
+                    ans_graph.add_edge((X[i]), (X[j]), weight=weight, cycle=[X[i], X[j]])
 
         #   creating the edges in the graph by going through the 3-circles
         for k in range(len(X)):
-            if isinstance(X[k], tuple):
-                node = X[k][0]
-                ed = X[k][1]
-                for j, l in Y:
-                    if [j, l, node] in cycles:
-                        weight = graph.get_edge_data(j, l)["weight"] + graph.get_edge_data(l, node)["weight"] + \
-                                 graph.get_edge_data(node, j)["weight"]
-                        ans_graph.add_edge(ed, (j, l), weight=weight, cycle=[j, l, node])
-            else:
-                for j, l in Y:  # This deals with the normal case of Yi,j Xk
-                    if [j, l, X[k]] in cycles:
-                        weight = graph.get_edge_data(j, l)["weight"] + graph.get_edge_data(l, X[k])["weight"] + \
-                                 graph.get_edge_data(X[k], j)["weight"]
-                        # ans_graph.add_edge(f"X{X[k]}", f"Y{j},{l}", weight=weight, cycle=[j, l, X[k]])
-                        ans_graph.add_edge((X[k]), (j, l), weight=weight, cycle=[j, l, X[k]])
+            for j, l in Y:  # This deals with the normal case of Yi,j Xk
+                if (l, X[k]) in graph.edges and (X[k], j) in graph.edges:  # [j, l, X[k]] in cycles:
+                    weight = graph.get_edge_data(j, l)["weight"] + graph.get_edge_data(l, X[k])["weight"] + \
+                             graph.get_edge_data(X[k], j)["weight"]
+                    ans_graph.add_edge((X[k]), (j, l), weight=weight, cycle=[j, l, X[k]])
+
         exchanges = list(nx.max_weight_matching(ans_graph))
+        if len(exchanges) == 0 and ans_graph.number_of_edges() == 1:
+            exchanges = [list(ans_graph.edges)[0]]
         temp_max = 0
         for cyc in exchanges:
             temp_max = temp_max + ans_graph.get_edge_data(cyc[0], cyc[1])["weight"]
@@ -153,8 +131,14 @@ def maximum_weight_cycle_packing(graph: nx.DiGraph, k: int) -> list:
 
 
 def simple_cycles(G, limit):
-    """"
-    >>>
+    """
+    >>> Digraph=nx.DiGraph()
+    >>> Digraph.add_nodes_from([1,2,3,5,6,7,8])
+    >>> Digraph.add_weighted_edges_from([(1,8,2),(8,1,4),(2,1,5),(1,3,4),(3,8,2),(8,2,3),(8,5,4),(5,7,3),(7,6,2),(6,5,4)])
+    >>> Ys=simple_cycles(Digraph,3)
+    >>> a=[y for y in Ys]
+    >>> print(len(a)) #- the known product is supposed to be composed of 27 permutation
+    4
     """
     subG = type(G)(G.edges())
     sccs = list(nx.strongly_connected_components(subG))
@@ -169,7 +153,7 @@ def simple_cycles(G, limit):
         while stack:
             thisnode, nbrs = stack[-1]
 
-            if nbrs and len(path) < limit:
+            if nbrs and len(path) <= limit:
                 nextnode = nbrs.pop()
                 if nextnode == startnode:
                     yield path[:]
@@ -190,7 +174,7 @@ def simple_cycles(G, limit):
 def create_Ys(graph, k):
     """This function is used to create the cartesian product of the 3-cycles
     >>> Digraph=nx.DiGraph()
-    >>> Digraph.add_nodes_from([1,2,3,4,5,6,7,8])
+    >>> Digraph.add_nodes_from([1,2,3,5,6,7,8])
     >>> Digraph.add_weighted_edges_from([(1,8,2),(8,1,4),(2,1,5),(1,3,4),(3,8,2),(8,2,3),(8,5,4),(5,7,3),(7,6,2),(6,5,4)])
     >>> Ys,_=create_Ys(Digraph,3)
     >>> print(len(Ys)) #- the known product is supposed to be composed of 27 permutation
@@ -201,7 +185,7 @@ def create_Ys(graph, k):
     >>> print(len(create_Ys(Digraph,3))) #- the known product is supposed to be composed of 1 permutation
     2
     """
-    temp_cycles = simple_cycles(graph, k + 1)  # nx.recursive_simple_cycles(graph)
+    temp_cycles = simple_cycles(graph, k)  # nx.recursive_simple_cycles(graph)
     cycles = []
     for cycle in temp_cycles:
         if len(cycle) == k:
@@ -223,6 +207,7 @@ def create_Ys(graph, k):
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     # itertools.ne
+
     doctest.testmod()
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
