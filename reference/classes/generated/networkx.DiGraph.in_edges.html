@@ -527,7 +527,7 @@
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">DiGraph.</span></span><span class="sig-name descname"><span class="pre">in_edges</span></span><a class="headerlink" href="#networkx.DiGraph.in_edges" title="Permalink to this definition">#</a></dt>
 <dd><p>A view of the in edges of the graph as G.in_edges or G.in_edges().</p>
 <p>in_edges(self, nbunch=None, data=False, default=None):</p>
-<dl class="field-list">
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>nbunch</strong><span class="classifier">single node, container, or all nodes (default= all nodes)</span></dt><dd><p>The view will only report edges incident to these nodes.</p>
@@ -547,31 +547,6 @@ Only relevant if data is not True or False.</p>
 or (u, v, d) tuples of edges, but can also be used for
 attribute lookup as <code class="xref py py-obj docutils literal notranslate"><span class="pre">edges[u,</span> <span class="pre">v]['foo']</span></code>.</p>
 </dd>
-<dt>Examples</dt><dd></dd>
-</dl>
-<blockquote>
-<div></div></blockquote>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
-<span class="go">    ..</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">)</span>
-<span class="go">    ..</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">in_edges</span><span class="p">()</span>
-<span class="go">    ..</span>
-</pre></div>
-</div>
-<dl class="simple">
-<dt>InEdgeView([(1, 2)])</dt><dd></dd>
-</dl>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">in_edges</span><span class="p">(</span><span class="n">nbunch</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-<span class="go">    ..</span>
-</pre></div>
-</div>
-<dl class="simple">
-<dt>InEdgeDataView([(1, 2)])</dt><dd></dd>
 </dl>
 </dd>
 </dl>
@@ -580,6 +555,15 @@ attribute lookup as <code class="xref py py-obj docutils literal notranslate"><s
 <dl class="simple">
 <dt><a class="reference internal" href="networkx.DiGraph.edges.html#networkx.DiGraph.edges" title="networkx.DiGraph.edges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">edges</span></code></a></dt><dd></dd>
 </dl>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">in_edges</span><span class="p">()</span>
+<span class="go">InEdgeView([(1, 2)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">in_edges</span><span class="p">(</span><span class="n">nbunch</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="go">InEdgeDataView([(1, 2)])</span>
+</pre></div>
 </div>
 </dd></dl>
 

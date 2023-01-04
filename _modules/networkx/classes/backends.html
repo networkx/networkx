@@ -470,7 +470,8 @@
 <span class="sd">To be a valid plugin, a package must register an entry_point</span>
 <span class="sd">of `networkx.plugins` with a key pointing to the handler.</span>
 
-<span class="sd">For example,</span>
+<span class="sd">For example:</span>
+
 <span class="sd">```</span>
 <span class="sd">entry_points={&#39;networkx.plugins&#39;: &#39;sparse = networkx_plugin_sparse&#39;}</span>
 <span class="sd">```</span>
@@ -479,6 +480,7 @@
 <span class="sd">`__networkx_plugin__` with a value of the entry point name.</span>
 
 <span class="sd">Continuing the example above:</span>
+
 <span class="sd">```</span>
 <span class="sd">class WrappedSparse:</span>
 <span class="sd">    __networkx_plugin__ = &quot;sparse&quot;</span>

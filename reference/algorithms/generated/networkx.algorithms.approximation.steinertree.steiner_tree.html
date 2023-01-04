@@ -578,9 +578,11 @@ trees.</p>
 </ul>
 <p>the subgraph of the metric closure of <em>G</em> induced by the terminal nodes,
 where the metric closure of <em>G</em> is the complete graph in which each edge is
-weighted by the shortest path distance between the nodes in <em>G</em>.
-* <code class="xref py py-obj docutils literal notranslate"><span class="pre">mehlhorn</span></code> <a class="reference internal" href="#rfafe17775e63-3" id="id2">[3]</a> (runtime <span class="math notranslate nohighlight">\(O(|E|+|V|\log|V|)\)</span>) modifies Kou et al.’s
-algorithm, beginning by finding the closest terminal node for each
+weighted by the shortest path distance between the nodes in <em>G</em>.</p>
+<ul class="simple">
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">mehlhorn</span></code> <a class="reference internal" href="#rfafe17775e63-3" id="id2">[3]</a> (runtime <span class="math notranslate nohighlight">\(O(|E|+|V|\log|V|)\)</span>) modifies Kou et al.’s</p></li>
+</ul>
+<p>algorithm, beginning by finding the closest terminal node for each
 non-terminal. This data is used to create a complete graph containing only
 the terminal nodes, in which edge is weighted with the shortest path
 distance between them. The algorithm then proceeds in the same way as Kou

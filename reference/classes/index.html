@@ -736,14 +736,14 @@ for computation. Things will change and break in the future!</p>
 <h3>Create a Dispatcher<a class="headerlink" href="#create-a-dispatcher" title="Permalink to this heading">#</a></h3>
 <p>To be a valid plugin, a package must register an entry_point
 of <code class="xref py py-obj docutils literal notranslate"><span class="pre">networkx.plugins</span></code> with a key pointing to the handler.</p>
-<p>For example,
-<code class="docutils literal notranslate"><span class="pre">`</span>
+<p>For example:</p>
+<p><code class="docutils literal notranslate"><span class="pre">`</span>
 <span class="pre">entry_points={'networkx.plugins':</span> <span class="pre">'sparse</span> <span class="pre">=</span> <span class="pre">networkx_plugin_sparse'}</span>
 <span class="pre">`</span></code></p>
 <p>The plugin must create a Graph-like object which contains an attribute
 <code class="xref py py-obj docutils literal notranslate"><span class="pre">__networkx_plugin__</span></code> with a value of the entry point name.</p>
-<p>Continuing the example above:
-<a href="#id1"><span class="problematic" id="id2">``</span></a>`
+<p>Continuing the example above:</p>
+<p><a href="#id1"><span class="problematic" id="id2">``</span></a>`
 class WrappedSparse:</p>
 <blockquote>
 <div><p>__networkx_plugin__ = “sparse”
