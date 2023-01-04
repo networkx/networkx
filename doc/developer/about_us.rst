@@ -145,6 +145,7 @@ to add your name to the bottom of the list.
 - Philip Boalch
 - Matt Schwennesen, Github: `mjschwenne <https://github.com/mjschwenne>`_
 - Andrew Knyazev, Github: `lobpcg <https://github.com/lobpcg>`_, LinkedIn: `andrew-knyazev <https://www.linkedin.com/in/andrew-knyazev>`_
+- Luca Cappelletti, GitHub: `LucaCappelletti94 <https://github.com/LucaCappelletti94>`_
 - Sultan Orazbayev, GitHub: `SultanOrazbayev <https://github.com/SultanOrazbayev>`_, LinkedIn: `Sultan Orazbayev <https://www.linkedin.com/in/sultan-orazbayev/>`_
 
 A supplementary (but still incomplete) list of contributors is given by the
