@@ -94,25 +94,24 @@ def maximum_weight_cycle_packing(graph: nx.DiGraph, k: int) -> list:
             if edge[0] not in seen_Y and edge[0] not in X:
                 X.append((edge[0]))
                 ans_graph.add_node((edge[0]))
-
-        # X = list(X)
-        for i in range(len(X)):  # creating the edges in the graph by going through the 2-circles
-            for j in range(i + 1, len(X)):
-                if (X[i], X[j]) in graph.edges and (X[j], X[i]) in graph.edges:
-                    weight = graph.get_edge_data(X[i], X[j])["weight"] + graph.get_edge_data(X[j], X[i])["weight"]
-                    # ans_graph.add_edge(f"X{X[i]}", f"X{X[j]}", weight=weight, cycle=[X[i], X[j]])
-                    ans_graph.add_edge((X[i]), (X[j]), weight=weight, cycle=[X[i], X[j]])
-
-        #   creating the edges in the graph by going through the 3-circles
-        for k in range(len(X)):
-            for j, l in Y:  # This deals with the normal case of Yi,j Xk
-                if (l, X[k]) in graph.edges and (X[k], j) in graph.edges:  # [j, l, X[k]] in cycles:
-                    weight = graph.get_edge_data(j, l)["weight"] + graph.get_edge_data(l, X[k])["weight"] + \
-                             graph.get_edge_data(X[k], j)["weight"]
-                    ans_graph.add_edge((X[k]), (j, l), weight=weight, cycle=[j, l, X[k]])
+        connect_2cycles(X, graph, ans_graph)
+        connect_3cycles(X, Y, graph, ans_graph)
+        # for i in range(len(X)):  # creating the edges in the graph by going through the 2-circles
+        #     for j in range(i + 1, len(X)):
+        #         if (X[i], X[j]) in graph.edges and (X[j], X[i]) in graph.edges:
+        #             weight = graph.get_edge_data(X[i], X[j])["weight"] + graph.get_edge_data(X[j], X[i])["weight"]
+        #             ans_graph.add_edge((X[i]), (X[j]), weight=weight, cycle=[X[i], X[j]])
+        #
+        # #   creating the edges in the graph by going through the 3-circles
+        # for k in range(len(X)):
+        #     for j, l in Y:  # This deals with the normal case of Yi,j Xk
+        #         if (l, X[k]) in graph.edges and (X[k], j) in graph.edges:  # [j, l, X[k]] in cycles:
+        #             weight = graph.get_edge_data(j, l)["weight"] + graph.get_edge_data(l, X[k])["weight"] + \
+        #                      graph.get_edge_data(X[k], j)["weight"]
+        #             ans_graph.add_edge((X[k]), (j, l), weight=weight, cycle=[j, l, X[k]])
 
         exchanges = list(nx.max_weight_matching(ans_graph))
-        if len(exchanges) == 0 and ans_graph.number_of_edges() == 1:
+        if len(exchanges) == 0 and ans_graph.number_of_edges() == 1:  # for the use-case of only self connected edge
             exchanges = [list(ans_graph.edges)[0]]
         temp_max = 0
         for cyc in exchanges:
@@ -128,6 +127,24 @@ def maximum_weight_cycle_packing(graph: nx.DiGraph, k: int) -> list:
         result.append(cycle)
 
     return result  # exchanges
+
+
+def connect_2cycles(X, graph, ans_graph):
+    for i in range(len(X)):  # creating the edges in the graph by going through the 2-circles
+        for j in range(i + 1, len(X)):
+            if (X[i], X[j]) in graph.edges and (X[j], X[i]) in graph.edges:
+                weight = graph.get_edge_data(X[i], X[j])["weight"] + graph.get_edge_data(X[j], X[i])["weight"]
+                ans_graph.add_edge((X[i]), (X[j]), weight=weight, cycle=[X[i], X[j]])
+
+
+def connect_3cycles(X, Y, graph, ans_graph):
+    #   creating the edges in the graph by going through the 3-circles
+    for k in range(len(X)):
+        for j, l in Y:  # This deals with the normal case of Yi,j Xk
+            if (l, X[k]) in graph.edges and (X[k], j) in graph.edges:  # [j, l, X[k]] in cycles:
+                weight = graph.get_edge_data(j, l)["weight"] + graph.get_edge_data(l, X[k])["weight"] + \
+                         graph.get_edge_data(X[k], j)["weight"]
+                ans_graph.add_edge((X[k]), (j, l), weight=weight, cycle=[j, l, X[k]])
 
 
 def simple_cycles(G, limit):
