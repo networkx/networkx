@@ -488,6 +488,9 @@
 <li class="toctree-l2"><a class="reference internal" href="generated/networkx.drawing.layout.spectral_layout.html">spectral_layout</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/networkx.drawing.layout.spiral_layout.html">spiral_layout</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/networkx.drawing.layout.multipartite_layout.html">multipartite_layout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.drawing.nx_latex.to_latex_raw.html">to_latex_raw</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.drawing.nx_latex.to_latex.html">to_latex</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/networkx.drawing.nx_latex.write_latex.html">write_latex</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="randomness.html">Randomness</a></li>
@@ -755,6 +758,142 @@ Changing <code class="xref py py-obj docutils literal notranslate"><span class="
 </tbody>
 </table>
 </section>
+<section id="module-networkx.drawing.nx_latex">
+<span id="latex-code"></span><h2>LaTeX Code<a class="headerlink" href="#module-networkx.drawing.nx_latex" title="Permalink to this heading">#</a></h2>
+<p>Export NetworkX graphs in LaTeX format using the TikZ library within TeX/LaTeX.
+Usually, you will want the drawing to appear in a figure environment so
+you use <code class="docutils literal notranslate"><span class="pre">to_latex(G,</span> <span class="pre">caption=&quot;A</span> <span class="pre">caption&quot;)</span></code>. If you want the raw
+drawing commands without a figure environment use <a class="reference internal" href="generated/networkx.drawing.nx_latex.to_latex_raw.html#networkx.drawing.nx_latex.to_latex_raw" title="networkx.drawing.nx_latex.to_latex_raw"><code class="xref py py-func docutils literal notranslate"><span class="pre">to_latex_raw()</span></code></a>.
+And if you want to write to a file instead of just returning the latex
+code as a string, use <code class="docutils literal notranslate"><span class="pre">write_latex(G,</span> <span class="pre">&quot;filname.tex&quot;,</span> <span class="pre">caption=&quot;A</span> <span class="pre">caption&quot;)</span></code>.</p>
+<p>To construct a figure with subfigures for each graph to be shown, provide
+<code class="docutils literal notranslate"><span class="pre">to_latex</span></code> or <code class="docutils literal notranslate"><span class="pre">write_latex</span></code> a list of graphs, a list of subcaptions,
+and a number of rows of subfigures inside the figure.</p>
+<p>To be able to refer to the figures or subfigures in latex using <code class="docutils literal notranslate"><span class="pre">\\ref</span></code>,
+the keyword <code class="docutils literal notranslate"><span class="pre">latex_label</span></code> is available for figures and <code class="xref py py-obj docutils literal notranslate"><span class="pre">sub_labels</span></code> for
+a list of labels, one for each subfigure.</p>
+<p>We intend to eventually provide an interface to the TikZ Graph
+features which include e.g. layout algorithms.</p>
+<p>Let us know via github what you’d like to see available, or better yet
+give us some code to do it, or even better make a github pull request
+to add the feature.</p>
+<section id="the-tikz-approach">
+<h3>The TikZ approach<a class="headerlink" href="#the-tikz-approach" title="Permalink to this heading">#</a></h3>
+<p>Drawing options can be stored on the graph as node/edge attributes, or
+can be provided as dicts keyed by node/edge to a string of the options
+for that node/edge. Similarly a label can be shown for each node/edge
+by specifying the labels as graph node/edge attributes or by providing
+a dict keyed by node/edge to the text to be written for that node/edge.</p>
+<p>Options for the tikzpicture environment (e.g. “[scale=2]”) can be provided
+via a keyword argument. Similarly default node and edge options can be
+provided through keywords arguments. The default node options are applied
+to the single TikZ “path” that draws all nodes (and no edges). The default edge
+options are applied to a TikZ “scope” which contains a path for each edge.</p>
+</section>
+<section id="id6">
+<h3>Examples<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h3>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">path_graph</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nx</span><span class="o">.</span><span class="n">write_latex</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="s2">&quot;just_my_figure.tex&quot;</span><span class="p">,</span> <span class="n">as_document</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nx</span><span class="o">.</span><span class="n">write_latex</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="s2">&quot;my_figure.tex&quot;</span><span class="p">,</span> <span class="n">caption</span><span class="o">=</span><span class="s2">&quot;A path graph&quot;</span><span class="p">,</span> <span class="n">latex_label</span><span class="o">=</span><span class="s2">&quot;fig1&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">latex_code</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">to_latex</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>  <span class="c1"># a string rather than a file</span>
+</pre></div>
+</div>
+<p>You can change many features of the nodes and edges.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">path_graph</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">create_using</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pos</span> <span class="o">=</span> <span class="p">{</span><span class="n">n</span><span class="p">:</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">G</span><span class="p">}</span>  <span class="c1"># nodes set on a line</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;style&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;blue&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="s2">&quot;style&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;line width=3,draw&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="s2">&quot;label&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Stop&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)][</span><span class="s2">&quot;label&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;1st Step&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)][</span><span class="s2">&quot;label_opts&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;near start&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)][</span><span class="s2">&quot;style&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;line width=3&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)][</span><span class="s2">&quot;label&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;2nd Step&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">[(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)][</span><span class="s2">&quot;style&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;green&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">[(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)][</span><span class="s2">&quot;label&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;3rd Step&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">[(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)][</span><span class="s2">&quot;label_opts&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;near end&quot;</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">nx</span><span class="o">.</span><span class="n">write_latex</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="s2">&quot;latex_graph.tex&quot;</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="n">pos</span><span class="p">,</span> <span class="n">as_document</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Then compile the LaTeX using something like <code class="docutils literal notranslate"><span class="pre">pdflatex</span> <span class="pre">latex_graph.tex</span></code>
+and view the pdf file created: <code class="docutils literal notranslate"><span class="pre">latex_graph.pdf</span></code>.</p>
+<p>If you want <strong>subfigures</strong> each containing one graph, you can input a list of graphs.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">H1</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">path_graph</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">H2</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">complete_graph</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">H3</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">path_graph</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">H4</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">complete_graph</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">graphs</span> <span class="o">=</span> <span class="p">[</span><span class="n">H1</span><span class="p">,</span> <span class="n">H2</span><span class="p">,</span> <span class="n">H3</span><span class="p">,</span> <span class="n">H4</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">caps</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Path 4&quot;</span><span class="p">,</span> <span class="s2">&quot;Complete graph 4&quot;</span><span class="p">,</span> <span class="s2">&quot;Path 8&quot;</span><span class="p">,</span> <span class="s2">&quot;Complete graph 8&quot;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lbls</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;fig2a&quot;</span><span class="p">,</span> <span class="s2">&quot;fig2b&quot;</span><span class="p">,</span> <span class="s2">&quot;fig2c&quot;</span><span class="p">,</span> <span class="s2">&quot;fig2d&quot;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nx</span><span class="o">.</span><span class="n">write_latex</span><span class="p">(</span><span class="n">graphs</span><span class="p">,</span> <span class="s2">&quot;subfigs.tex&quot;</span><span class="p">,</span> <span class="n">n_rows</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sub_captions</span><span class="o">=</span><span class="n">caps</span><span class="p">,</span> <span class="n">sub_labels</span><span class="o">=</span><span class="n">lbls</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">latex_code</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">to_latex</span><span class="p">(</span><span class="n">graphs</span><span class="p">,</span> <span class="n">n_rows</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sub_captions</span><span class="o">=</span><span class="n">caps</span><span class="p">,</span> <span class="n">sub_labels</span><span class="o">=</span><span class="n">lbls</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">node_color</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;orange&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="s2">&quot;gray!90&quot;</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">edge_width</span> <span class="o">=</span> <span class="p">{</span><span class="n">e</span><span class="p">:</span> <span class="s2">&quot;line width=1.5&quot;</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">H3</span><span class="o">.</span><span class="n">edges</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pos</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">circular_layout</span><span class="p">(</span><span class="n">H3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">latex_code</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">to_latex</span><span class="p">(</span><span class="n">H3</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">node_options</span><span class="o">=</span><span class="n">node_color</span><span class="p">,</span> <span class="n">edge_options</span><span class="o">=</span><span class="n">edge_width</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">latex_code</span><span class="p">)</span>
+<span class="go">\documentclass{report}</span>
+<span class="go">\usepackage{tikz}</span>
+<span class="go">\usepackage{subcaption}</span>
+
+<span class="go">\begin{document}</span>
+<span class="go">\begin{figure}</span>
+<span class="go">  \begin{tikzpicture}</span>
+<span class="go">      \draw</span>
+<span class="go">        (1.0, 0.0) node[red] (0){0}</span>
+<span class="go">        (0.707, 0.707) node[orange] (1){1}</span>
+<span class="go">        (-0.0, 1.0) node[blue] (2){2}</span>
+<span class="go">        (-0.707, 0.707) node[gray!90] (3){3}</span>
+<span class="go">        (-1.0, -0.0) node (4){4}</span>
+<span class="go">        (-0.707, -0.707) node (5){5}</span>
+<span class="go">        (0.0, -1.0) node (6){6}</span>
+<span class="go">        (0.707, -0.707) node (7){7};</span>
+<span class="go">      \begin{scope}[-]</span>
+<span class="go">        \draw[line width=1.5] (0) to (1);</span>
+<span class="go">        \draw[line width=1.5] (1) to (2);</span>
+<span class="go">        \draw[line width=1.5] (2) to (3);</span>
+<span class="go">        \draw[line width=1.5] (3) to (4);</span>
+<span class="go">        \draw[line width=1.5] (4) to (5);</span>
+<span class="go">        \draw[line width=1.5] (5) to (6);</span>
+<span class="go">        \draw[line width=1.5] (6) to (7);</span>
+<span class="go">      \end{scope}</span>
+<span class="go">    \end{tikzpicture}</span>
+<span class="go">\end{figure}</span>
+<span class="go">\end{document}</span>
+</pre></div>
+</div>
+<section id="notes">
+<h4>Notes<a class="headerlink" href="#notes" title="Permalink to this heading">#</a></h4>
+<p>If you want to change the preamble/postamble of the figure/document/subfigure
+environment, use the keyword arguments: <code class="xref py py-obj docutils literal notranslate"><span class="pre">figure_wrapper</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">document_wrapper</span></code>,
+<code class="xref py py-obj docutils literal notranslate"><span class="pre">subfigure_wrapper</span></code>. The default values are stored in private variables
+e.g. <code class="docutils literal notranslate"><span class="pre">nx.nx_layout._DOCUMENT_WRAPPER</span></code></p>
+</section>
+<section id="references">
+<h4>References<a class="headerlink" href="#references" title="Permalink to this heading">#</a></h4>
+<p>TikZ:          <a class="reference external" href="https://tikz.dev/">https://tikz.dev/</a></p>
+<p>TikZ options details:   <a class="reference external" href="https://tikz.dev/tikz-actions">https://tikz.dev/tikz-actions</a></p>
+</section>
+</section>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.drawing.nx_latex.to_latex_raw.html#networkx.drawing.nx_latex.to_latex_raw" title="networkx.drawing.nx_latex.to_latex_raw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_latex_raw</span></code></a>(G[, pos, tikz_options, ...])</p></td>
+<td><p>Return a string of the LaTeX/TikZ code to draw <code class="xref py py-obj docutils literal notranslate"><span class="pre">G</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/networkx.drawing.nx_latex.to_latex.html#networkx.drawing.nx_latex.to_latex" title="networkx.drawing.nx_latex.to_latex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_latex</span></code></a>(Gbunch[, pos, tikz_options, ...])</p></td>
+<td><p>Return latex code to draw the graph(s) in <code class="xref py py-obj docutils literal notranslate"><span class="pre">Gbunch</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/networkx.drawing.nx_latex.write_latex.html#networkx.drawing.nx_latex.write_latex" title="networkx.drawing.nx_latex.write_latex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_latex</span></code></a>(Gbunch, path, **options)</p></td>
+<td><p>Write the latex code to draw the graph(s) onto <code class="xref py py-obj docutils literal notranslate"><span class="pre">path</span></code>.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
 </section>
 
 
@@ -830,6 +969,35 @@ Changing <code class="xref py py-obj docutils literal notranslate"><span class="
   <a class="reference internal nav-link" href="#module-networkx.drawing.layout">
    Graph Layout
   </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-networkx.drawing.nx_latex">
+   LaTeX Code
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#the-tikz-approach">
+     The TikZ approach
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id6">
+     Examples
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#notes">
+       Notes
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#references">
+       References
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
  </li>
 </ul>
 
