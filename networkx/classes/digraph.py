@@ -1024,7 +1024,7 @@ class DiGraph(Graph):
             attribute lookup as `edges[u, v]['foo']`.
 
         Examples
-        -------
+        --------
         >>> G = nx.DiGraph()
         >>> G.add_edge(1, 2, color='blue')
         >>> G.in_edges()

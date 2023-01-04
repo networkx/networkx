@@ -145,7 +145,7 @@ to add your name to the bottom of the list.
 - Philip Boalch
 - Matt Schwennesen, Github: `mjschwenne <https://github.com/mjschwenne>`_
 - Andrew Knyazev, Github: `lobpcg <https://github.com/lobpcg>`_, LinkedIn: `andrew-knyazev <https://www.linkedin.com/in/andrew-knyazev>`_
-- Sultan Orazbayev, GitHub: `link <https://github.com/SultanOrazbayev>`_, LinkedIn: `link <https://www.linkedin.com/in/sultan-orazbayev/>`_
+- Sultan Orazbayev, GitHub: `SultanOrazbayev <https://github.com/SultanOrazbayev>`_, LinkedIn: `Sultan Orazbayev <https://www.linkedin.com/in/sultan-orazbayev/>`_
 
 A supplementary (but still incomplete) list of contributors is given by the
 list of names that have commits in ``networkx``'s

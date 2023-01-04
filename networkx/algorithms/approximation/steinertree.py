@@ -142,6 +142,7 @@ def steiner_tree(G, terminal_nodes, weight="weight", method=None):
     the subgraph of the metric closure of *G* induced by the terminal nodes,
     where the metric closure of *G* is the complete graph in which each edge is
     weighted by the shortest path distance between the nodes in *G*.
+
     * `mehlhorn` [3]_ (runtime $O(|E|+|V|\log|V|)$) modifies Kou et al.'s
     algorithm, beginning by finding the closest terminal node for each
     non-terminal. This data is used to create a complete graph containing only
