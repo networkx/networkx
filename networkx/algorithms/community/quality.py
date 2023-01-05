@@ -193,7 +193,7 @@ def modularity(G, communities, weight="weight", resolution=1):
     Returns
     -------
     Q : float
-        The modularity of the paritition.
+        The modularity of the partition.
 
     Raises
     ------

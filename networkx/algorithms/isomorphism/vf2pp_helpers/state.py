@@ -219,7 +219,7 @@ def _restore_Tinout_Di(popped_node1, popped_node2, graph_params, state_params):
             if not (predecessor in T1 or predecessor in T1_in):
                 T1_tilde.add(predecessor)
 
-    # Case where the node is not present in neither the mapping nor T1. By deffinition it should belong to T1_tilde
+    # Case where the node is not present in neither the mapping nor T1. By definition it should belong to T1_tilde
     if not is_added:
         T1_tilde.add(popped_node1)
 

@@ -847,10 +847,10 @@ def random_spanning_tree(G, weight=None, *, multiplicative=True, seed=None):
         Find the sum of weights of the spanning trees of `G` using the
         approioate `method`.
 
-        This is easy if the choosen method is 'multiplicative', since we can
+        This is easy if the chosen method is 'multiplicative', since we can
         use Kirchhoff's Tree Matrix Theorem directly. However, with the
         'additive' method, this process is slightly more complex and less
-        computatiionally efficent as we have to find the number of spanning
+        computatiionally efficient as we have to find the number of spanning
         trees which contain each possible edge in the graph.
 
         Parameters
@@ -882,7 +882,7 @@ def random_spanning_tree(G, weight=None, *, multiplicative=True, seed=None):
             #    the number of spanning trees which have to include that edge. This
             #    can be accomplished by contracting the edge and finding the
             #    multiplicative total spanning tree weight if the weight of each edge
-            #    is assumed to be 1, which is conviently built into networkx already,
+            #    is assumed to be 1, which is conveniently built into networkx already,
             #    by calling total_spanning_tree_weight with weight=None
             else:
                 total = 0
