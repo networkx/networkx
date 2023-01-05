@@ -553,7 +553,7 @@ def generalized_degree(G, nodes=None):
 
     Notes
     -----
-    In a network of N nodes, the highest triangle multiplicty an edge can have
+    In a network of N nodes, the highest triangle multiplicity an edge can have
     is N-2.
 
     The return value does not include a `zero` entry if no edges of a

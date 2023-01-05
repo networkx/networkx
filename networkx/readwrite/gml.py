@@ -372,7 +372,7 @@ def parse_gml_lines(lines, label, destringizer):
             elif category == Pattern.DICT_START:
                 curr_token, value = parse_dict(curr_token)
             else:
-                # Allow for string convertible id and label values
+                # Allow for string convertable id and label values
                 if key in ("id", "label", "source", "target"):
                     try:
                         # String convert the token value

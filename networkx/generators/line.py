@@ -246,7 +246,7 @@ def inverse_line_graph(G):
     This is an implementation of the Roussopoulos algorithm.
 
     If G consists of multiple components, then the algorithm doesn't work.
-    You should invert every component seperately:
+    You should invert every component separately:
 
     >>> K5 = nx.complete_graph(5)
     >>> P4 = nx.Graph([("a", "b"), ("b", "c"), ("c", "d")])
@@ -274,7 +274,7 @@ def inverse_line_graph(G):
     elif G.number_of_nodes() > 1 and G.number_of_edges() == 0:
         msg = (
             "inverse_line_graph() doesn't work on an edgeless graph. "
-            "Please use this function on each component seperately."
+            "Please use this function on each component separately."
         )
         raise nx.NetworkXError(msg)
 

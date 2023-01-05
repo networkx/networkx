@@ -137,7 +137,7 @@ class TestSoftRandomGeometricGraph:
         assert len(SRGG.edges()) <= len(RGG.edges())
 
     def test_p_dist_zero(self):
-        """Tests if p_dict = 0 returns disconencted graph with 0 edges"""
+        """Tests if p_dict = 0 returns disconnected graph with 0 edges"""
 
         def p_dist(dist):
             return 0
@@ -208,7 +208,7 @@ class TestGeographicalThresholdGraph:
                 assert not join(G, u, v, 10, -2, l1dist)
 
     def test_p_dist_zero(self):
-        """Tests if p_dict = 0 returns disconencted graph with 0 edges"""
+        """Tests if p_dict = 0 returns disconnected graph with 0 edges"""
 
         def p_dist(dist):
             return 0
