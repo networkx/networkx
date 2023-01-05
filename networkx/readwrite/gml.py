@@ -372,7 +372,7 @@ def parse_gml_lines(lines, label, destringizer):
             elif category == Pattern.DICT_START:
                 curr_token, value = parse_dict(curr_token)
             else:
-                # Allow for string convertable id and label values
+                # Allow for string convertible id and label values
                 if key in ("id", "label", "source", "target"):
                     try:
                         # String convert the token value
@@ -386,7 +386,7 @@ def parse_gml_lines(lines, label, destringizer):
                     except Exception:
                         msg = (
                             "an int, float, string, '[' or string"
-                            + " convertable ASCII value for node id or label"
+                            + " convertible ASCII value for node id or label"
                         )
                         unexpected(curr_token, msg)
                 # Special handling for nan and infinity.  Since the gml language
