@@ -361,16 +361,19 @@ def _single_shortest_path(adj, firstlevel, paths, cutoff, join):
             list inputs `p1` and `p2`, and returns a list. Usually returns
             `p1 + p2` (forward from source) or `p2 + p1` (backward from target)
     """
-    level = 0  # the current level
-    nextlevel = firstlevel
+    level = 0
+    nextlevel = list(firstlevel)
+    n = len(adj)
     while nextlevel and cutoff > level:
         thislevel = nextlevel
-        nextlevel = {}
+        nextlevel = []
         for v in thislevel:
             for w in adj[v]:
                 if w not in paths:
                     paths[w] = join(paths[v], [w])
-                    nextlevel[w] = 1
+                    nextlevel.append(w)
+            if len(paths) == n:
+                return paths
         level += 1
     return paths
 
