@@ -364,14 +364,14 @@ def _matching_order(graph_params):
     node_order: list
         The ordering of the nodes.
     """
-    G1, G2, G1_labels, _, _, nodes_of_G2Labels, _ = graph_params
+    G1, G2, G1_degree, _, G1_labels, _, _, nodes_of_G2Labels, _ = graph_params
     if not G1 and not G2:
         return {}
 
     if G1.is_directed():
         G1 = G1.to_undirected(as_view=True)
 
-    V1_unordered = set(G1.nodes())
+    V1_unordered = set(G1)
     label_rarity = {label: len(nodes) for label, nodes in nodes_of_G2Labels.items()}
     used_degrees = {node: 0 for node in G1}
     node_order = []
@@ -390,9 +390,9 @@ def _matching_order(graph_params):
                 max_used_degree_nodes = [
                     n for n in nodes_to_add if used_degrees[n] == max_used_degree
                 ]
-                max_degree = max(G1.degree[n] for n in max_used_degree_nodes)
+                max_degree = max(G1_degree[n] for n in max_used_degree_nodes)
                 max_degree_nodes = [
-                    n for n in max_used_degree_nodes if G1.degree[n] == max_degree
+                    n for n in max_used_degree_nodes if G1_degree[n] == max_degree
                 ]
                 next_node = min(
                     max_degree_nodes, key=lambda x: label_rarity[G1_labels[x]]
@@ -409,9 +409,7 @@ def _matching_order(graph_params):
     return node_order
 
 
-def _find_candidates(
-    u, graph_params, state_params, G1_degree
-):  # todo: make the 4th argument the degree of u
+def _find_candidates(u, graph_params, state_params):
     """Given node u of G1, finds the candidates of u from G2.
 
     Parameters
@@ -449,13 +447,13 @@ def _find_candidates(
     candidates: set
         The nodes from G2 which are candidates for u.
     """
-    G1, G2, G1_labels, _, _, nodes_of_G2Labels, G2_nodes_of_degree = graph_params
+    G1, G2, G1_degree, _, G1_labels, _, _, G2_by_label, G2_by_degree = graph_params
     mapping, reverse_mapping, _, _, _, _, _, _, T2_tilde, _ = state_params
 
     covered_neighbors = [nbr for nbr in G1[u] if nbr in mapping]
     if not covered_neighbors:
-        candidates = set(nodes_of_G2Labels[G1_labels[u]])
-        candidates.intersection_update(G2_nodes_of_degree[G1_degree[u]])
+        candidates = set(G2_by_label[G1_labels[u]])
+        candidates.intersection_update(G2_by_degree[G1_degree[u]])
         candidates.intersection_update(T2_tilde)
         candidates.difference_update(reverse_mapping)
         if G1.is_multigraph():
@@ -475,8 +473,8 @@ def _find_candidates(
         common_nodes.intersection_update(G2[mapping[nbr1]])
 
     common_nodes.difference_update(reverse_mapping)
-    common_nodes.intersection_update(G2_nodes_of_degree[G1_degree[u]])
-    common_nodes.intersection_update(nodes_of_G2Labels[G1_labels[u]])
+    common_nodes.intersection_update(G2_by_degree[G1_degree[u]])
+    common_nodes.intersection_update(G2_by_label[G1_labels[u]])
     if G1.is_multigraph():
         common_nodes.difference_update(
             {
@@ -488,16 +486,16 @@ def _find_candidates(
     return common_nodes
 
 
-def _find_candidates_Di(u, graph_params, state_params, G1_degree):
-    G1, G2, G1_labels, _, _, nodes_of_G2Labels, G2_nodes_of_degree = graph_params
+def _find_candidates_Di(u, graph_params, state_params):
+    G1, G2, G1_degree, _, G1_labels, _, _, G2_by_label, G2_by_degree = graph_params
     mapping, reverse_mapping, _, _, _, _, _, _, T2_tilde, _ = state_params
 
     covered_successors = [succ for succ in G1[u] if succ in mapping]
     covered_predecessors = [pred for pred in G1.pred[u] if pred in mapping]
 
     if not (covered_successors or covered_predecessors):
-        candidates = set(nodes_of_G2Labels[G1_labels[u]])
-        candidates.intersection_update(G2_nodes_of_degree[G1_degree[u]])
+        candidates = set(G2_by_label[G1_labels[u]])
+        candidates.intersection_update(G2_by_degree[G1_degree[u]])
         candidates.intersection_update(T2_tilde)
         candidates.difference_update(reverse_mapping)
         if G1.is_multigraph():
@@ -524,8 +522,8 @@ def _find_candidates_Di(u, graph_params, state_params, G1_degree):
         common_nodes.intersection_update(G2[mapping[pred1]])
 
     common_nodes.difference_update(reverse_mapping)
-    common_nodes.intersection_update(G2_nodes_of_degree[G1_degree[u]])
-    common_nodes.intersection_update(nodes_of_G2Labels[G1_labels[u]])
+    common_nodes.intersection_update(G2_by_degree[G1_degree[u]])
+    common_nodes.intersection_update(G2_by_label[G1_labels[u]])
     if G1.is_multigraph():
         common_nodes.difference_update(
             {
@@ -538,12 +536,14 @@ def _find_candidates_Di(u, graph_params, state_params, G1_degree):
 
 
 def _feasibility(node1, node2, graph_params, state_params):
-    """Given a candidate pair of nodes u and v from G1 and G2 respectively, checks if it's feasible to extend the
-    mapping, i.e. if u and v can be matched.
+    """Check if a candidate pair of nodes can be matched
+
+    node1 and node2 must be from G1 and G2 respectively.
+    checks if it's feasible to extend the mapping using node1 -> node2.
 
     Notes
     -----
-    This function performs all the necessary checking by applying both consistency and cutting rules.
+    This function applies both consistency and cutting rules.
 
     Parameters
     ----------
@@ -579,12 +579,10 @@ def _feasibility(node1, node2, graph_params, state_params):
     -------
     True if all checks are successful, False otherwise.
     """
-    G1 = graph_params.G1
-
     if _cut_PT(node1, node2, graph_params, state_params):
         return False
 
-    if G1.is_multigraph():
+    if graph_params.G1.is_multigraph():
         if not _consistent_PT(node1, node2, graph_params, state_params):
             return False
 
@@ -628,7 +626,7 @@ def _cut_PT(u, v, graph_params, state_params):
     -------
     True if we should prune this branch, i.e. the node pair failed the cutting checks. False otherwise.
     """
-    G1, G2, G1_labels, G2_labels, _, _, _ = graph_params
+    G1, G2, _, _, G1_labels, G2_labels, _, _, _ = graph_params
     (
         _,
         _,
@@ -642,7 +640,6 @@ def _cut_PT(u, v, graph_params, state_params):
         _,
     ) = state_params
 
-    u_labels_predecessors, v_labels_predecessors = {}, {}
     if G1.is_directed():
         u_labels_predecessors = nx.utils.groups(
             {n1: G1_labels[n1] for n1 in G1.pred[u]}
@@ -768,16 +765,16 @@ def _consistent_PT(u, v, graph_params, state_params):
 
     for predecessor in G1.pred[u]:
         if predecessor in mapping:
-            if G1.number_of_edges(predecessor, u) != G2.number_of_edges(
-                mapping[predecessor], v
+            if G1.number_of_edges(u, predecessor) != G2.number_of_edges(
+                v, mapping[predecessor]
             ):
                 return False
 
     for predecessor in G2.pred[v]:
         if predecessor in reverse_mapping:
             if G1.number_of_edges(
-                reverse_mapping[predecessor], u
-            ) != G2.number_of_edges(predecessor, v):
+                u, reverse_mapping[predecessor]
+            ) != G2.number_of_edges(v, predecessor):
                 return False
 
     return True
@@ -823,7 +820,7 @@ def _update_Tinout(new_node1, new_node2, graph_params, state_params):
         T1_tilde, T2_tilde: set
             Ti_out contains all the nodes from Gi, that are neither in the mapping nor in Ti
     """
-    G1, G2, _, _, _, _, _ = graph_params
+    G1, G2 = graph_params.G1, graph_params.G2
     (
         mapping,
         reverse_mapping,
@@ -907,8 +904,7 @@ def _restore_Tinout(popped_node1, popped_node2, graph_params, state_params):
         T1_tilde, T2_tilde: set
             Ti_out contains all the nodes from Gi, that are neither in the mapping nor in Ti
     """
-    # If the node we want to remove from the mapping, has at least one covered neighbor, add it to T1.
-    G1, G2, _, _, _, _, _ = graph_params
+    G1, G2 = graph_params.G1, graph_params.G2
     (
         mapping,
         reverse_mapping,
@@ -925,17 +921,17 @@ def _restore_Tinout(popped_node1, popped_node2, graph_params, state_params):
     is_added = False
     for neighbor in G1[popped_node1]:
         if neighbor in mapping:
-            # if a neighbor of the excluded node1 is in the mapping, keep node1 in T1
+            # if a neighbor of popped_node1 is in the mapping, keep popped_node1 in T1
             is_added = True
             T1.add(popped_node1)
         else:
-            # check if its neighbor has another connection with a covered node. If not, only then exclude it from T1
+            # check if neighbor connects with a covered node. If not, exclude it from T1
             if any(nbr in mapping for nbr in G1[neighbor]):
                 continue
             T1.discard(neighbor)
             T1_tilde.add(neighbor)
 
-    # Case where the node is not present in neither the mapping nor T1. By definition, it should belong to T1_tilde
+    # If popped_node1 not present in the mapping nor T1, put into T1_tilde
     if not is_added:
         T1_tilde.add(popped_node1)
 
@@ -954,9 +950,9 @@ def _restore_Tinout(popped_node1, popped_node2, graph_params, state_params):
         T2_tilde.add(popped_node2)
 
 
+# TODO:  reuse the dup loops in restore_Tinout. Maybe handle DiGraph and Graph too.
 def _restore_Tinout_Di(popped_node1, popped_node2, graph_params, state_params):
-    # If the node we want to remove from the mapping, has at least one covered neighbor, add it to T1.
-    G1, G2, _, _, _, _, _ = graph_params
+    G1, G2 = graph_params.G1, graph_params.G2
     (
         mapping,
         reverse_mapping,
@@ -973,28 +969,27 @@ def _restore_Tinout_Di(popped_node1, popped_node2, graph_params, state_params):
     is_added = False
     for successor in G1[popped_node1]:
         if successor in mapping:
-            # if a neighbor of the excluded node1 is in the mapping, keep node1 in T1
+            # if a neighbor of popped_node1 is in the mapping, keep popped_node1 in T1
             is_added = True
             T1_in.add(popped_node1)
         else:
-            # check if its neighbor has another connection with a covered node. If not, only then exclude it from T1
+            # check if neighbor connects with a covered node. If not, exclude it from T1
             if not any(pred in mapping for pred in G1.pred[successor]):
                 T1.discard(successor)
 
             if not any(succ in mapping for succ in G1[successor]):
                 T1_in.discard(successor)
 
-            if successor not in T1:
-                if successor not in T1_in:
-                    T1_tilde.add(successor)
+            if not (successor in T1 or successor in T1_in):
+                T1_tilde.add(successor)
 
     for predecessor in G1.pred[popped_node1]:
         if predecessor in mapping:
-            # if a neighbor of the excluded node1 is in the mapping, keep node1 in T1
+            # if a neighbor of popped_node1 is in the mapping, keep popped_node1 in T1
             is_added = True
             T1.add(popped_node1)
         else:
-            # check if its neighbor has another connection with a covered node. If not, only then exclude it from T1
+            # check if neighbor connects with a covered node. If not, exclude it from T1
             if not any(pred in mapping for pred in G1.pred[predecessor]):
                 T1.discard(predecessor)
 
@@ -1004,7 +999,7 @@ def _restore_Tinout_Di(popped_node1, popped_node2, graph_params, state_params):
             if not (predecessor in T1 or predecessor in T1_in):
                 T1_tilde.add(predecessor)
 
-    # Case where the node is not present in neither the mapping nor T1. By definition it should belong to T1_tilde
+    # If popped_node1 not present in the mapping nor T1, put into T1_tilde
     if not is_added:
         T1_tilde.add(popped_node1)
 
@@ -1020,17 +1015,14 @@ def _restore_Tinout_Di(popped_node1, popped_node2, graph_params, state_params):
             if not any(succ in reverse_mapping for succ in G2[successor]):
                 T2_in.discard(successor)
 
-            if successor not in T2:
-                if successor not in T2_in:
-                    T2_tilde.add(successor)
+            if not (successor in T2 or successor in T2_in):
+                T2_tilde.add(successor)
 
     for predecessor in G2.pred[popped_node2]:
         if predecessor in reverse_mapping:
-            # if a neighbor of the excluded node1 is in the mapping, keep node1 in T1
             is_added = True
             T2.add(popped_node2)
         else:
-            # check if its neighbor has another connection with a covered node. If not, only then exclude it from T1
             if not any(pred in reverse_mapping for pred in G2.pred[predecessor]):
                 T2.discard(predecessor)
 

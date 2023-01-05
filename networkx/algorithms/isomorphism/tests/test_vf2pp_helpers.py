@@ -42,7 +42,7 @@ class TestNodeOrdering:
     def test_empty_graph(self):
         G1 = nx.Graph()
         G2 = nx.Graph()
-        gparams = _GraphParameters(G1, G2, None, None, None, None, None)
+        gparams = _GraphParameters(G1, G2, None, None, None, None, None, None, None)
         assert len(set(_matching_order(gparams))) == 0
 
     def test_single_node(self):
@@ -52,23 +52,22 @@ class TestNodeOrdering:
         G2.add_node(1)
 
         nx.set_node_attributes(G1, dict(zip(G1, it.cycle(labels_many))), "label")
-        nx.set_node_attributes(
-            G2,
-            dict(zip(G2, it.cycle(labels_many))),
-            "label",
-        )
-        l1, l2 = nx.get_node_attributes(G1, "label"), nx.get_node_attributes(
-            G2, "label"
-        )
+        nx.set_node_attributes(G2, dict(zip(G2, it.cycle(labels_many))), "label")
+        l1 = nx.get_node_attributes(G1, "label")
+        l2 = nx.get_node_attributes(G2, "label")
 
+        G1_degree = dict(G1.degree)
+        G2_degree = dict(G2.degree)
         gparams = _GraphParameters(
             G1,
             G2,
+            G1_degree,
+            G2_degree,
             l1,
             l2,
             nx.utils.groups(l1),
             nx.utils.groups(l2),
-            nx.utils.groups({node: degree for node, degree in G2.degree()}),
+            nx.utils.groups(G2_degree),
         )
         m = _matching_order(gparams)
         assert m == [1]
@@ -113,22 +112,21 @@ class TestNodeOrdering:
         )
         G2 = G1.copy()
         nx.set_node_attributes(G1, dict(zip(G1, it.cycle(labels))), "label")
-        nx.set_node_attributes(
-            G2,
-            dict(zip(G2, it.cycle(labels))),
-            "label",
-        )
-        l1, l2 = nx.get_node_attributes(G1, "label"), nx.get_node_attributes(
-            G2, "label"
-        )
+        nx.set_node_attributes(G2, dict(zip(G2, it.cycle(labels))), "label")
+        l1 = nx.get_node_attributes(G1, "label")
+        l2 = nx.get_node_attributes(G2, "label")
+        G1_degree = dict(G1.degree)
+        G2_degree = dict(G2.degree)
         gparams = _GraphParameters(
             G1,
             G2,
+            G1_degree,
+            G2_degree,
             l1,
             l2,
             nx.utils.groups(l1),
             nx.utils.groups(l2),
-            nx.utils.groups({node: degree for node, degree in G2.degree()}),
+            nx.utils.groups(G2_degree),
         )
 
         expected = [9, 11, 10, 13, 12, 1, 2, 4, 0, 3, 6, 5, 7, 8]
@@ -155,17 +153,20 @@ class TestNodeOrdering:
         G2.nodes[4]["label"] = "red"
         G2.nodes[5]["label"] = "blue"
 
-        l1, l2 = nx.get_node_attributes(G1, "label"), nx.get_node_attributes(
-            G2, "label"
-        )
+        l1 = nx.get_node_attributes(G1, "label")
+        l2 = nx.get_node_attributes(G2, "label")
+        G1_degree = dict(G1.degree)
+        G2_degree = dict(G2.degree)
         gparams = _GraphParameters(
             G1,
             G2,
+            G1_degree,
+            G2_degree,
             l1,
             l2,
             nx.utils.groups(l1),
             nx.utils.groups(l2),
-            nx.utils.groups({node: degree for node, degree in G2.degree()}),
+            nx.utils.groups(G2_degree),
         )
 
         expected = [0, 4, 1, 3, 2, 5]
@@ -207,16 +208,19 @@ class TestGraphCandidateSelection:
         G2 = nx.relabel_nodes(G1, self.mapped)
 
         G1_degree = dict(G1.degree)
+        G2_degree = dict(G2.degree)
         l1 = dict(G1.nodes(data="label", default=-1))
         l2 = dict(G2.nodes(data="label", default=-1))
         gparams = _GraphParameters(
             G1,
             G2,
+            G1_degree,
+            G2_degree,
             l1,
             l2,
             nx.utils.groups(l1),
             nx.utils.groups(l2),
-            nx.utils.groups({node: degree for node, degree in G2.degree()}),
+            nx.utils.groups(G2_degree),
         )
 
         m = {9: self.mapped[9], 1: self.mapped[1]}
@@ -232,11 +236,11 @@ class TestGraphCandidateSelection:
         )
 
         u = 3
-        candidates = _find_candidates(u, gparams, sparams, G1_degree)
+        candidates = _find_candidates(u, gparams, sparams)
         assert candidates == {self.mapped[u]}
 
         u = 0
-        candidates = _find_candidates(u, gparams, sparams, G1_degree)
+        candidates = _find_candidates(u, gparams, sparams)
         assert candidates == {self.mapped[u]}
 
         m.pop(9)
@@ -252,7 +256,7 @@ class TestGraphCandidateSelection:
         )
 
         u = 7
-        candidates = _find_candidates(u, gparams, sparams, G1_degree)
+        candidates = _find_candidates(u, gparams, sparams)
         assert candidates == {
             self.mapped[u],
             self.mapped[8],
@@ -267,31 +271,21 @@ class TestGraphCandidateSelection:
         G2 = nx.relabel_nodes(G1, self.mapped)
 
         G1_degree = dict(G1.degree)
-        nx.set_node_attributes(
-            G1,
-            dict(zip(G1, it.cycle(labels_many))),
-            "label",
-        )
-        nx.set_node_attributes(
-            G2,
-            dict(
-                zip(
-                    [self.mapped[n] for n in G1],
-                    it.cycle(labels_many),
-                )
-            ),
-            "label",
-        )
+        G2_degree = dict(G2.degree)
+        nx.set_node_attributes(G1, dict(zip(G1, it.cycle(labels_many))), "label")
+        nx.set_node_attributes(G2, dict(zip(G2, it.cycle(labels_many))), "label")
         l1 = dict(G1.nodes(data="label", default=-1))
         l2 = dict(G2.nodes(data="label", default=-1))
         gparams = _GraphParameters(
             G1,
             G2,
+            G1_degree,
+            G2_degree,
             l1,
             l2,
             nx.utils.groups(l1),
             nx.utils.groups(l2),
-            nx.utils.groups({node: degree for node, degree in G2.degree()}),
+            nx.utils.groups(G2_degree),
         )
 
         m = {9: self.mapped[9], 1: self.mapped[1]}
@@ -307,11 +301,11 @@ class TestGraphCandidateSelection:
         )
 
         u = 3
-        candidates = _find_candidates(u, gparams, sparams, G1_degree)
+        candidates = _find_candidates(u, gparams, sparams)
         assert candidates == {self.mapped[u]}
 
         u = 0
-        candidates = _find_candidates(u, gparams, sparams, G1_degree)
+        candidates = _find_candidates(u, gparams, sparams)
         assert candidates == {self.mapped[u]}
 
         # Change label of disconnected node
@@ -321,15 +315,17 @@ class TestGraphCandidateSelection:
         gparams = _GraphParameters(
             G1,
             G2,
+            G1_degree,
+            G2_degree,
             l1,
             l2,
             nx.utils.groups(l1),
             nx.utils.groups(l2),
-            nx.utils.groups({node: degree for node, degree in G2.degree()}),
+            nx.utils.groups(G2_degree),
         )
 
         # No candidate
-        candidates = _find_candidates(u, gparams, sparams, G1_degree)
+        candidates = _find_candidates(u, gparams, sparams)
         assert candidates == set()
 
         m.pop(9)
@@ -345,7 +341,7 @@ class TestGraphCandidateSelection:
         )
 
         u = 7
-        candidates = _find_candidates(u, gparams, sparams, G1_degree)
+        candidates = _find_candidates(u, gparams, sparams)
         assert candidates == {self.mapped[u]}
 
         G1.nodes[8]["label"] = G1.nodes[7]["label"]
@@ -355,14 +351,16 @@ class TestGraphCandidateSelection:
         gparams = _GraphParameters(
             G1,
             G2,
+            G1_degree,
+            G2_degree,
             l1,
             l2,
             nx.utils.groups(l1),
             nx.utils.groups(l2),
-            nx.utils.groups({node: degree for node, degree in G2.degree()}),
+            nx.utils.groups(G2_degree),
         )
 
-        candidates = _find_candidates(u, gparams, sparams, G1_degree)
+        candidates = _find_candidates(u, gparams, sparams)
         assert candidates == {self.mapped[u], self.mapped[8]}
 
     def test_covered_neighbors_no_labels(self):
@@ -372,16 +370,19 @@ class TestGraphCandidateSelection:
         G2 = nx.relabel_nodes(G1, self.mapped)
 
         G1_degree = dict(G1.degree)
+        G2_degree = dict(G2.degree)
         l1 = dict(G1.nodes(data=None, default=-1))
         l2 = dict(G2.nodes(data=None, default=-1))
         gparams = _GraphParameters(
             G1,
             G2,
+            G1_degree,
+            G2_degree,
             l1,
             l2,
             nx.utils.groups(l1),
             nx.utils.groups(l2),
-            nx.utils.groups({node: degree for node, degree in G2.degree()}),
+            nx.utils.groups(G2_degree),
         )
 
         m = {9: self.mapped[9], 1: self.mapped[1]}
@@ -397,11 +398,11 @@ class TestGraphCandidateSelection:
         )
 
         u = 5
-        candidates = _find_candidates(u, gparams, sparams, G1_degree)
+        candidates = _find_candidates(u, gparams, sparams)
         assert candidates == {self.mapped[u]}
 
         u = 6
-        candidates = _find_candidates(u, gparams, sparams, G1_degree)
+        candidates = _find_candidates(u, gparams, sparams)
         assert candidates == {self.mapped[u], self.mapped[2]}
 
     def test_covered_neighbors_with_labels(self):
@@ -411,31 +412,21 @@ class TestGraphCandidateSelection:
         G2 = nx.relabel_nodes(G1, self.mapped)
 
         G1_degree = dict(G1.degree)
-        nx.set_node_attributes(
-            G1,
-            dict(zip(G1, it.cycle(labels_many))),
-            "label",
-        )
-        nx.set_node_attributes(
-            G2,
-            dict(
-                zip(
-                    [self.mapped[n] for n in G1],
-                    it.cycle(labels_many),
-                )
-            ),
-            "label",
-        )
+        G2_degree = dict(G2.degree)
+        nx.set_node_attributes(G1, dict(zip(G1, it.cycle(labels_many))), "label")
+        nx.set_node_attributes(G2, dict(zip(G2, it.cycle(labels_many))), "label")
         l1 = dict(G1.nodes(data="label", default=-1))
         l2 = dict(G2.nodes(data="label", default=-1))
         gparams = _GraphParameters(
             G1,
             G2,
+            G1_degree,
+            G2_degree,
             l1,
             l2,
             nx.utils.groups(l1),
             nx.utils.groups(l2),
-            nx.utils.groups({node: degree for node, degree in G2.degree()}),
+            nx.utils.groups(G2_degree),
         )
 
         m = {9: self.mapped[9], 1: self.mapped[1]}
@@ -451,11 +442,11 @@ class TestGraphCandidateSelection:
         )
 
         u = 5
-        candidates = _find_candidates(u, gparams, sparams, G1_degree)
+        candidates = _find_candidates(u, gparams, sparams)
         assert candidates == {self.mapped[u]}
 
         u = 6
-        candidates = _find_candidates(u, gparams, sparams, G1_degree)
+        candidates = _find_candidates(u, gparams, sparams)
         assert candidates == {self.mapped[u]}
 
         # Assign to 2, the same label as 6
@@ -466,14 +457,16 @@ class TestGraphCandidateSelection:
         gparams = _GraphParameters(
             G1,
             G2,
+            G1_degree,
+            G2_degree,
             l1,
             l2,
             nx.utils.groups(l1),
             nx.utils.groups(l2),
-            nx.utils.groups({node: degree for node, degree in G2.degree()}),
+            nx.utils.groups(G2_degree),
         )
 
-        candidates = _find_candidates(u, gparams, sparams, G1_degree)
+        candidates = _find_candidates(u, gparams, sparams)
         assert candidates == {self.mapped[u], self.mapped[2]}
 
 
@@ -515,24 +508,23 @@ class TestDiGraphCandidateSelection:
             n: (in_degree, out_degree)
             for (n, in_degree), (_, out_degree) in zip(G1.in_degree, G1.out_degree)
         }
+        G2_degree = {
+            n: (in_degree, out_degree)
+            for (n, in_degree), (_, out_degree) in zip(G2.in_degree, G2.out_degree)
+        }
 
         l1 = dict(G1.nodes(data="label", default=-1))
         l2 = dict(G2.nodes(data="label", default=-1))
         gparams = _GraphParameters(
             G1,
             G2,
+            G1_degree,
+            G2_degree,
             l1,
             l2,
             nx.utils.groups(l1),
             nx.utils.groups(l2),
-            nx.utils.groups(
-                {
-                    node: (in_degree, out_degree)
-                    for (node, in_degree), (_, out_degree) in zip(
-                        G2.in_degree(), G2.out_degree()
-                    )
-                }
-            ),
+            nx.utils.groups(G2_degree),
         )
 
         m = {9: self.mapped[9], 1: self.mapped[1]}
@@ -550,11 +542,11 @@ class TestDiGraphCandidateSelection:
         )
 
         u = 3
-        candidates = _find_candidates_Di(u, gparams, sparams, G1_degree)
+        candidates = _find_candidates_Di(u, gparams, sparams)
         assert candidates == {self.mapped[u]}
 
         u = 0
-        candidates = _find_candidates_Di(u, gparams, sparams, G1_degree)
+        candidates = _find_candidates_Di(u, gparams, sparams)
         assert candidates == {self.mapped[u]}
 
         m.pop(9)
@@ -572,7 +564,7 @@ class TestDiGraphCandidateSelection:
         )
 
         u = 7
-        candidates = _find_candidates_Di(u, gparams, sparams, G1_degree)
+        candidates = _find_candidates_Di(u, gparams, sparams)
         assert candidates == {self.mapped[u], self.mapped[8], self.mapped[3]}
 
     def test_no_covered_neighbors_with_labels(self):
@@ -585,38 +577,24 @@ class TestDiGraphCandidateSelection:
             n: (in_degree, out_degree)
             for (n, in_degree), (_, out_degree) in zip(G1.in_degree, G1.out_degree)
         }
-        nx.set_node_attributes(
-            G1,
-            dict(zip(G1, it.cycle(labels_many))),
-            "label",
-        )
-        nx.set_node_attributes(
-            G2,
-            dict(
-                zip(
-                    [self.mapped[n] for n in G1],
-                    it.cycle(labels_many),
-                )
-            ),
-            "label",
-        )
+        G2_degree = {
+            n: (in_degree, out_degree)
+            for (n, in_degree), (_, out_degree) in zip(G2.in_degree, G2.out_degree)
+        }
+        nx.set_node_attributes(G1, dict(zip(G1, it.cycle(labels_many))), "label")
+        nx.set_node_attributes(G2, dict(zip(G2, it.cycle(labels_many))), "label")
         l1 = dict(G1.nodes(data="label", default=-1))
         l2 = dict(G2.nodes(data="label", default=-1))
         gparams = _GraphParameters(
             G1,
             G2,
+            G1_degree,
+            G2_degree,
             l1,
             l2,
             nx.utils.groups(l1),
             nx.utils.groups(l2),
-            nx.utils.groups(
-                {
-                    node: (in_degree, out_degree)
-                    for (node, in_degree), (_, out_degree) in zip(
-                        G2.in_degree(), G2.out_degree()
-                    )
-                }
-            ),
+            nx.utils.groups(G2_degree),
         )
 
         m = {9: self.mapped[9], 1: self.mapped[1]}
@@ -634,11 +612,11 @@ class TestDiGraphCandidateSelection:
         )
 
         u = 3
-        candidates = _find_candidates_Di(u, gparams, sparams, G1_degree)
+        candidates = _find_candidates_Di(u, gparams, sparams)
         assert candidates == {self.mapped[u]}
 
         u = 0
-        candidates = _find_candidates_Di(u, gparams, sparams, G1_degree)
+        candidates = _find_candidates_Di(u, gparams, sparams)
         assert candidates == {self.mapped[u]}
 
         # Change label of disconnected node
@@ -648,22 +626,17 @@ class TestDiGraphCandidateSelection:
         gparams = _GraphParameters(
             G1,
             G2,
+            G1_degree,
+            G2_degree,
             l1,
             l2,
             nx.utils.groups(l1),
             nx.utils.groups(l2),
-            nx.utils.groups(
-                {
-                    node: (in_degree, out_degree)
-                    for (node, in_degree), (_, out_degree) in zip(
-                        G2.in_degree(), G2.out_degree()
-                    )
-                }
-            ),
+            nx.utils.groups(G2_degree),
         )
 
         # No candidate
-        candidates = _find_candidates_Di(u, gparams, sparams, G1_degree)
+        candidates = _find_candidates_Di(u, gparams, sparams)
         assert candidates == set()
 
         m.pop(9)
@@ -681,7 +654,7 @@ class TestDiGraphCandidateSelection:
         )
 
         u = 7
-        candidates = _find_candidates_Di(u, gparams, sparams, G1_degree)
+        candidates = _find_candidates_Di(u, gparams, sparams)
         assert candidates == {self.mapped[u]}
 
         G1.nodes[8]["label"] = G1.nodes[7]["label"]
@@ -691,21 +664,16 @@ class TestDiGraphCandidateSelection:
         gparams = _GraphParameters(
             G1,
             G2,
+            G1_degree,
+            G2_degree,
             l1,
             l2,
             nx.utils.groups(l1),
             nx.utils.groups(l2),
-            nx.utils.groups(
-                {
-                    node: (in_degree, out_degree)
-                    for (node, in_degree), (_, out_degree) in zip(
-                        G2.in_degree(), G2.out_degree()
-                    )
-                }
-            ),
+            nx.utils.groups(G2_degree),
         )
 
-        candidates = _find_candidates_Di(u, gparams, sparams, G1_degree)
+        candidates = _find_candidates_Di(u, gparams, sparams)
         assert candidates == {self.mapped[u], self.mapped[8]}
 
     def test_covered_neighbors_no_labels(self):
@@ -718,24 +686,23 @@ class TestDiGraphCandidateSelection:
             n: (in_degree, out_degree)
             for (n, in_degree), (_, out_degree) in zip(G1.in_degree, G1.out_degree)
         }
+        G2_degree = {
+            n: (in_degree, out_degree)
+            for (n, in_degree), (_, out_degree) in zip(G2.in_degree, G2.out_degree)
+        }
 
         l1 = dict(G1.nodes(data=None, default=-1))
         l2 = dict(G2.nodes(data=None, default=-1))
         gparams = _GraphParameters(
             G1,
             G2,
+            G1_degree,
+            G2_degree,
             l1,
             l2,
             nx.utils.groups(l1),
             nx.utils.groups(l2),
-            nx.utils.groups(
-                {
-                    node: (in_degree, out_degree)
-                    for (node, in_degree), (_, out_degree) in zip(
-                        G2.in_degree(), G2.out_degree()
-                    )
-                }
-            ),
+            nx.utils.groups(G2_degree),
         )
 
         m = {9: self.mapped[9], 1: self.mapped[1]}
@@ -753,11 +720,11 @@ class TestDiGraphCandidateSelection:
         )
 
         u = 5
-        candidates = _find_candidates_Di(u, gparams, sparams, G1_degree)
+        candidates = _find_candidates_Di(u, gparams, sparams)
         assert candidates == {self.mapped[u]}
 
         u = 6
-        candidates = _find_candidates_Di(u, gparams, sparams, G1_degree)
+        candidates = _find_candidates_Di(u, gparams, sparams)
         assert candidates == {self.mapped[u]}
 
         # Change the direction of an edge to make the degree orientation same as first candidate of u.
@@ -765,25 +732,28 @@ class TestDiGraphCandidateSelection:
         G1.add_edge(2, 4)
         G2.remove_edge("d", "b")
         G2.add_edge("b", "d")
+        G1_degree = {
+            n: (in_degree, out_degree)
+            for (n, in_degree), (_, out_degree) in zip(G1.in_degree, G1.out_degree)
+        }
+        G2_degree = {
+            n: (in_degree, out_degree)
+            for (n, in_degree), (_, out_degree) in zip(G2.in_degree, G2.out_degree)
+        }
 
         gparams = _GraphParameters(
             G1,
             G2,
+            G1_degree,
+            G2_degree,
             l1,
             l2,
             nx.utils.groups(l1),
             nx.utils.groups(l2),
-            nx.utils.groups(
-                {
-                    node: (in_degree, out_degree)
-                    for (node, in_degree), (_, out_degree) in zip(
-                        G2.in_degree(), G2.out_degree()
-                    )
-                }
-            ),
+            nx.utils.groups(G2_degree),
         )
 
-        candidates = _find_candidates_Di(u, gparams, sparams, G1_degree)
+        candidates = _find_candidates_Di(u, gparams, sparams)
         assert candidates == {self.mapped[u], self.mapped[2]}
 
     def test_covered_neighbors_with_labels(self):
@@ -801,39 +771,24 @@ class TestDiGraphCandidateSelection:
             n: (in_degree, out_degree)
             for (n, in_degree), (_, out_degree) in zip(G1.in_degree, G1.out_degree)
         }
-
-        nx.set_node_attributes(
-            G1,
-            dict(zip(G1, it.cycle(labels_many))),
-            "label",
-        )
-        nx.set_node_attributes(
-            G2,
-            dict(
-                zip(
-                    [self.mapped[n] for n in G1],
-                    it.cycle(labels_many),
-                )
-            ),
-            "label",
-        )
+        G2_degree = {
+            n: (in_degree, out_degree)
+            for (n, in_degree), (_, out_degree) in zip(G2.in_degree, G2.out_degree)
+        }
+        nx.set_node_attributes(G1, dict(zip(G1, it.cycle(labels_many))), "label")
+        nx.set_node_attributes(G2, dict(zip(G2, it.cycle(labels_many))), "label")
         l1 = dict(G1.nodes(data="label", default=-1))
         l2 = dict(G2.nodes(data="label", default=-1))
         gparams = _GraphParameters(
             G1,
             G2,
+            G1_degree,
+            G2_degree,
             l1,
             l2,
             nx.utils.groups(l1),
             nx.utils.groups(l2),
-            nx.utils.groups(
-                {
-                    node: (in_degree, out_degree)
-                    for (node, in_degree), (_, out_degree) in zip(
-                        G2.in_degree(), G2.out_degree()
-                    )
-                }
-            ),
+            nx.utils.groups(G2_degree),
         )
 
         m = {9: self.mapped[9], 1: self.mapped[1]}
@@ -851,11 +806,11 @@ class TestDiGraphCandidateSelection:
         )
 
         u = 5
-        candidates = _find_candidates_Di(u, gparams, sparams, G1_degree)
+        candidates = _find_candidates_Di(u, gparams, sparams)
         assert candidates == {self.mapped[u]}
 
         u = 6
-        candidates = _find_candidates_Di(u, gparams, sparams, G1_degree)
+        candidates = _find_candidates_Di(u, gparams, sparams)
         assert candidates == {self.mapped[u]}
 
         # Assign to 2, the same label as 6
@@ -866,21 +821,16 @@ class TestDiGraphCandidateSelection:
         gparams = _GraphParameters(
             G1,
             G2,
+            G1_degree,
+            G2_degree,
             l1,
             l2,
             nx.utils.groups(l1),
             nx.utils.groups(l2),
-            nx.utils.groups(
-                {
-                    node: (in_degree, out_degree)
-                    for (node, in_degree), (_, out_degree) in zip(
-                        G2.in_degree(), G2.out_degree()
-                    )
-                }
-            ),
+            nx.utils.groups(G2_degree),
         )
 
-        candidates = _find_candidates_Di(u, gparams, sparams, G1_degree)
+        candidates = _find_candidates_Di(u, gparams, sparams)
         assert candidates == {self.mapped[u], self.mapped[2]}
 
         # Change the direction of an edge to make the degree orientation same as first candidate of u.
@@ -888,54 +838,55 @@ class TestDiGraphCandidateSelection:
         G1.add_edge(4, 2)
         G2.remove_edge("b", "d")
         G2.add_edge("d", "b")
+        G1_degree = {
+            n: (in_degree, out_degree)
+            for (n, in_degree), (_, out_degree) in zip(G1.in_degree, G1.out_degree)
+        }
+        G2_degree = {
+            n: (in_degree, out_degree)
+            for (n, in_degree), (_, out_degree) in zip(G2.in_degree, G2.out_degree)
+        }
 
         gparams = _GraphParameters(
             G1,
             G2,
+            G1_degree,
+            G2_degree,
             l1,
             l2,
             nx.utils.groups(l1),
             nx.utils.groups(l2),
-            nx.utils.groups(
-                {
-                    node: (in_degree, out_degree)
-                    for (node, in_degree), (_, out_degree) in zip(
-                        G2.in_degree(), G2.out_degree()
-                    )
-                }
-            ),
+            nx.utils.groups(G2_degree),
         )
 
-        candidates = _find_candidates_Di(u, gparams, sparams, G1_degree)
+        candidates = _find_candidates_Di(u, gparams, sparams)
         assert candidates == {self.mapped[u]}
 
     def test_same_in_out_degrees_no_candidate(self):
-        g1 = nx.DiGraph([(4, 1), (4, 2), (3, 4), (5, 4), (6, 4)])
-        g2 = nx.DiGraph([(1, 4), (2, 4), (3, 4), (4, 5), (4, 6)])
+        G1 = nx.DiGraph([(4, 1), (4, 2), (3, 4), (5, 4), (6, 4)])
+        G2 = nx.DiGraph([(1, 4), (2, 4), (3, 4), (4, 5), (4, 6)])
+        G1_degree = {
+            n: (in_degree, out_degree)
+            for (n, in_degree), (_, out_degree) in zip(G1.in_degree, G1.out_degree)
+        }
+        G2_degree = {
+            n: (in_degree, out_degree)
+            for (n, in_degree), (_, out_degree) in zip(G2.in_degree, G2.out_degree)
+        }
 
-        l1 = dict(g1.nodes(data=None, default=-1))
-        l2 = dict(g2.nodes(data=None, default=-1))
+        l1 = dict(G1.nodes(data=None, default=-1))
+        l2 = dict(G2.nodes(data=None, default=-1))
         gparams = _GraphParameters(
-            g1,
-            g2,
+            G1,
+            G2,
+            G1_degree,
+            G2_degree,
             l1,
             l2,
             nx.utils.groups(l1),
             nx.utils.groups(l2),
-            nx.utils.groups(
-                {
-                    node: (in_degree, out_degree)
-                    for (node, in_degree), (_, out_degree) in zip(
-                        g2.in_degree(), g2.out_degree()
-                    )
-                }
-            ),
+            nx.utils.groups(G2_degree),
         )
-
-        g1_degree = {
-            n: (in_degree, out_degree)
-            for (n, in_degree), (_, out_degree) in zip(g1.in_degree, g1.out_degree)
-        }
 
         m = {1: 1, 2: 2, 3: 3}
         m_rev = m.copy()
@@ -953,10 +904,10 @@ class TestDiGraphCandidateSelection:
 
         u = 4
         # despite the same in and out degree, there's no candidate for u=4
-        candidates = _find_candidates_Di(u, gparams, sparams, g1_degree)
+        candidates = _find_candidates_Di(u, gparams, sparams)
         assert candidates == set()
         # Notice how the regular candidate selection method returns wrong result.
-        assert _find_candidates(u, gparams, sparams, g1_degree) == {4}
+        assert _find_candidates(u, gparams, sparams) == {4}
 
 
 class TestGraphISOFeasibility:
@@ -2808,8 +2759,7 @@ class TestGraphTinoutUpdating:
     G2 = nx.relabel_nodes(G1, mapping=mapped)
 
     def test_updating(self):
-        G2_degree = dict(self.G2.degree)
-        gparams, sparams = _initialize_parameters(self.G1, self.G2, G2_degree)
+        gparams, sparams = _initialize_parameters(self.G1, self.G2)
         m, m_rev, T1, _, T1_tilde, _, T2, _, T2_tilde, _ = sparams
 
         # Add node to the mapping
@@ -2871,7 +2821,7 @@ class TestGraphTinoutUpdating:
         T1_tilde = set()
         T2_tilde = set()
 
-        gparams = _GraphParameters(self.G1, self.G2, {}, {}, {}, {}, {})
+        gparams = _GraphParameters(self.G1, self.G2, None, None, {}, {}, {}, {}, {})
         sparams = _StateParameters(
             m, m_rev, T1, None, T1_tilde, None, T2, None, T2_tilde, None
         )
@@ -2963,7 +2913,7 @@ class TestDiGraphTinoutUpdating:
                 self.G2.in_degree, self.G2.out_degree
             )
         }
-        gparams, sparams = _initialize_parameters(self.G1, self.G2, G2_degree)
+        gparams, sparams = _initialize_parameters(self.G1, self.G2)
         m, m_rev, T1_out, T1_in, T1_tilde, _, T2_out, T2_in, T2_tilde, _ = sparams
 
         # Add node to the mapping
@@ -3037,7 +2987,7 @@ class TestDiGraphTinoutUpdating:
         T1_tilde = set()
         T2_tilde = set()
 
-        gparams = _GraphParameters(self.G1, self.G2, {}, {}, {}, {}, {})
+        gparams = _GraphParameters(self.G1, self.G2, None, None, {}, {}, {}, {}, {})
         sparams = _StateParameters(
             m, m_rev, T1_out, T1_in, T1_tilde, None, T2_out, T2_in, T2_tilde, None
         )
