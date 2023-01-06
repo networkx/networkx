@@ -24,6 +24,10 @@ def could_be_isomorphic(G1, G2):
     Notes
     -----
     Checks for matching degree, triangle, and number of cliques sequences.
+    The triangle sequence contains the number of triangles each node is part of.
+    The clique sequence contains for each node the number of maximal cliques
+    involving that node.
+
     """
 
     # Check global properties
@@ -65,7 +69,8 @@ def fast_could_be_isomorphic(G1, G2):
 
     Notes
     -----
-    Checks for matching degree and triangle sequences.
+    Checks for matching degree and triangle sequences. The triangle
+    sequence contains the number of triangles each node is part of.
     """
     # Check global properties
     if G1.order() != G2.order():
@@ -219,7 +224,7 @@ def is_isomorphic(G1, G2, node_match=None, edge_match=None):
        "An Improved Algorithm for Matching Large Graphs",
        3rd IAPR-TC15 Workshop  on Graph-based Representations in
        Pattern Recognition, Cuen, pp. 149-159, 2001.
-       https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.101.5342
+       https://www.researchgate.net/publication/200034365_An_Improved_Algorithm_for_Matching_Large_Graphs
     """
     if G1.is_directed() and G2.is_directed():
         GM = nx.algorithms.isomorphism.DiGraphMatcher

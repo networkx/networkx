@@ -132,7 +132,7 @@ def relaxed_caveman_graph(l, k, p, seed=None):
     k : int
       Size of cliques
     p : float
-      Probabilty of rewiring each edge.
+      Probability of rewiring each edge.
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
@@ -320,7 +320,7 @@ def gaussian_random_partition_graph(n, s, v, p_in, p_out, directed=False, seed=N
     v : float
       Shape parameter. The variance of cluster size distribution is s/v.
     p_in : float
-      Probabilty of intra cluster connection.
+      Probability of intra cluster connection.
     p_out : float
       Probability of inter cluster connection.
     directed : boolean, optional default=False
