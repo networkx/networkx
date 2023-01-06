@@ -192,7 +192,6 @@ def _plain_bfs(G, source):
     n = len(adj)
     seen = {source}
     nextlevel = [source]
-    yield source
     while nextlevel:
         thislevel = nextlevel
         nextlevel = []
