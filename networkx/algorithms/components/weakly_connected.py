@@ -172,7 +172,7 @@ def _plain_bfs(G, source):
     n = len(G)
     Gsucc = G.succ
     Gpred = G.pred
-    seen = set()
+    seen = {source}
     nextlevel = [source]
 
     yield source
