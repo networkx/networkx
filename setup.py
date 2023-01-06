@@ -122,7 +122,7 @@ dd = os.path.join(docdirbase, "examples", "javascript/force")
 pp = os.path.join("examples", "javascript/force")
 data.append((dd, glob(os.path.join(pp, "*"))))
 
-# add the tests and helper subpackage(s)
+# add the tests subpackage(s)
 package_data = {
     "networkx": ["tests/*.py"],
     "networkx.algorithms": ["tests/*.py"],
