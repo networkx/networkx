@@ -135,11 +135,7 @@ package_data = {
     "networkx.algorithms.coloring": ["tests/*.py"],
     "networkx.algorithms.minors": ["tests/*.py"],
     "networkx.algorithms.flow": ["tests/*.py", "tests/*.bz2"],
-    "networkx.algorithms.isomorphism": [
-        "tests/*.py",
-        "tests/*.*99",
-        "vf2pp_helpers/*.py",
-    ],
+    "networkx.algorithms.isomorphism": ["tests/*.py", "tests/*.*99"],
     "networkx.algorithms.link_analysis": ["tests/*.py"],
     "networkx.algorithms.approximation": ["tests/*.py"],
     "networkx.algorithms.operators": ["tests/*.py"],
