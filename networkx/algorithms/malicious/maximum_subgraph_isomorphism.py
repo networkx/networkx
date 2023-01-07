@@ -10,7 +10,8 @@ import logging
 
 LOGֹ_FORMAT = "%(levelname)s, time: %(asctime)s , line: %(lineno)d- %(message)s "
 # create and configure logger
-logging.basicConfig(filename='malicious_algo_logging.log', level=logging.DEBUG)
+logging.basicConfig(filename='malicious_algo_logging.log',
+                    level=logging.DEBUG, filemode='w')
 logger = logging.getLogger()
 
 def find_max__edges_of_sub_isomorphism_graph(G1, G2):

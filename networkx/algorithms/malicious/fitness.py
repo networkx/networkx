@@ -9,7 +9,7 @@ import logging
 
 LOGֹ_FORMAT = "%(levelname)s, time: %(asctime)s , line: %(lineno)d- %(message)s "
 # create and configure logger
-logging.basicConfig(filename='malicious_algo_logging.log', level=logging.DEBUG)
+logging.basicConfig(filename='malicious_algo_logging.log', level=logging.DEBUG, filemode='w')
 logger = logging.getLogger()
 
 
@@ -101,6 +101,6 @@ def fitness(sub_G1, sub_G2, G1_num_of_nodes, G1_num_of_edges, G2_num_of_nodes, G
         logging.debug(f'Calculating fitness value: {(((G1_num_of_edges - mutual) + (G2_num_of_edges - mutual)) / min_val)}')
         return (((G1_num_of_edges - mutual) + (G2_num_of_edges - mutual)) / min_val)
     else:
-        logging.warning('Graphs are not isomorphic')
+        logging.debug('Graphs are not isomorphic')
         return 999999 # arbitrary high number
 

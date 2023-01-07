@@ -6,15 +6,38 @@ Two heuristics to improve the quality of arrangements for maximum subgraph isomo
 __all__ = ["GA", "count_equal_size_combinations"]
 
 from networkx.algorithms.malicious.fitness import fitness
+# from fitness import fitness
+# from graph_reduction import build_RG_from_DG
+
 from math import comb
 import networkx as nx
 import logging
 import random
+import time
+import multiprocessing as mp
 
 LOGֹ_FORMAT = "%(levelname)s, time: %(asctime)s , line: %(lineno)d- %(message)s "
 # create and configure logger
-logging.basicConfig(filename='malicious_algo_logging.log', level=logging.DEBUG)
+logging.basicConfig(filename='malicious_algo_logging.log', level=logging.DEBUG, filemode='w')
 logger = logging.getLogger()
+
+
+def generate_solutions(G1, G2, num_solutions):
+    # Generate solutions
+    solutions = []
+    min_nodes = min(len(G1.nodes), len(G2.nodes))
+    with mp.Pool() as pool:
+        results = [pool.apply_async(generate_solution, args=(
+            G1, G2, min_nodes)) for s in range(num_solutions)]
+        solutions = [r.get() for r in results]
+    return solutions
+
+
+def generate_solution(G1, G2, min_nodes):
+    sub_graph_size = random.randint(1, min_nodes)
+    sub1 = random.sample(G1.nodes, sub_graph_size)
+    sub2 = random.sample(G2.nodes, sub_graph_size)
+    return (sub1, sub2)
 
 
 def count_equal_size_combinations(G1_nodes, G2_nodes):
@@ -54,120 +77,91 @@ def count_equal_size_combinations(G1_nodes, G2_nodes):
     logging.debug(f'Total number of equal size combinations: {count}')
     return count
 
-
-def GA(G1, G2, ALPHA):
-    """
-    Since subgraph isomorphism is an NP-hard problem, a
-    GA is appropriate. A GA generates a set of initial solutions
-    and lets them evolve over a number of iterations. When GA
-    meets some condition, the best solution is returned and the
-    algorithm terminates. Our algorithm replaces 20 percent
-    of the population per generation and uses local optimisation heuristics after mutation.
-
-    Parameters
-    ----------
-    G1 : NetworkX DiGraph
-        A (dirceted) graph 
-    G2 : NetworkX DiGraph
-        A (dirceted) graph 
-    ALPHA: folat
-        A threshold value that indicates how much similar the ftness' score should be
-
-    Returns
-    -------
-    True iff the minimal fitness' score between all the subgraphs og G1 and G2 it smaller than the given alpha 
-
-    Notes
-    -----
-    In computer science and operations research, 
-    a genetic algorithm (GA) is a metaheuristic inspired by 
-    the process of natural selection that belongs to the larger
-    class of evolutionary algorithms (EA). 
-    Genetic algorithms are commonly used to generate high-quality
-    solutions to optimization and search problems by relying on 
-    biologically inspired operators such as mutation, crossover and selection.
-
-    https://en.wikipedia.org/wiki/Genetic_algorithm
-
-    References
-    ----------
-    "Malware detection based on dependency graph using hybrid genetic algorithm",
-    by K.Kim and B.Moon (2010)
-    Algorithm 1, page 5.
-    http://rosaec.snu.ac.kr/publish/2010/T2/KiMo-GECCO-2010.pdf
-
-    Programmers
-    -----------
-    Stu L.Akirav & B.Schtalman
-
-    Example : building a RG graph
-    ------------------------------
-    >>> import networkx as nx
-
-    # creates and builds G1 
-    >>> G1 = nx.DiGraph()
-    >>> G1.add_nodes_from(range(6, 10))
-    >>> edges = [(6, 7), (6, 8), (6, 9), (8, 8), (9, 7), (9, 8), (9, 9)]
-    >>> G1.add_edges_from(edges)
-
-    # creates and builds G2
-    >>> G2 = nx.DiGraph()
-    >>> G2.add_nodes_from(range(6, 10))
-    >>> edges = [(6, 7), (6, 8), (6, 9), (8, 8), (9, 7), (9, 8), (9, 9)]
-    >>> G2.add_edges_from(edges)
-
-    # runs the function
-    >>> GA(G1, G2, 0)
-    True
-    """
-
-    logging.info('Started genetic algorithm')
-    G1_nodes = list(G1.nodes)
-    G2_nodes = list(G2.nodes)
-    # calculates the num of combinations
-    num_of_combinations = count_equal_size_combinations(G1_nodes, G2_nodes)
-    # generate solutions
+def generate_solutions(G1, G2, num_solutions):
+    t_original = time.time()
+    # Generate solutions
     solutions = []
-    min_nodes = min(len(G1_nodes), len(G2_nodes))
-    NUM_OF_SOLUTIONS = int(num_of_combinations / 4)
-    logging.debug(f'Generating {NUM_OF_SOLUTIONS} solutions')
-    for s in range(NUM_OF_SOLUTIONS):
+    min_nodes = min(len(G1.nodes), len(G2.nodes))
+    for s in range(num_solutions):
         sub_graph_size = random.randint(1, min_nodes)
-        sub1 = random.sample(G1_nodes, sub_graph_size)
-        sub2 = random.sample(G2_nodes, sub_graph_size)
+        sub1 = random.sample(G1.nodes, sub_graph_size)
+        sub2 = random.sample(G2.nodes, sub_graph_size)
         solutions.append((sub1, sub2))
+    print("original time:", time.time() - t_original)
+    return solutions
 
-    num_of_nodes_G1 = len(G1.nodes)
-    num_of_edges_G1 = len(G1.edges)
-    num_of_nodes_G2 = len(G2.nodes)
-    num_of_edges_G2 = len(G2.edges)
-
-    NUM_OF_GENERATIONS = NUM_OF_SOLUTIONS * 2
-    for i in range(NUM_OF_GENERATIONS):
-        rankedsolutions = []  # [solution, fitness' score]
-        logging.debug(f'Evaluating solutions in generation {i+1}')
-        for s in solutions:
-            fitness_score = fitness(G1.subgraph(s[0]), G2.subgraph(
-                s[1]), num_of_nodes_G1, num_of_edges_G1, num_of_nodes_G2, num_of_edges_G2)
-            rankedsolutions.append((s, fitness_score))
-        # checks if the best solution so fate is less or equals to alpha
-        if rankedsolutions[0][1] <= ALPHA:
+def evaluate_solutions(G1, G2, solutions, ALPHA):
+    solutions_with_fitness = []
+    for i, solution in enumerate(solutions):
+        # Calculate the fitness score for the current solution
+        fitness_score = fitness(G1.subgraph(solution[0]), G2.subgraph(
+            solution[1]), len(G1.nodes), len(G1.edges), len(G2.nodes), len(G2.edges))
+        solutions_with_fitness.append((solution, fitness_score))
+        # Check if the current solution has a fitness score less than or equal to ALPHA
+        if fitness_score <= ALPHA:
             logging.warning(
                 f'Found solution with fitness score <= ALPHA ({ALPHA}) in generation {i+1}')
+            return True, None
+    return False, solutions_with_fitness
+
+def crossover(G1_nodes, G2_nodes, G1_sublists, G2_sublists, num_solutions):
+    new_solutions = []
+    count_new_solutions = 0
+    while count_new_solutions < num_solutions:
+        sub_graph_size = random.choice(list(G1_sublists.keys()))
+        e1 = random.choice(G1_sublists[sub_graph_size])
+        e2 = random.choice(G2_sublists[sub_graph_size])
+        if (e1, e2) not in new_solutions:
+            new_solutions.append((e1, e2))
+        else:
+            new_e1 = random.sample(G1_nodes, sub_graph_size)
+            new_e2 = random.sample(G2_nodes, sub_graph_size)
+            new_solutions.append((new_e1, new_e2))
+        count_new_solutions += 1
+    logging.debug(f'Generating new solutions')
+    return new_solutions
+
+
+def GA(G1, G2, ALPHA):
+    logging.info('Started genetic algorithm')
+    # Get the nodes of each graph
+    G1_nodes = list(G1.nodes)
+    G2_nodes = list(G2.nodes)
+
+    # Calculate the number of combinations of equal size sublists that can be created from the nodes of the two graphs
+    num_of_combinations = count_equal_size_combinations(G1_nodes, G2_nodes)
+
+    # Generate the solutions
+    NUM_OF_SOLUTIONS = int(num_of_combinations / 2)
+    logging.debug(f'Generating {NUM_OF_SOLUTIONS} solutions')
+    solutions = generate_solutions(G1, G2, NUM_OF_SOLUTIONS)
+
+    # Evaluate the solutions
+    NUM_OF_GENERATIONS = int(NUM_OF_SOLUTIONS * 10)
+    for i in range(NUM_OF_GENERATIONS):
+        logging.debug(f'Evaluating solutions in generation {i+1}')
+        found_solution, solutions_with_fitness = evaluate_solutions(
+            G1, G2, solutions, ALPHA)
+        if found_solution:
             return True
-            # sorts the solutaions by thier fitness' score
-        rankedsolutions = sorted(rankedsolutions, key=lambda x: x[1])
-        logging.debug(f'Sorting solutions in generation {i+1}')
-        SOLUTIONS_TO_CHOOSE = int(NUM_OF_SOLUTIONS * 0.8)
-        # picks the smallest SOLUTIONS_TO_CHOOSE solutions
+
+        solutions_with_fitness  
+        # Sort the solutions by their fitness scores
+        rankedsolutions = sorted(solutions_with_fitness, key=lambda x: x[1])
+        if NUM_OF_SOLUTIONS == 1:
+            SOLUTIONS_TO_CHOOSE = 1
+        else:
+            SOLUTIONS_TO_CHOOSE = int(NUM_OF_SOLUTIONS * 0.8)
+        # Choose the top SOLUTIONS_TO_CHOOSE solutions
         bestsoutions = rankedsolutions[:SOLUTIONS_TO_CHOOSE]
         logging.debug(
             f'Choosing top {SOLUTIONS_TO_CHOOSE} solutions in generation {i+1}')
+
         G1_elements = []
         G2_elements = []
         for s in bestsoutions:
-            G1_sub = s[0][0]  # takes the solution for G1
-            G2_sub = s[0][1]  # takes the solution for G2
+            G1_sub = s[0][0]  # Take the solution for G1
+            G2_sub = s[0][1]  # Take the solution for G2
             G1_elements.append(G1_sub)
             G2_elements.append(G2_sub)
 
@@ -184,20 +178,9 @@ def GA(G1, G2, ALPHA):
             G2_sublists[length] = [
                 lst for lst in G2_elements if len(lst) == length]
 
-        newGen = []
-        count_new_solutions = 0
-        while (count_new_solutions < NUM_OF_SOLUTIONS):
-            sub_graph_size = random.choice(intersection)
-            e1 = random.choice(G1_sublists[sub_graph_size])
-            e2 = random.choice(G2_sublists[sub_graph_size])
-            if (e1, e2) not in newGen:
-                newGen.append((e1, e2))
-            else:
-                new_e1 = random.sample(G1_nodes, sub_graph_size)
-                new_e2 = random.sample(G2_nodes, sub_graph_size)
-                newGen.append((new_e1, new_e2))
-            count_new_solutions += 1
-        logging.debug(f'Generating new solutions in generation {i+1}')
-        solutions = newGen
+        # Crossover
+        logging.debug(f'Performing crossover in generation {i+1}')
+        solutions = crossover(G1_nodes, G2_nodes,
+                              G1_sublists, G2_sublists, NUM_OF_SOLUTIONS)
 
     return False
