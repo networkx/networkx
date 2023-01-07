@@ -344,11 +344,11 @@ class TestEnvyFreeMatching:
             return nx.Graph([(i, i + size) for i in range(size)])
 
         A = nx.complete_bipartite_graph(3, 3)
-        matching = algo.envy_free_matching(A)
+        matching = envy_free_matching(A)
         assert matching == {0: 3, 3: 0, 1: 4, 4: 1, 2: 5, 5: 2}
 
         B = nx.Graph([(0, 3), (3, 0), (0, 4), (4, 0), (1, 4), (4, 1), (1, 5), (5, 1), (2, 5), (5, 2)])
-        matching = algo.envy_free_matching(B)
+        matching = envy_free_matching(B)
         assert matching == {0: 3, 3: 0, 1: 4, 4: 1, 2: 5, 5: 2}
 
         # Check our algorithm with big inputs, array can be expanded to contain more values for which to generate graphs
@@ -356,7 +356,7 @@ class TestEnvyFreeMatching:
         for size in sizes:
             G = generate_marriable_bipartite_graph(size)
             if nx.is_connected(G):
-                matching = algo.envy_free_matching(G)
+                matching = envy_free_matching(G)
                 expected1 = {i: i + size for i in range(size)}
                 expected2 = {i + size: i for i in range(size)}
                 expected = {**expected1, **expected2}
