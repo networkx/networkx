@@ -713,10 +713,6 @@ def _EFM_partition(G, M=None, top_nodes=None):
     by Elad Aigner-Horev and Erel Segal-Halevi (2022), https://arxiv.org/abs/1901.09527
     Algorithm 1: Finding the EFM partition of a bipartite graph.
 
-    Programmers
-    -----------
-        Benjamin Saldman
-        Daniel Gilkarov
     Examples
     --------
         Example 1: Perfect matching
@@ -786,10 +782,7 @@ def envy_free_matching(G, top_nodes=None):
     .. [1] "Envy-free Matchings in Bipartite Graphs and their Applications to Fair Division",
     by Elad Aigner-Horev and Erel Segal-Halevi (2022), https://arxiv.org/abs/1901.09527
     Algorithm 2: Finding an envy-free matching of maximum cardinality.
-    Programmers
-    -----------
-        Benjamin Saldman
-        Daniel Gilkarov
+
     Examples
     --------
         Example 1: Perfect matching
@@ -842,10 +835,7 @@ def minimum_weight_envy_free_matching(G, top_nodes=None):
     .. [1] "Envy-free Matchings in Bipartite Graphs and their Applications to Fair Division",
     by Elad Aigner-Horev and Erel Segal-Halevi (2022), https://arxiv.org/abs/1901.09527
     Algorithm 3: Finding a minimum-cost maximum-cardinality envy-free matching.
-    Programmers
-    -----------
-        Benjamin Saldman
-        Daniel Gilkarov
+
     Examples
     --------
         Example 1: K 3,3 with weights
