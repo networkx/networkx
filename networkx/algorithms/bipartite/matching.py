@@ -593,7 +593,7 @@ def minimum_weight_full_matching(G, top_nodes=None, weight="weight"):
 
 
 def __neighbours_of_set__(G, node_set):
-    """
+    r"""
     returns a set of the neighbours of a given set of nodes
     >>> G = nx.complete_bipartite_graph(3,3)
     >>> __neighbours_of_set__(G, {})
@@ -620,7 +620,7 @@ def __neighbours_of_set__(G, node_set):
 
 
 def __M_alternating_sequence__(G, M, top_nodes=None):
-    """
+    r"""
     Generates M-alternating-sequence for a graph G with regard to a matching M
     We generate two sets with the following recursive definition:
     X_0 = nodes in G unmatched by M.
@@ -673,11 +673,19 @@ def __M_alternating_sequence__(G, M, top_nodes=None):
     index = 1
 
     while len(X_subsets) == 1 or X_subsets[-1] != set() and Y_subsets[-1] != set():
-        GMinusM = nx.subgraph_view(G, filter_edge=lambda u, v: (u, v) not in M.items() and (v, u) not in M.items())
-        Y_current = (__neighbours_of_set__(GMinusM, X_subsets[-1])) - Y_subgroups_accumulate
+        GMinusM = nx.subgraph_view(
+            G,
+            filter_edge=lambda u, v: (u, v) not in M.items()
+            and (v, u) not in M.items(),
+        )
+        Y_current = (
+            __neighbours_of_set__(GMinusM, X_subsets[-1])
+        ) - Y_subgroups_accumulate
         if Y_current == set():
             break
-        G_M = nx.subgraph_view(G, filter_edge=lambda u, v: (u, v) in M.items() and (v, u) in M.items())
+        G_M = nx.subgraph_view(
+            G, filter_edge=lambda u, v: (u, v) in M.items() and (v, u) in M.items()
+        )
         X_current = __neighbours_of_set__(G_M, Y_current)
         if X_current == set():
             break
@@ -692,7 +700,7 @@ def __M_alternating_sequence__(G, M, top_nodes=None):
 
 
 def _EFM_partition(G, M=None, top_nodes=None):
-    """Returns the unique EFM partition of bipartite graph.
+    r"""Returns the unique EFM partition of bipartite graph.
 
     A matching in a bipartite graph with parts X and Y is called envy-free, if no unmatched
     vertex in X is adjacent to a matched vertex in Y.
