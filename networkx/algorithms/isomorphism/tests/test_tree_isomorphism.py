@@ -134,7 +134,7 @@ def test_hardcoded():
     isomorphism = sorted(rooted_tree_isomorphism(t1, root1, t2, root2))
 
     # is correct by hand
-    assert (isomorphism == isomorphism1) or (isomorphism == isomorphism2)
+    assert isomorphism in (isomorphism1, isomorphism2)
 
     # check algorithmically
     assert check_isomorphism(t1, t2, isomorphism)
@@ -151,7 +151,7 @@ def test_hardcoded():
     isomorphism = sorted(rooted_tree_isomorphism(t1, root1, t2, root2))
 
     # is correct by hand
-    assert (isomorphism == isomorphism1) or (isomorphism == isomorphism2)
+    assert isomorphism in (isomorphism1, isomorphism2)
 
     # check algorithmically
     assert check_isomorphism(t1, t2, isomorphism)

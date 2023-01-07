@@ -316,7 +316,7 @@ def triangulate_face(embedding, v1, v2):
     """
     _, v3 = embedding.next_face_half_edge(v1, v2)
     _, v4 = embedding.next_face_half_edge(v2, v3)
-    if v1 == v2 or v1 == v3:
+    if v1 in (v2, v3):
         # The component has less than 3 nodes
         return
     while v1 != v4:
