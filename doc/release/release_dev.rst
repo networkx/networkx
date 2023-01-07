@@ -264,7 +264,7 @@ Merged PRs
 - Broken link in isomorphism documentation (#6296)
 - Update copyright years to 2023 (#6322)
 - fix warnings for make doctest (#6323)
-- fix whitespace issue in 'networkx.generators.tests.test_internet_as_g… (#6324)
+- fix whitespace issue in test_internet_as_graph (#6324)
 - Create a Tikz latex drawing feature for networkx (#6238)
 - Fix docstrings (#6329)
 - Fix documentation deployment (#6330)
