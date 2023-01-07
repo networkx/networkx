@@ -417,7 +417,7 @@ def _connected_by_alternating_paths(G, matching, targets):
         v
         for v in G
         if v in targets
-           or _is_connected_by_alternating_path(
+        or _is_connected_by_alternating_path(
             G, v, matched_edges, unmatched_edges, targets
         )
     }
