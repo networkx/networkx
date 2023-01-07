@@ -143,7 +143,7 @@ def is_connected(G):
         raise nx.NetworkXPointlessConcept(
             "Connectivity is undefined ", "for the null graph."
         )
-    return sum(1 for node in _plain_bfs(G, arbitrary_element(G))) == len(G)
+    return len(_plain_bfs(G, arbitrary_element(G))) == len(G)
 
 
 @not_implemented_for("directed")

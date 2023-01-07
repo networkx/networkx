@@ -2,6 +2,8 @@
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
 
+from ...utils import arbitrary_element
+
 __all__ = [
     "number_weakly_connected_components",
     "weakly_connected_components",
@@ -60,7 +62,7 @@ def weakly_connected_components(G):
     seen = set()
     for v in G:
         if v not in seen:
-            c = set(_plain_bfs(G, v))
+            c = _plain_bfs(G, v)
             seen.update(c)
             yield c
 
@@ -158,7 +160,7 @@ def is_weakly_connected(G):
             """Connectivity is undefined for the null graph."""
         )
 
-    return len(next(weakly_connected_components(G))) == len(G)
+    return len(_plain_bfs(G, arbitrary_element(G))) == len(G)
 
 
 def _plain_bfs(G, source):
@@ -182,4 +184,4 @@ def _plain_bfs(G, source):
                 seen.add(v)
                 nextlevel.update(Gsucc[v])
                 nextlevel.update(Gpred[v])
-                yield v
+    return seen
