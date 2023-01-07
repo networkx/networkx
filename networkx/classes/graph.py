@@ -1980,8 +1980,8 @@ class Graph:
         Raises
         ------
         NetworkXError
-            If nbunch is not a node or sequence of nodes.
-            If a node in nbunch is not hashable.
+            If a node in nbunch is not hashable, or if nbunch is a single node
+            that is not hashable.
 
         See Also
         --------
@@ -1995,34 +1995,30 @@ class Graph:
         To test whether nbunch is a single node, one can use
         "if nbunch in self:", even after processing with this routine.
 
-        If nbunch is not a node or a (possibly empty) sequence/iterator
-        or None, a :exc:`NetworkXError` is raised.  Also, if any object in
-        nbunch is not hashable, a :exc:`NetworkXError` is raised.
+        If any object in nbunch is not hashable (or if nbunch is a single node
+        that is not hashable), a :exc:`NetworkXError` is raised.
         """
-        if nbunch is None:  # include all nodes via iterator
-            bunch = iter(self._adj)
-        elif nbunch in self:  # if nbunch is a single node
-            bunch = iter([nbunch])
-        else:  # if nbunch is a sequence of nodes
+        if nbunch is None:
+            return iter(self._adj)  # include all nodes via iterator
 
-            def bunch_iter(nlist, adj):
-                try:
-                    for n in nlist:
-                        if n in adj:
-                            yield n
-                except TypeError as err:
-                    exc, message = err, err.args[0]
-                    # capture error for non-sequence/iterator nbunch.
-                    if "iter" in message:
-                        exc = NetworkXError(
-                            "nbunch is not a node or a sequence of nodes."
-                        )
-                    # capture error for unhashable node.
-                    if "hashable" in message:
-                        exc = NetworkXError(
-                            f"Node {n} in sequence nbunch is not a valid node."
-                        )
-                    raise exc
+        try:
+            bunch = iter(nbunch)  # nbunch is a sequence of nodes
+        except TypeError:
+            bunch = iter([nbunch])  # nbunch is a single node
 
-            bunch = bunch_iter(nbunch, self._adj)
-        return bunch
+        # iterator that yields nodes from nbunch if they are in the graph
+        def bunch_iter(nlist, adj):
+            try:
+                for n in nlist:
+                    if n in adj:
+                        yield n
+            except TypeError as err:
+                exc, message = err, err.args[0]
+                # capture error for unhashable node.
+                if "hashable" in message:
+                    exc = NetworkXError(
+                        f"Node {n} is not a valid node."
+                    )
+                raise exc
+
+        return bunch_iter(bunch, self._adj)
