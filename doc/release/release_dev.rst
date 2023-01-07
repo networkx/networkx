@@ -227,7 +227,7 @@ Merged PRs
 - PR for issue #6033 Improve test coverage for algorithms in betweenness_subset.py #6033 (#6083)
 - Di graph edges doc fix (#6108)
 - Improve coverage for core.py (#6116)
-- Add clear edges method to the list of methods to be frozen by the nx.… (#6190)
+- Add clear edges method as a method to be frozen by nx.freeze (#6190)
 - Adds LCA test case for self-ancestors from gh-4458. (#6218)
 - Minor Python 2 cleanup (#6219)
 - Add example laplacian matrix  (#6168)
