@@ -2001,10 +2001,18 @@ class Graph:
         if nbunch is None:
             return iter(self._adj)  # include all nodes via iterator
 
+        if nbunch in self:
+            return iter([nbunch])   # nbunch is a single node, found in graph;
+                                    # we do this check first to accommodate
+                                    # nodes that could coincidentally be a
+                                    # valid argument to iter()
+
         try:
-            bunch = iter(nbunch)  # nbunch is a sequence of nodes
+            bunch = iter(nbunch)    # nbunch is (likely) a sequence of nodes
         except TypeError:
-            bunch = iter([nbunch])  # nbunch is a single node
+            bunch = iter([nbunch])  # nbunch is a single node, not in graph;
+                                    # handle the same as if it was included in
+                                    # a sequence
 
         # iterator that yields nodes from nbunch if they are in the graph
         def bunch_iter(nlist, adj):
