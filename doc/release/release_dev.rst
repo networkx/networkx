@@ -39,10 +39,14 @@ to NetworkX 3.0 <https://networkx.org/documentation/latest/release/migration_gui
   are checking might be a class rather than an instance. We suggest you check
   for attribute `_adj` to verify it is like a NetworkX graph object or type and
   then `type(obj) is type` to check if it is a class.
-- We have added an experimental plugin feature which let users choose alternate
-  backends like GraphBLAS, CuGraph for computation. This is an opt-in feature and
-  may change in future releases.
+- We have added an `experimental plugin feature <https://github.com/networkx/networkx/pull/6000>`_,
+  which let users choose alternate backends like GraphBLAS, CuGraph for computation. This is an
+  opt-in feature and may change in future releases.
 - Improved integration with the general `Scientific Python ecosystem <https://networkx.org/documentation/latest/release/migration_guide_from_2.x_to_3.0.html#improved-integration-with-scientific-python>`_.
+- New drawing feature (module and tests) from NetworkX graphs to the TikZ library of TeX/LaTeX.
+  The basic interface is ``nx.to_latex(G, pos, **options)`` to construct a string of latex code or
+  ``nx.write_latex(G, filename, as_document=True, **options)`` to write the string to a file.
+- Added an improved subgraph isomorphism algorithm called VF2++.
 
 Improvements
 ------------
@@ -91,108 +95,127 @@ Deprecations
 Merged PRs
 ----------
 
-A total of 217 changes have been committed.
-
-- Add 2.8.5 release notes
-- update all_pairs_lca docstrings (#5876)
-- Improve LCA input validation (#5877)
+- Bump release version
+- Add characteristic polynomial example to polynomials docs (#5730)
+- Remove deprecated function is_string_like (#5738)
+- Remove deprecated function make_str (#5739)
+- Remove unused 'name' parameter from `union` (#5741)
+- Remove deprecated function is_iterator (#5740)
+- Remove deprecated `euclidean` from geometric.py (#5744)
+- Remove deprecated function utils.consume (#5745)
+- Rm `to_numpy_recarray` (#5737)
+- Remove deprecated function utils.empty_generator (#5748)
+- Rm jit.py (#5751)
+- Remove deprecated context managers (#5752)
+- Remove deprecated function utils.to_tuple (#5755)
+- Remove deprecated display_pygraphviz (#5754)
+- Remove to_numpy_matrix & from_numpy_matrix (#5746)
+- Remove deprecated decorator preserve_random_state (#5768)
+- Remove deprecated function is_list_of_ints (#5743)
+- Remove decorator random_state (#5770)
+- remove `adj_matrix` from `linalg/graphmatrix.py` (#5753)
+- Remove betweenness_centrality_source (#5786)
+- Remove deprecated simrank_similarity_numpy (#5783)
+- Remove networkx.testing subpackage (#5782)
+- Change PyDot PendingDeprecation to Deprecation (#5781)
+- Remove deprecated numeric_mixing_matrix (#5777)
+- Remove deprecated functions make_small_graph and make_small_undirected_graph (#5761)
+- Remove _naive_greedy_modularity_communities (#5760)
+- Make chordal_graph_cliques a generator (#5758)
+- update cytoscape functions to drop old signature (#5784)
+- Remove deprecated functions dict_to_numpy_array2 and dict_to_numpy_array1 (#5756)
+- Remove deprecated function utils.default_opener (#5747)
+- Remove deprecated function iterable (#5742)
+- remove old attr keyword from json_graph/tree (#5785)
+- Remove generate_unique_node (#5780)
+- Replace node_classification subpackage with a module (#5774)
+- Remove gpickle (#5773)
+- Remove deprecated function extrema_bounding (#5757)
+- Remove coverage and performance from quality (#5775)
+- Update return type of google_matrix to numpy.ndarray (#5762)
+- Remove deprecated k-nearest-neighbors (#5769)
+- Remove gdal dependency (#5766)
+- Update return type of attrmatrix (#5764)
+- Remove unused deprecated argument from to_pandas_edgelist (#5778)
+- Remove deprecated function edge_betweeness (#5765)
+- Remove pyyaml dependency (#5763)
+- Remove copy methods for Filter* coreviews (#5776)
+- Remove deprecated function nx.info (#5759)
+- Remove deprecated n_communities argument from greedy_modularity_communities (#5789)
+- Remove deprecated functions hub_matrix and authority_matrix (#5767)
+- Make HITS numpy and scipy private functions (#5771)
+- Add Triad example plot (#5528)
+- Add gallery example visualizing DAG with multiple layouts (#5432)
+- Make pagerank numpy and scipy private functions (#5772)
+- Implement directed edge swap (#5663)
+- Update relabel.py to preserve node order (#5258)
+- Modify DAG example to show topological layout. (#5835)
+- Add docstring example for self-ancestors/descendants (#5802)
+- Update precommit linters (#5839)
+- remove to/from_scipy_sparse_matrix (#5779)
+- Clean up from PR #5779 (#5841)
+- Corona Product (#5223)
+- Add direct link to github networkx org sponsorship (#5843)
+- added examples to efficiency_measures.py (#5643)
+- added examples to regular.py (#5642)
+- added examples to degree_alg.py (#5644)
+- Add docstring examples for triads functions (#5522)
+- Fix docbuild warnings: is_string_like is removed and identation in corona product (#5845)
+- Use py_random_state to control randomness of random_triad (#5847)
+- Remove OrderedGraphs (#5813)
+- Drop NumPy 1.19 (#5856)
+- Speed up unionfind a bit by not adding root node in the path (#5844)
+- Minor doc fixups (#5868)
+- Attempt to reverse slowdown from hasattr  needed for cached_property (#5836)
+- make lazy_import private and remove its internal use (#5878)
 - strategy_saturation_largest_first now accepts partial colorings (#5888)
-- Fixed unused root argument in has_bridges (#5846)
-- Update docs to include description of the `return_seen` kwarg (#5891)
-- Add cache reset for when G._node is changed (#5894)
 - Add weight distance metrics (#5305)
-- Allow classes to relabel nodes -- casting (#5903)
-- Update lattice.py (#5914)
 - docstring updates for `union`, `disjoint_union`, and `compose` (#5892)
-- Adds ```nx.bfs_layers``` method (#5879)
-- Add to about_us.rst (#5919)
 - Update precommit hooks (#5923)
 - Remove old Appveyor cruft (#5924)
 - signature change for `node_link` functions: for issue #5787 (#5899)
-- Allow unsortable nodes in approximation.treewidth functions (#5921)
-- Fix Louvain_partitions by yielding a copy of the sets in the partition gh-5901 (#5902)
 - Replace LCA with naive implementations (#5883)
-- Add function bfs_layers to docs (#5932)
 - Bump nodelink args deprecation expiration to v3.2 (#5933)
 - Update mapping logic in `relabel_nodes` (#5912)
-- Propose to make new node_link arguments keyword only. (#5928)
-- docstring update to lexicographical_topological_sort issue 5681 (#5930)
 - Update pygraphviz (#5934)
-- See matplotlb 3.6rc1 failure (#5937)
 - Further improvements to strategy_saturation_largest_first (#5935)
 - Arf layout (#5910)
 - [ENH] Find and verify a minimal D-separating set in DAG (#5898)
 - Add Mehlhorn Steiner approximations (#5629)
-- Updated networkx/classes/function.py . Solves Issue #5463 (#5474)
-- Improved documentation for all_simple_paths (#5944)
-- Change is_path to return False when node not in G instead of raising exception (#5943)
 - Preliminary VF2++ Implementation (#5788)
 - Minor docstring touchups and test refactor for `is_path` (#5967)
-- Update documentation header links for latest pydata-sphinx-theme (#5966)
 - Switch to relative import for vf2pp_helpers. (#5973)
 - Add vf2pp_helpers subpackage to wheel (#5975)
 - Enhance biconnected components to avoid indexing (#5974)
 - Update mentored projects list (#5985)
 - Add concurrency hook to cancel jobs on new push. (#5986)
 - Make all.py generator friendly (#5984)
-- Fix failing example due to mpl 3.6 colorbar. (#5994)
 - Only run scheduled pytest-randomly job in main repo. (#5993)
 - Fix steiner tree test (#5999)
-- Add Tidelift security vulnerability link (#6001)
-- Update linters (#6006)
 - Update doc requirements (#6008)
 - VF2++ for Directed Graphs (#5972)
 - Fix defect and update docs for MappedQueue, related to gh-5681 (#5939)
-- Fix warnings from running tests in randomized order (#6014)
 - Update pydata-sphinx-theme (#6012)
-- update security link to tidelift (#6019)
 - Update numpydoc (#6022)
-- Support Python 3.11 (#6023)
-- Update linters (#6024)
 - Fixed test for average shortest path in the case of directed graphs (#6003)
-- Minor updates to expanders generator tests (#6027)
 - Update deprecations after 3.0 dep sprint (#6031)
 - Use scipy.sparse array datastructure (#6037)
 - Designate 3.0b1 release
 - Bump release version
 - Use org funding.yml
-- Add missing asserts to tests (#6039)
-- improve test coverage for algorithms in load centrality (#6080)
-- Improve test coverage expanders line graph generators solved (PR for issue #6034) (#6071)
 - Update which flow functions support the cutoff argument (#6085)
 - Update GML parsing/writing to allow empty lists/tuples as node attributes (#6093)
-- Replace .A call with .toarray for sparse array in example. (#6106)
-- Improve test coverage for algorithms/richclub.py (#6089)
-- Tested boykov_kolmogorov and dinitz with cutoff (#6104)
-- Improve test coverage for multigraph class (#6101)
-- Improve test coverage for algorithms in dominating_set.py (PR for issue 6032) (#6068)
 - Warn on unused visualization kwargs that only apply to FancyArrowPatch edges (#6098)
-- Improve test coverage for graph class (#6105)
 - Fix weighted MultiDiGraphs in DAG longest path algorithms + add additional tests (#5988)
-- added coverage in generators/tree.py (#6082)
-- DOC: Specifically branch off main, instead of current branch (#6127)
 - Circular center node layout (#6114)
-- Improve test coverage for multidigraph class (#6131)
-- Improve test coverage for digraph class (#6130)
-- Improve test coverage for algorithms in dispersion.py (#6100)
 - Fix doc inconsistencies related to cutoff in connectivity.py and disjoint_paths.py (#6113)
 - Remove deprecated maxcardinality parameter from min_weight_matching (#6146)
 - Remove deprecated `find_cores` (#6139)
 - Remove deprecated project function from bipartite package. (#6147)
-- Test on Python 3.11 (#6159)
-- Improve test coverage in algorithms shortest paths unweighted.py (#6121)
-- Increased test coverage algorithms/matching.py (#6095)
-- Renamed test functions in test_lowest_common_ancestors (#6110)
-- Increase covering coverage (#6099)
-- Add example for fiedler_vector (#6155)
-- Improve test coverage for cycles.py (#6152)
-- Added an example in all_pairs_node_connectivity  (#6126)
-- Amount of nodes and edges have mistakes when reading adjlist file (#6132)
-- Update pytest to v7.2 (#6165)
 - Improve test coverage for voterank algorithm (#6161)
 - plugin based backend infrastructure to use multiple computation backends (#6000)
 - Undocumented parameters in dispersion (#6183)
-- improve swap.py test coverage  (#6176)
+- Swap.py coverage to 100 (#6176)
 - Improve test coverage for current_flow_betweenness module (#6143)
 - Completed Testing in community.py resolves issue #6184 (#6185)
 - Added an example to algebraic_connectivity (#6153)
@@ -208,53 +231,94 @@ A total of 217 changes have been committed.
 - PR for issue #6033 Improve test coverage for algorithms in betweenness_subset.py #6033 (#6083)
 - Di graph edges doc fix (#6108)
 - Improve coverage for core.py (#6116)
-- Add clear_edges() method to the list of methods to be frozen by nx.freeze() (#6190)
+- Add clear edges method as a method to be frozen by nx.freeze (#6190)
 - Adds LCA test case for self-ancestors from gh-4458. (#6218)
 - Minor Python 2 cleanup (#6219)
 - Add example laplacian matrix  (#6168)
 - Revert 6219 and delete comment. (#6222)
 - fix wording in error message (#6228)
 - Rm incorrect test case for connected edge swap (#6223)
-
+- add missing `seed` to function called by `connected_double_edge_swap` (#6231)
+- Hide edges with a weight of None in A*. (#5945)
+- Add dfs_labeled_edges reporting of reverse edges due to depth_limit. (#6240)
+- Warn users about duplicate nodes in generator function input (#6237)
+- Reenable geospatial examples (#6252)
+- Draft 3.0 release notes (#6232)
+- Add 2.8.x release notes (#6255)
+- doc: clarify allowed `alpha` when using nx.draw_networkx_edges (#6254)
+- Add a contributor (#6256)
+- Allow MultiDiGraphs for LCA (#6234)
+- Update simple_paths.py to improve readability of the BFS. (#6273)
+- doc: update documentation when providing an iterator over current graph to add/remove_edges_from. (#6268)
+- Fix bug vf2pp is isomorphic issue 6257 (#6270)
+- Improve test coverage for Eigenvector centrality  (#6227)
+- Bug fix in swap: directed_edge_swap and double_edge_swap  (#6149)
+- Adding a test to verify that a NetworkXError is raised when calling n… (#6265)
+- Pin to sphinx 5.2.3 (#6277)
+- Update pre-commit hooks (#6278)
+- Update GH actions (#6280)
+- Fix links in release notes (#6281)
+- bug fix in smallworld.py: random_reference and lattice_reference (#6151)
+- [DOC] Follow numpydoc standard in barbell_graph documentation (#6286)
+- Update simple_paths.py: consistent behaviour for `is_simple_path` when path contains nodes not in the graph. (#6272)
+- Correctly point towards 2.8.8 in release notes (#6298)
+- Isomorphism improve documentation (#6295)
+- Improvements and test coverage for `line.py` (#6215)
+- Fix typo in Katz centrality comment (#6310)
+- Broken link in isomorphism documentation (#6296)
+- Update copyright years to 2023 (#6322)
+- fix warnings for make doctest (#6323)
+- fix whitespace issue in test_internet_as_graph (#6324)
+- Create a Tikz latex drawing feature for networkx (#6238)
+- Fix docstrings (#6329)
+- Fix documentation deployment (#6330)
+- Fix links to migration guide (#6331)
+- Fix links to migration guide (#6331)
+- Fix typo in readme file (#6312)
+- Fix typos in the networkx codebase (#6335)
+- Refactor vf2pp modules and test files (#6334)
 
 Contributors
 ------------
-Made by the following committers [alphabetical by last name]:
 
 - 0ddoe_s
-- Tanmay Aeron
-- Guy Aglionby
-- Douglas K. G. Araujo
-- Ross Barnowski
-- Paula Pérez Bianchi
-- Kevin Brown
-- DiamondJoseph
-- Casper van Elteren
-- Radoslav Fulek
-- Juanita Gomez
-- Michael Holtz
 - Abangma Jessika
-- Tigran Khachatryan
-- Dhaval Kumar
 - Adam Li
-- Lucas H. McCabe
-- Jarrod Millman
-- Mjh9122
-- Sultan Orazbayev
-- Konstantinos Petridis
-- Alimi Qudirah
 - Adam Richardson
-- Okite chimaobi Samuel
-- Jefter Santiago
+- Ali Faraji
+- Alimi Qudirah
+- Anurag Bhat
+- Ben Heil
+- Brian Hou
+- Casper van Elteren
+- danieleades
 - Dan Schult
-- Mridul Seth
-- Tindi Sommers
-- Morrison Turnansky
-- Sebastiano Vigna
-- George Watkins
-- Isaac Western
 - ddelange
+- Dilara Tekinoglu
+- Dimitrios Papageorgiou
+- Douglas K. G. Araujo
+- George Watkins
+- Guy Aglionby
+- Isaac Western
+- Jarrod Millman
+- Juanita Gomez
+- Kevin Brown
+- Konstantinos Petridis
 - ladykkk
+- Lucas H. McCabe
+- Ludovic Stephan
+- Lukong123
+- Matt Schwennesen
+- Michael Holtz
+- Morrison Turnansky
+- Mridul Seth
 - nsengaw4c
-- pmlpm1986
+- Okite chimaobi Samuel
+- Paula Pérez Bianchi
+- Radoslav Fulek
+- reneechebbo
+- Ross Barnowski
+- Sebastiano Vigna
 - stevenstrickler
+- Sultan Orazbayev
+- Tina Oberoi
