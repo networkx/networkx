@@ -42,6 +42,7 @@ import itertools
 import networkx as nx
 from networkx.algorithms.bipartite import sets as bipartite_sets
 from networkx.algorithms.bipartite.matrix import biadjacency_matrix
+from networkx.utils import not_implemented_for
 
 __all__ = [
     "maximum_matching",
@@ -772,6 +773,7 @@ def _EFM_partition(G, M=None, top_nodes=None):
     return set(X) - X_S, X_S, set(Y) - Y_S, Y_S
 
 
+@not_implemented_for("directed", "multigraph")
 def envy_free_matching(G, top_nodes=None):
     r"""Return an envy-free matching of maximum cardinality
     Parameters
@@ -825,6 +827,7 @@ def envy_free_matching(G, top_nodes=None):
     return M
 
 
+@not_implemented_for("directed", "multigraph")
 def minimum_weight_envy_free_matching(G, top_nodes=None):
     r"""Returns minimum-cost maximum-cardinality envy-free matching
     Parameters
@@ -866,7 +869,3 @@ def minimum_weight_envy_free_matching(G, top_nodes=None):
     Union = EFM_PARTITION[0].union(EFM_PARTITION[2])
     M = nx.bipartite.minimum_weight_full_matching(G.subgraph(Union))
     return M
-
-
-
-
