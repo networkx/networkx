@@ -8,7 +8,7 @@ a graph to reverse directed edges, or treat a directed graph
 as undirected, etc. This module provides those graph views.
 
 The resulting views are essentially read-only graphs that
-report data from the orignal graph object. We provide an
+report data from the original graph object. We provide an
 attribute G._graph which points to the underlying graph object.
 
 Note: Since graphviews look like graphs, one can end up with

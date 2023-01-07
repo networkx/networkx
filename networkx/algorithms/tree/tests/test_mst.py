@@ -283,7 +283,7 @@ class TestSpanningTreeIterator:
     Order of Increasing Cost
     """
 
-    def setup(self):
+    def setup_method(self):
         # Original Graph
         edges = [(0, 1, 5), (1, 2, 4), (1, 4, 6), (2, 3, 5), (2, 4, 7), (3, 4, 3)]
         self.G = nx.Graph()

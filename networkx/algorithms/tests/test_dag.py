@@ -60,6 +60,31 @@ class TestDagLongestPath:
         # this will raise NotImplementedError when nodes need to be ordered
         nx.dag_longest_path(G)
 
+    def test_multigraph_unweighted(self):
+        edges = [(1, 2), (2, 3), (2, 3), (3, 4), (4, 5), (1, 3), (1, 5), (3, 5)]
+        G = nx.MultiDiGraph(edges)
+        assert nx.dag_longest_path(G) == [1, 2, 3, 4, 5]
+
+    def test_multigraph_weighted(self):
+        G = nx.MultiDiGraph()
+        edges = [
+            (1, 2, 2),
+            (2, 3, 2),
+            (1, 3, 1),
+            (1, 3, 5),
+            (1, 3, 2),
+        ]
+        G.add_weighted_edges_from(edges)
+        assert nx.dag_longest_path(G) == [1, 3]
+
+    def test_multigraph_weighted_default_weight(self):
+        G = nx.MultiDiGraph([(1, 2), (2, 3)])  # Unweighted edges
+        G.add_weighted_edges_from([(1, 3, 1), (1, 3, 5), (1, 3, 2)])
+
+        # Default value for default weight is 1
+        assert nx.dag_longest_path(G) == [1, 3]
+        assert nx.dag_longest_path(G, default_weight=3) == [1, 2, 3]
+
 
 class TestDagLongestPathLength:
     """Unit tests for computing the length of a longest path in a
@@ -88,6 +113,23 @@ class TestDagLongestPathLength:
     def test_weighted(self):
         edges = [(1, 2, -5), (2, 3, 1), (3, 4, 1), (4, 5, 0), (3, 5, 4), (1, 6, 2)]
         G = nx.DiGraph()
+        G.add_weighted_edges_from(edges)
+        assert nx.dag_longest_path_length(G) == 5
+
+    def test_multigraph_unweighted(self):
+        edges = [(1, 2), (2, 3), (2, 3), (3, 4), (4, 5), (1, 3), (1, 5), (3, 5)]
+        G = nx.MultiDiGraph(edges)
+        assert nx.dag_longest_path_length(G) == 4
+
+    def test_multigraph_weighted(self):
+        G = nx.MultiDiGraph()
+        edges = [
+            (1, 2, 2),
+            (2, 3, 2),
+            (1, 3, 1),
+            (1, 3, 5),
+            (1, 3, 2),
+        ]
         G.add_weighted_edges_from(edges)
         assert nx.dag_longest_path_length(G) == 5
 

@@ -5,6 +5,7 @@ import networkx as nx
 __all__ = ["constraint", "local_constraint", "effective_size"]
 
 
+@nx._dispatch
 def mutual_weight(G, u, v, weight=None):
     """Returns the sum of the weights of the edge from `u` to `v` and
     the edge from `v` to `u` in `G`.

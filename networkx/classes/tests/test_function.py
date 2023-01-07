@@ -252,6 +252,7 @@ class TestFunction:
         pytest.raises(nx.NetworkXError, G.add_edges_from, [(1, 2)])
         pytest.raises(nx.NetworkXError, G.remove_edge, 1, 2)
         pytest.raises(nx.NetworkXError, G.remove_edges_from, [(1, 2)])
+        pytest.raises(nx.NetworkXError, G.clear_edges)
         pytest.raises(nx.NetworkXError, G.clear)
 
     def test_is_frozen(self):
@@ -259,6 +260,18 @@ class TestFunction:
         G = nx.freeze(self.G)
         assert G.frozen == nx.is_frozen(self.G)
         assert G.frozen
+
+    def test_node_attributes_are_still_mutable_on_frozen_graph(self):
+        G = nx.freeze(nx.path_graph(3))
+        node = G.nodes[0]
+        node["node_attribute"] = True
+        assert node["node_attribute"] == True
+
+    def test_edge_attributes_are_still_mutable_on_frozen_graph(self):
+        G = nx.freeze(nx.path_graph(3))
+        edge = G.edges[(0, 1)]
+        edge["edge_attribute"] = True
+        assert edge["edge_attribute"] == True
 
     def test_neighbors_complete_graph(self):
         graph = nx.complete_graph(100)

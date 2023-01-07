@@ -1352,7 +1352,7 @@ class TestWriteGraphML(BaseGraphML):
                 ".//{http://graphml.graphdrawing.org/xmlns}edge"
             )
         ]
-        # verify edge id value is equal to sepcified attribute value
+        # verify edge id value is equal to specified attribute value
         assert sorted(edge_ids) == sorted(edge_attributes.values())
 
         # check graphml generated from generate_graphml()
@@ -1404,7 +1404,7 @@ class TestWriteGraphML(BaseGraphML):
                 ".//{http://graphml.graphdrawing.org/xmlns}edge"
             )
         ]
-        # verify edge id value is equal to sepcified attribute value
+        # verify edge id value is equal to specified attribute value
         assert sorted(edge_ids) == sorted(edge_attributes.values())
 
         # check graphml generated from generate_graphml()
@@ -1482,7 +1482,7 @@ class TestWriteGraphML(BaseGraphML):
         os.unlink(fname)
 
     def test_unicode_escape(self):
-        # test for handling json escaped stings in python 2 Issue #1880
+        # test for handling json escaped strings in python 2 Issue #1880
         import json
 
         a = dict(a='{"a": "123"}')  # an object with many chars to escape

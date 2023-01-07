@@ -16,7 +16,7 @@ from networkx.algorithms.bipartite.matching import (
 class TestMatching:
     """Tests for bipartite matching algorithms."""
 
-    def setup(self):
+    def setup_method(self):
         """Creates a bipartite graph for use in testing matching algorithms.
 
         The bipartite graph has a maximum cardinality matching that leaves

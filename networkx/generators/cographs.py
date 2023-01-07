@@ -25,7 +25,7 @@ def random_cograph(n, seed=None):
     Cographs or $P_4$-free graphs can be obtained from a single vertex
     by disjoint union and complementation operations.
 
-    This generator starts off from a single vertex and performes disjoint
+    This generator starts off from a single vertex and performs disjoint
     union and full join operations on itself.
     The decision on which operation will take place is random.
 

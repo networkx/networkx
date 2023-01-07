@@ -55,7 +55,7 @@ G = nx.read_edgelist("hartford_drug.edgelist")
 H = G.subgraph(next(nx.connected_components(G)))
 # Makes life easier to have consecutively labeled integer nodes
 H = nx.convert_node_labels_to_integers(H)
-# Create parititions with hierarchical clustering
+# Create partitions with hierarchical clustering
 partitions = create_hc(H)
 # Build blockmodel graph
 BM = nx.quotient_graph(H, partitions, relabel=True)

@@ -1,14 +1,122 @@
-import itertools
+import itertools as it
 
 import pytest
-import utils
 
 import networkx as nx
-from networkx.algorithms.isomorphism.vf2pp import vf2pp_isomorphism
+from networkx import vf2pp_is_isomorphic, vf2pp_isomorphism
+
+labels_same = ["blue"]
+
+labels_many = [
+    "white",
+    "red",
+    "blue",
+    "green",
+    "orange",
+    "black",
+    "purple",
+    "yellow",
+    "brown",
+    "cyan",
+    "solarized",
+    "pink",
+    "none",
+]
+
+
+class TestPreCheck:
+    def test_first_graph_empty(self):
+        G1 = nx.Graph()
+        G2 = nx.Graph([(0, 1), (1, 2)])
+        assert not vf2pp_is_isomorphic(G1, G2)
+
+    def test_second_graph_empty(self):
+        G1 = nx.Graph([(0, 1), (1, 2)])
+        G2 = nx.Graph()
+        assert not vf2pp_is_isomorphic(G1, G2)
+
+    def test_different_order1(self):
+        G1 = nx.path_graph(5)
+        G2 = nx.path_graph(6)
+        assert not vf2pp_is_isomorphic(G1, G2)
+
+    def test_different_order2(self):
+        G1 = nx.barbell_graph(100, 20)
+        G2 = nx.barbell_graph(101, 20)
+        assert not vf2pp_is_isomorphic(G1, G2)
+
+    def test_different_order3(self):
+        G1 = nx.complete_graph(7)
+        G2 = nx.complete_graph(8)
+        assert not vf2pp_is_isomorphic(G1, G2)
+
+    def test_different_degree_sequences1(self):
+        G1 = nx.Graph([(0, 1), (0, 2), (1, 2), (1, 3), (0, 4)])
+        G2 = nx.Graph([(0, 1), (0, 2), (1, 2), (1, 3), (0, 4), (2, 5)])
+        assert not vf2pp_is_isomorphic(G1, G2)
+
+        G2.remove_node(3)
+        nx.set_node_attributes(G1, dict(zip(G1, it.cycle(["a"]))), "label")
+        nx.set_node_attributes(G2, dict(zip(G2, it.cycle("a"))), "label")
+
+        assert vf2pp_is_isomorphic(G1, G2)
+
+    def test_different_degree_sequences2(self):
+        G1 = nx.Graph(
+            [
+                (0, 1),
+                (1, 2),
+                (0, 2),
+                (2, 3),
+                (3, 4),
+                (4, 5),
+                (5, 6),
+                (6, 3),
+                (4, 7),
+                (7, 8),
+                (8, 3),
+            ]
+        )
+        G2 = G1.copy()
+        G2.add_edge(8, 0)
+        assert not vf2pp_is_isomorphic(G1, G2)
+
+        G1.add_edge(6, 1)
+        nx.set_node_attributes(G1, dict(zip(G1, it.cycle(["a"]))), "label")
+        nx.set_node_attributes(G2, dict(zip(G2, it.cycle("a"))), "label")
+
+        assert vf2pp_is_isomorphic(G1, G2)
+
+    def test_different_degree_sequences3(self):
+        G1 = nx.Graph([(0, 1), (0, 2), (1, 2), (2, 3), (2, 4), (3, 4), (2, 5), (2, 6)])
+        G2 = nx.Graph(
+            [(0, 1), (0, 6), (0, 2), (1, 2), (2, 3), (2, 4), (3, 4), (2, 5), (2, 6)]
+        )
+        assert not vf2pp_is_isomorphic(G1, G2)
+
+        G1.add_edge(3, 5)
+        nx.set_node_attributes(G1, dict(zip(G1, it.cycle(["a"]))), "label")
+        nx.set_node_attributes(G2, dict(zip(G2, it.cycle("a"))), "label")
+
+        assert vf2pp_is_isomorphic(G1, G2)
+
+    def test_label_distribution(self):
+        G1 = nx.Graph([(0, 1), (0, 2), (1, 2), (2, 3), (2, 4), (3, 4), (2, 5), (2, 6)])
+        G2 = nx.Graph([(0, 1), (0, 2), (1, 2), (2, 3), (2, 4), (3, 4), (2, 5), (2, 6)])
+
+        colors1 = ["blue", "blue", "blue", "yellow", "black", "purple", "purple"]
+        colors2 = ["blue", "blue", "yellow", "yellow", "black", "purple", "purple"]
+
+        nx.set_node_attributes(G1, dict(zip(G1, it.cycle(colors1[::-1]))), "label")
+        nx.set_node_attributes(G2, dict(zip(G2, it.cycle(colors2[::-1]))), "label")
+
+        assert not vf2pp_is_isomorphic(G1, G2, node_label="label")
+        G2.nodes[3]["label"] = "blue"
+        assert vf2pp_is_isomorphic(G1, G2, node_label="label")
 
 
 class TestAllGraphTypesEdgeCases:
-    @pytest.mark.parametrize("graph_type", (nx.Graph, nx.MultiGraph))
+    @pytest.mark.parametrize("graph_type", (nx.Graph, nx.MultiGraph, nx.DiGraph))
     def test_both_graphs_empty(self, graph_type):
         G = graph_type()
         H = graph_type()
@@ -22,13 +130,13 @@ class TestAllGraphTypesEdgeCases:
         H.add_node(0)
         assert vf2pp_isomorphism(G, H) == {0: 0}
 
-    @pytest.mark.parametrize("graph_type", (nx.Graph, nx.MultiGraph))
+    @pytest.mark.parametrize("graph_type", (nx.Graph, nx.MultiGraph, nx.DiGraph))
     def test_first_graph_empty(self, graph_type):
         G = graph_type()
         H = graph_type([(0, 1)])
         assert vf2pp_isomorphism(G, H) is None
 
-    @pytest.mark.parametrize("graph_type", (nx.Graph, nx.MultiGraph))
+    @pytest.mark.parametrize("graph_type", (nx.Graph, nx.MultiGraph, nx.DiGraph))
     def test_second_graph_empty(self, graph_type):
         G = graph_type([(0, 1)])
         H = graph_type()
@@ -44,12 +152,8 @@ class TestGraphISOVF2pp:
 
         G1.add_edges_from(edges1)
         G2 = nx.relabel_nodes(G1, mapped)
-        nx.set_node_attributes(
-            G1, dict(zip(G1, itertools.cycle(utils.labels_same))), "label"
-        )
-        nx.set_node_attributes(
-            G2, dict(zip(G2, itertools.cycle(utils.labels_same))), "label"
-        )
+        nx.set_node_attributes(G1, dict(zip(G1, it.cycle(labels_same))), "label")
+        nx.set_node_attributes(G2, dict(zip(G2, it.cycle(labels_same))), "label")
         assert vf2pp_isomorphism(G1, G2, node_label="label")
 
         # Add edge making G1 symmetrical
@@ -76,12 +180,10 @@ class TestGraphISOVF2pp:
 
         G1.add_edges_from(edges1)
         G2 = nx.relabel_nodes(G1, mapped)
-        nx.set_node_attributes(
-            G1, dict(zip(G1, itertools.cycle(utils.labels_different))), "label"
-        )
+        nx.set_node_attributes(G1, dict(zip(G1, it.cycle(labels_many))), "label")
         nx.set_node_attributes(
             G2,
-            dict(zip([mapped[n] for n in G1], itertools.cycle(utils.labels_different))),
+            dict(zip([mapped[n] for n in G1], it.cycle(labels_many))),
             "label",
         )
         assert vf2pp_isomorphism(G1, G2, node_label="label") == mapped
@@ -94,12 +196,8 @@ class TestGraphISOVF2pp:
 
         G1.add_edges_from(edges1)
         G2 = nx.relabel_nodes(G1, mapped)
-        nx.set_node_attributes(
-            G1, dict(zip(G1, itertools.cycle(utils.labels_same))), "label"
-        )
-        nx.set_node_attributes(
-            G2, dict(zip(G2, itertools.cycle(utils.labels_same))), "label"
-        )
+        nx.set_node_attributes(G1, dict(zip(G1, it.cycle(labels_same))), "label")
+        nx.set_node_attributes(G2, dict(zip(G2, it.cycle(labels_same))), "label")
 
         assert vf2pp_isomorphism(G1, G2, node_label="label")
 
@@ -123,12 +221,10 @@ class TestGraphISOVF2pp:
 
         G1.add_edges_from(edges1)
         G2 = nx.relabel_nodes(G1, mapped)
-        nx.set_node_attributes(
-            G1, dict(zip(G1, itertools.cycle(utils.labels_different))), "label"
-        )
+        nx.set_node_attributes(G1, dict(zip(G1, it.cycle(labels_many))), "label")
         nx.set_node_attributes(
             G2,
-            dict(zip([mapped[n] for n in G1], itertools.cycle(utils.labels_different))),
+            dict(zip([mapped[n] for n in G1], it.cycle(labels_many))),
             "label",
         )
 
@@ -176,12 +272,8 @@ class TestGraphISOVF2pp:
         ]
         G1.add_edges_from(edges1)
         G2 = nx.relabel_nodes(G1, mapped)
-        nx.set_node_attributes(
-            G1, dict(zip(G1, itertools.cycle(utils.labels_same))), "label"
-        )
-        nx.set_node_attributes(
-            G2, dict(zip(G2, itertools.cycle(utils.labels_same))), "label"
-        )
+        nx.set_node_attributes(G1, dict(zip(G1, it.cycle(labels_same))), "label")
+        nx.set_node_attributes(G2, dict(zip(G2, it.cycle(labels_same))), "label")
         assert vf2pp_isomorphism(G1, G2, node_label="label")
 
         # Connect nodes maintaining symmetry
@@ -250,12 +342,10 @@ class TestGraphISOVF2pp:
         ]
         G1.add_edges_from(edges1)
         G2 = nx.relabel_nodes(G1, mapped)
-        nx.set_node_attributes(
-            G1, dict(zip(G1, itertools.cycle(utils.labels_different))), "label"
-        )
+        nx.set_node_attributes(G1, dict(zip(G1, it.cycle(labels_many))), "label")
         nx.set_node_attributes(
             G2,
-            dict(zip([mapped[n] for n in G1], itertools.cycle(utils.labels_different))),
+            dict(zip([mapped[n] for n in G1], it.cycle(labels_many))),
             "label",
         )
         assert vf2pp_isomorphism(G1, G2, node_label="label") == mapped
@@ -334,12 +424,10 @@ class TestGraphISOVF2pp:
 
         G1.add_edges_from(edges1)
         G2 = nx.relabel_nodes(G1, mapped)
-        nx.set_node_attributes(
-            G1, dict(zip(G1, itertools.cycle(utils.labels_different))), "label"
-        )
+        nx.set_node_attributes(G1, dict(zip(G1, it.cycle(labels_many))), "label")
         nx.set_node_attributes(
             G2,
-            dict(zip([mapped[n] for n in G1], itertools.cycle(utils.labels_different))),
+            dict(zip([mapped[n] for n in G1], it.cycle(labels_many))),
             "label",
         )
         assert vf2pp_isomorphism(G1, G2, node_label="label") == mapped
@@ -381,12 +469,8 @@ class TestGraphISOVF2pp:
 
         G1.add_edges_from(edges1)
         G2 = nx.relabel_nodes(G1, mapped)
-        nx.set_node_attributes(
-            G1, dict(zip(G1, itertools.cycle(utils.labels_same))), "label"
-        )
-        nx.set_node_attributes(
-            G2, dict(zip(G2, itertools.cycle(utils.labels_same))), "label"
-        )
+        nx.set_node_attributes(G1, dict(zip(G1, it.cycle(labels_same))), "label")
+        nx.set_node_attributes(G2, dict(zip(G2, it.cycle(labels_same))), "label")
         assert vf2pp_isomorphism(G1, G2, node_label="label")
 
         # Add nodes of different label
@@ -445,12 +529,8 @@ class TestGraphISOVF2pp:
 
         G1.add_edges_from(edges1)
         G2 = nx.relabel_nodes(G1, mapped)
-        nx.set_node_attributes(
-            G1, dict(zip(G1, itertools.cycle(utils.labels_same))), "label"
-        )
-        nx.set_node_attributes(
-            G2, dict(zip(G2, itertools.cycle(utils.labels_same))), "label"
-        )
+        nx.set_node_attributes(G1, dict(zip(G1, it.cycle(labels_same))), "label")
+        nx.set_node_attributes(G2, dict(zip(G2, it.cycle(labels_same))), "label")
         assert vf2pp_isomorphism(G1, G2, node_label="label")
 
         # Add different edges in each graph, maintaining symmetry
@@ -508,12 +588,10 @@ class TestGraphISOVF2pp:
         G2 = nx.relabel_nodes(G1, mapped)
 
         colors = ["red", "blue", "grey", "none", "brown", "solarized", "yellow", "pink"]
-        nx.set_node_attributes(
-            G1, dict(zip(G1, itertools.cycle(utils.labels_different))), "label"
-        )
+        nx.set_node_attributes(G1, dict(zip(G1, it.cycle(labels_many))), "label")
         nx.set_node_attributes(
             G2,
-            dict(zip([mapped[n] for n in G1], itertools.cycle(utils.labels_different))),
+            dict(zip([mapped[n] for n in G1], it.cycle(labels_many))),
             "label",
         )
         assert vf2pp_isomorphism(G1, G2, node_label="label") == mapped
@@ -546,12 +624,8 @@ class TestGraphISOVF2pp:
 
         mapped = {0: 9, 1: 8, 2: 7, 3: 6, 4: 5, 5: 4, 6: 3, 7: 2, 8: 1, 9: 0}
         G2 = nx.relabel_nodes(G1, mapped)
-        nx.set_node_attributes(
-            G1, dict(zip(G1, itertools.cycle(utils.labels_same))), "label"
-        )
-        nx.set_node_attributes(
-            G2, dict(zip(G2, itertools.cycle(utils.labels_same))), "label"
-        )
+        nx.set_node_attributes(G1, dict(zip(G1, it.cycle(labels_same))), "label")
+        nx.set_node_attributes(G2, dict(zip(G2, it.cycle(labels_same))), "label")
         assert vf2pp_isomorphism(G1, G2, node_label="label")
 
     def test_disconnected_graph_all_different_labels(self):
@@ -561,12 +635,10 @@ class TestGraphISOVF2pp:
         mapped = {0: 9, 1: 8, 2: 7, 3: 6, 4: 5, 5: 4, 6: 3, 7: 2, 8: 1, 9: 0}
         G2 = nx.relabel_nodes(G1, mapped)
 
-        nx.set_node_attributes(
-            G1, dict(zip(G1, itertools.cycle(utils.labels_different))), "label"
-        )
+        nx.set_node_attributes(G1, dict(zip(G1, it.cycle(labels_many))), "label")
         nx.set_node_attributes(
             G2,
-            dict(zip([mapped[n] for n in G1], itertools.cycle(utils.labels_different))),
+            dict(zip([mapped[n] for n in G1], it.cycle(labels_many))),
             "label",
         )
         assert vf2pp_isomorphism(G1, G2, node_label="label") == mapped
@@ -591,9 +663,9 @@ class TestGraphISOVF2pp:
             "pink",
         ]
 
-        nx.set_node_attributes(G1, dict(zip(G1, itertools.cycle(colors))), "label")
+        nx.set_node_attributes(G1, dict(zip(G1, it.cycle(colors))), "label")
         nx.set_node_attributes(
-            G2, dict(zip([mapped[n] for n in G1], itertools.cycle(colors))), "label"
+            G2, dict(zip([mapped[n] for n in G1], it.cycle(colors))), "label"
         )
 
         assert vf2pp_isomorphism(G1, G2, node_label="label")
@@ -624,12 +696,8 @@ class TestMultiGraphISOVF2pp:
         G1.add_edges_from(edges1)
         G2 = nx.relabel_nodes(G1, mapped)
 
-        nx.set_node_attributes(
-            G1, dict(zip(G1, itertools.cycle(utils.labels_same))), "label"
-        )
-        nx.set_node_attributes(
-            G2, dict(zip(G2, itertools.cycle(utils.labels_same))), "label"
-        )
+        nx.set_node_attributes(G1, dict(zip(G1, it.cycle(labels_same))), "label")
+        nx.set_node_attributes(G2, dict(zip(G2, it.cycle(labels_same))), "label")
         m = vf2pp_isomorphism(G1, G2, node_label="label")
         assert m
 
@@ -681,12 +749,10 @@ class TestMultiGraphISOVF2pp:
         G1.add_edges_from(edges1)
         G2 = nx.relabel_nodes(G1, mapped)
 
-        nx.set_node_attributes(
-            G1, dict(zip(G1, itertools.cycle(utils.labels_different))), "label"
-        )
+        nx.set_node_attributes(G1, dict(zip(G1, it.cycle(labels_many))), "label")
         nx.set_node_attributes(
             G2,
-            dict(zip([mapped[n] for n in G1], itertools.cycle(utils.labels_different))),
+            dict(zip([mapped[n] for n in G1], it.cycle(labels_many))),
             "label",
         )
         m = vf2pp_isomorphism(G1, G2, node_label="label")
@@ -744,12 +810,8 @@ class TestMultiGraphISOVF2pp:
         G1.add_edges_from(edges1)
         G2 = nx.relabel_nodes(G1, mapped)
 
-        nx.set_node_attributes(
-            G1, dict(zip(G1, itertools.cycle(utils.labels_same))), "label"
-        )
-        nx.set_node_attributes(
-            G2, dict(zip(G2, itertools.cycle(utils.labels_same))), "label"
-        )
+        nx.set_node_attributes(G1, dict(zip(G1, it.cycle(labels_same))), "label")
+        nx.set_node_attributes(G2, dict(zip(G2, it.cycle(labels_same))), "label")
         m = vf2pp_isomorphism(G1, G2, node_label="label")
         assert m
 
@@ -814,12 +876,10 @@ class TestMultiGraphISOVF2pp:
         G1.add_edges_from(edges1)
         G2 = nx.relabel_nodes(G1, mapped)
 
-        nx.set_node_attributes(
-            G1, dict(zip(G1, itertools.cycle(utils.labels_different))), "label"
-        )
+        nx.set_node_attributes(G1, dict(zip(G1, it.cycle(labels_many))), "label")
         nx.set_node_attributes(
             G2,
-            dict(zip([mapped[n] for n in G1], itertools.cycle(utils.labels_different))),
+            dict(zip([mapped[n] for n in G1], it.cycle(labels_many))),
             "label",
         )
         m = vf2pp_isomorphism(G1, G2, node_label="label")
@@ -899,12 +959,8 @@ class TestMultiGraphISOVF2pp:
         G1.add_edges_from(edges1)
         G2 = nx.relabel_nodes(G1, mapped)
 
-        nx.set_node_attributes(
-            G1, dict(zip(G1, itertools.cycle(utils.labels_same))), "label"
-        )
-        nx.set_node_attributes(
-            G2, dict(zip(G2, itertools.cycle(utils.labels_same))), "label"
-        )
+        nx.set_node_attributes(G1, dict(zip(G1, it.cycle(labels_same))), "label")
+        nx.set_node_attributes(G2, dict(zip(G2, it.cycle(labels_same))), "label")
         m = vf2pp_isomorphism(G1, G2, node_label="label")
         assert m
 
@@ -1040,12 +1096,10 @@ class TestMultiGraphISOVF2pp:
         G1.add_edges_from(edges1)
         G2 = nx.relabel_nodes(G1, mapped)
 
-        nx.set_node_attributes(
-            G1, dict(zip(G1, itertools.cycle(utils.labels_different))), "label"
-        )
+        nx.set_node_attributes(G1, dict(zip(G1, it.cycle(labels_many))), "label")
         nx.set_node_attributes(
             G2,
-            dict(zip([mapped[n] for n in G1], itertools.cycle(utils.labels_different))),
+            dict(zip([mapped[n] for n in G1], it.cycle(labels_many))),
             "label",
         )
         m = vf2pp_isomorphism(G1, G2, node_label="label")
@@ -1162,12 +1216,8 @@ class TestMultiGraphISOVF2pp:
         G1.add_edges_from(edges1)
         G2 = nx.relabel_nodes(G1, mapped)
 
-        nx.set_node_attributes(
-            G1, dict(zip(G1, itertools.cycle(utils.labels_same))), "label"
-        )
-        nx.set_node_attributes(
-            G2, dict(zip(G2, itertools.cycle(utils.labels_same))), "label"
-        )
+        nx.set_node_attributes(G1, dict(zip(G1, it.cycle(labels_same))), "label")
+        nx.set_node_attributes(G2, dict(zip(G2, it.cycle(labels_same))), "label")
         m = vf2pp_isomorphism(G1, G2, node_label="label")
         assert m
 
@@ -1272,12 +1322,10 @@ class TestMultiGraphISOVF2pp:
         G1.add_edges_from(edges1)
         G2 = nx.relabel_nodes(G1, mapped)
 
-        nx.set_node_attributes(
-            G1, dict(zip(G1, itertools.cycle(utils.labels_different))), "label"
-        )
+        nx.set_node_attributes(G1, dict(zip(G1, it.cycle(labels_many))), "label")
         nx.set_node_attributes(
             G2,
-            dict(zip([mapped[n] for n in G1], itertools.cycle(utils.labels_different))),
+            dict(zip([mapped[n] for n in G1], it.cycle(labels_many))),
             "label",
         )
         m = vf2pp_isomorphism(G1, G2, node_label="label")
@@ -1363,12 +1411,8 @@ class TestMultiGraphISOVF2pp:
 
         G1.add_edges_from(edges1)
         G2 = nx.relabel_nodes(G1, mapped)
-        nx.set_node_attributes(
-            G1, dict(zip(G1, itertools.cycle(utils.labels_same))), "label"
-        )
-        nx.set_node_attributes(
-            G2, dict(zip(G2, itertools.cycle(utils.labels_same))), "label"
-        )
+        nx.set_node_attributes(G1, dict(zip(G1, it.cycle(labels_same))), "label")
+        nx.set_node_attributes(G2, dict(zip(G2, it.cycle(labels_same))), "label")
 
         m = vf2pp_isomorphism(G1, G2, node_label="label")
         assert m
@@ -1430,12 +1474,8 @@ class TestMultiGraphISOVF2pp:
         mapped = {0: 9, 1: 8, 2: 7, 3: 6, 4: 5, 5: 4, 6: 3, 7: 2, 8: 1, 9: 0}
         G2 = nx.relabel_nodes(G1, mapped)
 
-        nx.set_node_attributes(
-            G1, dict(zip(G1, itertools.cycle(utils.labels_same))), "label"
-        )
-        nx.set_node_attributes(
-            G2, dict(zip(G2, itertools.cycle(utils.labels_same))), "label"
-        )
+        nx.set_node_attributes(G1, dict(zip(G1, it.cycle(labels_same))), "label")
+        nx.set_node_attributes(G2, dict(zip(G2, it.cycle(labels_same))), "label")
 
         m = vf2pp_isomorphism(G1, G2, node_label="label")
         assert m
@@ -1468,12 +1508,10 @@ class TestMultiGraphISOVF2pp:
         mapped = {0: 9, 1: 8, 2: 7, 3: 6, 4: 5, 5: 4, 6: 3, 7: 2, 8: 1, 9: 0}
         G2 = nx.relabel_nodes(G1, mapped)
 
-        nx.set_node_attributes(
-            G1, dict(zip(G1, itertools.cycle(utils.labels_different))), "label"
-        )
+        nx.set_node_attributes(G1, dict(zip(G1, it.cycle(labels_many))), "label")
         nx.set_node_attributes(
             G2,
-            dict(zip([mapped[n] for n in G1], itertools.cycle(utils.labels_different))),
+            dict(zip([mapped[n] for n in G1], it.cycle(labels_many))),
             "label",
         )
         m = vf2pp_isomorphism(G1, G2, node_label="label")
@@ -1499,3 +1537,72 @@ class TestMultiGraphISOVF2pp:
         G1.add_edges_from([(i, i) for i in range(0, 3)] * 7)
         m = vf2pp_isomorphism(G1, G2, node_label="label")
         assert m
+
+
+class TestDiGraphISOVF2pp:
+    def test_wikipedia_graph(self):
+        edges1 = [
+            (1, 5),
+            (1, 2),
+            (1, 4),
+            (3, 2),
+            (6, 2),
+            (3, 4),
+            (7, 3),
+            (4, 8),
+            (5, 8),
+            (6, 5),
+            (6, 7),
+            (7, 8),
+        ]
+        mapped = {1: "a", 2: "h", 3: "d", 4: "i", 5: "g", 6: "b", 7: "j", 8: "c"}
+
+        G1 = nx.DiGraph(edges1)
+        G2 = nx.relabel_nodes(G1, mapped)
+
+        assert vf2pp_isomorphism(G1, G2) == mapped
+
+        # Change the direction of an edge
+        G1.remove_edge(1, 5)
+        G1.add_edge(5, 1)
+        assert vf2pp_isomorphism(G1, G2) is None
+
+    def test_non_isomorphic_same_degree_sequence(self):
+        r"""
+                G1                           G2
+        x--------------x              x--------------x
+        | \            |              | \            |
+        |  x-------x   |              |  x-------x   |
+        |  |       |   |              |  |       |   |
+        |  x-------x   |              |  x-------x   |
+        | /            |              |            \ |
+        x--------------x              x--------------x
+        """
+        edges1 = [
+            (1, 5),
+            (1, 2),
+            (4, 1),
+            (3, 2),
+            (3, 4),
+            (4, 8),
+            (5, 8),
+            (6, 5),
+            (6, 7),
+            (7, 8),
+        ]
+        edges2 = [
+            (1, 5),
+            (1, 2),
+            (4, 1),
+            (3, 2),
+            (4, 3),
+            (5, 8),
+            (6, 5),
+            (6, 7),
+            (3, 7),
+            (8, 7),
+        ]
+
+        G1 = nx.DiGraph(edges1)
+        G2 = nx.DiGraph(edges2)
+        assert vf2pp_isomorphism(G1, G2) is None

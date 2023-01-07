@@ -28,7 +28,7 @@ def test_union_all_attributes():
         assert ghj.nodes[n] == eval(graph).nodes[int(node)]
 
     assert ghj.graph["attr"] == "attr"
-    assert ghj.graph["name"] == "j"  # j graph attributes take precendent
+    assert ghj.graph["name"] == "j"  # j graph attributes take precedent
 
 
 def test_intersection_all():

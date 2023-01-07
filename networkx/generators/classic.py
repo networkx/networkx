@@ -145,7 +145,26 @@ def balanced_tree(r, h, create_using=None):
 def barbell_graph(m1, m2, create_using=None):
     """Returns the Barbell Graph: two complete graphs connected by a path.
 
-    For $m1 > 1$ and $m2 >= 0$.
+    Parameters
+    ----------
+    m1 : int
+        Size of the left and right barbells, must be greater than 2.
+
+    m2 : int
+        Length of the path connecting the barbells.
+
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+       Graph type to create. If graph instance, then cleared before populated.
+       Only undirected Graphs are supported.
+
+    Returns
+    -------
+    G : NetworkX graph
+        A barbell graph.
+
+    Notes
+    -----
+
 
     Two identical complete graphs $K_{m1}$ form the left and right bells,
     and are connected by a path $P_{m2}$.
@@ -177,14 +196,17 @@ def barbell_graph(m1, m2, create_using=None):
     G.add_nodes_from(range(m1, m1 + m2 - 1))
     if m2 > 1:
         G.add_edges_from(pairwise(range(m1, m1 + m2)))
+
     # right barbell
     G.add_edges_from(
         (u, v) for u in range(m1 + m2, 2 * m1 + m2) for v in range(u + 1, 2 * m1 + m2)
     )
+
     # connect it up
     G.add_edge(m1 - 1, m1)
     if m2 > 0:
         G.add_edge(m1 + m2 - 1, m1 + m2)
+
     return G
 
 
@@ -233,6 +255,8 @@ def complete_graph(n, create_using=None):
     n : int or iterable container of nodes
         If n is an integer, nodes are from range(n).
         If n is a container of nodes, those nodes appear in the graph.
+        Warning: n is not checked for duplicates and if present the
+        resulting graph may not be as desired. Make sure you have no duplicates.
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
        Graph type to create. If graph instance, then cleared before populated.
 
@@ -360,6 +384,8 @@ def cycle_graph(n, create_using=None):
     n : int or iterable container of nodes
         If n is an integer, nodes are from `range(n)`.
         If n is a container of nodes, those nodes appear in the graph.
+        Warning: n is not checked for duplicates and if present the
+        resulting graph may not be as desired. Make sure you have no duplicates.
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
        Graph type to create. If graph instance, then cleared before populated.
 
@@ -523,7 +549,9 @@ def lollipop_graph(m, n, create_using=None):
     ----------
     m, n : int or iterable container of nodes (default = 0)
         If an integer, nodes are from `range(m)` and `range(m,m+n)`.
-        If a container, the entries are the coordinate of the node.
+        If a container of nodes, those nodes appear in the graph.
+        Warning: m and n are not checked for duplicates and if present the
+        resulting graph may not be as desired. Make sure you have no duplicates.
 
         The nodes for m appear in the complete graph $K_m$ and the nodes
         for n appear in the path $P_n$
@@ -587,6 +615,8 @@ def path_graph(n, create_using=None):
     n : int or iterable
         If an integer, nodes are 0 to n - 1.
         If an iterable of nodes, in the order they appear in the path.
+        Warning: n is not checked for duplicates and if present the
+        resulting graph may not be as desired. Make sure you have no duplicates.
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
        Graph type to create. If graph instance, then cleared before populated.
 
@@ -608,6 +638,8 @@ def star_graph(n, create_using=None):
     n : int or iterable
         If an integer, node labels are 0 to n with center 0.
         If an iterable of nodes, the center is the first.
+        Warning: n is not checked for duplicates and if present the
+        resulting graph may not be as desired. Make sure you have no duplicates.
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
        Graph type to create. If graph instance, then cleared before populated.
 
@@ -679,6 +711,8 @@ def wheel_graph(n, create_using=None):
     n : int or iterable
         If an integer, node labels are 0 to n with center 0.
         If an iterable of nodes, the center is the first.
+        Warning: n is not checked for duplicates and if present the
+        resulting graph may not be as desired. Make sure you have no duplicates.
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
        Graph type to create. If graph instance, then cleared before populated.
 
