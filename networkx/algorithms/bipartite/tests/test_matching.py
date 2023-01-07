@@ -5,13 +5,13 @@ import pytest
 
 import networkx as nx
 from networkx.algorithms.bipartite.matching import (
+    envy_free_matching,
     eppstein_matching,
     hopcroft_karp_matching,
     maximum_matching,
+    minimum_weight_envy_free_matching,
     minimum_weight_full_matching,
     to_vertex_cover,
-    envy_free_matching,
-    minimum_weight_envy_free_matching,
 )
 
 
