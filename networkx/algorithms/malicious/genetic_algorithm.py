@@ -22,24 +22,6 @@ logging.basicConfig(filename='malicious_algo_logging.log', level=logging.DEBUG, 
 logger = logging.getLogger()
 
 
-def generate_solutions(G1, G2, num_solutions):
-    # Generate solutions
-    solutions = []
-    min_nodes = min(len(G1.nodes), len(G2.nodes))
-    with mp.Pool() as pool:
-        results = [pool.apply_async(generate_solution, args=(
-            G1, G2, min_nodes)) for s in range(num_solutions)]
-        solutions = [r.get() for r in results]
-    return solutions
-
-
-def generate_solution(G1, G2, min_nodes):
-    sub_graph_size = random.randint(1, min_nodes)
-    sub1 = random.sample(G1.nodes, sub_graph_size)
-    sub2 = random.sample(G2.nodes, sub_graph_size)
-    return (sub1, sub2)
-
-
 def count_equal_size_combinations(G1_nodes, G2_nodes):
     """
     this is helper method for calculating the number of distinct groups of nodes in equal size
