@@ -39,10 +39,14 @@ to NetworkX 3.0 <https://networkx.org/documentation/latest/release/migration_gui
   are checking might be a class rather than an instance. We suggest you check
   for attribute `_adj` to verify it is like a NetworkX graph object or type and
   then `type(obj) is type` to check if it is a class.
-- We have added an experimental plugin feature which let users choose alternate
-  backends like GraphBLAS, CuGraph for computation. This is an opt-in feature and
-  may change in future releases.
+- We have added an `experimental plugin feature <https://github.com/networkx/networkx/pull/6000>`_,
+  which let users choose alternate backends like GraphBLAS, CuGraph for computation. This is an
+  opt-in feature and may change in future releases.
 - Improved integration with the general `Scientific Python ecosystem <https://networkx.org/documentation/latest/release/migration_guide_from_2.x_to_3.0.html#improved-integration-with-scientific-python>`_.
+- New drawing feature (module and tests) from NetworkX graphs to the TikZ library of TeX/LaTeX.
+  The basic interface is ``nx.to_latex(G, pos, **options)`` to construct a string of latex code or
+  ``nx.write_latex(G, filename, as_document=True, **options)`` to write the string to a file.
+- Added an improved subgraph isomorphism algorithm called VF2++.
 
 Improvements
 ------------
