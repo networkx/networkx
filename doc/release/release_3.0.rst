@@ -1,7 +1,7 @@
-NetworkX 3.0 (unreleased)
-=========================
+NetworkX 3.0
+============
 
-Release date: TBD
+Release date: 7 January 2023
 
 Supports Python 3.8, 3.9, 3.10, and 3.11.
 
@@ -16,8 +16,8 @@ Please send comments and questions to the `networkx-discuss mailing list
 Highlights
 ----------
 
-This release is the result of 8 months of work with over 217 pull requests by
-37 contributors. We also have a `guide for people moving from NetworkX 2.X
+This release is the result of 8 months of work with over 180 changes by
+41 contributors. We also have a `guide for people moving from NetworkX 2.X
 to NetworkX 3.0 <https://networkx.org/documentation/latest/release/migration_guide_from_2.x_to_3.0.html>`_. Highlights include:
 
 - Better syncing between G._succ and G._adj for directed G.
