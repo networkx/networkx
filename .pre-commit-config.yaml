@@ -28,3 +28,11 @@ repos:
       - id: prettier
         files: \.(html|md|yml|yaml)
         args: [--prose-wrap=preserve]
+
+  - repo: https://github.com/charliermarsh/ruff-pre-commit
+    rev: v0.0.215
+    hooks:
+      - id: ruff
+        args:
+          - --force-exclude
+          - --fix

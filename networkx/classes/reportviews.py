@@ -966,10 +966,7 @@ class OutMultiEdgeDataView(OutEdgeDataView):
             except KeyError:
                 return False
             return e == self._report(u, v, k, dd)
-        for k, dd in kdict.items():
-            if e == self._report(u, v, k, dd):
-                return True
-        return False
+        return any(e == self._report(u, v, k, dd) for k, dd in kdict.items())
 
 
 class MultiEdgeDataView(OutMultiEdgeDataView):
@@ -1005,10 +1002,7 @@ class MultiEdgeDataView(OutMultiEdgeDataView):
             except KeyError:
                 return False
             return e == self._report(u, v, k, dd)
-        for k, dd in kdict.items():
-            if e == self._report(u, v, k, dd):
-                return True
-        return False
+        return any(e == self._report(u, v, k, dd) for k, dd in kdict.items())
 
 
 class InMultiEdgeDataView(OutMultiEdgeDataView):
@@ -1036,10 +1030,7 @@ class InMultiEdgeDataView(OutMultiEdgeDataView):
             k = e[2]
             dd = kdict[k]
             return e == self._report(u, v, k, dd)
-        for k, dd in kdict.items():
-            if e == self._report(u, v, k, dd):
-                return True
-        return False
+        return any(e == self._report(u, v, k, dd) for k, dd in kdict.items())
 
 
 # EdgeViews    have set operations and no data reported

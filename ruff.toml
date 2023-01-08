@@ -1,0 +1,4 @@
+select = [
+    "SIM110",  # convert loop to 'any'
+    "SIM111",  # convert loop to 'all'
+]
