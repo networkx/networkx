@@ -484,7 +484,7 @@ class GraphMatcher:
                 if (neighbor in self.inout_2) and (neighbor not in self.core_2):
                     num2 += 1
             if self.test == "graph":
-                if not (num1 == num2):
+                if num1 != num2:
                     return False
             else:  # self.test == 'subgraph'
                 if not (num1 >= num2):
@@ -506,7 +506,7 @@ class GraphMatcher:
                 if neighbor not in self.inout_2:
                     num2 += 1
             if self.test == "graph":
-                if not (num1 == num2):
+                if num1 != num2:
                     return False
             else:  # self.test == 'subgraph'
                 if not (num1 >= num2):
@@ -740,7 +740,7 @@ class DiGraphMatcher(GraphMatcher):
                 if (predecessor in self.in_2) and (predecessor not in self.core_2):
                     num2 += 1
             if self.test == "graph":
-                if not (num1 == num2):
+                if num1 != num2:
                     return False
             else:  # self.test == 'subgraph'
                 if not (num1 >= num2):
@@ -757,7 +757,7 @@ class DiGraphMatcher(GraphMatcher):
                 if (successor in self.in_2) and (successor not in self.core_2):
                     num2 += 1
             if self.test == "graph":
-                if not (num1 == num2):
+                if num1 != num2:
                     return False
             else:  # self.test == 'subgraph'
                 if not (num1 >= num2):
@@ -776,7 +776,7 @@ class DiGraphMatcher(GraphMatcher):
                 if (predecessor in self.out_2) and (predecessor not in self.core_2):
                     num2 += 1
             if self.test == "graph":
-                if not (num1 == num2):
+                if num1 != num2:
                     return False
             else:  # self.test == 'subgraph'
                 if not (num1 >= num2):
@@ -793,7 +793,7 @@ class DiGraphMatcher(GraphMatcher):
                 if (successor in self.out_2) and (successor not in self.core_2):
                     num2 += 1
             if self.test == "graph":
-                if not (num1 == num2):
+                if num1 != num2:
                     return False
             else:  # self.test == 'subgraph'
                 if not (num1 >= num2):
@@ -815,7 +815,7 @@ class DiGraphMatcher(GraphMatcher):
                 if (predecessor not in self.in_2) and (predecessor not in self.out_2):
                     num2 += 1
             if self.test == "graph":
-                if not (num1 == num2):
+                if num1 != num2:
                     return False
             else:  # self.test == 'subgraph'
                 if not (num1 >= num2):
@@ -833,7 +833,7 @@ class DiGraphMatcher(GraphMatcher):
                 if (successor not in self.in_2) and (successor not in self.out_2):
                     num2 += 1
             if self.test == "graph":
-                if not (num1 == num2):
+                if num1 != num2:
                     return False
             else:  # self.test == 'subgraph'
                 if not (num1 >= num2):

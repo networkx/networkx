@@ -110,7 +110,7 @@ def _edges_cross_nodes_and_nodes(G, H):
 
 
 def _init_product_graph(G, H):
-    if not G.is_directed() == H.is_directed():
+    if G.is_directed() != H.is_directed():
         msg = "G and H must be both directed or both undirected"
         raise nx.NetworkXError(msg)
     if G.is_multigraph() or H.is_multigraph():

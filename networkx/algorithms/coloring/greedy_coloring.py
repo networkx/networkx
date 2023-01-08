@@ -232,7 +232,7 @@ def strategy_saturation_largest_first(G, colors):
         for v in G[node]:
             distinct_colors[v].add(0)
 
-    while not len(G) == len(colors):
+    while len(G) != len(colors):
         # Update the distinct color sets for the neighbors.
         for node, color in colors.items():
             for neighbor in G[node]:
