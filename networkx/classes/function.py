@@ -1254,7 +1254,7 @@ def is_path(G, path):
 
     """
     return all(
-        not (node not in G or nbr not in G[node])
+        (node in G and nbr in G[node])
         for node, nbr in nx.utils.pairwise(path)
     )
 
