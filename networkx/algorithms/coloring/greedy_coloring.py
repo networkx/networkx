@@ -232,7 +232,7 @@ def strategy_saturation_largest_first(G, colors):
         for v in G[node]:
             distinct_colors[v].add(0)
 
-    while not len(G) == len(colors):
+    while len(G) != len(colors):
         # Update the distinct color sets for the neighbors.
         for node, color in colors.items():
             for neighbor in G[node]:
@@ -499,7 +499,7 @@ def _greedy_coloring_with_interchange(G, nodes):
             while connected and col1 < k:
                 col1 += 1
                 neighbor_cols = graph[node].iter_neighbors_color(col1)
-                col1_adj = [it for it in neighbor_cols]
+                col1_adj = list(neighbor_cols)
 
                 col2 = col1
                 while connected and col2 < k:

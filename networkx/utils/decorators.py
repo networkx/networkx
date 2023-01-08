@@ -75,8 +75,8 @@ def not_implemented_for(*graph_types):
         )
 
     # 3-way logic: True if "directed" input, False if "undirected" input, else None
-    dval = ("directed" in graph_types) or not ("undirected" in graph_types) and None
-    mval = ("multigraph" in graph_types) or not ("graph" in graph_types) and None
+    dval = ("directed" in graph_types) or "undirected" not in graph_types and None
+    mval = ("multigraph" in graph_types) or "graph" not in graph_types and None
     errmsg = f"not implemented for {' '.join(graph_types)} type"
 
     def _not_implemented_for(g):
@@ -97,7 +97,7 @@ fopeners = {
     ".gzip": gzip.open,
     ".bz2": bz2.BZ2File,
 }
-_dispatch_dict = defaultdict(lambda: open, **fopeners)  # type: ignore
+_dispatch_dict = defaultdict(lambda: open, **fopeners)
 
 
 def open_file(path_arg, mode="r"):

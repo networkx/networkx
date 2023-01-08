@@ -195,7 +195,7 @@ def local_node_connectivity(
     if mapping is None:
         raise nx.NetworkXError("Invalid auxiliary digraph.")
 
-    kwargs = dict(flow_func=flow_func, residual=residual)
+    kwargs = {"flow_func": flow_func, "residual": residual}
     if flow_func is shortest_augmenting_path:
         kwargs["cutoff"] = cutoff
         kwargs["two_phase"] = True
@@ -330,7 +330,7 @@ def node_connectivity(G, s=None, t=None, flow_func=None):
     # Reuse the auxiliary digraph and the residual network
     H = build_auxiliary_node_connectivity(G)
     R = build_residual_network(H, "capacity")
-    kwargs = dict(flow_func=flow_func, auxiliary=H, residual=R)
+    kwargs = {"flow_func": flow_func, "auxiliary": H, "residual": R}
 
     # Pick a node with minimum degree
     # Node connectivity is bounded by degree.
@@ -405,7 +405,7 @@ def average_node_connectivity(G, flow_func=None):
     # Reuse the auxiliary digraph and the residual network
     H = build_auxiliary_node_connectivity(G)
     R = build_residual_network(H, "capacity")
-    kwargs = dict(flow_func=flow_func, auxiliary=H, residual=R)
+    kwargs = {"flow_func": flow_func, "auxiliary": H, "residual": R}
 
     num, den = 0, 0
     for u, v in iter_func(G, 2):
@@ -473,7 +473,7 @@ def all_pairs_node_connectivity(G, nbunch=None, flow_func=None):
     H = build_auxiliary_node_connectivity(G)
     mapping = H.graph["mapping"]
     R = build_residual_network(H, "capacity")
-    kwargs = dict(flow_func=flow_func, auxiliary=H, residual=R)
+    kwargs = {"flow_func": flow_func, "auxiliary": H, "residual": R}
 
     for u, v in iter_func(nbunch, 2):
         K = local_node_connectivity(G, u, v, **kwargs)
@@ -631,7 +631,7 @@ def local_edge_connectivity(
     else:
         H = auxiliary
 
-    kwargs = dict(flow_func=flow_func, residual=residual)
+    kwargs = {"flow_func": flow_func, "residual": residual}
     if flow_func is shortest_augmenting_path:
         kwargs["cutoff"] = cutoff
         kwargs["two_phase"] = True
@@ -760,7 +760,7 @@ def edge_connectivity(G, s=None, t=None, flow_func=None, cutoff=None):
     # reuse auxiliary digraph and residual network
     H = build_auxiliary_edge_connectivity(G)
     R = build_residual_network(H, "capacity")
-    kwargs = dict(flow_func=flow_func, auxiliary=H, residual=R)
+    kwargs = {"flow_func": flow_func, "auxiliary": H, "residual": R}
 
     if G.is_directed():
         # Algorithm 8 in [1]

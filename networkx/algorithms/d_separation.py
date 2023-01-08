@@ -419,7 +419,7 @@ def _bfs_with_marks(G, start_node, check_set):
     marked : set
         A set of nodes that were marked.
     """
-    visited = dict()
+    visited = {}
     marked = set()
     queue = []
 

@@ -38,7 +38,7 @@ original_graph.add_edges_from(
         ("A", "6"),
     ]
 )
-base_options = dict(with_labels=True, edgecolors="black")
+base_options = {"with_labels": True, "edgecolors": "black"}
 pos = {
     "3": (0, 1),
     "2": (0, 2),

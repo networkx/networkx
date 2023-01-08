@@ -620,7 +620,7 @@ class TestGraphISOVF2pp:
 
     def test_disconnected_graph_all_same_labels(self):
         G1 = nx.Graph()
-        G1.add_nodes_from([i for i in range(10)])
+        G1.add_nodes_from(list(range(10)))
 
         mapped = {0: 9, 1: 8, 2: 7, 3: 6, 4: 5, 5: 4, 6: 3, 7: 2, 8: 1, 9: 0}
         G2 = nx.relabel_nodes(G1, mapped)
@@ -630,7 +630,7 @@ class TestGraphISOVF2pp:
 
     def test_disconnected_graph_all_different_labels(self):
         G1 = nx.Graph()
-        G1.add_nodes_from([i for i in range(10)])
+        G1.add_nodes_from(list(range(10)))
 
         mapped = {0: 9, 1: 8, 2: 7, 3: 6, 4: 5, 5: 4, 6: 3, 7: 2, 8: 1, 9: 0}
         G2 = nx.relabel_nodes(G1, mapped)
@@ -645,7 +645,7 @@ class TestGraphISOVF2pp:
 
     def test_disconnected_graph_some_same_labels(self):
         G1 = nx.Graph()
-        G1.add_nodes_from([i for i in range(10)])
+        G1.add_nodes_from(list(range(10)))
 
         mapped = {0: 9, 1: 8, 2: 7, 3: 6, 4: 5, 5: 4, 6: 3, 7: 2, 8: 1, 9: 0}
         G2 = nx.relabel_nodes(G1, mapped)
@@ -1468,7 +1468,7 @@ class TestMultiGraphISOVF2pp:
 
     def test_disconnected_multigraph_all_same_labels(self):
         G1 = nx.MultiGraph()
-        G1.add_nodes_from([i for i in range(10)])
+        G1.add_nodes_from(list(range(10)))
         G1.add_edges_from([(i, i) for i in range(10)])
 
         mapped = {0: 9, 1: 8, 2: 7, 3: 6, 4: 5, 5: 4, 6: 3, 7: 2, 8: 1, 9: 0}
@@ -1502,7 +1502,7 @@ class TestMultiGraphISOVF2pp:
 
     def test_disconnected_multigraph_all_different_labels(self):
         G1 = nx.MultiGraph()
-        G1.add_nodes_from([i for i in range(10)])
+        G1.add_nodes_from(list(range(10)))
         G1.add_edges_from([(i, i) for i in range(10)])
 
         mapped = {0: 9, 1: 8, 2: 7, 3: 6, 4: 5, 5: 4, 6: 3, 7: 2, 8: 1, 9: 0}

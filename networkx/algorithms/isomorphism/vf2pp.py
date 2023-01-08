@@ -344,8 +344,8 @@ def _initialize_parameters(G1, G2, G2_degree, node_label=None, default_label=-1)
         T2_tilde, T2_tilde_in = set(G2.nodes()), set()
 
     state_params = _StateParameters(
-        dict(),
-        dict(),
+        {},
+        {},
         T1,
         T1_in,
         T1_tilde,

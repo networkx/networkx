@@ -501,7 +501,7 @@ def onion_layers(G):
     current_core = 1
     current_layer = 1
     # Sets vertices of degree 0 to layer 1, if any.
-    isolated_nodes = [v for v in nx.isolates(G)]
+    isolated_nodes = list(nx.isolates(G))
     if len(isolated_nodes) > 0:
         for v in isolated_nodes:
             od_layers[v] = current_layer

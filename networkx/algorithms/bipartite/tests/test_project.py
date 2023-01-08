@@ -362,14 +362,14 @@ class TestBipartiteWeightedProjection:
         )
         assert nodes_equal(list(G), [0, 2, 4])
         assert edges_equal(
-            list(list(G.edges(data=True))),
+            list(G.edges(data=True)),
             [(0, 2, {"weight": 1}), (2, 4, {"weight": 1})],
         )
 
         G = bipartite.generic_weighted_projected_graph(B, [0, 2, 4])
         assert nodes_equal(list(G), [0, 2, 4])
         assert edges_equal(
-            list(list(G.edges(data=True))),
+            list(G.edges(data=True)),
             [(0, 2, {"weight": 1}), (2, 4, {"weight": 1})],
         )
         B = nx.DiGraph()

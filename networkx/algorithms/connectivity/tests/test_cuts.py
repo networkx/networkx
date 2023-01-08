@@ -70,7 +70,7 @@ def test_brandes_erlebach_book():
         ]
     )
     for flow_func in flow_funcs:
-        kwargs = dict(flow_func=flow_func)
+        kwargs = {"flow_func": flow_func}
         errmsg = f"Assertion failed in function: {flow_func.__name__}"
         # edge cutsets
         assert 3 == len(nx.minimum_edge_cut(G, 1, 11, **kwargs)), errmsg
@@ -104,7 +104,7 @@ def test_white_harary_paper():
     for i in range(7, 10):
         G.add_edge(0, i)
     for flow_func in flow_funcs:
-        kwargs = dict(flow_func=flow_func)
+        kwargs = {"flow_func": flow_func}
         errmsg = f"Assertion failed in function: {flow_func.__name__}"
         # edge cuts
         edge_cut = nx.minimum_edge_cut(G, **kwargs)
@@ -123,7 +123,7 @@ def test_white_harary_paper():
 def test_petersen_cutset():
     G = nx.petersen_graph()
     for flow_func in flow_funcs:
-        kwargs = dict(flow_func=flow_func)
+        kwargs = {"flow_func": flow_func}
         errmsg = f"Assertion failed in function: {flow_func.__name__}"
         # edge cuts
         edge_cut = nx.minimum_edge_cut(G, **kwargs)
@@ -142,7 +142,7 @@ def test_petersen_cutset():
 def test_octahedral_cutset():
     G = nx.octahedral_graph()
     for flow_func in flow_funcs:
-        kwargs = dict(flow_func=flow_func)
+        kwargs = {"flow_func": flow_func}
         errmsg = f"Assertion failed in function: {flow_func.__name__}"
         # edge cuts
         edge_cut = nx.minimum_edge_cut(G, **kwargs)
@@ -161,7 +161,7 @@ def test_octahedral_cutset():
 def test_icosahedral_cutset():
     G = nx.icosahedral_graph()
     for flow_func in flow_funcs:
-        kwargs = dict(flow_func=flow_func)
+        kwargs = {"flow_func": flow_func}
         errmsg = f"Assertion failed in function: {flow_func.__name__}"
         # edge cuts
         edge_cut = nx.minimum_edge_cut(G, **kwargs)

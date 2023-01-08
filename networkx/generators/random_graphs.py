@@ -1017,7 +1017,7 @@ def powerlaw_cluster_graph(n, m, p, seed=None):
                 neighborhood = [
                     nbr
                     for nbr in G.neighbors(target)
-                    if not G.has_edge(source, nbr) and not nbr == source
+                    if not G.has_edge(source, nbr) and nbr != source
                 ]
                 if neighborhood:  # if there is a neighbor without a link
                     nbr = seed.choice(neighborhood)

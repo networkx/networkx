@@ -13,19 +13,19 @@ def _matches_to_sets(matches):
     Helper function to facilitate comparing collections of dictionaries in
     which order does not matter.
     """
-    return set(map(lambda m: frozenset(m.items()), matches))
+    return {frozenset(m.items()) for m in matches}
 
 
 class TestSelfIsomorphism:
     data = [
         (
             [
-                (0, dict(name="a")),
-                (1, dict(name="a")),
-                (2, dict(name="b")),
-                (3, dict(name="b")),
-                (4, dict(name="a")),
-                (5, dict(name="a")),
+                (0, {"name": "a"}),
+                (1, {"name": "a"}),
+                (2, {"name": "b"}),
+                (3, {"name": "b"}),
+                (4, {"name": "a"}),
+                (5, {"name": "a"}),
             ],
             [(0, 1), (1, 2), (2, 3), (3, 4), (4, 5)],
         ),

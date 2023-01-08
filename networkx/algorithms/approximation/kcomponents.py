@@ -212,7 +212,7 @@ class _AntiGraph(nx.Graph):
     def single_edge_dict(self):
         return self.all_edge_dict
 
-    edge_attr_dict_factory = single_edge_dict  # type: ignore
+    edge_attr_dict_factory = single_edge_dict  # type: ignore[assignment]
 
     def __getitem__(self, n):
         """Returns a dict of neighbors of node n in the dense graph.

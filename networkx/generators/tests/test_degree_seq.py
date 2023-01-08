@@ -169,11 +169,11 @@ def test_directed_havel_hakimi():
     p = 1.0 / r
     for i in range(r):
         G1 = nx.erdos_renyi_graph(n, p * (i + 1), None, True)
-        din1 = list(d for n, d in G1.in_degree())
-        dout1 = list(d for n, d in G1.out_degree())
+        din1 = [d for n, d in G1.in_degree()]
+        dout1 = [d for n, d in G1.out_degree()]
         G2 = nx.directed_havel_hakimi_graph(din1, dout1)
-        din2 = list(d for n, d in G2.in_degree())
-        dout2 = list(d for n, d in G2.out_degree())
+        din2 = [d for n, d in G2.in_degree()]
+        dout2 = [d for n, d in G2.out_degree()]
         assert sorted(din1) == sorted(din2)
         assert sorted(dout1) == sorted(dout2)
 

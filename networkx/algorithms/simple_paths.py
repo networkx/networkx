@@ -547,7 +547,7 @@ def shortest_simple_paths(G, source, target, weight=None):
 
         shortest_path_func = _bidirectional_dijkstra
 
-    listA = list()
+    listA = []
     listB = PathBuffer()
     prev_path = None
     while True:
@@ -590,7 +590,7 @@ def shortest_simple_paths(G, source, target, weight=None):
 class PathBuffer:
     def __init__(self):
         self.paths = set()
-        self.sortedpaths = list()
+        self.sortedpaths = []
         self.counter = count()
 
     def __len__(self):
