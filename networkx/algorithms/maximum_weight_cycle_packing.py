@@ -96,20 +96,6 @@ def maximum_weight_cycle_packing(graph: nx.DiGraph, k: int) -> list:
                 ans_graph.add_node((edge[0]))
         connect_2cycles(X, graph, ans_graph)
         connect_3cycles(X, Y, graph, ans_graph)
-        # for i in range(len(X)):  # creating the edges in the graph by going through the 2-circles
-        #     for j in range(i + 1, len(X)):
-        #         if (X[i], X[j]) in graph.edges and (X[j], X[i]) in graph.edges:
-        #             weight = graph.get_edge_data(X[i], X[j])["weight"] + graph.get_edge_data(X[j], X[i])["weight"]
-        #             ans_graph.add_edge((X[i]), (X[j]), weight=weight, cycle=[X[i], X[j]])
-        #
-        # #   creating the edges in the graph by going through the 3-circles
-        # for k in range(len(X)):
-        #     for j, l in Y:  # This deals with the normal case of Yi,j Xk
-        #         if (l, X[k]) in graph.edges and (X[k], j) in graph.edges:  # [j, l, X[k]] in cycles:
-        #             weight = graph.get_edge_data(j, l)["weight"] + graph.get_edge_data(l, X[k])["weight"] + \
-        #                      graph.get_edge_data(X[k], j)["weight"]
-        #             ans_graph.add_edge((X[k]), (j, l), weight=weight, cycle=[j, l, X[k]])
-
         exchanges = list(nx.max_weight_matching(ans_graph))
         if len(exchanges) == 0 and ans_graph.number_of_edges() == 1:  # for the use-case of only self connected edge
             exchanges = [list(ans_graph.edges)[0]]
@@ -154,8 +140,22 @@ def simple_cycles(G, limit):
     >>> Digraph.add_weighted_edges_from([(1,8,2),(8,1,4),(2,1,5),(1,3,4),(3,8,2),(8,2,3),(8,5,4),(5,7,3),(7,6,2),(6,5,4)])
     >>> Ys=simple_cycles(Digraph,3)
     >>> a=[y for y in Ys]
-    >>> print(len(a)) #- the known product is supposed to be composed of 27 permutation
-    4
+    >>> print(a)
+    [[8, 2, 1], [8, 1, 3], [8, 1], [5, 7, 6]]
+    >>> Digraph =nx.DiGraph()
+    >>> Digraph.add_nodes_from([1,2,3,4])
+    >>> Digraph.add_weighted_edges_from([(2,1,3),(1,3,1),(3,2,2),(3,4,5),(4,3,9)])
+    >>> Ys=simple_cycles(Digraph,3)
+    >>> a=[y for y in Ys]
+    >>> print(a)
+    [[1, 3, 2], [3, 4]]
+    >>> graphEX3 = nx.DiGraph()
+    >>> graphEX3.add_nodes_from([10,11,12,13,14,15,16])
+    >>> Digraph.add_weighted_edges_from([(10,11,10),(11,12,5),(12,13,6),(13,10,4),(11,14,2),(14,16,3),(16,15,8),(15,14,6)])
+    >>> Ys=simple_cycles(Digraph,3)
+    >>> a=[y for y in Ys]
+    >>> print(a)
+    [[16, 15, 14], [1, 3, 2], [3, 4]]
     """
     subG = type(G)(G.edges())
     sccs = list(nx.strongly_connected_components(subG))
@@ -169,7 +169,6 @@ def simple_cycles(G, limit):
 
         while stack:
             thisnode, nbrs = stack[-1]
-
             if nbrs and len(path) <= limit:
                 nextnode = nbrs.pop()
                 if nextnode == startnode:
