@@ -1,6 +1,8 @@
 """
 Shortest path algorithms for unweighted graphs.
 """
+import operator
+
 import networkx as nx
 
 __all__ = [
@@ -331,15 +333,11 @@ def single_source_shortest_path(G, source, cutoff=None):
     """
     if source not in G:
         raise nx.NodeNotFound(f"Source {source} not in G")
-
-    def join(p1, p2):
-        return p1 + p2
-
     if cutoff is None:
         cutoff = float("inf")
     nextlevel = {source: 1}  # list of nodes to check at next level
     paths = {source: [source]}  # paths dictionary  (paths to key from source)
-    return dict(_single_shortest_path(G.adj, nextlevel, paths, cutoff, join))
+    return dict(_single_shortest_path(G.adj, nextlevel, paths, cutoff, operator.add))
 
 
 def _single_shortest_path(adj, firstlevel, paths, cutoff, join):
