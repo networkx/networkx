@@ -98,7 +98,7 @@ def Maximum_weight_cycle_packing_approximation_algorithm(graph: nx.DiGraph, k: i
         weights[i] = weight
 
     h = hnx.Hypergraph(buildHype)
-
+    # print(h)
     # logging.info("draw hypergraph h")
     # hnx.draw(h, edge_labels=weights)
     # plt.title('HyperGraph')
