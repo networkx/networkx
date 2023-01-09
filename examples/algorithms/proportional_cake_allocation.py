@@ -90,10 +90,10 @@ def allocation_graph3():
     g2 = nx.Graph()
     g2.add_nodes_from([2, 3, 4, 5, 6])
     g2.add_edges_from([(2, 3), (2, 5), (3, 4), (4, 5), (5, 6)])
-    g2[2][3]['weight'] = 6
-    g2[2][5]['weight'] = 1
-    g2[3][4]['weight'] = 5
-    g2[5][4]['weight'] = 2
+    g2[2][3]['weight'] = 1
+    g2[2][5]['weight'] = 2
+    g2[3][4]['weight'] = 6
+    g2[5][4]['weight'] = 5
     g2[5][6]['weight'] = 15
     return g1, g2
 
@@ -101,6 +101,15 @@ def allocation_graph3():
 def total_valuation(v):
     """
     This function returns the total valuation of an agent for the entire graph
+    >>> total_valuation([pc.PiecewiseConstantValuation([10,20]), pc.PiecewiseConstantValuation([10]), pc.PiecewiseConstantValuation([5]), \
+    pc.PiecewiseConstantValuation([10 ,20]), pc.PiecewiseConstantValuation([10]), pc.PiecewiseConstantValuation([10]), pc.PiecewiseConstantValuation([5,10])])
+    110
+    >>> total_valuation([pc.PiecewiseConstantValuation([1]), pc.PiecewiseConstantValuation([1, 2, 3, 4]), \
+    pc.PiecewiseConstantValuation([10]), pc.PiecewiseConstantValuation([2, 4]),pc.PiecewiseConstantValuation([5, 10])])
+    42
+    >>> total_valuation([pc.PiecewiseConstantValuation([5, 10, 15]), pc.PiecewiseConstantValuation([2]), pc.PiecewiseConstantValuation([2]),pc.PiecewiseConstantValuation([1, 2]), \
+    pc.PiecewiseConstantValuation([3]), pc.PiecewiseConstantValuation([20])])
+    60
     """
     s = 0
     for i in v:
@@ -213,7 +222,7 @@ def get_proportional_allocation(v1, v2, graph):
                     return alloc1[1], nx.Graph() # return empty graph if we the rest is not sufficent to 2nd agent
     return alloc1, alloc2
 
-#
+
 # graph1, graph2 = get_proportional_allocation(
 #     [pc.PiecewiseConstantValuation([5, 10, 15]), pc.PiecewiseConstantValuation([2]), pc.PiecewiseConstantValuation([2]),
 #      pc.PiecewiseConstantValuation([1, 2]), pc.PiecewiseConstantValuation([3]), pc.PiecewiseConstantValuation([20])],
