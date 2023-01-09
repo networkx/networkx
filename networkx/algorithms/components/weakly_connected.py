@@ -170,8 +170,8 @@ def _plain_bfs(G, source):
 
     """
     n = len(G)
-    Gsucc = G.succ
-    Gpred = G.pred
+    Gsucc = G._succ
+    Gpred = G._pred
     seen = {source}
     nextlevel = [source]
 
