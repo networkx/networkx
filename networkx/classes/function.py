@@ -201,6 +201,7 @@ def freeze(G):
     G.remove_edge = frozen
     G.remove_edges_from = frozen
     G.clear = frozen
+    G.clear_edges = frozen
     G.frozen = True
     return G
 

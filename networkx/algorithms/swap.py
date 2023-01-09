@@ -46,7 +46,7 @@ def directed_edge_swap(G, *, nswap=1, max_tries=100, seed=None):
     NetworkXError
         If `G` is not directed, or
         If nswap > max_tries, or
-        If there are fewer than 4 nodes in `G`
+        If there are fewer than 4 nodes or 3 edges in `G`.
     NetworkXAlgorithmError
         If the number of swap attempts exceeds `max_tries` before `nswap` swaps are made
 
@@ -70,7 +70,9 @@ def directed_edge_swap(G, *, nswap=1, max_tries=100, seed=None):
     if nswap > max_tries:
         raise nx.NetworkXError("Number of swaps > number of tries allowed.")
     if len(G) < 4:
-        raise nx.NetworkXError("Graph has less than four nodes.")
+        raise nx.NetworkXError("DiGraph has fewer than four nodes.")
+    if len(G.edges) < 3:
+        raise nx.NetworkXError("DiGraph has fewer than 3 edges")
 
     # Instead of choosing uniformly at random from a generated edge list,
     # this algorithm chooses nonuniformly from the set of nodes with
@@ -161,6 +163,15 @@ def double_edge_swap(G, nswap=1, max_tries=100, seed=None):
     G : graph
        The graph after double edge swaps.
 
+    Raises
+    ------
+    NetworkXError
+        If `G` is directed, or
+        If `nswap` > `max_tries`, or
+        If there are fewer than 4 nodes or 2 edges in `G`.
+    NetworkXAlgorithmError
+        If the number of swap attempts exceeds `max_tries` before `nswap` swaps are made
+
     Notes
     -----
     Does not enforce any connectivity constraints.
@@ -174,7 +185,9 @@ def double_edge_swap(G, nswap=1, max_tries=100, seed=None):
     if nswap > max_tries:
         raise nx.NetworkXError("Number of swaps > number of tries allowed.")
     if len(G) < 4:
-        raise nx.NetworkXError("Graph has less than four nodes.")
+        raise nx.NetworkXError("Graph has fewer than four nodes.")
+    if len(G.edges) < 2:
+        raise nx.NetworkXError("Graph has fewer than 2 edges")
     # Instead of choosing uniformly at random from a generated edge list,
     # this algorithm chooses nonuniformly from the set of nodes with
     # probability weighted by degree.
@@ -285,7 +298,7 @@ def connected_double_edge_swap(G, nswap=1, _window_threshold=3, seed=None):
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph not connected")
     if len(G) < 4:
-        raise nx.NetworkXError("Graph has less than four nodes.")
+        raise nx.NetworkXError("Graph has fewer than four nodes.")
     n = 0
     swapcount = 0
     deg = G.degree()
@@ -350,7 +363,7 @@ def connected_double_edge_swap(G, nswap=1, _window_threshold=3, seed=None):
             while wcount < window and n < nswap:
                 # Pick two random edges without creating the edge list. Choose
                 # source nodes from the discrete degree distribution.
-                (ui, xi) = nx.utils.discrete_sequence(2, cdistribution=cdf)
+                (ui, xi) = discrete_sequence(2, cdistribution=cdf, seed=seed)
                 # If the source nodes are the same, skip this pair.
                 if ui == xi:
                     continue

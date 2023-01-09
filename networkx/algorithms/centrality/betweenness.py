@@ -3,6 +3,7 @@ from collections import deque
 from heapq import heappop, heappush
 from itertools import count
 
+import networkx as nx
 from networkx.algorithms.shortest_paths.weighted import _weight_function
 from networkx.utils import py_random_state
 from networkx.utils.decorators import not_implemented_for
@@ -10,6 +11,7 @@ from networkx.utils.decorators import not_implemented_for
 __all__ = ["betweenness_centrality", "edge_betweenness_centrality"]
 
 
+@nx._dispatch
 @py_random_state(5)
 def betweenness_centrality(
     G, k=None, normalized=True, weight=None, endpoints=False, seed=None
@@ -146,6 +148,7 @@ def betweenness_centrality(
     return betweenness
 
 
+@nx._dispatch
 @py_random_state(4)
 def edge_betweenness_centrality(G, k=None, normalized=True, weight=None, seed=None):
     r"""Compute betweenness centrality for edges.

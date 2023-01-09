@@ -42,13 +42,13 @@ def is_threshold_graph(G):
 
 def is_threshold_sequence(degree_sequence):
     """
-    Returns True if the sequence is a threshold degree seqeunce.
+    Returns True if the sequence is a threshold degree sequence.
 
     Uses the property that a threshold graph must be constructed by
     adding either dominating or isolated nodes. Thus, it can be
     deconstructed iteratively by removing a node of degree zero or a
     node that connects to the remaining nodes.  If this deconstruction
-    failes then the sequence is not a threshold sequence.
+    fails then the sequence is not a threshold sequence.
     """
     ds = degree_sequence[:]  # get a copy so we don't destroy original
     ds.sort()
@@ -95,7 +95,7 @@ def creation_sequence(degree_sequence, with_labels=False, compact=False):
         raise ValueError("compact sequences cannot be labeled")
 
     # make an indexed copy
-    if isinstance(degree_sequence, dict):  # labeled degree seqeunce
+    if isinstance(degree_sequence, dict):  # labeled degree sequence
         ds = [[degree, label] for (label, degree) in degree_sequence.items()]
     else:
         ds = [[d, i] for i, d in enumerate(degree_sequence)]
@@ -668,7 +668,7 @@ def betweenness_sequence(creation_sequence, normalized=True):
     cs = creation_sequence
     seq = []  # betweenness
     lastchar = "d"  # first node is always a 'd'
-    dr = float(cs.count("d"))  # number of d's to the right of curren pos
+    dr = float(cs.count("d"))  # number of d's to the right of current pos
     irun = 0  # number of i's in the last run
     drun = 0  # number of d's in the last run
     dlast = 0.0  # betweenness of last d
