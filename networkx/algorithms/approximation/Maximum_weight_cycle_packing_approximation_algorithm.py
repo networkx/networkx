@@ -1,7 +1,6 @@
 import doctest
 import logging
 
-import re
 import networkx as nx
 import hypernetx as hnx
 import matplotlib.pyplot as plt
@@ -11,6 +10,7 @@ import matplotlib.pyplot as plt
 from hypernetx import Entity
 
 EPS = 1e-6
+WORKERS = 4
 
 """REUT HADAD & TAL SOMECH"""
 
@@ -52,12 +52,12 @@ def Maximum_weight_cycle_packing_approximation_algorithm(graph: nx.DiGraph, k: i
     >>> Digraph.add_nodes_from([1,2,3,4,5,6,7,8])
     >>> Digraph.add_weighted_edges_from([(1,8,2),(8,1,4),(2,1,5),(1,3,4),(3,8,2),(8,2,3),(8,5,4),(5,7,3),(7,6,2),(6,5,4)])
     >>> print(Maximum_weight_cycle_packing_approximation_algorithm(Digraph, 3))
-    ['[5, 7, 6]', '[8, 2, 1]']
+    [(5, 7, 6), (8, 2, 1)]
     >>> Digraph =nx.DiGraph()
     >>> Digraph.add_nodes_from([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20])
     >>> Digraph.add_weighted_edges_from([(1, 6, 11), (6, 1, 10), (1, 5, 3), (5, 1, 2), (8, 9, 11), (9, 8, 20), (3, 2, 6), (2, 6, 5), (6, 3, 8),(5, 7, 6), (7, 4, 11), (4, 5, 5), (10, 16, 1), (16, 11, 10), (11, 15, 3), (15, 11, 2), (18, 19, 11),(19, 18, 20), (13, 12, 6), (12, 16, 5), (16, 13, 8)])
     >>> print(Maximum_weight_cycle_packing_approximation_algorithm(Digraph, 2))
-    ['[1, 6]', '[11, 15]', '[18, 19]', '[8, 9]']
+    [(1, 6), (8, 9), (11, 15), (18, 19)]
     >>> Digraph=nx.DiGraph()
     >>> Digraph.add_nodes_from([1,2,3,4,5,6,7,8])
     >>> Digraph.add_weighted_edges_from([(8,1,4),(2,1,5),(1,3,4),(3,8,2),(8,2,3),(8,5,4),(5,7,3),(7,6,2),(6,5,4)])
@@ -83,20 +83,21 @@ def Maximum_weight_cycle_packing_approximation_algorithm(graph: nx.DiGraph, k: i
         return []
 
     logging.info("create hypergraph according to hypergraph's format of hypernetx library - "
-                 "https://pnnl.github.io/HyperNetX/build/classes/classes.html")
+                 "https://pnnl.github.io/HyperNetX/build/classes/classes.html  {i,Entity{i,([nodesOfSingleHyperEdge]),"
+                 "'weight'}}")
     buildHype = {}
     weights = {}
-    i = 0
-    for cycle in cycles:
+
+    for i, cycle in enumerate(cycles):
         if len(cycle) < 3:
             weight = graph.get_edge_data(cycle[0], cycle[1])["weight"] + graph.get_edge_data(cycle[1], cycle[0])[
                 "weight"]
         else:
             weight = graph.get_edge_data(cycle[0], cycle[1])["weight"] + graph.get_edge_data(cycle[1], cycle[2])[
                 "weight"] + graph.get_edge_data(cycle[2], cycle[0])["weight"]
-        buildHype[i] = Entity(i, tuple(str(item) for item in cycle), weight=weight)
+        buildHype[i] = Entity(i, (str(item) for item in cycle), weight=weight)
         weights[i] = weight
-        i = i + 1
+
     h = hnx.Hypergraph(buildHype)
 
     # logging.info("draw hypergraph h")
@@ -108,9 +109,9 @@ def Maximum_weight_cycle_packing_approximation_algorithm(graph: nx.DiGraph, k: i
     graphL = nx.Graph()
     for e in h.edges:
         if len(h.edge_neighbors(e)) == 0:
-            graphL.add_node(str(cycles[e]), weight=weights[e])
+            graphL.add_node(cycles[e], weight=weights[e])
         for i in h.edge_neighbors(e):
-            graphL.add_edge(str(cycles[e]), str(cycles[i]))
+            graphL.add_edge(cycles[e], cycles[i])
 
     # logging.info("draw undirected graphL")
     # nx.draw(graphL, pos=nx.spring_layout(graphL), font_size=12, with_labels=True)
@@ -126,6 +127,29 @@ def Maximum_weight_cycle_packing_approximation_algorithm(graph: nx.DiGraph, k: i
 
 
 def simple_cycles(graph, k):
+    """
+        >>> Digraph=nx.DiGraph()
+        >>> Digraph.add_nodes_from([1,2,3,5,6,7,8])
+        >>> Digraph.add_weighted_edges_from([(1,8,2),(8,1,4),(2,1,5),(1,3,4),(3,8,2),(8,2,3),(8,5,4),(5,7,3),(7,6,2),(6,5,4)])
+        >>> Ys=simple_cycles(Digraph,3)
+        >>> a=[y for y in Ys]
+        >>> print(a)
+        [[8, 2, 1], [8, 1, 3], [8, 1], [5, 7, 6]]
+        >>> Digraph =nx.DiGraph()
+        >>> Digraph.add_nodes_from([1,2,3,4])
+        >>> Digraph.add_weighted_edges_from([(2,1,3),(1,3,1),(3,2,2),(3,4,5),(4,3,9)])
+        >>> Ys=simple_cycles(Digraph,3)
+        >>> a=[y for y in Ys]
+        >>> print(a)
+        [[1, 3, 2], [3, 4]]
+        >>> graphEX3 = nx.DiGraph()
+        >>> graphEX3.add_nodes_from([10,11,12,13,14,15,16])
+        >>> Digraph.add_weighted_edges_from([(10,11,10),(11,12,5),(12,13,6),(13,10,4),(11,14,2),(14,16,3),(16,15,8),(15,14,6)])
+        >>> Ys=simple_cycles(Digraph,3)
+        >>> a=[y for y in Ys]
+        >>> print(a)
+        [[16, 15, 14], [1, 3, 2], [3, 4]]
+        """
     subG = type(graph)(graph.edges())
     ccs = list(nx.strongly_connected_components(subG))
     while ccs:
@@ -173,12 +197,12 @@ def find_cycles_of_size_k(graph, k):
        >>> Digraph.add_nodes_from([1,2,3,4,5,6,7,8])
        >>> Digraph.add_weighted_edges_from([(1,8,2),(8,1,4),(2,1,5),(1,3,4),(3,8,2),(8,2,3),(8,5,4),(5,7,3),(7,6,2),(6,5,4)])
        >>> print(find_cycles_of_size_k(Digraph, 3))
-       [[8, 2, 1], [8, 1, 3], [8, 1], [5, 7, 6]]
+       [(8, 2, 1), (8, 1, 3), (8, 1), (5, 7, 6)]
        >>> Digraph =nx.DiGraph()
        >>> Digraph.add_nodes_from([1,2,3,4])
        >>> Digraph.add_weighted_edges_from([(2,1,3),(1,3,1),(3,2,2),(3,4,5),(4,3,9)])
        >>> print(find_cycles_of_size_k(Digraph, 2))
-       [[3, 4]]
+       [(3, 4)]
        >>> Digraph=nx.DiGraph()
        >>> Digraph.add_nodes_from([1,2,3,4,5,6,7,8])
        >>> Digraph.add_weighted_edges_from([(8,1,4),(2,1,5),(1,3,4),(3,8,2),(8,2,3),(8,5,4),(5,7,3),(7,6,2),(6,5,4)])
@@ -188,10 +212,8 @@ def find_cycles_of_size_k(graph, k):
     sc = simple_cycles(graph, k)
     cycles = []
     for cycle in sc:
-        if len(cycle) == k and k == 2:
-            cycles.append(cycle)
-        if (len(cycle) == k or len(cycle) == k - 1) and k == 3:
-            cycles.append(cycle)
+        if 1 < len(cycle) <= k:
+            cycles.append(tuple(cycle))
     return cycles
 
 
@@ -320,10 +342,3 @@ def MWIS(graph, pi, b_score=0):
 
 if __name__ == '__main__':
     print(doctest.testmod())
-    # graphEX3 = nx.DiGraph()
-    # graphEX3.add_nodes_from([1, 2, 3, 4, 5, 6, 7, 8, 9])
-    # graphEX3.add_weighted_edges_from(
-    #     [(1, 6, 11), (6, 1, 10), (1, 5, 3), (5, 1, 2), (8, 9, 11), (9, 8, 20), (3, 2, 6), (2, 6, 5), (6, 3, 8),
-    #      (5, 7, 6), (7, 4, 11), (4, 5, 5), (10, 16, 1), (16, 11, 10), (11, 15, 3), (15, 11, 2), (18, 19, 11),
-    #      (19, 18, 20), (13, 12, 6), (12, 16, 5), (16, 13, 8)])
-    # print(Maximum_weight_cycle_packing_approximation_algorithm(graphEX3, 2))
