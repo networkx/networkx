@@ -10,7 +10,6 @@ import matplotlib.pyplot as plt
 from hypernetx import Entity
 
 EPS = 1e-6
-WORKERS = 4
 
 """REUT HADAD & TAL SOMECH"""
 
