@@ -55,8 +55,8 @@ def single_source_shortest_path_length(G, source, cutoff=None):
         raise nx.NodeNotFound(f"Source {source} is not in G")
     if cutoff is None:
         cutoff = float("inf")
-    nextlevel = {source: 1}
-    return dict(_single_shortest_path_length(G.adj, nextlevel, cutoff))
+    nextlevel = [source]
+    return dict(_single_shortest_path_length(G._adj, nextlevel, cutoff))
 
 
 def _single_shortest_path_length(adj, firstlevel, cutoff):
@@ -67,13 +67,13 @@ def _single_shortest_path_length(adj, firstlevel, cutoff):
     ----------
         adj : dict
             Adjacency dict or view
-        firstlevel : dict
-            starting nodes, e.g. {source: 1} or {target: 1}
+        firstlevel : list
+            starting nodes, e.g. [source] or [target]
         cutoff : int or float
             level at which we stop the process
     """
     seen = set(firstlevel)
-    nextlevel = list(firstlevel)
+    nextlevel = firstlevel
     level = 0
     n = len(adj)
     for v in nextlevel:
@@ -134,8 +134,8 @@ def single_target_shortest_path_length(G, target, cutoff=None):
     if cutoff is None:
         cutoff = float("inf")
     # handle either directed or undirected
-    adj = G.pred if G.is_directed() else G.adj
-    nextlevel = {target: 1}
+    adj = G._pred if G.is_directed() else G._adj
+    nextlevel = [target]
     return _single_shortest_path_length(adj, nextlevel, cutoff)
 
 
