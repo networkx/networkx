@@ -28,8 +28,10 @@ def triangles(G, nodes=None):
     G : graph
        A networkx graph
 
-    nodes : container of nodes, optional (default = all nodes in G)
-       Compute triangles for nodes in this container.
+    nodes : node, iterable of nodes, or None (default=None)
+        If a singleton node, return the number of triangles for that node. 
+        If an iterable, compute the number of triangles for each of those nodes.
+        If `None` (the default) compute the number of triangles for all nodes in `G`.
 
     Returns
     -------
@@ -55,11 +57,7 @@ def triangles(G, nodes=None):
     if nodes is not None:
         # If `nodes` represents a single node, return only its number of triangles
         if nodes in G:
-            if nodes in G:
-                return next(_triangles_and_degree_iter(G, nodes))[2] // 2
-            else:
-                # node is not in the graph, so its triangle count is zero
-                return 0
+            return next(_triangles_and_degree_iter(G, nodes))[2] // 2
 
         # if `nodes` is a container of nodes, then return a
         # dictionary mapping node to number of triangles.
