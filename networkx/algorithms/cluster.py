@@ -302,6 +302,7 @@ def average_clustering(G, nodes=None, weight=None, count_zeros=True):
     .. [2] Marcus Kaiser,  Mean clustering coefficients: the role of isolated
        nodes and leafs on clustering measures for small-world networks.
        https://arxiv.org/abs/0802.2512
+
     """
     c = clustering(G, nodes, weight=weight).values()
     if not count_zeros:
