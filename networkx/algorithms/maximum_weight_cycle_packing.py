@@ -138,34 +138,30 @@ def simple_cycles(G, limit):
     >>> Digraph=nx.DiGraph()
     >>> Digraph.add_nodes_from([1,2,3,5,6,7,8])
     >>> Digraph.add_weighted_edges_from([(1,8,2),(8,1,4),(2,1,5),(1,3,4),(3,8,2),(8,2,3),(8,5,4),(5,7,3),(7,6,2),(6,5,4)])
-    >>> Ys=simple_cycles(Digraph,3)
-    >>> a=[y for y in Ys]
-    >>> print(a)
+    >>> Ys=list(simple_cycles(Digraph,3))
+    >>> print(Ys)
     [[8, 2, 1], [8, 1, 3], [8, 1], [5, 7, 6]]
     >>> Digraph =nx.DiGraph()
     >>> Digraph.add_nodes_from([1,2,3,4])
     >>> Digraph.add_weighted_edges_from([(2,1,3),(1,3,1),(3,2,2),(3,4,5),(4,3,9)])
-    >>> Ys=simple_cycles(Digraph,3)
-    >>> a=[y for y in Ys]
-    >>> print(a)
+    >>> Ys=list(simple_cycles(Digraph,3))
+    >>> print(Ys)
     [[1, 3, 2], [3, 4]]
     >>> graphEX3 = nx.DiGraph()
     >>> graphEX3.add_nodes_from([10,11,12,13,14,15,16])
-    >>> Digraph.add_weighted_edges_from([(10,11,10),(11,12,5),(12,13,6),(13,10,4),(11,14,2),(14,16,3),(16,15,8),(15,14,6)])
-    >>> Ys=simple_cycles(Digraph,3)
-    >>> a=[y for y in Ys]
-    >>> print(a)
-    [[16, 15, 14], [1, 3, 2], [3, 4]]
-    >>> graphEX3 = nx.DiGraph()
+    >>> graphEX3.add_weighted_edges_from([(10,11,10),(11,12,5),(12,13,6),(13,10,4),(11,14,2),(14,16,3),(16,15,8),(15,14,6)])
+    >>> Ys=list(simple_cycles(graphEX3,3))
+    >>> print(Ys)
+    [[16, 15, 14]]
+    >>> graphEX3 =nx.DiGraph()
     >>> graphEX3.add_nodes_from([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20])
     >>> graphEX3.add_weighted_edges_from(
     ...    [(1, 6, 11), (6, 1, 10), (1, 5, 3), (5, 1, 2), (8, 9, 11), (9, 8, 20), (3, 2, 6), (2, 6, 5), (6, 3, 8),
     ...     (5, 7, 6), (7, 4, 11), (4, 5, 5), (10, 16, 1), (16, 11, 10), (11, 15, 3), (15, 11, 2), (18, 19, 11),
     ...     (19, 18, 20), (13, 12, 6), (12, 16, 5), (16, 13, 8)])
-    >>> Ys=simple_cycles(Digraph,3)
-    >>> a=[y for y in Ys]
-    >>> print(a)
-    [[16, 15, 14], [1, 3, 2], [3, 4]]
+    >>> Ys=list(simple_cycles(graphEX3,3))
+    >>> print(Ys)
+    [[18, 19], [16, 13, 12], [11, 15], [8, 9], [1, 5], [1, 6], [4, 5, 7], [2, 6, 3]]
     """
     subG = type(G)(G.edges())
     sccs = list(nx.strongly_connected_components(subG))
