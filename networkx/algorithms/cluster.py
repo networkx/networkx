@@ -362,8 +362,10 @@ def clustering(G, nodes=None, weight=None):
     ----------
     G : graph
 
-    nodes : container of nodes, optional (default=all nodes in G)
-       Compute clustering for nodes in this container.
+    nodes : node, iterable of nodes, or None (default=None)
+        If a singleton node, return the number of triangles for that node.
+        If an iterable, compute the number of triangles for each of those nodes.
+        If `None` (the default) compute the number of triangles for all nodes in `G`.
 
     weight : string or None, optional (default=None)
        The edge attribute that holds the numerical value used as a weight.
@@ -586,7 +588,7 @@ def generalized_degree(G, nodes=None):
 
     Notes
     -----
-    In a network of N nodes, the highest triangle multiplicty an edge can have
+    In a network of N nodes, the highest triangle multiplicity an edge can have
     is N-2.
 
     The return value does not include a `zero` entry if no edges of a

@@ -72,13 +72,23 @@ def is_simple_path(G, nodes):
     # NetworkXPointlessConcept here.
     if len(nodes) == 0:
         return False
+
     # If the list is a single node, just check that the node is actually
     # in the graph.
     if len(nodes) == 1:
         return nodes[0] in G
-    # Test that no node appears more than once, and that each
-    # adjacent pair of nodes is adjacent.
-    return len(set(nodes)) == len(nodes) and all(v in G[u] for u, v in pairwise(nodes))
+
+    # check that all nodes in the list are in the graph, if at least one
+    # is not in the graph, then this is not a simple path
+    if not all(n in G for n in nodes):
+        return False
+
+    # If the list contains repeated nodes, then it's not a simple path
+    if len(set(nodes)) != len(nodes):
+        return False
+
+    # Test that each adjacent pair of nodes is adjacent.
+    return all(v in G[u] for u, v in pairwise(nodes))
 
 
 def all_simple_paths(G, source, target, cutoff=None):
@@ -257,7 +267,7 @@ def _empty_generator():
 
 
 def _all_simple_paths_graph(G, source, targets, cutoff):
-    visited = dict.fromkeys([source])
+    visited = {source: True}
     stack = [iter(G[source])]
     while stack:
         children = stack[-1]
@@ -270,7 +280,7 @@ def _all_simple_paths_graph(G, source, targets, cutoff):
                 continue
             if child in targets:
                 yield list(visited) + [child]
-            visited[child] = None
+            visited[child] = True
             if targets - set(visited.keys()):  # expand stack until find all targets
                 stack.append(iter(G[child]))
             else:
@@ -283,7 +293,7 @@ def _all_simple_paths_graph(G, source, targets, cutoff):
 
 
 def _all_simple_paths_multigraph(G, source, targets, cutoff):
-    visited = dict.fromkeys([source])
+    visited = {source: True}
     stack = [(v for u, v in G.edges(source))]
     while stack:
         children = stack[-1]
@@ -296,7 +306,7 @@ def _all_simple_paths_multigraph(G, source, targets, cutoff):
                 continue
             if child in targets:
                 yield list(visited) + [child]
-            visited[child] = None
+            visited[child] = True
             if targets - set(visited.keys()):
                 stack.append((v for u, v in G.edges(child)))
             else:

@@ -7,7 +7,8 @@ Create a Dispatcher
 To be a valid plugin, a package must register an entry_point
 of `networkx.plugins` with a key pointing to the handler.
 
-For example,
+For example:
+
 ```
 entry_points={'networkx.plugins': 'sparse = networkx_plugin_sparse'}
 ```
@@ -16,6 +17,7 @@ The plugin must create a Graph-like object which contains an attribute
 `__networkx_plugin__` with a value of the entry point name.
 
 Continuing the example above:
+
 ```
 class WrappedSparse:
     __networkx_plugin__ = "sparse"

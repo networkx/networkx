@@ -136,7 +136,7 @@ def are_all_equal(iterable):
         pass
     else:
         if len(shape) > 1:
-            message = "The function does not works on multidimension arrays."
+            message = "The function does not works on multidimensional arrays."
             raise NotImplementedError(message) from None
 
     iterator = iter(iterable)
@@ -226,7 +226,7 @@ def intersect(collection_of_sets):
 
 class ISMAGS:
     """
-    Implements the ISMAGS subgraph matching algorith. [1]_ ISMAGS stands for
+    Implements the ISMAGS subgraph matching algorithm. [1]_ ISMAGS stands for
     "Index-based Subgraph Matching Algorithm with General Symmetries". As the
     name implies, it is symmetry aware and will only generate non-symmetric
     isomorphisms.
@@ -587,7 +587,7 @@ class ISMAGS:
         graph : networkx.Graph
             The graph whose symmetry should be analyzed.
         node_partitions : list of sets
-            A list of sets containining node keys. Node keys in the same set
+            A list of sets containing node keys. Node keys in the same set
             are considered equivalent. Every node key in `graph` should be in
             exactly one of the sets. If all nodes are equivalent, this should
             be ``[set(graph.nodes)]``.
@@ -910,7 +910,7 @@ class ISMAGS:
         # "part of" the subgraph in to_be_mapped, and we make it a little
         # smaller every iteration.
 
-        # pylint disable becuase it's guarded against by default value
+        # pylint disable because it's guarded against by default value
         current_size = len(
             next(iter(to_be_mapped), [])
         )  # pylint: disable=stop-iteration-return
