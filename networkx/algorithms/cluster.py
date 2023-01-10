@@ -29,7 +29,7 @@ def triangles(G, nodes=None):
        A networkx graph
 
     nodes : node, iterable of nodes, or None (default=None)
-        If a singleton node, return the number of triangles for that node. 
+        If a singleton node, return the number of triangles for that node.
         If an iterable, compute the number of triangles for each of those nodes.
         If `None` (the default) compute the number of triangles for all nodes in `G`.
 
