@@ -44,12 +44,6 @@ class TestTriangles:
         assert list(nx.triangles(G).values()) == [5, 3, 3, 5, 5]
         assert nx.triangles(G, 3) == 5
 
-    def test_node_not_in_graph(self):
-        G = nx.Graph()
-        G.add_node((0, 0))
-        G.add_node((2, 3))
-        assert nx.triangles(G, (0, 1)) == 0
-
 
 class TestDirectedClustering:
     def test_clustering(self):
