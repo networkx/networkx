@@ -53,10 +53,8 @@ def triangles(G, nodes=None):
 
     """
     if nodes is not None:
-        # this checks if `nodes` could potentially refer to a single node
         # If `nodes` represents a single node, return only its number of triangles
-        # (if it's in the graph) or zero (if the node is not in the graph).
-        if callable(getattr(nodes, "__hash__")):
+        if nodes in G:
             if nodes in G:
                 return next(_triangles_and_degree_iter(G, nodes))[2] // 2
             else:
