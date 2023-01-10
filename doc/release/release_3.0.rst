@@ -78,6 +78,9 @@ Improvements
 API Changes
 -----------
 
+- [`#5813 <https://github.com/networkx/networkx/pull/5813>`_]
+  OrderedGraph and other Ordered classes are replaced by Graph because
+  Python dicts (and thus networkx graphs) now maintain order.
 - [`#5899 <https://github.com/networkx/networkx/pull/5899>`_]
   The `attrs` keyword argument will be replaced with keyword only arguments
   `source`, `target`, `name`, `key` and `link` for `json_graph/node_link` functions.
