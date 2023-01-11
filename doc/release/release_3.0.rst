@@ -300,10 +300,12 @@ Contributors
 - Dilara Tekinoglu
 - Dimitrios Papageorgiou
 - Douglas K. G. Araujo
+- Erik Welch
 - George Watkins
 - Guy Aglionby
 - Isaac Western
 - Jarrod Millman
+- Jim Kitchen
 - Juanita Gomez
 - Kevin Brown
 - Konstantinos Petridis
