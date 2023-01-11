@@ -111,11 +111,11 @@ def get_initial_maps_and_height(T, root):
         VALUES[child] = 0
 
         # Define d(child, root) = d(parent, root) + 1
-        distance_to_root[child] = distance_to_root[parent] + 1
+        d_child = distance_to_root[parent] + 1
+        distance_to_root[child] = d_child
 
         # Add the child to the set of vertices have the same distance to the
         # root.
-        d_child = distance_to_root[child]
         from_distance[d_child].add(child)
 
     # The max distance to the root is the rooted tree's height.
