@@ -272,7 +272,7 @@ class AS_graph_generator:
     def add_cp_peering_link(self, cp, to_kind):
         """Add a peering link to a content provider (CP) node.
 
-        Target node j can be CP or M and it is drawn uniformely among the nodes
+        Target node j can be CP or M and it is drawn uniformly among the nodes
         belonging to the same region as cp.
 
         Parameters

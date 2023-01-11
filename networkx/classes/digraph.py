@@ -486,7 +486,7 @@ class DiGraph(Graph):
         add_node
 
         Notes
-        -------
+        -----
         When adding nodes from an iterator over the graph you are changing,
         a `RuntimeError` can be raised with message:
         `RuntimeError: dictionary changed size during iteration`. This
@@ -600,7 +600,7 @@ class DiGraph(Graph):
         remove_node
 
         Notes
-        -------
+        -----
         When removing nodes from an iterator over the graph you are changing,
         a `RuntimeError` will be raised with message:
         `RuntimeError: dictionary changed size during iteration`. This
@@ -1024,7 +1024,7 @@ class DiGraph(Graph):
             attribute lookup as `edges[u, v]['foo']`.
 
         Examples
-        -------
+        --------
         >>> G = nx.DiGraph()
         >>> G.add_edge(1, 2, color='blue')
         >>> G.in_edges()

@@ -148,3 +148,10 @@ VoteRank
    :toctree: generated/
 
    voterank
+
+Laplacian
+--------
+.. autosummary::
+   :toctree: generated/
+
+   laplacian_centrality

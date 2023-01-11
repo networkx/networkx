@@ -324,7 +324,7 @@ def view_pygraphviz(
     G : NetworkX graph
         The machine to draw.
     edgelabel : str, callable, None
-        If a string, then it specifes the edge attribute to be displayed
+        If a string, then it specifies the edge attribute to be displayed
         on the edge labels. If a callable, then it is called for each
         edge and it should return the string to be displayed on the edges.
         The function signature of `edgelabel` should be edgelabel(data),

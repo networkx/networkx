@@ -20,7 +20,7 @@ nodes called compressor or virtual nodes to reduce the total number of edges in
 a graph. Edge-grouping techniques can be lossless, meaning that they can be
 used to re-create the original graph, or techniques can be lossy, requiring
 less space to store the summary graph, but at the expense of lower
-recontruction accuracy of the original graph.
+reconstruction accuracy of the original graph.
 
 Bit-compression techniques minimize the amount of information needed to
 describe the original graph, while revealing structural patterns in the
@@ -177,20 +177,20 @@ def dedensify(G, threshold, prefix=None, copy=True):
     high_degree_nodes = {n for n, d in degrees if d > threshold}
     low_degree_nodes = G.nodes() - high_degree_nodes
 
-    auxillary = {}
+    auxiliary = {}
     for node in G:
         high_degree_neighbors = frozenset(high_degree_nodes & set(G[node]))
         if high_degree_neighbors:
-            if high_degree_neighbors in auxillary:
-                auxillary[high_degree_neighbors].add(node)
+            if high_degree_neighbors in auxiliary:
+                auxiliary[high_degree_neighbors].add(node)
             else:
-                auxillary[high_degree_neighbors] = {node}
+                auxiliary[high_degree_neighbors] = {node}
 
     if copy:
         G = G.copy()
 
     compressor_nodes = set()
-    for index, (high_degree_nodes, low_degree_nodes) in enumerate(auxillary.items()):
+    for index, (high_degree_nodes, low_degree_nodes) in enumerate(auxiliary.items()):
         low_degree_node_count = len(low_degree_nodes)
         high_degree_node_count = len(high_degree_nodes)
         old_edges = high_degree_node_count * low_degree_node_count

@@ -116,7 +116,7 @@ References
       Algorithm for Matching Large Graphs", 3rd IAPR-TC15 Workshop
       on Graph-based Representations in Pattern Recognition, Cuen,
       pp. 149-159, 2001.
-      https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.101.5342
+      https://www.researchgate.net/publication/200034365_An_Improved_Algorithm_for_Matching_Large_Graphs
 
 See Also
 --------
