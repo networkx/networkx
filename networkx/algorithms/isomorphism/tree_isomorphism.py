@@ -98,7 +98,6 @@ def get_initial_maps_and_height(T, root):
     distance_to_root = {}
     distance_to_root[root] = 0
     from_distance[0].add(root)
-    max_distance_to_root = 0
 
     # Perform a single BFS traversal to obtain the necessary information.
     for (parent, child) in nx.bfs_edges(T, root):
@@ -119,12 +118,8 @@ def get_initial_maps_and_height(T, root):
         d_child = distance_to_root[child]
         from_distance[d_child].add(child)
 
-        # If the previous distance is greater than the max, update it.
-        if max_distance_to_root < distance_to_root[child]:
-            max_distance_to_root = distance_to_root[child]
-
     # The max distance to the root is the rooted tree's height.
-    height = max_distance_to_root
+    height = len(from_distance) - 1
 
     # Build the LEVELS map.
     current_lvl = height
