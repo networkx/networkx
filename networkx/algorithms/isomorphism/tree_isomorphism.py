@@ -180,19 +180,18 @@ def group_structures_in_level(levels, values, struct, i):
 
     # Traverse all vertices on the i-th level.
     for u in levels[i]:
-        # If the vertex is not leave, add its structure to the list.
-        if values[u] != 0:
-            # Get the structure (counter) associated with u.
-            c = struct[u]
+        # Get the structure (counter) associated with u.
+        c = struct[u]
 
-            # Get the list representation of the counter.
-            lc = tuple(x for x in range(max(c) + 1) for _ in range(c[x]))
+        # Get the tuple representation of the counter, which is a counting sort
+        # of its elements.
+        lc = tuple(x for x in range(max(c, default=0) + 1) for _ in range(c[x]))
 
-            # Add the list representation to the counter.
-            S[lc] += 1
+        # Add the list representation to the counter.
+        S[lc] += 1
 
-            # Indicate that c is a structure that u has.
-            MS[lc].add(u)
+        # Indicate that c is a structure that u has.
+        MS[lc].add(u)
 
     return S, MS
 
@@ -207,8 +206,6 @@ def update_values(
     children_T2,
     parenthood_T1,
     parenthood_T2,
-    leaves_T1,
-    leaves_T2,
 ):
     """Updates the values of current level.
 
@@ -252,38 +249,12 @@ def update_values(
     parenthood_T2 : dict of node: node
         The parenthood map defined for the rooted tree T2.
 
-    leaves_T1 : set of nodes
-        The leaves of the current level in the rooted tree T1.
-
-    leaves_T2 : set of nodes
-        The leaves of the current level in the rooted tree T1.
-
     Note
     ----
     This algorithm runs in O(m_{i-1} + m_i) time and space where m_{j} are the
     vertices found on the j-th level of both rooted trees.
 
     """
-    # The first vertices in the order of children are the leaves.
-    for v in leaves_T1:
-        # If it exists, get the leave's parent; the previous case is considered
-        # for the root, who doesn't have a parent.
-        if v in parenthood_T1:
-            u = parenthood_T1[v]
-
-            # Add the child to the list of children of the parent.
-            children_T1[u].append(v)
-
-    # Repeat the process with the leaves of T2.
-    for v in leaves_T2:
-        # If it exists, get the leave's parent; the previous case is considered
-        # for the root, who doesn't have a parent.
-        if v in parenthood_T2:
-            u = parenthood_T2[v]
-
-            # Add the child to the list of children of the parent.
-            children_T2[u].append(v)
-
     # Traverse all the structures contained in the counter. As the current level
     # of both trees share the same structures in the same amount, we can use
     # this traversal to update the vertices of both trees.
@@ -293,8 +264,9 @@ def update_values(
     for struct in C:
         # Get the vertices of T1 who have the current structure.
         for v in MS_T1[struct]:
-            # Update the value of v.
-            values_T1[v] = current_val
+            # Update the value of v if its not a leave.
+            if values_T1[v] != 0:
+                values_T1[v] = current_val
 
             # Add v to the list of children of his parent, if it has one.
             if v in parenthood_T1:
@@ -304,7 +276,8 @@ def update_values(
         # Get the vertices of T2 who have the current structure.
         for v in MS_T2[struct]:
             # Update the value of v.
-            values_T2[v] = current_val
+            if values_T2[v] != 0:
+                values_T2[v] = current_val
 
             # Add v to the list of children of his parent, if it has one.
             if v in parenthood_T2:
@@ -443,13 +416,11 @@ def levels_verification(T1, root_T1, T2, root_T2):
             v: Counter(values_T1[u] for u in children_T1[v])
             for v in levels_T1[current_level]
         }
-        leaves_T1 = {v for v in levels_T1[current_level] if values_T1[v] == 0}
 
         struct_T2 = {
             v: Counter(values_T2[u] for u in children_T2[v])
             for v in levels_T2[current_level]
         }
-        leaves_T2 = {v for v in levels_T2[current_level] if values_T2[v] == 0}
 
         # Build the counter of structures and the mapping.
         C_T1, MS_T1 = group_structures_in_level(
@@ -475,8 +446,6 @@ def levels_verification(T1, root_T1, T2, root_T2):
             children_T2,
             parenthood_T1,
             parenthood_T2,
-            leaves_T1,
-            leaves_T2,
         )
 
         # Move to the next level.
