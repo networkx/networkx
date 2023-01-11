@@ -13,7 +13,7 @@ __all__ = [
 ]
 
 
-def generic_bfs_edges(G, source, neighbors=None, depth_limit=float("inf"), sort_neighbors=None):
+def generic_bfs_edges(G, source, neighbors=None, depth_limit=None, sort_neighbors=None):
     """Iterate over edges in a breadth-first search.
 
     The breadth-first search begins at `source` and enqueues the
@@ -38,7 +38,7 @@ def generic_bfs_edges(G, source, neighbors=None, depth_limit=float("inf"), sort_
         given node, in any order.
 
     depth_limit : int
-        Specify the maximum search depth, it defaults to traverse the all graph.
+        Specify the maximum search depth, by default it searches the all graph.
 
     sort_neighbors : function
         A function that takes the list of neighbors of given node as input, and
@@ -71,6 +71,8 @@ def generic_bfs_edges(G, source, neighbors=None, depth_limit=float("inf"), sort_
         neighbors = G.neighbors
     if sort_neighbors is not None:
         neighbors = lambda node: iter(sort_neighbors(neighbors(node)))
+    if depth_limit is None:
+        depth_limit = float("inf")
 
     seen = {source}
     n = len(G)
