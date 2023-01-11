@@ -448,9 +448,6 @@ def levels_verification(T1, root_T1, T2, root_T2):
             parenthood_T2,
         )
 
-        # Move to the next level.
-        current_level += 1
-
     # If all the previous levels are equal, then build an isomorphism with the
     # previous information.
     isomorphism = build_isomorphism(root_T1, root_T2, children_T1, children_T2)
