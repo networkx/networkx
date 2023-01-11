@@ -117,10 +117,18 @@ def test_group_structures_in_level():
         "v1": Counter([0, 0]),
         "v3": Counter([0]),
         "v7": Counter([0]),
+        "v2": Counter(),
     }
 
     expected_counter_lvl_2 = Counter([(0, 1, 2)])
-    expected_counter_lvl_1 = Counter([(0, 0), (0,), (0,)])
+    expected_counter_lvl_1 = Counter(
+        [
+            (0, 0),
+            (0,),
+            (0,),
+            (),
+        ]
+    )
 
     expected_mapping_lvl_2 = {
         (0, 1, 2): {"v0"},
@@ -129,6 +137,7 @@ def test_group_structures_in_level():
     expected_mapping_lvl_1 = {
         (0, 0): {"v1"},
         (0,): {"v3", "v7"},
+        (): {"v2"},
     }
 
     obt_counter_lvl_1, obt_mapping_lvl_1 = group_structures_in_level(
@@ -277,8 +286,6 @@ def test_update_values():
         children_T2,
         parenthood_T1,
         parenthood_T2,
-        leaves_lvl_1_T1,
-        leaves_lvl_1_T2,
     )
 
     assert (vals_T1 == possible_vals_T1_1) or (vals_T1 == possible_vals_T1_2)
@@ -357,8 +364,6 @@ def test_update_values():
         children_T2,
         parenthood_T1,
         parenthood_T2,
-        {},
-        {},
     )
 
     assert (vals_T1 == possible_vals_T1_1) or (vals_T1 == possible_vals_T1_2)
