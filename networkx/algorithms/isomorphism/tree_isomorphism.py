@@ -448,13 +448,13 @@ def levels_verification(T1, root_T1, T2, root_T2):
         # Assign the structures for the vertices of the current level for T1 and
         # T2.
         struct_T1 = {
-            v: Counter([values_T1[u] for u in children_T1[v]])
+            v: Counter(values_T1[u] for u in children_T1[v])
             for v in levels_T1[current_level]
         }
         leaves_T1 = {v for v in levels_T1[current_level] if values_T1[v] == 0}
 
         struct_T2 = {
-            v: Counter([values_T2[u] for u in children_T2[v]])
+            v: Counter(values_T2[u] for u in children_T2[v])
             for v in levels_T2[current_level]
         }
         leaves_T2 = {v for v in levels_T2[current_level] if values_T2[v] == 0}
