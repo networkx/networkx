@@ -127,11 +127,8 @@ def get_initial_maps_and_height(T, root):
     # Traverse all the vertices found on the 0-th level and set the initial
     # children for the CHILDREN map.
     for v in LEVELS[0]:
-        # If the current vertex has a parent, add the child to the parent's
-        # list of children.
-        if v in PARENTHOOD:
-            u = PARENTHOOD[v]
-            CHILDREN[u].append(v)
+        u = PARENTHOOD[v]
+        CHILDREN[u].append(v)
 
     return LEVELS, VALUES, CHILDREN, PARENTHOOD, height
 
