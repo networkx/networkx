@@ -122,12 +122,7 @@ def get_initial_maps_and_height(T, root):
     height = len(from_distance) - 1
 
     # Build the LEVELS map.
-    current_lvl = height
-    for d in range(height + 1):
-        for v in from_distance[d]:
-            LEVELS[current_lvl].add(v)
-
-        current_lvl -= 1
+    LEVELS = {(height - d): s for (d, s) in from_distance.items()}
 
     # Traverse all the vertices found on the 0-th level and set the initial
     # children for the CHILDREN map.
