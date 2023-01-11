@@ -429,11 +429,6 @@ def levels_verification(T1, root_T1, T2, root_T2):
     if height_T1 != height_T2:
         return False, {}
 
-    # If both trees have height 0, then there are only conformed by its roots,
-    # they're isomorphic.
-    if height_T1 == 0:
-        return True, {root_T1: root_T2}
-
     # For every level i, check that both trees have the same amount of
     # vertices on the i-th level. If they differ for some level, return
     # false.
@@ -536,6 +531,10 @@ def rooted_tree_isomorphism(T1, root_T1, T2, root_T2):
     # If both trees are empty, return true.
     if T1.order() == 0:
         return True, {}
+
+    # If both trees have only one vertex, return the only isomorphism.
+    if T1.order() == 1:
+        return True, {root_T1: root_T2}
 
     # If trees have more than one node, verify that they're indeed trees.
     assert nx.is_tree(T1)
