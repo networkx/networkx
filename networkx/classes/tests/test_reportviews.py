@@ -878,7 +878,7 @@ class TestMultiEdgeView(TestEdgeView):
         with pytest.raises(TypeError):
             evr((1, 2), "foo", True, 1)
         with pytest.raises(TypeError):
-            evr((1, 2), "foo", keys=True, 1)
+            evr((1, 2), "foo", True, default=1)
         for e in ev:
             if set(e[:2]) == {1, 2}:
                 assert e[2] in {0, 3}
