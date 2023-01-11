@@ -126,11 +126,6 @@ class TestMaxflowMinCutCommon:
         compare_flows_and_cuts(G, "x", "y", 4.0)
 
     def test_digraph1(self):
-        # Provides full coverage for minimum_cut
-        G = nx.DiGraph()
-        G.add_edge("a", "b", capacity=0.0)
-
-    def test_digraph1(self):
         # The classic directed graph example
         G = nx.DiGraph()
         G.add_edge("a", "b", capacity=1000.0)
