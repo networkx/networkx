@@ -627,7 +627,7 @@ See :doc:`/reference/drawing` for additional details.
 
 .. code-links::
 
-Nx-Guides
+NX-Guides
 ---------
 If you are interested in learning more about NetworkX, graph theory and network analysis 
 then you should check out :doc:`nx-guides <nx-guides:index>`. There you can find tutorials,
