@@ -11,8 +11,8 @@ def laplacian_centrality(
 ):
     r"""Compute the Laplacian centrality for nodes in the graph `G`.
 
-    The Laplacian Centrality of a node `i` is measured by the drop in the
-    Laplacian Energy after deleting node `i` from the graph. The Laplacian Energy
+    The Laplacian Centrality of a node ``i`` is measured by the drop in the
+    Laplacian Energy after deleting node ``i`` from the graph. The Laplacian Energy
     is the sum of the squared eigenvalues of a graph's Laplacian matrix.
 
     .. math::
@@ -22,14 +22,13 @@ def laplacian_centrality(
         E_L (G) = \sum_{i=0}^n \lambda_i^2
 
     Where $E_L (G)$ is the Laplacian energy of graph `G`,
-    E_L (G_i) is the Laplacian energy of graph `G` after deleting node `i`
+    E_L (G_i) is the Laplacian energy of graph `G` after deleting node ``i``
     and $\lambda_i$ are the eigenvalues of `G`'s Laplacian matrix.
     This formula shows the normalized value. Without normalization,
     the numerator on the right side is returned.
 
     Parameters
     ----------
-
     G : graph
         A networkx graph
 
@@ -73,8 +72,8 @@ def laplacian_centrality(
 
     Notes
     -----
-    The algorithm is implemented based on [1] with an extension to directed graphs
-    using the `nx.directed_laplacian_matrix` function.
+    The algorithm is implemented based on [1]_ with an extension to directed graphs
+    using the ``directed_laplacian_matrix`` function.
 
     Raises
     ------
@@ -84,12 +83,12 @@ def laplacian_centrality(
     References
     ----------
     .. [1] Qi, X., Fuller, E., Wu, Q., Wu, Y., and Zhang, C.-Q. (2012).
-    Laplacian centrality: A new centrality measure for weighted networks.
-    Information Sciences, 194:240-253.
-    https://math.wvu.edu/~cqzhang/Publication-files/my-paper/INS-2012-Laplacian-W.pdf
+       Laplacian centrality: A new centrality measure for weighted networks.
+       Information Sciences, 194:240-253.
+       https://math.wvu.edu/~cqzhang/Publication-files/my-paper/INS-2012-Laplacian-W.pdf
 
     See Also
-    ========
+    --------
     directed_laplacian_matrix
     laplacian_matrix
     """

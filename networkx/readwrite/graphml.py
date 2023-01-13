@@ -7,7 +7,7 @@ Read and write graphs in GraphML format.
 .. warning::
 
     This parser uses the standard xml library present in Python, which is
-    insecure - see :doc:`library/xml` for additional information.
+    insecure - see :external+python:mod:`xml` for additional information.
     Only parse GraphML files you trust.
 
 This implementation does not support mixed graphs (directed and unidirected
