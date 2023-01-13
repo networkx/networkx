@@ -136,7 +136,7 @@ html_theme_options = {
     ],
     "external_links": [{"name": "Guides", "url": "https://networkx.org/nx-guides/"}],
     "navbar_end": ["theme-switcher", "navbar-icon-links", "version"],
-    "page_sidebar_items": ["search-field", "page-toc", "edit-this-page"],
+    "secondary_sidebar_items": ["search-field", "page-toc", "edit-this-page"],
     "header_links_before_dropdown": 7,
 }
 html_sidebars = {

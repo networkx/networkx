@@ -21,12 +21,12 @@ that includes support for `numpy.random` and the Python built-in `random` module
 preferred package for random number generation.
 NumPy introduced a new interface in the `numpy.random` package in NumPy version
 1.17.
-According to :doc:`NEP19 <nep-0019-rng-policy>`, the new interface based on
+According to :external+neps:doc:`NEP19 <nep-0019-rng-policy>`, the new interface based on
 `numpy.random.Generator`
 is recommended over the legacy `numpy.random.RandomState` as the former has
 `better statistical properties <https://www.pcg-random.org/index.html>`_,
-:doc:`more features <reference/random/new-or-different>`,
-and :doc:`improved performance <reference/random/performance>`.
+:external+numpy:doc:`more features <reference/random/new-or-different>`,
+and :external+numpy:doc:`improved performance <reference/random/performance>`.
 This NXEP proposes a strategy for adopting `numpy.random.Generator` as the
 **default** interface for random number generation within NetworkX.
 

@@ -7,56 +7,53 @@ Create a Dispatcher
 To be a valid plugin, a package must register an entry_point
 of `networkx.plugins` with a key pointing to the handler.
 
-For example:
+For example::
 
-```
-entry_points={'networkx.plugins': 'sparse = networkx_plugin_sparse'}
-```
+    entry_points={'networkx.plugins': 'sparse = networkx_plugin_sparse'}
 
 The plugin must create a Graph-like object which contains an attribute
-`__networkx_plugin__` with a value of the entry point name.
+``__networkx_plugin__`` with a value of the entry point name.
 
-Continuing the example above:
+Continuing the example above::
 
-```
-class WrappedSparse:
-    __networkx_plugin__ = "sparse"
-    ...
-```
+    class WrappedSparse:
+        __networkx_plugin__ = "sparse"
+        ...
 
 When a dispatchable NetworkX algorithm encounters a Graph-like object
-with a `__networkx_plugin__` attribute, it will look for the associated
+with a ``__networkx_plugin__`` attribute, it will look for the associated
 dispatch object in the entry_points, load it, and dispatch the work to it.
 
 
 Testing
 -------
 To assist in validating the backend algorithm implementations, if an
-environment variable `NETWORKX_GRAPH_CONVERT` is set to a registered
+environment variable ``NETWORKX_GRAPH_CONVERT`` is set to a registered
 plugin keys, the dispatch machinery will automatically convert regular
 networkx Graphs and DiGraphs to the backend equivalent by calling
-`<backend dispatcher>.convert_from_nx(G, weight=weight, name=name)`.
+``<backend dispatcher>.convert_from_nx(G, weight=weight, name=name)``.
 
 The converted object is then passed to the backend implementation of
 the algorithm. The result is then passed to
-`<backend dispatcher>.convert_to_nx(result, name=name)` to convert back
+``<backend dispatcher>.convert_to_nx(result, name=name)`` to convert back
 to a form expected by the NetworkX tests.
 
-By defining `convert_from_nx` and `convert_to_nx` methods and setting
+By defining ``convert_from_nx`` and ``convert_to_nx`` methods and setting
 the environment variable, NetworkX will automatically route tests on
 dispatchable algorithms to the backend, allowing the full networkx test
 suite to be run against the backend implementation.
 
-Example pytest invocation:
-NETWORKX_GRAPH_CONVERT=sparse pytest --pyargs networkx
+Example pytest invocation::
+
+    NETWORKX_GRAPH_CONVERT=sparse pytest --pyargs networkx
 
 Dispatchable algorithms which are not implemented by the backend
-will cause a `pytest.xfail()`, giving some indication that not all
+will cause a ``pytest.xfail()``, giving some indication that not all
 tests are working, while avoiding causing an explicit failure.
 
-A special `on_start_tests(items)` function may be defined by the backend.
+A special ``on_start_tests(items)`` function may be defined by the backend.
 It will be called with the list of NetworkX tests discovered. Each item
-is a pytest.Node object. If the backend does not support the test, that
+is a `pytest.Node` object. If the backend does not support the test, that
 test can be marked as xfail.
 """
 import functools

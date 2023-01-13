@@ -384,7 +384,7 @@ def triads_by_type(G):
     - 210: 1 -> 2 <-> 3, 1 <-> 3
     - 300: 1 <-> 2 <-> 3, 1 <-> 3
 
-    Refer to the :doc:`example gallery <auto_examples/graph/plot_triad_types>`
+    Refer to the :doc:`example gallery </auto_examples/graph/plot_triad_types>`
     for visual examples of the triad types.
 
     Parameters

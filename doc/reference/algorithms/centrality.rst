@@ -150,7 +150,7 @@ VoteRank
    voterank
 
 Laplacian
---------
+---------
 .. autosummary::
    :toctree: generated/
 

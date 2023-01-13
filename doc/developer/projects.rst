@@ -47,7 +47,7 @@ Completed Projects
 - `VF2++ algorithm for graph isomorphism`_
     - Program: Google Summer of Code 2022
     - Contributor: `@kpetridis24 <https://github.com/kpetridis24/>`__
-    - Link to Proposal: `GSoC 2022: VF2++ Algorithm <https://github.com/networkx/archive/blob/main/proposals-gsoc/GSoC-2022-VF2plusplus-isomorphism.pdf`_
+    - Link to Proposal: `GSoC 2022: VF2++ Algorithm <https://github.com/networkx/archive/blob/main/proposals-gsoc/GSoC-2022-VF2plusplus-isomorphism.pdf>`_
 
 - `Louvain community detection algorithm`_ 
     - Program: Google Summer of Code 2021
