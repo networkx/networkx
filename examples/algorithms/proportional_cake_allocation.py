@@ -199,7 +199,7 @@ def get_proportional_allocation(v1, v2, graph):
         e
     ) in (
         ordered_edges
-            ):  # according to the algorithm, the knife goes from i- to i+ in increasing order of the labels.
+    ):  # according to the algorithm, the knife goes from i- to i+ in increasing order of the labels.
         for path in nx.all_simple_paths(
             g, source=ordered_edges[0][0], target=e[1]
         ):  # compute an ordered directed path
