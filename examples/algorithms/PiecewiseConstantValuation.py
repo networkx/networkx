@@ -6,57 +6,30 @@ from scipy import integrate
 
 
 class Valuation(ABC):
-    """
-    An abstract class that describes a valuation of a cake.
-    It can answer the standard "mark" and "eval" queries.
-    """
 
     @abstractmethod
     def eval(self, start: float, end: float) -> float:
-        """
-        Answer an Eval query: return the value of the interval [start,end].
-        :param start: Location on cake where the calculation starts.
-        :param end:   Location on cake where the calculation ends.
-        :return: Value of [start,end]
-        """
         pass
 
     @abstractmethod
     def mark(self, start: float, targetValue: float) -> float:
-        """
-        Answer a Mark query: return "end" such that the value of the interval [start,end] is targetValue.
-        :param start: Location on cake where the calculation starts.
-        :param targetValue: required value for the piece [start,end]
-        :return: the end of an interval with a value of targetValue.
-        """
         pass
 
     @abstractmethod
     def total_value(self):
-        """
-        :return: the value of the entire cake for the agent.
-        """
         pass
 
     @abstractmethod
     def cake_length(self):
-        """
-        :return: the total length of the cake that the agent cares about.
-        """
         pass
 
     def value(self, piece: List[tuple]):
-        """
-        Evaluate a piece made of several intervals.
-        :param piece: a list of tuples [(start1,end1), (start2,end2),...]
-        :return:
-        """
         if piece == None:
             return 0
         return sum([self.eval(*interval) for interval in piece])
 
     def partition_values(self, partition: List[float]):
-        '''
+        """
         Evaluate all the pieces in the given partition.
         :param partition: a list of k cut-points [cut1,cut2,...]
         :return: a list of k+1 values: eval(0,cut1), eval(cut1,cut2), ...
@@ -72,10 +45,10 @@ class Valuation(ABC):
             values.append(self.eval(partition[i], partition[i + 1]))
         values.append(self.eval(partition[-1], self.cake_length()))
         return values
-        '''
+
 
 class PiecewiseConstantValuation(Valuation):
-    '''
+    """
     A PiecewiseConstantValuation is a valuation with a constant density on a finite number of intervals.
     >>> a = PiecewiseConstantValuation([11,22,33,44]) # Four desired intervals: the leftmost has value 11, the second one 22, etc.
     >>> a.total_value()
@@ -88,44 +61,24 @@ class PiecewiseConstantValuation(Valuation):
     3.5
     >>> a.value([(0,1),(2,3)])
     44.0
-    '''
+    """
 
     def __init__(self, values: list):
-        """
-        Parameters
-        ----------
-        values
-        """
         self.values = np.array(values)
         self.length = len(values)
         self.total_value_cache = sum(values)
 
     def __repr__(self):
-        """
-        Returns
-        -------
-
-        """
         return f"Piecewise-constant valuation with values {self.values} and total value={self.total_value_cache}"
 
     def total_value(self):
-        """
-        Returns
-        -------
-
-        """
         return self.total_value_cache
 
     def cake_length(self):
-        """
-        Returns
-        -------
-
-        """
         return self.length
 
     def eval(self, start: float, end: float):
-        '''
+        """
         Answer an Eval query: return the value of the interval [start,end].
         :param start: Location on cake where the calculation starts.
         :param end:   Location on cake where the calculation ends.
@@ -145,7 +98,7 @@ class PiecewiseConstantValuation(Valuation):
         44.0
         >>> a.eval(-1,7)
         110.0
-        '''
+        """
         # the cake to the left of 0 and to the right of length is considered worthless.
         start = max(0, min(start, self.length))
         end = max(0, min(end, self.length))
@@ -159,13 +112,13 @@ class PiecewiseConstantValuation(Valuation):
 
         val = 0.0
         val += self.values[fromFloor] * fromFraction
-        val += self.values[fromFloor + 1 : toCeiling].sum()
+        val += self.values[fromFloor + 1: toCeiling].sum()
         val -= self.values[toCeiling - 1] * toCeilingRemovedFraction
 
         return val
 
     def mark(self, start: float, target_value: float):
-        '''
+        """
         Answer a Mark query: return "end" such that the value of the interval [start,end] is target_value.
         :param start: Location on cake where the calculation starts.
         :param targetValue: required value for the piece [start,end]
@@ -193,7 +146,7 @@ class PiecewiseConstantValuation(Valuation):
         target_value
         target_value
         target_value
-        '''
+        """
         # the cake to the left of 0 and to the right of length is considered worthless.
         start = max(0, start)
         if start >= self.length:
