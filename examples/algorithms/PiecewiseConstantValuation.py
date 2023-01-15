@@ -3,6 +3,7 @@ import numpy as np
 from typing import *
 
 from scipy import integrate
+"""Helpful docstring for a .py file of functions."""
 
 
 class Valuation(ABC):
