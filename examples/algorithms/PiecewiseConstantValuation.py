@@ -112,7 +112,7 @@ class PiecewiseConstantValuation(Valuation):
 
         val = 0.0
         val += self.values[fromFloor] * fromFraction
-        val += self.values[fromFloor + 1: toCeiling].sum()
+        val += self.values[fromFloor + 1 : toCeiling].sum()
         val -= self.values[toCeiling - 1] * toCeilingRemovedFraction
 
         return val
