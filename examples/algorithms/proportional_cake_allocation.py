@@ -121,15 +121,15 @@ def get_valuations_until_i(ordered_edges, vals_to_edges, edge, half):
     j = ordered_edges.index(edge)
     for i in range(j + 1):
         len = vals_to_edges[ordered_edges[i]][
-                        0
+            0
         ].cake_length()  # length of a single assignment of an edge
         for l in range(len):  # iterate over the piece
             if s == half:
                 return (
-                        s,
-                        cake_alloc,
-                        l / len,
-                    )  # if its exactly half we return the allocation and if we didnt take the whole edge assignment we return the part we stopped at
+                    s,
+                    cake_alloc,
+                    l / len,
+                )  # if its exactly half we return the allocation and if we didnt take the whole edge assignment we return the part we stopped at
             cake_alloc.add_edge(ordered_edges[i][0], ordered_edges[i][1])
             s += vals_to_edges[ordered_edges[i]][0].eval(l, l + 1)
             edge_weight += vals_to_edges[ordered_edges[i]][0].eval(l, l + 1)
@@ -179,15 +179,15 @@ def get_proportional_allocation(v1, v2, graph):
     True
     """
     ordered_edges, oriented_edges = col.get_contiguous_oriented_labeling(
-                graph
-        )  # get the orientation of the edges and the order
+        graph
+    )  # get the orientation of the edges and the order
     g = nx.DiGraph(oriented_edges)  # build a directed graph from them
     vals_to_edges = dict()  # all the values the agents gave to each edge
     i = 0
     edge_weight = 0
     for val in zip(
-                v1, v2
-                  ):  # each value to each edge will be a tuple. First index value of 1st agent. Second to 2nd agent
+        v1, v2
+    ):  # each value to each edge will be a tuple. First index value of 1st agent. Second to 2nd agent
         vals_to_edges[ordered_edges[i]] = val
         i += 1
     sum_v1 = total_valuation(v1)
@@ -195,15 +195,16 @@ def get_proportional_allocation(v1, v2, graph):
     remainder_sum_v2 = 0
     alloc2 = nx.Graph()
     alloc1 = tuple()
-    for (e
+    for (
+        e
     ) in (
-            ordered_edges
+        ordered_edges
             ):  # according to the algorithm, the knife goes from i- to i+ in increasing order of the labels.
         for path in nx.all_simple_paths(
-                g, source=ordered_edges[0][0], target=e[1]
+            g, source=ordered_edges[0][0], target=e[1]
         ):  # compute an ordered directed path
             alloc1 = get_valuations_until_i(
-                ordered_edges, vals_to_edges, (path[-2], path[-1]),sum_v1 / 2
+                ordered_edges, vals_to_edges, (path[-2], path[-1]), sum_v1 / 2
             )  # get the total value of it and then check if its half
             if alloc1[0] == sum_v1 / 2:
                 u = path[-2]
@@ -213,10 +214,12 @@ def get_proportional_allocation(v1, v2, graph):
                     if edge not in alloc1[1].edges:
                         alloc2.add_edge(edge[0], edge[1])
                         remainder_sum_v2 += vals_to_edges[edge][1].total_value()
-                        alloc2[edge[0]][edge[1]]["weight"] = vals_to_edges[edge][1].total_value()
+                        alloc2[edge[0]][edge[1]]["weight"] = vals_to_edges[edge][
+                            1
+                        ].total_value()
                 if (
-                        part != 1
-                ): # if part != 1 it means we need to add a fraction of an edge and not the entirety of it
+                    part != 1
+                ):  # if part != 1 it means we need to add a fraction of an edge and not the entirety of it
                     len = vals_to_edges[(u, v)][1].cake_length()
                     for l in range(int(len * part), len):
                         edge_weight += vals_to_edges[(u, v)][1].eval(l, l + 1)

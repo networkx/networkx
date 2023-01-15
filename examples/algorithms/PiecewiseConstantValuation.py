@@ -175,10 +175,11 @@ class PiecewiseConstantValuation(Valuation):
             raise ValueError(f"sum out of range (should be positive): {sum}")
         start_floor = int(np.floor(start))
         if start_floor >= len(self.values):
-            raise ValueError("mark({},{}): start_floor ({}) is >= length of values ({})".format(
+            raise ValueError(
+                "mark({},{}): start_floor ({}) is >= length of values ({})".format(
                     start, target_value, start_floor, self.values
                 )
-           )
+            )
 
         start_fraction = start_floor + 1 - start
 

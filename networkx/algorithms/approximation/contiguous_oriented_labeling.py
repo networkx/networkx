@@ -118,7 +118,7 @@ def get_contiguous_oriented_labeling(graph):
     for (
         edge
     ) in (
-            graph.edges
+        graph.edges
     ):  # iterate over all the edges to find edge x,y. x in ear and y is not
         if edge not in ordered_edges and tuple(reversed(edge)) not in ordered_edges:
             if (
@@ -135,7 +135,7 @@ def get_contiguous_oriented_labeling(graph):
                         if check_path(nodes_in_ears, path, node, edge) and c == 0:
                             cycle = True
                             for i in range(
-                                    len(path) - 1
+                                len(path) - 1
                             ):  # go over he path and add the edges one by one
                                 if (path[i], path[i + 1]) not in ordered_edges:
                                     if x == u:  # we insert from the start of the order
@@ -153,7 +153,9 @@ def get_contiguous_oriented_labeling(graph):
                                                     or tuple(reversed(e1))
                                                     in ordered_edges
                                                 ):
-                                                    x_idx = min(ordered_edges.index(e1), x_idx)
+                                                    x_idx = min(
+                                                        ordered_edges.index(e1), x_idx
+                                                    )
                                                     t = x_idx + 1
                                         ordered_edges.insert(t, (path[i], path[i + 1]))
                                         oriented_graph.add_edge(path[i], path[i + 1])
@@ -188,9 +190,9 @@ def get_contiguous_oriented_labeling(graph):
                                             x_directed = oriented_graph.in_edges(x)
                                             for e1 in x_directed:
                                                 if (
-                                                        e1 in ordered_edges
-                                                        or tuple(reversed(e1))
-                                                        in ordered_edges
+                                                    e1 in ordered_edges
+                                                    or tuple(reversed(e1))
+                                                    in ordered_edges
                                                 ):
                                                     x_idx = min(
                                                         ordered_edges.index(e1), x_idx
@@ -203,7 +205,7 @@ def get_contiguous_oriented_labeling(graph):
 
                 cycle = False
             elif (
-                    edge[0] in nodes_in_ears and edge[1] in nodes_in_ears
+                edge[0] in nodes_in_ears and edge[1] in nodes_in_ears
             ):  # if both of the vertices of the edge already in an ear we add it after the first edge directed into x
                 x = edge[0]
                 y = edge[1]
@@ -265,9 +267,9 @@ def check_path(nodes_in_ears: list, path: list, node, edge):
     False
     """
     if (
-            path[1] == edge[1]
-            and path[-1] == node
-            and all(n not in nodes_in_ears for n in path[2:-1])
+        path[1] == edge[1]
+        and path[-1] == node
+        and all(n not in nodes_in_ears for n in path[2:-1])
     ):
         return True
     return False
