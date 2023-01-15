@@ -27,6 +27,9 @@ Improvements
 API Changes
 -----------
 
+- [`#6368 <https://github.com/networkx/networkx/pull/6368>`_]
+  Added ``linewidths`` parameter to ``draw_networkx_edges``.
+
 
 Deprecations
 ------------
