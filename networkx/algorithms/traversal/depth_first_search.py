@@ -423,9 +423,10 @@ def dfs_labeled_edges(G, source=None, depth_limit=None):
     else:
         # edges for components with source
         nodes = [source]
-    visited = set()
     if depth_limit is None:
         depth_limit = len(G)
+
+    visited = set()
     for start in nodes:
         if start in visited:
             continue
