@@ -435,7 +435,7 @@ def dfs_labeled_edges(G, source=None, depth_limit=None):
         stack = [(start, iter(G[start]))]
         depth_now = 1
         while stack:
-            parent, depth_now, children = stack[-1]
+            parent, children = stack[-1]
             try:
                 child = next(children)
                 if child in visited:
