@@ -6,7 +6,6 @@ from scipy import integrate
 
 
 class Valuation(ABC):
-
     @abstractmethod
     def eval(self, start: float, end: float) -> float:
         pass
