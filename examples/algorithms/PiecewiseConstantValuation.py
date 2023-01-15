@@ -91,17 +91,37 @@ class PiecewiseConstantValuation(Valuation):
     """
 
     def __init__(self, values: list):
+        """
+        Parameters
+        ----------
+        values
+        """
         self.values = np.array(values)
         self.length = len(values)
         self.total_value_cache = sum(values)
 
     def __repr__(self):
+        """
+        Returns
+        -------
+
+        """
         return f"Piecewise-constant valuation with values {self.values} and total value={self.total_value_cache}"
 
     def total_value(self):
+        """
+        Returns
+        -------
+
+        """
         return self.total_value_cache
 
     def cake_length(self):
+        """
+        Returns
+        -------
+
+        """
         return self.length
 
     def eval(self, start: float, end: float):
@@ -165,6 +185,14 @@ class PiecewiseConstantValuation(Valuation):
         >>> a.mark(1, 100)
         >>> a.mark(1, 0)
         1.0
+
+        Parameters
+        ----------
+        target_value
+        target_value
+        target_value
+        target_value
+        target_value
         """
         # the cake to the left of 0 and to the right of length is considered worthless.
         start = max(0, start)
