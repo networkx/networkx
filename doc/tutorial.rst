@@ -626,3 +626,10 @@ the graph in dot format for further processing.
 See :doc:`/reference/drawing` for additional details.
 
 .. code-links::
+
+NX-Guides
+---------
+If you are interested in learning more about NetworkX, graph theory and network analysis 
+then you should check out :doc:`nx-guides <nx-guides:index>`. There you can find tutorials,
+real-world applications and in-depth examinations of graphs and network algorithms. 
+All the material is official and was developed and curated by the NetworkX community. 

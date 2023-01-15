@@ -464,4 +464,4 @@ All interactions with the project are subject to the
 We also follow these policies:
 
 * :doc:`NetworkX deprecation policy <deprecations>`
-* :doc:`Python version support <nep-0029-deprecation_policy>`
+* :external+neps:doc:`Python version support <nep-0029-deprecation_policy>`

@@ -36,7 +36,7 @@ def pagerank(
       The "personalization vector" consisting of a dictionary with a
       key some subset of graph nodes and personalization value each of those.
       At least one personalization value must be non-zero.
-      If not specfiied, a nodes personalization value will be zero.
+      If not specified, a nodes personalization value will be zero.
       By default, a uniform distribution is used.
 
     max_iter : integer, optional
@@ -190,7 +190,7 @@ def google_matrix(
       The "personalization vector" consisting of a dictionary with a
       key some subset of graph nodes and personalization value each of those.
       At least one personalization value must be non-zero.
-      If not specfiied, a nodes personalization value will be zero.
+      If not specifed, a nodes personalization value will be zero.
       By default, a uniform distribution is used.
 
     nodelist : list, optional
@@ -289,7 +289,7 @@ def _pagerank_numpy(
       The "personalization vector" consisting of a dictionary with a
       key some subset of graph nodes and personalization value each of those.
       At least one personalization value must be non-zero.
-      If not specfiied, a nodes personalization value will be zero.
+      If not specified, a nodes personalization value will be zero.
       By default, a uniform distribution is used.
 
     weight : key, optional
@@ -383,7 +383,7 @@ def _pagerank_scipy(
       The "personalization vector" consisting of a dictionary with a
       key some subset of graph nodes and personalization value each of those.
       At least one personalization value must be non-zero.
-      If not specfiied, a nodes personalization value will be zero.
+      If not specified, a nodes personalization value will be zero.
       By default, a uniform distribution is used.
 
     max_iter : integer, optional

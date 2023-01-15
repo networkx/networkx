@@ -58,6 +58,10 @@ class TestIsSimplePath:
         G = nx.path_graph(2)
         assert not nx.is_simple_path(G, [0, 2])
 
+    def test_missing_starting_node(self):
+        G = nx.path_graph(2)
+        assert not nx.is_simple_path(G, [2, 0])
+
     def test_directed_path(self):
         G = nx.DiGraph([(0, 1), (1, 2)])
         assert nx.is_simple_path(G, [0, 1, 2])

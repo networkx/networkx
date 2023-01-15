@@ -384,7 +384,7 @@ def triads_by_type(G):
     - 210: 1 -> 2 <-> 3, 1 <-> 3
     - 300: 1 <-> 2 <-> 3, 1 <-> 3
 
-    Refer to the :doc:`example gallery <auto_examples/graph/plot_triad_types>`
+    Refer to the :doc:`example gallery </auto_examples/graph/plot_triad_types>`
     for visual examples of the triad types.
 
     Parameters
@@ -458,7 +458,7 @@ def triad_type(G):
 
     {m}     = number of mutual ties (takes 0, 1, 2, 3); a mutual tie is (0,1)
               AND (1,0)
-    {a}     = number of assymmetric ties (takes 0, 1, 2, 3); an assymmetric tie
+    {a}     = number of asymmetric ties (takes 0, 1, 2, 3); an asymmetric tie
               is (0,1) BUT NOT (1,0) or vice versa
     {n}     = number of null ties (takes 0, 1, 2, 3); a null tie is NEITHER
               (0,1) NOR (1,0)

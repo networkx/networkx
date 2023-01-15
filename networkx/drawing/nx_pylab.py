@@ -522,8 +522,11 @@ def draw_networkx_edges(
         Also, `(offset, onoffseq)` tuples can be used as style instead of a strings.
         (See `matplotlib.patches.FancyArrowPatch`: `linestyle`)
 
-    alpha : float or None (default=None)
-        The edge transparency
+    alpha : float or array of floats (default=None)
+        The edge transparency.  This can be a single alpha value,
+        in which case it will be applied to all specified edges. Otherwise,
+        if it is an array, the elements of alpha will be applied to the colors
+        in order (cycling through alpha multiple times if necessary).
 
     edge_cmap : Matplotlib colormap, optional
         Colormap for mapping intensities of edges
@@ -575,14 +578,14 @@ def draw_networkx_edges(
         Label for legend
 
     min_source_margin : int (default=0)
-        The minimum margin (gap) at the begining of the edge at the source.
+        The minimum margin (gap) at the beginning of the edge at the source.
 
     min_target_margin : int (default=0)
         The minimum margin (gap) at the end of the edge at the target.
 
     Returns
     -------
-     matplotlib.colections.LineCollection or a list of matplotlib.patches.FancyArrowPatch
+     matplotlib.collections.LineCollection or a list of matplotlib.patches.FancyArrowPatch
         If ``arrows=True``, a list of FancyArrowPatches is returned.
         If ``arrows=False``, a LineCollection is returned.
         If ``arrows=None`` (the default), then a LineCollection is returned if
@@ -781,7 +784,7 @@ def draw_networkx_edges(
                 # is 0, e.g. for a single node. In this case, fall back to scaling
                 # by the maximum node size
                 selfloop_ht = 0.005 * max_nodesize if h == 0 else h
-                # this is called with _screen space_ values so covert back
+                # this is called with _screen space_ values so convert back
                 # to data space
                 data_loc = ax.transData.inverted().transform(posA)
                 v_shift = 0.1 * selfloop_ht
@@ -1109,7 +1112,7 @@ def draw_networkx_edge_labels(
     ax : Matplotlib Axes object, optional
         Draw the graph in the specified Matplotlib axes.
 
-    rotate : bool (deafult=True)
+    rotate : bool (default=True)
         Rotate edge labels to lie parallel to edges
 
     clip_on : bool (default=True)
