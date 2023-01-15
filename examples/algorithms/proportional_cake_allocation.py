@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 import networkx.algorithms.isomorphism as iso
 
 
-
 def graph_example1():
     """
     Notice that this graph is almost bridgeless, if we add edge (3,6) for example  this graph will be bridgeless

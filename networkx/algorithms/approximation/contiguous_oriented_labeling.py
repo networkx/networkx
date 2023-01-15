@@ -1,9 +1,9 @@
 import math
+
 import matplotlib.pyplot as plt
+
 import networkx as nx
 import networkx.algorithms.isomorphism as iso
-
-
 
 
 def graph_example1():
@@ -49,6 +49,7 @@ def graph_example4():
         g.remove_edge(0, n)
     g.add_edge(0, 9)
     return g
+
 
 def get_contiguous_oriented_labeling(graph):
     """
