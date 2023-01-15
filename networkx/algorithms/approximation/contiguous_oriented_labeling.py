@@ -1,15 +1,9 @@
 import math
-import logging
-import networkx as nx
 import matplotlib.pyplot as plt
+import networkx as nx
 import networkx.algorithms.isomorphism as iso
 
-logger = logging.getLogger("contiguous_oriented_labeling")
-formatter = logging.Formatter('%(asctime)s: %(levelname)s: %(name)s: Line %(lineno)d: %(message)s')
-console = logging.StreamHandler()
-logger.handlers = [console]
-console.setFormatter(formatter)
-logging.basicConfig(filename="contiguous_oriented_labeling.log", level=logging.DEBUG)
+
 
 
 def graph_example1():
@@ -107,7 +101,6 @@ def get_contiguous_oriented_labeling(graph):
     oriented_graph = nx.DiGraph()
     # for path in nx.all_simple_paths(g, source=u, target=v): # find a path from u to v and add it's edges
     path = nx.shortest_path(graph, source=u, target=v)
-    logger.info("Gets a path from u to v")
     for i in range(len(path) - 1):
         if path[i] != u or path[i + 1] != v:
             ordered_edges.append((path[i], path[i + 1]))
@@ -122,36 +115,48 @@ def get_contiguous_oriented_labeling(graph):
     c = 0
     cycle = False  # a flag to determine if an ear is a cycle. if x = z
     t_update = True  # a flag to determine where to insert edges in order
-    for edge in graph.edges:  # iterate over all the edges to find edge x,y. x in ear and y is not
-        logger.info("Find an edge legal for an ear")
+    for (
+        edge
+    ) in (
+            graph.edges
+    ):  # iterate over all the edges to find edge x,y. x in ear and y is not
         if edge not in ordered_edges and tuple(reversed(edge)) not in ordered_edges:
-            if edge[0] in nodes_in_ears and edge[1] not in nodes_in_ears:  # find the x and y
+            if (
+                edge[0] in nodes_in_ears and edge[1] not in nodes_in_ears
+            ):  # find the x and y
                 x = edge[0]
                 y = edge[1]
-                for node in nodes_in_ears:  # iterate over all the nodes in ears and find a legal path from x to another node in ear
+                for (
+                    node
+                ) in (
+                    nodes_in_ears
+                ):  # iterate over all the nodes in ears and find a legal path from x to another node in ear
                     for path in nx.all_simple_paths(graph, source=x, target=node):
-                        logger.info("Find ear")
                         if check_path(nodes_in_ears, path, node, edge) and c == 0:
-                            logger.debug(f"A legal ear {path}")
                             cycle = True
-                            for i in range(len(path) - 1):  # go over he path and add the edges one by one
+                            for i in range(
+                                    len(path) - 1
+                            ):  # go over he path and add the edges one by one
                                 if (path[i], path[i + 1]) not in ordered_edges:
-                                    logger.info("Insert the edges of the ear")
                                     if x == u:  # we insert from the start of the order
-                                        ordered_edges.insert(idx, (path[i], path[i + 1]))
+                                        ordered_edges.insert(
+                                            idx, (path[i], path[i + 1])
+                                        )
                                         idx += 1
                                         oriented_graph.add_edge(path[i], path[i + 1])
                                     else:  # we insert from the first edge directed to x
                                         if t_update:
                                             x_directed = oriented_graph.in_edges(x)
                                             for e1 in x_directed:
-                                                if e1 in ordered_edges or tuple(reversed(e1)) in ordered_edges:
+                                                if (
+                                                    e1 in ordered_edges
+                                                    or tuple(reversed(e1))
+                                                    in ordered_edges
+                                                ):
                                                     x_idx = min(ordered_edges.index(e1), x_idx)
                                                     t = x_idx + 1
                                         ordered_edges.insert(t, (path[i], path[i + 1]))
                                         oriented_graph.add_edge(path[i], path[i + 1])
-                                        logger.debug(f"Ordered Edges {ordered_edges}")
-                                        logger.debug(f"Oriented Graph {oriented_graph}")
                                         t += 1
                                         t_update = False
                                 if path[i] not in nodes_in_ears:
@@ -163,22 +168,33 @@ def get_contiguous_oriented_labeling(graph):
                             x_idx = math.inf
                 c = 0
                 if not cycle:  # if its a cycle we find a path from y back to x
-                    logger.info("If its a cycle")
                     for path in nx.all_simple_paths(graph, source=y, target=x):
                         path.insert(0, x)  # we add x at the start to complete the ear
-                        if check_path(nodes_in_ears, path, x, (x, y)) and path != [x, y, x]:
+                        if check_path(nodes_in_ears, path, x, (x, y)) and path != [
+                            x,
+                            y,
+                            x,
+                        ]:
                             for i in range(len(path) - 1):
                                 if (path[i], path[i + 1]) not in ordered_edges:
                                     if x == u:
-                                        ordered_edges.insert(idx, (path[i], path[i + 1]))
+                                        ordered_edges.insert(
+                                            idx, (path[i], path[i + 1])
+                                        )
                                         idx += 1
                                         oriented_graph.add_edge(path[i], path[i + 1])
                                     else:
                                         if t_update:
                                             x_directed = oriented_graph.in_edges(x)
                                             for e1 in x_directed:
-                                                if e1 in ordered_edges or tuple(reversed(e1)) in ordered_edges:
-                                                    x_idx = min(ordered_edges.index(e1), x_idx)
+                                                if (
+                                                        e1 in ordered_edges
+                                                        or tuple(reversed(e1))
+                                                        in ordered_edges
+                                                ):
+                                                    x_idx = min(
+                                                        ordered_edges.index(e1), x_idx
+                                                    )
                                                     t = x_idx + 1
                                         ordered_edges.insert(t, (path[i], path[i + 1]))
                                         oriented_graph.add_edge(path[i], path[i + 1])
@@ -186,9 +202,9 @@ def get_contiguous_oriented_labeling(graph):
                                         t_update = False
 
                 cycle = False
-            elif edge[0] in nodes_in_ears and edge[
-                1] in nodes_in_ears:  # if both of the vertices of the edge already in an ear we add it after the first edge directed into x
-                logger.info("If both vertices already in an ear")
+            elif (
+                    edge[0] in nodes_in_ears and edge[1] in nodes_in_ears
+            ):  # if both of the vertices of the edge already in an ear we add it after the first edge directed into x
                 x = edge[0]
                 y = edge[1]
                 if t_update:
@@ -197,7 +213,9 @@ def get_contiguous_oriented_labeling(graph):
                         if e1 in ordered_edges or tuple(reversed(e1)) in ordered_edges:
                             x_idx = min(ordered_edges.index(e1), x_idx)
                             t = x_idx + 1
-                ordered_edges.insert(t, (x, y))  # append after the first edge directed into x
+                ordered_edges.insert(
+                    t, (x, y)
+                )  # append after the first edge directed into x
                 oriented_graph.add_edge(x, y)
                 t += 1
                 t_update = False
@@ -246,9 +264,10 @@ def check_path(nodes_in_ears: list, path: list, node, edge):
     >>> check_path([1,2,5,6], [2,3,4], 5, (2,3))
     False
     """
-    if path[1] == edge[1] and path[-1] == node and all(n not in nodes_in_ears for n in path[2:-1]):
+    if (
+            path[1] == edge[1]
+            and path[-1] == node
+            and all(n not in nodes_in_ears for n in path[2:-1])
+    ):
         return True
     return False
-
-# if __name__ == '__main__':
-#     print(graph_example4())

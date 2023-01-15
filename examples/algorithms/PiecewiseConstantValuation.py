@@ -51,7 +51,7 @@ class Valuation(ABC):
         :param piece: a list of tuples [(start1,end1), (start2,end2),...]
         :return:
         """
-        if (piece == None):
+        if piece == None:
             return 0
         return sum([self.eval(*interval) for interval in piece])
 
@@ -133,14 +133,14 @@ class PiecewiseConstantValuation(Valuation):
             return 0.0  # special case not covered by loop below
 
         fromFloor = int(np.floor(start))
-        fromFraction = (fromFloor + 1 - start)
+        fromFraction = fromFloor + 1 - start
         toCeiling = int(np.ceil(end))
-        toCeilingRemovedFraction = (toCeiling - end)
+        toCeilingRemovedFraction = toCeiling - end
 
         val = 0.0
-        val += (self.values[fromFloor] * fromFraction)
-        val += self.values[fromFloor + 1:toCeiling].sum()
-        val -= (self.values[toCeiling - 1] * toCeilingRemovedFraction)
+        val += self.values[fromFloor] * fromFraction
+        val += self.values[fromFloor + 1 : toCeiling].sum()
+        val -= self.values[toCeiling - 1] * toCeilingRemovedFraction
 
         return val
 
@@ -172,20 +172,20 @@ class PiecewiseConstantValuation(Valuation):
             return None  # value is too high
 
         if target_value < 0:
-            raise ValueError("sum out of range (should be positive): {}".format(sum))
-
+            raise ValueError(f"sum out of range (should be positive): {sum}")
         start_floor = int(np.floor(start))
         if start_floor >= len(self.values):
-            raise ValueError(
-                "mark({},{}): start_floor ({}) is >= length of values ({})".format(start, target_value, start_floor,
-                                                                                   self.values))
+            raise ValueError("mark({},{}): start_floor ({}) is >= length of values ({})".format(
+                    start, target_value, start_floor, self.values
+                )
+           )
 
-        start_fraction = (start_floor + 1 - start)
+        start_fraction = start_floor + 1 - start
 
         value = self.values[start_floor]
         if value * start_fraction >= target_value:
             return start + (target_value / value)
-        target_value -= (value * start_fraction)
+        target_value -= value * start_fraction
         for i in range(start_floor + 1, self.length):
             value = self.values[i]
             if target_value <= value:
