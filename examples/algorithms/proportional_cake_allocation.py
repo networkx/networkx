@@ -3,7 +3,6 @@ import networkx as nx
 from networkx.algorithms.approximation import contiguous_oriented_labeling as col
 import matplotlib.pyplot as plt
 import networkx.algorithms.isomorphism as iso
-import logging
 
 
 
