@@ -1,3 +1,6 @@
+"""
+dadas
+"""
 from abc import ABC, abstractmethod
 import numpy as np
 from typing import *
@@ -21,6 +24,16 @@ class Valuation(ABC):
         pass
 
     def value(self, piece: List[tuple]):
+        """
+
+        Parameters
+        ----------
+        piece
+
+        Returns
+        -------
+
+        """
         if piece == None:
             return 0
         return sum([self.eval(*interval) for interval in piece])
