@@ -486,7 +486,7 @@ def find_augmenting_paths(G: nx.Graph, Priority: int):
                         path = find_path_first_cond(G, w)
                         logger.info(str(path))
                         # update the augemnting path in the Graph
-                        reverse_path(G,p ath)
+                        reverse_path(G, path)
                         logger.info(
                             "update the augemnting path in the Graph and try to find more for priority %d",
                             Priority,
