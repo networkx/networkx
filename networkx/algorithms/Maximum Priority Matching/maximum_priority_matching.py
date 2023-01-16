@@ -12,6 +12,7 @@ import networkx as nx
 logging.basicConfig(filename="my_logger.log", level=logging.INFO, filemode="w")
 logger = logging.getLogger()
 
+
 def find_priority_score(G: nx.Graph):
     """
     "The bounded edge coloring problem and offline crossbar scheduling" by Turner, Jonathan S.
@@ -1498,7 +1499,6 @@ def reverse_path(G: nx.Graph, path):
     nx.set_node_attributes(G, {path[0]: {"isMatched": not matching_nodes[path[0]]}})
     nx.set_node_attributes(G, {path[-1]: {"isMatched": not matching_nodes[path[-1]]}})
 
-####################### second algo ##############################
 
 def find_maximum_priority_matching_bipartite(G: nx.Graph):
     """
@@ -1923,3 +1923,4 @@ if __name__ == "__main__":
     # matching = find_maximum_priority_matching(G)
     # print(matching)
     print(doctest.testmod())
+    
