@@ -37,13 +37,15 @@ def could_be_isomorphic(G1, G2):
     # Check local properties
     d1 = G1.degree()
     t1 = nx.triangles(G1)
-    c1 = nx.number_of_cliques(G1)
+    clqs_1 = list(nx.find_cliques(G1))
+    c1 = {n: sum(1 for c in clqs_1 if n in c) for n in G1}  # number of cliques
     props1 = [[d, t1[v], c1[v]] for v, d in d1]
     props1.sort()
 
     d2 = G2.degree()
     t2 = nx.triangles(G2)
-    c2 = nx.number_of_cliques(G2)
+    clqs_2 = list(nx.find_cliques(G2))
+    c2 = {n: sum(1 for c in clqs_2 if n in c) for n in G2}  # number of cliques
     props2 = [[d, t2[v], c2[v]] for v, d in d2]
     props2.sort()
 

@@ -110,7 +110,7 @@ For example, let's say you are interested in making a change to the
 where it is defined. In an IPython terminal, you can use ``?`` --- the source file is
 listed in the ``File:`` field:
 
-.. code-block:: ipython
+.. code-block:: ipython3
 
    In [1]: import networkx as nx
    In [2]: nx.kamada_kawai_layout?
