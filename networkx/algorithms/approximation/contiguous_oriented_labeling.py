@@ -119,11 +119,7 @@ def get_contiguous_oriented_labeling(graph):
     c = 0
     cycle = False  # a flag to determine if an ear is a cycle. if x = z
     t_update = True  # a flag to determine where to insert edges in order
-    for (
-        edge
-    ) in (
-        graph.edges
-    ):  # iterate over all the edges to find edge x,y. x in ear and y is not
+    for edge in graph.edges:  # iterate over all the edges to find edge x,y. x in ear and y is not
         if edge not in ordered_edges and tuple(reversed(edge)) not in ordered_edges:
             if (
                 edge[0] in nodes_in_ears and edge[1] not in nodes_in_ears
