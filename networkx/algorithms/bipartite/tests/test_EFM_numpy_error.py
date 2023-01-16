@@ -11,5 +11,5 @@ class TestEnvyFreeMatching:
         matching = envy_free_matching(B)
         assert matching == {0: 3, 1: 4, 2: 5, 3: 0, 4: 1, 5: 2}
         C = nx.complete_bipartite_graph(3, 3)
-        matching=minimum_weight_envy_free_matching(C)
+        matching = minimum_weight_envy_free_matching(C)
         assert matching == {0: 3, 1: 4, 2: 5, 3: 0, 4: 1, 5: 2}
