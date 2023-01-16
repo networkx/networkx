@@ -1923,5 +1923,4 @@ if __name__ == "__main__":
     # matching = find_maximum_priority_matching(G)
     # print(matching)
     print(doctest.testmod())
-    
-    
+    \n
