@@ -7,20 +7,57 @@ from typing import *
 
 
 class Valuation(ABC):
+    """
+    das
+    """
     @abstractmethod
     def eval(self, start: float, end: float) -> float:
+        """
+
+        Parameters
+        ----------
+        start
+        end
+
+        Returns
+        -------
+
+        """
         pass
 
     @abstractmethod
     def mark(self, start: float, targetValue: float) -> float:
+        """
+
+        Parameters
+        ----------
+        start
+        targetValue
+
+        Returns
+        -------
+
+        """
         pass
 
     @abstractmethod
     def total_value(self):
+        """
+
+        Returns
+        -------
+
+        """
         pass
 
     @abstractmethod
     def cake_length(self):
+        """
+
+        Returns
+        -------
+
+        """
         pass
 
     def value(self, piece: List[tuple]):
@@ -74,17 +111,41 @@ class PiecewiseConstantValuation(Valuation):
     """
 
     def __init__(self, values: list):
+        """
+
+        Parameters
+        ----------
+        values
+        """
         self.values = np.array(values)
         self.length = len(values)
         self.total_value_cache = sum(values)
 
     def __repr__(self):
+        """
+
+        Returns
+        -------
+
+        """
         return f"Piecewise-constant valuation with values {self.values} and total value={self.total_value_cache}"
 
     def total_value(self):
+        """
+
+        Returns
+        -------
+
+        """
         return self.total_value_cache
 
     def cake_length(self):
+        """
+
+        Returns
+        -------
+
+        """
         return self.length
 
     def eval(self, start: float, end: float):
