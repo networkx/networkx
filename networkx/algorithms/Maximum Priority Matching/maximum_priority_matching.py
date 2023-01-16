@@ -1893,7 +1893,6 @@ def generate_diGraph(G: nx.Graph, m: list, priority: int, flag: bool):
         return ans
 
 if __name__ == "__main__":
-    print(doctest.testmod())
     # an example of the algorithm, you can see how it works in the file named 'my_logger.log" after you run the main
     # current_time = time.time()
     # G = nx.Graph()
@@ -1905,3 +1904,4 @@ if __name__ == "__main__":
     # nx.set_node_attributes(G, nodes_attrs)
     # matching = find_maximum_priority_matching(G)
     # print(matching)
+    print(doctest.testmod())
