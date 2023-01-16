@@ -656,8 +656,8 @@ def find_augmenting_paths(G: nx.Graph, Priority: int):
                             neighbor not in blossom["nodes"]
                             and (node, neighbor) not in eligible_edges
                             and (neighbor, node) not in eligible_edges
-                            ):
-                                eligible_edges.append((node, neighbor))
+                        ):
+                            eligible_edges.append((node, neighbor))
 
             logger.info("shrink_blossom and continue to next edge in eligeble edges")
             # shrink the bolssom and update the graph
@@ -1905,7 +1905,3 @@ if __name__ == "__main__":
     # nx.set_node_attributes(G, nodes_attrs)
     # matching = find_maximum_priority_matching(G)
     # print(matching)
-    # new_time = time.time()
-    # run_time = new_time-current_time
-    # print(run_time)
-    
