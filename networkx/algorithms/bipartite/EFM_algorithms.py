@@ -287,4 +287,5 @@ def minimum_weight_envy_free_matching(G, top_nodes=None):
     Union = EFM_PARTITION[0].union(EFM_PARTITION[2])
     M = nx.bipartite.minimum_weight_full_matching(G.subgraph(Union))
 
+
     return M
