@@ -73,6 +73,8 @@ def find_priority_score(G: nx.Graph):
     for x in score_list:
         score += str(x)
     return score
+
+
 def find_maximum_priority_matching(G: nx.Graph):
     """
     We describe a variation of the augmenting path method (Edmonds’ algorithm) that
@@ -169,6 +171,8 @@ def find_maximum_priority_matching(G: nx.Graph):
         if matching_info[edge] == True:
             matching.append(edge)
     return matching
+
+
 def find_augmenting_paths(G: nx.Graph, Priority: int):
     """
     "Data structures and network algorithms" by Tarjan, Robert E.
@@ -668,6 +672,7 @@ def find_augmenting_paths(G: nx.Graph, Priority: int):
             continue
     return False
 
+
 def shrink_graph(G: nx.Graph, blossom, key):
     """
     Programmers: Roi Meshulam and Liroy Melamed
@@ -705,6 +710,7 @@ def shrink_graph(G: nx.Graph, blossom, key):
     for node in blossom["nodes"]:
         test.append((external_info[node], blossoms_info[node]))
     return test
+
 
 def prepare_for_algo(G: nx.Graph, Priority: int):
     """
@@ -816,6 +822,7 @@ def prepare_for_algo(G: nx.Graph, Priority: int):
 
     return (eligible_edges, roots)
 
+
 def find_path(G: nx.Graph, blossoms, u, v, flag):
     """
     Programmers: Roi Meshulam and Liroy Melamed
@@ -852,6 +859,7 @@ def find_path(G: nx.Graph, blossoms, u, v, flag):
         second_path = find_path_to_root(G, blossoms, v, u)
         path = merge_paths(first_path, second_path)
         return path
+
 
 def find_path_first_cond(G: nx.Graph, id):
     """
@@ -915,6 +923,7 @@ def find_path_first_cond(G: nx.Graph, id):
     path.insert(0, root_list[temp])
 
     return path
+
 
 def merge_paths(lst1: list, lst2: list):
     """
@@ -985,6 +994,7 @@ def merge_paths(lst1: list, lst2: list):
     for j in lst2:
         list.append(j)
     return list
+
 
 def find_blossom(G: nx.Graph, blossoms, u, v):
     """
@@ -1127,6 +1137,7 @@ def find_blossom(G: nx.Graph, blossoms, u, v):
     }
     return (blossoms[key], key)
 
+
 def find_path_in_blossom(G: nx.Graph, blossom, flag, u):
     """
     Programmers: Roi Meshulam and Liroy Melamed
@@ -1210,6 +1221,7 @@ def find_path_in_blossom(G: nx.Graph, blossom, flag, u):
             else:
                 return (path2, parent)
 
+
 def paths_to_base(list, u, base):
     """
     Programmers: Roi Meshulam and Liroy Melamed
@@ -1278,6 +1290,7 @@ def paths_to_base(list, u, base):
 
     path2.append(base)
     return (path1, path2)
+
 
 def find_path_to_root(G: nx.Graph, blossoms, u, v):
     """
@@ -1387,6 +1400,7 @@ def find_path_to_root(G: nx.Graph, blossoms, u, v):
 
     path.insert(0, temp)
     return path
+
 
 def reverse_path(G: nx.Graph, path):
     """
@@ -1611,6 +1625,7 @@ def find_maximum_priority_matching_bipartite(G: nx.Graph):
     matching = m3
     return matching
 
+
 def augmenting_path_v1(G: nx.Graph, m1: list, priority: int):
     """
     "Faster Maximium Priority Matchings in Bipartite Graphs" by Tarjan, Robert E.
@@ -1694,6 +1709,7 @@ def augmenting_path_v1(G: nx.Graph, m1: list, priority: int):
                         m2.append((v, u))
             # return the new matching and that there are maybe more augmenting paths
             return (m2, True)
+
 
 def augmenting_path_v2(G: nx.Graph, m2: list, priority: int):
     """
@@ -1779,6 +1795,7 @@ def augmenting_path_v2(G: nx.Graph, m2: list, priority: int):
                         m3.append((v, u))
             # return the new matching and that there are maybe more augmenting paths
             return (m3, True)
+
 
 def generate_diGraph(G: nx.Graph, m: list, priority: int, flag: bool):
     """
@@ -1892,6 +1909,7 @@ def generate_diGraph(G: nx.Graph, m: list, priority: int, flag: bool):
 
         return ans
 
+
 if __name__ == "__main__":
     # an example of the algorithm, you can see how it works in the file named 'my_logger.log" after you run the main
     # current_time = time.time()
@@ -1905,3 +1923,5 @@ if __name__ == "__main__":
     # matching = find_maximum_priority_matching(G)
     # print(matching)
     print(doctest.testmod())
+    
+    
