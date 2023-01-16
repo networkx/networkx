@@ -1,2 +1,2 @@
-pre-commit>=2.20
+pre-commit>=2.21
 mypy>=0.991

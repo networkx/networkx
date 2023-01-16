@@ -28,7 +28,7 @@ Pedagogical Interactive Notebooks for Algorithms Implemented in NetworkX
 - Expected Outcome: A collection of Interactive Jupyter notebooks which
   explain and explore network algorithms to readers and users of NetworkX.
   For example, see this notebook on
-  :doc:`Random Geometric Graphs <content/generators/geometric>`
+  :doc:`Geometric Generator Models <nx-guides:content/generators/geometric>`
 
 - Complexity: Depending on the algorithms you are interested to work on.
 
@@ -47,7 +47,7 @@ Completed Projects
 - `VF2++ algorithm for graph isomorphism`_
     - Program: Google Summer of Code 2022
     - Contributor: `@kpetridis24 <https://github.com/kpetridis24/>`__
-    - Link to Proposal: `GSoC 2022: VF2++ Algorithm <https://github.com/networkx/archive/blob/main/proposals-gsoc/GSoC-2022-VF2plusplus-isomorphism.pdf`_
+    - Link to Proposal: `GSoC 2022: VF2++ Algorithm <https://github.com/networkx/archive/blob/main/proposals-gsoc/GSoC-2022-VF2plusplus-isomorphism.pdf>`_
 
 - `Louvain community detection algorithm`_ 
     - Program: Google Summer of Code 2021

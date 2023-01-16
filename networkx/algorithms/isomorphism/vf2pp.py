@@ -3,7 +3,7 @@
 VF2++ Algorithm
 ***************
 
-An implementation of the VF2++ algorithm for Graph Isomorphism testing.
+An implementation of the VF2++ algorithm [1]_ for Graph Isomorphism testing.
 
 The simplest interface to use this module is to call:
 
@@ -53,6 +53,12 @@ With node labels:
 True
 >>> nx.vf2pp_isomorphism(G1, G2, node_label="label")
 {1: 1, 2: 2, 0: 0, 3: 3}
+
+References
+----------
+.. [1] Jüttner, Alpár & Madarasi, Péter. (2018). "VF2++—An improved subgraph
+   isomorphism algorithm". Discrete Applied Mathematics. 242.
+   https://doi.org/10.1016/j.dam.2018.02.018
 
 """
 import collections

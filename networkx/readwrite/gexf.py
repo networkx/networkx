@@ -2,7 +2,7 @@
 
 .. warning::
     This parser uses the standard xml library present in Python, which is
-    insecure - see :doc:`library/xml` for additional information.
+    insecure - see :external+python:mod:`xml` for additional information.
     Only parse GEFX files you trust.
 
 GEXF (Graph Exchange XML Format) is a language for describing complex
