@@ -1,0 +1,595 @@
+INFO:root:Current roots: ['1', '8']
+INFO:root:Current eligible edges: [('1', '2'), ('8', '7')]
+INFO:root:Selected edge: ('1', '2')
+INFO:root:u : 1
+INFO:root:v : 2
+INFO:root:B(v) is positive : False
+INFO:root:B(v) and B(u) are in the same tree : False
+INFO:root:curr blossoms list: {}
+INFO:root:priority list: {'1': 1, '2': 8, '3': 6, '4': 5, '5': 2, '6': 4, '7': 3, '8': 1, '9': 7}
+INFO:root:First condition
+INFO:root:There is an augmenting path
+INFO:root:['1', '2', '3']
+INFO:root:update the augemnting path in the Graph and try to find more for priority 1
+INFO:root:Current roots: ['8']
+INFO:root:Current eligible edges: [('8', '7')]
+INFO:root:Selected edge: ('8', '7')
+INFO:root:u : 8
+INFO:root:v : 7
+INFO:root:B(v) is positive : False
+INFO:root:B(v) and B(u) are in the same tree : False
+INFO:root:curr blossoms list: {}
+INFO:root:priority list: {'1': 1, '2': 8, '3': 6, '4': 5, '5': 2, '6': 4, '7': 3, '8': 1, '9': 7}
+INFO:root:First condition
+INFO:root:There is an augmenting path
+INFO:root:['8', '7', '6']
+INFO:root:update the augemnting path in the Graph and try to find more for priority 1
+INFO:root:No relevant roots
+INFO:root:No relevant roots
+INFO:root:No relevant roots
+INFO:root:Current roots: ['6']
+INFO:root:Current eligible edges: [('6', '5'), ('6', '7')]
+INFO:root:Selected edge: ('6', '5')
+INFO:root:u : 6
+INFO:root:v : 5
+INFO:root:B(v) is positive : False
+INFO:root:B(v) and B(u) are in the same tree : False
+INFO:root:curr blossoms list: {}
+INFO:root:priority list: {'1': 1, '2': 8, '3': 6, '4': 5, '5': 2, '6': 4, '7': 3, '8': 1, '9': 7}
+INFO:root:First condition
+INFO:root:There is an augmenting path
+INFO:root:['6', '5', '4']
+INFO:root:update the augemnting path in the Graph and try to find more for priority 4
+INFO:root:No relevant roots
+INFO:root:Current roots: ['4']
+INFO:root:Current eligible edges: [('4', '3'), ('4', '5')]
+INFO:root:Selected edge: ('4', '3')
+INFO:root:u : 4
+INFO:root:v : 3
+INFO:root:B(v) is positive : False
+INFO:root:B(v) and B(u) are in the same tree : False
+INFO:root:curr blossoms list: {}
+INFO:root:priority list: {'1': 1, '2': 8, '3': 6, '4': 5, '5': 2, '6': 4, '7': 3, '8': 1, '9': 7}
+INFO:root:Second condition
+INFO:root:There is an augmenting path
+INFO:root:['4', '3']
+INFO:root:update the augemnting path in the Graph and try to find more for priority 5
+INFO:root:No relevant roots
+INFO:root:No relevant roots
+INFO:root:Current roots: ['9']
+INFO:root:Current eligible edges: [('9', '7')]
+INFO:root:Selected edge: ('9', '7')
+INFO:root:u : 9
+INFO:root:v : 7
+INFO:root:B(v) is positive : False
+INFO:root:B(v) and B(u) are in the same tree : False
+INFO:root:curr blossoms list: {}
+INFO:root:priority list: {'1': 1, '2': 8, '3': 6, '4': 5, '5': 2, '6': 4, '7': 3, '8': 1, '9': 7}
+INFO:root:First condition
+INFO:root:It is not an augmenting path, add all incident edges to node 8 to eligible edges
+INFO:root:No relevant roots
+INFO:root:Find maximal matching for G {('1', '2'), ('3', '4'), ('7', '8'), ('5', '6')}
+INFO:root:Searching for augmenting paths for prioirity 1
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 1
+INFO:root:Searching for augmenting paths for prioirity 2
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 2
+INFO:root:Searching for augmenting paths for prioirity 3
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 3
+INFO:root:Searching for augmenting paths for prioirity 4
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 4
+INFO:root:Searching for augmenting paths for prioirity 5
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 5
+INFO:root:Searching for augmenting paths for prioirity 6
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 6
+INFO:root:Searching for augmenting paths for prioirity 7
+INFO:root:Current roots: ['9']
+INFO:root:Current eligible edges: [('9', '7')]
+INFO:root:Selected edge: ('9', '7')
+INFO:root:u : 9
+INFO:root:v : 7
+INFO:root:B(v) is positive : False
+INFO:root:B(v) and B(u) are in the same tree : False
+INFO:root:curr blossoms list: {}
+INFO:root:priority list: {'1': 1, '2': 8, '3': 6, '4': 5, '5': 2, '6': 4, '7': 3, '8': 1, '9': 7}
+INFO:root:First condition
+INFO:root:It is not an augmenting path, add all incident edges to node 8 to eligible edges
+INFO:root:There are no more augmenting paths for prioirity 7
+INFO:root:Searching for augmenting paths for prioirity 8
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 8
+INFO:root:Searching for augmenting paths for prioirity 9
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 9
+INFO:root:Find maximal matching for G {('3', '4'), ('10', '11'), ('1', '2'), ('5', '7'), ('8', '9')}
+INFO:root:Searching for augmenting paths for prioirity 1
+INFO:root:Current roots: ['6', '12']
+INFO:root:Current eligible edges: [('6', '3'), ('6', '7'), ('12', '10'), ('12', '11')]
+INFO:root:Selected edge: ('6', '3')
+INFO:root:u : 6
+INFO:root:v : 3
+INFO:root:B(v) is positive : False
+INFO:root:B(v) and B(u) are in the same tree : False
+INFO:root:curr blossoms list: {}
+INFO:root:priority list: {'1': 1, '2': 2, '3': 1, '4': 1, '5': 1, '6': 1, '7': 1, '8': 1, '9': 2, '10': 1, '11': 1, '12': 1}
+INFO:root:First condition
+INFO:root:It is not an augmenting path, add all incident edges to node 4 to eligible edges
+INFO:root:Current eligible edges: [('6', '7'), ('12', '10'), ('12', '11'), ('4', '5')]
+INFO:root:Selected edge: ('6', '7')
+INFO:root:u : 6
+INFO:root:v : 7
+INFO:root:B(v) is positive : False
+INFO:root:B(v) and B(u) are in the same tree : False
+INFO:root:curr blossoms list: {}
+INFO:root:priority list: {'1': 1, '2': 2, '3': 1, '4': 1, '5': 1, '6': 1, '7': 1, '8': 1, '9': 2, '10': 1, '11': 1, '12': 1}
+INFO:root:First condition
+INFO:root:It is not an augmenting path, add all incident edges to node 5 to eligible edges
+INFO:root:Current eligible edges: [('12', '10'), ('12', '11'), ('4', '5')]
+INFO:root:Selected edge: ('12', '10')
+INFO:root:u : 12
+INFO:root:v : 10
+INFO:root:B(v) is positive : False
+INFO:root:B(v) and B(u) are in the same tree : False
+INFO:root:curr blossoms list: {}
+INFO:root:priority list: {'1': 1, '2': 2, '3': 1, '4': 1, '5': 1, '6': 1, '7': 1, '8': 1, '9': 2, '10': 1, '11': 1, '12': 1}
+INFO:root:First condition
+INFO:root:It is not an augmenting path, add all incident edges to node 11 to eligible edges
+INFO:root:Current eligible edges: [('12', '11'), ('4', '5'), ('11', '7')]
+INFO:root:Selected edge: ('12', '11')
+INFO:root:u : 12
+INFO:root:v : 11
+INFO:root:B(v) is positive : True
+INFO:root:B(v) and B(u) are in the same tree : True
+INFO:root:curr blossoms list: {}
+INFO:root:priority list: {'1': 1, '2': 2, '3': 1, '4': 1, '5': 1, '6': 1, '7': 1, '8': 1, '9': 2, '10': 1, '11': 1, '12': 1}
+INFO:root:Fourth condition
+INFO:root:Find blossom
+INFO:root:blossom_key: B0
+INFO:root:{'nodes': ['12', '10', '11'], 'root': '12', 'isPositive': True, 'Base': '12'}
+INFO:root:There isn't an augmenting path yet, add all incident edges to the odds nodes in the blossom
+INFO:root:shrink_blossom and continue to next edge in eligeble edges
+INFO:root:Current eligible edges: [('4', '5'), ('11', '7'), ('10', '9')]
+INFO:root:Selected edge: ('4', '5')
+INFO:root:u : 4
+INFO:root:v : 5
+INFO:root:B(v) is positive : True
+INFO:root:B(v) and B(u) are in the same tree : True
+INFO:root:curr blossoms list: {'B0': {'nodes': ['12', '10', '11'], 'root': '12', 'isPositive': True, 'Base': '12'}}
+INFO:root:priority list: {'1': 1, '2': 2, '3': 1, '4': 1, '5': 1, '6': 1, '7': 1, '8': 1, '9': 2, '10': 1, '11': 1, '12': 1}
+INFO:root:Fourth condition
+INFO:root:Find blossom
+INFO:root:blossom_key: B1
+INFO:root:{'nodes': ['4', '3', '6', '7', '5'], 'root': '6', 'isPositive': True, 'Base': '6'}
+INFO:root:There isn't an augmenting path yet, add all incident edges to the odds nodes in the blossom
+INFO:root:shrink_blossom and continue to next edge in eligeble edges
+INFO:root:Current eligible edges: [('11', '7'), ('10', '9'), ('3', '2')]
+INFO:root:Selected edge: ('11', '7')
+INFO:root:u : 11
+INFO:root:v : 7
+INFO:root:B(v) is positive : True
+INFO:root:B(v) and B(u) are in the same tree : False
+INFO:root:curr blossoms list: {'B0': {'nodes': ['12', '10', '11'], 'root': '12', 'isPositive': True, 'Base': '12'}, 'B1': {'nodes': ['4', '3', '6', '7', '5'], 'root': '6', 'isPositive': True, 'Base': '6'}}
+INFO:root:priority list: {'1': 1, '2': 2, '3': 1, '4': 1, '5': 1, '6': 1, '7': 1, '8': 1, '9': 2, '10': 1, '11': 1, '12': 1}
+INFO:root:Third condition
+INFO:root:There is an augmenting path
+INFO:root:['12', '10', '11', '7', '5', '4', '3', '6']
+INFO:root:update the augemnting path in the Graph and try to find more for priority 1
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 1
+INFO:root:Searching for augmenting paths for prioirity 2
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 2
+INFO:root:Searching for augmenting paths for prioirity 3
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 3
+INFO:root:Searching for augmenting paths for prioirity 4
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 4
+INFO:root:Searching for augmenting paths for prioirity 5
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 5
+INFO:root:Searching for augmenting paths for prioirity 6
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 6
+INFO:root:Searching for augmenting paths for prioirity 7
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 7
+INFO:root:Searching for augmenting paths for prioirity 8
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 8
+INFO:root:Searching for augmenting paths for prioirity 9
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 9
+INFO:root:Searching for augmenting paths for prioirity 10
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 10
+INFO:root:Searching for augmenting paths for prioirity 11
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 11
+INFO:root:Searching for augmenting paths for prioirity 12
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 12
+INFO:root:Find maximal matching for G {('28', '39'), ('1', 'test'), ('4', '22'), ('6', '35')}
+INFO:root:Searching for augmenting paths for prioirity 1
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 1
+INFO:root:Searching for augmenting paths for prioirity 2
+INFO:root:Current roots: ['36', '48']
+INFO:root:There are no more augmenting paths for prioirity 2
+INFO:root:Searching for augmenting paths for prioirity 3
+INFO:root:Current roots: ['3', '20']
+INFO:root:There are no more augmenting paths for prioirity 3
+INFO:root:Searching for augmenting paths for prioirity 4
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 4
+INFO:root:Searching for augmenting paths for prioirity 5
+INFO:root:Current roots: ['5', '43']
+INFO:root:There are no more augmenting paths for prioirity 5
+INFO:root:Searching for augmenting paths for prioirity 6
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 6
+INFO:root:Searching for augmenting paths for prioirity 7
+INFO:root:Current roots: ['30']
+INFO:root:There are no more augmenting paths for prioirity 7
+INFO:root:Searching for augmenting paths for prioirity 8
+INFO:root:Current roots: ['0', '18']
+INFO:root:There are no more augmenting paths for prioirity 8
+INFO:root:Searching for augmenting paths for prioirity 9
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 9
+INFO:root:Searching for augmenting paths for prioirity 10
+INFO:root:Current roots: ['16', '47']
+INFO:root:There are no more augmenting paths for prioirity 10
+INFO:root:Searching for augmenting paths for prioirity 11
+INFO:root:Current roots: ['8', '27']
+INFO:root:There are no more augmenting paths for prioirity 11
+INFO:root:Searching for augmenting paths for prioirity 12
+INFO:root:Current roots: ['25']
+INFO:root:There are no more augmenting paths for prioirity 12
+INFO:root:Searching for augmenting paths for prioirity 13
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 13
+INFO:root:Searching for augmenting paths for prioirity 14
+INFO:root:Current roots: ['13']
+INFO:root:There are no more augmenting paths for prioirity 14
+INFO:root:Searching for augmenting paths for prioirity 15
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 15
+INFO:root:Searching for augmenting paths for prioirity 16
+INFO:root:Current roots: ['15', '24', '31']
+INFO:root:There are no more augmenting paths for prioirity 16
+INFO:root:Searching for augmenting paths for prioirity 17
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 17
+INFO:root:Searching for augmenting paths for prioirity 18
+INFO:root:Current roots: ['11']
+INFO:root:There are no more augmenting paths for prioirity 18
+INFO:root:Searching for augmenting paths for prioirity 19
+INFO:root:Current roots: ['46']
+INFO:root:There are no more augmenting paths for prioirity 19
+INFO:root:Searching for augmenting paths for prioirity 20
+INFO:root:Current roots: ['2', '23', '42']
+INFO:root:There are no more augmenting paths for prioirity 20
+INFO:root:Searching for augmenting paths for prioirity 21
+INFO:root:Current roots: ['7', '12']
+INFO:root:There are no more augmenting paths for prioirity 21
+INFO:root:Searching for augmenting paths for prioirity 22
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 22
+INFO:root:Searching for augmenting paths for prioirity 23
+INFO:root:Current roots: ['26']
+INFO:root:There are no more augmenting paths for prioirity 23
+INFO:root:Searching for augmenting paths for prioirity 24
+INFO:root:Current roots: ['9', '32', '34']
+INFO:root:There are no more augmenting paths for prioirity 24
+INFO:root:Searching for augmenting paths for prioirity 25
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 25
+INFO:root:Searching for augmenting paths for prioirity 26
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 26
+INFO:root:Searching for augmenting paths for prioirity 27
+INFO:root:Current roots: ['40']
+INFO:root:There are no more augmenting paths for prioirity 27
+INFO:root:Searching for augmenting paths for prioirity 28
+INFO:root:Current roots: ['10']
+INFO:root:There are no more augmenting paths for prioirity 28
+INFO:root:Searching for augmenting paths for prioirity 29
+INFO:root:Current roots: ['41', '49']
+INFO:root:There are no more augmenting paths for prioirity 29
+INFO:root:Searching for augmenting paths for prioirity 30
+INFO:root:Current roots: ['17']
+INFO:root:There are no more augmenting paths for prioirity 30
+INFO:root:Searching for augmenting paths for prioirity 31
+INFO:root:Current roots: ['14']
+INFO:root:Current eligible edges: [('14', '35')]
+INFO:root:Selected edge: ('14', '35')
+INFO:root:u : 14
+INFO:root:v : 35
+INFO:root:B(v) is positive : False
+INFO:root:B(v) and B(u) are in the same tree : False
+INFO:root:curr blossoms list: {}
+INFO:root:priority list: {'0': 8, '1': 27, '2': 20, '3': 3, '4': 28, '5': 5, '6': 47, '7': 21, '8': 11, '9': 24, '10': 28, '11': 18, '12': 21, '13': 14, '14': 31, '15': 16, '16': 10, '17': 30, '18': 8, '19': 32, '20': 3, '21': 50, '22': 26, '23': 20, '24': 16, '25': 12, '26': 23, '27': 11, '28': 10, '29': 37, '30': 7, '31': 16, '32': 24, '33': 38, '34': 24, '35': 49, '36': 2, '37': 32, '38': 32, '39': 32, '40': 27, '41': 29, '42': 20, '43': 5, '44': 44, '45': 36, '46': 19, '47': 10, '48': 2, '49': 29, 'test': 1}
+INFO:root:First condition
+INFO:root:There is an augmenting path
+INFO:root:['14', '35', '6']
+INFO:root:update the augemnting path in the Graph and try to find more for priority 31
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 31
+INFO:root:Searching for augmenting paths for prioirity 32
+INFO:root:Current roots: ['19', '37', '38']
+INFO:root:There are no more augmenting paths for prioirity 32
+INFO:root:Searching for augmenting paths for prioirity 33
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 33
+INFO:root:Searching for augmenting paths for prioirity 34
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 34
+INFO:root:Searching for augmenting paths for prioirity 35
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 35
+INFO:root:Searching for augmenting paths for prioirity 36
+INFO:root:Current roots: ['45']
+INFO:root:There are no more augmenting paths for prioirity 36
+INFO:root:Searching for augmenting paths for prioirity 37
+INFO:root:Current roots: ['29']
+INFO:root:There are no more augmenting paths for prioirity 37
+INFO:root:Searching for augmenting paths for prioirity 38
+INFO:root:Current roots: ['33']
+INFO:root:There are no more augmenting paths for prioirity 38
+INFO:root:Searching for augmenting paths for prioirity 39
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 39
+INFO:root:Searching for augmenting paths for prioirity 40
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 40
+INFO:root:Searching for augmenting paths for prioirity 41
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 41
+INFO:root:Searching for augmenting paths for prioirity 42
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 42
+INFO:root:Searching for augmenting paths for prioirity 43
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 43
+INFO:root:Searching for augmenting paths for prioirity 44
+INFO:root:Current roots: ['44']
+INFO:root:There are no more augmenting paths for prioirity 44
+INFO:root:Searching for augmenting paths for prioirity 45
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 45
+INFO:root:Searching for augmenting paths for prioirity 46
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 46
+INFO:root:Searching for augmenting paths for prioirity 47
+INFO:root:Current roots: ['6']
+INFO:root:Current eligible edges: [('6', '35')]
+INFO:root:Selected edge: ('6', '35')
+INFO:root:u : 6
+INFO:root:v : 35
+INFO:root:B(v) is positive : False
+INFO:root:B(v) and B(u) are in the same tree : False
+INFO:root:curr blossoms list: {}
+INFO:root:priority list: {'0': 8, '1': 27, '2': 20, '3': 3, '4': 28, '5': 5, '6': 47, '7': 21, '8': 11, '9': 24, '10': 28, '11': 18, '12': 21, '13': 14, '14': 31, '15': 16, '16': 10, '17': 30, '18': 8, '19': 32, '20': 3, '21': 50, '22': 26, '23': 20, '24': 16, '25': 12, '26': 23, '27': 11, '28': 10, '29': 37, '30': 7, '31': 16, '32': 24, '33': 38, '34': 24, '35': 49, '36': 2, '37': 32, '38': 32, '39': 32, '40': 27, '41': 29, '42': 20, '43': 5, '44': 44, '45': 36, '46': 19, '47': 10, '48': 2, '49': 29, 'test': 1}
+INFO:root:First condition
+INFO:root:It is not an augmenting path, add all incident edges to node 14 to eligible edges
+INFO:root:There are no more augmenting paths for prioirity 47
+INFO:root:Searching for augmenting paths for prioirity 48
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 48
+INFO:root:Searching for augmenting paths for prioirity 49
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 49
+INFO:root:Searching for augmenting paths for prioirity 50
+INFO:root:Current roots: ['21']
+INFO:root:There are no more augmenting paths for prioirity 50
+INFO:root:Searching for augmenting paths for prioirity 51
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 51
+INFO:root:Find max prioirity matching for bipartite G
+INFO:root:Find maximal matching for G {('1', '2'), ('3', '6')}
+INFO:root:searching for augmenting path for prioirity 1
+INFO:root:new matching [('1', '2'), ('3', '6')]
+INFO:root:searching for augmenting path for prioirity 1
+INFO:root:new matching [('1', '2'), ('3', '6')]
+INFO:root:searching for augmenting path for prioirity 2
+INFO:root:new matching [('1', '2'), ('3', '6')]
+INFO:root:searching for augmenting path for prioirity 2
+INFO:root:new matching [('1', '2'), ('3', '6')]
+INFO:root:searching for augmenting path for prioirity 3
+INFO:root:new matching [('1', '2'), ('3', '6')]
+INFO:root:searching for augmenting path for prioirity 3
+INFO:root:new matching [('1', '2'), ('3', '6')]
+INFO:root:searching for augmenting path for prioirity 4
+INFO:root:new matching [('1', '2'), ('3', '6')]
+INFO:root:searching for augmenting path for prioirity 4
+INFO:root:new matching [('1', '2'), ('3', '6')]
+INFO:root:searching for augmenting path for prioirity 5
+INFO:root:new matching [('1', '2'), ('3', '6')]
+INFO:root:searching for augmenting path for prioirity 5
+INFO:root:new matching [('1', '2'), ('3', '6')]
+INFO:root:searching for augmenting path for prioirity 6
+INFO:root:new matching [('1', '2'), ('3', '6')]
+INFO:root:searching for augmenting path for prioirity 6
+INFO:root:new matching [('1', '2'), ('3', '6')]
+INFO:root:Find max prioirity matching for bipartite G
+INFO:root:Find maximal matching for G {('1', '2'), ('3', '4')}
+INFO:root:searching for augmenting path for prioirity 1
+INFO:root:new matching [('1', '2'), ('3', '4')]
+INFO:root:searching for augmenting path for prioirity 1
+INFO:root:new matching [('1', '2'), ('3', '4')]
+INFO:root:searching for augmenting path for prioirity 2
+INFO:root:new matching [('1', '2'), ('3', '4')]
+INFO:root:searching for augmenting path for prioirity 2
+INFO:root:new matching [('1', '2'), ('3', '4')]
+INFO:root:searching for augmenting path for prioirity 3
+INFO:root:new matching [('1', '2'), ('3', '4')]
+INFO:root:searching for augmenting path for prioirity 3
+INFO:root:new matching [('1', '2'), ('3', '4')]
+INFO:root:searching for augmenting path for prioirity 4
+INFO:root:new matching [('1', '2'), ('3', '4')]
+INFO:root:searching for augmenting path for prioirity 4
+INFO:root:new matching [('1', '2'), ('3', '4')]
+INFO:root:searching for augmenting path for prioirity 5
+INFO:root:new matching [('1', '2'), ('3', '4')]
+INFO:root:searching for augmenting path for prioirity 5
+INFO:root:new matching [('1', '2'), ('3', '4')]
+INFO:root:searching for augmenting path for prioirity 6
+INFO:root:new matching [('1', '2'), ('3', '4')]
+INFO:root:searching for augmenting path for prioirity 6
+INFO:root:new matching [('1', '2'), ('3', '4')]
+INFO:root:Find max prioirity matching for bipartite G
+INFO:root:Find maximal matching for G {('0', '1'), ('3', '10'), ('6', '14')}
+INFO:root:searching for augmenting path for prioirity 1
+INFO:root:new matching [('0', '1'), ('3', '10'), ('6', '14')]
+INFO:root:searching for augmenting path for prioirity 1
+INFO:root:new matching [('0', '1'), ('3', '10'), ('6', '14')]
+INFO:root:searching for augmenting path for prioirity 2
+INFO:root:new matching [('0', '1'), ('3', '10'), ('6', '14')]
+INFO:root:searching for augmenting path for prioirity 2
+INFO:root:new matching [('0', '1'), ('3', '10'), ('6', '14')]
+INFO:root:searching for augmenting path for prioirity 3
+INFO:root:new matching [('0', '1'), ('3', '10'), ('6', '14')]
+INFO:root:searching for augmenting path for prioirity 3
+INFO:root:new matching [('0', '1'), ('3', '10'), ('6', '14')]
+INFO:root:searching for augmenting path for prioirity 4
+INFO:root:new matching [('0', '1'), ('3', '10'), ('6', '14')]
+INFO:root:searching for augmenting path for prioirity 4
+INFO:root:new matching [('0', '1'), ('3', '10'), ('6', '14')]
+INFO:root:searching for augmenting path for prioirity 5
+INFO:root:new matching [('0', '1'), ('5', '10'), ('6', '14')]
+INFO:root:searching for augmenting path for prioirity 5
+INFO:root:new matching [('0', '1'), ('5', '10'), ('6', '14')]
+INFO:root:searching for augmenting path for prioirity 5
+INFO:root:new matching [('0', '1'), ('5', '10'), ('6', '14')]
+INFO:root:searching for augmenting path for prioirity 6
+INFO:root:new matching [('0', '1'), ('5', '10'), ('6', '14')]
+INFO:root:searching for augmenting path for prioirity 6
+INFO:root:new matching [('0', '1'), ('5', '10'), ('6', '14')]
+INFO:root:searching for augmenting path for prioirity 7
+INFO:root:new matching [('0', '1'), ('5', '10'), ('6', '14')]
+INFO:root:searching for augmenting path for prioirity 7
+INFO:root:new matching [('0', '1'), ('5', '10'), ('6', '14')]
+INFO:root:searching for augmenting path for prioirity 8
+INFO:root:new matching [('0', '1'), ('5', '10'), ('6', '14')]
+INFO:root:searching for augmenting path for prioirity 8
+INFO:root:new matching [('0', '1'), ('5', '10'), ('6', '14')]
+INFO:root:searching for augmenting path for prioirity 9
+INFO:root:new matching [('0', '1'), ('5', '10'), ('6', '14')]
+INFO:root:searching for augmenting path for prioirity 9
+INFO:root:new matching [('0', '1'), ('5', '10'), ('6', '14')]
+INFO:root:searching for augmenting path for prioirity 10
+INFO:root:new matching [('0', '1'), ('5', '10'), ('6', '14')]
+INFO:root:searching for augmenting path for prioirity 10
+INFO:root:new matching [('0', '1'), ('5', '10'), ('6', '14')]
+INFO:root:searching for augmenting path for prioirity 11
+INFO:root:new matching [('0', '1'), ('5', '10'), ('6', '14')]
+INFO:root:searching for augmenting path for prioirity 11
+INFO:root:new matching [('0', '1'), ('5', '10'), ('6', '14')]
+INFO:root:searching for augmenting path for prioirity 12
+INFO:root:new matching [('0', '1'), ('5', '10'), ('6', '14')]
+INFO:root:searching for augmenting path for prioirity 12
+INFO:root:new matching [('0', '1'), ('5', '10'), ('6', '14')]
+INFO:root:searching for augmenting path for prioirity 13
+INFO:root:new matching [('0', '1'), ('5', '10'), ('6', '14')]
+INFO:root:searching for augmenting path for prioirity 13
+INFO:root:new matching [('0', '1'), ('5', '10'), ('6', '14')]
+INFO:root:searching for augmenting path for prioirity 14
+INFO:root:new matching [('0', '1'), ('5', '10'), ('6', '14')]
+INFO:root:searching for augmenting path for prioirity 14
+INFO:root:new matching [('0', '1'), ('5', '10'), ('6', '14')]
+INFO:root:searching for augmenting path for prioirity 15
+INFO:root:new matching [('0', '1'), ('5', '10'), ('6', '14')]
+INFO:root:searching for augmenting path for prioirity 15
+INFO:root:new matching [('0', '1'), ('5', '10'), ('6', '14')]
+INFO:root:searching for augmenting path for prioirity 16
+INFO:root:new matching [('0', '1'), ('5', '10'), ('6', '14')]
+INFO:root:searching for augmenting path for prioirity 16
+INFO:root:new matching [('0', '1'), ('5', '10'), ('6', '14')]
+INFO:root:searching for augmenting path for prioirity 17
+INFO:root:new matching [('0', '1'), ('5', '10'), ('6', '14')]
+INFO:root:searching for augmenting path for prioirity 17
+INFO:root:new matching [('0', '1'), ('5', '10'), ('6', '14')]
+INFO:root:searching for augmenting path for prioirity 18
+INFO:root:new matching [('0', '1'), ('5', '10'), ('6', '14')]
+INFO:root:searching for augmenting path for prioirity 18
+INFO:root:new matching [('0', '1'), ('5', '10'), ('6', '14')]
+INFO:root:searching for augmenting path for prioirity 19
+INFO:root:new matching [('0', '1'), ('5', '10'), ('6', '14')]
+INFO:root:searching for augmenting path for prioirity 19
+INFO:root:new matching [('0', '1'), ('5', '10'), ('6', '14')]
+INFO:root:searching for augmenting path for prioirity 20
+INFO:root:new matching [('0', '1'), ('5', '10'), ('6', '14')]
+INFO:root:searching for augmenting path for prioirity 20
+INFO:root:new matching [('0', '1'), ('5', '10'), ('6', '14')]
+INFO:root:Find maximal matching for G set()
+INFO:root:Searching for augmenting paths for prioirity 1
+INFO:root:Current roots: ['1', '8']
+INFO:root:There are no more augmenting paths for prioirity 1
+INFO:root:Searching for augmenting paths for prioirity 2
+INFO:root:Current roots: ['5']
+INFO:root:There are no more augmenting paths for prioirity 2
+INFO:root:Searching for augmenting paths for prioirity 3
+INFO:root:Current roots: ['7']
+INFO:root:There are no more augmenting paths for prioirity 3
+INFO:root:Searching for augmenting paths for prioirity 4
+INFO:root:Current roots: ['6']
+INFO:root:There are no more augmenting paths for prioirity 4
+INFO:root:Searching for augmenting paths for prioirity 5
+INFO:root:Current roots: ['4']
+INFO:root:There are no more augmenting paths for prioirity 5
+INFO:root:Searching for augmenting paths for prioirity 6
+INFO:root:Current roots: ['3']
+INFO:root:There are no more augmenting paths for prioirity 6
+INFO:root:Searching for augmenting paths for prioirity 7
+INFO:root:Current roots: ['9']
+INFO:root:There are no more augmenting paths for prioirity 7
+INFO:root:Searching for augmenting paths for prioirity 8
+INFO:root:Current roots: ['2']
+INFO:root:There are no more augmenting paths for prioirity 8
+INFO:root:Searching for augmenting paths for prioirity 9
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 9
+INFO:root:Find maximal matching for G {('1', '2'), ('3', '4'), ('7', '8'), ('5', '6')}
+INFO:root:Searching for augmenting paths for prioirity 1
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 1
+INFO:root:Searching for augmenting paths for prioirity 2
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 2
+INFO:root:Searching for augmenting paths for prioirity 3
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 3
+INFO:root:Searching for augmenting paths for prioirity 4
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 4
+INFO:root:Searching for augmenting paths for prioirity 5
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 5
+INFO:root:Searching for augmenting paths for prioirity 6
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 6
+INFO:root:Searching for augmenting paths for prioirity 7
+INFO:root:Current roots: ['9']
+INFO:root:Current eligible edges: [('9', '7')]
+INFO:root:Selected edge: ('9', '7')
+INFO:root:u : 9
+INFO:root:v : 7
+INFO:root:B(v) is positive : False
+INFO:root:B(v) and B(u) are in the same tree : False
+INFO:root:curr blossoms list: {}
+INFO:root:priority list: {'1': 1, '2': 8, '3': 6, '4': 5, '5': 2, '6': 4, '7': 3, '8': 1, '9': 7}
+INFO:root:First condition
+INFO:root:It is not an augmenting path, add all incident edges to node 8 to eligible edges
+INFO:root:There are no more augmenting paths for prioirity 7
+INFO:root:Searching for augmenting paths for prioirity 8
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 8
+INFO:root:Searching for augmenting paths for prioirity 9
+INFO:root:No relevant roots
+INFO:root:There are no more augmenting paths for prioirity 9
