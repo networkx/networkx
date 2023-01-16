@@ -1,6 +1,5 @@
-from networkx.algorithms.bipartite.EFM_algorithms import *
 import numpy
-
+from networkx.algorithms.bipartite.EFM_algorithms import *
 
 
 class TestEnvyFreeMatching:
