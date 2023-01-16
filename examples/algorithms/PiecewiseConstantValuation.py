@@ -10,6 +10,7 @@ class Valuation(ABC):
     """
     das
     """
+
     @abstractmethod
     def eval(self, start: float, end: float) -> float:
         """
