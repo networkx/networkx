@@ -9,7 +9,7 @@ import networkx as nx
 
 ####################### first algo ##############################
 
-logging.basicConfig(filename="my_logger.log", level =logging.INFO, filemode="w")
+logging.basicConfig(filename="my_logger.log", level=logging.INFO, filemode="w")
 logger = logging.getLogger()
 
 def find_priority_score(G: nx.Graph):
@@ -65,9 +65,7 @@ def find_priority_score(G: nx.Graph):
     for element in matching:
         nx.set_node_attributes(G, {element[0]: {"isMatched": True}})
         nx.set_node_attributes(G, {element[1]: {"isMatched": True}})
-        
-
-   
+          
     matching_info = nx.get_node_attributes(G, "isMatched")
     priority_info = nx.get_node_attributes(G, "priority")
     # update the score
@@ -178,9 +176,7 @@ def find_maximum_priority_matching(G: nx.Graph):
             loop_condition = find_augmenting_paths(temp_graph, priority)
         logger.info("There are no more augmenting paths for prioirity %d", priority)
 
-
     matching = []
-
     matching_info = nx.get_edge_attributes(temp_graph, "isMatched")
     for edge in matching_info:
         if matching_info[edge] == True:
@@ -314,7 +310,6 @@ def find_augmenting_paths(G: nx.Graph, Priority: int):
                 else:
                     sameTree = False
 
-
             elif positive_list[edge[1]] is True:
                 u = str(edge[1])
                 v = str(edge[0])
@@ -350,7 +345,6 @@ def find_augmenting_paths(G: nx.Graph, Priority: int):
                 else:
                     sameTree = False
 
-
             # check if the blossom of edge[1] is positive
             elif blossoms[blossom_id1]["isPositive"] is True:
                 u = str(edge[1])
@@ -362,7 +356,6 @@ def find_augmenting_paths(G: nx.Graph, Priority: int):
                     sameTree = True
                 else:
                     sameTree = False
-
 
             else:
                 continue
@@ -416,7 +409,6 @@ def find_augmenting_paths(G: nx.Graph, Priority: int):
                     else:
                         sameTree = False
 
-
                 elif blossoms[blossom_id]["isPositive"] is True:
                     u = str(edge[1])
                     v = str(edge[0])
@@ -437,7 +429,6 @@ def find_augmenting_paths(G: nx.Graph, Priority: int):
         logger.info("B(v) and B(u) are in the same tree : %s", str(sameTree))
         logger.info("curr blossoms list: %s", str(blossoms))
         logger.info("priority list: %s", str(priority_list))
-        
         # if v is unreached and matched (condition 1)
         if reachable_list[v] is False and matching_list[v] is True:
             logger.info("First condition")
@@ -447,7 +438,7 @@ def find_augmenting_paths(G: nx.Graph, Priority: int):
                 {
                     v: {
                         "root": root_list[u],
-                        "isPositive": not (positive_list[u]), 
+                        "isPositive": not (positive_list[u]),
                         "isReachable": True,
                         "parent": u,
                     }
@@ -467,11 +458,11 @@ def find_augmenting_paths(G: nx.Graph, Priority: int):
                         logger.info("There is an augmenting path")
                         # making w a child of v
                         nx.set_node_attributes(
-                            G, 
+                            G,
                             {
                                 w: {
                                     "root": root_list[v],
-                                    "isPositive": not (positive_list[v]), 
+                                    "isPositive": not (positive_list[v]),
                                     "isReachable": True,
                                     "parent": v,
                                 }
@@ -499,8 +490,8 @@ def find_augmenting_paths(G: nx.Graph, Priority: int):
                             G,
                             {
                                 w: {
-                                    "root": root_list[v], 
-                                    "isPositive": not (positive_list[v]), 
+                                    "root": root_list[v],
+                                    "isPositive": not (positive_list[v]),
                                     "isReachable": True,
                                     "parent": v,
                                 }
@@ -524,15 +515,15 @@ def find_augmenting_paths(G: nx.Graph, Priority: int):
                         logger.info("There is an augmenting path")
                         # making w a child of v
                         nx.set_node_attributes(
-                            G, 
+                            G,
                             {
                                 w: {
-                                    "root": root_list[v], 
-                                    "isPositive": not (positive_list[v]), 
+                                    "root": root_list[v],
+                                    "isPositive": not (positive_list[v]),
                                     "isReachable": True,
                                     "parent": v,
                                 }
-                            }
+                            },
                         )
                         # find the augmenting path
                         path = find_path_first_cond(G, w)
@@ -711,7 +702,7 @@ def find_augmenting_paths(G: nx.Graph, Priority: int):
                     for neighbor in G.neighbors(node):
                         if (
                             neighbor not in blossom["nodes"]
-                             and (node, neighbor) not in eligible_edges 
+                             and (node, neighbor) not in eligible_edges
                              and (neighbor, node) not in eligible_edges
                              ):
                                 eligible_edges.append((node, neighbor))
@@ -724,7 +715,6 @@ def find_augmenting_paths(G: nx.Graph, Priority: int):
             logger.info("Ignore this edge")
             continue
 
-    
     return False
 
 def shrink_graph(G: nx.Graph, blossom, key):
@@ -756,10 +746,8 @@ def shrink_graph(G: nx.Graph, blossom, key):
     # more tests for shrink_graph are in 'find_blossom' tests
 
     """
-
     for node in blossom["nodes"]:
         nx.set_node_attributes(G, {node: {"isExternal": False, "blossomsID": key}})
-
     test = []
     external_info = nx.get_node_attributes(G, "isExternal")
     blossoms_info = nx.get_node_attributes(G, "blossomsID")
@@ -871,8 +859,6 @@ def prepare_for_algo(G: nx.Graph, Priority: int):
                 },
             )
 
-
-    
     # get all incident edges to the root into the eligible_edges list
     for root in roots:
         for neighbor in G.neighbors(root):
@@ -966,8 +952,6 @@ def find_path_first_cond(G: nx.Graph, id):
 
     """
 
-
-
     # info
     parents_list = nx.get_node_attributes(G, "parent")
     root_list = nx.get_node_attributes(G, "root")
@@ -983,7 +967,7 @@ def find_path_first_cond(G: nx.Graph, id):
 
     return path
 
-def merge_paths(lst1: list , lst2: list):
+def merge_paths(lst1: list, lst2: list):
     """
     Programmers: Roi Meshulam and Liroy Melamed
 
@@ -1045,7 +1029,6 @@ def merge_paths(lst1: list , lst2: list):
     ['g', 'e', 'c', 'a', 'a', 'c', 'e', 'g']
     """
 
-
     list = []
 
     for i in reversed(lst1):
@@ -1054,7 +1037,7 @@ def merge_paths(lst1: list , lst2: list):
         list.append(j)
     return list
 
-def find_blossom(G: nx.Graph, blossoms ,u ,v):
+def find_blossom(G: nx.Graph, blossoms, u, v):
     """
     Programmers: Roi Meshulam and Liroy Melamed
 
@@ -1162,7 +1145,6 @@ def find_blossom(G: nx.Graph, blossoms ,u ,v):
     B1
 
     """
-    
     isExternal = nx.get_node_attributes(G, "isExternal")
     positive_list = nx.get_node_attributes(G, "isPositive")
 
@@ -1194,7 +1176,6 @@ def find_blossom(G: nx.Graph, blossoms ,u ,v):
         "isPositive": positive_list[ancestor],
         "Base": ancestor,
     }
-
     return (blossoms[key], key)
 
 def find_path_in_blossom(G: nx.Graph, blossom, flag, u):
@@ -1265,7 +1246,6 @@ def find_path_in_blossom(G: nx.Graph, blossom, flag, u):
             else:
                 return (path2, parent)
 
-
     #  (u,v) is not a matching edge
     else:
         w = path1[1]
@@ -1327,7 +1307,6 @@ def paths_to_base(list, u, base):
     temp = u
 
     while temp != base:
-
         # path1.insert(0,temp)
         path1.append(temp)
         if pos == (len(list) - 1):
@@ -1335,7 +1314,6 @@ def paths_to_base(list, u, base):
         else:
             pos = pos + 1
         temp = list[pos]
-
     # path1.insert(0,base)
     path1.append(base)
     temp = u
@@ -1395,10 +1373,7 @@ def find_path_to_root(G: nx.Graph, blossoms, u, v):
     >>> find_path_to_root(G,{'B1':{'nodes': ['12','11','10'], 'root': '8' , 'isPositive': True, 'Base': '12' }},'11','7')
     ['11', '10', '12']
 
-
     """
-
-
 
     path: List[str] = []
     # info
@@ -1429,7 +1404,6 @@ def find_path_to_root(G: nx.Graph, blossoms, u, v):
                     parent = result[1]
                     if parent == None:
                         return sub_path
-
 
                 else:
                     result = find_path_in_blossom(G, blossom, False, u)
@@ -1544,7 +1518,7 @@ def reverse_path(G: nx.Graph, path):
                 G,
                 {
                     (path[i], path[i + 1]): {
-                        "isMatched": not matching_edges[(path[i], path[i + 1])] 
+                        "isMatched": not matching_edges[(path[i], path[i + 1])]
                     }
                 },
             )
@@ -1595,7 +1569,6 @@ def find_maximum_priority_matching_bipartite(G: nx.Graph):
     >>> find_maximum_priority_matching_bipartite(G)
     [('1', '2'), ('3', '4')]
 
-
     >>> G = nx.Graph()
     >>> n = 20
     >>> x = random.randint(1,n)
@@ -1617,7 +1590,6 @@ def find_maximum_priority_matching_bipartite(G: nx.Graph):
     ...    else:
     ...        nx.set_node_attributes(G,{str(i):{"Group":2}})
 
-    
     >>> for u in range(x):
     ...    for v in range(x+1,n):
     ...        p = rd.random()
@@ -1632,8 +1604,6 @@ def find_maximum_priority_matching_bipartite(G: nx.Graph):
     >>> print(check)
     True
     """
-
-
     logger.info("Find max prioirity matching for bipartite G")
     for node in G.nodes:
         nx.set_node_attributes(G, {node: {"isMatched": False}})
@@ -1647,8 +1617,6 @@ def find_maximum_priority_matching_bipartite(G: nx.Graph):
             nx.set_node_attributes(G, {v: {"isMatched": True}})
         else:
             nx.set_edge_attributes(G, {(u, v): {"isMatched": False}})
-
-
     # The algorithm maximizes the matching for each prioirty
     priority_size = G.number_of_nodes()
     for priority in range(1, priority_size + 1):
@@ -1778,7 +1746,7 @@ def augmenting_path_v1(G: nx.Graph, m1: list, priority: int):
             # return the new matching and that there are maybe more augmenting paths
             return (m2, True)
 
-def augmenting_path_v2(G:nx.Graph, m2: list, priority: int):
+def augmenting_path_v2(G: nx.Graph, m2: list, priority: int):
     """
     "Faster Maximium Priority Matchings in Bipartite Graphs" by Tarjan, Robert E.
 
@@ -1803,7 +1771,6 @@ def augmenting_path_v2(G:nx.Graph, m2: list, priority: int):
     ([('1', '4'), ('5', '6')], False)
 
     """
-
 
     # reset the flow attr in each edge
     for edge in G.edges:
@@ -1877,8 +1844,6 @@ def generate_diGraph(G: nx.Graph, m: list, priority: int, flag: bool):
     :return: A list of edges and bool
 
     """
-
-
     ans = nx.DiGraph()
     # info
     priority_info = nx.get_node_attributes(G, "priority")
@@ -1893,13 +1858,13 @@ def generate_diGraph(G: nx.Graph, m: list, priority: int, flag: bool):
         for node in G.nodes:
             ans.add_node(node)
             if (
-                Gruop_info[node] == 1 
-                and matching_info[node] is False 
+                Gruop_info[node] == 1
+                and matching_info[node] is False
                 and priority_info[node] == priority
             ):
                 ans.add_edges_from([("s", node)])
             if (
-                Gruop_info[node] == 1 
+                Gruop_info[node] == 1
                 and matching_info[node] is True
                 and priority_info[node] > priority
             ):
@@ -1947,7 +1912,7 @@ def generate_diGraph(G: nx.Graph, m: list, priority: int, flag: bool):
             ):
                 ans.add_edges_from([("s", node)])
             if (
-                Gruop_info[node] == 2 
+                Gruop_info[node] == 2
                 and matching_info[node] is False
                 and priority_info[node] == priority
             ):
@@ -1976,18 +1941,10 @@ def generate_diGraph(G: nx.Graph, m: list, priority: int, flag: bool):
                 else:
                     ans.add_edges_from([(u, v)])
 
-
-
         return ans
-
-
-
-
-
 
 if __name__ == "__main__":
     print(doctest.testmod())
-    
     # an example of the algorithm, you can see how it works in the file named 'my_logger.log" after you run the main
     # current_time = time.time()
     # G = nx.Graph()
@@ -2002,8 +1959,3 @@ if __name__ == "__main__":
     # new_time = time.time()
     # run_time = new_time-current_time
     # print(run_time)
-
-
-
-
-
