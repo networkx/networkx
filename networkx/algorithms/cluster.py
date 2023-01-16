@@ -316,8 +316,7 @@ def clustering(G, nodes=None, weight=None):
 
     .. math::
 
-       c_u = \frac{2}{deg^{tot}(u)(deg^{tot}(u)-1) - 2deg^{\leftrightarrow}(u)}
-             T(u),
+       c_u = \frac{T(u)}{2(deg^{tot}(u)(deg^{tot}(u)-1) - 2deg^{\leftrightarrow}(u))},
 
     where :math:`T(u)` is the number of directed triangles through node
     :math:`u`, :math:`deg^{tot}(u)` is the sum of in degree and out degree of
