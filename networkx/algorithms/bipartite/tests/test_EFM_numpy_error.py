@@ -8,4 +8,5 @@ class TestEnvyFreeMatching:
         # Fails to import numpy when calling envy_free_matching.
         assert envy_free_matching(A) == {0: 3, 1: 4, 2: 5, 3: 0, 4: 1, 5: 2}
         B = nx.complete_bipartite_graph(3, 3)
-        assert envy_free_matching(B) == {0: 3, 1: 4, 2: 5, 3: 0, 4: 1, 5: 2}
+        matching = envy_free_matching(B)
+        assert matching == {0: 3, 1: 4, 2: 5, 3: 0, 4: 1, 5: 2}
