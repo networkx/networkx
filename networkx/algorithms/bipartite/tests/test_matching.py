@@ -489,8 +489,6 @@ class TestMinimumWeightEnvyFreeMatching:
             3: 2,
         }
 
-
-
     def test_non_empty_envy_free_matching(self):
         Graph = nx.Graph()
         Graph.add_weighted_edges_from(
