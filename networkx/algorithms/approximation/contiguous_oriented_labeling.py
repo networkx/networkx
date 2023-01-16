@@ -118,7 +118,7 @@ def get_contiguous_oriented_labeling(graph):
     t = x_idx
     c = 0
     cycle = False  # a flag to determine if an ear is a cycle. if x = z
-    t_update = True  # a flag to determine where to insert edges in order
+    t_update = True  # a flag to determine where to insert edges in order hbiui
     for (
         edge
     ) in (
