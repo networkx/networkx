@@ -3,15 +3,9 @@ import logging
 import random
 import random as rd
 import time
-from typing import Dict,Union, List
+from typing import Dict, List ,Union
 
 import networkx as nx
-
-
-
-
-
-
 
 ####################### first algo ##############################
 
