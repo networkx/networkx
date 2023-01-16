@@ -253,7 +253,7 @@ def find_augmenting_paths(G: nx.Graph, Priority: int):
     # Graph = G.copy()
     # dictionary of all our blossoms
     # blossoms:Dict[str,Union[list[str],bool,str]]={}
-    blossom:Dict
+    blossoms:Dict = {}
 
     # preparation for the algorithm
     # if we want to use cython library
