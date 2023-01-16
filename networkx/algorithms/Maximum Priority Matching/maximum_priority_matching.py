@@ -9,7 +9,7 @@ import networkx as nx
 
 ####################### first algo ##############################
 
-logging.basicConfig(filename="my_logger.log", level = logging.INFO, filemode="w")
+logging.basicConfig(filename="my_logger.log", level =logging.INFO, filemode="w")
 logger = logging.getLogger()
 
 def find_priority_score(G: nx.Graph):
@@ -63,8 +63,8 @@ def find_priority_score(G: nx.Graph):
 
     # if node touch the matching change nodes' attr to true
     for element in matching:
-        nx.set_node_attributes(G, {element[0]: {"isMatched":True}})
-        nx.set_node_attributes(G, {element[1]: {"isMatched":True}})
+        nx.set_node_attributes(G, {element[0]: {"isMatched": True}})
+        nx.set_node_attributes(G, {element[1]: {"isMatched": True}})
         
 
    
@@ -344,8 +344,8 @@ def find_augmenting_paths(G: nx.Graph, Priority: int):
                 else:
                     isPositive = False
 
-                #check if B(u) and B(V) in the same tree
-                if blossoms[blossom_id0]["root"] == blossoms[blossom_id1]['root']:
+                # check if B(u) and B(V) in the same tree
+                if blossoms[blossom_id0]["root"] == blossoms[blossom_id1]["root"]:
                     sameTree = True
                 else:
                     sameTree = False
@@ -623,7 +623,7 @@ def find_augmenting_paths(G: nx.Graph, Priority: int):
                 # check if there is odd node in the cycle and his priority is higher then Priority, if there is one , so we have an augmenting path
                 if positive_list[node] is False and priority_list[node] > Priority:
                     logger.info("There is an augmenting path")
-                    paths = paths_to_base(blossom["nodes"], node,blossom["Base"])
+                    paths = paths_to_base(blossom["nodes"], node, blossom["Base"])
                     first_path = paths[0]
                     second_path = paths[1]
                     x = first_path[0]
@@ -845,7 +845,7 @@ def prepare_for_algo(G: nx.Graph, Priority: int):
             nx.set_node_attributes(
                 G,
                 {
-                    check_node:{
+                    check_node: {
                         "root": check_node,
                         "isPositive": True,
                         "isReachable": True,
@@ -853,7 +853,7 @@ def prepare_for_algo(G: nx.Graph, Priority: int):
                         "isExternal": True,
                         "blossomsID": -1,
                     }
-                }
+                },
             )
         # if not we iniliaze all the relevant attributes
         else:
@@ -868,7 +868,7 @@ def prepare_for_algo(G: nx.Graph, Priority: int):
                         "isExternal": True,
                         "blossomsID": -1,
                     }
-                }
+                },
             )
 
 
@@ -983,7 +983,7 @@ def find_path_first_cond(G: nx.Graph, id):
 
     return path
 
-def merge_paths(lst1:list , lst2:list):
+def merge_paths(lst1: list , lst2: list):
     """
     Programmers: Roi Meshulam and Liroy Melamed
 
@@ -1054,7 +1054,7 @@ def merge_paths(lst1:list , lst2:list):
         list.append(j)
     return list
 
-def find_blossom(G: nx.Graph ,blossoms ,u ,v):
+def find_blossom(G: nx.Graph, blossoms ,u ,v):
     """
     Programmers: Roi Meshulam and Liroy Melamed
 
@@ -1465,7 +1465,7 @@ def find_path_to_root(G: nx.Graph, blossoms, u, v):
     path.insert(0, temp)
     return path
 
-def reverse_path(G: nx.Graph,path):
+def reverse_path(G: nx.Graph, path):
     """
     Programmers: Roi Meshulam and Liroy Melamed
 
@@ -1745,12 +1745,12 @@ def augmenting_path_v1(G: nx.Graph, m1: list, priority: int):
         temp = []
         for path in paths:
             # temp is the path without 's' and 't'
-            for i in range (1, len(path) - 1):
+            for i in range(1, len(path) - 1):
                 temp.append(path[i])
             # change all attr "flow" to 1 for each edge in temp_graph that in the path
-            for j in range (0, len(temp) - 1):
+            for j in range(0, len(temp) - 1):
                 if (temp[j], temp[j + 1]) in flow_info:
-                    nx.set_edge_attributes(G, {(temp[j],temp[j + 1]): {"flow": 1}})
+                    nx.set_edge_attributes(G, {(temp[j], temp[j + 1]): {"flow": 1}})
                 else:
                     nx.set_edge_attributes(G, {(temp[j + 1], temp[j]): {"flow": 1}})
             # info
@@ -1778,7 +1778,7 @@ def augmenting_path_v1(G: nx.Graph, m1: list, priority: int):
             # return the new matching and that there are maybe more augmenting paths
             return (m2, True)
 
-def augmenting_path_v2 (G:nx.Graph, m2:list, priority:int):
+def augmenting_path_v2(G:nx.Graph, m2: list, priority: int):
     """
     "Faster Maximium Priority Matchings in Bipartite Graphs" by Tarjan, Robert E.
 
@@ -1883,7 +1883,7 @@ def generate_diGraph(G: nx.Graph, m: list, priority: int, flag: bool):
     # info
     priority_info = nx.get_node_attributes(G, "priority")
     Gruop_info = nx.get_node_attributes(G, "Group")
-    matching_info =  nx.get_node_attributes(G, "isMatched")
+    matching_info = nx.get_node_attributes(G, "isMatched")
 
     # generate graph for augmenting_path_v1
     if flag is True:
@@ -1985,7 +1985,7 @@ def generate_diGraph(G: nx.Graph, m: list, priority: int, flag: bool):
 
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     print(doctest.testmod())
     
     # an example of the algorithm, you can see how it works in the file named 'my_logger.log" after you run the main
