@@ -329,7 +329,6 @@ class TestMinimumWeightFullMatching:
 
 
 class TestEnvyFreeMatching:
-
     def test_envy_free_perfect_matching(self):
         def generate_marriable_bipartite_graph(size: int):
             """
@@ -419,8 +418,6 @@ class TestEnvyFreeMatching:
 
             actions = {
                 0: lambda: edges.append((edges[-1][0], edges[-1][1] + 1)),
-
-
                 1: lambda: edges.append((edges[-1][0] + 1, edges[-1][1])),
             }
 
