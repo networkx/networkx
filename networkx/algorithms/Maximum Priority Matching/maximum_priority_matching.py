@@ -7,6 +7,8 @@ import time
 import preparation
 import algo2_library
 
+from typing import Dict,Union, List
+
 ####################### first algo ##############################
 
 logging.basicConfig(filename='my_logger.log' , level = logging.INFO, filemode="w")
@@ -79,7 +81,7 @@ def find_priority_score(G: nx.Graph):
         score += str(x)
     return score
 
-def find_maximum_priority_matching(G: nx.Graph()):
+def find_maximum_priority_matching(G: nx.Graph):
     '''
         " We describe a variation of the augmenting path method (Edmonds’ algorithm) that
         finds a matching with maximum priority score in O(mn) time." by Turner, Jonathan S.
@@ -251,7 +253,7 @@ def find_augmenting_paths(G: nx.Graph, Priority: int):
 
     # Graph = G.copy()
     # dictionary of all our blossoms
-    blossoms={}
+    blossoms:Dict[str,Union[list[str],bool,str]]={}
 
     # preparation for the algorithm
     # if we want to use cython library
@@ -844,7 +846,7 @@ def find_path_first_cond(G:nx.Graph , id):
     parents_list = nx.get_node_attributes(G, "parent")
     root_list = nx.get_node_attributes(G, "root")
     # vars
-    path =[]
+    path : List[str] = []
     temp= id
     # while temp is not the root of the tree
     while root_list[temp] != temp:
@@ -1273,7 +1275,7 @@ def find_path_to_root(G:nx.Graph,blossoms,u,v):
 
 
 
-    path = []
+    path: List[str] = []
     # info
     external_info = nx.get_node_attributes(G, "isExternal")
     blossoms_info = nx.get_node_attributes(G, "blossomsID")
