@@ -1,5 +1,5 @@
 """
-dadas
+This file creates a valuation for a piece of cake.
 """
 from abc import ABC, abstractmethod
 import numpy as np

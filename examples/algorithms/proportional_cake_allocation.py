@@ -1,5 +1,5 @@
 """
-dasdsa
+This file gets a proportional allocation in a graph for 2 agents.
 """
 import PiecewiseConstantValuation as pc
 import networkx as nx

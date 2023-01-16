@@ -1,5 +1,5 @@
 """
-dasdsa
+This file admits a contiguous oriented labeling in an almost bridgeless graph.
 """
 import math
 
