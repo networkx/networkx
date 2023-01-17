@@ -154,6 +154,67 @@ def crossover(G1_nodes, G2_nodes, G1_sublists, G2_sublists, num_solutions):
 
 
 def GA(G1, G2, ALPHA):
+    """
+    Since subgraph isomorphism is an NP-hard problem, a
+    GA is appropriate. A GA generates a set of initial solutions
+    and lets them evolve over a number of iterations. When GA
+    meets some condition, the best solution is returned and the
+    algorithm terminates. Our algorithm replaces 20 percent
+    of the population per generation and uses local optimisation heuristics after crossover and mutation (hybrid or
+    memetic GA).
+
+    Parameters
+    ----------
+    G1 : NetworkX DiGraph
+        A (dirceted) graph 
+    G2 : NetworkX DiGraph
+        A (dirceted) graph 
+    ALPHA: folat
+        A threshold value that indicates how much similar the ftness' score should be
+
+    Returns
+    -------
+    True iff the minimal fitness' score between all the subgraphs og G1 and G2 it smaller than the given alpha 
+
+    Notes
+    -----
+    In computer science and operations research, 
+    a genetic algorithm (GA) is a metaheuristic inspired by 
+    the process of natural selection that belongs to the larger
+    class of evolutionary algorithms (EA). 
+    Genetic algorithms are commonly used to generate high-quality
+    solutions to optimization and search problems by relying on 
+    biologically inspired operators such as mutation, crossover and selection.
+    https://en.wikipedia.org/wiki/Genetic_algorithm
+
+    References
+    ----------
+    "Malware detection based on dependency graph using hybrid genetic algorithm",
+    by K.Kim and B.Moon (2010)
+    Algorithm 1, page 5.
+    http://rosaec.snu.ac.kr/publish/2010/T2/KiMo-GECCO-2010.pdf
+
+    Programmers
+    -----------
+    Stu L.Akirav & B.Schtalman
+
+    Example : building a RG graph
+    ------------------------------
+    >>> import networkx as nx
+    # creates and builds G1 
+    >>> G1 = nx.DiGraph()
+    >>> G1.add_nodes_from(range(6, 10))
+    >>> edges = [(6, 7), (6, 8), (6, 9), (8, 8), (9, 7), (9, 8), (9, 9)]
+    >>> G1.add_edges_from(edges)
+    # creates and builds G2
+    >>> G2 = nx.DiGraph()
+    >>> G2.add_nodes_from(range(6, 10))
+    >>> edges = [(6, 7), (6, 8), (6, 9), (8, 8), (9, 7), (9, 8), (9, 9)]
+    >>> G2.add_edges_from(edges)
+    # runs the function
+    >>> GA_C(G1, G2, 0)
+    True
+    """
     logging.info('Started genetic algorithm')
     # Get the nodes of each graph
     G1_nodes = list(G1.nodes)
@@ -217,78 +278,3 @@ def GA(G1, G2, ALPHA):
                               G1_sublists, G2_sublists, NUM_OF_SOLUTIONS)
 
     return False
-
-def run_time_simulation(G1, G2, ALPHA, py_func, cython_func, num_of_iterations):
-    total_time_py = total_time_cython = 0
-
-    for t in range(num_of_iterations):
-        start_time_py = time.time()
-        py_func(G1, G2, ALPHA)
-        time_py = time.time() - start_time_py
-        total_time_py += time_py
-
-        start_time_cython = time.time()
-        cython_func(G1, G2, ALPHA)
-        time_cython = time.time() - start_time_cython
-        total_time_cython += time_cython
-
-    avg_time_py = total_time_py/num_of_iterations
-    avg_time_cython = total_time_cython/num_of_iterations
-    
-    print(f"avg_time_py: {avg_time_py}s")
-    print(f"avg_time_cython: {avg_time_cython}s")
-    print(f"cython is {avg_time_py / avg_time_cython:.2f} times faster")
-
-
-def threads_simulation(G1, G2, num_solutions, original_func, threads__func, num_of_iterations):
-    total_time_original = total_time_threads = 0
-
-    for t in range(num_of_iterations):
-        start_time_original = time.time()
-        original_func(G1, G2, num_solutions)
-        time_original = time.time() - start_time_original
-        total_time_original += time_original
-
-        start_time_threads = time.time()
-        threads__func(G1, G2, num_solutions)
-        time_threads = time.time() - start_time_threads
-        total_time_threads += time_threads
-
-    avg_time_original = total_time_original/num_of_iterations
-    avg_time_threads = total_time_threads/num_of_iterations
-
-    print(f"avg_time_original: {avg_time_original}s")
-    print(f"avg_time_threads: {avg_time_threads}s")
-    print(f"threads is {avg_time_original / avg_time_threads:.2f} times faster")
-
-
-# def main():
-#     # fork code
-#     fork_DG = nx.DiGraph()
-#     fork_DG.add_nodes_from(range(1, 7))
-#     edges = [(1, 2), (2, 3)]
-#     fork_DG.add_edges_from(edges)
-#     fork_RG = build_RG_from_DG(fork_DG)
-
-#     # fork_code_v1 reduced garph
-#     fork_R1_DG = nx.DiGraph()
-#     fork_R1_DG.add_nodes_from(range(1, 15))
-#     edges = [(1, 4), (2, 6), (3, 5), (4, 7), (5, 8), (5, 10), (10, 10)]
-#     fork_R1_DG.add_edges_from(edges)
-#     fork_R1_RG = build_RG_from_DG(fork_R1_DG)
-
-#     g1 = nx.gnm_random_graph(5, 8, directed=True)
-#     g2 = nx.gnm_random_graph(10, 19, directed=True)    
-#     g3 = nx.gnm_random_graph(15, 25, directed=True)    
-#     g4 = nx.gnm_random_graph(20, 31, directed=True)
-
-#     g1_RG = build_RG_from_DG(g1)
-#     g2_RG = build_RG_from_DG(g2)
-#     g3_RG = build_RG_from_DG(g3)
-#     g4_RG = build_RG_from_DG(g4)
-
-#     # threads_simulation(G1=fork_RG, G2=fork_R1_RG, num_solutions=10000, original_func=generate_solutions, threads__func=generate_solutions_multithreading, num_of_iterations=10)
-    
-#     # threads_simulation(G1=fork_RG, G2=fork_R1_RG, num_solutions=10000, original_func=generate_solutions_processes,
-#     #                    threads__func=generate_solutions_multithreading, num_of_iterations=10)
-# main()
