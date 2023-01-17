@@ -126,6 +126,7 @@ html_theme_options = {
     "collapse_navigation": True,
     "navigation_depth": 2,
     "show_prev_next": False,
+    "announcement": "<p>Tell us about your ideas, complaints, praises of NetworkX! Fill out the <a href='https://forms.gle/NUGcBxyjx5onbAgc8'> NetworkX User Survey 2023</a> 🎉</p>",
     "icon_links": [
         {"name": "Home Page", "url": "https://networkx.org", "icon": "fas fa-home"},
         {
