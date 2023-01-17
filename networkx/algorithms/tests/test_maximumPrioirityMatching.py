@@ -317,53 +317,450 @@ class TestMaximumPriorityMatching:
     def test_shrink_graph(self):
 
         G = nx.Graph()
-        nodes = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
-        edges = [('1', '2'), ('2', '3'), ('3', '4'), ('3', '6'), ('4', '5'), ('5', '7'), ('6', '7'),
-                 ('7', '11'), ('8', '9'), ('9', '10'), ('10', '11'), ('10', '12'), ('11', '12')]
-        nodes_attrs = {'1': {"parent": None, "priority": 1, "isMatched": False, "isPositive": True, "isReachable": True, "root": '1', "isBolssom": False, "isExternal": True, "blossomsID": -1}, '2': {"parent": '1', "priority": 2, "isMatched": True, "isPositive": False, "isReachable": True, "root": '1', "isBolssom": False, "isExternal": True, "blossomsID": -1}, '3': {"parent": '2', "priority": 1, "isMatched": True, "isPositive": True, "isReachable": True, "root": '1', "isBolssom": False, "isExternal": True, "blossomsID": -1}, '4': {"parent": '3', "priority": 1, "isMatched": True, "isPositive": False, "isReachable": True, "root": '1', "isBolssom": False, "isExternal": True, "blossomsID": -1}, '5': {"parent": '4', "priority": 1, "isMatched": True, "isPositive": True, "isReachable": True, "root": '1', "isBolssom": False, "isExternal": True, "blossomsID": -1}, '6': {"parent": '3', "priority": 1, "isMatched": True, "isPositive": False, "isReachable": True, "root": '1', "isBolssom": False, "isExternal": True, "blossomsID": -1},
-                       '7': {"parent": '6', "priority": 1, "isMatched": True, "isPositive": True, "isReachable": True, "root": '1', "isBolssom": False, "isExternal": True, "blossomsID": -1}, '8': {"parent": None, "priority": 1, "isMatched": False, "isPositive": False, "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1}, '9': {"parent": None, "priority": 2, "isMatched": True, "isPositive": False, "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1}, '10': {"parent": None, "priority": 1, "isMatched": True, "isPositive": False, "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1}, '11': {"parent": None, "priority": 1, "isMatched": True, "isPositive": False, "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1}, '12': {"parent": None, "priority": 1, "isMatched": True, "isPositive": False, "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1}}
-        edges_attrs = {('1', '2'): {"isMatched": False}, ('2', '3'): {"isMatched": True}, ('3', '4'): {"isMatched": False}, ('3', '6'): {"isMatched": False}, ('4', '5'): {"isMatched": True}, ('5', '7'): {"isMatched": False}, ('6', '7'): {
-            "isMatched": True}, ('7', '11'): {"isMatched": False}, ('8', '9'): {"isMatched": False}, ('9', '10'): {"isMatched": True}, ('10', '11'): {"isMatched": False}, ('10', '12'): {"isMatched": False}, ('11', '12'): {"isMatched": True}}
+        nodes = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
+        edges = [
+            ("1", "2"),
+            ("2", "3"),
+            ("3", "4"),
+            ("3", "6"),
+            ("4", "5"),
+            ("5", "7"),
+            ("6", "7"),
+            ("7", "11"),
+            ("8", "9"),
+            ("9", "10"),
+            ("10", "11"),
+            ("10", "12"),
+            ("11", "12"),
+        ]
+        nodes_attrs = {
+                '1': {"parent": None,
+                "priority": 1,
+                "isMatched": False,
+                "isPositive": True,
+                "isReachable": True,
+                "root": '1',
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1
+            },
+            "2": {
+                "parent": '1',
+                "priority": 2,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": True,
+                "root": "1",
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1
+            }, "3": {
+                "parent": '2',
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": True,
+                "isReachable": True,
+                "root": '1',
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1
+            }, 
+            "4": {
+                "parent": '3',
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": True,
+                "root": '1',
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1
+            },
+            "5": {
+                "parent": '4',
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": True,
+                "isReachable": True,
+                "root": '1',
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1
+            },
+            "6": {
+                "parent": '3',
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": True,
+                "root": '1',
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1
+            },
+            "7": {
+                "parent": '6',
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": True,
+                "isReachable": True,
+                "root": '1',
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1
+            },
+            "8": {
+                "parent": None,
+                "priority": 1,
+                "isMatched": False,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1
+            },
+            "9": {
+                "parent": None,
+                "priority": 2,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1
+            },
+            "10": {
+                "parent": None,
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1
+            },
+            "11": {
+                "parent": None,
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1
+            },
+            "12": {
+                "parent": None,
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1
+            }
+        }
+        edges_attrs = {
+            ("1", "2"): {"isMatched": False},
+            ("2", "3"): {"isMatched": True},
+            ("3", "4"): {"isMatched": False},
+            ("3", "6"): {"isMatched": False},
+            ("4", "5"): {"isMatched": True},
+            ("5", "7"): {"isMatched": False},
+            ("6", "7"): {"isMatched": True},
+            ("7", "11"): {"isMatched": False},
+            ("8", "9"): {"isMatched": False},
+            ("9", "10"): {"isMatched": True},
+            ("10", "11"): {"isMatched": False},
+            ("10", "12"): {"isMatched": False},
+            ("11", "12"): {"isMatched": True},
+        }
         G.add_nodes_from(nodes)
         G.add_edges_from(edges)
         nx.set_node_attributes(G, nodes_attrs)
         nx.set_edge_attributes(G, edges_attrs)
-        assert algo.shrink_graph(G, {'nodes': ['5', '4', '3', '6', '7']}, 'B0') == [(
-            False, 'B0'), (False, 'B0'), (False, 'B0'), (False, 'B0'), (False, 'B0')]
-        assert algo.shrink_graph(G, {'nodes': ['11', '10', '12']}, 'B1') == [
-            (False, 'B1'), (False, 'B1'), (False, 'B1')]
+        assert algo.shrink_graph(G, {"nodes": ["5", "4", "3", "6", "7"]}, "B0") == [
+            (False, "B0"),
+            (False, "B0"),
+            (False, "B0"),
+            (False, "B0"),
+            (False, "B0"),
+        ]
+        assert algo.shrink_graph(G, {"nodes": ["11", "10", "12"]}, "B1") == [
+            (False, "B1"),
+            (False, "B1"),
+            (False, "B1"),
+        ]
 
     def test_prepare_for_algo(self):
         G = nx.Graph()
-        nodes = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
-        edges = [('1', '2'), ('2', '3'), ('3', '4'), ('4', '5'),
-                 ('5', '6'), ('6', '7'), ('7', '8'), ('7', '9'), ('7', '3')]
-        nodes_attrs = {'1': {"parent": None, "priority": 1, "isMatched": False, "isPositive": False, "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1}, '2': {"parent": None, "priority": 8, "isMatched": True, "isPositive": False, "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1}, '3': {"parent": None, "priority": 6, "isMatched": True, "isPositive": False, "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1}, '4': {"parent": None, "priority": 5, "isMatched": True, "isPositive": False, "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1},   '5': {"parent": None, "priority": 2, "isMatched": True, "isPositive": False,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1}, '6': {"parent": None, "priority": 4, "isMatched": True, "isPositive": False, "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1}, '7': {"parent": None, "priority": 3, "isMatched": True, "isPositive": False, "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1}, '8': {"parent": None, "priority": 1, "isMatched": False, "isPositive": False, "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1}, '9': {"parent": None, "priority": 7, "isMatched": False, "isPositive": False, "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1}}
-        edges_attrs = {('1', '2'): {"isMatched": False}, ('2', '3'): {"isMatched": True}, ('3', '4'): {"isMatched": False}, ('4', '5'): {"isMatched": True}, ('5', '6'): {
-            "isMatched": False}, ('6', '7'): {"isMatched": True}, ('7', '3'): {"isMatched": False}, ('7', '8'): {"isMatched": False}, ('7', '9'): {"isMatched": False}}
+        nodes = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
+        edges = [
+            ("1", "2"),
+            ("2", "3"),
+            ("3", "4"),
+            ("4", "5"),
+            ("5", "6"),
+            ("6", "7"),
+            ("7", "8"),
+            ("7", "9"),
+            ("7", "3"),
+        ]
+        nodes_attrs = {
+            "1": {
+                "parent": None,
+                "priority": 1,
+                "isMatched": False,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "2": {
+                "parent": None,
+                "priority": 8,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "3": {
+                "parent": None,
+                "priority": 6,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "4": {
+                "parent": None,
+                "priority": 5,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "5": {
+                "parent": None,
+                "priority": 2,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "6": {
+                "parent": None,
+                "priority": 4,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "7": {
+                "parent": None,
+                "priority": 3,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "8": {
+                "parent": None,
+                "priority": 1,
+                "isMatched": False,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "9": {
+                "parent": None,
+                "priority": 7,
+                "isMatched": False,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+        }
+        edges_attrs = {
+            ("1", "2"): {"isMatched": False},
+            ("2", "3"): {"isMatched": True},
+            ("3", "4"): {"isMatched": False},
+            ("4", "5"): {"isMatched": True},
+            ("5", "6"): {"isMatched": False},
+            ("6", "7"): {"isMatched": True},
+            ("7", "3"): {"isMatched": False},
+            ("7", "8"): {"isMatched": False},
+            ("7", "9"): {"isMatched": False},
+        }
         G.add_nodes_from(nodes)
         G.add_edges_from(edges)
         nx.set_node_attributes(G, nodes_attrs)
         nx.set_edge_attributes(G, edges_attrs)
-        assert algo.prepare_for_algo(G, 1) == (
-            [('1', '2'), ('8', '7')], ['1', '8'])
+        assert algo.prepare_for_algo(G, 1) == ([("1", "2"), ("8", "7")], ["1", "8"])
         assert algo.prepare_for_algo(G, 2) == ([], [])
         assert algo.prepare_for_algo(G, 3) == ([], [])
         assert algo.prepare_for_algo(G, 4) == ([], [])
         assert algo.prepare_for_algo(G, 5) == ([], [])
         assert algo.prepare_for_algo(G, 6) == ([], [])
-        assert algo.prepare_for_algo(G, 7) == ([('9', '7')], ['9'])
+        assert algo.prepare_for_algo(G, 7) == ([("9", "7")], ["9"])
         assert algo.prepare_for_algo(G, 8) == ([], [])
 
         G = nx.Graph()
-        nodes = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
-        edges = [('1', '2'), ('2', '3'), ('3', '4'), ('4', '5'),
-                 ('5', '6'), ('6', '7'), ('7', '8'), ('7', '9'), ('7', '3')]
-        nodes_attrs = {'1': {"parent": None, "priority": 5, "isMatched": False, "isPositive": False, "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1}, '2': {"parent": None, "priority": 1, "isMatched": True, "isPositive": False, "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1}, '3': {"parent": None, "priority": 8, "isMatched": True, "isPositive": False, "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1}, '4': {"parent": None, "priority": 3, "isMatched": True, "isPositive": False, "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1},   '5': {"parent": None, "priority": 2, "isMatched": True, "isPositive": False,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1}, '6': {"parent": None, "priority": 7, "isMatched": True, "isPositive": False, "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1}, '7': {"parent": None, "priority": 4, "isMatched": True, "isPositive": False, "isReachable": False, "root": None, "isBolssom": False, 'isExternal': True, "blossomsID": -1}, '8': {"parent": None, "priority": 6, "isMatched": False, "isPositive": False, "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1}, '9': {"parent": None, "priority": 9, "isMatched": False, "isPositive": False, "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1}}
-        edges_attrs = {('1', '2'): {"isMatched": False}, ('2', '3'): {"isMatched": True}, ('3', '4'): {"isMatched": False}, ('4', '5'): {"isMatched": True}, ('5', '6'): {
-            "isMatched": False}, ('6', '7'): {"isMatched": True}, ('7', '3'): {"isMatched": False}, ('7', '8'): {"isMatched": False}, ('7', '9'): {"isMatched": False}}
+        nodes = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
+        edges = [
+            ("1", "2"),
+            ("2", "3"),
+            ("3", "4"),
+            ("4", "5"),
+            ("5", "6"),
+            ("6", "7"),
+            ("7", "8"),
+            ("7", "9"),
+            ("7", "3"),
+        ]
+        nodes_attrs = {
+            "1": {
+                "parent": None,
+                "priority": 5,
+                "isMatched": False,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "2": {
+                "parent": None,
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "3": {
+                "parent": None,
+                "priority": 8,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "4": {
+                "parent": None,
+                "priority": 3,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "5": {
+                "parent": None,
+                "priority": 2,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "6": {
+                "parent": None,
+                "priority": 7,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "7": {
+                "parent": None,
+                "priority": 4,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "8": {
+                "parent": None,
+                "priority": 6,
+                "isMatched": False,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "9": {
+                "parent": None,
+                "priority": 9,
+                "isMatched": False,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+        }
+        edges_attrs = {
+            ("1", "2"): {"isMatched": False},
+            ("2", "3"): {"isMatched": True},
+            ("3", "4"): {"isMatched": False},
+            ("4", "5"): {"isMatched": True},
+            ("5", "6"): {"isMatched": False},
+            ("6", "7"): {"isMatched": True},
+            ("7", "3"): {"isMatched": False},
+            ("7", "8"): {"isMatched": False},
+            ("7", "9"): {"isMatched": False},
+        }
         G.add_nodes_from(nodes)
         G.add_edges_from(edges)
         nx.set_node_attributes(G, nodes_attrs)
@@ -372,263 +769,1442 @@ class TestMaximumPriorityMatching:
 
     def test_find_path(self):
         G = nx.Graph()
-        nodes = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
-        edges = [('1', '2'), ('2', '3'), ('3', '4'), ('3', '6'), ('4', '5'), ('5', '7'), ('6', '7'),
-                 ('7', '11'), ('8', '9'), ('9', '10'), ('10', '11'), ('10', '12'), ('11', '12')]
-        nodes_attrs = {'1': {"parent": None, "priority": 1, "isMatched": False, "isPositive": True, "isReachable": True, "root": '1', "isBolssom": False, "isExternal": True, "blossomsID": -1}, '2': {"parent": '1', "priority": 2, "isMatched": True, "isPositive": False, "isReachable": True, "root": '1', "isBolssom": False, "isExternal": True, "blossomsID": -1}, '3': {"parent": '2', "priority": 1, "isMatched": True, "isPositive": True, "isReachable": True, "root": '1', "isBolssom": False, "isExternal": False, "blossomsID": 'B0'}, '4': {"parent": '3', "priority": 1, "isMatched": True, "isPositive": False, "isReachable": True, "root": '1', "isBolssom": False, "isExternal": False, "blossomsID": 'B0'}, '5': {"parent": '4', "priority": 1, "isMatched": True, "isPositive": True, "isReachable": True, "root": '1', "isBolssom": False, "isExternal": False, "blossomsID": 'B0'}, '6': {"parent": '3', "priority": 1, "isMatched": True, "isPositive": False, "isReachable": True, "root": '1', "isBolssom": False, "isExternal": False, "blossomsID": 'B0'},
-                       '7': {"parent": '6', "priority": 1, "isMatched": True, "isPositive": True, "isReachable": True, "root": '1', "isBolssom": False, "isExternal": False, "blossomsID": 'B0'}, '8': {"parent": None, "priority": 1, "isMatched": False, "isPositive": False, "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1}, '9': {"parent": None, "priority": 2, "isMatched": True, "isPositive": False, "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1}, '10': {"parent": None, "priority": 1, "isMatched": True, "isPositive": False, "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1}, '11': {"parent": None, "priority": 1, "isMatched": True, "isPositive": False, "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1}, '12': {"parent": None, "priority": 1, "isMatched": True, "isPositive": False, "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1}}
-        edges_attrs = {('1', '2'): {"isMatched": False}, ('2', '3'): {"isMatched": True}, ('3', '4'): {"isMatched": False}, ('3', '6'): {"isMatched": False}, ('4', '5'): {"isMatched": True}, ('5', '7'): {"isMatched": False}, ('6', '7'): {
-            "isMatched": True}, ('7', '11'): {"isMatched": False}, ('8', '9'): {"isMatched": False}, ('9', '10'): {"isMatched": True}, ('10', '11'): {"isMatched": False}, ('10', '12'): {"isMatched": False}, ('11', '12'): {"isMatched": True}}
+        nodes = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
+        edges = [
+            ("1", "2"),
+            ("2", "3"),
+            ("3", "4"),
+            ("3", "6"),
+            ("4", "5"),
+            ("5", "7"),
+            ("6", "7"),
+            ("7", "11"),
+            ("8", "9"),
+            ("9", "10"),
+            ("10", "11"),
+            ("10", "12"),
+            ("11", "12"),
+        ]
+        nodes_attrs = {
+            "1": {
+                "parent": None,
+                "priority": 1,
+                "isMatched": False,
+                "isPositive": True,
+                "isReachable": True,
+                "root": "1",
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "2": {
+                "parent": "1",
+                "priority": 2,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": True,
+                "root": "1",
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "3": {
+                "parent": "2",
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": True,
+                "isReachable": True,
+                "root": "1",
+                "isBolssom": False,
+                "isExternal": False,
+                "blossomsID": "B0",
+            },
+            "4": {
+                "parent": "3",
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": True,
+                "root": "1",
+                "isBolssom": False,
+                "isExternal": False,
+                "blossomsID": "B0",
+            },
+            "5": {
+                "parent": "4",
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": True,
+                "isReachable": True,
+                "root": "1",
+                "isBolssom": False,
+                "isExternal": False,
+                "blossomsID": "B0",
+            },
+            "6": {
+                "parent": "3",
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": True,
+                "root": "1",
+                "isBolssom": False,
+                "isExternal": False,
+                "blossomsID": "B0",
+            },
+            "7": {
+                "parent": "6",
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": True,
+                "isReachable": True,
+                "root": "1",
+                "isBolssom": False,
+                "isExternal": False,
+                "blossomsID": "B0",
+            },
+            "8": {
+                "parent": None,
+                "priority": 1,
+                "isMatched": False,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "9": {
+                "parent": None,
+                "priority": 2,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "10": {
+                "parent": None,
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "11": {
+                "parent": None,
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "12": {
+                "parent": None,
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+        }
+        edges_attrs = {
+            ("1", "2"): {"isMatched": False},
+            ("2", "3"): {"isMatched": True},
+            ("3", "4"): {"isMatched": False},
+            ("3", "6"): {"isMatched": False},
+            ("4", "5"): {"isMatched": True},
+            ("5", "7"): {"isMatched": False},
+            ("6", "7"): {"isMatched": True},
+            ("7", "11"): {"isMatched": False},
+            ("8", "9"): {"isMatched": False},
+            ("9", "10"): {"isMatched": True},
+            ("10", "11"): {"isMatched": False},
+            ("10", "12"): {"isMatched": False},
+            ("11", "12"): {"isMatched": True},
+        }
         G.add_nodes_from(nodes)
         G.add_edges_from(edges)
         nx.set_node_attributes(G, nodes_attrs)
         nx.set_edge_attributes(G, edges_attrs)
-        assert algo.find_path(G, {'B0': {'nodes': ['5', '4', '3', '6', '7'], 'root': '1',
-                              'isPositive': True, 'Base': '3'}}, '7', '11', True) == ['1', '2', '3', '6', '7', '11']
+        assert algo.find_path(
+            G,
+            {
+                "B0": {
+                    "nodes": ["5", "4", "3", "6", "7"],
+                    "root": "1",
+                    "isPositive": True,
+                    "Base": "3",
+                }
+            },
+            "7",
+            "11",
+            True,
+        ) == ["1", "2", "3", "6", "7", "11"]
 
     def test_find_path_first_cond(self):
         G = nx.Graph()
-        nodes = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
-        edges = [('1', '2'), ('2', '3'), ('3', '4'), ('4', '5'),
-                 ('5', '6'), ('6', '7'), ('7', '8'), ('7', '9'), ('7', '3')]
-        nodes_attrs = {'1': {"parent": None, "priority": 1, "isMatched": False, "isPositive": False, "isReachable": False, "root": '1', "isBolssom": False, "isExternal": True, "blossomsID": -1}, '2': {"parent": '1', "priority": 8, "isMatched": True, "isPositive": False, "isReachable": False, "root": '1', "isBolssom": False, "isExternal": True, "blossomsID": -1}, '3': {"parent": '2', "priority": 6, "isMatched": True, "isPositive": False, "isReachable": False, "root": '1', "isBolssom": False, "isExternal": True, "blossomsID": -1}, '4': {"parent": None, "priority": 5, "isMatched": True, "isPositive": False, "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1}, '5': {"parent": None, "priority": 2, "isMatched": True, "isPositive": False,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1}, '6': {"parent": None, "priority": 4, "isMatched": True, "isPositive": False, "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1}, '7': {"parent": None, "priority": 3, "isMatched": True, "isPositive": False, "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1}, '8': {"parent": None, "priority": 1, "isMatched": False, "isPositive": False, "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1}, '9': {"parent": None, "priority": 7, "isMatched": False, "isPositive": False, "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1}}
-        edges_attrs = {('1', '2'): {"isMatched": False}, ('2', '3'): {"isMatched": True}, ('3', '4'): {"isMatched": False}, ('4', '5'): {"isMatched": True}, ('5', '6'): {
-            "isMatched": False}, ('6', '7'): {"isMatched": True}, ('7', '3'): {"isMatched": False}, ('7', '8'): {"isMatched": False}, ('7', '9'): {"isMatched": False}}
+        nodes = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
+        edges = [
+            ("1", "2"),
+            ("2", "3"),
+            ("3", "4"),
+            ("4", "5"),
+            ("5", "6"),
+            ("6", "7"),
+            ("7", "8"),
+            ("7", "9"),
+            ("7", "3"),
+        ]
+        nodes_attrs = {
+            "1": {
+                "parent": None,
+                "priority": 1,
+                "isMatched": False,
+                "isPositive": False,
+                "isReachable": False,
+                "root": "1",
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "2": {
+                "parent": "1",
+                "priority": 8,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": False,
+                "root": "1",
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "3": {
+                "parent": "2",
+                "priority": 6,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": False,
+                "root": "1",
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "4": {
+                "parent": None,
+                "priority": 5,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "5": {
+                "parent": None,
+                "priority": 2,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "6": {
+                "parent": None,
+                "priority": 4,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "7": {
+                "parent": None,
+                "priority": 3,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "8": {
+                "parent": None,
+                "priority": 1,
+                "isMatched": False,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "9": {
+                "parent": None,
+                "priority": 7,
+                "isMatched": False,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+        }
+        edges_attrs = {
+            ("1", "2"): {"isMatched": False},
+            ("2", "3"): {"isMatched": True},
+            ("3", "4"): {"isMatched": False},
+            ("4", "5"): {"isMatched": True},
+            ("5", "6"): {"isMatched": False},
+            ("6", "7"): {"isMatched": True},
+            ("7", "3"): {"isMatched": False},
+            ("7", "8"): {"isMatched": False},
+            ("7", "9"): {"isMatched": False},
+        }
         G.add_nodes_from(nodes)
         G.add_edges_from(edges)
         nx.set_node_attributes(G, nodes_attrs)
         nx.set_edge_attributes(G, edges_attrs)
-        assert algo.find_path_first_cond(G, '3') == ['1', '2', '3']
+        assert algo.find_path_first_cond(G, "3") == ["1", "2", "3"]
         # create a graph with a simple tree structure
         G = nx.Graph()
-        nodes = ['1', '2', '3', '4', '5']
-        edges = [('1', '2'), ('1', '3'), ('2', '4'), ('3', '5')]
-        nodes_attrs = {'1': {'parent': None, 'root': '1'}, '2': {'parent': '1', 'root': '1'}, '3': {
-            'parent': '1', 'root': '1'}, '4': {'parent': '2', 'root': '1'}, '5': {'parent': '3', 'root': '1'}}
+        nodes = ["1", "2", "3", "4", "5"]
+        edges = [("1", "2"), ("1", "3"), ("2", "4"), ("3", "5")]
+        nodes_attrs = {
+            "1": {"parent": None, "root": "1"},
+            "2": {"parent": "1", "root": "1"},
+            "3": {"parent": "1", "root": "1"},
+            "4": {"parent": "2", "root": "1"},
+            "5": {"parent": "3", "root": "1"},
+        }
         G.add_nodes_from(nodes)
         G.add_edges_from(edges)
         nx.set_node_attributes(G, nodes_attrs)
 
         # test the function with various node ids
-        assert algo.find_path_first_cond(G, '1') == ['1']
-        assert algo.find_path_first_cond(G, '2') == ['1', '2']
-        assert algo.find_path_first_cond(G, '3') == ['1', '3']
-        assert algo.find_path_first_cond(G, '4') == ['1', '2', '4']
-        assert algo.find_path_first_cond(G, '5') == ['1', '3', '5']
+        assert algo.find_path_first_cond(G, "1") == ["1"]
+        assert algo.find_path_first_cond(G, "2") == ["1", "2"]
+        assert algo.find_path_first_cond(G, "3") == ["1", "3"]
+        assert algo.find_path_first_cond(G, "4") == ["1", "2", "4"]
+        assert algo.find_path_first_cond(G, "5") == ["1", "3", "5"]
 
     def test_find_blossom(self):
         G = nx.Graph()
-        nodes = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
-        edges = [('1', '2'), ('2', '3'), ('3', '4'), ('3', '6'), ('4', '5'), ('5', '7'), ('6', '7'),
-                 ('7', '11'), ('8', '9'), ('9', '10'), ('10', '11'), ('10', '12'), ('11', '12')]
-        nodes_attrs = {'1': {"parent": None, "priority": 1, "isMatched": False, "isPositive": True, "isReachable": True, "root": '1', "isExternal": True, "blossomsID": -1}, '2': {"parent": '1', "priority": 2, "isMatched": True, "isPositive": False, "isReachable": True, "root": '1', "isExternal": True, "blossomsID": -1}, '3': {"parent": '2', "priority": 1, "isMatched": True, "isPositive": True, "isReachable": True, "root": '1', "isExternal": True, "blossomsID": -1}, '4': {"parent": '3', "priority": 1, "isMatched": True, "isPositive": False, "isReachable": True, "root": '1', "isExternal": True, "blossomsID": -1}, '5': {"parent": '4', "priority": 1, "isMatched": True, "isPositive": True, "isReachable": True, "root": '1', "isExternal": True, "blossomsID": -1}, '6': {"parent": '3', "priority": 1, "isMatched": True, "isPositive": False, "isReachable": True, "root": '1', "isBolssom": False, "isExternal": True, "blossomsID": -1},
-                       '7': {"parent": '6', "priority": 1, "isMatched": True, "isPositive": True, "isReachable": True, "root": '1', "isBolssom": False, "isExternal": True, "blossomsID": -1}, '8': {"parent": None, "priority": 1, "isMatched": False, "isPositive": True, "isReachable": True, "root": '8', "isExternal": True, "blossomsID": -1}, '9': {"parent": '8', "priority": 2, "isMatched": True, "isPositive": False, "isReachable": True, "root": '8', "isExternal": True, "blossomsID": -1}, '10': {"parent": '9', "priority": 1, "isMatched": True, "isPositive": True, "isReachable": True, "root": '8', "isExternal": True, "blossomsID": -1}, '11': {"parent": '10', "priority": 1, "isMatched": True, "isPositive": False, "isReachable": True, "root": '8', "isExternal": True, "blossomsID": -1}, '12': {"parent": '11', "priority": 1, "isMatched": True, "isPositive": False, "isReachable": True, "root": '8', "isExternal": True, "blossomsID": -1}}
-        edges_attrs = {('1', '2'): {"isMatched": False}, ('2', '3'): {"isMatched": True}, ('3', '4'): {"isMatched": False}, ('3', '6'): {"isMatched": False}, ('4', '5'): {"isMatched": True}, ('5', '7'): {"isMatched": False}, ('6', '7'): {
-            "isMatched": True}, ('7', '11'): {"isMatched": False}, ('8', '9'): {"isMatched": False}, ('9', '10'): {"isMatched": True}, ('10', '11'): {"isMatched": False}, ('10', '12'): {"isMatched": False}, ('11', '12'): {"isMatched": True}}
+        nodes = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
+        edges = [
+            ("1", "2"),
+            ("2", "3"),
+            ("3", "4"),
+            ("3", "6"),
+            ("4", "5"),
+            ("5", "7"),
+            ("6", "7"),
+            ("7", "11"),
+            ("8", "9"),
+            ("9", "10"),
+            ("10", "11"),
+            ("10", "12"),
+            ("11", "12"),
+        ]
+        nodes_attrs = {
+            "1": {
+                "parent": None,
+                "priority": 1,
+                "isMatched": False,
+                "isPositive": True,
+                "isReachable": True,
+                "root": "1",
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "2": {
+                "parent": "1",
+                "priority": 2,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": True,
+                "root": "1",
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "3": {
+                "parent": "2",
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": True,
+                "isReachable": True,
+                "root": "1",
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "4": {
+                "parent": "3",
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": True,
+                "root": "1",
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "5": {
+                "parent": "4",
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": True,
+                "isReachable": True,
+                "root": "1",
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "6": {
+                "parent": "3",
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": True,
+                "root": "1",
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "7": {
+                "parent": "6",
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": True,
+                "isReachable": True,
+                "root": "1",
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "8": {
+                "parent": None,
+                "priority": 1,
+                "isMatched": False,
+                "isPositive": True,
+                "isReachable": True,
+                "root": "8",
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "9": {
+                "parent": "8",
+                "priority": 2,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": True,
+                "root": "8",
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "10": {
+                "parent": "9",
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": True,
+                "isReachable": True,
+                "root": "8",
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "11": {
+                "parent": "10",
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": True,
+                "root": "8",
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "12": {
+                "parent": "11",
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": True,
+                "root": "8",
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+        }
+        edges_attrs = {
+            ("1", "2"): {"isMatched": False},
+            ("2", "3"): {"isMatched": True},
+            ("3", "4"): {"isMatched": False},
+            ("3", "6"): {"isMatched": False},
+            ("4", "5"): {"isMatched": True},
+            ("5", "7"): {"isMatched": False},
+            ("6", "7"): {"isMatched": True},
+            ("7", "11"): {"isMatched": False},
+            ("8", "9"): {"isMatched": False},
+            ("9", "10"): {"isMatched": True},
+            ("10", "11"): {"isMatched": False},
+            ("10", "12"): {"isMatched": False},
+            ("11", "12"): {"isMatched": True},
+        }
         G.add_nodes_from(nodes)
         G.add_edges_from(edges)
         nx.set_node_attributes(G, nodes_attrs)
         nx.set_edge_attributes(G, edges_attrs)
         blossoms = {}
-        algo.find_blossom(G, blossoms, '5', '7')
-        ({'nodes': ['5', '4', '3', '6', '7'], 'root': '1',
-         'isPositive': True, 'Base': '3'}, 'B0')
+        algo.find_blossom(G, blossoms, "5", "7")
+        (
+            {
+                "nodes": ["5", "4", "3", "6", "7"],
+                "root": "1",
+                "isPositive": True,
+                "Base": "3",
+            },
+            "B0",
+        )
         assert len(blossoms) == 1
-        external_info = nx.get_node_attributes(G, 'isExternal')
-        blossoms_id = nx.get_node_attributes(G, 'blossomsID')
-        assert external_info['5'] == True
-        assert external_info['4'] == True
-        assert external_info['3'] == True
-        assert external_info['6'] == True
-        assert external_info['7'] == True
-        assert blossoms_id['4'] == -1
-        assert blossoms_id['5'] == -1
-        assert blossoms_id['3'] == -1
-        assert blossoms_id['6'] == -1
-        assert blossoms_id['7'] == -1
-        assert external_info['10'] == True
-        assert external_info['11'] == True
-        assert external_info['12'] == True
-        assert blossoms_id['10'] == -1
-        assert blossoms_id['11'] == -1
-        assert blossoms_id['12'] == -1
+        external_info = nx.get_node_attributes(G, "isExternal")
+        blossoms_id = nx.get_node_attributes(G, "blossomsID")
+        assert external_info["5"] == True
+        assert external_info["4"] == True
+        assert external_info["3"] == True
+        assert external_info["6"] == True
+        assert external_info["7"] == True
+        assert blossoms_id["4"] == -1
+        assert blossoms_id["5"] == -1
+        assert blossoms_id["3"] == -1
+        assert blossoms_id["6"] == -1
+        assert blossoms_id["7"] == -1
+        assert external_info["10"] == True
+        assert external_info["11"] == True
+        assert external_info["12"] == True
+        assert blossoms_id["10"] == -1
+        assert blossoms_id["11"] == -1
+        assert blossoms_id["12"] == -1
 
-        algo.shrink_graph(G, blossoms['B0'], 'B0') == [
-            (False, 'B0'), (False, 'B0'), (False, 'B0'), (False, 'B0'), (False, 'B0')]
-        external_info = nx.get_node_attributes(G, 'isExternal')
-        blossoms_id = nx.get_node_attributes(G, 'blossomsID')
-        assert external_info['5'] == False
-        assert external_info['4'] == False
-        assert external_info['3'] == False
-        assert external_info['6'] == False
-        assert external_info['7'] == False
-        assert blossoms_id['4'] == "B0"
-        assert blossoms_id['5'] == "B0"
-        assert blossoms_id['3'] == "B0"
-        assert blossoms_id['6'] == "B0"
-        assert blossoms_id['7'] == "B0"
+        algo.shrink_graph(G, blossoms["B0"], "B0") == [
+            (False, "B0"),
+            (False, "B0"),
+            (False, "B0"),
+            (False, "B0"),
+            (False, "B0"),
+        ]
+        external_info = nx.get_node_attributes(G, "isExternal")
+        blossoms_id = nx.get_node_attributes(G, "blossomsID")
+        assert external_info["5"] == False
+        assert external_info["4"] == False
+        assert external_info["3"] == False
+        assert external_info["6"] == False
+        assert external_info["7"] == False
+        assert blossoms_id["4"] == "B0"
+        assert blossoms_id["5"] == "B0"
+        assert blossoms_id["3"] == "B0"
+        assert blossoms_id["6"] == "B0"
+        assert blossoms_id["7"] == "B0"
 
-        assert algo.find_blossom(G, blossoms, '10', '12') == (
-            {'nodes': ['10', '11', '12'], 'root': '8', 'isPositive': True, 'Base': '10'}, 'B1')
+        assert algo.find_blossom(G, blossoms, "10", "12") == (
+            {
+                "nodes": ["10", "11", "12"],
+                "root": "8",
+                "isPositive": True,
+                "Base": "10",
+            },
+            "B1",
+        )
         assert len(blossoms) == 2
-        assert algo.shrink_graph(G, blossoms['B1'], 'B1') == [
-            (False, 'B1'), (False, 'B1'), (False, 'B1')]
-        external_info = nx.get_node_attributes(G, 'isExternal')
-        blossoms_id = nx.get_node_attributes(G, 'blossomsID')
-        external_info['10'] == False
-        external_info['11'] == False
-        external_info['12'] == False
-        blossoms_id['10'] == "B1"
-        blossoms_id['11'] == "B1"
-        blossoms_id['12'] == "B1"
+        assert algo.shrink_graph(G, blossoms["B1"], "B1") == [
+            (False, "B1"),
+            (False, "B1"),
+            (False, "B1"),
+        ]
+        external_info = nx.get_node_attributes(G, "isExternal")
+        blossoms_id = nx.get_node_attributes(G, "blossomsID")
+        external_info["10"] == False
+        external_info["11"] == False
+        external_info["12"] == False
+        blossoms_id["10"] == "B1"
+        blossoms_id["11"] == "B1"
+        blossoms_id["12"] == "B1"
 
     def test_find_path_in_blossom(self):
         G = nx.Graph()
-        nodes = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
-        edges = [('1', '2'), ('2', '3'), ('3', '4'), ('3', '6'), ('4', '5'), ('5', '7'), ('6', '7'),
-                 ('7', '11'), ('8', '9'), ('9', '10'), ('10', '11'), ('10', '12'), ('11', '12')]
-        nodes_attrs = {'1': {"parent": None, "priority": 1, "isMatched": False, "isPositive": False, "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1}, '2': {"parent": None, "priority": 2, "isMatched": True, "isPositive": False, "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1}, '3': {"parent": '2', "priority": 1, "isMatched": True, "isPositive": False, "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1}, '4': {"parent": None, "priority": 1, "isMatched": True, "isPositive": False, "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1}, '5': {"parent": None, "priority": 1, "isMatched": True, "isPositive": False, "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1}, '6': {"parent": None, "priority": 1, "isMatched": True, "isPositive": False, "isReachable": False, "root": None, "isBolssom": False,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         "isExternal": True, "blossomsID": -1}, '7': {"parent": None, "priority": 1, "isMatched": True, "isPositive": False, "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1}, '8': {"parent": None, "priority": 1, "isMatched": False, "isPositive": False, "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1}, '9': {"parent": None, "priority": 2, "isMatched": True, "isPositive": False, "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1}, '10': {"parent": '9', "priority": 1, "isMatched": True, "isPositive": True, "isReachable": True, "root": '8', "isExternal": True, "blossomsID": -1}, '11': {"parent": '10', "priority": 1, "isMatched": True, "isPositive": False, "isReachable": True, "root": '8', "isExternal": True, "blossomsID": -1}, '12': {"parent": '11', "priority": 1, "isMatched": True, "isPositive": True, "isReachable": True, "root": '8', "isExternal": True, "blossomsID": -1}}
-        edges_attrs = {('1', '2'): {"isMatched": False}, ('2', '3'): {"isMatched": True}, ('3', '4'): {"isMatched": False}, ('3', '6'): {"isMatched": False}, ('4', '5'): {"isMatched": True}, ('5', '7'): {"isMatched": False}, ('6', '7'): {
-            "isMatched": True}, ('7', '11'): {"isMatched": False}, ('8', '9'): {"isMatched": False}, ('9', '10'): {"isMatched": True}, ('10', '11'): {"isMatched": False}, ('10', '12'): {"isMatched": False}, ('11', '12'): {"isMatched": True}}
+        nodes = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
+        edges = [
+            ("1", "2"),
+            ("2", "3"),
+            ("3", "4"),
+            ("3", "6"),
+            ("4", "5"),
+            ("5", "7"),
+            ("6", "7"),
+            ("7", "11"),
+            ("8", "9"),
+            ("9", "10"),
+            ("10", "11"),
+            ("10", "12"),
+            ("11", "12"),
+        ]
+        nodes_attrs = {
+            "1": {
+                "parent": None,
+                "priority": 1,
+                "isMatched": False,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "2": {
+                "parent": None,
+                "priority": 2,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "3": {
+                "parent": "2",
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "4": {
+                "parent": None,
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "5": {
+                "parent": None,
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "6": {
+                "parent": None,
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "7": {
+                "parent": None,
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "8": {
+                "parent": None,
+                "priority": 1,
+                "isMatched": False,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "9": {
+                "parent": None,
+                "priority": 2,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "10": {
+                "parent": "9",
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": True,
+                "isReachable": True,
+                "root": "8",
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "11": {
+                "parent": "10",
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": True,
+                "root": "8",
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "12": {
+                "parent": "11",
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": True,
+                "isReachable": True,
+                "root": "8",
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+        }
+        edges_attrs = {
+            ("1", "2"): {"isMatched": False},
+            ("2", "3"): {"isMatched": True},
+            ("3", "4"): {"isMatched": False},
+            ("3", "6"): {"isMatched": False},
+            ("4", "5"): {"isMatched": True},
+            ("5", "7"): {"isMatched": False},
+            ("6", "7"): {"isMatched": True},
+            ("7", "11"): {"isMatched": False},
+            ("8", "9"): {"isMatched": False},
+            ("9", "10"): {"isMatched": True},
+            ("10", "11"): {"isMatched": False},
+            ("10", "12"): {"isMatched": False},
+            ("11", "12"): {"isMatched": True},
+        }
         G.add_nodes_from(nodes)
         G.add_edges_from(edges)
         nx.set_node_attributes(G, nodes_attrs)
         nx.set_edge_attributes(G, edges_attrs)
-        blossom = {'nodes': ['5', '4', '3', '6', '7'], 'Base': '3'}
-        assert algo.find_path_in_blossom(
-            G, blossom, False, '7') == (['7', '6', '3'], '2')
-        blossom = {'nodes': ['11', '10', '12'], 'Base': '10'}
-        assert algo.find_path_in_blossom(
-            G, blossom, False, '11') == (['11', '12', '10'], '9')
+        blossom = {"nodes": ["5", "4", "3", "6", "7"], "Base": "3"}
+        assert algo.find_path_in_blossom(G, blossom, False, "7") == (
+            ["7", "6", "3"],
+            "2",
+        )
+        blossom = {"nodes": ["11", "10", "12"], "Base": "10"}
+        assert algo.find_path_in_blossom(G, blossom, False, "11") == (
+            ["11", "12", "10"],
+            "9",
+        )
 
         G1 = nx.Graph()
-        nodes_attrs = {'1': {"parent": None, "priority": 1, "isMatched": True, "isPositive": None, "isReachable": False, "root": None, "isExternal": True, "blossomsID": -1}, '2': {"parent": None, "priority": 2, "isMatched": True, "isPositive": None, "isReachable": False, "root": None, "isExternal": True, "blossomsID": -1}, '3': {"parent": '6', "priority": 1, "isMatched": True, "isPositive": False, "isReachable": True, "root": '6', "isExternal": False, "blossomsID": 'B0'}, '4': {"parent": '3', "priority": 1, "isMatched": True, "isPositive": True, "isReachable": True, "root": '6', "isExternal": False, "blossomsID": 'B0'}, '5': {"parent": '7', "priority": 1, "isMatched": True, "isPositive": True, "isReachable": True, "root": '6', "isExternal": True, "blossomsID": 'B0'}, '6': {"parent": None, "priority": 1, "isMatched": False, "isPositive": True, "isReachable": True, "root": '6', "isExternal": False, "blossomsID": 'B0'},
-                       '7': {"parent": '6', "priority": 1, "isMatched": True, "isPositive": False, "isReachable": True, "root": '6', "isExternal": False, "blossomsID": 'B0'}, '8': {"parent": None, "priority": 1, "isMatched": True, "isPositive": None, "isReachable": False, "root": None, "isExternal": True, "blossomsID": -1}, '9': {"parent": None, "priority": 2, "isMatched": True, "isPositive": False, "isReachable": False, "root": None, "isExternal": True, "blossomsID": -1}, '10': {"parent": '12', "priority": 1, "isMatched": True, "isPositive": False, "isReachable": True, "root": '12', "isExternal": False, "blossomsID": 'B1'}, '11': {"parent": '10', "priority": 1, "isMatched": True, "isPositive": True, "isReachable": True, "root": '12', "isExternal": False, "blossomsID": 'B1'}, '12': {"parent": None, "priority": 1, "isMatched": False, "isPositive": True, "isReachable": True, "root": '12', "isExternal": False, "blossomsID": 'B1'}}
-        edges_attrs = {('1', '2'): {"isMatched": True}, ('2', '3'): {"isMatched": False}, ('3', '4'): {"isMatched": True}, ('3', '6'): {"isMatched": False}, ('4', '5'): {"isMatched": False}, ('5', '7'): {"isMatched": True}, ('6', '7'): {
-            "isMatched": False}, ('7', '11'): {"isMatched": False}, ('8', '9'): {"isMatched": True}, ('9', '10'): {"isMatched": False}, ('10', '11'): {"isMatched": True}, ('10', '12'): {"isMatched": False}, ('11', '12'): {"isMatched": False}}
+        nodes_attrs = {
+            "1": {
+                "parent": None,
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": None,
+                "isReachable": False,
+                "root": None,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "2": {
+                "parent": None,
+                "priority": 2,
+                "isMatched": True,
+                "isPositive": None,
+                "isReachable": False,
+                "root": None,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "3": {
+                "parent": "6",
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": True,
+                "root": "6",
+                "isExternal": False,
+                "blossomsID": "B0",
+            },
+            "4": {
+                "parent": "3",
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": True,
+                "isReachable": True,
+                "root": "6",
+                "isExternal": False,
+                "blossomsID": "B0",
+            },
+            "5": {
+                "parent": "7",
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": True,
+                "isReachable": True,
+                "root": "6",
+                "isExternal": True,
+                "blossomsID": "B0",
+            },
+            "6": {
+                "parent": None,
+                "priority": 1,
+                "isMatched": False,
+                "isPositive": True,
+                "isReachable": True,
+                "root": "6",
+                "isExternal": False,
+                "blossomsID": "B0",
+            },
+            "7": {
+                "parent": "6",
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": True,
+                "root": "6",
+                "isExternal": False,
+                "blossomsID": "B0",
+            },
+            "8": {
+                "parent": None,
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": None,
+                "isReachable": False,
+                "root": None,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "9": {
+                "parent": None,
+                "priority": 2,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "10": {
+                "parent": "12",
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": True,
+                "root": "12",
+                "isExternal": False,
+                "blossomsID": "B1",
+            },
+            "11": {
+                "parent": "10",
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": True,
+                "isReachable": True,
+                "root": "12",
+                "isExternal": False,
+                "blossomsID": "B1",
+            },
+            "12": {
+                "parent": None,
+                "priority": 1,
+                "isMatched": False,
+                "isPositive": True,
+                "isReachable": True,
+                "root": "12",
+                "isExternal": False,
+                "blossomsID": "B1",
+            },
+        }
+        edges_attrs = {
+            ("1", "2"): {"isMatched": True},
+            ("2", "3"): {"isMatched": False},
+            ("3", "4"): {"isMatched": True},
+            ("3", "6"): {"isMatched": False},
+            ("4", "5"): {"isMatched": False},
+            ("5", "7"): {"isMatched": True},
+            ("6", "7"): {"isMatched": False},
+            ("7", "11"): {"isMatched": False},
+            ("8", "9"): {"isMatched": True},
+            ("9", "10"): {"isMatched": False},
+            ("10", "11"): {"isMatched": True},
+            ("10", "12"): {"isMatched": False},
+            ("11", "12"): {"isMatched": False},
+        }
         G1.add_nodes_from(nodes)
         G1.add_edges_from(edges)
         nx.set_node_attributes(G1, nodes_attrs)
         nx.set_edge_attributes(G1, edges_attrs)
-        blossom = {'nodes': ['5', '4', '3', '6', '7'], 'Base': '6'}
-        assert algo.find_path_in_blossom(G1, blossom, False, '7') == ([
-            '7', '5', '4', '3', '6'], None)
+        blossom = {"nodes": ["5", "4", "3", "6", "7"], "Base": "6"}
+        assert algo.find_path_in_blossom(G1, blossom, False, "7") == (
+            ["7", "5", "4", "3", "6"],
+            None,
+        )
 
-        blossom = {'nodes': ['11', '10', '12'], 'Base': '12'}
-        assert algo.find_path_in_blossom(
-            G1, blossom, False, '11') == (['11', '10', '12'], None)
+        blossom = {"nodes": ["11", "10", "12"], "Base": "12"}
+        assert algo.find_path_in_blossom(G1, blossom, False, "11") == (
+            ["11", "10", "12"],
+            None,
+        )
 
     def test_find_path_to_base(self):
-        list = ['5', '4', '3', '6', '7']
-        u = '7'
-        base = '3'
+        list = ["5", "4", "3", "6", "7"]
+        u = "7"
+        base = "3"
         assert algo.paths_to_base(list, u, base) == (
-            ['7', '5', '4', '3'], ['7', '6', '3'])
-        assert algo.paths_to_base(['5', '4', '3', '6', '7'], '7', '3') == (
-            ['7', '5', '4', '3'], ['7', '6', '3'])
-        assert algo.paths_to_base(['5', '4', '3', '6', '7'], '5', '3') == (
-            ['5', '4', '3'], ['5', '7', '6', '3'])
-        assert algo.paths_to_base(['5', '4', '3', '6', '7'], '4', '3') == (
-            ['4', '3'], ['4', '5', '7', '6', '3'])
-        assert algo.paths_to_base(['1', '2', '3'], '2', '1') == (
-            ['2', '3', '1'], ['2', '1'])
-        assert algo.paths_to_base(['1', '2', '3'], '1', '1') == (['1'], ['1'])
-        assert algo.paths_to_base(['1', '2', '3'], '3', '1') == (
-            ['3', '1'], ['3', '2', '1'])
-        assert algo.paths_to_base(
-            ['1', '2', '3', '4'], '1', '1') == (['1'], ['1'])
-        assert algo.paths_to_base(['1', '2', '3', '4'], '2', '1') == (
-            ['2', '3', '4', '1'], ['2', '1'])
-        assert algo.paths_to_base(['1', '2', '3', '4'], '3', '1') == (
-            ['3', '4', '1'], ['3', '2', '1'])
-        assert algo.paths_to_base(['1', '2', '3', '4'], '4', '1') == (
-            ['4', '1'], ['4', '3', '2', '1'])
-        assert algo.paths_to_base(['1', '2', '3', '4', '5'], '5', '3') == (
-            ['5', '1', '2', '3'], ['5', '4', '3'])
+            ["7", "5", "4", "3"],
+            ["7", "6", "3"],
+        )
+        assert algo.paths_to_base(["5", "4", "3", "6", "7"], "7", "3") == (
+            ["7", "5", "4", "3"],
+            ["7", "6", "3"],
+        )
+        assert algo.paths_to_base(["5", "4", "3", "6", "7"], "5", "3") == (
+            ["5", "4", "3"],
+            ["5", "7", "6", "3"],
+        )
+        assert algo.paths_to_base(["5", "4", "3", "6", "7"], "4", "3") == (
+            ["4", "3"],
+            ["4", "5", "7", "6", "3"],
+        )
+        assert algo.paths_to_base(["1", "2", "3"], "2", "1") == (
+            ["2", "3", "1"],
+            ["2", "1"],
+        )
+        assert algo.paths_to_base(["1", "2", "3"], "1", "1") == (["1"], ["1"])
+        assert algo.paths_to_base(["1", "2", "3"], "3", "1") == (
+            ["3", "1"],
+            ["3", "2", "1"],
+        )
+        assert algo.paths_to_base(["1", "2", "3", "4"], "1", "1") == (["1"], ["1"])
+        assert algo.paths_to_base(["1", "2", "3", "4"], "2", "1") == (
+            ["2", "3", "4", "1"],
+            ["2", "1"],
+        )
+        assert algo.paths_to_base(["1", "2", "3", "4"], "3", "1") == (
+            ["3", "4", "1"],
+            ["3", "2", "1"],
+        )
+        assert algo.paths_to_base(["1", "2", "3", "4"], "4", "1") == (
+            ["4", "1"],
+            ["4", "3", "2", "1"],
+        )
+        assert algo.paths_to_base(["1", "2", "3", "4", "5"], "5", "3") == (
+            ["5", "1", "2", "3"],
+            ["5", "4", "3"],
+        )
+
 
     def test_find_path_to_root(self):
         G = nx.Graph()
-        nodes = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
-        edges = [('1', '2'), ('2', '3'), ('3', '4'), ('3', '6'), ('4', '5'), ('5', '7'), ('6', '7'),
-                 ('7', '11'), ('8', '9'), ('9', '10'), ('10', '11'), ('10', '12'), ('11', '12')]
-        nodes_attrs = {'1': {"parent": None, "priority": 1, "isMatched": False, "isPositive": True, "isReachable": True, "root": '1', "isExternal": True, "blossomsID": -1}, '2': {"parent": '1', "priority": 2, "isMatched": True, "isPositive": False, "isReachable": True, "root": '1', "isExternal": True, "blossomsID": -1}, '3': {"parent": '2', "priority": 1, "isMatched": True, "isPositive": True, "isReachable": True, "root": '1', "isExternal": False, "blossomsID": 'B0'}, '4': {"parent": '3', "priority": 1, "isMatched": True, "isPositive": False, "isReachable": True, "root": '1', "isExternal": False, "blossomsID": 'B0'}, '5': {"parent": '4', "priority": 1, "isMatched": True, "isPositive": True, "isReachable": True, "root": '1', "isExternal": False, "blossomsID": 'B0'}, '6': {"parent": '3', "priority": 1, "isMatched": True, "isPositive": False, "isReachable": True, "root": '1', "isExternal": False, "blossomsID": 'B0'},
-                       '7': {"parent": '6', "priority": 1, "isMatched": True, "isPositive": True, "isReachable": True, "root": '1', "isExternal": False, "blossomsID": 'B0'}, '8': {"parent": None, "priority": 1, "isMatched": False, "isPositive": True, "isReachable": True, "root": '8', "isExternal": True, "blossomsID": -1}, '9': {"parent": '8', "priority": 2, "isMatched": True, "isPositive": False, "isReachable": True, "root": '8', "isExternal": True, "blossomsID": -1}, '10': {"parent": '9', "priority": 1, "isMatched": True, "isPositive": True, "isReachable": True, "root": '8', "isExternal": False, "blossomsID": 'B1'}, '11': {"parent": '10', "priority": 1, "isMatched": True, "isPositive": False, "isReachable": True, "root": '8', "isExternal": False, "blossomsID": 'B1'}, '12': {"parent": '11', "priority": 1, "isMatched": True, "isPositive": True, "isReachable": True, "root": '8', "isExternal": False, "blossomsID": 'B1'}}
-        edges_attrs = {('1', '2'): {"isMatched": False}, ('2', '3'): {"isMatched": True}, ('3', '4'): {"isMatched": False}, ('3', '6'): {"isMatched": False}, ('4', '5'): {"isMatched": True}, ('5', '7'): {"isMatched": False}, ('6', '7'): {
-            "isMatched": True}, ('7', '11'): {"isMatched": False}, ('8', '9'): {"isMatched": False}, ('9', '10'): {"isMatched": True}, ('10', '11'): {"isMatched": False}, ('10', '12'): {"isMatched": False}, ('11', '12'): {"isMatched": True}}
+        nodes = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
+        edges = [
+            ("1", "2"),
+            ("2", "3"),
+            ("3", "4"),
+            ("3", "6"),
+            ("4", "5"),
+            ("5", "7"),
+            ("6", "7"),
+            ("7", "11"),
+            ("8", "9"),
+            ("9", "10"),
+            ("10", "11"),
+            ("10", "12"),
+            ("11", "12"),
+        ]
+        nodes_attrs = {
+            "1": {
+                "parent": None,
+                "priority": 1,
+                "isMatched": False,
+                "isPositive": True,
+                "isReachable": True,
+                "root": "1",
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "2": {
+                "parent": "1",
+                "priority": 2,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": True,
+                "root": "1",
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "3": {
+                "parent": "2",
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": True,
+                "isReachable": True,
+                "root": "1",
+                "isExternal": False,
+                "blossomsID": "B0",
+            },
+            "4": {
+                "parent": "3",
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": True,
+                "root": "1",
+                "isExternal": False,
+                "blossomsID": "B0",
+            },
+            "5": {
+                "parent": "4",
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": True,
+                "isReachable": True,
+                "root": "1",
+                "isExternal": False,
+                "blossomsID": "B0",
+            },
+            "6": {
+                "parent": "3",
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": True,
+                "root": "1",
+                "isExternal": False,
+                "blossomsID": "B0",
+            },
+            "7": {
+                "parent": "6",
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": True,
+                "isReachable": True,
+                "root": "1",
+                "isExternal": False,
+                "blossomsID": "B0",
+            },
+            "8": {
+                "parent": None,
+                "priority": 1,
+                "isMatched": False,
+                "isPositive": True,
+                "isReachable": True,
+                "root": "8",
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "9": {
+                "parent": "8",
+                "priority": 2,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": True,
+                "root": "8",
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "10": {
+                "parent": "9",
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": True,
+                "isReachable": True,
+                "root": "8",
+                "isExternal": False,
+                "blossomsID": "B1",
+            },
+            "11": {
+                "parent": "10",
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": True,
+                "root": "8",
+                "isExternal": False,
+                "blossomsID": "B1",
+            },
+            "12": {
+                "parent": "11",
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": True,
+                "isReachable": True,
+                "root": "8",
+                "isExternal": False,
+                "blossomsID": "B1",
+            },
+        }
+        edges_attrs = {
+            ("1", "2"): {"isMatched": False},
+            ("2", "3"): {"isMatched": True},
+            ("3", "4"): {"isMatched": False},
+            ("3", "6"): {"isMatched": False},
+            ("4", "5"): {"isMatched": True},
+            ("5", "7"): {"isMatched": False},
+            ("6", "7"): {"isMatched": True},
+            ("7", "11"): {"isMatched": False},
+            ("8", "9"): {"isMatched": False},
+            ("9", "10"): {"isMatched": True},
+            ("10", "11"): {"isMatched": False},
+            ("10", "12"): {"isMatched": False},
+            ("11", "12"): {"isMatched": True},
+        }
         G.add_nodes_from(nodes)
         G.add_edges_from(edges)
         nx.set_node_attributes(G, nodes_attrs)
         nx.set_edge_attributes(G, edges_attrs)
-        assert algo.find_path_to_root(G, {'B0': {'nodes': [
-                                      '5', '4', '3', '6', '7'], 'root': '1', 'isPositive': True, 'Base': '3'}}, '7', '11') == ['1', '2', '3', '6', '7']
-        assert algo.find_path_to_root(G, {'B1': {'nodes': [
-                                      '12', '11', '10'], 'root': '8', 'isPositive': True, 'Base': '10'}}, '11', '7') == ['8', '9', '10', '12', '11']
-
+        assert algo.find_path_to_root(
+            G,
+            {
+                "B0": {
+                    "nodes": ["5", "4", "3", "6", "7"],
+                    "root": "1",
+                    "isPositive": True,
+                    "Base": "3",
+                }
+            },
+            "7",
+            "11",
+        ) == ["1", "2", "3", "6", "7"]
+        assert algo.find_path_to_root(
+            G,
+            {
+                "B1": {
+                    "nodes": ["12", "11", "10"],
+                    "root": "8",
+                    "isPositive": True,
+                    "Base": "10",
+                }
+            },
+            "11",
+            "7",
+        ) == ["8", "9", "10", "12", "11"]
         # cases when the base's blossom does not have parent and the base is the root in some tree
         G = nx.Graph()
-        nodes = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
-        edges = [('1', '2'), ('2', '3'), ('3', '4'), ('3', '6'), ('4', '5'), ('5', '7'), ('6', '7'),
-                 ('7', '11'), ('8', '9'), ('9', '10'), ('10', '11'), ('10', '12'), ('11', '12')]
-        nodes_attrs = {'1': {"parent": None, "priority": 1, "isMatched": True, "isPositive": None, "isReachable": False, "root": None, "isExternal": True, "blossomsID": -1}, '2': {"parent": '1', "priority": 2, "isMatched": False, "isPositive": None, "isReachable": False, "root": None, "isExternal": True, "blossomsID": -1}, '3': {"parent": '6', "priority": 1, "isMatched": True, "isPositive": False, "isReachable": True, "root": '6', "isExternal": False, "blossomsID": 'B0'}, '4': {"parent": '3', "priority": 1, "isMatched": True, "isPositive": True, "isReachable": True, "root": '6', "isExternal": False, "blossomsID": 'B0'}, '5': {"parent": '4', "priority": 1, "isMatched": True, "isPositive": True, "isReachable": True, "root": '6', "isExternal": False, "blossomsID": 'B0'}, '6': {"parent": None, "priority": 1, "isMatched": False, "isPositive": True, "isReachable": True, "root": '6', "isExternal": False, "blossomsID": 'B0'},
-                       '7': {"parent": '6', "priority": 1, "isMatched": True, "isPositive": False, "isReachable": True, "root": '6', "isExternal": False, "blossomsID": 'B0'}, '8': {"parent": None, "priority": 1, "isMatched": True, "isPositive": None, "isReachable": False, "root": None, "isExternal": True, "blossomsID": -1}, '9': {"parent": None, "priority": 2, "isMatched": True, "isPositive": None, "isReachable": False, "root": None, "isExternal": True, "blossomsID": -1}, '10': {"parent": '12', "priority": 1, "isMatched": True, "isPositive": False, "isReachable": True, "root": '12', "isExternal": False, "blossomsID": 'B1'}, '11': {"parent": '10', "priority": 1, "isMatched": True, "isPositive": True, "isReachable": True, "root": '12', "isExternal": False, "blossomsID": 'B1'}, '12': {"parent": None, "priority": 1, "isMatched": False, "isPositive": True, "isReachable": True, "root": '12', "isExternal": False, "blossomsID": 'B1'}}
-        edges_attrs = {('1', '2'): {"isMatched": True}, ('2', '3'): {"isMatched": False}, ('3', '4'): {"isMatched": True}, ('3', '6'): {"isMatched": False}, ('4', '5'): {"isMatched": False}, ('5', '7'): {"isMatched": True}, ('6', '7'): {
-            "isMatched": False}, ('7', '11'): {"isMatched": False}, ('8', '9'): {"isMatched": True}, ('9', '10'): {"isMatched": False}, ('10', '11'): {"isMatched": True}, ('10', '12'): {"isMatched": False}, ('11', '12'): {"isMatched": False}}
+        nodes = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
+        edges = [
+            ("1", "2"),
+            ("2", "3"),
+            ("3", "4"),
+            ("3", "6"),
+            ("4", "5"),
+            ("5", "7"),
+            ("6", "7"),
+            ("7", "11"),
+            ("8", "9"),
+            ("9", "10"),
+            ("10", "11"),
+            ("10", "12"),
+            ("11", "12"),
+        ]
+        nodes_attrs = {
+            "1": {
+                "parent": None,
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": None,
+                "isReachable": False,
+                "root": None,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "2": {
+                "parent": "1",
+                "priority": 2,
+                "isMatched": False,
+                "isPositive": None,
+                "isReachable": False,
+                "root": None,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "3": {
+                "parent": "6",
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": True,
+                "root": "6",
+                "isExternal": False,
+                "blossomsID": "B0",
+            },
+            "4": {
+                "parent": "3",
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": True,
+                "isReachable": True,
+                "root": "6",
+                "isExternal": False,
+                "blossomsID": "B0",
+            },
+            "5": {
+                "parent": "4",
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": True,
+                "isReachable": True,
+                "root": "6",
+                "isExternal": False,
+                "blossomsID": "B0",
+            },
+            "6": {
+                "parent": None,
+                "priority": 1,
+                "isMatched": False,
+                "isPositive": True,
+                "isReachable": True,
+                "root": "6",
+                "isExternal": False,
+                "blossomsID": "B0",
+            },
+            "7": {
+                "parent": "6",
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": True,
+                "root": "6",
+                "isExternal": False,
+                "blossomsID": "B0",
+            },
+            "8": {
+                "parent": None,
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": None,
+                "isReachable": False,
+                "root": None,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "9": {
+                "parent": None,
+                "priority": 2,
+                "isMatched": True,
+                "isPositive": None,
+                "isReachable": False,
+                "root": None,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "10": {
+                "parent": "12",
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": True,
+                "root": "12",
+                "isExternal": False,
+                "blossomsID": "B1",
+            },
+            "11": {
+                "parent": "10",
+                "priority": 1,
+                "isMatched": True,
+                "isPositive": True,
+                "isReachable": True,
+                "root": "12",
+                "isExternal": False,
+                "blossomsID": "B1",
+            },
+            "12": {
+                "parent": None,
+                "priority": 1,
+                "isMatched": False,
+                "isPositive": True,
+                "isReachable": True,
+                "root": "12",
+                "isExternal": False,
+                "blossomsID": "B1",
+            },
+        }
+        edges_attrs = {
+            ("1", "2"): {"isMatched": True},
+            ("2", "3"): {"isMatched": False},
+            ("3", "4"): {"isMatched": True},
+            ("3", "6"): {"isMatched": False},
+            ("4", "5"): {"isMatched": False},
+            ("5", "7"): {"isMatched": True},
+            ("6", "7"): {"isMatched": False},
+            ("7", "11"): {"isMatched": False},
+            ("8", "9"): {"isMatched": True},
+            ("9", "10"): {"isMatched": False},
+            ("10", "11"): {"isMatched": True},
+            ("10", "12"): {"isMatched": False},
+            ("11", "12"): {"isMatched": False},
+        }
         G.add_nodes_from(nodes)
         G.add_edges_from(edges)
         nx.set_node_attributes(G, nodes_attrs)
         nx.set_edge_attributes(G, edges_attrs)
-        assert algo.find_path_to_root(G, {'B0': {'nodes': [
-                                      '5', '4', '3', '6', '7'], 'root': '1', 'isPositive': True, 'Base': '6'}}, '7', '11') == ['7', '5', '4', '3', '6']
-        assert algo.find_path_to_root(G, {'B1': {'nodes': [
-                                      '12', '11', '10'], 'root': '8', 'isPositive': True, 'Base': '12'}}, '11', '7') == ['11', '10', '12']
-
+        assert algo.find_path_to_root(
+            G,
+            {
+                "B0": {
+                    "nodes": ["5", "4", "3", "6", "7"],
+                    "root": "1",
+                    "isPositive": True,
+                    "Base": "6",
+                }
+            },
+            "7",
+            "11",
+        ) == ["7", "5", "4", "3", "6"]
+        assert algo.find_path_to_root(
+            G,
+            {
+                "B1": {
+                    "nodes": ["12", "11", "10"],
+                    "root": "8",
+                    "isPositive": True,
+                    "Base": "12",
+                }
+            },
+            "11",
+            "7",
+        ) == ["11", "10", "12"]
     def test_reverse_path(self):
         G = nx.Graph()
-        nodes = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
-        edges = [('1', '2'), ('2', '3'), ('3', '4'), ('4', '5'),
-                 ('5', '6'), ('6', '7'), ('7', '8'), ('7', '9'), ('7', '3')]
-        nodes_attrs = {'1': {"isMatched": False}, '2': {"isMatched": True}, '3': {"isMatched": True}, '4': {"isMatched": True}, '5': {"isMatched": True}, '6': {"isMatched": True}, '7': {
-            "isMatched": True}, '8': {"isMatched": False}, '9': {"isMatched": True}, '10': {"isMatched": True}, '11': {"isMatched": True}, '12': {"isMatched": True}}
-        edges_attrs = {('1', '2'): {"isMatched": False}, ('2', '3'): {"isMatched": True}, ('3', '4'): {"isMatched": False}, ('4', '5'): {"isMatched": True}, ('5', '6'): {
-            "isMatched": False}, ('6', '7'): {"isMatched": True}, ('7', '8'): {"isMatched": False}, ('7', '3'): {"isMatched": False}, ('7', '9'): {"isMatched": False}}
+        nodes = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
+        edges = [
+            ("1", "2"),
+            ("2", "3"),
+            ("3", "4"),
+            ("4", "5"),
+            ("5", "6"),
+            ("6", "7"),
+            ("7", "8"),
+            ("7", "9"),
+            ("7", "3"),
+        ]
+        nodes_attrs = {
+            "1": {"isMatched": False},
+            "2": {"isMatched": True},
+            "3": {"isMatched": True},
+            "4": {"isMatched": True},
+            "5": {"isMatched": True},
+            "6": {"isMatched": True},
+            "7": {"isMatched": True},
+            "8": {"isMatched": False},
+            "9": {"isMatched": True},
+            "10": {"isMatched": True},
+            "11": {"isMatched": True},
+            "12": {"isMatched": True},
+        }
+        edges_attrs = {
+            ("1", "2"): {"isMatched": False},
+            ("2", "3"): {"isMatched": True},
+            ("3", "4"): {"isMatched": False},
+            ("4", "5"): {"isMatched": True},
+            ("5", "6"): {"isMatched": False},
+            ("6", "7"): {"isMatched": True},
+            ("7", "8"): {"isMatched": False},
+            ("7", "3"): {"isMatched": False},
+            ("7", "9"): {"isMatched": False},
+        }
+
         G.add_nodes_from(nodes)
         G.add_edges_from(edges)
         nx.set_node_attributes(G, nodes_attrs)
         nx.set_edge_attributes(G, edges_attrs)
-        algo.reverse_path(G, ['1', '2', '3'])
+        algo.reverse_path(G, ["1", "2", "3"])
         matching_edges = nx.get_edge_attributes(G, "isMatched")
-        assert matching_edges[('1', '2')] == True
-        assert matching_edges[('2', '3')] == False
-        algo.reverse_path(G, ['8', '7', '6'])
+        assert matching_edges[("1", "2")] == True
+        assert matching_edges[("2", "3")] == False
+        algo.reverse_path(G, ["8", "7", "6"])
         matching_edges = nx.get_edge_attributes(G, "isMatched")
-        assert matching_edges[('7', '8')] == True
-        assert matching_edges[('6', '7')] == False
+        assert matching_edges[("7", "8")] == True
+        assert matching_edges[("6", "7")] == False
 
         G = nx.Graph()
-        nodes = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
-        edges = [('1', '2'), ('2', '3'), ('3', '4'), ('3', '6'), ('4', '5'), ('5', '7'), ('6', '7'),
-                 ('7', '11'), ('8', '9'), ('9', '10'), ('10', '11'), ('10', '12'), ('11', '12')]
-        nodes_attrs = {'1': {"priority": 1, "isMatched": False}, '2': {"priority": 2, "isMatched": True}, '3': {"priority": 1, "isMatched": True}, '4': {"priority": 1, "isMatched": True}, '5': {"priority": 1, "isMatched": True}, '6': {"priority": 1, "isMatched": True}, '7': {
-            "priority": 1, "isMatched": True}, '8': {"priority": 1, "isMatched": False}, '9': {"priority": 2, "isMatched": True}, '10': {"priority": 1, "isMatched": True}, '11': {"priority": 1, "isMatched": True}, '12': {"priority": 1, "isMatched": True}}
-        edges_attrs = {('1', '2'): {"isMatched": False}, ('2', '3'): {"isMatched": True}, ('3', '4'): {"isMatched": False}, ('3', '6'): {"isMatched": False}, ('4', '5'): {"isMatched": True}, ('5', '7'): {"isMatched": False}, ('6', '7'): {
-            "isMatched": True}, ('7', '11'): {"isMatched": False}, ('8', '9'): {"isMatched": False}, ('9', '10'): {"isMatched": True}, ('10', '11'): {"isMatched": False}, ('10', '12'): {"isMatched": False}, ('11', '12'): {"isMatched": True}}
+        nodes = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
+        edges = [
+            ("1", "2"),
+            ("2", "3"),
+            ("3", "4"),
+            ("3", "6"),
+            ("4", "5"),
+            ("5", "7"),
+            ("6", "7"),
+            ("7", "11"),
+            ("8", "9"),
+            ("9", "10"),
+            ("10", "11"),
+            ("10", "12"),
+            ("11", "12"),
+        ]
+        nodes_attrs = {
+            "1": {"priority": 1, "isMatched": False},
+            "2": {"priority": 2, "isMatched": True},
+            "3": {"priority": 1, "isMatched": True},
+            "4": {"priority": 1, "isMatched": True},
+            "5": {"priority": 1, "isMatched": True},
+            "6": {"priority": 1, "isMatched": True},
+            "7": {"priority": 1, "isMatched": True},
+            "8": {"priority": 1, "isMatched": False},
+            "9": {"priority": 2, "isMatched": True},
+            "10": {"priority": 1, "isMatched": True},
+            "11": {"priority": 1, "isMatched": True},
+            "12": {"priority": 1, "isMatched": True},
+        }
+        edges_attrs = {
+            ("1", "2"): {"isMatched": False},
+            ("2", "3"): {"isMatched": True},
+            ("3", "4"): {"isMatched": False},
+            ("3", "6"): {"isMatched": False},
+            ("4", "5"): {"isMatched": True},
+            ("5", "7"): {"isMatched": False},
+            ("6", "7"): {"isMatched": True},
+            ("7", "11"): {"isMatched": False},
+            ("8", "9"): {"isMatched": False},
+            ("9", "10"): {"isMatched": True},
+            ("10", "11"): {"isMatched": False},
+            ("10", "12"): {"isMatched": False},
+            ("11", "12"): {"isMatched": True},
+        }
         G.add_nodes_from(nodes)
         G.add_edges_from(edges)
         nx.set_node_attributes(G, nodes_attrs)
         nx.set_edge_attributes(G, edges_attrs)
         matching_edges = nx.get_edge_attributes(G, "isMatched")
         matching_info = nx.get_edge_attributes(G, "isMatched")
-        algo.reverse_path(
-            G, ['8', '9', '10', '12', '11', '7', '6', '3', '2', '1'])
-        matching_edges = nx.get_edge_attributes(G, "isMatched")
-        matching_edges[('8', '9')] == True
-        matching_edges[('9', '10')] == False
-        matching_edges[('10', '12')] == True
-        matching_edges[('11', '12')] == False
-        matching_edges[('7', '11')] == True
-        matching_edges[('6', '7')] == False
-        matching_edges[('3', '6')] == True
-        matching_edges[('2', '3')] == False
-        matching_edges[('1', '2')] == True
+        algo.reverse_path(G, ["8", "9", "10", "12", "11", "7", "6", "3", "2", "1"])
+        matching_edges[("8", "9")] == True
+        matching_edges[("9", "10")] == False
+        matching_edges[("10", "12")] == True
+        matching_edges[("11", "12")] == False
+        matching_edges[("7", "11")] == True
+        matching_edges[("6", "7")] == False
+        matching_edges[("3", "6")] == True
+        matching_edges[("2", "3")] == False
+        matching_edges[("1", "2")] == True
