@@ -5,8 +5,8 @@ Two heuristics to improve the quality of arrangements for maximum subgraph isomo
 
 import concurrent.futures
 from concurrent.futures import ThreadPoolExecutor
-from networkx.algorithms.malicious.fitness import fitness
-from networkx.algorithms.malicious.graph_reduction import build_RG_from_DG
+from networkx.algorithms.genetic_isomorphism.fitness import fitness
+from networkx.algorithms.genetic_isomorphism.graph_reduction import build_RG_from_DG
 from math import comb
 import networkx as nx
 import logging

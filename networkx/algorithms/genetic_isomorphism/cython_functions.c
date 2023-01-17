@@ -1382,7 +1382,7 @@ static const char __pyx_k_G1_sublists[] = "G1_sublists";
 static const char __pyx_k_G2_sublists[] = "G2_sublists";
 static const char __pyx_k_num_solutions[] = "num_solutions";
 static const char __pyx_k_cline_in_traceback[] = "cline_in_traceback";
-static const char __pyx_k_networkx_algorithms_malicious_fi[] = "networkx.algorithms.malicious.fitness";
+static const char __pyx_k_networkx_algorithms_genetic_isom[] = "networkx.algorithms.genetic_isomorphism.fitness";
 static PyObject *__pyx_n_s_ALPHA;
 static PyObject *__pyx_n_s_G1;
 static PyObject *__pyx_n_s_G1_nodes;
@@ -1403,7 +1403,7 @@ static PyObject *__pyx_n_s_keys;
 static PyObject *__pyx_n_s_main;
 static PyObject *__pyx_n_s_math;
 static PyObject *__pyx_n_s_name;
-static PyObject *__pyx_n_s_networkx_algorithms_malicious_fi;
+static PyObject *__pyx_n_s_networkx_algorithms_genetic_isom;
 static PyObject *__pyx_n_s_nodes;
 static PyObject *__pyx_n_s_num_solutions;
 static PyObject *__pyx_n_s_randint;
@@ -1796,8 +1796,8 @@ static PyObject *__pyx_pf_16cython_functions_count_equal_size_combinations(CYTHO
  * @cython.boundscheck(False)
  * @cython.wraparound(False)
  * cpdef generate_solutions(G1, G2, num_solutions: int):             # <<<<<<<<<<<<<<
- *     cdef list solutions = []
- *     cdef int min_nodes = min(len(G1.nodes), len(G2.nodes))
+ *     """
+ *     This function generate_solutions takes in two input graphs G1 and G2, and an integer num_solutions.
  */
 
 static PyObject *__pyx_pw_16cython_functions_3generate_solutions(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
@@ -1829,32 +1829,32 @@ static PyObject *__pyx_f_16cython_functions_generate_solutions(PyObject *__pyx_v
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("generate_solutions", 0);
 
-  /* "cython_functions.pyx":35
- * @cython.wraparound(False)
- * cpdef generate_solutions(G1, G2, num_solutions: int):
+  /* "cython_functions.pyx":41
+ *     It uses the python built-in function random.sample to select the random sub-graphs.
+ *     """
  *     cdef list solutions = []             # <<<<<<<<<<<<<<
  *     cdef int min_nodes = min(len(G1.nodes), len(G2.nodes))
  *     cdef int s
  */
-  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 35, __pyx_L1_error)
+  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 41, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_solutions = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "cython_functions.pyx":36
- * cpdef generate_solutions(G1, G2, num_solutions: int):
+  /* "cython_functions.pyx":42
+ *     """
  *     cdef list solutions = []
  *     cdef int min_nodes = min(len(G1.nodes), len(G2.nodes))             # <<<<<<<<<<<<<<
  *     cdef int s
  *     cdef int sub_graph_size
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_G2, __pyx_n_s_nodes); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 36, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_G2, __pyx_n_s_nodes); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 42, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyObject_Length(__pyx_t_1); if (unlikely(__pyx_t_2 == ((Py_ssize_t)-1))) __PYX_ERR(0, 36, __pyx_L1_error)
+  __pyx_t_2 = PyObject_Length(__pyx_t_1); if (unlikely(__pyx_t_2 == ((Py_ssize_t)-1))) __PYX_ERR(0, 42, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_G1, __pyx_n_s_nodes); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 36, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_G1, __pyx_n_s_nodes); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 42, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = PyObject_Length(__pyx_t_1); if (unlikely(__pyx_t_3 == ((Py_ssize_t)-1))) __PYX_ERR(0, 36, __pyx_L1_error)
+  __pyx_t_3 = PyObject_Length(__pyx_t_1); if (unlikely(__pyx_t_3 == ((Py_ssize_t)-1))) __PYX_ERR(0, 42, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   if (((__pyx_t_2 < __pyx_t_3) != 0)) {
     __pyx_t_4 = __pyx_t_2;
@@ -1863,31 +1863,31 @@ static PyObject *__pyx_f_16cython_functions_generate_solutions(PyObject *__pyx_v
   }
   __pyx_v_min_nodes = __pyx_t_4;
 
-  /* "cython_functions.pyx":41
+  /* "cython_functions.pyx":47
  *     cdef list sub1
  *     cdef list sub2
  *     for s in range(num_solutions):             # <<<<<<<<<<<<<<
  *         sub_graph_size = random.randint(1, min_nodes)
  *         sub1 = random.sample(G1.nodes, sub_graph_size)
  */
-  __pyx_t_5 = __Pyx_PyInt_As_long(__pyx_v_num_solutions); if (unlikely((__pyx_t_5 == (long)-1) && PyErr_Occurred())) __PYX_ERR(0, 41, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyInt_As_long(__pyx_v_num_solutions); if (unlikely((__pyx_t_5 == (long)-1) && PyErr_Occurred())) __PYX_ERR(0, 47, __pyx_L1_error)
   __pyx_t_6 = __pyx_t_5;
   for (__pyx_t_7 = 0; __pyx_t_7 < __pyx_t_6; __pyx_t_7+=1) {
     __pyx_v_s = __pyx_t_7;
 
-    /* "cython_functions.pyx":42
+    /* "cython_functions.pyx":48
  *     cdef list sub2
  *     for s in range(num_solutions):
  *         sub_graph_size = random.randint(1, min_nodes)             # <<<<<<<<<<<<<<
  *         sub1 = random.sample(G1.nodes, sub_graph_size)
  *         sub2 = random.sample(G2.nodes, sub_graph_size)
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_random); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 42, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_random); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 48, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
-    __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_randint); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 42, __pyx_L1_error)
+    __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_randint); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 48, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    __pyx_t_8 = __Pyx_PyInt_From_int(__pyx_v_min_nodes); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 42, __pyx_L1_error)
+    __pyx_t_8 = __Pyx_PyInt_From_int(__pyx_v_min_nodes); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 48, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
     __pyx_t_10 = NULL;
     __pyx_t_11 = 0;
@@ -1904,7 +1904,7 @@ static PyObject *__pyx_f_16cython_functions_generate_solutions(PyObject *__pyx_v
     #if CYTHON_FAST_PYCALL
     if (PyFunction_Check(__pyx_t_9)) {
       PyObject *__pyx_temp[3] = {__pyx_t_10, __pyx_int_1, __pyx_t_8};
-      __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_9, __pyx_temp+1-__pyx_t_11, 2+__pyx_t_11); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 42, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_9, __pyx_temp+1-__pyx_t_11, 2+__pyx_t_11); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 48, __pyx_L1_error)
       __Pyx_XDECREF(__pyx_t_10); __pyx_t_10 = 0;
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
@@ -1913,14 +1913,14 @@ static PyObject *__pyx_f_16cython_functions_generate_solutions(PyObject *__pyx_v
     #if CYTHON_FAST_PYCCALL
     if (__Pyx_PyFastCFunction_Check(__pyx_t_9)) {
       PyObject *__pyx_temp[3] = {__pyx_t_10, __pyx_int_1, __pyx_t_8};
-      __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_9, __pyx_temp+1-__pyx_t_11, 2+__pyx_t_11); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 42, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_9, __pyx_temp+1-__pyx_t_11, 2+__pyx_t_11); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 48, __pyx_L1_error)
       __Pyx_XDECREF(__pyx_t_10); __pyx_t_10 = 0;
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
     } else
     #endif
     {
-      __pyx_t_12 = PyTuple_New(2+__pyx_t_11); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 42, __pyx_L1_error)
+      __pyx_t_12 = PyTuple_New(2+__pyx_t_11); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 48, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_12);
       if (__pyx_t_10) {
         __Pyx_GIVEREF(__pyx_t_10); PyTuple_SET_ITEM(__pyx_t_12, 0, __pyx_t_10); __pyx_t_10 = NULL;
@@ -1931,30 +1931,30 @@ static PyObject *__pyx_f_16cython_functions_generate_solutions(PyObject *__pyx_v
       __Pyx_GIVEREF(__pyx_t_8);
       PyTuple_SET_ITEM(__pyx_t_12, 1+__pyx_t_11, __pyx_t_8);
       __pyx_t_8 = 0;
-      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_9, __pyx_t_12, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 42, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_9, __pyx_t_12, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 48, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
     }
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-    __pyx_t_11 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_11 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 42, __pyx_L1_error)
+    __pyx_t_11 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_11 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 48, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __pyx_v_sub_graph_size = __pyx_t_11;
 
-    /* "cython_functions.pyx":43
+    /* "cython_functions.pyx":49
  *     for s in range(num_solutions):
  *         sub_graph_size = random.randint(1, min_nodes)
  *         sub1 = random.sample(G1.nodes, sub_graph_size)             # <<<<<<<<<<<<<<
  *         sub2 = random.sample(G2.nodes, sub_graph_size)
  *         solutions.append((sub1, sub2))
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_9, __pyx_n_s_random); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 43, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_9, __pyx_n_s_random); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 49, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
-    __pyx_t_12 = __Pyx_PyObject_GetAttrStr(__pyx_t_9, __pyx_n_s_sample); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 43, __pyx_L1_error)
+    __pyx_t_12 = __Pyx_PyObject_GetAttrStr(__pyx_t_9, __pyx_n_s_sample); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 49, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_12);
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-    __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_v_G1, __pyx_n_s_nodes); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 43, __pyx_L1_error)
+    __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_v_G1, __pyx_n_s_nodes); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 49, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
-    __pyx_t_8 = __Pyx_PyInt_From_int(__pyx_v_sub_graph_size); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 43, __pyx_L1_error)
+    __pyx_t_8 = __Pyx_PyInt_From_int(__pyx_v_sub_graph_size); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 49, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
     __pyx_t_10 = NULL;
     __pyx_t_11 = 0;
@@ -1971,7 +1971,7 @@ static PyObject *__pyx_f_16cython_functions_generate_solutions(PyObject *__pyx_v
     #if CYTHON_FAST_PYCALL
     if (PyFunction_Check(__pyx_t_12)) {
       PyObject *__pyx_temp[3] = {__pyx_t_10, __pyx_t_9, __pyx_t_8};
-      __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_12, __pyx_temp+1-__pyx_t_11, 2+__pyx_t_11); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 43, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_12, __pyx_temp+1-__pyx_t_11, 2+__pyx_t_11); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 49, __pyx_L1_error)
       __Pyx_XDECREF(__pyx_t_10); __pyx_t_10 = 0;
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
@@ -1981,7 +1981,7 @@ static PyObject *__pyx_f_16cython_functions_generate_solutions(PyObject *__pyx_v
     #if CYTHON_FAST_PYCCALL
     if (__Pyx_PyFastCFunction_Check(__pyx_t_12)) {
       PyObject *__pyx_temp[3] = {__pyx_t_10, __pyx_t_9, __pyx_t_8};
-      __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_12, __pyx_temp+1-__pyx_t_11, 2+__pyx_t_11); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 43, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_12, __pyx_temp+1-__pyx_t_11, 2+__pyx_t_11); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 49, __pyx_L1_error)
       __Pyx_XDECREF(__pyx_t_10); __pyx_t_10 = 0;
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
@@ -1989,7 +1989,7 @@ static PyObject *__pyx_f_16cython_functions_generate_solutions(PyObject *__pyx_v
     } else
     #endif
     {
-      __pyx_t_13 = PyTuple_New(2+__pyx_t_11); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 43, __pyx_L1_error)
+      __pyx_t_13 = PyTuple_New(2+__pyx_t_11); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 49, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_13);
       if (__pyx_t_10) {
         __Pyx_GIVEREF(__pyx_t_10); PyTuple_SET_ITEM(__pyx_t_13, 0, __pyx_t_10); __pyx_t_10 = NULL;
@@ -2000,30 +2000,30 @@ static PyObject *__pyx_f_16cython_functions_generate_solutions(PyObject *__pyx_v
       PyTuple_SET_ITEM(__pyx_t_13, 1+__pyx_t_11, __pyx_t_8);
       __pyx_t_9 = 0;
       __pyx_t_8 = 0;
-      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_12, __pyx_t_13, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 43, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_12, __pyx_t_13, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 49, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
     }
     __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
-    if (!(likely(PyList_CheckExact(__pyx_t_1))||((__pyx_t_1) == Py_None)||((void)PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "list", Py_TYPE(__pyx_t_1)->tp_name), 0))) __PYX_ERR(0, 43, __pyx_L1_error)
+    if (!(likely(PyList_CheckExact(__pyx_t_1))||((__pyx_t_1) == Py_None)||((void)PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "list", Py_TYPE(__pyx_t_1)->tp_name), 0))) __PYX_ERR(0, 49, __pyx_L1_error)
     __Pyx_XDECREF_SET(__pyx_v_sub1, ((PyObject*)__pyx_t_1));
     __pyx_t_1 = 0;
 
-    /* "cython_functions.pyx":44
+    /* "cython_functions.pyx":50
  *         sub_graph_size = random.randint(1, min_nodes)
  *         sub1 = random.sample(G1.nodes, sub_graph_size)
  *         sub2 = random.sample(G2.nodes, sub_graph_size)             # <<<<<<<<<<<<<<
  *         solutions.append((sub1, sub2))
  *     return solutions
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_12, __pyx_n_s_random); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 44, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_12, __pyx_n_s_random); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 50, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_12);
-    __pyx_t_13 = __Pyx_PyObject_GetAttrStr(__pyx_t_12, __pyx_n_s_sample); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 44, __pyx_L1_error)
+    __pyx_t_13 = __Pyx_PyObject_GetAttrStr(__pyx_t_12, __pyx_n_s_sample); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 50, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_13);
     __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
-    __pyx_t_12 = __Pyx_PyObject_GetAttrStr(__pyx_v_G2, __pyx_n_s_nodes); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 44, __pyx_L1_error)
+    __pyx_t_12 = __Pyx_PyObject_GetAttrStr(__pyx_v_G2, __pyx_n_s_nodes); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 50, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_12);
-    __pyx_t_8 = __Pyx_PyInt_From_int(__pyx_v_sub_graph_size); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 44, __pyx_L1_error)
+    __pyx_t_8 = __Pyx_PyInt_From_int(__pyx_v_sub_graph_size); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 50, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
     __pyx_t_9 = NULL;
     __pyx_t_11 = 0;
@@ -2040,7 +2040,7 @@ static PyObject *__pyx_f_16cython_functions_generate_solutions(PyObject *__pyx_v
     #if CYTHON_FAST_PYCALL
     if (PyFunction_Check(__pyx_t_13)) {
       PyObject *__pyx_temp[3] = {__pyx_t_9, __pyx_t_12, __pyx_t_8};
-      __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_13, __pyx_temp+1-__pyx_t_11, 2+__pyx_t_11); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 44, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_13, __pyx_temp+1-__pyx_t_11, 2+__pyx_t_11); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 50, __pyx_L1_error)
       __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
@@ -2050,7 +2050,7 @@ static PyObject *__pyx_f_16cython_functions_generate_solutions(PyObject *__pyx_v
     #if CYTHON_FAST_PYCCALL
     if (__Pyx_PyFastCFunction_Check(__pyx_t_13)) {
       PyObject *__pyx_temp[3] = {__pyx_t_9, __pyx_t_12, __pyx_t_8};
-      __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_13, __pyx_temp+1-__pyx_t_11, 2+__pyx_t_11); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 44, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_13, __pyx_temp+1-__pyx_t_11, 2+__pyx_t_11); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 50, __pyx_L1_error)
       __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
@@ -2058,7 +2058,7 @@ static PyObject *__pyx_f_16cython_functions_generate_solutions(PyObject *__pyx_v
     } else
     #endif
     {
-      __pyx_t_10 = PyTuple_New(2+__pyx_t_11); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 44, __pyx_L1_error)
+      __pyx_t_10 = PyTuple_New(2+__pyx_t_11); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 50, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_10);
       if (__pyx_t_9) {
         __Pyx_GIVEREF(__pyx_t_9); PyTuple_SET_ITEM(__pyx_t_10, 0, __pyx_t_9); __pyx_t_9 = NULL;
@@ -2069,23 +2069,23 @@ static PyObject *__pyx_f_16cython_functions_generate_solutions(PyObject *__pyx_v
       PyTuple_SET_ITEM(__pyx_t_10, 1+__pyx_t_11, __pyx_t_8);
       __pyx_t_12 = 0;
       __pyx_t_8 = 0;
-      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_13, __pyx_t_10, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 44, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_13, __pyx_t_10, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 50, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
     }
     __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
-    if (!(likely(PyList_CheckExact(__pyx_t_1))||((__pyx_t_1) == Py_None)||((void)PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "list", Py_TYPE(__pyx_t_1)->tp_name), 0))) __PYX_ERR(0, 44, __pyx_L1_error)
+    if (!(likely(PyList_CheckExact(__pyx_t_1))||((__pyx_t_1) == Py_None)||((void)PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "list", Py_TYPE(__pyx_t_1)->tp_name), 0))) __PYX_ERR(0, 50, __pyx_L1_error)
     __Pyx_XDECREF_SET(__pyx_v_sub2, ((PyObject*)__pyx_t_1));
     __pyx_t_1 = 0;
 
-    /* "cython_functions.pyx":45
+    /* "cython_functions.pyx":51
  *         sub1 = random.sample(G1.nodes, sub_graph_size)
  *         sub2 = random.sample(G2.nodes, sub_graph_size)
  *         solutions.append((sub1, sub2))             # <<<<<<<<<<<<<<
  *     return solutions
  * 
  */
-    __pyx_t_1 = PyTuple_New(2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 45, __pyx_L1_error)
+    __pyx_t_1 = PyTuple_New(2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 51, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_INCREF(__pyx_v_sub1);
     __Pyx_GIVEREF(__pyx_v_sub1);
@@ -2093,11 +2093,11 @@ static PyObject *__pyx_f_16cython_functions_generate_solutions(PyObject *__pyx_v
     __Pyx_INCREF(__pyx_v_sub2);
     __Pyx_GIVEREF(__pyx_v_sub2);
     PyTuple_SET_ITEM(__pyx_t_1, 1, __pyx_v_sub2);
-    __pyx_t_14 = __Pyx_PyList_Append(__pyx_v_solutions, __pyx_t_1); if (unlikely(__pyx_t_14 == ((int)-1))) __PYX_ERR(0, 45, __pyx_L1_error)
+    __pyx_t_14 = __Pyx_PyList_Append(__pyx_v_solutions, __pyx_t_1); if (unlikely(__pyx_t_14 == ((int)-1))) __PYX_ERR(0, 51, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   }
 
-  /* "cython_functions.pyx":46
+  /* "cython_functions.pyx":52
  *         sub2 = random.sample(G2.nodes, sub_graph_size)
  *         solutions.append((sub1, sub2))
  *     return solutions             # <<<<<<<<<<<<<<
@@ -2113,8 +2113,8 @@ static PyObject *__pyx_f_16cython_functions_generate_solutions(PyObject *__pyx_v
  * @cython.boundscheck(False)
  * @cython.wraparound(False)
  * cpdef generate_solutions(G1, G2, num_solutions: int):             # <<<<<<<<<<<<<<
- *     cdef list solutions = []
- *     cdef int min_nodes = min(len(G1.nodes), len(G2.nodes))
+ *     """
+ *     This function generate_solutions takes in two input graphs G1 and G2, and an integer num_solutions.
  */
 
   /* function exit code */
@@ -2138,6 +2138,7 @@ static PyObject *__pyx_f_16cython_functions_generate_solutions(PyObject *__pyx_v
 
 /* Python wrapper */
 static PyObject *__pyx_pw_16cython_functions_3generate_solutions(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static char __pyx_doc_16cython_functions_2generate_solutions[] = "\n    This function generate_solutions takes in two input graphs G1 and G2, and an integer num_solutions. \n    It generates num_solutions number of random solutions by selecting random sub-graphs of both G1 and G2 with the same number of nodes. \n    The function returns a list of tuples, where each tuple contains the solutions of sub-graphs of G1 and G2. \n    It uses the python built-in function random.sample to select the random sub-graphs.\n    ";
 static PyObject *__pyx_pw_16cython_functions_3generate_solutions(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   PyObject *__pyx_v_G1 = 0;
   PyObject *__pyx_v_G2 = 0;
@@ -2237,12 +2238,12 @@ static PyObject *__pyx_pf_16cython_functions_2generate_solutions(CYTHON_UNUSED P
   return __pyx_r;
 }
 
-/* "cython_functions.pyx":51
+/* "cython_functions.pyx":57
  * @cython.boundscheck(False)
  * @cython.wraparound(False)
  * cpdef evaluate_solutions(G1, G2, solutions: List[Tuple[int, int]], ALPHA: float):             # <<<<<<<<<<<<<<
- *     cdef list solutions_with_fitness = []
- *     cdef int i
+ *     """
+ *     This function, evaluate_solutions, calculates the fitness score of each solution in a list of solutions,
  */
 
 static PyObject *__pyx_pw_16cython_functions_5evaluate_solutions(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
@@ -2277,19 +2278,19 @@ static PyObject *__pyx_f_16cython_functions_evaluate_solutions(PyObject *__pyx_v
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("evaluate_solutions", 0);
 
-  /* "cython_functions.pyx":52
- * @cython.wraparound(False)
- * cpdef evaluate_solutions(G1, G2, solutions: List[Tuple[int, int]], ALPHA: float):
+  /* "cython_functions.pyx":65
+ *     If all solutions' fitness scores are above ALPHA, it returns False, solutions_with_fitness
+ *     """
  *     cdef list solutions_with_fitness = []             # <<<<<<<<<<<<<<
  *     cdef int i
  *     cdef tuple solution
  */
-  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 52, __pyx_L1_error)
+  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 65, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_solutions_with_fitness = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "cython_functions.pyx":56
+  /* "cython_functions.pyx":69
  *     cdef tuple solution
  *     cdef float fitness_score
  *     for i, solution in enumerate(solutions):             # <<<<<<<<<<<<<<
@@ -2301,26 +2302,26 @@ static PyObject *__pyx_f_16cython_functions_evaluate_solutions(PyObject *__pyx_v
     __pyx_t_1 = __pyx_v_solutions; __Pyx_INCREF(__pyx_t_1); __pyx_t_3 = 0;
     __pyx_t_4 = NULL;
   } else {
-    __pyx_t_3 = -1; __pyx_t_1 = PyObject_GetIter(__pyx_v_solutions); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 56, __pyx_L1_error)
+    __pyx_t_3 = -1; __pyx_t_1 = PyObject_GetIter(__pyx_v_solutions); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 69, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_4 = Py_TYPE(__pyx_t_1)->tp_iternext; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 56, __pyx_L1_error)
+    __pyx_t_4 = Py_TYPE(__pyx_t_1)->tp_iternext; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 69, __pyx_L1_error)
   }
   for (;;) {
     if (likely(!__pyx_t_4)) {
       if (likely(PyList_CheckExact(__pyx_t_1))) {
         if (__pyx_t_3 >= PyList_GET_SIZE(__pyx_t_1)) break;
         #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_5 = PyList_GET_ITEM(__pyx_t_1, __pyx_t_3); __Pyx_INCREF(__pyx_t_5); __pyx_t_3++; if (unlikely(0 < 0)) __PYX_ERR(0, 56, __pyx_L1_error)
+        __pyx_t_5 = PyList_GET_ITEM(__pyx_t_1, __pyx_t_3); __Pyx_INCREF(__pyx_t_5); __pyx_t_3++; if (unlikely(0 < 0)) __PYX_ERR(0, 69, __pyx_L1_error)
         #else
-        __pyx_t_5 = PySequence_ITEM(__pyx_t_1, __pyx_t_3); __pyx_t_3++; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 56, __pyx_L1_error)
+        __pyx_t_5 = PySequence_ITEM(__pyx_t_1, __pyx_t_3); __pyx_t_3++; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 69, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_5);
         #endif
       } else {
         if (__pyx_t_3 >= PyTuple_GET_SIZE(__pyx_t_1)) break;
         #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_5 = PyTuple_GET_ITEM(__pyx_t_1, __pyx_t_3); __Pyx_INCREF(__pyx_t_5); __pyx_t_3++; if (unlikely(0 < 0)) __PYX_ERR(0, 56, __pyx_L1_error)
+        __pyx_t_5 = PyTuple_GET_ITEM(__pyx_t_1, __pyx_t_3); __Pyx_INCREF(__pyx_t_5); __pyx_t_3++; if (unlikely(0 < 0)) __PYX_ERR(0, 69, __pyx_L1_error)
         #else
-        __pyx_t_5 = PySequence_ITEM(__pyx_t_1, __pyx_t_3); __pyx_t_3++; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 56, __pyx_L1_error)
+        __pyx_t_5 = PySequence_ITEM(__pyx_t_1, __pyx_t_3); __pyx_t_3++; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 69, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_5);
         #endif
       }
@@ -2330,32 +2331,32 @@ static PyObject *__pyx_f_16cython_functions_evaluate_solutions(PyObject *__pyx_v
         PyObject* exc_type = PyErr_Occurred();
         if (exc_type) {
           if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-          else __PYX_ERR(0, 56, __pyx_L1_error)
+          else __PYX_ERR(0, 69, __pyx_L1_error)
         }
         break;
       }
       __Pyx_GOTREF(__pyx_t_5);
     }
-    if (!(likely(PyTuple_CheckExact(__pyx_t_5))||((__pyx_t_5) == Py_None)||((void)PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "tuple", Py_TYPE(__pyx_t_5)->tp_name), 0))) __PYX_ERR(0, 56, __pyx_L1_error)
+    if (!(likely(PyTuple_CheckExact(__pyx_t_5))||((__pyx_t_5) == Py_None)||((void)PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "tuple", Py_TYPE(__pyx_t_5)->tp_name), 0))) __PYX_ERR(0, 69, __pyx_L1_error)
     __Pyx_XDECREF_SET(__pyx_v_solution, ((PyObject*)__pyx_t_5));
     __pyx_t_5 = 0;
     __pyx_v_i = __pyx_t_2;
     __pyx_t_2 = (__pyx_t_2 + 1);
 
-    /* "cython_functions.pyx":58
+    /* "cython_functions.pyx":71
  *     for i, solution in enumerate(solutions):
  *         # Calculate the fitness score for the current solution
  *         fitness_score = fitness(G1.subgraph(solution[0]), G2.subgraph(             # <<<<<<<<<<<<<<
  *             solution[1]), len(G1.nodes), len(G1.edges), len(G2.nodes), len(G2.edges))
  *         solutions_with_fitness.append((solution, fitness_score))
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_fitness); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 58, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_fitness); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 71, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
-    __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_v_G1, __pyx_n_s_subgraph); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 58, __pyx_L1_error)
+    __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_v_G1, __pyx_n_s_subgraph); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 71, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
     if (unlikely(__pyx_v_solution == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      __PYX_ERR(0, 58, __pyx_L1_error)
+      __PYX_ERR(0, 71, __pyx_L1_error)
     }
     __pyx_t_9 = NULL;
     if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_8))) {
@@ -2369,13 +2370,13 @@ static PyObject *__pyx_f_16cython_functions_evaluate_solutions(PyObject *__pyx_v
     }
     __pyx_t_7 = (__pyx_t_9) ? __Pyx_PyObject_Call2Args(__pyx_t_8, __pyx_t_9, PyTuple_GET_ITEM(__pyx_v_solution, 0)) : __Pyx_PyObject_CallOneArg(__pyx_t_8, PyTuple_GET_ITEM(__pyx_v_solution, 0));
     __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
-    if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 58, __pyx_L1_error)
+    if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 71, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_v_G2, __pyx_n_s_subgraph); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 58, __pyx_L1_error)
+    __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_v_G2, __pyx_n_s_subgraph); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 71, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
 
-    /* "cython_functions.pyx":59
+    /* "cython_functions.pyx":72
  *         # Calculate the fitness score for the current solution
  *         fitness_score = fitness(G1.subgraph(solution[0]), G2.subgraph(
  *             solution[1]), len(G1.nodes), len(G1.edges), len(G2.nodes), len(G2.edges))             # <<<<<<<<<<<<<<
@@ -2384,7 +2385,7 @@ static PyObject *__pyx_f_16cython_functions_evaluate_solutions(PyObject *__pyx_v
  */
     if (unlikely(__pyx_v_solution == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      __PYX_ERR(0, 59, __pyx_L1_error)
+      __PYX_ERR(0, 72, __pyx_L1_error)
     }
     __pyx_t_10 = NULL;
     if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_9))) {
@@ -2398,32 +2399,32 @@ static PyObject *__pyx_f_16cython_functions_evaluate_solutions(PyObject *__pyx_v
     }
     __pyx_t_8 = (__pyx_t_10) ? __Pyx_PyObject_Call2Args(__pyx_t_9, __pyx_t_10, PyTuple_GET_ITEM(__pyx_v_solution, 1)) : __Pyx_PyObject_CallOneArg(__pyx_t_9, PyTuple_GET_ITEM(__pyx_v_solution, 1));
     __Pyx_XDECREF(__pyx_t_10); __pyx_t_10 = 0;
-    if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 58, __pyx_L1_error)
+    if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 71, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-    __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_v_G1, __pyx_n_s_nodes); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 59, __pyx_L1_error)
+    __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_v_G1, __pyx_n_s_nodes); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 72, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
-    __pyx_t_11 = PyObject_Length(__pyx_t_9); if (unlikely(__pyx_t_11 == ((Py_ssize_t)-1))) __PYX_ERR(0, 59, __pyx_L1_error)
+    __pyx_t_11 = PyObject_Length(__pyx_t_9); if (unlikely(__pyx_t_11 == ((Py_ssize_t)-1))) __PYX_ERR(0, 72, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-    __pyx_t_9 = PyInt_FromSsize_t(__pyx_t_11); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 59, __pyx_L1_error)
+    __pyx_t_9 = PyInt_FromSsize_t(__pyx_t_11); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 72, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
-    __pyx_t_10 = __Pyx_PyObject_GetAttrStr(__pyx_v_G1, __pyx_n_s_edges); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 59, __pyx_L1_error)
+    __pyx_t_10 = __Pyx_PyObject_GetAttrStr(__pyx_v_G1, __pyx_n_s_edges); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 72, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_10);
-    __pyx_t_11 = PyObject_Length(__pyx_t_10); if (unlikely(__pyx_t_11 == ((Py_ssize_t)-1))) __PYX_ERR(0, 59, __pyx_L1_error)
+    __pyx_t_11 = PyObject_Length(__pyx_t_10); if (unlikely(__pyx_t_11 == ((Py_ssize_t)-1))) __PYX_ERR(0, 72, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
-    __pyx_t_10 = PyInt_FromSsize_t(__pyx_t_11); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 59, __pyx_L1_error)
+    __pyx_t_10 = PyInt_FromSsize_t(__pyx_t_11); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 72, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_10);
-    __pyx_t_12 = __Pyx_PyObject_GetAttrStr(__pyx_v_G2, __pyx_n_s_nodes); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 59, __pyx_L1_error)
+    __pyx_t_12 = __Pyx_PyObject_GetAttrStr(__pyx_v_G2, __pyx_n_s_nodes); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 72, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_12);
-    __pyx_t_11 = PyObject_Length(__pyx_t_12); if (unlikely(__pyx_t_11 == ((Py_ssize_t)-1))) __PYX_ERR(0, 59, __pyx_L1_error)
+    __pyx_t_11 = PyObject_Length(__pyx_t_12); if (unlikely(__pyx_t_11 == ((Py_ssize_t)-1))) __PYX_ERR(0, 72, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
-    __pyx_t_12 = PyInt_FromSsize_t(__pyx_t_11); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 59, __pyx_L1_error)
+    __pyx_t_12 = PyInt_FromSsize_t(__pyx_t_11); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 72, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_12);
-    __pyx_t_13 = __Pyx_PyObject_GetAttrStr(__pyx_v_G2, __pyx_n_s_edges); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 59, __pyx_L1_error)
+    __pyx_t_13 = __Pyx_PyObject_GetAttrStr(__pyx_v_G2, __pyx_n_s_edges); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 72, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_13);
-    __pyx_t_11 = PyObject_Length(__pyx_t_13); if (unlikely(__pyx_t_11 == ((Py_ssize_t)-1))) __PYX_ERR(0, 59, __pyx_L1_error)
+    __pyx_t_11 = PyObject_Length(__pyx_t_13); if (unlikely(__pyx_t_11 == ((Py_ssize_t)-1))) __PYX_ERR(0, 72, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
-    __pyx_t_13 = PyInt_FromSsize_t(__pyx_t_11); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 59, __pyx_L1_error)
+    __pyx_t_13 = PyInt_FromSsize_t(__pyx_t_11); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 72, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_13);
     __pyx_t_14 = NULL;
     __pyx_t_15 = 0;
@@ -2440,7 +2441,7 @@ static PyObject *__pyx_f_16cython_functions_evaluate_solutions(PyObject *__pyx_v
     #if CYTHON_FAST_PYCALL
     if (PyFunction_Check(__pyx_t_6)) {
       PyObject *__pyx_temp[7] = {__pyx_t_14, __pyx_t_7, __pyx_t_8, __pyx_t_9, __pyx_t_10, __pyx_t_12, __pyx_t_13};
-      __pyx_t_5 = __Pyx_PyFunction_FastCall(__pyx_t_6, __pyx_temp+1-__pyx_t_15, 6+__pyx_t_15); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 58, __pyx_L1_error)
+      __pyx_t_5 = __Pyx_PyFunction_FastCall(__pyx_t_6, __pyx_temp+1-__pyx_t_15, 6+__pyx_t_15); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 71, __pyx_L1_error)
       __Pyx_XDECREF(__pyx_t_14); __pyx_t_14 = 0;
       __Pyx_GOTREF(__pyx_t_5);
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
@@ -2454,7 +2455,7 @@ static PyObject *__pyx_f_16cython_functions_evaluate_solutions(PyObject *__pyx_v
     #if CYTHON_FAST_PYCCALL
     if (__Pyx_PyFastCFunction_Check(__pyx_t_6)) {
       PyObject *__pyx_temp[7] = {__pyx_t_14, __pyx_t_7, __pyx_t_8, __pyx_t_9, __pyx_t_10, __pyx_t_12, __pyx_t_13};
-      __pyx_t_5 = __Pyx_PyCFunction_FastCall(__pyx_t_6, __pyx_temp+1-__pyx_t_15, 6+__pyx_t_15); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 58, __pyx_L1_error)
+      __pyx_t_5 = __Pyx_PyCFunction_FastCall(__pyx_t_6, __pyx_temp+1-__pyx_t_15, 6+__pyx_t_15); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 71, __pyx_L1_error)
       __Pyx_XDECREF(__pyx_t_14); __pyx_t_14 = 0;
       __Pyx_GOTREF(__pyx_t_5);
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
@@ -2466,7 +2467,7 @@ static PyObject *__pyx_f_16cython_functions_evaluate_solutions(PyObject *__pyx_v
     } else
     #endif
     {
-      __pyx_t_16 = PyTuple_New(6+__pyx_t_15); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 58, __pyx_L1_error)
+      __pyx_t_16 = PyTuple_New(6+__pyx_t_15); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 71, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_16);
       if (__pyx_t_14) {
         __Pyx_GIVEREF(__pyx_t_14); PyTuple_SET_ITEM(__pyx_t_16, 0, __pyx_t_14); __pyx_t_14 = NULL;
@@ -2489,33 +2490,33 @@ static PyObject *__pyx_f_16cython_functions_evaluate_solutions(PyObject *__pyx_v
       __pyx_t_10 = 0;
       __pyx_t_12 = 0;
       __pyx_t_13 = 0;
-      __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_6, __pyx_t_16, NULL); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 58, __pyx_L1_error)
+      __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_6, __pyx_t_16, NULL); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 71, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_5);
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
     }
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-    /* "cython_functions.pyx":58
+    /* "cython_functions.pyx":71
  *     for i, solution in enumerate(solutions):
  *         # Calculate the fitness score for the current solution
  *         fitness_score = fitness(G1.subgraph(solution[0]), G2.subgraph(             # <<<<<<<<<<<<<<
  *             solution[1]), len(G1.nodes), len(G1.edges), len(G2.nodes), len(G2.edges))
  *         solutions_with_fitness.append((solution, fitness_score))
  */
-    __pyx_t_17 = __pyx_PyFloat_AsFloat(__pyx_t_5); if (unlikely((__pyx_t_17 == (float)-1) && PyErr_Occurred())) __PYX_ERR(0, 58, __pyx_L1_error)
+    __pyx_t_17 = __pyx_PyFloat_AsFloat(__pyx_t_5); if (unlikely((__pyx_t_17 == (float)-1) && PyErr_Occurred())) __PYX_ERR(0, 71, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __pyx_v_fitness_score = __pyx_t_17;
 
-    /* "cython_functions.pyx":60
+    /* "cython_functions.pyx":73
  *         fitness_score = fitness(G1.subgraph(solution[0]), G2.subgraph(
  *             solution[1]), len(G1.nodes), len(G1.edges), len(G2.nodes), len(G2.edges))
  *         solutions_with_fitness.append((solution, fitness_score))             # <<<<<<<<<<<<<<
  *         # Check if the current solution has a fitness score less than or equal to ALPHA
  *         if fitness_score <= ALPHA:
  */
-    __pyx_t_5 = PyFloat_FromDouble(__pyx_v_fitness_score); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 60, __pyx_L1_error)
+    __pyx_t_5 = PyFloat_FromDouble(__pyx_v_fitness_score); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 73, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_6 = PyTuple_New(2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 60, __pyx_L1_error)
+    __pyx_t_6 = PyTuple_New(2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 73, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_INCREF(__pyx_v_solution);
     __Pyx_GIVEREF(__pyx_v_solution);
@@ -2523,10 +2524,10 @@ static PyObject *__pyx_f_16cython_functions_evaluate_solutions(PyObject *__pyx_v
     __Pyx_GIVEREF(__pyx_t_5);
     PyTuple_SET_ITEM(__pyx_t_6, 1, __pyx_t_5);
     __pyx_t_5 = 0;
-    __pyx_t_18 = __Pyx_PyList_Append(__pyx_v_solutions_with_fitness, __pyx_t_6); if (unlikely(__pyx_t_18 == ((int)-1))) __PYX_ERR(0, 60, __pyx_L1_error)
+    __pyx_t_18 = __Pyx_PyList_Append(__pyx_v_solutions_with_fitness, __pyx_t_6); if (unlikely(__pyx_t_18 == ((int)-1))) __PYX_ERR(0, 73, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-    /* "cython_functions.pyx":62
+    /* "cython_functions.pyx":75
  *         solutions_with_fitness.append((solution, fitness_score))
  *         # Check if the current solution has a fitness score less than or equal to ALPHA
  *         if fitness_score <= ALPHA:             # <<<<<<<<<<<<<<
@@ -2536,7 +2537,7 @@ static PyObject *__pyx_f_16cython_functions_evaluate_solutions(PyObject *__pyx_v
     __pyx_t_19 = ((__pyx_v_fitness_score <= __pyx_v_ALPHA) != 0);
     if (__pyx_t_19) {
 
-      /* "cython_functions.pyx":63
+      /* "cython_functions.pyx":76
  *         # Check if the current solution has a fitness score less than or equal to ALPHA
  *         if fitness_score <= ALPHA:
  *             return True, None             # <<<<<<<<<<<<<<
@@ -2549,7 +2550,7 @@ static PyObject *__pyx_f_16cython_functions_evaluate_solutions(PyObject *__pyx_v
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
       goto __pyx_L0;
 
-      /* "cython_functions.pyx":62
+      /* "cython_functions.pyx":75
  *         solutions_with_fitness.append((solution, fitness_score))
  *         # Check if the current solution has a fitness score less than or equal to ALPHA
  *         if fitness_score <= ALPHA:             # <<<<<<<<<<<<<<
@@ -2558,7 +2559,7 @@ static PyObject *__pyx_f_16cython_functions_evaluate_solutions(PyObject *__pyx_v
  */
     }
 
-    /* "cython_functions.pyx":56
+    /* "cython_functions.pyx":69
  *     cdef tuple solution
  *     cdef float fitness_score
  *     for i, solution in enumerate(solutions):             # <<<<<<<<<<<<<<
@@ -2568,7 +2569,7 @@ static PyObject *__pyx_f_16cython_functions_evaluate_solutions(PyObject *__pyx_v
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "cython_functions.pyx":64
+  /* "cython_functions.pyx":77
  *         if fitness_score <= ALPHA:
  *             return True, None
  *     return False, solutions_with_fitness             # <<<<<<<<<<<<<<
@@ -2576,7 +2577,7 @@ static PyObject *__pyx_f_16cython_functions_evaluate_solutions(PyObject *__pyx_v
  * 
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = PyTuple_New(2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 64, __pyx_L1_error)
+  __pyx_t_1 = PyTuple_New(2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 77, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_INCREF(Py_False);
   __Pyx_GIVEREF(Py_False);
@@ -2588,12 +2589,12 @@ static PyObject *__pyx_f_16cython_functions_evaluate_solutions(PyObject *__pyx_v
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "cython_functions.pyx":51
+  /* "cython_functions.pyx":57
  * @cython.boundscheck(False)
  * @cython.wraparound(False)
  * cpdef evaluate_solutions(G1, G2, solutions: List[Tuple[int, int]], ALPHA: float):             # <<<<<<<<<<<<<<
- *     cdef list solutions_with_fitness = []
- *     cdef int i
+ *     """
+ *     This function, evaluate_solutions, calculates the fitness score of each solution in a list of solutions,
  */
 
   /* function exit code */
@@ -2621,6 +2622,7 @@ static PyObject *__pyx_f_16cython_functions_evaluate_solutions(PyObject *__pyx_v
 
 /* Python wrapper */
 static PyObject *__pyx_pw_16cython_functions_5evaluate_solutions(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static char __pyx_doc_16cython_functions_4evaluate_solutions[] = "\n    This function, evaluate_solutions, calculates the fitness score of each solution in a list of solutions, \n    and returns a list of tuples with the solutions and their fitness scores. \n    It also checks if any solution's fitness score is less than or equal to a threshold value ALPHA, \n    and if so, logs a warning message and returns True, None. \n    If all solutions' fitness scores are above ALPHA, it returns False, solutions_with_fitness\n    ";
 static PyObject *__pyx_pw_16cython_functions_5evaluate_solutions(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   PyObject *__pyx_v_G1 = 0;
   PyObject *__pyx_v_G2 = 0;
@@ -2659,23 +2661,23 @@ static PyObject *__pyx_pw_16cython_functions_5evaluate_solutions(PyObject *__pyx
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_G2)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("evaluate_solutions", 1, 4, 4, 1); __PYX_ERR(0, 51, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("evaluate_solutions", 1, 4, 4, 1); __PYX_ERR(0, 57, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  2:
         if (likely((values[2] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_solutions)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("evaluate_solutions", 1, 4, 4, 2); __PYX_ERR(0, 51, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("evaluate_solutions", 1, 4, 4, 2); __PYX_ERR(0, 57, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  3:
         if (likely((values[3] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_ALPHA)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("evaluate_solutions", 1, 4, 4, 3); __PYX_ERR(0, 51, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("evaluate_solutions", 1, 4, 4, 3); __PYX_ERR(0, 57, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "evaluate_solutions") < 0)) __PYX_ERR(0, 51, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "evaluate_solutions") < 0)) __PYX_ERR(0, 57, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 4) {
       goto __pyx_L5_argtuple_error;
@@ -2688,11 +2690,11 @@ static PyObject *__pyx_pw_16cython_functions_5evaluate_solutions(PyObject *__pyx
     __pyx_v_G1 = values[0];
     __pyx_v_G2 = values[1];
     __pyx_v_solutions = values[2];
-    __pyx_v_ALPHA = __pyx_PyFloat_AsDouble(values[3]); if (unlikely((__pyx_v_ALPHA == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 51, __pyx_L3_error)
+    __pyx_v_ALPHA = __pyx_PyFloat_AsDouble(values[3]); if (unlikely((__pyx_v_ALPHA == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 57, __pyx_L3_error)
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("evaluate_solutions", 1, 4, 4, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 51, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("evaluate_solutions", 1, 4, 4, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 57, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("cython_functions.evaluate_solutions", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -2714,7 +2716,7 @@ static PyObject *__pyx_pf_16cython_functions_4evaluate_solutions(CYTHON_UNUSED P
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("evaluate_solutions", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_16cython_functions_evaluate_solutions(__pyx_v_G1, __pyx_v_G2, __pyx_v_solutions, __pyx_v_ALPHA, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 51, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_16cython_functions_evaluate_solutions(__pyx_v_G1, __pyx_v_G2, __pyx_v_solutions, __pyx_v_ALPHA, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 57, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -2731,12 +2733,12 @@ static PyObject *__pyx_pf_16cython_functions_4evaluate_solutions(CYTHON_UNUSED P
   return __pyx_r;
 }
 
-/* "cython_functions.pyx":69
+/* "cython_functions.pyx":82
  * @cython.boundscheck(False)
  * @cython.wraparound(False)
  * cpdef crossover(list G1_nodes, list G2_nodes, dict G1_sublists, dict G2_sublists, int num_solutions):             # <<<<<<<<<<<<<<
- *     cdef list new_solutions = []
- *     cdef int count_new_solutions = 0
+ *     """
+ *     This function uses a genetic algorithm to generate new solutions for subgraph isomorphism between two input graphs (G1 and G2).
  */
 
 static PyObject *__pyx_pw_16cython_functions_7crossover(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
@@ -2763,20 +2765,20 @@ static PyObject *__pyx_f_16cython_functions_crossover(PyObject *__pyx_v_G1_nodes
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("crossover", 0);
 
-  /* "cython_functions.pyx":70
- * @cython.wraparound(False)
- * cpdef crossover(list G1_nodes, list G2_nodes, dict G1_sublists, dict G2_sublists, int num_solutions):
+  /* "cython_functions.pyx":89
+ *     The new solutions are returned as a list of tuples, each containing a subgraph from G1 and its corresponding subgraph from G2.
+ *     """
  *     cdef list new_solutions = []             # <<<<<<<<<<<<<<
  *     cdef int count_new_solutions = 0
  *     while count_new_solutions < num_solutions:
  */
-  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 70, __pyx_L1_error)
+  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 89, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_new_solutions = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "cython_functions.pyx":71
- * cpdef crossover(list G1_nodes, list G2_nodes, dict G1_sublists, dict G2_sublists, int num_solutions):
+  /* "cython_functions.pyx":90
+ *     """
  *     cdef list new_solutions = []
  *     cdef int count_new_solutions = 0             # <<<<<<<<<<<<<<
  *     while count_new_solutions < num_solutions:
@@ -2784,7 +2786,7 @@ static PyObject *__pyx_f_16cython_functions_crossover(PyObject *__pyx_v_G1_nodes
  */
   __pyx_v_count_new_solutions = 0;
 
-  /* "cython_functions.pyx":72
+  /* "cython_functions.pyx":91
  *     cdef list new_solutions = []
  *     cdef int count_new_solutions = 0
  *     while count_new_solutions < num_solutions:             # <<<<<<<<<<<<<<
@@ -2795,25 +2797,25 @@ static PyObject *__pyx_f_16cython_functions_crossover(PyObject *__pyx_v_G1_nodes
     __pyx_t_2 = ((__pyx_v_count_new_solutions < __pyx_v_num_solutions) != 0);
     if (!__pyx_t_2) break;
 
-    /* "cython_functions.pyx":73
+    /* "cython_functions.pyx":92
  *     cdef int count_new_solutions = 0
  *     while count_new_solutions < num_solutions:
  *         sub_graph_size = random.choice(list(G1_sublists.keys()))             # <<<<<<<<<<<<<<
  *         e1 = random.choice(G1_sublists[sub_graph_size])
  *         e2 = random.choice(G2_sublists[sub_graph_size])
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_random); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 73, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_random); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 92, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_choice); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 73, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_choice); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 92, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     if (unlikely(__pyx_v_G1_sublists == Py_None)) {
       PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "keys");
-      __PYX_ERR(0, 73, __pyx_L1_error)
+      __PYX_ERR(0, 92, __pyx_L1_error)
     }
-    __pyx_t_3 = __Pyx_PyDict_Keys(__pyx_v_G1_sublists); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 73, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyDict_Keys(__pyx_v_G1_sublists); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 92, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_5 = PySequence_List(__pyx_t_3); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 73, __pyx_L1_error)
+    __pyx_t_5 = PySequence_List(__pyx_t_3); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 92, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __pyx_t_3 = NULL;
@@ -2829,29 +2831,29 @@ static PyObject *__pyx_f_16cython_functions_crossover(PyObject *__pyx_v_G1_nodes
     __pyx_t_1 = (__pyx_t_3) ? __Pyx_PyObject_Call2Args(__pyx_t_4, __pyx_t_3, __pyx_t_5) : __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_5);
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 73, __pyx_L1_error)
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 92, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_XDECREF_SET(__pyx_v_sub_graph_size, __pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "cython_functions.pyx":74
+    /* "cython_functions.pyx":93
  *     while count_new_solutions < num_solutions:
  *         sub_graph_size = random.choice(list(G1_sublists.keys()))
  *         e1 = random.choice(G1_sublists[sub_graph_size])             # <<<<<<<<<<<<<<
  *         e2 = random.choice(G2_sublists[sub_graph_size])
  *         if (e1, e2) not in new_solutions:
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_random); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 74, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_random); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 93, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_choice); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 74, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_choice); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 93, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     if (unlikely(__pyx_v_G1_sublists == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      __PYX_ERR(0, 74, __pyx_L1_error)
+      __PYX_ERR(0, 93, __pyx_L1_error)
     }
-    __pyx_t_4 = __Pyx_PyDict_GetItem(__pyx_v_G1_sublists, __pyx_v_sub_graph_size); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 74, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyDict_GetItem(__pyx_v_G1_sublists, __pyx_v_sub_graph_size); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 93, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __pyx_t_3 = NULL;
     if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_5))) {
@@ -2866,29 +2868,29 @@ static PyObject *__pyx_f_16cython_functions_crossover(PyObject *__pyx_v_G1_nodes
     __pyx_t_1 = (__pyx_t_3) ? __Pyx_PyObject_Call2Args(__pyx_t_5, __pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallOneArg(__pyx_t_5, __pyx_t_4);
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 74, __pyx_L1_error)
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 93, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_XDECREF_SET(__pyx_v_e1, __pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "cython_functions.pyx":75
+    /* "cython_functions.pyx":94
  *         sub_graph_size = random.choice(list(G1_sublists.keys()))
  *         e1 = random.choice(G1_sublists[sub_graph_size])
  *         e2 = random.choice(G2_sublists[sub_graph_size])             # <<<<<<<<<<<<<<
  *         if (e1, e2) not in new_solutions:
  *             new_solutions.append((e1, e2))
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_random); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 75, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_random); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 94, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_choice); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 75, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_choice); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 94, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     if (unlikely(__pyx_v_G2_sublists == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      __PYX_ERR(0, 75, __pyx_L1_error)
+      __PYX_ERR(0, 94, __pyx_L1_error)
     }
-    __pyx_t_5 = __Pyx_PyDict_GetItem(__pyx_v_G2_sublists, __pyx_v_sub_graph_size); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 75, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyDict_GetItem(__pyx_v_G2_sublists, __pyx_v_sub_graph_size); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 94, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __pyx_t_3 = NULL;
     if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_4))) {
@@ -2903,20 +2905,20 @@ static PyObject *__pyx_f_16cython_functions_crossover(PyObject *__pyx_v_G1_nodes
     __pyx_t_1 = (__pyx_t_3) ? __Pyx_PyObject_Call2Args(__pyx_t_4, __pyx_t_3, __pyx_t_5) : __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_5);
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 75, __pyx_L1_error)
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 94, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_XDECREF_SET(__pyx_v_e2, __pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "cython_functions.pyx":76
+    /* "cython_functions.pyx":95
  *         e1 = random.choice(G1_sublists[sub_graph_size])
  *         e2 = random.choice(G2_sublists[sub_graph_size])
  *         if (e1, e2) not in new_solutions:             # <<<<<<<<<<<<<<
  *             new_solutions.append((e1, e2))
  *         else:
  */
-    __pyx_t_1 = PyTuple_New(2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 76, __pyx_L1_error)
+    __pyx_t_1 = PyTuple_New(2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 95, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_INCREF(__pyx_v_e1);
     __Pyx_GIVEREF(__pyx_v_e1);
@@ -2924,19 +2926,19 @@ static PyObject *__pyx_f_16cython_functions_crossover(PyObject *__pyx_v_G1_nodes
     __Pyx_INCREF(__pyx_v_e2);
     __Pyx_GIVEREF(__pyx_v_e2);
     PyTuple_SET_ITEM(__pyx_t_1, 1, __pyx_v_e2);
-    __pyx_t_2 = (__Pyx_PySequence_ContainsTF(__pyx_t_1, __pyx_v_new_solutions, Py_NE)); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 76, __pyx_L1_error)
+    __pyx_t_2 = (__Pyx_PySequence_ContainsTF(__pyx_t_1, __pyx_v_new_solutions, Py_NE)); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 95, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __pyx_t_6 = (__pyx_t_2 != 0);
     if (__pyx_t_6) {
 
-      /* "cython_functions.pyx":77
+      /* "cython_functions.pyx":96
  *         e2 = random.choice(G2_sublists[sub_graph_size])
  *         if (e1, e2) not in new_solutions:
  *             new_solutions.append((e1, e2))             # <<<<<<<<<<<<<<
  *         else:
  *             new_e1 = random.sample(G1_nodes, sub_graph_size)
  */
-      __pyx_t_1 = PyTuple_New(2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 77, __pyx_L1_error)
+      __pyx_t_1 = PyTuple_New(2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 96, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_INCREF(__pyx_v_e1);
       __Pyx_GIVEREF(__pyx_v_e1);
@@ -2944,10 +2946,10 @@ static PyObject *__pyx_f_16cython_functions_crossover(PyObject *__pyx_v_G1_nodes
       __Pyx_INCREF(__pyx_v_e2);
       __Pyx_GIVEREF(__pyx_v_e2);
       PyTuple_SET_ITEM(__pyx_t_1, 1, __pyx_v_e2);
-      __pyx_t_7 = __Pyx_PyList_Append(__pyx_v_new_solutions, __pyx_t_1); if (unlikely(__pyx_t_7 == ((int)-1))) __PYX_ERR(0, 77, __pyx_L1_error)
+      __pyx_t_7 = __Pyx_PyList_Append(__pyx_v_new_solutions, __pyx_t_1); if (unlikely(__pyx_t_7 == ((int)-1))) __PYX_ERR(0, 96, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "cython_functions.pyx":76
+      /* "cython_functions.pyx":95
  *         e1 = random.choice(G1_sublists[sub_graph_size])
  *         e2 = random.choice(G2_sublists[sub_graph_size])
  *         if (e1, e2) not in new_solutions:             # <<<<<<<<<<<<<<
@@ -2957,7 +2959,7 @@ static PyObject *__pyx_f_16cython_functions_crossover(PyObject *__pyx_v_G1_nodes
       goto __pyx_L5;
     }
 
-    /* "cython_functions.pyx":79
+    /* "cython_functions.pyx":98
  *             new_solutions.append((e1, e2))
  *         else:
  *             new_e1 = random.sample(G1_nodes, sub_graph_size)             # <<<<<<<<<<<<<<
@@ -2965,9 +2967,9 @@ static PyObject *__pyx_f_16cython_functions_crossover(PyObject *__pyx_v_G1_nodes
  *             new_solutions.append((new_e1, new_e2))
  */
     /*else*/ {
-      __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_random); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 79, __pyx_L1_error)
+      __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_random); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 98, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
-      __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_sample); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 79, __pyx_L1_error)
+      __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_sample); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 98, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_5);
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       __pyx_t_4 = NULL;
@@ -2985,7 +2987,7 @@ static PyObject *__pyx_f_16cython_functions_crossover(PyObject *__pyx_v_G1_nodes
       #if CYTHON_FAST_PYCALL
       if (PyFunction_Check(__pyx_t_5)) {
         PyObject *__pyx_temp[3] = {__pyx_t_4, __pyx_v_G1_nodes, __pyx_v_sub_graph_size};
-        __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_5, __pyx_temp+1-__pyx_t_8, 2+__pyx_t_8); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 79, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_5, __pyx_temp+1-__pyx_t_8, 2+__pyx_t_8); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 98, __pyx_L1_error)
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
         __Pyx_GOTREF(__pyx_t_1);
       } else
@@ -2993,13 +2995,13 @@ static PyObject *__pyx_f_16cython_functions_crossover(PyObject *__pyx_v_G1_nodes
       #if CYTHON_FAST_PYCCALL
       if (__Pyx_PyFastCFunction_Check(__pyx_t_5)) {
         PyObject *__pyx_temp[3] = {__pyx_t_4, __pyx_v_G1_nodes, __pyx_v_sub_graph_size};
-        __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_5, __pyx_temp+1-__pyx_t_8, 2+__pyx_t_8); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 79, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_5, __pyx_temp+1-__pyx_t_8, 2+__pyx_t_8); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 98, __pyx_L1_error)
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
         __Pyx_GOTREF(__pyx_t_1);
       } else
       #endif
       {
-        __pyx_t_3 = PyTuple_New(2+__pyx_t_8); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 79, __pyx_L1_error)
+        __pyx_t_3 = PyTuple_New(2+__pyx_t_8); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 98, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_3);
         if (__pyx_t_4) {
           __Pyx_GIVEREF(__pyx_t_4); PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_4); __pyx_t_4 = NULL;
@@ -3010,7 +3012,7 @@ static PyObject *__pyx_f_16cython_functions_crossover(PyObject *__pyx_v_G1_nodes
         __Pyx_INCREF(__pyx_v_sub_graph_size);
         __Pyx_GIVEREF(__pyx_v_sub_graph_size);
         PyTuple_SET_ITEM(__pyx_t_3, 1+__pyx_t_8, __pyx_v_sub_graph_size);
-        __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_3, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 79, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_3, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 98, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
       }
@@ -3018,16 +3020,16 @@ static PyObject *__pyx_f_16cython_functions_crossover(PyObject *__pyx_v_G1_nodes
       __Pyx_XDECREF_SET(__pyx_v_new_e1, __pyx_t_1);
       __pyx_t_1 = 0;
 
-      /* "cython_functions.pyx":80
+      /* "cython_functions.pyx":99
  *         else:
  *             new_e1 = random.sample(G1_nodes, sub_graph_size)
  *             new_e2 = random.sample(G2_nodes, sub_graph_size)             # <<<<<<<<<<<<<<
  *             new_solutions.append((new_e1, new_e2))
  *         count_new_solutions += 1
  */
-      __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_random); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 80, __pyx_L1_error)
+      __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_random); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 99, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_5);
-      __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_sample); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 80, __pyx_L1_error)
+      __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_sample); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 99, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_3);
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
       __pyx_t_5 = NULL;
@@ -3045,7 +3047,7 @@ static PyObject *__pyx_f_16cython_functions_crossover(PyObject *__pyx_v_G1_nodes
       #if CYTHON_FAST_PYCALL
       if (PyFunction_Check(__pyx_t_3)) {
         PyObject *__pyx_temp[3] = {__pyx_t_5, __pyx_v_G2_nodes, __pyx_v_sub_graph_size};
-        __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_8, 2+__pyx_t_8); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 80, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_8, 2+__pyx_t_8); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 99, __pyx_L1_error)
         __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
         __Pyx_GOTREF(__pyx_t_1);
       } else
@@ -3053,13 +3055,13 @@ static PyObject *__pyx_f_16cython_functions_crossover(PyObject *__pyx_v_G1_nodes
       #if CYTHON_FAST_PYCCALL
       if (__Pyx_PyFastCFunction_Check(__pyx_t_3)) {
         PyObject *__pyx_temp[3] = {__pyx_t_5, __pyx_v_G2_nodes, __pyx_v_sub_graph_size};
-        __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_8, 2+__pyx_t_8); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 80, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_8, 2+__pyx_t_8); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 99, __pyx_L1_error)
         __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
         __Pyx_GOTREF(__pyx_t_1);
       } else
       #endif
       {
-        __pyx_t_4 = PyTuple_New(2+__pyx_t_8); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 80, __pyx_L1_error)
+        __pyx_t_4 = PyTuple_New(2+__pyx_t_8); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 99, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_4);
         if (__pyx_t_5) {
           __Pyx_GIVEREF(__pyx_t_5); PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_5); __pyx_t_5 = NULL;
@@ -3070,7 +3072,7 @@ static PyObject *__pyx_f_16cython_functions_crossover(PyObject *__pyx_v_G1_nodes
         __Pyx_INCREF(__pyx_v_sub_graph_size);
         __Pyx_GIVEREF(__pyx_v_sub_graph_size);
         PyTuple_SET_ITEM(__pyx_t_4, 1+__pyx_t_8, __pyx_v_sub_graph_size);
-        __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 80, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 99, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
         __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       }
@@ -3078,14 +3080,14 @@ static PyObject *__pyx_f_16cython_functions_crossover(PyObject *__pyx_v_G1_nodes
       __Pyx_XDECREF_SET(__pyx_v_new_e2, __pyx_t_1);
       __pyx_t_1 = 0;
 
-      /* "cython_functions.pyx":81
+      /* "cython_functions.pyx":100
  *             new_e1 = random.sample(G1_nodes, sub_graph_size)
  *             new_e2 = random.sample(G2_nodes, sub_graph_size)
  *             new_solutions.append((new_e1, new_e2))             # <<<<<<<<<<<<<<
  *         count_new_solutions += 1
  *     return new_solutions
  */
-      __pyx_t_1 = PyTuple_New(2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 81, __pyx_L1_error)
+      __pyx_t_1 = PyTuple_New(2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 100, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_INCREF(__pyx_v_new_e1);
       __Pyx_GIVEREF(__pyx_v_new_e1);
@@ -3093,12 +3095,12 @@ static PyObject *__pyx_f_16cython_functions_crossover(PyObject *__pyx_v_G1_nodes
       __Pyx_INCREF(__pyx_v_new_e2);
       __Pyx_GIVEREF(__pyx_v_new_e2);
       PyTuple_SET_ITEM(__pyx_t_1, 1, __pyx_v_new_e2);
-      __pyx_t_7 = __Pyx_PyList_Append(__pyx_v_new_solutions, __pyx_t_1); if (unlikely(__pyx_t_7 == ((int)-1))) __PYX_ERR(0, 81, __pyx_L1_error)
+      __pyx_t_7 = __Pyx_PyList_Append(__pyx_v_new_solutions, __pyx_t_1); if (unlikely(__pyx_t_7 == ((int)-1))) __PYX_ERR(0, 100, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     }
     __pyx_L5:;
 
-    /* "cython_functions.pyx":82
+    /* "cython_functions.pyx":101
  *             new_e2 = random.sample(G2_nodes, sub_graph_size)
  *             new_solutions.append((new_e1, new_e2))
  *         count_new_solutions += 1             # <<<<<<<<<<<<<<
@@ -3108,7 +3110,7 @@ static PyObject *__pyx_f_16cython_functions_crossover(PyObject *__pyx_v_G1_nodes
     __pyx_v_count_new_solutions = (__pyx_v_count_new_solutions + 1);
   }
 
-  /* "cython_functions.pyx":83
+  /* "cython_functions.pyx":102
  *             new_solutions.append((new_e1, new_e2))
  *         count_new_solutions += 1
  *     return new_solutions             # <<<<<<<<<<<<<<
@@ -3119,12 +3121,12 @@ static PyObject *__pyx_f_16cython_functions_crossover(PyObject *__pyx_v_G1_nodes
   __pyx_r = __pyx_v_new_solutions;
   goto __pyx_L0;
 
-  /* "cython_functions.pyx":69
+  /* "cython_functions.pyx":82
  * @cython.boundscheck(False)
  * @cython.wraparound(False)
  * cpdef crossover(list G1_nodes, list G2_nodes, dict G1_sublists, dict G2_sublists, int num_solutions):             # <<<<<<<<<<<<<<
- *     cdef list new_solutions = []
- *     cdef int count_new_solutions = 0
+ *     """
+ *     This function uses a genetic algorithm to generate new solutions for subgraph isomorphism between two input graphs (G1 and G2).
  */
 
   /* function exit code */
@@ -3149,6 +3151,7 @@ static PyObject *__pyx_f_16cython_functions_crossover(PyObject *__pyx_v_G1_nodes
 
 /* Python wrapper */
 static PyObject *__pyx_pw_16cython_functions_7crossover(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static char __pyx_doc_16cython_functions_6crossover[] = "\n    This function uses a genetic algorithm to generate new solutions for subgraph isomorphism between two input graphs (G1 and G2). \n    It selects random subgraphs of G1 and G2 of the same size, and creates a new solution by pairing them. \n    It repeats this process until the desired number of new solutions is reached. \n    The new solutions are returned as a list of tuples, each containing a subgraph from G1 and its corresponding subgraph from G2.\n    ";
 static PyObject *__pyx_pw_16cython_functions_7crossover(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   PyObject *__pyx_v_G1_nodes = 0;
   PyObject *__pyx_v_G2_nodes = 0;
@@ -3190,29 +3193,29 @@ static PyObject *__pyx_pw_16cython_functions_7crossover(PyObject *__pyx_self, Py
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_G2_nodes)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("crossover", 1, 5, 5, 1); __PYX_ERR(0, 69, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("crossover", 1, 5, 5, 1); __PYX_ERR(0, 82, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  2:
         if (likely((values[2] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_G1_sublists)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("crossover", 1, 5, 5, 2); __PYX_ERR(0, 69, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("crossover", 1, 5, 5, 2); __PYX_ERR(0, 82, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  3:
         if (likely((values[3] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_G2_sublists)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("crossover", 1, 5, 5, 3); __PYX_ERR(0, 69, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("crossover", 1, 5, 5, 3); __PYX_ERR(0, 82, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  4:
         if (likely((values[4] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_num_solutions)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("crossover", 1, 5, 5, 4); __PYX_ERR(0, 69, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("crossover", 1, 5, 5, 4); __PYX_ERR(0, 82, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "crossover") < 0)) __PYX_ERR(0, 69, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "crossover") < 0)) __PYX_ERR(0, 82, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 5) {
       goto __pyx_L5_argtuple_error;
@@ -3227,20 +3230,20 @@ static PyObject *__pyx_pw_16cython_functions_7crossover(PyObject *__pyx_self, Py
     __pyx_v_G2_nodes = ((PyObject*)values[1]);
     __pyx_v_G1_sublists = ((PyObject*)values[2]);
     __pyx_v_G2_sublists = ((PyObject*)values[3]);
-    __pyx_v_num_solutions = __Pyx_PyInt_As_int(values[4]); if (unlikely((__pyx_v_num_solutions == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 69, __pyx_L3_error)
+    __pyx_v_num_solutions = __Pyx_PyInt_As_int(values[4]); if (unlikely((__pyx_v_num_solutions == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 82, __pyx_L3_error)
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("crossover", 1, 5, 5, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 69, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("crossover", 1, 5, 5, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 82, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("cython_functions.crossover", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_G1_nodes), (&PyList_Type), 1, "G1_nodes", 1))) __PYX_ERR(0, 69, __pyx_L1_error)
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_G2_nodes), (&PyList_Type), 1, "G2_nodes", 1))) __PYX_ERR(0, 69, __pyx_L1_error)
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_G1_sublists), (&PyDict_Type), 1, "G1_sublists", 1))) __PYX_ERR(0, 69, __pyx_L1_error)
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_G2_sublists), (&PyDict_Type), 1, "G2_sublists", 1))) __PYX_ERR(0, 69, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_G1_nodes), (&PyList_Type), 1, "G1_nodes", 1))) __PYX_ERR(0, 82, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_G2_nodes), (&PyList_Type), 1, "G2_nodes", 1))) __PYX_ERR(0, 82, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_G1_sublists), (&PyDict_Type), 1, "G1_sublists", 1))) __PYX_ERR(0, 82, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_G2_sublists), (&PyDict_Type), 1, "G2_sublists", 1))) __PYX_ERR(0, 82, __pyx_L1_error)
   __pyx_r = __pyx_pf_16cython_functions_6crossover(__pyx_self, __pyx_v_G1_nodes, __pyx_v_G2_nodes, __pyx_v_G1_sublists, __pyx_v_G2_sublists, __pyx_v_num_solutions);
 
   /* function exit code */
@@ -3261,7 +3264,7 @@ static PyObject *__pyx_pf_16cython_functions_6crossover(CYTHON_UNUSED PyObject *
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("crossover", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_16cython_functions_crossover(__pyx_v_G1_nodes, __pyx_v_G2_nodes, __pyx_v_G1_sublists, __pyx_v_G2_sublists, __pyx_v_num_solutions, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 69, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_16cython_functions_crossover(__pyx_v_G1_nodes, __pyx_v_G2_nodes, __pyx_v_G1_sublists, __pyx_v_G2_sublists, __pyx_v_num_solutions, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 82, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -3280,9 +3283,9 @@ static PyObject *__pyx_pf_16cython_functions_6crossover(CYTHON_UNUSED PyObject *
 
 static PyMethodDef __pyx_methods[] = {
   {"count_equal_size_combinations", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_16cython_functions_1count_equal_size_combinations, METH_VARARGS|METH_KEYWORDS, 0},
-  {"generate_solutions", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_16cython_functions_3generate_solutions, METH_VARARGS|METH_KEYWORDS, 0},
-  {"evaluate_solutions", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_16cython_functions_5evaluate_solutions, METH_VARARGS|METH_KEYWORDS, 0},
-  {"crossover", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_16cython_functions_7crossover, METH_VARARGS|METH_KEYWORDS, 0},
+  {"generate_solutions", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_16cython_functions_3generate_solutions, METH_VARARGS|METH_KEYWORDS, __pyx_doc_16cython_functions_2generate_solutions},
+  {"evaluate_solutions", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_16cython_functions_5evaluate_solutions, METH_VARARGS|METH_KEYWORDS, __pyx_doc_16cython_functions_4evaluate_solutions},
+  {"crossover", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_16cython_functions_7crossover, METH_VARARGS|METH_KEYWORDS, __pyx_doc_16cython_functions_6crossover},
   {0, 0, 0, 0}
 };
 
@@ -3348,7 +3351,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_main, __pyx_k_main, sizeof(__pyx_k_main), 0, 0, 1, 1},
   {&__pyx_n_s_math, __pyx_k_math, sizeof(__pyx_k_math), 0, 0, 1, 1},
   {&__pyx_n_s_name, __pyx_k_name, sizeof(__pyx_k_name), 0, 0, 1, 1},
-  {&__pyx_n_s_networkx_algorithms_malicious_fi, __pyx_k_networkx_algorithms_malicious_fi, sizeof(__pyx_k_networkx_algorithms_malicious_fi), 0, 0, 1, 1},
+  {&__pyx_n_s_networkx_algorithms_genetic_isom, __pyx_k_networkx_algorithms_genetic_isom, sizeof(__pyx_k_networkx_algorithms_genetic_isom), 0, 0, 1, 1},
   {&__pyx_n_s_nodes, __pyx_k_nodes, sizeof(__pyx_k_nodes), 0, 0, 1, 1},
   {&__pyx_n_s_num_solutions, __pyx_k_num_solutions, sizeof(__pyx_k_num_solutions), 0, 0, 1, 1},
   {&__pyx_n_s_randint, __pyx_k_randint, sizeof(__pyx_k_randint), 0, 0, 1, 1},
@@ -3363,7 +3366,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
 };
 static CYTHON_SMALL_CODE int __Pyx_InitCachedBuiltins(void) {
   __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 20, __pyx_L1_error)
-  __pyx_builtin_enumerate = __Pyx_GetBuiltinName(__pyx_n_s_enumerate); if (!__pyx_builtin_enumerate) __PYX_ERR(0, 56, __pyx_L1_error)
+  __pyx_builtin_enumerate = __Pyx_GetBuiltinName(__pyx_n_s_enumerate); if (!__pyx_builtin_enumerate) __PYX_ERR(0, 69, __pyx_L1_error)
   return 0;
   __pyx_L1_error:;
   return -1;
@@ -3373,14 +3376,14 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__Pyx_InitCachedConstants", 0);
 
-  /* "cython_functions.pyx":63
+  /* "cython_functions.pyx":76
  *         # Check if the current solution has a fitness score less than or equal to ALPHA
  *         if fitness_score <= ALPHA:
  *             return True, None             # <<<<<<<<<<<<<<
  *     return False, solutions_with_fitness
  * 
  */
-  __pyx_tuple_ = PyTuple_Pack(2, Py_True, Py_None); if (unlikely(!__pyx_tuple_)) __PYX_ERR(0, 63, __pyx_L1_error)
+  __pyx_tuple_ = PyTuple_Pack(2, Py_True, Py_None); if (unlikely(!__pyx_tuple_)) __PYX_ERR(0, 76, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple_);
   __Pyx_GIVEREF(__pyx_tuple_);
   __Pyx_RefNannyFinishContext();
@@ -3687,7 +3690,7 @@ if (!__Pyx_RefNanny) {
  * from math import comb
  * import cython
  * import random             # <<<<<<<<<<<<<<
- * from networkx.algorithms.malicious.fitness import fitness
+ * from networkx.algorithms.genetic_isomorphism.fitness import fitness
  * from typing import List, Tuple
  */
   __pyx_t_2 = __Pyx_Import(__pyx_n_s_random, 0, -1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3, __pyx_L1_error)
@@ -3698,7 +3701,7 @@ if (!__Pyx_RefNanny) {
   /* "cython_functions.pyx":4
  * import cython
  * import random
- * from networkx.algorithms.malicious.fitness import fitness             # <<<<<<<<<<<<<<
+ * from networkx.algorithms.genetic_isomorphism.fitness import fitness             # <<<<<<<<<<<<<<
  * from typing import List, Tuple
  * 
  */
@@ -3707,7 +3710,7 @@ if (!__Pyx_RefNanny) {
   __Pyx_INCREF(__pyx_n_s_fitness);
   __Pyx_GIVEREF(__pyx_n_s_fitness);
   PyList_SET_ITEM(__pyx_t_2, 0, __pyx_n_s_fitness);
-  __pyx_t_1 = __Pyx_Import(__pyx_n_s_networkx_algorithms_malicious_fi, __pyx_t_2, -1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_Import(__pyx_n_s_networkx_algorithms_genetic_isom, __pyx_t_2, -1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_t_2 = __Pyx_ImportFrom(__pyx_t_1, __pyx_n_s_fitness); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4, __pyx_L1_error)
@@ -3718,7 +3721,7 @@ if (!__Pyx_RefNanny) {
 
   /* "cython_functions.pyx":5
  * import random
- * from networkx.algorithms.malicious.fitness import fitness
+ * from networkx.algorithms.genetic_isomorphism.fitness import fitness
  * from typing import List, Tuple             # <<<<<<<<<<<<<<
  * 
  * @cython.boundscheck(False)
