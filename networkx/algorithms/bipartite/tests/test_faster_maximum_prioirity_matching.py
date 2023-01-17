@@ -6,6 +6,7 @@ import networkx as nx
 # from networkx import convert_node_labels_to_integers as cnlti
 from .. import faster_maximum_prioirity_matching
 
+
 class TestFasterMaximumPriorityMatching:
     def find_maximum_priority_matching_bipartite(self):
         G = nx.Graph()
