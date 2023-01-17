@@ -779,10 +779,7 @@ def prepare_for_algo(G: nx.Graph, Priority: int):
     for node in G.nodes:
         # check_node = str(node)
         # check if the node in the current priority class and if it doesn't 'touch' the matching yet
-        if (
-            nodes_priorities[node] == Priority
-            and nodes_matching[node] is False
-        ):
+        if nodes_priorities[node] == Priority and nodes_matching[node] is False:
             roots.append(node)
             nx.set_node_attributes(
                 G,

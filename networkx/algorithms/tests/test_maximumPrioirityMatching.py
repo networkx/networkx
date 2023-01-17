@@ -1,100 +1,297 @@
-import pytest
 import random
 import random as rd
 
-import networkx as nx
 # from networkx import convert_node_labels_to_integers as cnlti
 import maximum_priority_matching as algo
+
+import networkx as nx
+
 
 
 class TestMaximumPriorityMatching:
 
     def test_find_prioirity_score(self):
         G = nx.Graph()
-        nodes = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
+        nodes = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
         edges = []
-        nodes_attrs = {'1': {"priority": 1}, '2': {"priority": 8}, '3': {"priority": 6}, '4': {"priority": 5}, '5': {
-            "priority": 2}, '6': {"priority": 4}, '7': {"priority": 3}, '8': {"priority": 1}, '9': {"priority": 7}}
+        nodes_attrs = {
+            "1": {"priority": 1},
+            "2": {"priority": 8},
+            "3": {"priority": 6},
+            "4": {"priority": 5},
+            "5": {"priority": 2},
+            "6": {"priority": 4},
+            "7": {"priority": 3},
+            "8": {"priority": 1},
+            "9": {"priority": 7}
+        }
         G.add_nodes_from(nodes)
         G.add_edges_from(edges)
         nx.set_node_attributes(G, nodes_attrs)
-        assert algo.find_priority_score(G) == '000000000'
+        assert algo.find_priority_score(G) == "000000000"
 
         # Test with a graph that has all matching edges
         G = nx.Graph()
-        nodes = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
-        edges = [('1', '2'), ('2', '3'), ('3', '4'), ('4', '5'),
-                 ('5', '6'), ('6', '7'), ('7', '8'), ('7', '9'), ('7', '3')]
-        nodes_attrs = {'1': {"priority": 1}, '2': {"priority": 8}, '3': {"priority": 6}, '4': {"priority": 5}, '5': {
-            "priority": 2}, '6': {"priority": 4}, '7': {"priority": 3}, '8': {"priority": 1}, '9': {"priority": 7}}
+        nodes = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
+        edges = [
+            ("1", "2"),
+            ("2", "3"),
+            ("3", "4"),
+            ("4", "5"),
+            ("5", "6"), 
+            ("6", "7"), 
+            ("7", "8"), 
+            ("7", "9"), 
+            ("7", "3"),
+        ]
+        nodes_attrs = {
+            "1": {"priority": 1},
+            "2": {"priority": 8},
+            "3": {"priority": 6},
+            "4": {"priority": 5},
+            "5": {"priority": 2},
+            "6": {"priority": 4},
+            "7": {"priority": 3},
+            "8": {"priority": 1},
+            "9": {"priority": 7}
+        }
         G.add_nodes_from(nodes)
         G.add_edges_from(edges)
         nx.set_node_attributes(G, nodes_attrs)
-        assert algo.find_priority_score(G) == '211111010'
+        assert algo.find_priority_score(G) == "211111010"
 
     def test_find_maximum_prioirity_matching(self):
         G = nx.Graph()
-        nodes = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
-        edges = [('1', '2'), ('2', '3'), ('3', '4'), ('4', '5'),
-                 ('5', '6'), ('6', '7'), ('7', '8'), ('7', '9'), ('7', '3')]
-        nodes_attrs = {'1': {"priority": 1}, '2': {"priority": 8}, '3': {"priority": 6}, '4': {"priority": 5}, '5': {
-            "priority": 2}, '6': {"priority": 4}, '7': {"priority": 3}, '8': {"priority": 1}, '9': {"priority": 7}}
+        nodes = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
+        edges = [
+            ("1", "2"),
+            ("2", "3"),
+            ("3", "4"),
+            ("4", "5"),
+            ("5", "6"),
+            ("6", "7"),
+            ("7", "8"),
+            ("7", "9"),
+            ("7", "3"),
+        ]
+        nodes_attrs = {
+            "1": {"priority": 1},
+            "2": {"priority": 8},
+            "3": {"priority": 6},
+            "4": {"priority": 5},
+            "5": {"priority": 2},
+            "6": {"priority": 4},
+            "7": {"priority": 3},
+            "8": {"priority": 1},
+            "9": {"priority": 7}
+        }
         G.add_nodes_from(nodes)
         G.add_edges_from(edges)
         nx.set_node_attributes(G, nodes_attrs)
-        assert algo.find_maximum_priority_matching(
-            G) == [('1', '2'), ('3', '4'), ('5', '6'), ('7', '8')]
+        assert algo.find_maximum_priority_matching(G) == [
+            ("1", "2"),
+            ("3", "4"),
+            ("5", "6"),
+            ("7", "8"),
+        ]
 
         G = nx.Graph()
-        nodes = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
-        edges = [('1', '2'), ('2', '3'), ('3', '4'), ('3', '6'), ('4', '5'), ('5', '7'), ('6', '7'),
-                 ('7', '11'), ('8', '9'), ('9', '10'), ('10', '11'), ('10', '12'), ('11', '12')]
-        nodes_attrs = {'1': {"priority": 1}, '2': {"priority": 2}, '3': {"priority": 1}, '4': {"priority": 1}, '5': {"priority": 1}, '6': {
-            "priority": 1}, '7': {"priority": 1}, '8': {"priority": 1}, '9': {"priority": 2}, '10': {"priority": 1}, '11': {"priority": 1}, '12': {"priority": 1}}
+        nodes = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
+        edges = [
+            ("1", "2"),
+            ("2", "3"),
+            ("3", "4"),
+            ("3", "6"),
+            ("4", "5"),
+            ("5", "7"),
+            ("6", "7"),
+            ("7", "11"),
+            ("8", "9"),
+            ("9", "10"),
+            ("10", "11"),
+            ("10", "12"),
+            ("11", "12")
+        ]
+        nodes_attrs = {
+            "1": {"priority": 1},
+            "2": {"priority": 2},
+            "3": {"priority": 1},
+            "4": {"priority": 1},
+            "5": {"priority": 1},
+            "6": {"priority": 1},
+            "7": {"priority": 1},
+            "8": {"priority": 1},
+            "9": {"priority": 2},
+            "10": {"priority": 1},
+            "11": {"priority": 1},
+            "12": {"priority": 1}
+        }
         G.add_nodes_from(nodes)
         G.add_edges_from(edges)
         nx.set_node_attributes(G, nodes_attrs)
-        algo.find_maximum_priority_matching(G) == [(
-            '1', '2'), ('3', '6'), ('4', '5'), ('7', '11'), ('8', '9'), ('10', '12')]
+        algo.find_maximum_priority_matching(G) == [
+            ("1", "2"),
+            ("3", "6"),
+            ("4", "5"),
+            ("7", "11"),
+            ("8", "9"),
+            ("10", "12"),
+        ]
 
         G = nx.Graph()
         for i in range(50):
             G.add_node(str(i))
 
         for node in G.nodes:
-            G.nodes[node]['priority'] = random.randint(1, 50)
-        G.add_node('test')
-        G.nodes['test']['priority'] = 1
+            G.nodes[node]["priority"] = random.randint(1, 50)
+        G.add_node("test")
+        G.nodes["test"]["priority"] = 1
         edges = nx.erdos_renyi_graph(50, 0.005).edges()
         for u, v in edges:
             G.add_edge(str(u), str(v))
 
-        G.add_edge('test', '1')
+        G.add_edge("test", "1")
         matching = algo.find_maximum_priority_matching(G)
         check = False
         for element in matching:
-            if 'test' in element:
+            if "test" in element:
                 check = True
         assert check == True
 
     def test_find_augmenting_paths(self):
         G = nx.Graph()
-        nodes = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
-        edges = [('1', '2'), ('2', '3'), ('3', '4'), ('4', '5'),
-                 ('5', '6'), ('6', '7'), ('7', '8'), ('7', '9'), ('7', '3')]
-        nodes_attrs = {'1': {"parent": None, "priority": 1, "isMatched": False, "isPositive": False, "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1}, '2': {"parent": None, "priority": 8, "isMatched": True, "isPositive": False, "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1}, '3': {"parent": None, "priority": 6, "isMatched": True, "isPositive": False, "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1}, '4': {"parent": None, "priority": 5, "isMatched": True, "isPositive": False, "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1}, '5': {"parent": None, "priority": 2, "isMatched": True, "isPositive": False,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1}, '6': {"parent": None, "priority": 4, "isMatched": True, "isPositive": False, "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1}, '7': {"parent": None, "priority": 3, "isMatched": True, "isPositive": False, "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1}, '8': {"parent": None, "priority": 1, "isMatched": False, "isPositive": False, "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1}, '9': {"parent": None, "priority": 7, "isMatched": False, "isPositive": False, "isReachable": False, "root": None, "isBolssom": False, "isExternal": True, "blossomsID": -1}}
-        edges_attrs = {('1', '2'): {"isMatched": False}, ('2', '3'): {"isMatched": True}, ('3', '4'): {"isMatched": False}, ('4', '5'): {"isMatched": True}, ('5', '6'): {
-            "isMatched": False}, ('6', '7'): {"isMatched": True}, ('7', '3'): {"isMatched": False}, ('7', '8'): {"isMatched": False}, ('7', '9'): {"isMatched": False}}
+        nodes = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
+        edges = [
+            ("1", "2"),
+            ("2", "3"),
+            ("3", "4"),
+            ("4", "5"),
+            ("5", "6"),
+            ("6", "7"),
+            ("7", "8"),
+            ("7", "9"),
+            ("7", "3"),
+        ]
+        nodes_attrs = {
+            "1": {
+                "parent": None,
+                "priority": 1,
+                "isMatched": False,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "2": {
+                "parent": None,
+                "priority": 8,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "3": {
+                "parent": None,
+                "priority": 6,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "4": {
+                "parent": None,
+                "priority": 5,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "5": {
+                "parent": None,
+                "priority": 2,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "6": {
+                "parent": None,
+                "priority": 4,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "7": {
+                "parent": None,
+                "priority": 3,
+                "isMatched": True,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "8": {
+                "parent": None,
+                "priority": 1,
+                "isMatched": False,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+            "9": {
+                "parent": None,
+                "priority": 7,
+                "isMatched": False,
+                "isPositive": False,
+                "isReachable": False,
+                "root": None,
+                "isBolssom": False,
+                "isExternal": True,
+                "blossomsID": -1,
+            },
+        }
+        edges_attrs = {
+            ("1", "2"): {"isMatched": False},
+            ("2", "3"): {"isMatched": True},
+            ("3", "4"): {"isMatched": False},
+            ("4", "5"): {"isMatched": True},
+            ("5", "6"): {"isMatched": False},
+            ("6", "7"): {"isMatched": True},
+            ("7", "3"): {"isMatched": False},
+            ("7", "8"): {"isMatched": False},
+            ("7", "9"): {"isMatched": False},
+        }
         G.add_nodes_from(nodes)
         G.add_edges_from(edges)
         nx.set_node_attributes(G, nodes_attrs)
         nx.set_edge_attributes(G, edges_attrs)
 
-        assert algo.prepare_for_algo(G, 1) == (
-            [('1', '2'), ('8', '7')], ['1', '8'])
+        assert algo.prepare_for_algo(G, 1) == ([("1", "2"), ("8", "7")], ["1", "8"])
         assert algo.find_augmenting_paths(G, 1) == True
-        assert algo.prepare_for_algo(G, 1) == ([('8', '7')], ['8'])
+        assert algo.prepare_for_algo(G, 1) == ([("8", "7")], ["8"])
         assert algo.find_augmenting_paths(G, 1) == True
         assert algo.prepare_for_algo(G, 1) == ([], [])
         assert algo.find_augmenting_paths(G, 1) == False
@@ -102,17 +299,17 @@ class TestMaximumPriorityMatching:
         assert algo.find_augmenting_paths(G, 2) == False
         assert algo.prepare_for_algo(G, 3) == ([], [])
         assert algo.find_augmenting_paths(G, 3) == False
-        assert algo.prepare_for_algo(G, 4) == ([('6', '5'), ('6', '7')], ['6'])
+        assert algo.prepare_for_algo(G, 4) == ([("6", "5"), ("6", "7")], ["6"])
         assert algo.find_augmenting_paths(G, 4) == True
         assert algo.prepare_for_algo(G, 4) == ([], [])
         assert algo.find_augmenting_paths(G, 4) == False
-        assert algo.prepare_for_algo(G, 5) == ([('4', '3'), ('4', '5')], ['4'])
+        assert algo.prepare_for_algo(G, 5) == ([("4", "3"), ("4", "5")], ["4"])
         assert algo.find_augmenting_paths(G, 5) == True
         assert algo.prepare_for_algo(G, 5) == ([], [])
         assert algo.find_augmenting_paths(G, 5) == False
         assert algo.prepare_for_algo(G, 6) == ([], [])
         assert algo.find_augmenting_paths(G, 6) == False
-        assert algo.prepare_for_algo(G, 7) == ([('9', '7')], ['9'])
+        assert algo.prepare_for_algo(G, 7) == ([("9", "7")], ["9"])
         assert algo.find_augmenting_paths(G, 7) == False
         assert algo.prepare_for_algo(G, 8) == ([], [])
         assert algo.find_augmenting_paths(G, 8) == False
