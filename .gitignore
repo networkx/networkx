@@ -14,6 +14,7 @@ doc/ghpages_build
 .coverage
 *.class
 
+
 # Generated while building documentation.
 doc/auto_examples
 doc/modules
@@ -61,3 +62,6 @@ networkx.venv
 
 # logging
 .log
+
+# img
+*.png
