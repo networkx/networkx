@@ -7,6 +7,16 @@ from typing import Dict, List, Union
 
 import networkx as nx
 
+"""
+Programmers: Roi Meshulam and Liroy Melamed
+
+This file is implemation of "Maximum Prioirity Matching" from the article that
+written by Turner, Jonathan S.
+
+more details about this algo can be found in the following link: "http://myusername.pythonanywhere.com/"
+
+"""
+
 logging.basicConfig(filename="my_logger.log", level=logging.INFO, filemode="w")
 logger = logging.getLogger()
 
