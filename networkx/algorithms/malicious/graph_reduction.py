@@ -5,6 +5,7 @@ Building a reduced graph from a dependency graph.
 __all__ = ["build_RG_from_DG"]
 
 import logging
+import networkx as nx
 
 LOGֹ_FORMAT = "%(levelname)s, time: %(asctime)s , line: %(lineno)d- %(message)s "
 # create and configure logger
@@ -108,11 +109,12 @@ def build_RG_from_DG(G):
       return G
   # otherwise, we will remove those nodes as well
   else:
-      g_tag = G
-      g_tag.remove_nodes_from(nodes_to_remove)
-      logging.debug(
-          f'Removed {len(nodes_to_remove)} nodes from the graph. Returning g_tag: {g_tag.nodes}')
-      return g_tag
+    g_tag = G.copy() # deep copy 
+    g_tag.remove_nodes_from(nodes_to_remove)
+    if g_tag.number_of_edges() == 0:
+        return G
+    logging.debug(f'Removed {len(nodes_to_remove)} nodes from the graph. Returning g_tag: {g_tag.nodes}')
+    return g_tag
 
 
 # Set the logging level to INFO
