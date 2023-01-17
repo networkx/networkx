@@ -83,7 +83,7 @@ class TestMaximumPriorityMatching:
             "6": {"priority": 4},
             "7": {"priority": 3},
             "8": {"priority": 1},
-            "9": {"priority": 7}
+            "9": {"priority": 7},
         }
         G.add_nodes_from(nodes)
         G.add_edges_from(edges)
@@ -355,7 +355,8 @@ class TestMaximumPriorityMatching:
                 "isBolssom": False,
                 "isExternal": True,
                 "blossomsID": -1,
-            }, "3": {
+            },
+            "3": {
                 "parent": "2",
                 "priority": 1,
                 "isMatched": True,
@@ -365,7 +366,7 @@ class TestMaximumPriorityMatching:
                 "isBolssom": False,
                 "isExternal": True,
                 "blossomsID": -1,
-            }, 
+            },
             "4": {
                 "parent": "3",
                 "priority": 1,
@@ -383,7 +384,7 @@ class TestMaximumPriorityMatching:
                 "isMatched": True,
                 "isPositive": True,
                 "isReachable": True,
-                "root": '1',
+                "root": "1",
                 "isBolssom": False,
                 "isExternal": True,
                 "blossomsID": -1,
@@ -430,7 +431,7 @@ class TestMaximumPriorityMatching:
                 "root": None,
                 "isBolssom": False,
                 "isExternal": True,
-                "blossomsID": -1
+                "blossomsID": -1,
             },
             "10": {
                 "parent": None,
@@ -464,7 +465,7 @@ class TestMaximumPriorityMatching:
                 "isBolssom": False,
                 "isExternal": True,
                 "blossomsID": -1,
-            }
+            },
         }
         edges_attrs = {
             ("1", "2"): {"isMatched": False},
