@@ -9,11 +9,15 @@ __all__ = ["fitness"]
 
 LOGֹ_FORMAT = "%(levelname)s, time: %(asctime)s , line: %(lineno)d- %(message)s "
 # create and configure logger
-logging.basicConfig(filename='malicious_algo_logging.log', level=logging.DEBUG, filemode='w')
+logging.basicConfig(
+    filename="malicious_algo_logging.log", level=logging.DEBUG, filemode="w"
+)
 logger = logging.getLogger()
 
 
-def fitness(sub_G1, sub_G2, G1_num_of_nodes, G1_num_of_edges, G2_num_of_nodes, G2_num_of_edges):
+def fitness(
+    sub_G1, sub_G2, G1_num_of_nodes, G1_num_of_edges, G2_num_of_nodes, G2_num_of_edges
+):
     """
     Measures the proportion of the number of different edges
     between two given graphs against the number of edges in the
@@ -64,7 +68,7 @@ def fitness(sub_G1, sub_G2, G1_num_of_nodes, G1_num_of_edges, G2_num_of_nodes, G
     -----------
     Stu L.Akirav & B.Schtalman
 
-    Example: finding the maximum subgraph isomorphism on two graphs 
+    Example: finding the maximum subgraph isomorphism on two graphs
     -----------------------------------------------------------------
     >>> import networkx as nx
 
@@ -74,13 +78,13 @@ def fitness(sub_G1, sub_G2, G1_num_of_nodes, G1_num_of_edges, G2_num_of_nodes, G
     >>> edges = [(6, 7), (6, 8), (6, 9), (8, 8), (9, 7), (9, 8), (9, 9)]
     >>> basic_RG.add_edges_from(edges)
 
-    # basic_code_v1 
+    # basic_code_v1
     >>> basic_RG_v1 = nx.DiGraph()
     >>> basic_RG_v1.add_nodes_from(range(6, 10))
     >>> edges = [(6, 7), (6, 8), (6, 9), (8, 8), (9, 7), (9, 8), (9, 9)]
     >>> basic_RG_v1.add_edges_from(edges)
 
-    # calculates the number of nodes and edges of the originl graphs 
+    # calculates the number of nodes and edges of the originl graphs
     >>> basic_num_of_nodes = len(basic_RG.nodes)
     >>> basic_num_of_edges = len(basic_RG.edges)
 
@@ -89,18 +93,19 @@ def fitness(sub_G1, sub_G2, G1_num_of_nodes, G1_num_of_edges, G2_num_of_nodes, G
     0.0
     """
 
-    logging.info('Started calculating fitness')
+    logging.info("Started calculating fitness")
     if nx.is_isomorphic(sub_G1, sub_G2):
-        logging.debug('Graphs are isomorphic')
+        logging.debug("Graphs are isomorphic")
         min_val = 0
         if G1_num_of_nodes < G2_num_of_nodes:
             min_val = G1_num_of_edges
         else:
             min_val = G2_num_of_edges
         mutual = len(sub_G2.edges)
-        logging.debug(f'Calculating fitness value: {(((G1_num_of_edges - mutual) + (G2_num_of_edges - mutual)) / min_val)}')
-        return (((G1_num_of_edges - mutual) + (G2_num_of_edges - mutual)) / min_val)
+        logging.debug(
+            f"Calculating fitness value: {(((G1_num_of_edges - mutual) + (G2_num_of_edges - mutual)) / min_val)}"
+        )
+        return ((G1_num_of_edges - mutual) + (G2_num_of_edges - mutual)) / min_val
     else:
-        logging.debug('Graphs are not isomorphic')
-        return 999999 # arbitrary high number
-
+        logging.debug("Graphs are not isomorphic")
+        return 999999  # arbitrary high number

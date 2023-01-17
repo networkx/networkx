@@ -78,7 +78,7 @@ class TestFitnessFunction:
     edges = [(1, 4), (2, 6), (3, 5), (4, 7), (5, 8), (5, 10), (10, 10)]
     fork_R1_RG.add_edges_from(edges)
 
-    # calculates the number of nodes and edges of the originl graphs 
+    # calculates the number of nodes and edges of the originl graphs
     basic_num_of_nodes = len(basic_RG.nodes)
     basic_num_of_edges = len(basic_RG.edges)
 
@@ -96,8 +96,14 @@ class TestFitnessFunction:
         Calculates the fitness between basic-code to itself:
         http://rosaec.snu.ac.kr/publish/2010/T2/KiMo-GECCO-2010.pdf
         """
-        actual_d = fitness(self.basic_RG, self.basic_RG, self.basic_num_of_nodes,
-                           self.basic_num_of_edges, self.basic_num_of_nodes, self.basic_num_of_edges)
+        actual_d = fitness(
+            self.basic_RG,
+            self.basic_RG,
+            self.basic_num_of_nodes,
+            self.basic_num_of_edges,
+            self.basic_num_of_nodes,
+            self.basic_num_of_edges,
+        )
         expected_d = 0
         assert actual_d == expected_d
 
@@ -105,8 +111,14 @@ class TestFitnessFunction:
         """
         Calculates the fitness between basic-code to basic-code.v1:
         """
-        actual_d = fitness(self.basic_RG, self.basic_RG_v1, self.basic_num_of_nodes,
-                           self.basic_num_of_edges, self.basic_num_of_nodes, self.basic_num_of_edges)
+        actual_d = fitness(
+            self.basic_RG,
+            self.basic_RG_v1,
+            self.basic_num_of_nodes,
+            self.basic_num_of_edges,
+            self.basic_num_of_nodes,
+            self.basic_num_of_edges,
+        )
         expected_d = 0
         assert actual_d == expected_d
 
@@ -114,8 +126,14 @@ class TestFitnessFunction:
         """
         Calculates the fitness between basic-code to basic-code.v2:
         """
-        actual_d = fitness(self.basic_RG, self.basic_RG_v2, self.basic_num_of_nodes,
-                           self.basic_num_of_edges, self.basic_num_of_nodes, self.basic_num_of_edges)
+        actual_d = fitness(
+            self.basic_RG,
+            self.basic_RG_v2,
+            self.basic_num_of_nodes,
+            self.basic_num_of_edges,
+            self.basic_num_of_nodes,
+            self.basic_num_of_edges,
+        )
         expected_d = 0
         assert actual_d == expected_d
 
@@ -123,8 +141,14 @@ class TestFitnessFunction:
         """
         Calculates the fitness between basic-code to basic-code.v3:
         """
-        actual_d = fitness(self.basic_RG, self.basic_RG_v3, self.basic_num_of_nodes,
-                           self.basic_num_of_edges, self.basic_num_of_nodes, self.basic_num_of_edges)
+        actual_d = fitness(
+            self.basic_RG,
+            self.basic_RG_v3,
+            self.basic_num_of_nodes,
+            self.basic_num_of_edges,
+            self.basic_num_of_nodes,
+            self.basic_num_of_edges,
+        )
         expected_d = 0
         assert actual_d == expected_d
 
@@ -132,8 +156,14 @@ class TestFitnessFunction:
         """
         Calculates the fitness between basic-code to basic-code.v4:
         """
-        actual_d = fitness(self.basic_RG, self.basic_RG_v4, self.basic_num_of_nodes,
-                           self.basic_num_of_edges, self.basic_num_of_nodes, self.basic_num_of_edges)
+        actual_d = fitness(
+            self.basic_RG,
+            self.basic_RG_v4,
+            self.basic_num_of_nodes,
+            self.basic_num_of_edges,
+            self.basic_num_of_nodes,
+            self.basic_num_of_edges,
+        )
         expected_d = 0
         assert actual_d == expected_d
 
@@ -141,8 +171,14 @@ class TestFitnessFunction:
         """
         Calculates the fitness between basic-code to basic-code.v5:
         """
-        actual_d = fitness(self.basic_RG, self.basic_RG_v5, self.basic_num_of_nodes,
-                           self.basic_num_of_edges, self.basic_num_of_nodes, self.basic_num_of_edges)
+        actual_d = fitness(
+            self.basic_RG,
+            self.basic_RG_v5,
+            self.basic_num_of_nodes,
+            self.basic_num_of_edges,
+            self.basic_num_of_nodes,
+            self.basic_num_of_edges,
+        )
         expected_d = 0
         assert actual_d == expected_d
 
@@ -150,8 +186,14 @@ class TestFitnessFunction:
         """
         Calculates the fitness between basic-code to stupid-code:
         """
-        actual_d = fitness(self.basic_RG, self.stupid_RG, self.basic_num_of_nodes,
-                           self.basic_num_of_edges, self.stupid_num_of_nodes, self.stupid_num_of_edges)
+        actual_d = fitness(
+            self.basic_RG,
+            self.stupid_RG,
+            self.basic_num_of_nodes,
+            self.basic_num_of_edges,
+            self.stupid_num_of_nodes,
+            self.stupid_num_of_edges,
+        )
         expected_d = self.MAX_SCORE
         assert actual_d == expected_d
 
@@ -159,8 +201,14 @@ class TestFitnessFunction:
         """
         Calculates the fitness between basic-code to stupid-code.v1:
         """
-        actual_d = fitness(self.basic_RG, self.stupid_RG_v1, self.basic_num_of_nodes,
-                           self.basic_num_of_edges, self.stupid_num_of_nodes, self.stupid_num_of_edges)
+        actual_d = fitness(
+            self.basic_RG,
+            self.stupid_RG_v1,
+            self.basic_num_of_nodes,
+            self.basic_num_of_edges,
+            self.stupid_num_of_nodes,
+            self.stupid_num_of_edges,
+        )
         expected_d = self.MAX_SCORE
         assert actual_d == expected_d
 
@@ -168,8 +216,14 @@ class TestFitnessFunction:
         """
         Calculates the fitness between basic-code to fork-code:
         """
-        actual_d = fitness(self.basic_RG, self.fork_RG, self.basic_num_of_nodes,
-                           self.basic_num_of_edges, self.fork_num_of_nodes, self.fork_num_of_edges)
+        actual_d = fitness(
+            self.basic_RG,
+            self.fork_RG,
+            self.basic_num_of_nodes,
+            self.basic_num_of_edges,
+            self.fork_num_of_nodes,
+            self.fork_num_of_edges,
+        )
         expected_d = self.MAX_SCORE
         assert actual_d == expected_d
 
@@ -177,8 +231,14 @@ class TestFitnessFunction:
         """
         Calculates the fitness between basic-code to fork-code.v1:
         """
-        actual_d = fitness(self.basic_RG, self.fork_R1_RG, self.basic_num_of_nodes,
-                           self.basic_num_of_edges, self.fork_num_of_nodes, self.fork_num_of_edges)
+        actual_d = fitness(
+            self.basic_RG,
+            self.fork_R1_RG,
+            self.basic_num_of_nodes,
+            self.basic_num_of_edges,
+            self.fork_num_of_nodes,
+            self.fork_num_of_edges,
+        )
         expected_d = self.MAX_SCORE
         assert actual_d == expected_d
 
@@ -188,8 +248,14 @@ class TestFitnessFunction:
         """
         Calculates the fitness between stupid-code to basic-code.v1:
         """
-        actual_d = fitness(self.stupid_RG, self.basic_RG_v1, self.stupid_num_of_nodes,
-                           self.stupid_num_of_edges, self.basic_num_of_nodes, self.basic_num_of_edges)
+        actual_d = fitness(
+            self.stupid_RG,
+            self.basic_RG_v1,
+            self.stupid_num_of_nodes,
+            self.stupid_num_of_edges,
+            self.basic_num_of_nodes,
+            self.basic_num_of_edges,
+        )
         expected_d = self.MAX_SCORE
         assert actual_d == expected_d
 
@@ -197,8 +263,14 @@ class TestFitnessFunction:
         """
         Calculates the fitness between stupid-code to basic-code.v2:
         """
-        actual_d = fitness(self.stupid_RG, self.basic_RG_v2, self.stupid_num_of_nodes,
-                           self.stupid_num_of_edges, self.basic_num_of_nodes, self.basic_num_of_edges)
+        actual_d = fitness(
+            self.stupid_RG,
+            self.basic_RG_v2,
+            self.stupid_num_of_nodes,
+            self.stupid_num_of_edges,
+            self.basic_num_of_nodes,
+            self.basic_num_of_edges,
+        )
         expected_d = self.MAX_SCORE
         assert actual_d == expected_d
 
@@ -206,8 +278,14 @@ class TestFitnessFunction:
         """
         Calculates the fitness between stupid-code to basic-code.v3:
         """
-        actual_d = fitness(self.stupid_RG, self.basic_RG_v3, self.stupid_num_of_nodes,
-                           self.stupid_num_of_edges, self.basic_num_of_nodes, self.basic_num_of_edges)
+        actual_d = fitness(
+            self.stupid_RG,
+            self.basic_RG_v3,
+            self.stupid_num_of_nodes,
+            self.stupid_num_of_edges,
+            self.basic_num_of_nodes,
+            self.basic_num_of_edges,
+        )
         expected_d = self.MAX_SCORE
         assert actual_d == expected_d
 
@@ -215,8 +293,14 @@ class TestFitnessFunction:
         """
         Calculates the fitness between stupid-code to basic-code.v4:
         """
-        actual_d = fitness(self.stupid_RG, self.basic_RG_v4, self.stupid_num_of_nodes,
-                           self.stupid_num_of_edges, self.basic_num_of_nodes, self.basic_num_of_edges)
+        actual_d = fitness(
+            self.stupid_RG,
+            self.basic_RG_v4,
+            self.stupid_num_of_nodes,
+            self.stupid_num_of_edges,
+            self.basic_num_of_nodes,
+            self.basic_num_of_edges,
+        )
         expected_d = self.MAX_SCORE
         assert actual_d == expected_d
 
@@ -224,8 +308,14 @@ class TestFitnessFunction:
         """
         Calculates the fitness between stupid-code to basic-code.v5:
         """
-        actual_d = fitness(self.stupid_RG, self.basic_RG_v5, self.stupid_num_of_nodes,
-                           self.stupid_num_of_edges, self.basic_num_of_nodes, self.basic_num_of_edges)
+        actual_d = fitness(
+            self.stupid_RG,
+            self.basic_RG_v5,
+            self.stupid_num_of_nodes,
+            self.stupid_num_of_edges,
+            self.basic_num_of_nodes,
+            self.basic_num_of_edges,
+        )
         expected_d = self.MAX_SCORE
         assert actual_d == expected_d
 
@@ -233,8 +323,14 @@ class TestFitnessFunction:
         """
         Calculates the fitness between stupid-code to itself:
         """
-        actual_d = fitness(self.stupid_RG, self.stupid_RG, self.stupid_num_of_nodes,
-                           self.stupid_num_of_edges, self.stupid_num_of_nodes, self.stupid_num_of_edges)
+        actual_d = fitness(
+            self.stupid_RG,
+            self.stupid_RG,
+            self.stupid_num_of_nodes,
+            self.stupid_num_of_edges,
+            self.stupid_num_of_nodes,
+            self.stupid_num_of_edges,
+        )
         expected_d = 0
         assert actual_d == expected_d
 
@@ -242,8 +338,14 @@ class TestFitnessFunction:
         """
         Calculates the fitness between stupid-code to stupid-code.v1:
         """
-        actual_d = fitness(self.stupid_RG, self.stupid_RG_v1, self.stupid_num_of_nodes,
-                           self.stupid_num_of_edges, self.stupid_num_of_nodes, self.stupid_num_of_edges)
+        actual_d = fitness(
+            self.stupid_RG,
+            self.stupid_RG_v1,
+            self.stupid_num_of_nodes,
+            self.stupid_num_of_edges,
+            self.stupid_num_of_nodes,
+            self.stupid_num_of_edges,
+        )
         expected_d = 0
         assert actual_d == expected_d
 
@@ -251,8 +353,14 @@ class TestFitnessFunction:
         """
         Calculates the fitness between stupid-code to fork-code:
         """
-        actual_d = fitness(self.stupid_RG, self.fork_RG, self.stupid_num_of_nodes,
-                           self.stupid_num_of_edges, self.fork_num_of_nodes, self.fork_num_of_edges)
+        actual_d = fitness(
+            self.stupid_RG,
+            self.fork_RG,
+            self.stupid_num_of_nodes,
+            self.stupid_num_of_edges,
+            self.fork_num_of_nodes,
+            self.fork_num_of_edges,
+        )
         expected_d = self.MAX_SCORE
         assert actual_d == expected_d
 
@@ -260,7 +368,13 @@ class TestFitnessFunction:
         """
         Calculates the fitness between stupid-code to fork-code.v1:
         """
-        actual_d = fitness(self.stupid_RG, self.fork_R1_RG, self.stupid_num_of_nodes,
-                           self.stupid_num_of_edges, self.fork_num_of_nodes, self.fork_num_of_edges)
+        actual_d = fitness(
+            self.stupid_RG,
+            self.fork_R1_RG,
+            self.stupid_num_of_nodes,
+            self.stupid_num_of_edges,
+            self.fork_num_of_nodes,
+            self.fork_num_of_edges,
+        )
         expected_d = self.MAX_SCORE
         assert actual_d == expected_d

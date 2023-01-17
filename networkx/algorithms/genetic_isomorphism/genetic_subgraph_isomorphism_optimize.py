@@ -6,7 +6,8 @@ Two heuristics to improve the quality of arrangements for maximum subgraph isomo
 import concurrent.futures
 from networkx.algorithms.genetic_isomorphism.fitness import fitness
 import networkx.algorithms.genetic_isomorphism.cython_functions
-#from fitness import fitness
+
+# from fitness import fitness
 # from graph_reduction import build_RG_from_DG
 import cython_functions
 from math import comb
@@ -20,8 +21,9 @@ WORKERS = 4
 
 LOGֹ_FORMAT = "%(levelname)s, time: %(asctime)s , line: %(lineno)d- %(message)s "
 # create and configure logger
-logging.basicConfig(filename='malicious_algo_logging.log',
-                    level=logging.DEBUG, filemode='w')
+logging.basicConfig(
+    filename="malicious_algo_logging.log", level=logging.DEBUG, filemode="w"
+)
 logger = logging.getLogger()
 
 
@@ -37,31 +39,31 @@ def find_subgraph_isomorphism_with_genetic_algorithm_cython(G1, G2, ALPHA):
 
     Improving runtime
     -----------------
-    The find_subgraph_isomorphism_with_genetic_algorithm_cython function uses multi-threading and Cython to improve its runtime. 
-    Multi-threading distributes the computation across multiple cores, while Cython converts the Python code to faster C code. 
+    The find_subgraph_isomorphism_with_genetic_algorithm_cython function uses multi-threading and Cython to improve its runtime.
+    Multi-threading distributes the computation across multiple cores, while Cython converts the Python code to faster C code.
     These optimizations allow for faster execution of the algorithm.
 
     Parameters
     ----------
     G1 : NetworkX DiGraph
-        A (dirceted) graph 
+        A (dirceted) graph
     G2 : NetworkX DiGraph
-        A (dirceted) graph 
+        A (dirceted) graph
     ALPHA: folat
         A threshold value that indicates how much similar the ftness' score should be
 
     Returns
     -------
-    True iff the minimal fitness' score between all the subgraphs of G1 and G2 it smaller than the given alpha 
+    True iff the minimal fitness' score between all the subgraphs of G1 and G2 it smaller than the given alpha
 
     Notes
     -----
-    In computer science and operations research, 
-    a genetic algorithm (GA) is a metaheuristic inspired by 
+    In computer science and operations research,
+    a genetic algorithm (GA) is a metaheuristic inspired by
     the process of natural selection that belongs to the larger
-    class of evolutionary algorithms (EA). 
+    class of evolutionary algorithms (EA).
     Genetic algorithms are commonly used to generate high-quality
-    solutions to optimization and search problems by relying on 
+    solutions to optimization and search problems by relying on
     biologically inspired operators such as mutation, crossover and selection.
     https://en.wikipedia.org/wiki/Genetic_algorithm
 
@@ -79,7 +81,7 @@ def find_subgraph_isomorphism_with_genetic_algorithm_cython(G1, G2, ALPHA):
     Example : building a RG graph
     ------------------------------
     >>> import networkx as nx
-    # creates and builds G1 
+    # creates and builds G1
     >>> G1 = nx.DiGraph()
     >>> G1.add_nodes_from(range(6, 10))
     >>> edges = [(6, 7), (6, 8), (6, 9), (8, 8), (9, 7), (9, 8), (9, 9)]
@@ -93,36 +95,42 @@ def find_subgraph_isomorphism_with_genetic_algorithm_cython(G1, G2, ALPHA):
     >>> find_subgraph_isomorphism_with_genetic_algorithm_cython(G1, G2, 0)
     True
     """
-    logging.info('Started genetic algorithm')
+    logging.info("Started genetic algorithm")
     # Get the nodes of each graph
     G1_nodes = list(G1.nodes)
     G2_nodes = list(G2.nodes)
 
     # Calculate the number of combinations of equal size sublists that can be created from the nodes of the two graphs
     num_of_combinations = cython_functions.count_equal_size_combinations(
-        G1_nodes, G2_nodes)
+        G1_nodes, G2_nodes
+    )
     # num_of_combinations = count_equal_size_combinations(G1_nodes, G2_nodes)
 
     # Generate the solutions
     NUM_OF_SOLUTIONS = int(num_of_combinations / 2)
     if num_of_combinations >= 10000:
         NUM_OF_SOLUTIONS = 10000
-    logging.debug(f'Generating {NUM_OF_SOLUTIONS} solutions')
+    logging.debug(f"Generating {NUM_OF_SOLUTIONS} solutions")
     solutions = []
     # use of multi processes to generate solutions in parallel
     with concurrent.futures.ProcessPoolExecutor(max_workers=WORKERS) as executor:
-        future_1 = executor.submit(cython_functions.generate_solutions,G1,G2,NUM_OF_SOLUTIONS//2)
-        future_2 = executor.submit(cython_functions.generate_solutions,G1,G2,NUM_OF_SOLUTIONS//2)
-        for future in concurrent.futures.as_completed([future_1,future_2]):
+        future_1 = executor.submit(
+            cython_functions.generate_solutions, G1, G2, NUM_OF_SOLUTIONS // 2
+        )
+        future_2 = executor.submit(
+            cython_functions.generate_solutions, G1, G2, NUM_OF_SOLUTIONS // 2
+        )
+        for future in concurrent.futures.as_completed([future_1, future_2]):
             r = future.result()
             solutions += r
 
     # Evaluate the solutions
     NUM_OF_GENERATIONS = int(NUM_OF_SOLUTIONS * 10)
     for i in range(NUM_OF_GENERATIONS):
-        logging.debug(f'Evaluating solutions in generation {i+1}')
+        logging.debug(f"Evaluating solutions in generation {i+1}")
         found_solution, solutions_with_fitness = cython_functions.evaluate_solutions(
-            G1, G2, solutions, ALPHA)
+            G1, G2, solutions, ALPHA
+        )
         if found_solution:
             return True
 
@@ -136,7 +144,8 @@ def find_subgraph_isomorphism_with_genetic_algorithm_cython(G1, G2, ALPHA):
         # Choose the top SOLUTIONS_TO_CHOOSE solutions
         bestsoutions = rankedsolutions[:SOLUTIONS_TO_CHOOSE]
         logging.debug(
-            f'Choosing top {SOLUTIONS_TO_CHOOSE} solutions in generation {i+1}')
+            f"Choosing top {SOLUTIONS_TO_CHOOSE} solutions in generation {i+1}"
+        )
 
         G1_elements = []
         G2_elements = []
@@ -154,21 +163,31 @@ def find_subgraph_isomorphism_with_genetic_algorithm_cython(G1, G2, ALPHA):
         G2_sublists = {}
 
         for length in intersection:
-            G1_sublists[length] = [
-                lst for lst in G1_elements if len(lst) == length]
-            G2_sublists[length] = [
-                lst for lst in G2_elements if len(lst) == length]
+            G1_sublists[length] = [lst for lst in G1_elements if len(lst) == length]
+            G2_sublists[length] = [lst for lst in G2_elements if len(lst) == length]
 
         solutions = []
         # Crossover
-        logging.debug(f'Performing crossover in generation {i+1}')
+        logging.debug(f"Performing crossover in generation {i+1}")
         # use of multi processes to crossover solutions in parallel
         with concurrent.futures.ProcessPoolExecutor(max_workers=WORKERS) as executor:
-            future_1 = executor.submit(cython_functions.crossover,G1_nodes, G2_nodes,
-                                               G1_sublists, G2_sublists, NUM_OF_SOLUTIONS//2)
-            future_2 = executor.submit(cython_functions.crossover,G1_nodes, G2_nodes,
-                                               G1_sublists, G2_sublists, NUM_OF_SOLUTIONS//2)
-            for future in concurrent.futures.as_completed([future_1,future_2]):
+            future_1 = executor.submit(
+                cython_functions.crossover,
+                G1_nodes,
+                G2_nodes,
+                G1_sublists,
+                G2_sublists,
+                NUM_OF_SOLUTIONS // 2,
+            )
+            future_2 = executor.submit(
+                cython_functions.crossover,
+                G1_nodes,
+                G2_nodes,
+                G1_sublists,
+                G2_sublists,
+                NUM_OF_SOLUTIONS // 2,
+            )
+            for future in concurrent.futures.as_completed([future_1, future_2]):
                 r = future.result()
                 solutions += r
 

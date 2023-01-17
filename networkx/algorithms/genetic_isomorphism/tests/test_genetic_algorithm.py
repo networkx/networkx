@@ -5,7 +5,9 @@
 import pytest
 import networkx as nx
 from networkx.algorithms.genetic_isomorphism.graph_reduction import build_RG_from_DG
-from networkx.algorithms.genetic_isomorphism.genetic_subgraph_isomorphism_optimize import find_subgraph_isomorphism_with_genetic_algorithm_cython
+from networkx.algorithms.genetic_isomorphism.genetic_subgraph_isomorphism_optimize import (
+    find_subgraph_isomorphism_with_genetic_algorithm_cython,
+)
 
 
 class TestFitnessFunction:
@@ -81,13 +83,15 @@ class TestFitnessFunction:
     fork_R1_DG.add_edges_from(edges)
     fork_R1_RG = build_RG_from_DG(fork_R1_DG)
 
-# basic-code tests
+    # basic-code tests
     # alpha = 0
     def test_basic_code_vs_basic_code_v1(self):
         """
         Calculates the fitness between basic-code to basic-code.v1:
         """
-        actual_d = find_subgraph_isomorphism_with_genetic_algorithm_cython(self.basic_RG, self.basic_RG_v1, 0)
+        actual_d = find_subgraph_isomorphism_with_genetic_algorithm_cython(
+            self.basic_RG, self.basic_RG_v1, 0
+        )
         expected_d = True
         assert actual_d == expected_d
 
@@ -95,16 +99,20 @@ class TestFitnessFunction:
         """
         Calculates the fitness between basic-code to basic-code.v2:
         """
-        actual_d = find_subgraph_isomorphism_with_genetic_algorithm_cython(self.basic_RG, self.basic_RG_v2, 0)
+        actual_d = find_subgraph_isomorphism_with_genetic_algorithm_cython(
+            self.basic_RG, self.basic_RG_v2, 0
+        )
         expected_d = True
-        print('basic v2', actual_d, expected_d)
+        print("basic v2", actual_d, expected_d)
         assert actual_d == expected_d
 
     def test_basic_code_vs_basic_code_v3(self):
         """
         Calculates the fitness between basic-code to basic-code.v3:
         """
-        actual_d = find_subgraph_isomorphism_with_genetic_algorithm_cython(self.basic_RG, self.basic_RG_v3, 0)
+        actual_d = find_subgraph_isomorphism_with_genetic_algorithm_cython(
+            self.basic_RG, self.basic_RG_v3, 0
+        )
         expected_d = True
         assert actual_d == expected_d
 
@@ -112,7 +120,9 @@ class TestFitnessFunction:
         """
         Calculates the fitness between basic-code to basic-code.v4:
         """
-        actual_d = find_subgraph_isomorphism_with_genetic_algorithm_cython(self.basic_RG, self.basic_RG_v4, 0)
+        actual_d = find_subgraph_isomorphism_with_genetic_algorithm_cython(
+            self.basic_RG, self.basic_RG_v4, 0
+        )
         expected_d = True
         assert actual_d == expected_d
 
@@ -120,7 +130,9 @@ class TestFitnessFunction:
         """
         Calculates the fitness between basic-code to basic-code.v5:
         """
-        actual_d = find_subgraph_isomorphism_with_genetic_algorithm_cython(self.basic_RG, self.basic_RG_v5, 0)
+        actual_d = find_subgraph_isomorphism_with_genetic_algorithm_cython(
+            self.basic_RG, self.basic_RG_v5, 0
+        )
         expected_d = True
         assert actual_d == expected_d
 
@@ -128,12 +140,16 @@ class TestFitnessFunction:
         """
         Calculates the fitness between stupid-code to stupid-code.v1:
         """
-        actual_d = find_subgraph_isomorphism_with_genetic_algorithm_cython(self.stupid_RG, self.stupid_RG_v1, 0)
+        actual_d = find_subgraph_isomorphism_with_genetic_algorithm_cython(
+            self.stupid_RG, self.stupid_RG_v1, 0
+        )
         expected_d = True
         assert actual_d == expected_d
 
     def test_fork_code_vs_fork_code_v1(self):
-        actual_d = find_subgraph_isomorphism_with_genetic_algorithm_cython(self.fork_RG, self.fork_R1_RG, 0)
+        actual_d = find_subgraph_isomorphism_with_genetic_algorithm_cython(
+            self.fork_RG, self.fork_R1_RG, 0
+        )
         expected_d = False
         assert actual_d == expected_d
 
@@ -141,7 +157,9 @@ class TestFitnessFunction:
         """
         Calculates the fitness between basic-code to basic-code.v1:
         """
-        actual_d = find_subgraph_isomorphism_with_genetic_algorithm_cython(self.basic_RG, self.basic_RG_v1, 3)
+        actual_d = find_subgraph_isomorphism_with_genetic_algorithm_cython(
+            self.basic_RG, self.basic_RG_v1, 3
+        )
         expected_d = True
         assert actual_d == expected_d
 
@@ -149,7 +167,9 @@ class TestFitnessFunction:
         """
         Calculates the fitness between basic-code to basic-code.v2:
         """
-        actual_d = find_subgraph_isomorphism_with_genetic_algorithm_cython(self.basic_RG, self.basic_RG_v2, 3)
+        actual_d = find_subgraph_isomorphism_with_genetic_algorithm_cython(
+            self.basic_RG, self.basic_RG_v2, 3
+        )
         expected_d = True
         assert actual_d == expected_d
 
@@ -157,7 +177,9 @@ class TestFitnessFunction:
         """
         Calculates the fitness between basic-code to basic-code.v3:
         """
-        actual_d = find_subgraph_isomorphism_with_genetic_algorithm_cython(self.basic_RG, self.basic_RG_v3, 3)
+        actual_d = find_subgraph_isomorphism_with_genetic_algorithm_cython(
+            self.basic_RG, self.basic_RG_v3, 3
+        )
         expected_d = True
         assert actual_d == expected_d
 
@@ -165,7 +187,9 @@ class TestFitnessFunction:
         """
         Calculates the fitness between basic-code to basic-code.v4:
         """
-        actual_d = find_subgraph_isomorphism_with_genetic_algorithm_cython(self.basic_RG, self.basic_RG_v4, 3)
+        actual_d = find_subgraph_isomorphism_with_genetic_algorithm_cython(
+            self.basic_RG, self.basic_RG_v4, 3
+        )
         expected_d = True
         assert actual_d == expected_d
 
@@ -173,7 +197,9 @@ class TestFitnessFunction:
         """
         Calculates the fitness between basic-code to basic-code.v5:
         """
-        actual_d = find_subgraph_isomorphism_with_genetic_algorithm_cython(self.basic_RG, self.basic_RG_v5, 3)
+        actual_d = find_subgraph_isomorphism_with_genetic_algorithm_cython(
+            self.basic_RG, self.basic_RG_v5, 3
+        )
         expected_d = True
         assert actual_d == expected_d
 
@@ -181,11 +207,15 @@ class TestFitnessFunction:
         """
         Calculates the fitness between stupid-code to stupid-code.v1:
         """
-        actual_d = find_subgraph_isomorphism_with_genetic_algorithm_cython(self.stupid_RG, self.stupid_RG_v1, 3)
+        actual_d = find_subgraph_isomorphism_with_genetic_algorithm_cython(
+            self.stupid_RG, self.stupid_RG_v1, 3
+        )
         expected_d = True
         assert actual_d == expected_d
 
     def test_fork_code_vs_fork_code_v1_alpha_3(self):
-        actual_d = find_subgraph_isomorphism_with_genetic_algorithm_cython(self.fork_RG, self.fork_R1_RG, 3)
+        actual_d = find_subgraph_isomorphism_with_genetic_algorithm_cython(
+            self.fork_RG, self.fork_R1_RG, 3
+        )
         expected_d = True
         assert actual_d == expected_d
