@@ -103,7 +103,7 @@ def generate_isomorphism(v, w, M, ordered_children):
 def rooted_tree_isomorphism(t1, root1, t2, root2):
     """
     Given two rooted trees `t1` and `t2`,
-    with roots `root1` and `root2` respectivly
+    with roots `root1` and `root2` respectively
     this routine will determine if they are isomorphic.
 
     These trees may be either directed or undirected,
@@ -186,7 +186,7 @@ def rooted_tree_isomorphism(t1, root1, t2, root2):
         forlabel = sorted((ordered_labels[v], v) for v in L[i])
 
         # now assign labels to these nodes, according to the sorted order
-        # starting from 0, where idential ordered_labels get the same label
+        # starting from 0, where identical ordered_labels get the same label
         current = 0
         for i, (ol, v) in enumerate(forlabel):
             # advance to next label if not 0, and different from previous

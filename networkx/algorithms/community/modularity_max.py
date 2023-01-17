@@ -237,7 +237,7 @@ def greedy_modularity_communities(
 
     Greedy modularity maximization begins with each node in its own community
     and repeatedly joins the pair of communities that lead to the largest
-    modularity until no futher increase in modularity is possible (a maximum).
+    modularity until no further increase in modularity is possible (a maximum).
     Two keyword arguments adjust the stopping condition. `cutoff` is a lower
     limit on the number of communities so you can stop the process before
     reaching a maximum (used to save computation time). `best_n` is an upper

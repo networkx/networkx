@@ -136,7 +136,7 @@ html_theme_options = {
     ],
     "external_links": [{"name": "Guides", "url": "https://networkx.org/nx-guides/"}],
     "navbar_end": ["theme-switcher", "navbar-icon-links", "version"],
-    "page_sidebar_items": ["search-field", "page-toc", "edit-this-page"],
+    "secondary_sidebar_items": ["search-field", "page-toc", "edit-this-page"],
     "header_links_before_dropdown": 7,
 }
 html_sidebars = {
@@ -222,11 +222,11 @@ latex_appendices = ["tutorial"]
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3/", None),
     "numpy": ("https://numpy.org/doc/stable/", None),
-    "neps": ("https://numpy.org/neps", None),
-    "matplotlib": ("https://matplotlib.org/stable", None),
-    "scipy": ("https://docs.scipy.org/doc/scipy/reference", None),
-    "pandas": ("https://pandas.pydata.org/pandas-docs/stable", None),
-    "geopandas": ("https://geopandas.org/", None),
+    "neps": ("https://numpy.org/neps/", None),
+    "matplotlib": ("https://matplotlib.org/stable/", None),
+    "scipy": ("https://docs.scipy.org/doc/scipy/", None),
+    "pandas": ("https://pandas.pydata.org/pandas-docs/stable/", None),
+    "geopandas": ("https://geopandas.org/en/stable/", None),
     "pygraphviz": ("https://pygraphviz.github.io/documentation/stable/", None),
     "sphinx-gallery": ("https://sphinx-gallery.github.io/stable/", None),
     "nx-guides": ("https://networkx.org/nx-guides/", None),

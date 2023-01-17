@@ -262,7 +262,7 @@ def k_edge_augmentation(G, k, avail=None, weight=None, partial=False):
             aug_edges = greedy_k_edge_augmentation(
                 G, k=k, avail=avail, weight=weight, seed=0
             )
-        # Do eager evaulation so we can catch any exceptions
+        # Do eager evaluation so we can catch any exceptions
         # Before executing partial code.
         yield from list(aug_edges)
     except nx.NetworkXUnfeasible:
@@ -368,7 +368,7 @@ def partial_k_edge_augmentation(G, k, avail, weight=None):
             }
             # Remove potential augmenting edges
             C.remove_edges_from(sub_avail.keys())
-            # Find a subset of these edges that makes the compoment
+            # Find a subset of these edges that makes the component
             # k-edge-connected and ignore the rest
             yield from nx.k_edge_augmentation(C, k=k, avail=sub_avail)
 
@@ -542,7 +542,7 @@ def _lightest_meta_edges(mapping, avail_uv, avail_w):
     -----
     Each node in the metagraph is a k-edge-connected component in the original
     graph.  We don't care about any edge within the same k-edge-connected
-    component, so we ignore self edges.  We also are only intereseted in the
+    component, so we ignore self edges.  We also are only interested in the
     minimum weight edge bridging each k-edge-connected component so, we group
     the edges by meta-edge and take the lightest in each group.
 
