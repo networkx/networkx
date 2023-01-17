@@ -2,7 +2,7 @@ import doctest
 import logging
 
 import networkx as nx
-import hypernetx as hnx
+# import hypernetx as hnx
 import matplotlib.pyplot as plt
 
 # logging.basicConfig(filemode="Logs.log", level=logging.INFO)
@@ -63,6 +63,7 @@ def Maximum_weight_cycle_packing_approximation_algorithm(graph: nx.DiGraph, k: i
     >>> print(Maximum_weight_cycle_packing_approximation_algorithm(Digraph, 2))
     []
 
+
     Notes
     -----------
     Algorithm - the algorithm finds maximum weight k-way exchanges using reduction from graph to hyper-graph by
@@ -94,10 +95,11 @@ def Maximum_weight_cycle_packing_approximation_algorithm(graph: nx.DiGraph, k: i
         else:
             weight = graph.get_edge_data(cycle[0], cycle[1])["weight"] + graph.get_edge_data(cycle[1], cycle[2])[
                 "weight"] + graph.get_edge_data(cycle[2], cycle[0])["weight"]
-        buildHype[i] = Entity(i, (str(item) for item in cycle), weight=weight)
+        buildHype[cycle] = weight
         weights[i] = weight
 
-    h = hnx.Hypergraph(buildHype)
+    # print("Build Hype is:", buildHype)
+    # h = hnx.Hypergraph(buildHype)
     # print(h)
     # logging.info("draw hypergraph h")
     # hnx.draw(h, edge_labels=weights)
@@ -106,11 +108,35 @@ def Maximum_weight_cycle_packing_approximation_algorithm(graph: nx.DiGraph, k: i
 
     logging.info("create a new graph for maximum weight independent set algorithm")
     graphL = nx.Graph()
-    for e in h.edges:
-        if len(h.edge_neighbors(e)) == 0:
-            graphL.add_node(cycles[e], weight=weights[e])
-        for i in h.edge_neighbors(e):
-            graphL.add_edge(cycles[e], cycles[i])
+
+    for k, v in buildHype.items():
+        graphL.add_node(k, weight=v)
+
+    logging.info("create appearance of nodes that related to each node in the directed graph")
+    nodes = graph.nodes
+    temp = {}
+    for node in nodes:
+        temp2 = []
+        for edge in buildHype.keys():
+            if edge.count(node):
+                temp2.append(edge)
+        temp[node] = temp2
+
+    logging.info("add edges to undirected graph")
+    for k, v in temp.items():
+        if len(v) > 1:
+            for i in range(0, len(v)):
+                for j in range(i, len(v)):
+                    if i is not len(v):
+                        graphL.add_edge(v[i], v[j])
+
+    # print("graph edges: ", graphL.edges)
+
+    # for e in buildHype.keys():
+    #     if graph.neighbors == 0:
+    #         graphL.add_node(cycles[e], weight=weights[e])
+    #     for i in h.edge_neighbors(e):
+    #         graphL.add_edge(cycles[e], cycles[i])
 
     # logging.info("draw undirected graphL")
     # nx.draw(graphL, pos=nx.spring_layout(graphL), font_size=12, with_labels=True)
