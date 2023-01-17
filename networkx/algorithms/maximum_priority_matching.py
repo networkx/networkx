@@ -7,7 +7,6 @@ from typing import Dict, List, Union
 
 import networkx as nx
 
-
 logging.basicConfig(filename="my_logger.log", level=logging.INFO, filemode="w")
 logger = logging.getLogger()
 
