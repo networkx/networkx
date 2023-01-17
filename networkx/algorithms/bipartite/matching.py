@@ -873,6 +873,7 @@ def minimum_weight_envy_free_matching(G, top_nodes=None):
         {2: 5, 3: 6, 5: 2, 6: 3}
     """
     import numpy as np
+
     M = nx.bipartite.maximum_matching(G, top_nodes=top_nodes)
     EFM_PARTITION = _EFM_partition(G, M, top_nodes)
     Union = EFM_PARTITION[0].union(EFM_PARTITION[2])
