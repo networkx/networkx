@@ -1,10 +1,10 @@
 import random
 import random as rd
 
+import networkx as nx
+
 # from networkx import convert_node_labels_to_integers as cnlti
 from .. import maximum_priority_matching
-
-import networkx as nx
 
 
 class TestMaximumPriorityMatching:
@@ -287,7 +287,10 @@ class TestMaximumPriorityMatching:
         nx.set_node_attributes(G, nodes_attrs)
         nx.set_edge_attributes(G, edges_attrs)
 
-        assert maximum_priority_matching.prepare_for_algo(G, 1) == ([("1", "2"), ("8", "7")], ["1", "8"])
+        assert maximum_priority_matching.prepare_for_algo(G, 1) == (
+            [("1", "2"), ("8", "7")],
+            ["1", "8"],
+        )
         assert maximum_priority_matching.find_augmenting_paths(G, 1) == True
         assert maximum_priority_matching.prepare_for_algo(G, 1) == ([("8", "7")], ["8"])
         assert maximum_priority_matching.find_augmenting_paths(G, 1) == True
@@ -297,11 +300,17 @@ class TestMaximumPriorityMatching:
         assert maximum_priority_matching.find_augmenting_paths(G, 2) == False
         assert maximum_priority_matching.prepare_for_algo(G, 3) == ([], [])
         assert maximum_priority_matching.find_augmenting_paths(G, 3) == False
-        assert maximum_priority_matching.prepare_for_algo(G, 4) == ([("6", "5"), ("6", "7")], ["6"])
+        assert maximum_priority_matching.prepare_for_algo(G, 4) == (
+            [("6", "5"), ("6", "7")],
+            ["6"],
+        )
         assert maximum_priority_matching.find_augmenting_paths(G, 4) == True
         assert maximum_priority_matching.prepare_for_algo(G, 4) == ([], [])
         assert maximum_priority_matching.find_augmenting_paths(G, 4) == False
-        assert maximum_priority_matching.prepare_for_algo(G, 5) == ([("4", "3"), ("4", "5")], ["4"])
+        assert maximum_priority_matching.prepare_for_algo(G, 5) == (
+            [("4", "3"), ("4", "5")],
+            ["4"],
+        )
         assert maximum_priority_matching.find_augmenting_paths(G, 5) == True
         assert maximum_priority_matching.prepare_for_algo(G, 5) == ([], [])
         assert maximum_priority_matching.find_augmenting_paths(G, 5) == False
@@ -484,14 +493,18 @@ class TestMaximumPriorityMatching:
         G.add_edges_from(edges)
         nx.set_node_attributes(G, nodes_attrs)
         nx.set_edge_attributes(G, edges_attrs)
-        assert maximum_priority_matching.shrink_graph(G, {"nodes": ["5", "4", "3", "6", "7"]}, "B0") == [
+        assert maximum_priority_matching.shrink_graph(
+            G, {"nodes": ["5", "4", "3", "6", "7"]}, "B0"
+            ) == [
             (False, "B0"),
             (False, "B0"),
             (False, "B0"),
             (False, "B0"),
             (False, "B0"),
         ]
-        assert maximum_priority_matching.shrink_graph(G, {"nodes": ["11", "10", "12"]}, "B1") == [
+        assert maximum_priority_matching.shrink_graph(
+            G, {"nodes": ["11", "10", "12"]}, "B1"
+            ) == [
             (False, "B1"),
             (False, "B1"),
             (False, "B1"),
@@ -627,7 +640,10 @@ class TestMaximumPriorityMatching:
         G.add_edges_from(edges)
         nx.set_node_attributes(G, nodes_attrs)
         nx.set_edge_attributes(G, edges_attrs)
-        assert maximum_priority_matching.prepare_for_algo(G, 1) == ([("1", "2"), ("8", "7")], ["1", "8"])
+        assert maximum_priority_matching.prepare_for_algo(G, 1) == (
+            [("1", "2"), ("8", "7")],
+            ["1", "8"],
+        )
         assert maximum_priority_matching.prepare_for_algo(G, 2) == ([], [])
         assert maximum_priority_matching.prepare_for_algo(G, 3) == ([], [])
         assert maximum_priority_matching.prepare_for_algo(G, 4) == ([], [])
@@ -1511,12 +1527,16 @@ class TestMaximumPriorityMatching:
         nx.set_node_attributes(G, nodes_attrs)
         nx.set_edge_attributes(G, edges_attrs)
         blossom = {"nodes": ["5", "4", "3", "6", "7"], "Base": "3"}
-        assert maximum_priority_matching.find_path_in_blossom(G, blossom, False, "7") == (
+        assert maximum_priority_matching.find_path_in_blossom(
+            G, blossom, False, "7"
+        ) == (
             ["7", "6", "3"],
             "2",
         )
         blossom = {"nodes": ["11", "10", "12"], "Base": "10"}
-        assert maximum_priority_matching.find_path_in_blossom(G, blossom, False, "11") == (
+        assert maximum_priority_matching.find_path_in_blossom(
+            G, blossom, False, "11"
+        ) == (
             ["11", "12", "10"],
             "9",
         )
@@ -1664,13 +1684,17 @@ class TestMaximumPriorityMatching:
         nx.set_node_attributes(G1, nodes_attrs)
         nx.set_edge_attributes(G1, edges_attrs)
         blossom = {"nodes": ["5", "4", "3", "6", "7"], "Base": "6"}
-        assert maximum_priority_matching.find_path_in_blossom(G1, blossom, False, "7") == (
+        assert maximum_priority_matching.find_path_in_blossom(
+            G1, blossom, False, "7"
+        ) == (
             ["7", "5", "4", "3", "6"],
             None,
         )
 
         blossom = {"nodes": ["11", "10", "12"], "Base": "12"}
-        assert maximum_priority_matching.find_path_in_blossom(G1, blossom, False, "11") == (
+        assert maximum_priority_matching.find_path_in_blossom(
+            G1, blossom, False, "11"
+        ) == (
             ["11", "10", "12"],
             None,
         )
@@ -1683,15 +1707,21 @@ class TestMaximumPriorityMatching:
             ["7", "5", "4", "3"],
             ["7", "6", "3"],
         )
-        assert maximum_priority_matching.paths_to_base(["5", "4", "3", "6", "7"], "7", "3") == (
+        assert maximum_priority_matching.paths_to_base(
+            ["5", "4", "3", "6", "7"], "7", "3"
+        ) == (
             ["7", "5", "4", "3"],
             ["7", "6", "3"],
         )
-        assert maximum_priority_matching.paths_to_base(["5", "4", "3", "6", "7"], "5", "3") == (
+        assert maximum_priority_matching.paths_to_base(
+            ["5", "4", "3", "6", "7"], "5", "3"
+        ) == (
             ["5", "4", "3"],
             ["5", "7", "6", "3"],
         )
-        assert maximum_priority_matching.paths_to_base(["5", "4", "3", "6", "7"], "4", "3") == (
+        assert maximum_priority_matching.paths_to_base(
+            ["5", "4", "3", "6", "7"], "4", "3"
+        ) == (
             ["4", "3"],
             ["4", "5", "7", "6", "3"],
         )
@@ -1699,25 +1729,38 @@ class TestMaximumPriorityMatching:
             ["2", "3", "1"],
             ["2", "1"],
         )
-        assert maximum_priority_matching.paths_to_base(["1", "2", "3"], "1", "1") == (["1"], ["1"])
+        assert maximum_priority_matching.paths_to_base(["1", "2", "3"], "1", "1") == (
+            ["1"],
+            ["1"],
+        )
         assert maximum_priority_matching.paths_to_base(["1", "2", "3"], "3", "1") == (
             ["3", "1"],
             ["3", "2", "1"],
         )
-        assert maximum_priority_matching.paths_to_base(["1", "2", "3", "4"], "1", "1") == (["1"], ["1"])
-        assert maximum_priority_matching.paths_to_base(["1", "2", "3", "4"], "2", "1") == (
+        assert maximum_priority_matching.paths_to_base(
+            ["1", "2", "3", "4"], "1", "1"
+        ) == (["1"], ["1"])
+        assert maximum_priority_matching.paths_to_base(
+            ["1", "2", "3", "4"], "2", "1"
+        ) == (
             ["2", "3", "4", "1"],
             ["2", "1"],
         )
-        assert maximum_priority_matching.paths_to_base(["1", "2", "3", "4"], "3", "1") == (
+        assert maximum_priority_matching.paths_to_base(
+            ["1", "2", "3", "4"], "3", "1"
+        ) == (
             ["3", "4", "1"],
             ["3", "2", "1"],
         )
-        assert maximum_priority_matching.paths_to_base(["1", "2", "3", "4"], "4", "1") == (
+        assert maximum_priority_matching.paths_to_base(
+            ["1", "2", "3", "4"], "4", "1"
+        ) == (
             ["4", "1"],
             ["4", "3", "2", "1"],
         )
-        assert maximum_priority_matching.paths_to_base(["1", "2", "3", "4", "5"], "5", "3") == (
+        assert maximum_priority_matching.paths_to_base(
+            ["1", "2", "3", "4", "5"], "5", "3"
+        ) == (
             ["5", "1", "2", "3"],
             ["5", "4", "3"],
         )
@@ -2198,7 +2241,9 @@ class TestMaximumPriorityMatching:
         nx.set_edge_attributes(G, edges_attrs)
         matching_edges = nx.get_edge_attributes(G, "isMatched")
         matching_info = nx.get_edge_attributes(G, "isMatched")
-        maximum_priority_matching.reverse_path(G, ["8", "9", "10", "12", "11", "7", "6", "3", "2", "1"])
+        maximum_priority_matching.reverse_path(
+            G, ["8", "9", "10", "12", "11", "7", "6", "3", "2", "1"]
+        )
         matching_edges[("8", "9")] == True
         matching_edges[("9", "10")] == False
         matching_edges[("10", "12")] == True
