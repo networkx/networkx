@@ -8,8 +8,10 @@ from concurrent.futures import ThreadPoolExecutor
 __all__ = ["GA", "count_equal_size_combinations"]
 
 from networkx.algorithms.malicious.fitness import fitness
+import networkx.algorithms.malicious.cython_functions
 # from fitness import fitness
 # from graph_reduction import build_RG_from_DG
+# import cython_functions
 
 from math import comb
 import networkx as nx
@@ -21,10 +23,12 @@ import concurrent.futures
 
 LOGֹ_FORMAT = "%(levelname)s, time: %(asctime)s , line: %(lineno)d- %(message)s "
 # create and configure logger
-logging.basicConfig(filename='malicious_algo_logging.log', level=logging.DEBUG, filemode='w')
+logging.basicConfig(filename='malicious_algo_logging.log',
+                    level=logging.DEBUG, filemode='w')
 logger = logging.getLogger()
 
 # =============================Threads===========================
+
 
 def generate_solutions_multithreading(G1, G2, num_solutions):
     # Generate solutions
@@ -48,6 +52,8 @@ def generate_solutions_multithreading(G1, G2, num_solutions):
 # ================================================================
 
 # =============================Processes===========================
+
+
 def generate_solutions_processes(G1, G2, num_solutions):
     # Generate solutions
     solutions = []
@@ -152,7 +158,6 @@ def crossover(G1_nodes, G2_nodes, G1_sublists, G2_sublists, num_solutions):
     logging.debug(f'Generating new solutions')
     return new_solutions
 
-
 def GA(G1, G2, ALPHA):
     logging.info('Started genetic algorithm')
     # Get the nodes of each graph
@@ -160,25 +165,27 @@ def GA(G1, G2, ALPHA):
     G2_nodes = list(G2.nodes)
 
     # Calculate the number of combinations of equal size sublists that can be created from the nodes of the two graphs
-    num_of_combinations = count_equal_size_combinations(G1_nodes, G2_nodes)
+    num_of_combinations = cython_functions.count_equal_size_combinations(
+        G1_nodes, G2_nodes)
+    # num_of_combinations = count_equal_size_combinations(G1_nodes, G2_nodes)
 
     # Generate the solutions
     NUM_OF_SOLUTIONS = int(num_of_combinations / 2)
     if num_of_combinations >= 100000:
         NUM_OF_SOLUTIONS = 100000
     logging.debug(f'Generating {NUM_OF_SOLUTIONS} solutions')
-    solutions = generate_solutions(G1, G2, NUM_OF_SOLUTIONS)
+    solutions = cython_functions.generate_solutions(G1, G2, NUM_OF_SOLUTIONS)
 
     # Evaluate the solutions
     NUM_OF_GENERATIONS = int(NUM_OF_SOLUTIONS * 10)
     for i in range(NUM_OF_GENERATIONS):
         logging.debug(f'Evaluating solutions in generation {i+1}')
-        found_solution, solutions_with_fitness = evaluate_solutions(
+        found_solution, solutions_with_fitness = cython_functions.evaluate_solutions(
             G1, G2, solutions, ALPHA)
         if found_solution:
             return True
 
-        solutions_with_fitness  
+        solutions_with_fitness
         # Sort the solutions by their fitness scores
         rankedsolutions = sorted(solutions_with_fitness, key=lambda x: x[1])
         if NUM_OF_SOLUTIONS == 1:
@@ -213,10 +220,11 @@ def GA(G1, G2, ALPHA):
 
         # Crossover
         logging.debug(f'Performing crossover in generation {i+1}')
-        solutions = crossover(G1_nodes, G2_nodes,
-                              G1_sublists, G2_sublists, NUM_OF_SOLUTIONS)
+        solutions = cython_functions.crossover(G1_nodes, G2_nodes,
+                                               G1_sublists, G2_sublists, NUM_OF_SOLUTIONS)
 
     return False
+
 
 def run_time_simulation(G1, G2, ALPHA, py_func, cython_func, num_of_iterations):
     total_time_py = total_time_cython = 0
@@ -234,7 +242,7 @@ def run_time_simulation(G1, G2, ALPHA, py_func, cython_func, num_of_iterations):
 
     avg_time_py = total_time_py/num_of_iterations
     avg_time_cython = total_time_cython/num_of_iterations
-    
+
     print(f"avg_time_py: {avg_time_py}s")
     print(f"avg_time_cython: {avg_time_cython}s")
     print(f"cython is {avg_time_py / avg_time_cython:.2f} times faster")
@@ -259,7 +267,8 @@ def threads_simulation(G1, G2, num_solutions, original_func, threads__func, num_
 
     print(f"avg_time_original: {avg_time_original}s")
     print(f"avg_time_threads: {avg_time_threads}s")
-    print(f"threads is {avg_time_original / avg_time_threads:.2f} times faster")
+    print(
+        f"threads is {avg_time_original / avg_time_threads:.2f} times faster")
 
 
 # def main():
@@ -278,8 +287,8 @@ def threads_simulation(G1, G2, num_solutions, original_func, threads__func, num_
 #     fork_R1_RG = build_RG_from_DG(fork_R1_DG)
 
 #     g1 = nx.gnm_random_graph(5, 8, directed=True)
-#     g2 = nx.gnm_random_graph(10, 19, directed=True)    
-#     g3 = nx.gnm_random_graph(15, 25, directed=True)    
+#     g2 = nx.gnm_random_graph(10, 19, directed=True)
+#     g3 = nx.gnm_random_graph(15, 25, directed=True)
 #     g4 = nx.gnm_random_graph(20, 31, directed=True)
 
 #     g1_RG = build_RG_from_DG(g1)
@@ -288,7 +297,7 @@ def threads_simulation(G1, G2, num_solutions, original_func, threads__func, num_
 #     g4_RG = build_RG_from_DG(g4)
 
 #     # threads_simulation(G1=fork_RG, G2=fork_R1_RG, num_solutions=10000, original_func=generate_solutions, threads__func=generate_solutions_multithreading, num_of_iterations=10)
-    
+
 #     # threads_simulation(G1=fork_RG, G2=fork_R1_RG, num_solutions=10000, original_func=generate_solutions_processes,
 #     #                    threads__func=generate_solutions_multithreading, num_of_iterations=10)
 # main()
