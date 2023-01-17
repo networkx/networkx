@@ -279,8 +279,8 @@ def find_augmenting_paths(G: nx.Graph, Priority: int):
         if external_info[edge[0]] is True and external_info[edge[1]] is True:
             # B(u) is positive
             if positive_list[edge[0]] is True:
-                u = str(edge[0])
-                v = str(edge[1])
+                u = edge[0]
+                v = edge[1]
                 # check if B(V) is positive
                 if positive_list[v] is True:
                     isPositive = True
@@ -292,8 +292,8 @@ def find_augmenting_paths(G: nx.Graph, Priority: int):
                 else:
                     sameTree = False
             elif positive_list[edge[1]] is True:
-                u = str(edge[1])
-                v = str(edge[0])
+                u = edge[1]
+                v = edge[0]
                 # if B(V) was positive, the algo was entered to the previous condition
                 isPositive = False
                 # check if u,v in the same tree
@@ -309,8 +309,8 @@ def find_augmenting_paths(G: nx.Graph, Priority: int):
             blossom_id1 = blossoms_info[edge[1]]
             # check if the blossom of edge[0] is positive
             if blossoms[blossom_id0]["isPositive"] is True:
-                u = str(edge[0])
-                v = str(edge[1])
+                u = edge[0]
+                v = edge[1]
                 # check if B(v) is positive
                 if blossoms[blossom_id1]["isPositive"] is True:
                     isPositive = True
@@ -323,8 +323,8 @@ def find_augmenting_paths(G: nx.Graph, Priority: int):
                     sameTree = False
             # check if the blossom of edge[1] is positive
             elif blossoms[blossom_id1]["isPositive"] is True:
-                u = str(edge[1])
-                v = str(edge[0])
+                u = edge[1]
+                v = edge[0]
                 # if B(V) was positive, the algo was entered to the previous condition
                 isPositive = False
                 # check if B(u) and B(V) in the same tree
@@ -340,8 +340,8 @@ def find_augmenting_paths(G: nx.Graph, Priority: int):
             if external_info[edge[0]] is False:
                 blossom_id = blossoms_info[edge[0]]
                 if blossoms[blossom_id]["isPositive"] is True:
-                    u = str(edge[0])
-                    v = str(edge[1])
+                    u = edge[0]
+                    v = edge[1]
                     # check if B(v) is positive
                     if positive_list[v] is True:
                         isPositive = True
@@ -353,8 +353,8 @@ def find_augmenting_paths(G: nx.Graph, Priority: int):
                     else:
                         sameTree = False
                 elif positive_list[edge[1]] is True:
-                    u = str(edge[1])
-                    v = str(edge[0])
+                    u = edge[1]
+                    v = edge[0]
                     # if B(V) was positive, the algo was entered to the previous condition
                     isPositive = False
                     # check if B(u) and B(v) are in the same tree
@@ -368,8 +368,8 @@ def find_augmenting_paths(G: nx.Graph, Priority: int):
             else:
                 blossom_id = blossoms_info[edge[1]]
                 if positive_list[edge[0]] is True:
-                    u = str(edge[0])
-                    v = str(edge[1])
+                    u = edge[0]
+                    v = edge[1]
                     # check if B(v) is positive
                     if blossoms[blossom_id]["isPositive"] is True:
                         isPositive = True
@@ -381,8 +381,8 @@ def find_augmenting_paths(G: nx.Graph, Priority: int):
                     else:
                         sameTree = False
                 elif blossoms[blossom_id]["isPositive"] is True:
-                    u = str(edge[1])
-                    v = str(edge[0])
+                    u = edge[1]
+                    v = edge[0]
                     # if B(V) was positive, the algo was entered to the previous condition
                     isPositive = False
                     # check if B(u) and B(v) are in the same tree
@@ -780,15 +780,15 @@ def prepare_for_algo(G: nx.Graph, Priority: int):
         check_node = str(node)
         # check if the node in the current priority class and if it doesn't 'touch' the matching yet
         if (
-            nodes_priorities[check_node] == Priority
-            and nodes_matching[check_node] is False
+            nodes_priorities[node] == Priority
+            and nodes_matching[node] is False
         ):
             roots.append(node)
             nx.set_node_attributes(
                 G,
                 {
-                    check_node: {
-                        "root": check_node,
+                    node: {
+                        "root": node,
                         "isPositive": True,
                         "isReachable": True,
                         "parent": None,
@@ -802,7 +802,7 @@ def prepare_for_algo(G: nx.Graph, Priority: int):
             nx.set_node_attributes(
                 G,
                 {
-                    check_node: {
+                    node: {
                         "root": None,
                         "isPositive": None,
                         "isReachable": False,
@@ -816,7 +816,7 @@ def prepare_for_algo(G: nx.Graph, Priority: int):
     # get all incident edges to the root into the eligible_edges list
     for root in roots:
         for neighbor in G.neighbors(root):
-            edge = (str(root), str(neighbor))
+            edge = (root, neighbor)
             eligible_edges.append(edge)
 
     return (eligible_edges, roots)
@@ -1500,3 +1500,4 @@ def reverse_path(G: nx.Graph, path):
 
 if __name__ == "__main__":
     print(doctest.testmod())
+   
