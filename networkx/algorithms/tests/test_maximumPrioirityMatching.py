@@ -495,7 +495,7 @@ class TestMaximumPriorityMatching:
         nx.set_edge_attributes(G, edges_attrs)
         assert maximum_priority_matching.shrink_graph(
             G, {"nodes": ["5", "4", "3", "6", "7"]}, "B0"
-            ) == [
+        ) == [
             (False, "B0"),
             (False, "B0"),
             (False, "B0"),
@@ -504,7 +504,7 @@ class TestMaximumPriorityMatching:
         ]
         assert maximum_priority_matching.shrink_graph(
             G, {"nodes": ["11", "10", "12"]}, "B1"
-            ) == [
+        ) == [
             (False, "B1"),
             (False, "B1"),
             (False, "B1"),
