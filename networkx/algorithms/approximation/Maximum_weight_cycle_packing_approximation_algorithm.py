@@ -2,11 +2,9 @@ import doctest
 import logging
 
 import networkx as nx
-import matplotlib.pyplot as plt
 
 # logging.basicConfig(filemode="Logs.log", level=logging.INFO)
 # log = logging.getLogger()
-from hypernetx import Entity
 
 EPS = 1e-6
 
@@ -97,14 +95,6 @@ def Maximum_weight_cycle_packing_approximation_algorithm(graph: nx.DiGraph, k: i
         buildHype[cycle] = weight
         weights[i] = weight
 
-    # print("Build Hype is:", buildHype)
-    # h = hnx.Hypergraph(buildHype)
-    # print(h)
-    # logging.info("draw hypergraph h")
-    # hnx.draw(h, edge_labels=weights)
-    # plt.title('HyperGraph')
-    # plt.show()
-
     logging.info("create a new graph for maximum weight independent set algorithm")
     graphL = nx.Graph()
 
@@ -128,19 +118,6 @@ def Maximum_weight_cycle_packing_approximation_algorithm(graph: nx.DiGraph, k: i
                 for j in range(i, len(v)):
                     if i is not len(v):
                         graphL.add_edge(v[i], v[j])
-
-    # print("graph edges: ", graphL.edges)
-
-    # for e in buildHype.keys():
-    #     if graph.neighbors == 0:
-    #         graphL.add_node(cycles[e], weight=weights[e])
-    #     for i in h.edge_neighbors(e):
-    #         graphL.add_edge(cycles[e], cycles[i])
-
-    # logging.info("draw undirected graphL")
-    # nx.draw(graphL, pos=nx.spring_layout(graphL), font_size=12, with_labels=True)
-    # plt.title('graphL')
-    # plt.show()
 
     logging.info("nodes and weights")
     pi = dict(zip(graphL.nodes(), (weights[i] for i in weights)))
