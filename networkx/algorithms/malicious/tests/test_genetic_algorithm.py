@@ -7,6 +7,7 @@ import networkx as nx
 from networkx.algorithms.malicious.graph_reduction import build_RG_from_DG
 from networkx.algorithms.malicious.genetic_algorithm import GA
 
+
 class TestFitnessFunction:
     # basic_code reduced garph
     basic_RG = nx.DiGraph()
