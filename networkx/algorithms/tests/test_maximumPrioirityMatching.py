@@ -23,7 +23,7 @@ class TestMaximumPriorityMatching:
             "6": {"priority": 4},
             "7": {"priority": 3},
             "8": {"priority": 1},
-            "9": {"priority": 7}
+            "9": {"priority": 7},
         }
         G.add_nodes_from(nodes)
         G.add_edges_from(edges)
@@ -38,10 +38,10 @@ class TestMaximumPriorityMatching:
             ("2", "3"),
             ("3", "4"),
             ("4", "5"),
-            ("5", "6"), 
-            ("6", "7"), 
-            ("7", "8"), 
-            ("7", "9"), 
+            ("5", "6"),
+            ("6", "7"),
+            ("7", "8"),
+            ("7", "9"),
             ("7", "3"),
         ]
         nodes_attrs = {
@@ -53,7 +53,7 @@ class TestMaximumPriorityMatching:
             "6": {"priority": 4},
             "7": {"priority": 3},
             "8": {"priority": 1},
-            "9": {"priority": 7}
+            "9": {"priority": 7},
         }
         G.add_nodes_from(nodes)
         G.add_edges_from(edges)
@@ -110,7 +110,7 @@ class TestMaximumPriorityMatching:
             ("9", "10"),
             ("10", "11"),
             ("10", "12"),
-            ("11", "12")
+            ("11", "12"),
         ]
         nodes_attrs = {
             "1": {"priority": 1},
@@ -124,7 +124,7 @@ class TestMaximumPriorityMatching:
             "9": {"priority": 2},
             "10": {"priority": 1},
             "11": {"priority": 1},
-            "12": {"priority": 1}
+            "12": {"priority": 1},
         }
         G.add_nodes_from(nodes)
         G.add_edges_from(edges)
@@ -334,18 +334,19 @@ class TestMaximumPriorityMatching:
             ("11", "12"),
         ]
         nodes_attrs = {
-                '1': {"parent": None,
+            "1": {
+                "parent": None,
                 "priority": 1,
                 "isMatched": False,
                 "isPositive": True,
                 "isReachable": True,
-                "root": '1',
+                "root": "1",
                 "isBolssom": False,
                 "isExternal": True,
-                "blossomsID": -1
+                "blossomsID": -1,
             },
             "2": {
-                "parent": '1',
+                "parent": "1",
                 "priority": 2,
                 "isMatched": True,
                 "isPositive": False,
@@ -353,31 +354,31 @@ class TestMaximumPriorityMatching:
                 "root": "1",
                 "isBolssom": False,
                 "isExternal": True,
-                "blossomsID": -1
+                "blossomsID": -1,
             }, "3": {
-                "parent": '2',
+                "parent": "2",
                 "priority": 1,
                 "isMatched": True,
                 "isPositive": True,
                 "isReachable": True,
-                "root": '1',
+                "root": "1",
                 "isBolssom": False,
                 "isExternal": True,
-                "blossomsID": -1
+                "blossomsID": -1,
             }, 
             "4": {
-                "parent": '3',
+                "parent": "3",
                 "priority": 1,
                 "isMatched": True,
                 "isPositive": False,
                 "isReachable": True,
-                "root": '1',
+                "root": "1",
                 "isBolssom": False,
                 "isExternal": True,
-                "blossomsID": -1
+                "blossomsID": -1,
             },
             "5": {
-                "parent": '4',
+                "parent": "4",
                 "priority": 1,
                 "isMatched": True,
                 "isPositive": True,
@@ -385,29 +386,29 @@ class TestMaximumPriorityMatching:
                 "root": '1',
                 "isBolssom": False,
                 "isExternal": True,
-                "blossomsID": -1
+                "blossomsID": -1,
             },
             "6": {
-                "parent": '3',
+                "parent": "3",
                 "priority": 1,
                 "isMatched": True,
                 "isPositive": False,
                 "isReachable": True,
-                "root": '1',
+                "root": "1",
                 "isBolssom": False,
                 "isExternal": True,
-                "blossomsID": -1
+                "blossomsID": -1,
             },
             "7": {
-                "parent": '6',
+                "parent": "6",
                 "priority": 1,
                 "isMatched": True,
                 "isPositive": True,
                 "isReachable": True,
-                "root": '1',
+                "root": "1",
                 "isBolssom": False,
                 "isExternal": True,
-                "blossomsID": -1
+                "blossomsID": -1,
             },
             "8": {
                 "parent": None,
@@ -418,7 +419,7 @@ class TestMaximumPriorityMatching:
                 "root": None,
                 "isBolssom": False,
                 "isExternal": True,
-                "blossomsID": -1
+                "blossomsID": -1,
             },
             "9": {
                 "parent": None,
@@ -440,7 +441,7 @@ class TestMaximumPriorityMatching:
                 "root": None,
                 "isBolssom": False,
                 "isExternal": True,
-                "blossomsID": -1
+                "blossomsID": -1,
             },
             "11": {
                 "parent": None,
@@ -451,7 +452,7 @@ class TestMaximumPriorityMatching:
                 "root": None,
                 "isBolssom": False,
                 "isExternal": True,
-                "blossomsID": -1
+                "blossomsID": -1,
             },
             "12": {
                 "parent": None,
@@ -462,7 +463,7 @@ class TestMaximumPriorityMatching:
                 "root": None,
                 "isBolssom": False,
                 "isExternal": True,
-                "blossomsID": -1
+                "blossomsID": -1,
             }
         }
         edges_attrs = {
@@ -1722,7 +1723,6 @@ class TestMaximumPriorityMatching:
             ["5", "4", "3"],
         )
 
-
     def test_find_path_to_root(self):
         G = nx.Graph()
         nodes = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
@@ -2093,6 +2093,7 @@ class TestMaximumPriorityMatching:
             "11",
             "7",
         ) == ["11", "10", "12"]
+
     def test_reverse_path(self):
         G = nx.Graph()
         nodes = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
