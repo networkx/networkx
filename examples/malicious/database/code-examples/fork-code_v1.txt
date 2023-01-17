@@ -1,7 +1,0 @@
-1: int a, b, i
-    2: a = 0
-    3: b = 3
-    4: while(a == 0)
-    5:      for i = 0 to 5
-    6:          b = b +1
-    7:          fork()

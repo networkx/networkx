@@ -1,6 +1,0 @@
-1: dim n, p, i
-    2: n = 5
-    3: p = 1
-    4: for i = 1 to n do
-    5:      p = p * i
-    6: end for

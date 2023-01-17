@@ -1,0 +1,6 @@
+1: dim a, b, c
+    2: a = 5
+    3: b = 1
+    4: for c = 1 to a do
+    5:      b = b * c
+    6: end for

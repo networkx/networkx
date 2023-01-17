@@ -61,10 +61,4 @@ networkx-dev/
 networkx.venv
 
 # logging
-.log
-
-# img
-*.png
-
-# temp.py - cython tests
-temp.py
+*.log
