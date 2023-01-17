@@ -7,9 +7,7 @@ import maximum_priority_matching as algo
 import networkx as nx
 
 
-
 class TestMaximumPriorityMatching:
-
     def test_find_prioirity_score(self):
         G = nx.Graph()
         nodes = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
