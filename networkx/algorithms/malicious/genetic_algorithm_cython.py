@@ -7,11 +7,11 @@ import concurrent.futures
 from concurrent.futures import ThreadPoolExecutor
 __all__ = ["GA", "count_equal_size_combinations"]
 
-from networkx.algorithms.malicious.fitness import fitness
-import networkx.algorithms.malicious.cython_functions
-# from fitness import fitness
+#from networkx.algorithms.malicious.fitness import fitness
+#import networkx.algorithms.malicious.cython_functions
+from fitness import fitness
 # from graph_reduction import build_RG_from_DG
-# import cython_functions
+import cython_functions
 
 from math import comb
 import networkx as nx
@@ -19,6 +19,7 @@ import logging
 import random
 import time
 import concurrent.futures
+WORKERS = 4
 
 
 LOGֹ_FORMAT = "%(levelname)s, time: %(asctime)s , line: %(lineno)d- %(message)s "
@@ -158,7 +159,7 @@ def crossover(G1_nodes, G2_nodes, G1_sublists, G2_sublists, num_solutions):
     logging.debug(f'Generating new solutions')
     return new_solutions
 
-def GA(G1, G2, ALPHA):
+def GA_C(G1, G2, ALPHA):
     logging.info('Started genetic algorithm')
     # Get the nodes of each graph
     G1_nodes = list(G1.nodes)
@@ -171,10 +172,16 @@ def GA(G1, G2, ALPHA):
 
     # Generate the solutions
     NUM_OF_SOLUTIONS = int(num_of_combinations / 2)
-    if num_of_combinations >= 100000:
-        NUM_OF_SOLUTIONS = 100000
+    if num_of_combinations >= 10000:
+        NUM_OF_SOLUTIONS = 10000
     logging.debug(f'Generating {NUM_OF_SOLUTIONS} solutions')
-    solutions = cython_functions.generate_solutions(G1, G2, NUM_OF_SOLUTIONS)
+    solutions = []
+    with concurrent.futures.ProcessPoolExecutor(max_workers=WORKERS) as executor:
+        future_1 = executor.submit(cython_functions.generate_solutions,G1,G2,NUM_OF_SOLUTIONS//2)
+        future_2 = executor.submit(cython_functions.generate_solutions,G1,G2,NUM_OF_SOLUTIONS//2)
+        for future in concurrent.futures.as_completed([future_1,future_2]):
+            r = future.result()
+            solutions += r
 
     # Evaluate the solutions
     NUM_OF_GENERATIONS = int(NUM_OF_SOLUTIONS * 10)
@@ -218,10 +225,22 @@ def GA(G1, G2, ALPHA):
             G2_sublists[length] = [
                 lst for lst in G2_elements if len(lst) == length]
 
+        solutions = []
         # Crossover
         logging.debug(f'Performing crossover in generation {i+1}')
-        solutions = cython_functions.crossover(G1_nodes, G2_nodes,
-                                               G1_sublists, G2_sublists, NUM_OF_SOLUTIONS)
+        with concurrent.futures.ProcessPoolExecutor(max_workers=WORKERS) as executor:
+            future_1 = executor.submit(cython_functions.crossover,G1_nodes, G2_nodes,
+                                               G1_sublists, G2_sublists, NUM_OF_SOLUTIONS//2)
+            future_2 = executor.submit(cython_functions.crossover,G1_nodes, G2_nodes,
+                                               G1_sublists, G2_sublists, NUM_OF_SOLUTIONS//2)
+            for future in concurrent.futures.as_completed([future_1,future_2]):
+                r = future.result()
+                solutions += r
+            
+
+                        
+             #solutions = cython_functions.crossover(G1_nodes, G2_nodes,
+              #                                 G1_sublists, G2_sublists, NUM_OF_SOLUTIONS)
 
     return False
 

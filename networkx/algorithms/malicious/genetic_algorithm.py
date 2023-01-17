@@ -7,9 +7,9 @@ import concurrent.futures
 from concurrent.futures import ThreadPoolExecutor
 __all__ = ["GA", "count_equal_size_combinations"]
 
-from networkx.algorithms.malicious.fitness import fitness
-# from fitness import fitness
-# from graph_reduction import build_RG_from_DG
+#from networkx.algorithms.malicious.fitness import fitness
+from fitness import fitness
+from graph_reduction import build_RG_from_DG
 
 from math import comb
 import networkx as nx
