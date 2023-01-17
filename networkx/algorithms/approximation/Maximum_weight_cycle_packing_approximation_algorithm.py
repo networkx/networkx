@@ -2,7 +2,6 @@ import doctest
 import logging
 
 import networkx as nx
-# import hypernetx as hnx
 import matplotlib.pyplot as plt
 
 # logging.basicConfig(filemode="Logs.log", level=logging.INFO)
