@@ -309,7 +309,7 @@ class TestMaximumPriorityMatching:
         assert maximum_priority_matching.find_augmenting_paths(G, 6) == False
         assert maximum_priority_matching.prepare_for_algo(G, 7) == ([("9", "7")], ["9"])
         assert maximum_priority_matching.find_augmenting_paths(G, 7) == False
-        assert maximum_priority_matching.prepare_for_maximum_priority_matching(G, 8) == ([], [])
+        assert maximum_priority_matching.prepare_for_algo(G, 8) == ([], [])
         assert maximum_priority_matching.find_augmenting_paths(G, 8) == False
 
     def test_shrink_graph(self):
