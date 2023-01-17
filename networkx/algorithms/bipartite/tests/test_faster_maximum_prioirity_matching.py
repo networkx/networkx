@@ -82,8 +82,8 @@ class TestFasterMaximumPriorityMatching:
 
         for u in range(x):
            for v in range(x + 1, n):
-               p = rd.random()
-               if p > 0.95:
+                p = rd.random()
+                if p > 0.95:
                     G.add_edge(str(u), str(v))
 
         matching = (
@@ -93,7 +93,7 @@ class TestFasterMaximumPriorityMatching:
         )
         check = False
         for element in matching:
-           if "0" in element:
+            if "0" in element:
                 check = True
         assert check == True
 
@@ -120,8 +120,9 @@ class TestFasterMaximumPriorityMatching:
         nx.set_node_attributes(G, nodes_attrs)
         nx.set_edge_attributes(G, edges_attrs)
         assert faster_maximum_prioirity_matching.augmenting_path_v1(
-             G, [("1", "4"), ("5", "6")], 2
+            G, [("1", "4"), ("5", "6")], 2
         ) == ([("1", "4"), ("3", "6")], True)
+
     def augmenting_path_v2(self):
         G = nx.Graph()
         nodes = ["1", "2", "3", "4", "5", "6"]
@@ -145,5 +146,5 @@ class TestFasterMaximumPriorityMatching:
         nx.set_node_attributes(G, nodes_attrs)
         nx.set_edge_attributes(G, edges_attrs)
         assert faster_maximum_prioirity_matching.augmenting_path_v2(
-            G,[("1" , "4"), ("5", "6")], 2
+            G, [("1" , "4"), ("5", "6")], 2
         ) == ([("1", "4"), ("5", "6")], False)
