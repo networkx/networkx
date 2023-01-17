@@ -1,0 +1,134 @@
+INFO:root:Find max prioirity matching for bipartite G
+INFO:root:Find maximal matching for G {('1', '2'), ('3', '6')}
+INFO:root:searching for augmenting path for prioirity 1
+INFO:root:new matching [('1', '2'), ('3', '6')]
+INFO:root:searching for augmenting path for prioirity 1
+INFO:root:new matching [('1', '2'), ('3', '6')]
+INFO:root:searching for augmenting path for prioirity 2
+INFO:root:new matching [('1', '2'), ('3', '6')]
+INFO:root:searching for augmenting path for prioirity 2
+INFO:root:new matching [('1', '2'), ('3', '6')]
+INFO:root:searching for augmenting path for prioirity 3
+INFO:root:new matching [('1', '2'), ('3', '6')]
+INFO:root:searching for augmenting path for prioirity 3
+INFO:root:new matching [('1', '2'), ('3', '6')]
+INFO:root:searching for augmenting path for prioirity 4
+INFO:root:new matching [('1', '2'), ('3', '6')]
+INFO:root:searching for augmenting path for prioirity 4
+INFO:root:new matching [('1', '2'), ('3', '6')]
+INFO:root:searching for augmenting path for prioirity 5
+INFO:root:new matching [('1', '2'), ('3', '6')]
+INFO:root:searching for augmenting path for prioirity 5
+INFO:root:new matching [('1', '2'), ('3', '6')]
+INFO:root:searching for augmenting path for prioirity 6
+INFO:root:new matching [('1', '2'), ('3', '6')]
+INFO:root:searching for augmenting path for prioirity 6
+INFO:root:new matching [('1', '2'), ('3', '6')]
+INFO:root:Find max prioirity matching for bipartite G
+INFO:root:Find maximal matching for G {('1', '2'), ('3', '4')}
+INFO:root:searching for augmenting path for prioirity 1
+INFO:root:new matching [('1', '2'), ('3', '4')]
+INFO:root:searching for augmenting path for prioirity 1
+INFO:root:new matching [('1', '2'), ('3', '4')]
+INFO:root:searching for augmenting path for prioirity 2
+INFO:root:new matching [('1', '2'), ('3', '4')]
+INFO:root:searching for augmenting path for prioirity 2
+INFO:root:new matching [('1', '2'), ('3', '4')]
+INFO:root:searching for augmenting path for prioirity 3
+INFO:root:new matching [('1', '2'), ('3', '4')]
+INFO:root:searching for augmenting path for prioirity 3
+INFO:root:new matching [('1', '2'), ('3', '4')]
+INFO:root:searching for augmenting path for prioirity 4
+INFO:root:new matching [('1', '2'), ('3', '4')]
+INFO:root:searching for augmenting path for prioirity 4
+INFO:root:new matching [('1', '2'), ('3', '4')]
+INFO:root:searching for augmenting path for prioirity 5
+INFO:root:new matching [('1', '2'), ('3', '4')]
+INFO:root:searching for augmenting path for prioirity 5
+INFO:root:new matching [('1', '2'), ('3', '4')]
+INFO:root:searching for augmenting path for prioirity 6
+INFO:root:new matching [('1', '2'), ('3', '4')]
+INFO:root:searching for augmenting path for prioirity 6
+INFO:root:new matching [('1', '2'), ('3', '4')]
+INFO:root:Find max prioirity matching for bipartite G
+INFO:root:Find maximal matching for G {('0', '1'), ('7', '16'), ('3', '19')}
+INFO:root:searching for augmenting path for prioirity 1
+INFO:root:new matching [('0', '1'), ('3', '19'), ('7', '16')]
+INFO:root:searching for augmenting path for prioirity 1
+INFO:root:new matching [('0', '1'), ('3', '19'), ('7', '16')]
+INFO:root:searching for augmenting path for prioirity 2
+INFO:root:new matching [('0', '1'), ('3', '19'), ('7', '16')]
+INFO:root:searching for augmenting path for prioirity 2
+INFO:root:new matching [('0', '1'), ('3', '19'), ('7', '16')]
+INFO:root:searching for augmenting path for prioirity 3
+INFO:root:new matching [('0', '1'), ('3', '19'), ('7', '16')]
+INFO:root:searching for augmenting path for prioirity 3
+INFO:root:new matching [('0', '1'), ('3', '19'), ('7', '16')]
+INFO:root:searching for augmenting path for prioirity 4
+INFO:root:new matching [('0', '1'), ('3', '19'), ('7', '16')]
+INFO:root:searching for augmenting path for prioirity 4
+INFO:root:new matching [('0', '1'), ('3', '19'), ('7', '16')]
+INFO:root:searching for augmenting path for prioirity 5
+INFO:root:new matching [('0', '1'), ('3', '19'), ('7', '16')]
+INFO:root:searching for augmenting path for prioirity 5
+INFO:root:new matching [('0', '1'), ('3', '19'), ('7', '16')]
+INFO:root:searching for augmenting path for prioirity 6
+INFO:root:new matching [('0', '1'), ('3', '19'), ('7', '16')]
+INFO:root:searching for augmenting path for prioirity 6
+INFO:root:new matching [('0', '1'), ('3', '19'), ('7', '16')]
+INFO:root:searching for augmenting path for prioirity 7
+INFO:root:new matching [('0', '1'), ('3', '19'), ('7', '16')]
+INFO:root:searching for augmenting path for prioirity 7
+INFO:root:new matching [('0', '1'), ('3', '19'), ('7', '16')]
+INFO:root:searching for augmenting path for prioirity 8
+INFO:root:new matching [('0', '1'), ('3', '19'), ('7', '16')]
+INFO:root:searching for augmenting path for prioirity 8
+INFO:root:new matching [('0', '1'), ('3', '19'), ('7', '16')]
+INFO:root:searching for augmenting path for prioirity 9
+INFO:root:new matching [('0', '1'), ('3', '19'), ('7', '16')]
+INFO:root:searching for augmenting path for prioirity 9
+INFO:root:new matching [('0', '1'), ('3', '19'), ('7', '16')]
+INFO:root:searching for augmenting path for prioirity 10
+INFO:root:new matching [('0', '1'), ('3', '19'), ('7', '16')]
+INFO:root:searching for augmenting path for prioirity 10
+INFO:root:new matching [('0', '1'), ('3', '19'), ('7', '16')]
+INFO:root:searching for augmenting path for prioirity 11
+INFO:root:new matching [('0', '1'), ('3', '19'), ('7', '16')]
+INFO:root:searching for augmenting path for prioirity 11
+INFO:root:new matching [('0', '1'), ('3', '19'), ('7', '16')]
+INFO:root:searching for augmenting path for prioirity 12
+INFO:root:new matching [('0', '1'), ('3', '19'), ('7', '16')]
+INFO:root:searching for augmenting path for prioirity 12
+INFO:root:new matching [('0', '1'), ('3', '19'), ('7', '16')]
+INFO:root:searching for augmenting path for prioirity 13
+INFO:root:new matching [('0', '1'), ('3', '19'), ('7', '16')]
+INFO:root:searching for augmenting path for prioirity 13
+INFO:root:new matching [('0', '1'), ('3', '19'), ('7', '16')]
+INFO:root:searching for augmenting path for prioirity 14
+INFO:root:new matching [('0', '1'), ('3', '19'), ('7', '16')]
+INFO:root:searching for augmenting path for prioirity 14
+INFO:root:new matching [('0', '1'), ('3', '19'), ('7', '16')]
+INFO:root:searching for augmenting path for prioirity 15
+INFO:root:new matching [('0', '1'), ('3', '19'), ('7', '16')]
+INFO:root:searching for augmenting path for prioirity 15
+INFO:root:new matching [('0', '1'), ('3', '19'), ('7', '16')]
+INFO:root:searching for augmenting path for prioirity 16
+INFO:root:new matching [('0', '1'), ('3', '19'), ('7', '16')]
+INFO:root:searching for augmenting path for prioirity 16
+INFO:root:new matching [('0', '1'), ('3', '19'), ('7', '16')]
+INFO:root:searching for augmenting path for prioirity 17
+INFO:root:new matching [('0', '1'), ('3', '19'), ('7', '16')]
+INFO:root:searching for augmenting path for prioirity 17
+INFO:root:new matching [('0', '1'), ('3', '19'), ('7', '16')]
+INFO:root:searching for augmenting path for prioirity 18
+INFO:root:new matching [('0', '1'), ('3', '19'), ('7', '16')]
+INFO:root:searching for augmenting path for prioirity 18
+INFO:root:new matching [('0', '1'), ('3', '19'), ('7', '16')]
+INFO:root:searching for augmenting path for prioirity 19
+INFO:root:new matching [('0', '1'), ('3', '19'), ('7', '16')]
+INFO:root:searching for augmenting path for prioirity 19
+INFO:root:new matching [('0', '1'), ('3', '19'), ('7', '16')]
+INFO:root:searching for augmenting path for prioirity 20
+INFO:root:new matching [('0', '1'), ('3', '19'), ('7', '16')]
+INFO:root:searching for augmenting path for prioirity 20
+INFO:root:new matching [('0', '1'), ('3', '19'), ('7', '16')]
