@@ -1382,6 +1382,7 @@ static const char __pyx_k_G1_sublists[] = "G1_sublists";
 static const char __pyx_k_G2_sublists[] = "G2_sublists";
 static const char __pyx_k_num_solutions[] = "num_solutions";
 static const char __pyx_k_cline_in_traceback[] = "cline_in_traceback";
+static const char __pyx_k_networkx_algorithms_malicious_fi[] = "networkx.algorithms.malicious.fitness";
 static PyObject *__pyx_n_s_ALPHA;
 static PyObject *__pyx_n_s_G1;
 static PyObject *__pyx_n_s_G1_nodes;
@@ -1402,6 +1403,7 @@ static PyObject *__pyx_n_s_keys;
 static PyObject *__pyx_n_s_main;
 static PyObject *__pyx_n_s_math;
 static PyObject *__pyx_n_s_name;
+static PyObject *__pyx_n_s_networkx_algorithms_malicious_fi;
 static PyObject *__pyx_n_s_nodes;
 static PyObject *__pyx_n_s_num_solutions;
 static PyObject *__pyx_n_s_randint;
@@ -3346,6 +3348,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_main, __pyx_k_main, sizeof(__pyx_k_main), 0, 0, 1, 1},
   {&__pyx_n_s_math, __pyx_k_math, sizeof(__pyx_k_math), 0, 0, 1, 1},
   {&__pyx_n_s_name, __pyx_k_name, sizeof(__pyx_k_name), 0, 0, 1, 1},
+  {&__pyx_n_s_networkx_algorithms_malicious_fi, __pyx_k_networkx_algorithms_malicious_fi, sizeof(__pyx_k_networkx_algorithms_malicious_fi), 0, 0, 1, 1},
   {&__pyx_n_s_nodes, __pyx_k_nodes, sizeof(__pyx_k_nodes), 0, 0, 1, 1},
   {&__pyx_n_s_num_solutions, __pyx_k_num_solutions, sizeof(__pyx_k_num_solutions), 0, 0, 1, 1},
   {&__pyx_n_s_randint, __pyx_k_randint, sizeof(__pyx_k_randint), 0, 0, 1, 1},
@@ -3684,7 +3687,7 @@ if (!__Pyx_RefNanny) {
  * from math import comb
  * import cython
  * import random             # <<<<<<<<<<<<<<
- * from fitness import fitness
+ * from networkx.algorithms.malicious.fitness import fitness
  * from typing import List, Tuple
  */
   __pyx_t_2 = __Pyx_Import(__pyx_n_s_random, 0, -1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3, __pyx_L1_error)
@@ -3695,7 +3698,7 @@ if (!__Pyx_RefNanny) {
   /* "cython_functions.pyx":4
  * import cython
  * import random
- * from fitness import fitness             # <<<<<<<<<<<<<<
+ * from networkx.algorithms.malicious.fitness import fitness             # <<<<<<<<<<<<<<
  * from typing import List, Tuple
  * 
  */
@@ -3704,7 +3707,7 @@ if (!__Pyx_RefNanny) {
   __Pyx_INCREF(__pyx_n_s_fitness);
   __Pyx_GIVEREF(__pyx_n_s_fitness);
   PyList_SET_ITEM(__pyx_t_2, 0, __pyx_n_s_fitness);
-  __pyx_t_1 = __Pyx_Import(__pyx_n_s_fitness, __pyx_t_2, -1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_Import(__pyx_n_s_networkx_algorithms_malicious_fi, __pyx_t_2, -1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_t_2 = __Pyx_ImportFrom(__pyx_t_1, __pyx_n_s_fitness); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4, __pyx_L1_error)
@@ -3715,7 +3718,7 @@ if (!__Pyx_RefNanny) {
 
   /* "cython_functions.pyx":5
  * import random
- * from fitness import fitness
+ * from networkx.algorithms.malicious.fitness import fitness
  * from typing import List, Tuple             # <<<<<<<<<<<<<<
  * 
  * @cython.boundscheck(False)

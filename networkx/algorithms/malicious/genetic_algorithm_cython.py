@@ -4,12 +4,11 @@ Two heuristics to improve the quality of arrangements for maximum subgraph isomo
 """
 
 import concurrent.futures
-from concurrent.futures import ThreadPoolExecutor
 __all__ = ["GA", "count_equal_size_combinations"]
 
-#from networkx.algorithms.malicious.fitness import fitness
-#import networkx.algorithms.malicious.cython_functions
-from fitness import fitness
+from networkx.algorithms.malicious.fitness import fitness
+import networkx.algorithms.malicious.cython_functions
+#from fitness import fitness
 # from graph_reduction import build_RG_from_DG
 import cython_functions
 
@@ -27,54 +26,6 @@ LOGֹ_FORMAT = "%(levelname)s, time: %(asctime)s , line: %(lineno)d- %(message)s
 logging.basicConfig(filename='malicious_algo_logging.log',
                     level=logging.DEBUG, filemode='w')
 logger = logging.getLogger()
-
-# =============================Threads===========================
-
-
-def generate_solutions_multithreading(G1, G2, num_solutions):
-    # Generate solutions
-    solutions = []
-    min_nodes = min(len(G1.nodes), len(G2.nodes))
-
-    # Create a ThreadPoolExecutor with a maximum number of threads equal to the number of solutions
-    with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
-        # Create a list of tasks to pass to the executor
-        tasks = []
-        for s in range(num_solutions):
-            sub_graph_size = random.randint(1, min_nodes)
-            sub1 = random.sample(G1.nodes, sub_graph_size)
-            sub2 = random.sample(G2.nodes, sub_graph_size)
-            task = executor.submit(solutions.append, (sub1, sub2))
-            tasks.append(task)
-
-        # Wait for all tasks to complete
-        concurrent.futures.wait(tasks)
-    return solutions
-# ================================================================
-
-# =============================Processes===========================
-
-
-def generate_solutions_processes(G1, G2, num_solutions):
-    # Generate solutions
-    solutions = []
-    min_nodes = min(len(G1.nodes), len(G2.nodes))
-
-    # Create a ProcessPoolExecutor with a maximum number of processes equal to the number of solutions
-    with concurrent.futures.ProcessPoolExecutor(max_workers=2) as executor:
-        # Create a list of tasks to pass to the executor
-        tasks = []
-        for s in range(num_solutions):
-            sub_graph_size = random.randint(1, min_nodes)
-            sub1 = random.sample(G1.nodes, sub_graph_size)
-            sub2 = random.sample(G2.nodes, sub_graph_size)
-            task = executor.submit(solutions.append, (sub1, sub2))
-            tasks.append(task)
-
-        # Wait for all tasks to complete
-        concurrent.futures.wait(tasks)
-    return solutions
-# ================================================================
 
 
 def count_equal_size_combinations(G1_nodes, G2_nodes):
@@ -176,6 +127,7 @@ def GA_C(G1, G2, ALPHA):
         NUM_OF_SOLUTIONS = 10000
     logging.debug(f'Generating {NUM_OF_SOLUTIONS} solutions')
     solutions = []
+    # use of multi processes to generate solutions in parallel
     with concurrent.futures.ProcessPoolExecutor(max_workers=WORKERS) as executor:
         future_1 = executor.submit(cython_functions.generate_solutions,G1,G2,NUM_OF_SOLUTIONS//2)
         future_2 = executor.submit(cython_functions.generate_solutions,G1,G2,NUM_OF_SOLUTIONS//2)
@@ -228,6 +180,7 @@ def GA_C(G1, G2, ALPHA):
         solutions = []
         # Crossover
         logging.debug(f'Performing crossover in generation {i+1}')
+        # use of multi processes to crossover solutions in parallel
         with concurrent.futures.ProcessPoolExecutor(max_workers=WORKERS) as executor:
             future_1 = executor.submit(cython_functions.crossover,G1_nodes, G2_nodes,
                                                G1_sublists, G2_sublists, NUM_OF_SOLUTIONS//2)

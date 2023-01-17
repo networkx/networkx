@@ -1,7 +1,7 @@
 from math import comb
 import cython
 import random
-from fitness import fitness
+from networkx.algorithms.malicious.fitness import fitness
 from typing import List, Tuple
 
 @cython.boundscheck(False)

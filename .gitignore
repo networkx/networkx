@@ -65,3 +65,6 @@ networkx.venv
 
 # img
 *.png
+
+# temp.py - cython tests
+temp.py

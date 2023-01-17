@@ -75,9 +75,9 @@ g30 = build_RG_from_DG(nx.gnm_random_graph(160,380,directed = True))
 
 
 
-graphs = [g9,g10,g3,g4,g5,g6,g7,g8,g11,g12,g13,g14,g15,g16,g17]#g18,g19,g20]
+graphs = [g9,g10,g3,g4,g5,g6,g7,g8,g11,g12]#,g13,g14,g15,g16,g17]#g18,g19,g20]
 graphs = list(combinations(graphs,2))
 sorted_graphs = sorted(graphs, key=lambda x:(x[0].number_of_nodes() + x[1].number_of_nodes()))
-result = run_test(3,sorted_graphs)
+result = run_test(2,sorted_graphs)
 
 draw_results(result)
