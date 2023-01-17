@@ -2,7 +2,7 @@ import random
 import random as rd
 
 # from networkx import convert_node_labels_to_integers as cnlti
-import maximum_priority_matching as algo
+from algorithms import maximum_priority_matching as algo
 
 import networkx as nx
 
