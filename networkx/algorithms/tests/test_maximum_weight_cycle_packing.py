@@ -124,7 +124,7 @@ def test_4():
         (1, 6),
         (8, 9),
         (11, 15),
-        (18, 19)
+        (18, 19),
     ]
     assert maximum_weight_cycle_packing(graphEX3, 3) == [
         [16, 13, 12],
