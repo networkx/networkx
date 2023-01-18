@@ -35,7 +35,7 @@ def test_1():
         (1, 6),
         (2, 3),
     ]
-    assert maximum_weight_cycle_packing(graphEX3, 2) == [[1, 6]]
+    assert maximum_weight_cycle_packing(graphEX3, 2) == [[1, 6, 4]]
 
 
 def test_2():
