@@ -4,7 +4,7 @@
 
 import pytest
 import networkx as nx
-from networkx.algorithms.genetic_isomorphism.fitness import fitness
+from networkx.algorithms.genetic_isomorphism import fitness
 
 
 class TestFitnessFunction:
