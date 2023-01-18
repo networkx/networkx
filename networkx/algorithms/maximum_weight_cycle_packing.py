@@ -77,7 +77,7 @@ def maximum_weight_cycle_packing(graph: nx.DiGraph, k: int) -> list:
     max_cycles = []
     max_weight = 0
     seen_Y = set()
-    max_graph = None
+    max_graph = nx.Graph()
     for Y in Ys:
         ans_graph = nx.Graph()
         #   creating the nodes in the graph graph
