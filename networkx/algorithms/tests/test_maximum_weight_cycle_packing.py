@@ -125,13 +125,15 @@ def test_4():
     ]
     assert Maximum_weight_cycle_packing_approximation_algorithm(graphEX3, 2) == [
         (1, 6),
-        (11, 15),
-        (18, 19),
         (8, 9),
+        (11, 15),
+        (18, 19)
     ]
     assert maximum_weight_cycle_packing(graphEX3, 3) == [
-        [1, 6],
+        [16, 13, 12],
+        [4, 5, 7],
+        [2, 6, 3],
         [11, 15],
-        [18, 19],
         [8, 9],
+        [18, 19],
     ]
