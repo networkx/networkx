@@ -43,7 +43,9 @@ def test_2():
     graphEX3.add_nodes_from([1, 2, 3])
     graphEX3.add_weighted_edges_from([(1, 2, 1), (2, 1, 5), (2, 3, 2), (3, 1, 2)])
     assert Maximum_weight_cycle_packing_approximation_algorithm(graphEX3, 3) == [[1, 2, 3]]
-    assert maximum_weight_cycle_packing(graphEX3, 3) == [[1, 2, 3]]
+    assert maximum_weight_cycle_packing(graphEX3, 3) == [
+        [1, 2, 3]
+    ]
     assert Maximum_weight_cycle_packing_approximation_algorithm(graphEX3, 2) == [(1, 2)]
     assert maximum_weight_cycle_packing(graphEX3, 2) == [[1, 2]]
 
@@ -119,7 +121,7 @@ def test_4():
         [2, 6, 3],
         [11, 15],
         [8, 9],
-        [18, 19]
+        [18, 19],
     ]
     assert Maximum_weight_cycle_packing_approximation_algorithm(graphEX3, 2) == [
         (1, 6),
