@@ -91,14 +91,14 @@ def Maximum_weight_cycle_packing_approximation_algorithm(graph: nx.DiGraph, k: i
     for i, cycle in enumerate(cycles):
         if len(cycle) < 3:
             weight = (
-                    graph.get_edge_data(cycle[0], cycle[1])["weight"]
-                    + graph.get_edge_data(cycle[1], cycle[0])["weight"]
+                graph.get_edge_data(cycle[0], cycle[1])["weight"]
+                + graph.get_edge_data(cycle[1], cycle[0])["weight"]
             )
         else:
             weight = (
-                    graph.get_edge_data(cycle[0], cycle[1])["weight"]
-                    + graph.get_edge_data(cycle[1], cycle[2])["weight"]
-                    + graph.get_edge_data(cycle[2], cycle[0])["weight"]
+                graph.get_edge_data(cycle[0], cycle[1])["weight"]
+                + graph.get_edge_data(cycle[1], cycle[2])["weight"]
+                + graph.get_edge_data(cycle[2], cycle[0])["weight"]
             )
         buildHype[cycle] = weight
         weights[i] = weight
@@ -195,32 +195,32 @@ def simple_cycles(graph, k):
 def find_cycles_of_size_k(graph, k):
     """
     finds relevent cycles according to chosen K
-   Parameters
-   -----------
-   :param graph : NetworkX DiGraph
-       Directed graph with weights
-   :param k : size of cycles (according to article - max size is 3 and min size is 2)
-   Returns
-   -----------
-   cycles: cycles on graph according to chosen K
-   Examples
-   -----------
-   >>> Digraph=nx.DiGraph()
-   >>> Digraph.add_nodes_from([1,2,3,4,5,6,7,8])
-   >>> Digraph.add_weighted_edges_from([(1,8,2),(8,1,4),(2,1,5),(1,3,4),(3,8,2),(8,2,3),(8,5,4),(5,7,3),(7,6,2),(6,5,4)])
-   >>> print(find_cycles_of_size_k(Digraph, 3))
-   [(8, 2, 1), (8, 1, 3), (8, 1), (5, 7, 6)]
-   >>> Digraph =nx.DiGraph()
-   >>> Digraph.add_nodes_from([1,2,3,4])
-   >>> Digraph.add_weighted_edges_from([(2,1,3),(1,3,1),(3,2,2),(3,4,5),(4,3,9)])
-   >>> print(find_cycles_of_size_k(Digraph, 2))
-   [(3, 4)]
-   >>> Digraph=nx.DiGraph()
-   >>> Digraph.add_nodes_from([1,2,3,4,5,6,7,8])
-   >>> Digraph.add_weighted_edges_from([(8,1,4),(2,1,5),(1,3,4),(3,8,2),(8,2,3),(8,5,4),(5,7,3),(7,6,2),(6,5,4)])
-   >>> print(find_cycles_of_size_k(Digraph, 2))
-   []
-   """
+    Parameters
+    -----------
+    :param graph : NetworkX DiGraph
+        Directed graph with weights
+    +    :param k : size of cycles (according to article - max size is 3 and min size is 2)
+    Returns
+    -----------
+    cycles: cycles on graph according to chosen K
+    Examples
+    -----------
+    >>> Digraph=nx.DiGraph()
+    >>> Digraph.add_nodes_from([1,2,3,4,5,6,7,8])
+    >>> Digraph.add_weighted_edges_from([(1,8,2),(8,1,4),(2,1,5),(1,3,4),(3,8,2),(8,2,3),(8,5,4),(5,7,3),(7,6,2),(6,5,4)])
+    >>> print(find_cycles_of_size_k(Digraph, 3))
+    [(8, 2, 1), (8, 1, 3), (8, 1), (5, 7, 6)]
+    >>> Digraph =nx.DiGraph()
+    >>> Digraph.add_nodes_from([1,2,3,4])
+    >>> Digraph.add_weighted_edges_from([(2,1,3),(1,3,1),(3,2,2),(3,4,5),(4,3,9)])
+    >>> print(find_cycles_of_size_k(Digraph, 2))
+    [(3, 4)]
+    >>> Digraph=nx.DiGraph()
+    >>> Digraph.add_nodes_from([1,2,3,4,5,6,7,8])
+    >>> Digraph.add_weighted_edges_from([(8,1,4),(2,1,5),(1,3,4),(3,8,2),(8,2,3),(8,5,4),(5,7,3),(7,6,2),(6,5,4)])
+    >>> print(find_cycles_of_size_k(Digraph, 2))
+    []
+    """
     sc = simple_cycles(graph, k)
     cycles = []
     for cycle in sc:
