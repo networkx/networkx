@@ -27,25 +27,20 @@ def maximum_weight_cycle_packing(graph: nx.DiGraph, k: int) -> list:
     graph
     "Algorithm 2 - Exact algorithm for kidney exchange programs" by Biro, P. and Manlove, D.F. and Rizzi, R.
     Returns the list of max weighted exchanges of directed weighted graph 'G'
-
     A directed weighted graph is a graph in which every edge is one sided and weighted
     for example an edge from node 1->2 with a weight of 5,an k-way exchange
     is a circle within a graph containing at most k nodes.
     max weighted exchange is a circle with the most weighted edges from every node in the circle
-
     Parameters
     -----------
     G : NetworkX DiGraph
         Directed graph with weights
-
     Returns
     -----------
     Lst: list of lists
         Each list in lst contaning the nodes which make up the circle with the highest weights sum
     Examples
     -----------
-
-
     >>> Digraph=nx.DiGraph()
     >>> Digraph.add_nodes_from([1,2,3,5,6,7,8])
     >>> Digraph.add_weighted_edges_from([(1,8,2),(8,1,4),(2,1,5),(1,3,4),(3,8,2),(8,2,3),(8,5,4),(5,7,3),(7,6,2),(6,5,4)])
@@ -87,17 +82,26 @@ def maximum_weight_cycle_packing(graph: nx.DiGraph, k: int) -> list:
             seen_Y.add(edge[0])
             seen_Y.add(edge[1])
             if (edge[0], edge[1]) in graph.edges and (edge[1], edge[0]) in graph.edges:
-                weight = graph.get_edge_data(edge[0], edge[1])["weight"] + graph.get_edge_data(edge[1], edge[0])[
-                    "weight"]
-                ans_graph.add_edge((edge[0], edge[1]), (edge[0], edge[1]), weight=weight, cycle=[edge[0], edge[1]])
+                weight = (
+                        graph.get_edge_data(edge[0], edge[1])["weight"]
+                        + graph.get_edge_data(edge[1], edge[0])["weight"]
+                )
+                ans_graph.add_edge(
+                    (edge[0], edge[1]),
+                    (edge[0], edge[1]),
+                    weight=weight,
+                    cycle=[edge[0], edge[1]],
+                )
         for edge in graph.edges:
             if edge[0] not in seen_Y and edge[0] not in X:
-                X.append((edge[0]))
-                ans_graph.add_node((edge[0]))
+                X.append(edge[0])
+                ans_graph.add_node(edge[0])
         connect_2cycles(X, graph, ans_graph)
         connect_3cycles(X, Y, graph, ans_graph)
         exchanges = list(nx.max_weight_matching(ans_graph))
-        if len(exchanges) == 0 and ans_graph.number_of_edges() == 1:  # for the use-case of only self connected edge
+        if (
+                len(exchanges) == 0 and ans_graph.number_of_edges() == 1
+        ):  # for the use-case of only self connected edge
             exchanges = [list(ans_graph.edges)[0]]
         temp_max = 0
         for cyc in exchanges:
@@ -116,10 +120,15 @@ def maximum_weight_cycle_packing(graph: nx.DiGraph, k: int) -> list:
 
 
 def connect_2cycles(X, graph, ans_graph):
-    for i in range(len(X)):  # creating the edges in the graph by going through the 2-circles
+    for i in range(
+            len(X)
+    ):  # creating the edges in the graph by going through the 2-circles
         for j in range(i + 1, len(X)):
             if (X[i], X[j]) in graph.edges and (X[j], X[i]) in graph.edges:
-                weight = graph.get_edge_data(X[i], X[j])["weight"] + graph.get_edge_data(X[j], X[i])["weight"]
+                weight = (
+                        graph.get_edge_data(X[i], X[j])["weight"]
+                        + graph.get_edge_data(X[j], X[i])["weight"]
+                )
                 ans_graph.add_edge((X[i]), (X[j]), weight=weight, cycle=[X[i], X[j]])
 
 
@@ -127,10 +136,16 @@ def connect_3cycles(X, Y, graph, ans_graph):
     #   creating the edges in the graph by going through the 3-circles
     for k in range(len(X)):
         for j, l in Y:  # This deals with the normal case of Yi,j Xk
-            if (l, X[k]) in graph.edges and (X[k], j) in graph.edges:  # [j, l, X[k]] in cycles:
-                weight = graph.get_edge_data(j, l)["weight"] + graph.get_edge_data(l, X[k])["weight"] + \
-                         graph.get_edge_data(X[k], j)["weight"]
-                ans_graph.add_edge((X[k]), (j, l), weight=weight, cycle=[j, l, X[k]])
+            if (l, X[k]) in graph.edges and (
+                                    X[k],
+                                    j,
+                    ) in graph.edges:  # [j, l, X[k]] in cycles:
+                        weight = (
+                            graph.get_edge_data(j, l)["weight"]
+                            + graph.get_edge_data(l, X[k])["weight"]
+                            + graph.get_edge_data(X[k], j)["weight"]
+                        )
+                        ans_graph.add_edge((X[k]), (j, l), weight=weight, cycle=[j, l, X[k]])
 
 
 def simple_cycles(G, limit):
@@ -227,9 +242,7 @@ def create_Ys(graph, k):
 
 
 # Press the green button in the gutter to run the script.
-if __name__ == '__main__':
+if __name__ == "__main__":
     # itertools.ne
 
     doctest.testmod()
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
