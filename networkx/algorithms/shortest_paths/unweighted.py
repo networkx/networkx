@@ -2,6 +2,8 @@
 Shortest path algorithms for unweighted graphs.
 """
 import networkx as nx
+from multiprocessing import Process, Queue, cpu_count
+
 
 __all__ = [
     "bidirectional_shortest_path",
@@ -178,10 +180,47 @@ def all_pairs_shortest_path_length(G, cutoff=None):
     0
 
     """
-    length = single_source_shortest_path_length
+    
     # TODO This can be trivially parallelized.
-    for n in G:
-        yield (n, length(G, n, cutoff=cutoff))
+    # Indeed! - Mike.
+
+    # To unparalelize the function set numcores to 1.
+    numcores = cpu_count()
+    nodes = list(G.nodes.items())
+
+    # In case the graph has less nodes than the machine has cores.
+    # Realistically the overhead pressented by multiprocessing 
+    # makes this a fraction slower for smaller graphs
+    if(numcores > len(nodes)):
+        numcores = len(nodes)
+
+    queue = Queue()
+
+    n = len(nodes)//numcores
+    slices = [nodes[i:i+n] for i in range(0, len(nodes), n)]
+    # jobs = []
+    
+    for slice in slices:
+        x = Process(target=_all_pairs_multi, args=(queue, G, slice, cutoff), daemon=True)
+        # jobs.append(x)
+        x.start()
+
+    cont = 0
+    while cont < len(nodes):
+        yield queue.get()
+        cont += 1
+        
+def _all_pairs_multi(queue:Queue, G, nodes, cutoff):
+    """All Pairs Shortest path multithreading helper.
+
+    Recieves a section of nodes to calculate distances to all other nodes
+    and appends the result to a shared memory queue.
+    """
+    length = single_source_shortest_path_length
+
+    for n in nodes:
+        queue.put((n[0], length(G, n[0], cutoff)))
+
 
 
 def bidirectional_shortest_path(G, source, target):
