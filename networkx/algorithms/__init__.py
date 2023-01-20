@@ -127,6 +127,3 @@ from networkx.algorithms.tree.decomposition import *
 from networkx.algorithms.tree.mst import *
 from networkx.algorithms.tree.operations import *
 from networkx.algorithms.tree.recognition import *
-from networkx.algorithms.approximation.Maximum_weight_cycle_packing_approximation_algorithm import \
-    Maximum_weight_cycle_packing_approximation_algorithm
-from networkx.algorithms.maximum_weight_cycle_packing import maximum_weight_cycle_packing
