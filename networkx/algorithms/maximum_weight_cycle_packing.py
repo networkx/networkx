@@ -3,7 +3,6 @@ import doctest
 import numpy as np
 
 import networkx as nx
-from networkx.algorithms import cycles
 
 """REUT HADAD & TAL SOMECH"""
 
@@ -24,39 +23,21 @@ link:http://eprints.gla.ac.uk/25732/
 
 def maximum_weight_cycle_packing(graph: nx.DiGraph, k: int) -> list:
     """
-    Algorithm - the algorithm finds the exact maximum weight k-way exchanges using reduction from directed graph to non directed
-    graph
-    "Algorithm 2 - Exact algorithm for kidney exchange programs" by Biro, P. and Manlove, D.F. and Rizzi, R.
-    Returns the list of max weighted exchanges of directed weighted graph 'G'
-    A directed weighted graph is a graph in which every edge is one sided and weighted
-    for example an edge from node 1->2 with a weight of 5,an k-way exchange
-    is a circle within a graph containing at most k nodes.
-    max weighted exchange is a circle with the most weighted edges from every node in the circle
-    Parameters
-    -----------
-    G : NetworkX DiGraph
-        Directed graph with weights
-    Returns
-    -----------
-    Lst: list of lists
-        Each list in lst contaning the nodes which make up the circle with the highest weights sum
-    Examples
-    -----------
-    >>> Digraph=nx.DiGraph()
-    >>> Digraph.add_nodes_from([1,2,3,5,6,7,8])
-    >>> Digraph.add_weighted_edges_from([(1,8,2),(8,1,4),(2,1,5),(1,3,4),(3,8,2),(8,2,3),(8,5,4),(5,7,3),(7,6,2),(6,5,4)])
-    >>> print(len(maximum_weight_cycle_packing(Digraph,3))) #[1,8,2] [6,5,7] [1,3,8] , can be only 2 but in any order
-    2
-    >>> Digraph =nx.DiGraph()
-    >>> Digraph.add_nodes_from([1,2,3,4])
-    >>> Digraph.add_weighted_edges_from([(2,1,3),(1,3,1),(3,2,2),(3,4,5),(4,3,9)])
-    >>> print(len(maximum_weight_cycle_packing(Digraph,2)))#[3,4] or [4,3]
-    1
-    >>> graphEX3 = nx.DiGraph()
-    >>> graphEX3.add_nodes_from([10,11,12,13,14,15,16])
-    >>> Digraph.add_weighted_edges_from([(10,11,10),(11,12,5),(12,13,6),(13,10,4),(11,14,2),(14,16,3),(16,15,8),(15,14,6)])
-    >>> print(maximum_weight_cycle_packing(graphEX3, 3))
-    []
+    Algorithm - the algorithm finds the exact maximum weight k-way exchanges using reduction from directed graph to
+    non-directed graph "Algorithm 2 - Exact algorithm for kidney exchange programs" by Biro, P. and Manlove,
+    D.F. and Rizzi, R. Returns the list of max weighted exchanges of directed weighted graph 'G' A directed weighted
+    graph is a graph in which every edge is one-sided and weighted for example an edge from node 1->2 with a weight
+    of 5,a k-way exchange is a circle within a graph containing at most k nodes. max weighted exchange is a circle
+    with the most weighted edges from every node in the circle Parameters ----------- G : NetworkX DiGraph Directed
+    graph with weights Returns ----------- Lst: list of lists Each list in lst contaning the nodes which make up the
+    circle with the highest weights sum Examples ----------- >>> Digraph=nx.DiGraph() >>> Digraph.add_nodes_from([1,
+    2,3,5,6,7,8]) >>> Digraph.add_weighted_edges_from([(1,8,2),(8,1,4),(2,1,5),(1,3,4),(3,8,2),(8,2,3),(8,5,4),(5,7,
+    3),(7,6,2),(6,5,4)]) >>> print(len(maximum_weight_cycle_packing(Digraph,3))) #[1,8,2] [6,5,7] [1,3,8] ,
+    can be only 2 but in any order 2 >>> Digraph =nx.DiGraph() >>> Digraph.add_nodes_from([1,2,3,
+    4]) >>> Digraph.add_weighted_edges_from([(2,1,3),(1,3,1),(3,2,2),(3,4,5),(4,3,9)]) >>> print(len(
+    maximum_weight_cycle_packing(Digraph,2)))#[3,4] or [4,3] 1 >>> graphEX3 = nx.DiGraph() >>>
+    graphEX3.add_nodes_from([10,11,12,13,14,15,16]) >>> Digraph.add_weighted_edges_from([(10,11,10),(11,12,5),(12,13,
+    6),(13,10,4),(11,14,2),(14,16,3),(16,15,8),(15,14,6)]) >>> print(maximum_weight_cycle_packing(graphEX3, 3)) []
 
     Notes
     -----------
@@ -76,7 +57,7 @@ def maximum_weight_cycle_packing(graph: nx.DiGraph, k: int) -> list:
     max_graph = nx.Graph()
     for Y in Ys:
         ans_graph = nx.Graph()
-        #   creating the nodes in the graph graph
+        #   creating the nodes in the graph
         #   adding the nodes in the graph
         for edge in Y:
             ans_graph.add_node((edge[0], edge[1]))
