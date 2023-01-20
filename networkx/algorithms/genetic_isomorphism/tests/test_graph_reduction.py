@@ -2,9 +2,8 @@
     Tests for graph_reduction.
 """
 
-import pytest
 import networkx as nx
-from networkx.algorithms.genetic_isomorphism import build_RG_from_DG
+from networkx.algorithms.genetic_isomorphism.graph_reduction import build_RG_from_DG
 
 
 def compare_graphs(expcted, result):

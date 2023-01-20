@@ -2,9 +2,8 @@
     Tests for fitness.
 """
 
-import pytest
 import networkx as nx
-from networkx.algorithms.genetic_isomorphism import fitness
+from networkx.algorithms.genetic_isomorphism.fitness import fitness
 
 
 class TestFitnessFunction:
