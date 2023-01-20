@@ -12,7 +12,7 @@ import random
 import logging
 import concurrent.futures
 
-__all__ = ["find_subgraph_isomorphism_with_genetic_algorithm_optimize"]
+__all__ = ["find_subgraph_isomorphism_with_genetic_algorithm"]
 
 WORKERS = 4
 
@@ -106,7 +106,7 @@ def crossover(G1_nodes, G2_nodes, G1_sublists, G2_sublists, num_solutions):
     logging.debug(f'Generating new solutions')
     return new_solutions
 
-def find_subgraph_isomorphism_with_genetic_algorithm_multi_processes(G1, G2, ALPHA):
+def find_subgraph_isomorphism_with_genetic_algorithm(G1, G2, ALPHA):
     """
     Since subgraph isomorphism is an NP-hard problem, a
     GA is appropriate. A GA generates a set of initial solutions
@@ -118,7 +118,7 @@ def find_subgraph_isomorphism_with_genetic_algorithm_multi_processes(G1, G2, ALP
 
     Improving runtime
     -----------------
-    The find_subgraph_isomorphism_with_genetic_algorithm_optimize function uses multiprocessing to improve its runtime.
+    The find_subgraph_isomorphism_with_genetic_algorithm function uses multiprocessing to improve its runtime.
     multiprocessing distributes the computation across multiple cores.
     This optimization allow for faster execution of the algorithm.
 
@@ -171,7 +171,7 @@ def find_subgraph_isomorphism_with_genetic_algorithm_multi_processes(G1, G2, ALP
     >>> edges = [(6, 7), (6, 8), (6, 9), (8, 8), (9, 7), (9, 8), (9, 9)]
     >>> G2.add_edges_from(edges)
     # runs the function
-    >>> find_subgraph_isomorphism_with_genetic_algorithm_cython(G1, G2, 0)
+    >>> find_subgraph_isomorphism_with_genetic_algorithm(G1, G2, 0)
     True
     """
     logging.info("Started genetic algorithm")
