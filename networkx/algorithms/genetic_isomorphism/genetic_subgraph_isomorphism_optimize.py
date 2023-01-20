@@ -4,8 +4,8 @@ Two heuristics to improve the quality of arrangements for maximum subgraph isomo
 """
 
 import concurrent.futures
-from networkx.algorithms.genetic_isomorphism.fitness import fitness
-#from fitness import fitness
+#from networkx.algorithms.genetic_isomorphism.fitness import fitness
+from fitness import fitness
 #from graph_reduction import build_RG_from_DG
 from math import comb
 import networkx as nx
@@ -13,7 +13,7 @@ import random
 import logging
 import concurrent.futures
 
-__all__ = ["find_subgraph_isomorphism_with_genetic_algorithm_cython"]
+__all__ = ["find_subgraph_isomorphism_with_genetic_algorithm_optimize"]
 
 WORKERS = 4
 
@@ -119,9 +119,9 @@ def find_subgraph_isomorphism_with_genetic_algorithm_multi_processes(G1, G2, ALP
 
     Improving runtime
     -----------------
-    The find_subgraph_isomorphism_with_genetic_algorithm_cython function uses multi-threading and Cython to improve its runtime.
-    Multi-threading distributes the computation across multiple cores, while Cython converts the Python code to faster C code.
-    These optimizations allow for faster execution of the algorithm.
+    The find_subgraph_isomorphism_with_genetic_algorithm_optimize function uses multiprocessing to improve its runtime.
+    multiprocessing distributes the computation across multiple cores.
+    This optimization allow for faster execution of the algorithm.
 
     Parameters
     ----------

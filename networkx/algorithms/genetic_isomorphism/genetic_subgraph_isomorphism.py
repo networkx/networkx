@@ -4,7 +4,7 @@ Two heuristics to improve the quality of arrangements for maximum subgraph isomo
 """
 
 from fitness import fitness
-from networkx.algorithms.genetic_isomorphism.fitness import fitness
+#from networkx.algorithms.genetic_isomorphism.fitness import fitness
 #from networkx.algorithms.genetic_isomorphism.graph_reduction import build_RG_from_DG
 #from graph_reduction import build_RG_from_DG
 from math import comb
