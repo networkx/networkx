@@ -3,10 +3,10 @@ Hybrid find_subgraph_isomorphism_with_genetic_algorithm for local optimisation.
 Two heuristics to improve the quality of arrangements for maximum subgraph isomorphism.
 """
 
-import concurrent.futures
-from concurrent.futures import ThreadPoolExecutor
-from networkx.algorithms.genetic_isomorphism.fitness import fitness
-from networkx.algorithms.genetic_isomorphism.graph_reduction import build_RG_from_DG
+from fitness import fitness
+#from networkx.algorithms.genetic_isomorphism.fitness import fitness
+#from networkx.algorithms.genetic_isomorphism.graph_reduction import build_RG_from_DG
+from graph_reduction import build_RG_from_DG
 from math import comb
 import networkx as nx
 import logging
