@@ -7,8 +7,8 @@ import networkx as nx
 from networkx.algorithms.bipartite.matching import (
     eppstein_matching,
     hopcroft_karp_matching,
-    maximum_matching,
     max_size_envy_free_matching,
+    maximum_matching,
     min_weight_max_size_envy_free_matching,
     minimum_weight_full_matching,
     to_vertex_cover,
