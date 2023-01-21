@@ -1,7 +1,4 @@
 import doctest
-
-#import numpy as np
-
 import networkx as nx
 
 """REUT HADAD & TAL SOMECH"""
