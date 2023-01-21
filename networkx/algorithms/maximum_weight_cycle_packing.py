@@ -1,4 +1,5 @@
 import doctest
+
 import networkx as nx
 
 """REUT HADAD & TAL SOMECH"""
@@ -202,6 +203,7 @@ def create_Ys(graph, k):
     2
     """
     import numpy as np
+
     temp_cycles = simple_cycles(graph, k)  # nx.recursive_simple_cycles(graph)
     cycles = []
     for cycle in temp_cycles:
