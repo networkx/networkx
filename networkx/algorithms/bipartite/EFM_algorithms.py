@@ -1,6 +1,7 @@
 import networkx as nx
 from networkx.utils import not_implemented_for
 
+
 @not_implemented_for("directed", "multigraph")
 def max_size_envy_free_matching(G, top_nodes=None):
     r"""Return an envy-free matching of maximum cardinality
@@ -53,6 +54,8 @@ def max_size_envy_free_matching(G, top_nodes=None):
     un = EFM_PARTITION[1].union(EFM_PARTITION[3])
     M = {node: M[node] for node in M if node not in un and M[node] not in un}
     return M
+
+
 @not_implemented_for("directed", "multigraph")
 def min_weight_max_size_envy_free_matching(G, top_nodes=None):
     r"""Returns minimum-cost maximum-cardinality envy-free matching
@@ -95,6 +98,8 @@ def min_weight_max_size_envy_free_matching(G, top_nodes=None):
     Union = EFM_PARTITION[0].union(EFM_PARTITION[2])
     M = nx.bipartite.minimum_weight_full_matching(G.subgraph(Union))
     return M
+
+
 def __neighbours_of_set__(G, node_set):
     r"""
     returns a set of the neighbours of a given set of nodes
