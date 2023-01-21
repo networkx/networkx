@@ -1,7 +1,102 @@
 import networkx as nx
 from networkx.utils import not_implemented_for
 
+@not_implemented_for("directed", "multigraph")
+def max_size_envy_free_matching(G, top_nodes=None):
+    r"""Return an envy-free matching of maximum cardinality
+    Parameters
+    ----------
+    G:
+        NetworkX graph
+        Undirected bipartite graph
+    top_nodes:
+                list
+                if graph is not all connected top_nodes is the set of the top nodes in the bipartite graph G
+    Returns
+    -------
+    Matching: dictionary
+        The Maximum cardinallity envy-free matching is returned as a dictionary.
+    References
+    ----------
+    .. [1] "Envy-free Matchings in Bipartite Graphs and their Applications to Fair Division",
+    by Elad Aigner-Horev and Erel Segal-Halevi (2022), https://arxiv.org/abs/1901.09527
+    Algorithm 2: Finding an envy-free matching of maximum cardinality.
 
+    Examples
+    --------
+        Example 1: Perfect matching
+        >>> Graph=nx.complete_bipartite_graph(3,3)
+        >>> max_size_envy_free_matching(Graph)
+        {0: 3, 1: 4, 2: 5, 3: 0, 4: 1, 5: 2}
+
+        Where there exists a perfect matching the maximum envy free matching is the perfect matching.
+        Example 2: Non-empty envy-free matching
+        >>> Graph=nx.Graph([(0,3),(3,0),(0,4),(4,0),(1,4),(4,1),(2,4),(4,2)])
+        >>> max_size_envy_free_matching(Graph)
+        {0: 3, 3: 0}
+
+        Example 3: Odd path
+        >>> Graph=nx.Graph([(0,3),(3,0),(1,3),(3,1),(1,4),(4,1),(2,4),(4,2)])
+        >>> max_size_envy_free_matching(Graph)
+        {}
+
+        Like presented in the article, odd path contains an empty envy-free matching so the returned matching is empty.
+        Example 4: Y-path-saturated graph
+        >>> Graph=nx.Graph([(0,6),(6,0),(1,6),(6,1),(1,7),(7,1),(2,6),(6,2),(2,8),(8,2),(3,9),(9,3),(3,6),(6,3),(4,8),(8,4),(4,7),(7,4),(5,9),(9,5)])
+        >>> max_size_envy_free_matching(Graph)
+        {}
+
+        Like presented in the article, Y-path-saturated graph contains an empty envy-free matching so X_L and Y_L are empty in the partition.
+    """
+    M = nx.bipartite.maximum_matching(G, top_nodes=top_nodes)
+    EFM_PARTITION = _EFM_partition(G, M, top_nodes)
+    un = EFM_PARTITION[1].union(EFM_PARTITION[3])
+    M = {node: M[node] for node in M if node not in un and M[node] not in un}
+    return M
+
+
+@not_implemented_for("directed", "multigraph")
+def min_weight_max_size_envy_free_matching(G, top_nodes=None):
+    r"""Returns minimum-cost maximum-cardinality envy-free matching
+    Parameters
+    ----------
+    G
+        NetworkX graph
+        Undirected bipartite graph
+    top_nodes:
+                list
+                if graph is not all connected top_nodes is the set of the top nodes in the bipartite graph G
+    Returns
+    -------
+    Matching: dictionary
+        The minimum cost maximum cardinallity matching is returned as a dictionary.
+    References
+    ----------
+    .. [1] "Envy-free Matchings in Bipartite Graphs and their Applications to Fair Division",
+    by Elad Aigner-Horev and Erel Segal-Halevi (2022), https://arxiv.org/abs/1901.09527
+    Algorithm 3: Finding a minimum-cost maximum-cardinality envy-free matching.
+
+    Examples
+    --------
+        Example 1: K 3,3 with weights
+        >>> G = nx.Graph()
+        >>> weights = [(0,3,250), (0,4,148), (0,5,122), (1,3,175), (1,4,135), (1,5,150), (2,3,150), (2,4,125)]
+        >>> G.add_weighted_edges_from(weights)
+        >>> min_weight_max_size_envy_free_matching(G)
+        {0: 5, 1: 4, 2: 3, 5: 0, 4: 1, 3: 2}
+
+        Where there exists a perfect matching the maximum envy free matching is the perfect matching this is the least cost perfect matching.
+        Example 2: Non-empty envy-free matching
+        >>> Graph=nx.Graph()
+        >>> Graph.add_weighted_edges_from([(0, 4, 5), (1, 4, 1), (2, 5, 3), (2, 7, 9), (3, 6, 3), (3, 7, 7)])
+        >>> min_weight_max_size_envy_free_matching(Graph,top_nodes=[0,1,2,3])
+        {2: 5, 3: 6, 5: 2, 6: 3}
+    """
+    M = nx.bipartite.maximum_matching(G, top_nodes=top_nodes)
+    EFM_PARTITION = _EFM_partition(G, M, top_nodes)
+    Union = EFM_PARTITION[0].union(EFM_PARTITION[2])
+    M = nx.bipartite.minimum_weight_full_matching(G.subgraph(Union))
+    return M
 def __neighbours_of_set__(G, node_set):
     r"""
     returns a set of the neighbours of a given set of nodes
@@ -189,103 +284,3 @@ def _EFM_partition(G, M=None, top_nodes=None):
         Y_S.update(subset)
 
     return set(X) - X_S, X_S, set(Y) - Y_S, Y_S
-
-
-@not_implemented_for("directed", "multigraph")
-def envy_free_matching(G, top_nodes=None):
-    r"""Return an envy-free matching of maximum cardinality
-    Parameters
-    ----------
-    G:
-        NetworkX graph
-        Undirected bipartite graph
-    top_nodes:
-                list
-                if graph is not all connected top_nodes is the set of the top nodes in the bipartite graph G
-    Returns
-    -------
-    Matching: dictionary
-        The Maximum cardinallity envy-free matching is returned as a dictionary.
-    References
-    ----------
-    .. [1] "Envy-free Matchings in Bipartite Graphs and their Applications to Fair Division",
-    by Elad Aigner-Horev and Erel Segal-Halevi (2022), https://arxiv.org/abs/1901.09527
-    Algorithm 2: Finding an envy-free matching of maximum cardinality.
-
-    Examples
-    --------
-        Example 1: Perfect matching
-        >>> Graph=nx.complete_bipartite_graph(3,3)
-        >>> envy_free_matching(Graph)
-        {0: 3, 1: 4, 2: 5, 3: 0, 4: 1, 5: 2}
-
-        Where there exists a perfect matching the maximum envy free matching is the perfect matching.
-        Example 2: Non-empty envy-free matching
-        >>> Graph=nx.Graph([(0,3),(3,0),(0,4),(4,0),(1,4),(4,1),(2,4),(4,2)])
-        >>> envy_free_matching(Graph)
-        {0: 3, 3: 0}
-
-        Example 3: Odd path
-        >>> Graph=nx.Graph([(0,3),(3,0),(1,3),(3,1),(1,4),(4,1),(2,4),(4,2)])
-        >>> envy_free_matching(Graph)
-        {}
-
-        Like presented in the article, odd path contains an empty envy-free matching so the returned matching is empty.
-        Example 4: Y-path-saturated graph
-        >>> Graph=nx.Graph([(0,6),(6,0),(1,6),(6,1),(1,7),(7,1),(2,6),(6,2),(2,8),(8,2),(3,9),(9,3),(3,6),(6,3),(4,8),(8,4),(4,7),(7,4),(5,9),(9,5)])
-        >>> envy_free_matching(Graph)
-        {}
-
-        Like presented in the article, Y-path-saturated graph contains an empty envy-free matching so X_L and Y_L are empty in the partition.
-    """
-    M = nx.bipartite.maximum_matching(G, top_nodes=top_nodes)
-    EFM_PARTITION = _EFM_partition(G, M, top_nodes)
-    un = EFM_PARTITION[1].union(EFM_PARTITION[3])
-    M = {node: M[node] for node in M if node not in un and M[node] not in un}
-    return M
-
-
-@not_implemented_for("directed", "multigraph")
-def minimum_weight_envy_free_matching(G, top_nodes=None):
-    r"""Returns minimum-cost maximum-cardinality envy-free matching
-    Parameters
-    ----------
-    G
-        NetworkX graph
-        Undirected bipartite graph
-    top_nodes:
-                list
-                if graph is not all connected top_nodes is the set of the top nodes in the bipartite graph G
-    Returns
-    -------
-    Matching: dictionary
-        The minimum cost maximum cardinallity matching is returned as a dictionary.
-    References
-    ----------
-    .. [1] "Envy-free Matchings in Bipartite Graphs and their Applications to Fair Division",
-    by Elad Aigner-Horev and Erel Segal-Halevi (2022), https://arxiv.org/abs/1901.09527
-    Algorithm 3: Finding a minimum-cost maximum-cardinality envy-free matching.
-
-    Examples
-    --------
-        Example 1: K 3,3 with weights
-        >>> G = nx.Graph()
-        >>> weights = [(0,3,250), (0,4,148), (0,5,122), (1,3,175), (1,4,135), (1,5,150), (2,3,150), (2,4,125)]
-        >>> G.add_weighted_edges_from(weights)
-        >>> minimum_weight_envy_free_matching(G)
-        {0: 5, 1: 4, 2: 3, 5: 0, 4: 1, 3: 2}
-
-        Where there exists a perfect matching the maximum envy free matching is the perfect matching this is the least cost perfect matching.
-        Example 2: Non-empty envy-free matching
-        >>> Graph=nx.Graph()
-        >>> Graph.add_weighted_edges_from([(0, 4, 5), (1, 4, 1), (2, 5, 3), (2, 7, 9), (3, 6, 3), (3, 7, 7)])
-        >>> minimum_weight_envy_free_matching(Graph,top_nodes=[0,1,2,3])
-        {2: 5, 3: 6, 5: 2, 6: 3}
-    """
-    import numpy as np
-
-    M = nx.bipartite.maximum_matching(G, top_nodes=top_nodes)
-    EFM_PARTITION = _EFM_partition(G, M, top_nodes)
-    Union = EFM_PARTITION[0].union(EFM_PARTITION[2])
-    M = nx.bipartite.minimum_weight_full_matching(G.subgraph(Union))
-    return M

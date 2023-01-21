@@ -16,7 +16,7 @@ class TestEnvyFreeMatching:
             return nx.Graph([(i, i + size) for i in range(size)])
 
         A = nx.complete_bipartite_graph(3, 3)
-        matching = envy_free_matching(A)
+        matching = max_size_envy_free_matching(A)
         assert matching == {0: 3, 3: 0, 1: 4, 4: 1, 2: 5, 5: 2}
 
         B = nx.Graph(
@@ -33,7 +33,7 @@ class TestEnvyFreeMatching:
                 (5, 2),
             ]
         )
-        matching = envy_free_matching(B)
+        matching = max_size_envy_free_matching(B)
         assert matching == {0: 3, 3: 0, 1: 4, 4: 1, 2: 5, 5: 2}
 
         # Check our algorithm with big inputs, array can be expanded to contain more values for which to generate graphs
@@ -41,7 +41,7 @@ class TestEnvyFreeMatching:
         for size in sizes:
             G = generate_marriable_bipartite_graph(size)
             if nx.is_connected(G):
-                matching = envy_free_matching(G)
+                matching = max_size_envy_free_matching(G)
                 expected1 = {i: i + size for i in range(size)}
                 expected2 = {i + size: i for i in range(size)}
                 expected = {**expected1, **expected2}
@@ -49,7 +49,7 @@ class TestEnvyFreeMatching:
 
     def test_non_empty_envy_free_matching(self):
         A = nx.Graph([(0, 3), (3, 0), (0, 4), (4, 0), (1, 4), (4, 1), (2, 4), (4, 2)])
-        matching = envy_free_matching(A)
+        matching = max_size_envy_free_matching(A)
         assert matching == {0: 3, 3: 0}
 
         B = nx.Graph(
@@ -68,7 +68,7 @@ class TestEnvyFreeMatching:
                 (7, 3),
             ]
         )
-        matching = envy_free_matching(B, top_nodes=[0, 1, 2, 3])
+        matching = max_size_envy_free_matching(B, top_nodes=[0, 1, 2, 3])
         assert matching == {0: 4, 4: 0, 1: 6, 6: 1}
 
     def test_empty_envy_free_matching(self):
@@ -133,7 +133,7 @@ class TestEnvyFreeMatching:
         graphs = {A, B, C, D}
         for graph in graphs:
             if nx.is_connected(graph):
-                assert envy_free_matching(G=graph) == {}
+                assert max_size_envy_free_matching(G=graph) == {}
 
 
 # class TestMinimumWeightEnvyFreeMatching:
