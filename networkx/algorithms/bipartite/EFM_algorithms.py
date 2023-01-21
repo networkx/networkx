@@ -53,8 +53,6 @@ def max_size_envy_free_matching(G, top_nodes=None):
     un = EFM_PARTITION[1].union(EFM_PARTITION[3])
     M = {node: M[node] for node in M if node not in un and M[node] not in un}
     return M
-
-
 @not_implemented_for("directed", "multigraph")
 def min_weight_max_size_envy_free_matching(G, top_nodes=None):
     r"""Returns minimum-cost maximum-cardinality envy-free matching
