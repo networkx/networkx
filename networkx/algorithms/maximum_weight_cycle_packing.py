@@ -131,7 +131,7 @@ def connect_3cycles(X, Y, graph, ans_graph):
 
 
 def simple_cycles(G, limit):
-    """
+    """t
     >>> Digraph=nx.DiGraph()
     >>> Digraph.add_nodes_from([1,2,3,5,6,7,8])
     >>> Digraph.add_weighted_edges_from([(1,8,2),(8,1,4),(2,1,5),(1,3,4),(3,8,2),(8,2,3),(8,5,4),(5,7,3),(7,6,2),(6,5,4)])
