@@ -1,6 +1,6 @@
 import doctest
 
-import numpy as np
+#import numpy as np
 
 import networkx as nx
 
@@ -204,6 +204,7 @@ def create_Ys(graph, k):
     >>> print(len(create_Ys(Digraph,3))) #- the known product is supposed to be composed of 1 permutation
     2
     """
+    import numpy as np
     temp_cycles = simple_cycles(graph, k)  # nx.recursive_simple_cycles(graph)
     cycles = []
     for cycle in temp_cycles:
