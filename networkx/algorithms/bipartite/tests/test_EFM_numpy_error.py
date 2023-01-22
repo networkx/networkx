@@ -1,8 +1,11 @@
+from _pytest.outcomes import importorskip
+
 import networkx as nx
 from networkx.algorithms.bipartite.EFM_algorithms import *
 
 
 class TestEnvyFreeMatching:
+    @importorskip("numpy")
     def test_envy_free_matching(self):
         A = nx.complete_bipartite_graph(3, 3)
         # Fails to import numpy when calling envy_free_matching.
