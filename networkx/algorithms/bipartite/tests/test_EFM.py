@@ -150,7 +150,7 @@ class TestMinimumWeightEnvyFreeMatching:
             (2, 4, 125),
         ]
         G.add_weighted_edges_from(weights)
-        matching = minimum_weight_envy_free_matching(G)
+        matching = min_weight_max_size_envy_free_matching(G)
         assert matching == {
             0: 5,
             1: 4,
@@ -165,7 +165,7 @@ class TestMinimumWeightEnvyFreeMatching:
         Graph.add_weighted_edges_from(
             [(0, 4, 5), (1, 4, 1), (2, 5, 3), (2, 7, 9), (3, 6, 3), (3, 7, 7)]
         )
-        matching = minimum_weight_envy_free_matching(Graph, top_nodes=[0, 1, 2, 3])
+        matching = min_weight_max_size_envy_free_matching(Graph, top_nodes=[0, 1, 2, 3])
         assert matching == {
             2: 5,
             3: 6,
