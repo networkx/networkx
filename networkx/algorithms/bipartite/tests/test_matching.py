@@ -463,37 +463,37 @@ class TestEnvyFreeMatching:
                 assert max_size_envy_free_matching(G=graph) == {}
 
 
-# class TestMinimumWeightEnvyFreeMatching:
-#     def test_envy_free_perfect_matching(self):
-#         G = nx.Graph()
-#         weights = [
-#             (0, 3, 250),
-#             (0, 4, 148),
-#             (0, 5, 122),
-#             (1, 3, 175),
-#             (1, 4, 135),
-#             (1, 5, 150),
-#             (2, 3, 150),
-#             (2, 4, 125),
-#         ]
-#         G.add_weighted_edges_from(weights)
-#         assert minimum_weight_envy_free_matching(G) == {
-#             0: 5,
-#             1: 4,
-#             2: 3,
-#             5: 0,
-#             4: 1,
-#             3: 2,
-#         }
-#
-#     def test_non_empty_envy_free_matching(self):
-#         Graph = nx.Graph()
-#         Graph.add_weighted_edges_from(
-#             [(0, 4, 5), (1, 4, 1), (2, 5, 3), (2, 7, 9), (3, 6, 3), (3, 7, 7)]
-#         )
-#         assert minimum_weight_envy_free_matching(Graph, top_nodes=[0, 1, 2, 3]) == {
-#             2: 5,
-#             3: 6,
-#             5: 2,
-#             6: 3,
-#         }
+class TestMinimumWeightEnvyFreeMatching:
+    def test_envy_free_perfect_matching(self):
+        G = nx.Graph()
+        weights = [
+            (0, 3, 250),
+            (0, 4, 148),
+            (0, 5, 122),
+            (1, 3, 175),
+            (1, 4, 135),
+            (1, 5, 150),
+            (2, 3, 150),
+            (2, 4, 125),
+        ]
+        G.add_weighted_edges_from(weights)
+        assert minimum_weight_envy_free_matching(G) == {
+            0: 5,
+            1: 4,
+            2: 3,
+            5: 0,
+            4: 1,
+            3: 2,
+        }
+
+    def test_non_empty_envy_free_matching(self):
+        Graph = nx.Graph()
+        Graph.add_weighted_edges_from(
+            [(0, 4, 5), (1, 4, 1), (2, 5, 3), (2, 7, 9), (3, 6, 3), (3, 7, 7)]
+        )
+        assert minimum_weight_envy_free_matching(Graph, top_nodes=[0, 1, 2, 3]) == {
+            2: 5,
+            3: 6,
+            5: 2,
+            6: 3,
+        }
