@@ -4,7 +4,6 @@ import networkx as nx
 from networkx.algorithms.bipartite.EFM_algorithms import *
 
 
-@importorskip("numpy")
 class TestEnvyFreeMatching:
     def test_envy_free_matching(self):
         A = nx.complete_bipartite_graph(3, 3)
