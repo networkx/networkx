@@ -1041,6 +1041,16 @@ def dag_longest_path(G, weight="weight", default_weight=1, topo_order=None):
 def dag_longest_path_length(G, weight="weight", default_weight=1):
     """Returns the longest path length in a DAG
 
+    .. deprecated:: 3.0
+
+       This function is deprecated and will be removed in 3.2. Compute the
+       path length directly from `dag_longest_path` instead, e.g.::
+
+           sum(
+               G[u][v].get(weight, default_weight)
+               for u, v in pairwise(nx.dag_longest_path(G))
+            )
+
     Parameters
     ----------
     G : NetworkX DiGraph
@@ -1076,6 +1086,19 @@ def dag_longest_path_length(G, weight="weight", default_weight=1):
     --------
     dag_longest_path
     """
+    import warnings
+
+    warnings.warn(
+        (
+            "\n\ndag_longest_path_length is deprecated and will be removed in the"
+            "\nv3.2. Compute the path length directly from `dag_longest_path` instead, e.g.::"
+            "\n\n\tsum(G[u][v].get(weight, default_weight) for u, v in pairwise(path))"
+            "\n\nSee the Examples section of `dag_longest_path` for further details.\n"
+        ),
+        DeprecationWarning,
+        stacklevel=4,
+    )
+
     path = nx.dag_longest_path(G, weight, default_weight)
     path_length = 0
     if G.is_multigraph():
