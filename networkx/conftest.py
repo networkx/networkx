@@ -126,13 +126,14 @@ try:
 except ImportError:
     has_sympy = False
 
-
 # List of files that pytest should ignore
 
 collect_ignore = []
 
 needs_numpy = [
     "algorithms/approximation/traveling_salesman.py",
+    "algorithms/bipartite/EFM_algorithms.py",
+    "algorithms/bipartite/matching.py",
     "algorithms/centrality/current_flow_closeness.py",
     "algorithms/node_classification.py",
     "algorithms/non_randomness.py",
@@ -147,6 +148,8 @@ needs_scipy = [
     "algorithms/assortativity/correlation.py",
     "algorithms/assortativity/mixing.py",
     "algorithms/assortativity/pairs.py",
+    "algorithms/bipartite/EFM_algorithms.py",
+    "algorithms/bipartite/matching.py",
     "algorithms/bipartite/matrix.py",
     "algorithms/bipartite/spectral.py",
     "algorithms/centrality/current_flow_betweenness.py",
