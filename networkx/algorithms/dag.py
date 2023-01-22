@@ -975,7 +975,7 @@ def dag_longest_path(G, weight="weight", default_weight=1, topo_order=None):
 
     Examples
     --------
-    >>> DG = nx.DiGraph([(0, 1, {'cost':1}), (1, 2, {'cost':1}), (0, 2, {'cost':42})])
+    >>> DG = nx.DiGraph([(0, 1, {"cost": 1}), (1, 2, {"cost": 1}), (0, 2, {"cost": 42})])
     >>> list(nx.all_simple_paths(DG, 0, 2))
     [[0, 1, 2], [0, 2]]
     >>> nx.dag_longest_path(DG)
@@ -993,6 +993,21 @@ def dag_longest_path(G, weight="weight", default_weight=1, topo_order=None):
     [0, 1]
     >>> nx.dag_longest_path(DG, topo_order=[0, 2, 1])
     [0, 2]
+
+    The length of the longest path can be computed from the returned path.
+    In the simplest (unweighted) case:
+
+    >>> G = nx.DiGraph([(0, 1), (1, 2), (2, 3), (1, 4), (4, 3)])
+    >>> path = nx.dag_longest_path(G)
+    >>> len(list(nx.utils.pairwise(path)))
+    3
+
+    For a weighted graph:
+
+    >>> G[2][3]["weight"] = 10
+    >>> path = nx.dag_longest_path(G)
+    >>> sum(G[u][v].get("weight", 1) for u, v in nx.utils.pairwise(path))
+    12
 
     See also
     --------
