@@ -92,14 +92,14 @@ def maximum_weight_cycle_packing_approximation_algorithm(graph: nx.DiGraph, k: i
     for i, cycle in enumerate(cycles):
         if len(cycle) < 3:
             weight = (
-                    graph.get_edge_data(cycle[0], cycle[1])["weight"]
-                    + graph.get_edge_data(cycle[1], cycle[0])["weight"]
+                graph.get_edge_data(cycle[0], cycle[1])["weight"]
+                + graph.get_edge_data(cycle[1], cycle[0])["weight"]
             )
         else:
             weight = (
-                    graph.get_edge_data(cycle[0], cycle[1])["weight"]
-                    + graph.get_edge_data(cycle[1], cycle[2])["weight"]
-                    + graph.get_edge_data(cycle[2], cycle[0])["weight"]
+                graph.get_edge_data(cycle[0], cycle[1])["weight"]
+                + graph.get_edge_data(cycle[1], cycle[2])["weight"]
+                + graph.get_edge_data(cycle[2], cycle[0])["weight"]
             )
         buildHype[cycle] = weight
         weights[i] = weight
