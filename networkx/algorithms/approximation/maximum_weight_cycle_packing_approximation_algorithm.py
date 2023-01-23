@@ -26,8 +26,8 @@ EPS = 1e-6
 def maximum_weight_cycle_packing_approximation_algorithm(graph: nx.DiGraph, k: int):
     """
     "
-    A directed weighted graph is a graph in which every edge is one sided and weighted
-    for example an edge from node 1->2 with a weight of 5,an k-way exchange
+    A directed weighted graph is a graph in which every edge is one-sided and weighted
+    for example an edge from node 1->2 with a weight of 5,a k-way exchange
     is a cycle within a graph containing at most k nodes.
     max weighted exchange is a set of cycles, such that no node appears in more than one cycle,
     and the sum of weights on the edges in all cycles is maximum.
@@ -72,7 +72,6 @@ def maximum_weight_cycle_packing_approximation_algorithm(graph: nx.DiGraph, k: i
     :param graph: graph that simulates donors-Patients for kidney exchange programs.
 
     """
-    # logging.info(f"Find all cycles of size at most {k} in the graph")
 
     sc = simple_cycles_le_k(graph, k)
     cycles = []
@@ -213,7 +212,7 @@ def MWIS(graph, pi, b_score=0):
             if score + ub > best_score + EPS:
                 best_score = score + ub
             return key, ub
-        # compute highest priority node (used in recursion to choose {i})
+        # compute the highest priority node (used in recursion to choose {i})
         node_iter = ((n, deg * pi[n]) for (n, deg) in G.degree())
         node_chosen, _ = max(node_iter, key=lambda x: x[1])
         pi_chosen = pi[node_chosen]
