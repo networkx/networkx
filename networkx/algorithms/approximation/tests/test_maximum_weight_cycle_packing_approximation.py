@@ -70,7 +70,9 @@ def test_3():
             (4, 5, 5),
         ]
     )
-    assert (1, 6) or (6, 1) in maximum_weight_cycle_packing_approximation_algorithm(graphEX3, 3)
+    assert (1, 6) or (6, 1) in maximum_weight_cycle_packing_approximation_algorithm(
+        graphEX3, 3
+    )
     # assert maximum_weight_cycle_packing_approximation_algorithm(graphEX3, 3) == [
     #     (1, 6),
     #     (4, 5, 7),
