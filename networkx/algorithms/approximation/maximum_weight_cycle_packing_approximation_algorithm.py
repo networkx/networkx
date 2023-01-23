@@ -73,6 +73,7 @@ def maximum_weight_cycle_packing_approximation_algorithm(graph: nx.DiGraph, k: i
 
     """
 
+    # Find all cycles of size at most {k} in the graph
     sc = simple_cycles_le_k(graph, k)
     cycles = []
     for cycle in sc:
@@ -81,24 +82,24 @@ def maximum_weight_cycle_packing_approximation_algorithm(graph: nx.DiGraph, k: i
     if len(cycles) == 0:
         return []
 
-    #     "create hypergraph according to hypergraph's format of hypernetx library - "
-    #     "https://pnnl.github.io/HyperNetX/build/classes/classes.html"
-    #     "{i,Entity{i,([nodesOfSingleHyperEdge]),"
-    #     "'weight'}}"
+    # "create hypergraph according to hyper-graph's format of hypernetx library - "
+    # "https://pnnl.github.io/HyperNetX/build/classes/classes.html"
+    # "{i,Entity{i,([nodesOfSingleHyperEdge]),"
+    # "'weight'}}"
     buildHype = {}
     weights = {}
 
     for i, cycle in enumerate(cycles):
         if len(cycle) < 3:
             weight = (
-                graph.get_edge_data(cycle[0], cycle[1])["weight"]
-                + graph.get_edge_data(cycle[1], cycle[0])["weight"]
+                    graph.get_edge_data(cycle[0], cycle[1])["weight"]
+                    + graph.get_edge_data(cycle[1], cycle[0])["weight"]
             )
         else:
             weight = (
-                graph.get_edge_data(cycle[0], cycle[1])["weight"]
-                + graph.get_edge_data(cycle[1], cycle[2])["weight"]
-                + graph.get_edge_data(cycle[2], cycle[0])["weight"]
+                    graph.get_edge_data(cycle[0], cycle[1])["weight"]
+                    + graph.get_edge_data(cycle[1], cycle[2])["weight"]
+                    + graph.get_edge_data(cycle[2], cycle[0])["weight"]
             )
         buildHype[cycle] = weight
         weights[i] = weight
