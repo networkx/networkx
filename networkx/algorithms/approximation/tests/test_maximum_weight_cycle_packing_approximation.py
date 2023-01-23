@@ -127,13 +127,16 @@ def test_5():
     res = maximum_weight_cycle_packing_approximation_algorithm(graphEX3, 3)
     nodes_seen = []
     flag = True
-    for cyc in res:
-        for node in cyc:
-            if node in nodes_seen:
-                flag = False
-                break
-            nodes_seen.append(node)
-    assert flag
+    try:
+        for cyc in res:
+            for node in cyc:
+                if node in nodes_seen:
+                    flag = False
+                    break
+                nodes_seen.append(node)
+        assert flag
+    except:
+        assert False
 
 
 def test_6():
@@ -142,12 +145,15 @@ def test_6():
         w["weight"] = random.randint(0, 10)
     res = maximum_weight_cycle_packing_approximation_algorithm(graphEX3, 3)
     nodes_seen = []
-    flag = True
-    for cyc in res:
-        if len(cyc) > 3:
-            flag = False
-            break
-    assert flag
+    try:
+        flag = True
+        for cyc in res:
+            if len(cyc) > 3:
+                flag = False
+                break
+        assert flag
+    except:
+        assert False
 
 
 def test_7():
