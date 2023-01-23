@@ -127,7 +127,7 @@ def test_5():
                 flag = False
                 break
             nodes_seen.append(node)
-    assert False
+    assert flag
 
 
 def test_6():
