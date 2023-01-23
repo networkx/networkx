@@ -73,3 +73,4 @@ Version 3.3
 ~~~~~~~~~~~
 * Remove the ``forest_str`` function from ``readwrite/text.py``. Replace
   existing usages with ``write_network_text``.
+* Remove ``algorithms/dag/dag_longest_path_length``
