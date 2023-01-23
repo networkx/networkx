@@ -30,6 +30,8 @@ API Changes
 
 Deprecations
 ------------
+- [`#6388 <https://github.com/networkx/networkx/issues/6388>`_]
+  Deprecate ``dag_longest_path_length`` from ``networkx/algorithms/dag.py``
 
 
 Merged PRs
