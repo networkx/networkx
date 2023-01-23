@@ -530,7 +530,7 @@ def held_karp_ascent(G, weight="weight"):
            pp.1138-1162
     """
     import numpy as np
-    import scipy.optimize as optimize
+    from scipy import optimize
 
     def k_pi():
         """
