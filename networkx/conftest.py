@@ -142,7 +142,7 @@ needs_numpy = [
     "utils/misc.py",
     "algorithms/centrality/laplacian.py",
     "algorithms/maximum_weight_cycle_packing.py",
-    "algorithms/tests/test_maximum_weight_cycle_packing.py"
+    "algorithms/tests/test_maximum_weight_cycle_packing.py",
 ]
 needs_scipy = [
     "algorithms/approximation/traveling_salesman.py",
