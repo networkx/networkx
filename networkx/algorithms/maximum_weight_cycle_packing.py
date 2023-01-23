@@ -2,9 +2,8 @@ import doctest
 
 import networkx as nx
 
-"""REUT HADAD & TAL SOMECH"""
-
 """
+REUT HADAD & TAL SOMECH
 This is an implementation for two different algorithms described on "MAXIMUM WEIGHT CYCLE PACKING IN DIRECTED GRAPHS,
 WITH APPLICATION TO KIDNEY EXCHANGE PROGRAMS" article.
 The article points on two algorithms that solves kidney exchange problems, which can be modelled as cycle packing
