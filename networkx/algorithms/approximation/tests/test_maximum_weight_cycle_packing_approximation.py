@@ -26,12 +26,12 @@ def test_1():
         ]
     )
     assert maximum_weight_cycle_packing_approximation_algorithm(graphEX3, 3) == [
-        (3, 2),
-        (4, 1, 6),
+        (1, 6, 4),
+        (2, 3),
     ]
     assert maximum_weight_cycle_packing_approximation_algorithm(graphEX3, 2) == [
-        (3, 2),
-        (6, 1),
+        (1, 6),
+        (2, 3),
     ]
 
 
@@ -39,7 +39,7 @@ def test_2():
     graphEX3 = nx.DiGraph()
     graphEX3.add_nodes_from([1, 2, 3])
     graphEX3.add_weighted_edges_from([(1, 2, 1), (2, 1, 5), (2, 3, 2), (3, 1, 2)])
-    assert maximum_weight_cycle_packing_approximation_algorithm(graphEX3, 2) == [(2, 1)]
+    assert maximum_weight_cycle_packing_approximation_algorithm(graphEX3, 2) == [(1, 2)]
 
 
 def test_3():
@@ -62,9 +62,9 @@ def test_3():
         ]
     )
     assert maximum_weight_cycle_packing_approximation_algorithm(graphEX3, 3) == [
+        (1, 6),
         (4, 5, 7),
-        (6, 1),
-        (9, 8),
+        (8, 9),
     ]
 
 
@@ -99,18 +99,18 @@ def test_4():
         ]
     )
     assert maximum_weight_cycle_packing_approximation_algorithm(graphEX3, 3) == [
+        (1, 6),
         (4, 5, 7),
-        (6, 1),
-        (9, 8),
-        (12, 16, 13),
-        (15, 11),
-        (19, 18),
+        (8, 9),
+        (11, 15),
+        (16, 13, 12),
+        (18, 19),
     ]
     assert maximum_weight_cycle_packing_approximation_algorithm(graphEX3, 2) == [
-        (6, 1),
-        (9, 8),
-        (15, 11),
-        (19, 18),
+        (1, 6),
+        (8, 9),
+        (11, 15),
+        (18, 19),
     ]
 
 
