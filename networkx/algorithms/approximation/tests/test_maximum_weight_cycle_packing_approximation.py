@@ -25,12 +25,16 @@ def test_1():
             (5, 6, 12),
         ]
     )
-    assert (2, 3) or (3, 2) in maximum_weight_cycle_packing_approximation_algorithm(graphEX3, 3)
+    assert (2, 3) or (3, 2) in maximum_weight_cycle_packing_approximation_algorithm(
+        graphEX3, 3
+    )
     # assert maximum_weight_cycle_packing_approximation_algorithm(graphEX3, 3) == [
     #     (1, 6, 4),
     #     (2, 3),
     # ]
-    assert (1, 6) or (6, 1) in maximum_weight_cycle_packing_approximation_algorithm(graphEX3, 2)
+    assert (1, 6) or (6, 1) in maximum_weight_cycle_packing_approximation_algorithm(
+        graphEX3, 2
+    )
     # assert maximum_weight_cycle_packing_approximation_algorithm(graphEX3, 2) == [
     #     (1, 6),
     #     (2, 3),
@@ -41,7 +45,9 @@ def test_2():
     graphEX3 = nx.DiGraph()
     graphEX3.add_nodes_from([1, 2, 3])
     graphEX3.add_weighted_edges_from([(1, 2, 1), (2, 1, 5), (2, 3, 2), (3, 1, 2)])
-    assert (1, 2) or (2, 1) in maximum_weight_cycle_packing_approximation_algorithm(graphEX3, 2)
+    assert (1, 2) or (2, 1) in maximum_weight_cycle_packing_approximation_algorithm(
+        graphEX3, 2
+    )
     # assert maximum_weight_cycle_packing_approximation_algorithm(graphEX3, 2) == [(1, 2)]
 
 
@@ -102,7 +108,9 @@ def test_4():
             (16, 13, 8),
         ]
     )
-    assert (1, 6) or (6, 1) in maximum_weight_cycle_packing_approximation_algorithm(graphEX3, 3)
+    assert (1, 6) or (6, 1) in maximum_weight_cycle_packing_approximation_algorithm(
+        graphEX3, 3
+    )
     # assert maximum_weight_cycle_packing_approximation_algorithm(graphEX3, 3) == [
     #     (1, 6),
     #     (4, 5, 7),
@@ -111,7 +119,9 @@ def test_4():
     #     (16, 13, 12),
     #     (18, 19),
     # ]
-    assert (1, 6) or (6, 1) in maximum_weight_cycle_packing_approximation_algorithm(graphEX3, 2)
+    assert (1, 6) or (6, 1) in maximum_weight_cycle_packing_approximation_algorithm(
+        graphEX3, 2
+    )
     # assert maximum_weight_cycle_packing_approximation_algorithm(graphEX3, 2) == [
     #     (1, 6),
     #     (8, 9),
