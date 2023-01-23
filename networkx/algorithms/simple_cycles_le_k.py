@@ -1,5 +1,6 @@
 import networkx as nx
 
+
 @nx._dispatch
 def simple_cycles_le_k(graph, k):
     """

@@ -1,4 +1,3 @@
-
 import random
 
 import networkx as nx
@@ -140,6 +139,7 @@ def test_6():
 
 def test_7():
     from networkx.algorithms.simple_cycles_le_k import simple_cycles_le_k
+
     graphEX3 = nx.fast_gnp_random_graph(20, 0.15, 42, True)
     for (u, v, w) in graphEX3.edges(data=True):
         w["weight"] = random.randint(0, 10)
