@@ -46,7 +46,7 @@ def is_equitable(G, coloring, num_colors=None):
 
 
 def make_C_from_F(F):
-    C = defaultdict(lambda: [])
+    C = defaultdict(list)
     for node, color in F.items():
         C[color].append(node)
 
