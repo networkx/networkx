@@ -156,7 +156,6 @@ def test_6():
     for (u, v, w) in graphEX3.edges(data=True):
         w["weight"] = random.randint(0, 10)
     res = maximum_weight_cycle_packing_approximation_algorithm(graphEX3, 3)
-    nodes_seen = []
     try:
         flag = True
         for cyc in res:
