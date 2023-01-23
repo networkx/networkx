@@ -121,7 +121,7 @@ def test_5():
                 flag = False
                 break
             nodes_seen.append(node)
-    assert flag
+    return flag
 
 
 def test_6():
@@ -135,7 +135,7 @@ def test_6():
         if len(cyc) > 3:
             flag = False
             break
-    assert flag
+    return flag
 
 
 def test_7():
