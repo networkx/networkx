@@ -5,7 +5,6 @@ Two heuristics to improve the quality of arrangements for maximum subgraph isomo
 
 import concurrent.futures
 from networkx.algorithms.genetic_isomorphism.fitness import fitness
-# from fitness import fitness
 from math import comb
 import networkx as nx
 import random
@@ -40,7 +39,7 @@ def count_equal_size_combinations(G1_nodes, G2_nodes):
     125
     """
 
-    logging.info('Started counting equal size combinations')
+    logging.info("Started counting equal size combinations")
     # Find the smaller of the two graphs
     smaller_g = G1_nodes if len(G1_nodes) < len(G2_nodes) else G2_nodes
 
@@ -49,7 +48,7 @@ def count_equal_size_combinations(G1_nodes, G2_nodes):
 
     # Iterate over all subgraph sizes from 0 to the size of the smaller graph
     for i in range(1, len(smaller_g) + 1):
-        logging.debug(f'Calculating combinations for size {i}')
+        logging.debug(f"Calculating combinations for size {i}")
         # Calculate the number of combinations for g1
         g1_combinations = comb(len(G1_nodes), i)
 
@@ -58,7 +57,7 @@ def count_equal_size_combinations(G1_nodes, G2_nodes):
 
         # Add the total number of combinations for this size to the count
         count += g1_combinations * g2_combinations
-    logging.debug(f'Total number of equal size combinations: {count}')
+    logging.debug(f"Total number of equal size combinations: {count}")
     return count
 
 
@@ -78,13 +77,20 @@ def evaluate_solutions(G1, G2, solutions, ALPHA):
     solutions_with_fitness = []
     for i, solution in enumerate(solutions):
         # Calculate the fitness score for the current solution
-        fitness_score = fitness(G1.subgraph(solution[0]), G2.subgraph(
-            solution[1]), len(G1.nodes), len(G1.edges), len(G2.nodes), len(G2.edges))
+        fitness_score = fitness(
+            G1.subgraph(solution[0]),
+            G2.subgraph(solution[1]),
+            len(G1.nodes),
+            len(G1.edges),
+            len(G2.nodes),
+            len(G2.edges),
+        )
         solutions_with_fitness.append((solution, fitness_score))
         # Check if the current solution has a fitness score less than or equal to ALPHA
         if fitness_score <= ALPHA:
             logging.warning(
-                f'Found solution with fitness score <= ALPHA ({ALPHA}) in generation {i+1}')
+                f"Found solution with fitness score <= ALPHA ({ALPHA}) in generation {i+1}"
+            )
             return True, None
     return False, solutions_with_fitness
 
@@ -103,8 +109,9 @@ def crossover(G1_nodes, G2_nodes, G1_sublists, G2_sublists, num_solutions):
             new_e2 = random.sample(G2_nodes, sub_graph_size)
             new_solutions.append((new_e1, new_e2))
         count_new_solutions += 1
-    logging.debug(f'Generating new solutions')
+    logging.debug(f"Generating new solutions")
     return new_solutions
+
 
 def find_subgraph_isomorphism_with_genetic_algorithm(G1, G2, ALPHA):
     """
@@ -180,9 +187,7 @@ def find_subgraph_isomorphism_with_genetic_algorithm(G1, G2, ALPHA):
     G2_nodes = list(G2.nodes)
 
     # Calculate the number of combinations of equal size sublists that can be created from the nodes of the two graphs
-    num_of_combinations = count_equal_size_combinations(
-        G1_nodes, G2_nodes
-    )
+    num_of_combinations = count_equal_size_combinations(G1_nodes, G2_nodes)
     # num_of_combinations = count_equal_size_combinations(G1_nodes, G2_nodes)
 
     # Generate the solutions
@@ -193,12 +198,8 @@ def find_subgraph_isomorphism_with_genetic_algorithm(G1, G2, ALPHA):
     solutions = []
     # use of multi processes to generate solutions in parallel
     with concurrent.futures.ProcessPoolExecutor(max_workers=WORKERS) as executor:
-        future_1 = executor.submit(
-            generate_solutions, G1, G2, NUM_OF_SOLUTIONS // 2
-        )
-        future_2 = executor.submit(
-            generate_solutions, G1, G2, NUM_OF_SOLUTIONS // 2
-        )
+        future_1 = executor.submit(generate_solutions, G1, G2, NUM_OF_SOLUTIONS // 2)
+        future_2 = executor.submit(generate_solutions, G1, G2, NUM_OF_SOLUTIONS // 2)
         for future in concurrent.futures.as_completed([future_1, future_2]):
             r = future.result()
             solutions += r
@@ -271,3 +272,9 @@ def find_subgraph_isomorphism_with_genetic_algorithm(G1, G2, ALPHA):
                 solutions += r
 
     return False
+
+
+if __name__ == "__main__":
+    import doctest
+
+    doctest.testmod()

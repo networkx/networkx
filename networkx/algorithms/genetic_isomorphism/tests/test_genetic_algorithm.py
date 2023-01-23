@@ -5,7 +5,7 @@
 import networkx as nx
 from networkx.algorithms.genetic_isomorphism.graph_reduction import build_RG_from_DG
 from networkx.algorithms.genetic_isomorphism.genetic_subgraph_isomorphism import (
-    find_subgraph_isomorphism_with_genetic_algorithm
+    find_subgraph_isomorphism_with_genetic_algorithm,
 )
 
 
