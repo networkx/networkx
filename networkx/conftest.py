@@ -68,6 +68,9 @@ def set_warnings():
         category=DeprecationWarning,
         message="\n\nThe `attrs` keyword argument of node_link",
     )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\n\ndag_longest_path_length"
+    )
 
 
 @pytest.fixture(autouse=True)
