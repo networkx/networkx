@@ -132,7 +132,7 @@ def maximum_weight_cycle_packing_approximation_algorithm(graph: nx.DiGraph, k: i
     pi = dict(zip(graphL.nodes(), (weights[i] for i in weights)))
 
     #   "find maximum weight independent set"
-    mwis_set, mwis_weight = MWIS(graphL, pi, 0)
+    mwis_set, mwis_weight = mwis(graphL, pi, 0)
     return mwis_set
 
 
@@ -141,7 +141,7 @@ https://github.com/pchervi/Graph-Coloring/blob/295f7bce72885eab05ff50adea746585a
 @author: Philippe Chervi"""
 
 
-def MWIS(graph, pi, b_score=0):
+def mwis(graph, pi, b_score=0):
     """compute mawimum weighted independent set (recursively) using python
     networkx package. Input items are:
     :param graph, a networkx graph
@@ -163,7 +163,7 @@ def MWIS(graph, pi, b_score=0):
     >>> Graph.add_node(8,weight=8)
     >>> Graph.add_weighted_edges_from([(1, 8, 2), (8, 1, 4), (2, 1, 5), (1, 3, 4), (3, 8, 2), (8, 2, 3), (8, 5, 4), (5, 7, 3), (7, 6, 2), (6, 5, 4)])
     >>> pi = dict(zip(Graph.nodes(), (Graph.nodes[i]['weight'] for i in Graph.nodes)))
-    >>> print(MWIS(Graph, pi,0))
+    >>> print(mwis(Graph, pi,0))
     ([4, 7, 8], 19)
     >>> Graph = nx.Graph()
     >>> Graph.add_node(1,weight=1)
@@ -172,7 +172,7 @@ def MWIS(graph, pi, b_score=0):
     >>> Graph.add_node(4,weight=4)
     >>> Graph.add_weighted_edges_from([(2, 1, 3), (1, 3, 1), (3, 2, 2), (3, 4, 5), (4, 3, 9)])
     >>> pi = dict(zip(Graph.nodes(), (Graph.nodes[i]['weight'] for i in Graph.nodes)))
-    >>> print(MWIS(Graph, pi,0))
+    >>> print(mwis(Graph, pi,0))
     ([2, 4], 6)
     >>> Graph = nx.Graph()
     >>> Graph.add_node(1,weight=1)
@@ -184,7 +184,7 @@ def MWIS(graph, pi, b_score=0):
     >>> Graph.add_node(7,weight=7)
     >>> Graph.add_node(8,weight=8)
     >>> pi = dict(zip(Graph.nodes(), (Graph.nodes[i]['weight'] for i in Graph.nodes)))
-    >>> print(MWIS(Graph, pi,0))
+    >>> print(mwis(Graph, pi,0))
     ([1, 2, 3, 4, 5, 6, 7, 8], 36)
     """
 
