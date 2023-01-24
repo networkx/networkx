@@ -23,6 +23,8 @@ the chain is tricky and much harder with restricted_views than
 with induced subgraphs.
 Often it is easiest to use .copy() to avoid chains.
 """
+from typing import Callable, Any
+
 import networkx as nx
 from networkx.classes.coreviews import (
     FilterAdjacency,
@@ -71,7 +73,7 @@ def generic_graph_view(G, create_using=None):
     return newG
 
 
-def subgraph_view(G, filter_node=no_filter, filter_edge=no_filter):
+def subgraph_view(G, filter_node: Callable[[Any], bool]=no_filter, filter_edge: Callable[[Any], bool]=no_filter):
     """View of `G` applying a filter on nodes and edges.
 
     `subgraph_view` provides a read-only view of the input graph that excludes
