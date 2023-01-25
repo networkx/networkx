@@ -3,13 +3,12 @@ Hybrid GA for local optimisation.
 Two heuristics to improve the quality of arrangements for maximum subgraph isomorphism.
 """
 
-import concurrent.futures
 from networkx.algorithms.genetic_isomorphism.fitness import fitness
+import concurrent.futures
 from math import comb
 import networkx as nx
 import random
 import logging
-import concurrent.futures
 
 __all__ = ["find_subgraph_isomorphism_with_genetic_algorithm"]
 
@@ -70,8 +69,8 @@ def generate_solutions(G1, G2, num_solutions):
     min_nodes = min(len(G1.nodes), len(G2.nodes))
     for s in range(num_solutions):
         sub_graph_size = random.randint(1, min_nodes)
-        sub1 = random.sample(G1.nodes, sub_graph_size)
-        sub2 = random.sample(G2.nodes, sub_graph_size)
+        sub1 = random.sample(list(G1.nodes), sub_graph_size)
+        sub2 = random.sample(list(G2.nodes), sub_graph_size)
         solutions.append((sub1, sub2))
     return solutions
 
@@ -108,8 +107,8 @@ def crossover(G1_nodes, G2_nodes, G1_sublists, G2_sublists, num_solutions):
         if (e1, e2) not in new_solutions:
             new_solutions.append((e1, e2))
         else:
-            new_e1 = random.sample(G1_nodes, sub_graph_size)
-            new_e2 = random.sample(G2_nodes, sub_graph_size)
+            new_e1 = random.sample(list(G1_nodes), sub_graph_size)
+            new_e2 = random.sample(list(G2_nodes), sub_graph_size)
             new_solutions.append((new_e1, new_e2))
         count_new_solutions += 1
     logging.debug(f"Generating new solutions")
