@@ -31,12 +31,15 @@ def count_equal_size_combinations(G1_nodes, G2_nodes):
     G2_nodes: list of Graph2 nodes
     return:
     number of disticint possible options
+    >>> g1 = nx.gnm_random_graph(3, 3)
+    >>> g2 = nx.gnm_random_graph(5, 10)
+    >>> g3 = nx.gnm_random_graph(9, 7)
     >>> count_equal_size_combinations(g1,g2)
-    34
-    >>> count_equal_size_combinations(g1,g3)
     55
+    >>> count_equal_size_combinations(g1,g3)
+    219
     >>> count_equal_size_combinations(g3,g2)
-    125
+    2001
     """
 
     logging.info("Started counting equal size combinations")
@@ -167,17 +170,14 @@ def find_subgraph_isomorphism_with_genetic_algorithm(G1, G2, ALPHA):
     Example : building a RG graph
     ------------------------------
     >>> import networkx as nx
-    # creates and builds G1
     >>> G1 = nx.DiGraph()
     >>> G1.add_nodes_from(range(6, 10))
     >>> edges = [(6, 7), (6, 8), (6, 9), (8, 8), (9, 7), (9, 8), (9, 9)]
     >>> G1.add_edges_from(edges)
-    # creates and builds G2
     >>> G2 = nx.DiGraph()
     >>> G2.add_nodes_from(range(6, 10))
     >>> edges = [(6, 7), (6, 8), (6, 9), (8, 8), (9, 7), (9, 8), (9, 9)]
     >>> G2.add_edges_from(edges)
-    # runs the function
     >>> find_subgraph_isomorphism_with_genetic_algorithm(G1, G2, 0)
     True
     """
@@ -272,9 +272,3 @@ def find_subgraph_isomorphism_with_genetic_algorithm(G1, G2, ALPHA):
                 solutions += r
 
     return False
-
-
-if __name__ == "__main__":
-    import doctest
-
-    doctest.testmod()
