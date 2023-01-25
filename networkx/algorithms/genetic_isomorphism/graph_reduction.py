@@ -123,7 +123,3 @@ def build_RG_from_DG(G):
             f"Removed {len(nodes_to_remove)} nodes from the graph. Returning g_tag: {g_tag.nodes}"
         )
         return g_tag
-
-
-# Set the logging level to INFO
-logging.basicConfig(level=logging.INFO)

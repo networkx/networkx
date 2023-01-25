@@ -17,7 +17,7 @@ WORKERS = 4
 LOGֹ_FORMAT = "%(levelname)s, time: %(asctime)s , line: %(lineno)d- %(message)s "
 # create and configure logger
 logging.basicConfig(
-    filename="malicious_algo_logging.log", level=logging.DEBUG, filemode="w"
+    filename="malicious_algo_logging.log", level=logging.INFO, filemode="w"
 )
 logger = logging.getLogger()
 
@@ -91,7 +91,7 @@ def evaluate_solutions(G1, G2, solutions, ALPHA):
         # Check if the current solution has a fitness score less than or equal to ALPHA
         if fitness_score <= ALPHA:
             logging.warning(
-                f"Found solution with fitness score <= ALPHA ({ALPHA}) in generation {i+1}"
+                f"Found solution with fitness score {fitness_score} <= ALPHA ({ALPHA}) in generation {i+1}"
             )
             return True, None
     return False, solutions_with_fitness
@@ -190,7 +190,7 @@ def find_subgraph_isomorphism_with_genetic_algorithm(G1, G2, ALPHA):
     # num_of_combinations = count_equal_size_combinations(G1_nodes, G2_nodes)
 
     # Generate the solutions
-    NUM_OF_SOLUTIONS = int(num_of_combinations / 2)
+    NUM_OF_SOLUTIONS = int(num_of_combinations)
     if num_of_combinations >= 10000:
         NUM_OF_SOLUTIONS = 10000
     logging.debug(f"Generating {NUM_OF_SOLUTIONS} solutions")
@@ -270,4 +270,7 @@ def find_subgraph_isomorphism_with_genetic_algorithm(G1, G2, ALPHA):
                 r = future.result()
                 solutions += r
 
+    logging.warning(
+                f"Did not find a solution that good enough\n {rankedsolutions[0]}"
+            )
     return False
