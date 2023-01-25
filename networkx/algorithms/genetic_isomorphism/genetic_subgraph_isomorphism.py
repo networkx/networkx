@@ -270,7 +270,5 @@ def find_subgraph_isomorphism_with_genetic_algorithm(G1, G2, ALPHA):
                 r = future.result()
                 solutions += r
 
-    logging.warning(
-                f"Did not find a solution that good enough\n {rankedsolutions[0]}"
-            )
+    logging.warning(f"Did not find a solution that good enough\n {rankedsolutions[0]}")
     return False
