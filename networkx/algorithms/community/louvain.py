@@ -332,7 +332,7 @@ def _gen_graph(G, partition):
         com1 = node2com[node1]
         com2 = node2com[node2]
         temp = H.get_edge_data(com1, com2, {"weight": 0})["weight"]
-        H.add_edge(com1, com2, **{"weight": wt + temp})
+        H.add_edge(com1, com2, weight=wt + temp)
     return H
 
 
