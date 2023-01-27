@@ -212,9 +212,12 @@ class TestFitnessFunction:
         expected_d = True
         assert actual_d == expected_d
 
-    def test_fork_code_vs_fork_code_v1_alpha_4(self):
+    def test_fork_code_vs_fork_code_v1_alpha_5(self):
+        """
+        Calculates the fitness between fork_code to fork_code v1:
+        """
         actual_d = find_subgraph_isomorphism_with_genetic_algorithm(
-            self.fork_RG, self.fork_R1_RG, 4
+            self.fork_RG, self.fork_R1_RG, 5
         )
         expected_d = True
         assert actual_d == expected_d
