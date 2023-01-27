@@ -2,8 +2,9 @@
 Calculates the fitness function between two graphs.
 """
 
-import networkx as nx
 import logging
+
+import networkx as nx
 
 __all__ = ["fitness"]
 

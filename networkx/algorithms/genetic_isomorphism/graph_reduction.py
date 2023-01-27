@@ -3,6 +3,7 @@ Building a reduced graph from a dependency graph.
 """
 
 import logging
+
 import networkx as nx
 
 __all__ = ["build_RG_from_DG"]

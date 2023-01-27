@@ -3,12 +3,13 @@ Hybrid GA for local optimisation.
 Two heuristics to improve the quality of arrangements for maximum subgraph isomorphism.
 """
 
-from networkx.algorithms.genetic_isomorphism.fitness import fitness
 import concurrent.futures
-from math import comb
-import networkx as nx
-import random
 import logging
+import random
+from math import comb
+
+import networkx as nx
+from networkx.algorithms.genetic_isomorphism.fitness import fitness
 
 __all__ = ["find_subgraph_isomorphism_with_genetic_algorithm"]
 
@@ -234,8 +235,8 @@ def find_subgraph_isomorphism_with_genetic_algorithm(G1, G2, ALPHA):
             G1_elements.append(G1_sub)
             G2_elements.append(G2_sub)
 
-        G1_lengths = set([len(lst) for lst in G1_elements])
-        G2_lengths = set([len(lst) for lst in G2_elements])
+        G1_lengths = {len(lst) for lst in G1_elements}
+        G2_lengths = {len(lst) for lst in G2_elements}
         intersection = list(G1_lengths.intersection(G2_lengths))
 
         G1_sublists = {}
