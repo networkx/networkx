@@ -323,29 +323,29 @@ def random_tree(n, seed=None, create_using=None):
     Examples
     --------
     >>> tree = nx.random_tree(n=10, seed=0)
-    >>> print(nx.forest_str(tree, sources=[0]))
+    >>> nx.write_network_text(tree, sources=[0])
     ╙── 0
         ├── 3
         └── 4
             ├── 6
-            │   ├── 1
-            │   ├── 2
-            │   └── 7
-            │       └── 8
-            │           └── 5
+            │   ├── 1
+            │   ├── 2
+            │   └── 7
+            │       └── 8
+            │           └── 5
             └── 9
 
     >>> tree = nx.random_tree(n=10, seed=0, create_using=nx.DiGraph)
-    >>> print(nx.forest_str(tree))
+    >>> nx.write_network_text(tree)
     ╙── 0
         ├─╼ 3
         └─╼ 4
             ├─╼ 6
-            │   ├─╼ 1
-            │   ├─╼ 2
-            │   └─╼ 7
-            │       └─╼ 8
-            │           └─╼ 5
+            │   ├─╼ 1
+            │   ├─╼ 2
+            │   └─╼ 7
+            │       └─╼ 8
+            │           └─╼ 5
             └─╼ 9
     """
     if n == 0:
