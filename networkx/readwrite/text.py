@@ -534,8 +534,8 @@ def forest_str(graph, with_labels=True, sources=None, write=None, ascii_only=Fal
             L-- 2
     """
     msg = (
-        "\nforest_str is deprecated as of version <TBD:3.x?> and will be removed "
-        "in version <TBD:3.y?>. Use generate_network_text or write_network_text "
+        "\nforest_str is deprecated as of version 3.1 and will be removed "
+        "in version 3.3. Use generate_network_text or write_network_text "
         "instead.\n"
     )
     warnings.warn(msg, DeprecationWarning)
