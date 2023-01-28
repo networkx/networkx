@@ -1,7 +1,7 @@
 NetworkX
 ========
 
-NetworkX is running a user survey! Tell us about your ideas, complaints, praises of NetworkX! Fill out the `NetworkX User Survey 2023 <https://forms.gle/NUGcBxyjx5onbAgc8>`_ 🎉
+[NetworkX Survey 2023!!](https://forms.gle/NUGcBxyjx5onbAgc8) 🎉 Fill out the survey to tell us about your ideas, complaints, praises of NetworkX!
 
 
 .. image:: https://github.com/networkx/networkx/workflows/test/badge.svg?branch=main
