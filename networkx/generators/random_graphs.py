@@ -487,6 +487,8 @@ def connected_watts_strogatz_graph(n, k, p, tries=100, seed=None):
 def random_regular_graph(d, n, seed=None):
     r"""Returns a random $d$-regular graph on $n$ nodes.
 
+    A regular graph is a graph where each node has the same number of neighbors.
+
     The resulting graph has no self-loops or parallel edges.
 
     Parameters
@@ -518,7 +520,7 @@ def random_regular_graph(d, n, seed=None):
     .. [1] A. Steger and N. Wormald,
        Generating random regular graphs quickly,
        Probability and Computing 8 (1999), 377-396, 1999.
-       http://citeseer.ist.psu.edu/steger99generating.html
+       https://doi.org/10.1017/S0963548399003867
 
     .. [2] Jeong Han Kim and Van H. Vu,
        Generating random regular graphs,
