@@ -507,7 +507,7 @@ def empty_graph(n=0, create_using=None, default=Graph):
     """
     if create_using is None:
         G = default()
-    elif type(create_using) is type:
+    elif isinstance(create_using, type):
         G = create_using()
     elif not hasattr(create_using, "adj"):
         raise TypeError("create_using is not a valid NetworkX graph type or instance")

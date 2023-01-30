@@ -217,8 +217,8 @@ def to_latex_raw(
     if not isinstance(pos, dict):
         pos = nx.get_node_attributes(G, pos)
     if not pos:
-        # circular layout with radius 1
-        pos = {n: f"({round(2* 3.1415 * i / len(G), 3)}:10)" for i, n in enumerate(G)}
+        # circular layout with radius 2
+        pos = {n: f"({round(360.0 * i / len(G), 3)}:2)" for i, n in enumerate(G)}
     for node in G:
         if node not in pos:
             raise nx.NetworkXError(f"node {node} has no specified pos {pos}")

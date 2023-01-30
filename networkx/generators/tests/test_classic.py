@@ -6,6 +6,7 @@ Generators - Classic
 Unit tests for various classic graph generators in generators/classic.py
 """
 import itertools
+import typing
 
 import pytest
 
@@ -287,6 +288,15 @@ class TestGeneratorClassic:
         assert H.is_multigraph()
         assert not H.is_directed()
         assert G is not H
+
+        # test for subclasses that also use typing.Protocol. See gh-6243
+        class Mixin(typing.Protocol):
+            pass
+
+        class MyGraph(Mixin, nx.DiGraph):
+            pass
+
+        G = nx.empty_graph(create_using=MyGraph)
 
     def test_empty_graph(self):
         G = nx.empty_graph()
