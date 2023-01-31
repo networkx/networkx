@@ -25,7 +25,7 @@ def voronoi_cells(G, center_nodes, weight="weight"):
     G : NetworkX graph
 
     center_nodes : set
-        A nonempty set of nodes in the graph $G$ that represent the
+        A nonempty set of nodes in the graph `G` that represent the
         center of the Voronoi cells.
 
     weight : string or function
@@ -41,7 +41,7 @@ def voronoi_cells(G, center_nodes, weight="weight"):
         closer to that center node than to any other center node. The
         keys of the dictionary are the element of `center_nodes`, and
         the values of the dictionary form a partition of the nodes of
-        $G$.
+        `G`.
 
     Examples
     --------
