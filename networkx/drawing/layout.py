@@ -364,8 +364,6 @@ def spring_layout(
     as repelling objects, sometimes called an anti-gravity force.
     Simulation continues until the positions are close to an equilibrium.
 
-    There are some hard-coded values: minimal distance between
-    nodes (0.01) and "temperature" of 0.1 to ensure nodes don't fly away.
     During the simulation, `k` helps determine the distance between nodes,
     though `scale` and `center` determine the size and place after
     rescaling occurs at the end of the simulation.
@@ -521,45 +519,100 @@ def _fruchterman_reingold(
         # make sure positions are of same type as matrix
         pos = pos.astype(A.dtype)
 
+    # calculate the size of the frame
+    min_pos = np.min(pos, axis=0)
+    max_pos = np.max(pos, axis=0)
+    scale = max_pos - min_pos
+    area = np.product(scale)
+    print(area)
+
     # optimal distance between nodes
     if k is None:
-        k = np.sqrt(1.0 / nnodes)
+        k = 1.0 * np.sqrt(area / nnodes)
+
     # the initial "temperature"  is about .1 of domain area (=1x1)
     # this is the largest step allowed in the dynamics.
     # We need to calculate this in case our fixed positions force our domain
     # to be much bigger than 1x1
-    t = max(max(pos.T[0]) - min(pos.T[0]), max(pos.T[1]) - min(pos.T[1])) * 0.1
+    t = max(scale) * 0.1
+    print(t)
+
     # simple cooling scheme.
     # linearly step down by dt on each iteration so last iteration is size dt.
     dt = t / (iterations + 1)
-    delta = np.zeros((pos.shape[0], pos.shape[0], pos.shape[1]), dtype=A.dtype)
+
     # the inscrutable (but fast) version
     # this is still O(V^2)
     # could use multilevel methods to speed this up significantly
     for iteration in range(iterations):
-        # matrix of difference between points
-        delta = pos[:, np.newaxis, :] - pos[np.newaxis, :, :]
-        # distance between points
-        distance = np.linalg.norm(delta, axis=-1)
-        # enforce minimum distance of 0.01
-        np.clip(distance, 0.01, None, out=distance)
-        # displacement "force"
-        displacement = np.einsum(
-            "ijk,ij->ik", delta, (k * k / distance**2 - A * distance / k)
-        )
-        # update positions
-        length = np.linalg.norm(displacement, axis=-1)
-        length = np.where(length < 0.01, 0.1, length)
-        delta_pos = np.einsum("ij,i->ij", displacement, t / length)
-        if fixed is not None:
-            # don't change positions of fixed nodes
-            delta_pos[fixed] = 0.0
-        pos += delta_pos
+        end, pos = fruchterman_reingold_iteration(pos, A, fixed, k, t, threshold)
+
+        if end:
+            break
+
         # cool temperature
         t -= dt
-        if (np.linalg.norm(delta_pos) / nnodes) < threshold:
-            break
     return pos
+
+
+def fruchterman_reingold_iteration(pos, A, fixed, k, t, threshold):
+    import numpy as np
+
+    # difference between point i and j (vector from j to i)
+    delta = pos[:, np.newaxis, :] - pos[np.newaxis, :, :]
+
+    # distance between points
+    distance = np.linalg.norm(delta, axis=-1)
+
+    # check that there are no nodes with identical position
+    while np.sum(distance == 0) - np.trace(distance == 0) > 0:
+        print("some nodes have identical positions")
+        rand_delta = np.random.rand(*delta.shape) * 1e-9
+        is_zero = distance <= 0
+        delta[is_zero] = rand_delta[is_zero]
+        distance = np.linalg.norm(delta, axis=-1)
+
+    # calculate the direction of each force
+    with np.errstate(divide="ignore", invalid="ignore"):
+        direction = delta / distance[..., np.newaxis]
+
+    # calculate the forces
+    repulsion = _get_fr_repulsion(k, distance, direction)
+    attraction = _get_fr_attraction(k, distance, direction, A)
+    displacement = repulsion + attraction
+
+    # limit the forces to the temperature
+    length = np.linalg.norm(displacement, axis=-1)
+    displacement = (
+        displacement / length[:, np.newaxis] * np.clip(length, None, t)[:, np.newaxis]
+    )
+
+    if fixed is not None:
+        # don't change positions of fixed nodes
+        displacement[fixed] = 0.0
+
+    new_pos = pos + displacement
+
+    # inelastic collision
+    in_bbox = is_in_bbox(new_pos)
+    pos[in_bbox] = new_pos[in_bbox]
+
+    # collisions as used by FR, does not account for fixed nodes
+    # np.clip(pos, 0.0, 1.0, out=pos)
+
+    end = (np.linalg.norm(displacement) / A.shape[0]) < threshold
+
+    return (end, pos)
+
+
+def is_in_bbox(pos):
+    import numpy as np
+
+    dims = pos.shape[-1]
+
+    return np.all(
+        np.logical_and(pos >= np.zeros(shape=dims), pos <= np.ones(shape=dims)), axis=1
+    )
 
 
 @np_random_state(7)
@@ -634,6 +687,30 @@ def _sparse_fruchterman_reingold(
         if (np.linalg.norm(delta_pos) / nnodes) < threshold:
             break
     return pos
+
+
+def _get_fr_repulsion(k, distance, direction):
+    import numpy as np
+
+    with np.errstate(divide="ignore", invalid="ignore"):
+        displacement = -direction * (k * k / distance)[..., np.newaxis]
+
+    for index in range(displacement.shape[-1]):
+        np.fill_diagonal(displacement[:, :, index], 0.0)
+
+    return np.sum(displacement, axis=0)
+
+
+def _get_fr_attraction(k, distance, direction, adjacency):
+    import numpy as np
+
+    magnitudes = adjacency * (distance**2) / k
+    forces = direction * magnitudes[..., np.newaxis]
+
+    for index in range(forces.shape[-1]):
+        np.fill_diagonal(forces[:, :, index], 0.0)
+
+    return np.sum(forces, axis=0)
 
 
 def kamada_kawai_layout(

@@ -468,3 +468,43 @@ def test_multipartite_layout_layer_order():
     G.nodes["a"]["subset"] = "layer_0"  # Can't sort mixed strs/ints
     pos_nosort = nx.multipartite_layout(G)  # smoke test: this should not raise
     assert pos_nosort.keys() == pos.keys()
+
+
+def test_get_fr_repulsion():
+
+    import numpy as np
+
+    from networkx.drawing.layout import _get_fr_repulsion
+
+    k = 0.2
+
+    distance = np.array([[0, 1], [1, 0]])
+    direction = np.array(
+        [[[np.nan, np.nan], [-1.0, 0.0]], [[1.0, 0.0], [np.nan, np.nan]]]
+    )
+    repulsion = _get_fr_repulsion(k, distance, direction)
+
+    expected = np.array([[-(k**2), 0.0], [k**2, 0.0]])
+
+    assert np.allclose(expected, repulsion)
+
+
+def test_get_fr_attraction():
+
+    import numpy as np
+
+    from networkx.drawing.layout import _get_fr_attraction
+
+    k = 0.2
+
+    A = np.array([[0, 1], [1, 0]])
+    distance = np.array([[0, 1], [1, 0]])
+    direction = np.array(
+        [[[np.nan, np.nan], [-1.0, 0.0]], [[1.0, 0.0], [np.nan, np.nan]]]
+    )
+
+    repulsion = _get_fr_attraction(k, distance, direction, A)
+
+    expected = np.array([[1.0 / k, 0.0], [-1.0 / k, 0.0]])
+
+    assert np.allclose(expected, repulsion)
