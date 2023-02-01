@@ -524,7 +524,6 @@ def _fruchterman_reingold(
     max_pos = np.max(pos, axis=0)
     scale = max_pos - min_pos
     area = np.product(scale)
-    print(area)
 
     # optimal distance between nodes
     if k is None:
@@ -535,7 +534,6 @@ def _fruchterman_reingold(
     # We need to calculate this in case our fixed positions force our domain
     # to be much bigger than 1x1
     t = max(scale) * 0.1
-    print(t)
 
     # simple cooling scheme.
     # linearly step down by dt on each iteration so last iteration is size dt.
