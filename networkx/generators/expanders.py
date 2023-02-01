@@ -146,7 +146,7 @@ def chordal_cycle_graph(p, create_using=None):
 
 
 def paley_graph(p, create_using=None):
-    """Returns the Paley $\\frac{(p-1)}{2}-$regular graph on $p$ nodes.
+    """Returns the Paley $\\frac{(p-1)}{2}$ -regular graph on $p$ nodes.
 
     The returned graph is a graph on $ \\mathbb{Z}/p\\mathbb{Z}$ with edges between $x$ and $y$
     if and only if $x-y$ is a nonzero square in $\\mathbb{Z}/p\\mathbb{Z}$.
