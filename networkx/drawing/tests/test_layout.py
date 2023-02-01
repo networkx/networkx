@@ -479,12 +479,21 @@ def test_get_fr_repulsion():
     k = 0.2
 
     distance = np.array([[0, 1], [1, 0]])
+    distance = np.array([[0.0, 0.3], [0.3, 0.0]])
     direction = np.array(
-        [[[np.nan, np.nan], [-1.0, 0.0]], [[1.0, 0.0], [np.nan, np.nan]]]
+        [
+            [[np.nan, np.nan], [-0.8944271909999159, -0.4472135954999579]],
+            [[0.8944271909999159, 0.4472135954999579], [np.nan, np.nan]],
+        ]
     )
     repulsion = _get_fr_repulsion(k, distance, direction)
 
-    expected = np.array([[-(k**2), 0.0], [k**2, 0.0]])
+    expected = np.array(
+        [
+            [-0.11925695879998881, -0.059628479399994404],
+            [0.11925695879998881, 0.059628479399994404],
+        ]
+    )
 
     assert np.allclose(expected, repulsion)
 
@@ -498,13 +507,20 @@ def test_get_fr_attraction():
     k = 0.2
 
     A = np.array([[0, 1], [1, 0]])
-    distance = np.array([[0, 1], [1, 0]])
+    distance = np.array([[0.0, 0.3], [0.3, 0.0]])
     direction = np.array(
-        [[[np.nan, np.nan], [-1.0, 0.0]], [[1.0, 0.0], [np.nan, np.nan]]]
+        [
+            [[np.nan, np.nan], [-0.8944271909999159, -0.4472135954999579]],
+            [[0.8944271909999159, 0.4472135954999579], [np.nan, np.nan]],
+        ]
+    )
+    attraction = _get_fr_attraction(k, distance, direction, A)
+
+    expected = np.array(
+        [
+            [0.4024922359499621, 0.20124611797498104],
+            [-0.4024922359499621, -0.20124611797498104],
+        ]
     )
 
-    repulsion = _get_fr_attraction(k, distance, direction, A)
-
-    expected = np.array([[1.0 / k, 0.0], [-1.0 / k, 0.0]])
-
-    assert np.allclose(expected, repulsion)
+    assert np.allclose(expected, attraction)
