@@ -1,10 +1,9 @@
 """Functions for computing and measuring community structure.
 
-.. warning:: The functions in this class are not imported into the top-level
-:mod:`networkx` namespace. 
-
-They can be imported using the :mod:`networkx.algorithms.community` module,
-then accessing the functions as attributes of ``community``. For example::
+The functions in this class are not imported into the top-level
+:mod:`networkx` namespace. You can access these functions by importing
+the :mod:`networkx.algorithms.community` module, then accessing the
+functions as attributes of ``community``. For example::
 
     >>> from networkx.algorithms import community
     >>> G = nx.barbell_graph(5, 1)
