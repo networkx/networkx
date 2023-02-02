@@ -25,6 +25,7 @@ extensions = [
     "nb2plots",
     "texext",
     "numpydoc",
+    "matplotlib.sphinxext.plot_directive",
 ]
 
 # https://github.com/sphinx-gallery/sphinx-gallery
