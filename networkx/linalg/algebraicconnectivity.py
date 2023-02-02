@@ -10,7 +10,12 @@ from networkx.utils import (
     reverse_cuthill_mckee_ordering,
 )
 
-__all__ = ["algebraic_connectivity", "fiedler_vector", "spectral_ordering"]
+__all__ = [
+    "algebraic_connectivity",
+    "fiedler_vector",
+    "spectral_ordering",
+    "spectral_bisection",
+]
 
 
 class _PCGSolver:
@@ -587,30 +592,57 @@ def spectral_ordering(
     return order
 
 
-def spectral_bisection(G, weight="weight"):
-    """Bisect the graph using the Laplacian eigenvectors.
-    This method calculates the eigenvector v associated with the second
-    largest eigenvalue of the Laplacian. The partition is defined by the
-    nodes which are associated with either positive or negative values in v.
+def spectral_bisection(
+    G, weight="weight", normalized=False, tol=1e-8, method="tracemin_pcg", seed=None
+):
+    """Bisect the graph using the Fiedler vector.
+
+    This method uses the Fiedler vector to bisect a graph.
+    The partition is defined by the nodes which are associated with
+    either positive or negative values in the vector.
+
     Parameters
     ----------
-    G : NetworkX Graph or MultiGraph
-    weight : dict key
-       Edge data key to use as weight.  If None the partition will use
-       unweighted edges.
+    G : NetworkX Graph
+
+    weight : str, optional (default: weight)
+        The data key used to determine the weight of each edge. If None, then
+        each edge has unit weight.
+
+    normalized : bool, optional (default: False)
+        Whether the normalized Laplacian matrix is used.
+
+    tol : float, optional (default: 1e-8)
+        Tolerance of relative residual in eigenvalue computation.
+
+    method : string, optional (default: 'tracemin_pcg')
+        Method of eigenvalue computation. It must be one of the tracemin
+        options shown below (TraceMIN), 'lanczos' (Lanczos iteration)
+        or 'lobpcg' (LOBPCG).
+
+        The TraceMIN algorithm uses a linear system solver. The following
+        values allow specifying the solver to be used.
+
+        =============== ========================================
+        Value           Solver
+        =============== ========================================
+        'tracemin_pcg'  Preconditioned conjugate gradient method
+        'tracemin_lu'   LU factorization
+        =============== ========================================
+
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
+
     Returns
     --------
     bisection : list of sets
-      List with two sets of nodes
-    Raises
-    ------
-    ImportError
-      If NumPy is not available
+        List with two sets of nodes
 
     Examples
     --------
     >>> G = nx.karate_club_graph()
-    >>> nx.spectral_partition(G)
+    >>> nx.spectral_bisection(G)
     [set([9, 14, 15, 18, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33]),
      set([0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 16, 17, 19, 21])]
     Notes
@@ -621,12 +653,13 @@ def spectral_bisection(G, weight="weight"):
     .. [1] M. E. J Newman 'Networks: An Introduction', pages 364-370
        Oxford University Press 2011.
     """
-    if not nx.is_connected(G):
-        raise nx.NetworkXError("graph is not connected")
+    import numpy as np
 
-    v2 = laplacian_eigenvector(G, weight=weight)
-    cut_value = 0
+    v = nx.fiedler_vector(G, weight=weight)
+    node_list = list(G)
+    x, y = np.where(v > 0)[0], np.where(v <= 0)[0]
+
     return [
-        {n for n, v in v2 if v < cut_value},
-        {n for n, v in v2 if v >= cut_value},
+        {node_list[i] for i in x},
+        {node_list[i] for i in y},
     ]
