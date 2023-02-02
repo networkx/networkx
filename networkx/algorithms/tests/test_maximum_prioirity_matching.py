@@ -16,14 +16,19 @@ link to the article: "https://openscholarship.wustl.edu/cgi/viewcontent.cgi?arti
 more details about this algo can be found in the following link: "http://myusername.pythonanywhere.com/"
 
 """
-
+import pytest
+import unittest
 import random
 import random as rd
 
 import networkx as nx
 
+
 # from networkx import convert_node_labels_to_integers as cnlti
-from .. import maximum_priority_matching
+# from .. import maximum_priority_matching
+#from  import maximum_priority_matching
+#import maximum_priority_matching
+from networkx.algorithms import *
 
 
 class Test_maximum_priority_matching:
@@ -2274,3 +2279,6 @@ class Test_maximum_priority_matching:
         matching_edges[("3", "6")] == True
         matching_edges[("2", "3")] == False
         matching_edges[("1", "2")] == True
+
+if __name__ == '__main__':
+    unittest.main()

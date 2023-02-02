@@ -16,15 +16,15 @@ link to the article: "https://openscholarship.wustl.edu/cgi/viewcontent.cgi?arti
 more details about this algo can be found in the following link: "http://myusername.pythonanywhere.com/"
 
 """
-
+import unittest
 import random
 import random as rd
 
 import networkx as nx
 
 # from networkx import convert_node_labels_to_integers as cnlti
-from .. import faster_maximum_prioirity_matching
-
+# from .. import faster_maximum_prioirity_matching
+from networkx.algorithms.bipartite import *
 
 class TestFasterMaximumPriorityMatching:
     def find_maximum_priority_matching_bipartite(self):
@@ -168,3 +168,6 @@ class TestFasterMaximumPriorityMatching:
         assert faster_maximum_prioirity_matching.augmenting_path_v2(
             G, [("1", "4"), ("5", "6")], 2
         ) == ([("1", "4"), ("5", "6")], False)
+
+if __name__ == '__main__':
+    unittest.main()
