@@ -76,7 +76,7 @@ class Test_maximum_priority_matching:
         G.add_nodes_from(nodes)
         G.add_edges_from(edges)
         nx.set_node_attributes(G, nodes_attrs)
-        matching = [('1', '2'), ('3', '4'), ('5', '6'), ('7', '8')]
+        matching = [("1", "2"), ("3", "4"), ("5", "6"), ("7", "8")]
         assert maximum_priority_matching.find_priority_score(G, matching) == "211111010"
 
     def test_find_maximum_prioirity_matching(self):
