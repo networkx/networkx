@@ -791,9 +791,11 @@ def prepare_for_algo(G: nx.Graph, Priority: int):
     # more tests for this function display in "find_augmenting_paths"
 
     """
-
+    print(Priority)
     nodes_priorities = nx.get_node_attributes(G, "priority")
     nodes_matching = nx.get_node_attributes(G, "isMatched")
+    print(nodes_matching)
+    print(nodes_priorities)
     roots = []
     eligible_edges = []
     for node in G.nodes:
@@ -1516,4 +1518,9 @@ def reverse_path(G: nx.Graph, path):
 
 
 if __name__ == "__main__":
-    print(doctest.testmod())
+    # print(doctest.testmod())
+    G = nx.Graph()
+    G.add_edges_from([(0,1), (0,2), (1,2)])
+    nx.set_node_attributes(G, {0: {"priority":7}, 1: {"priority": 1}, 2: {"priority":4}})
+    print(G)
+    print(find_maximum_priority_matching(G))

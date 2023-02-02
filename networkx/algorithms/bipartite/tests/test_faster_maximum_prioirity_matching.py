@@ -16,19 +16,20 @@ link to the article: "https://openscholarship.wustl.edu/cgi/viewcontent.cgi?arti
 more details about this algo can be found in the following link: "http://myusername.pythonanywhere.com/"
 
 """
-import pytest
-import unittest
 import random
 import random as rd
+import unittest
+
+import pytest
 
 import networkx as nx
 
 # from networkx import convert_node_labels_to_integers as cnlti
 # from .. import faster_maximum_prioirity_matching
 from networkx.algorithms.bipartite.faster_maximum_prioirity_matching import (
-    find_maximum_priority_matching_bipartite,
     augmenting_path_v1,
     augmenting_path_v2,
+    find_maximum_priority_matching_bipartite,
     reverse_path,
 
 )
@@ -43,23 +44,30 @@ class TestFasterMaximumPriorityMatching(unittest.TestCase):
             ("5", "6"),
         ]
         nodes_attrs = {
-            "1": {"priority": 1},
-            "2": {"priority": 3},
-            "3": {"priority": 2},
-            "4": {"priority": 4},
-            "5": {"priority": 5},
-            "6": {"priority": 6},
+            "1": {
+                "priority": 1
+            },
+            "2": {
+                "priority": 3
+            },
+            "3": {
+                "priority": 2
+            },
+            "4": {
+                "priority": 4
+            },
+            "5": {
+                "priority": 5
+            },
+            "6": {
+                "priority": 6
+            },
         }
-        G.add_nodes_from(["1","3","5"], bipartite = 0)
-        G.add_nodes_from(["2","4","6"], bipartite = 1)
+        G.add_nodes_from(["1", "3", "5"], bipartite = 0)
+        G.add_nodes_from(["2", "4", "6"], bipartite = 1)
         G.add_edges_from(edges)
         nx.set_node_attributes(G, nodes_attrs)
-        assert (
-            find_maximum_priority_matching_bipartite(
-                G
-            )
-            == [("1", "2"), ("3", "6")]
-        )
+        assert find_maximum_priority_matching_bipartite(G) == [("1", "2"), ("3", "6")]
         G = nx.Graph()
         edges = [
             ("1", "2"),
@@ -77,17 +85,11 @@ class TestFasterMaximumPriorityMatching(unittest.TestCase):
             "5": {"priority": 5,},
             "6": {"priority": 6,},
         }
-        G.add_nodes_from(['1','2','3'],bipartite =0)
-        G.add_nodes_from(['4','5','6'],bipartite =1)
+        G.add_nodes_from(["1", "2", "3"],bipartite =0)
+        G.add_nodes_from(["4" ,"5", "6"],bipartite =1)
         G.add_edges_from(edges)
         nx.set_node_attributes(G, nodes_attrs)
-        assert (
-            find_maximum_priority_matching_bipartite(
-                G
-            )
-            == [("1", "2"), ("3", "4")]
-        )
-
+        assert find_maximum_priority_matching_bipartite(G) == [("1", "2"), ("3", "4")]
         G = nx.Graph()
         n = 20
         x = random.randint(1, n)
@@ -113,11 +115,7 @@ class TestFasterMaximumPriorityMatching(unittest.TestCase):
                 if p > 0.95:
                     G.add_edge(str(u), str(v))
 
-        matching = (
-            find_maximum_priority_matching_bipartite(
-                G
-            )
-        )
+        matching = find_maximum_priority_matching_bipartite(G)
         check = False
         for element in matching:
             if "0" in element:
@@ -146,9 +144,11 @@ class TestFasterMaximumPriorityMatching(unittest.TestCase):
         G.add_edges_from(edges)
         nx.set_node_attributes(G, nodes_attrs)
         nx.set_edge_attributes(G, edges_attrs)
-        assert augmenting_path_v1(
-            G, [("1", "4"), ("5", "6")], 2
-        ) == ([("1", "4"), ("3", "6")], True)
+        assert augmenting_path_v1(G, [("1", "4"), ("5", "6")], 2) == 
+        (
+            [("1", "4"), ("3", "6")],
+            True,
+        )
 
     def test_augmenting_path_v2(self):
         G = nx.Graph()
@@ -172,10 +172,11 @@ class TestFasterMaximumPriorityMatching(unittest.TestCase):
         G.add_edges_from(edges)
         nx.set_node_attributes(G, nodes_attrs)
         nx.set_edge_attributes(G, edges_attrs)
-        assert augmenting_path_v2(
-            G, [("1", "4"), ("5", "6")], 2
-        ) == ([("1", "4"), ("5", "6")], False)
+        assert augmenting_path_v2(G, [("1", "4"), ("5", "6")], 2) == (
+            [("1", "4"), ("5", "6")],
+            False,
+        )
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
     
