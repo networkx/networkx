@@ -1,3 +1,22 @@
+"""
+Programmers: Roi Meshulam and Liroy Melamed
+
+This file is implemation of "Faster Maximum Prioirity Matching in bipartite graphs" from the article that
+written by Jonathan Turner.
+
+A maximum priority matching is a matching in an undirected graph that maximizes a priority
+score defined with respect to given vertex priorities. An earlier paper showed how to find
+maximum priority matchings in unweighted graphs. This paper describes an algorithm for
+bipartite graphs that is faster when the number of distinct priority classes is limited. For graphs
+with k distinct priority classes it runs in O(kmn1/2) time, where n is the number of vertices in the
+graph and m is the number of edges. 
+
+link to the article: "https://openscholarship.wustl.edu/cgi/viewcontent.cgi?article=1511&context=cse_research"
+
+more details about this algo can be found in the following link: "http://myusername.pythonanywhere.com/"
+
+"""
+
 import doctest
 import logging
 import random
@@ -7,116 +26,8 @@ from typing import Dict, List, Union
 
 import networkx as nx
 
-"""
-Programmers: Roi Meshulam and Liroy Melamed
-
-This file is implemation of "Faster Maximum Prioirity Matching in bipartite graphs" from the article that
-written by Tarjan, Robert E.
-
-more details about this algo can be found in the following link: "http://myusername.pythonanywhere.com/"
-
-"""
-
 logging.basicConfig(filename="my_logger.log", level=logging.INFO, filemode="w")
 logger = logging.getLogger()
-
-
-def reverse_path(G: nx.Graph, path):
-    """
-    Programmers: Roi Meshulam and Liroy Melamed
-
-    Our reverse_path is a private function. The function gets graph and path and reverse the matching and the non matching
-    edges.
-
-    :param G: nx.Graph , List: edges
-    :return: void
-
-    Tests:
-
-    >>> G = nx.Graph()
-    >>> nodes=['1','2','3','4','5','6','7','8','9']
-    >>> edges = [('1', '2'), ('2', '3'), ('3', '4'), ('4', '5'), ('5', '6'), ('6', '7'), ('7', '8'), ('7', '9'),('7','3')]
-    >>> nodes_attrs = {'1': {"isMatched": False},'2': {"isMatched": True},'3': {"isMatched": True},'4': {"isMatched": True},'5': {"isMatched": True},'6': {"isMatched": True},'7': {"isMatched": True},'8': {"isMatched": False},'9': {"isMatched": True},'10': {"isMatched": True},'11': {"isMatched": True},'12': {"isMatched": True}}
-    >>> edges_attrs = {('1', '2'):{"isMatched":False},('2', '3'):{"isMatched":True},('3', '4'):{"isMatched":False},('4', '5'):{"isMatched":True},('5', '6'):{"isMatched":False},('6', '7'):{"isMatched":True},('7', '8'):{"isMatched":False},('7', '3'):{"isMatched":False},('7', '9'):{"isMatched":False}}
-    >>> G.add_nodes_from(nodes)
-    >>> G.add_edges_from(edges)
-    >>> nx.set_node_attributes(G, nodes_attrs)
-    >>> nx.set_edge_attributes(G, edges_attrs)
-    >>> reverse_path(G , ['1','2','3'])
-    >>> matching_edges = nx.get_edge_attributes(G, "isMatched")
-    >>> print(matching_edges[('1', '2')])
-    True
-    >>> print(matching_edges[('2', '3')])
-    False
-
-    >>> reverse_path(G , ['8','7','6'])
-    >>> matching_edges = nx.get_edge_attributes(G, "isMatched")
-    >>> print(matching_edges[('7', '8')])
-    True
-    >>> print(matching_edges[('6', '7')])
-    False
-
-    >>> G = nx.Graph()
-    >>> nodes = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
-    >>> edges = [('1', '2'), ('2', '3'), ('3', '4'),('3','6'), ('4', '5'), ('5', '7'), ('6', '7'), ('7', '11'), ('8', '9'), ('9', '10'),('10','11'),('10','12'),('11','12')]
-    >>> nodes_attrs = {'1': {"priority": 1 , "isMatched":False},'2': {"priority": 2, "isMatched":True},'3': {"priority": 1, "isMatched":True},'4': {"priority": 1, "isMatched":True},'5': {"priority": 1, "isMatched":True},'6': {"priority": 1, "isMatched":True},'7': {"priority": 1, "isMatched":True},'8': {"priority": 1, "isMatched":False},'9': {"priority": 2, "isMatched":True},'10': {"priority": 1, "isMatched":True},'11': {"priority": 1, "isMatched":True},'12': {"priority": 1, "isMatched":True}}
-    >>> edges_attrs = {('1', '2'): {"isMatched": False},('2', '3'): {"isMatched": True},('3', '4'): {"isMatched": False},('3', '6'): {"isMatched": False}, ('4', '5'): {"isMatched": True},('5', '7'): {"isMatched": False},('6', '7'): {"isMatched": True},('7', '11'): {"isMatched": False},('8', '9'): {"isMatched": False},('9', '10'): {"isMatched": True},('10', '11'): {"isMatched": False},('10', '12'): {"isMatched": False},('11', '12'): {"isMatched": True}}
-    >>> G.add_nodes_from(nodes)
-    >>> G.add_edges_from(edges)
-    >>> nx.set_node_attributes(G, nodes_attrs)
-    >>> nx.set_edge_attributes(G, edges_attrs)
-    >>> matching_edges = nx.get_edge_attributes(G, 'isMatched')
-    >>> matching_info = nx.get_edge_attributes(G, 'isMatched')
-    >>> reverse_path(G , ['8','9','10','12','11','7','6','3','2','1'])
-    >>> matching_edges = nx.get_edge_attributes(G, "isMatched")
-    >>> print(matching_edges[('8', '9')])
-    True
-    >>> print(matching_edges[('9', '10')])
-    False
-    >>> print(matching_edges[('10', '12')])
-    True
-    >>> print(matching_edges[('11', '12')])
-    False
-    >>> print(matching_edges[('7', '11')])
-    True
-    >>> print(matching_edges[('6', '7')])
-    False
-    >>> print(matching_edges[('3', '6')])
-    True
-    >>> print(matching_edges[('2', '3')])
-    False
-    >>> print(matching_edges[('1', '2')])
-    True
-
-
-
-    """
-
-    matching_nodes = nx.get_node_attributes(G, "isMatched")
-    matching_edges = nx.get_edge_attributes(G, "isMatched")
-    for i in range(0, len(path) - 1):
-        if (path[i], path[i + 1]) in matching_edges:
-            nx.set_edge_attributes(
-                G,
-                {
-                    (path[i], path[i + 1]): {
-                        "isMatched": not matching_edges[(path[i], path[i + 1])]
-                    }
-                },
-            )
-        else:
-            nx.set_edge_attributes(
-                G,
-                {
-                    (path[i + 1], path[i]): {
-                        "isMatched": not matching_edges[(path[i + 1], path[i])]
-                    }
-                },
-            )
-
-    nx.set_node_attributes(G, {path[0]: {"isMatched": not matching_nodes[path[0]]}})
-    nx.set_node_attributes(G, {path[-1]: {"isMatched": not matching_nodes[path[-1]]}})
-
 
 def find_maximum_priority_matching_bipartite(G: nx.Graph):
     """
@@ -526,6 +437,102 @@ def generate_diGraph(G: nx.Graph, m: list, priority: int, flag: bool):
                     ans.add_edges_from([(u, v)])
 
         return ans
+    
+def reverse_path(G: nx.Graph, path):
+    """
+    Programmers: Roi Meshulam and Liroy Melamed
+
+    Our reverse_path is a private function. The function gets graph and path and reverse the matching and the non matching
+    edges.
+
+    :param G: nx.Graph , List: edges
+    :return: void
+
+    Tests:
+
+    >>> G = nx.Graph()
+    >>> nodes=['1','2','3','4','5','6','7','8','9']
+    >>> edges = [('1', '2'), ('2', '3'), ('3', '4'), ('4', '5'), ('5', '6'), ('6', '7'), ('7', '8'), ('7', '9'),('7','3')]
+    >>> nodes_attrs = {'1': {"isMatched": False},'2': {"isMatched": True},'3': {"isMatched": True},'4': {"isMatched": True},'5': {"isMatched": True},'6': {"isMatched": True},'7': {"isMatched": True},'8': {"isMatched": False},'9': {"isMatched": True},'10': {"isMatched": True},'11': {"isMatched": True},'12': {"isMatched": True}}
+    >>> edges_attrs = {('1', '2'):{"isMatched":False},('2', '3'):{"isMatched":True},('3', '4'):{"isMatched":False},('4', '5'):{"isMatched":True},('5', '6'):{"isMatched":False},('6', '7'):{"isMatched":True},('7', '8'):{"isMatched":False},('7', '3'):{"isMatched":False},('7', '9'):{"isMatched":False}}
+    >>> G.add_nodes_from(nodes)
+    >>> G.add_edges_from(edges)
+    >>> nx.set_node_attributes(G, nodes_attrs)
+    >>> nx.set_edge_attributes(G, edges_attrs)
+    >>> reverse_path(G , ['1','2','3'])
+    >>> matching_edges = nx.get_edge_attributes(G, "isMatched")
+    >>> print(matching_edges[('1', '2')])
+    True
+    >>> print(matching_edges[('2', '3')])
+    False
+
+    >>> reverse_path(G , ['8','7','6'])
+    >>> matching_edges = nx.get_edge_attributes(G, "isMatched")
+    >>> print(matching_edges[('7', '8')])
+    True
+    >>> print(matching_edges[('6', '7')])
+    False
+
+    >>> G = nx.Graph()
+    >>> nodes = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
+    >>> edges = [('1', '2'), ('2', '3'), ('3', '4'),('3','6'), ('4', '5'), ('5', '7'), ('6', '7'), ('7', '11'), ('8', '9'), ('9', '10'),('10','11'),('10','12'),('11','12')]
+    >>> nodes_attrs = {'1': {"priority": 1 , "isMatched":False},'2': {"priority": 2, "isMatched":True},'3': {"priority": 1, "isMatched":True},'4': {"priority": 1, "isMatched":True},'5': {"priority": 1, "isMatched":True},'6': {"priority": 1, "isMatched":True},'7': {"priority": 1, "isMatched":True},'8': {"priority": 1, "isMatched":False},'9': {"priority": 2, "isMatched":True},'10': {"priority": 1, "isMatched":True},'11': {"priority": 1, "isMatched":True},'12': {"priority": 1, "isMatched":True}}
+    >>> edges_attrs = {('1', '2'): {"isMatched": False},('2', '3'): {"isMatched": True},('3', '4'): {"isMatched": False},('3', '6'): {"isMatched": False}, ('4', '5'): {"isMatched": True},('5', '7'): {"isMatched": False},('6', '7'): {"isMatched": True},('7', '11'): {"isMatched": False},('8', '9'): {"isMatched": False},('9', '10'): {"isMatched": True},('10', '11'): {"isMatched": False},('10', '12'): {"isMatched": False},('11', '12'): {"isMatched": True}}
+    >>> G.add_nodes_from(nodes)
+    >>> G.add_edges_from(edges)
+    >>> nx.set_node_attributes(G, nodes_attrs)
+    >>> nx.set_edge_attributes(G, edges_attrs)
+    >>> matching_edges = nx.get_edge_attributes(G, 'isMatched')
+    >>> matching_info = nx.get_edge_attributes(G, 'isMatched')
+    >>> reverse_path(G , ['8','9','10','12','11','7','6','3','2','1'])
+    >>> matching_edges = nx.get_edge_attributes(G, "isMatched")
+    >>> print(matching_edges[('8', '9')])
+    True
+    >>> print(matching_edges[('9', '10')])
+    False
+    >>> print(matching_edges[('10', '12')])
+    True
+    >>> print(matching_edges[('11', '12')])
+    False
+    >>> print(matching_edges[('7', '11')])
+    True
+    >>> print(matching_edges[('6', '7')])
+    False
+    >>> print(matching_edges[('3', '6')])
+    True
+    >>> print(matching_edges[('2', '3')])
+    False
+    >>> print(matching_edges[('1', '2')])
+    True
+
+
+
+    """
+
+    matching_nodes = nx.get_node_attributes(G, "isMatched")
+    matching_edges = nx.get_edge_attributes(G, "isMatched")
+    for i in range(0, len(path) - 1):
+        if (path[i], path[i + 1]) in matching_edges:
+            nx.set_edge_attributes(
+                G,
+                {
+                    (path[i], path[i + 1]): {
+                        "isMatched": not matching_edges[(path[i], path[i + 1])]
+                    }
+                },
+            )
+        else:
+            nx.set_edge_attributes(
+                G,
+                {
+                    (path[i + 1], path[i]): {
+                        "isMatched": not matching_edges[(path[i + 1], path[i])]
+                    }
+                },
+            )
+
+    nx.set_node_attributes(G, {path[0]: {"isMatched": not matching_nodes[path[0]]}})
+    nx.set_node_attributes(G, {path[-1]: {"isMatched": not matching_nodes[path[-1]]}})
 
 
 if __name__ == "__main__":

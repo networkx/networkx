@@ -1,3 +1,22 @@
+"""
+Programmers: Roi Meshulam and Liroy Melamed
+
+This file is implemation of "Maximum Prioirity Matching" from the article that
+written by Jonathan Turner.
+
+Let G=(V,E) be an undirected graph with n vertices and m edges, in which each vertex u is
+assigned an integer priority in [1,n], with 1 being the ``highest'' priority. Let M be a matching of G.
+We define the priority score of M to be an n-ary integer in which the i-th most-significant digit is
+the number of vertices with priority i that are incident to an edge in M. We describe a variation of
+the augmenting path method (Edmonds' algorithm) that finds a matching with maximum priority
+score in O(mn) time. 
+
+link to the article: "https://openscholarship.wustl.edu/cgi/viewcontent.cgi?article=1509&context=cse_research#:~:text=A%20maximum%20priority%20matching%20is%20a%20matching%20that%20has%20a,in%20internet%20routers%20%5B7%5D."
+
+more details about this algo can be found in the following link: "http://myusername.pythonanywhere.com/"
+
+"""
+
 import random
 import random as rd
 
@@ -7,7 +26,7 @@ import networkx as nx
 from .. import maximum_priority_matching
 
 
-class TestMaximumPriorityMatching:
+class Test_maximum_priority_matching:
     def test_find_prioirity_score(self):
         G = nx.Graph()
         nodes = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]

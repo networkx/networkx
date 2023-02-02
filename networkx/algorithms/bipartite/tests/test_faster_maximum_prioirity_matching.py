@@ -1,3 +1,22 @@
+"""
+Programmers: Roi Meshulam and Liroy Melamed
+
+This file is implemation of "Faster Maximum Prioirity Matching in bipartite graphs" from the article that
+written by Jonathan Turner.
+
+A maximum priority matching is a matching in an undirected graph that maximizes a priority
+score defined with respect to given vertex priorities. An earlier paper showed how to find
+maximum priority matchings in unweighted graphs. This paper describes an algorithm for
+bipartite graphs that is faster when the number of distinct priority classes is limited. For graphs
+with k distinct priority classes it runs in O(kmn1/2) time, where n is the number of vertices in the
+graph and m is the number of edges. 
+
+link to the article: "https://openscholarship.wustl.edu/cgi/viewcontent.cgi?article=1511&context=cse_research"
+
+more details about this algo can be found in the following link: "http://myusername.pythonanywhere.com/"
+
+"""
+
 import random
 import random as rd
 

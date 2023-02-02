@@ -1,3 +1,21 @@
+"""
+Programmers: Roi Meshulam and Liroy Melamed
+
+This file is implemation of "Maximum Prioirity Matching" from the article that
+written by Jonathan Turner.
+
+Let G=(V,E) be an undirected graph with n vertices and m edges, in which each vertex u is
+assigned an integer priority in [1,n], with 1 being the ``highest'' priority. Let M be a matching of G.
+We define the priority score of M to be an n-ary integer in which the i-th most-significant digit is
+the number of vertices with priority i that are incident to an edge in M. We describe a variation of
+the augmenting path method (Edmonds' algorithm) that finds a matching with maximum priority
+score in O(mn) time. 
+
+link to the article: "https://openscholarship.wustl.edu/cgi/viewcontent.cgi?article=1509&context=cse_research#:~:text=A%20maximum%20priority%20matching%20is%20a%20matching%20that%20has%20a,in%20internet%20routers%20%5B7%5D."
+
+more details about this algo can be found in the following link: "http://myusername.pythonanywhere.com/"
+
+"""
 import doctest
 import logging
 import random
@@ -7,21 +25,11 @@ from typing import Dict, List, Union
 
 import networkx as nx
 
-"""
-Programmers: Roi Meshulam and Liroy Melamed
-
-This file is implemation of "Maximum Prioirity Matching" from the article that
-written by Turner, Jonathan S.
-
-more details about this algo can be found in the following link: "http://myusername.pythonanywhere.com/"
-
-"""
-
 logging.basicConfig(filename="my_logger.log", level=logging.INFO, filemode="w")
 logger = logging.getLogger()
 
 
-def find_priority_score(G: nx.Graph):
+def find_priority_score(G: nx.Graph, matching: list):
     """
     "The bounded edge coloring problem and offline crossbar scheduling" by Turner, Jonathan S.
 
@@ -39,11 +47,12 @@ def find_priority_score(G: nx.Graph):
     >>> G = nx.Graph()
     >>> nodes=['1','2','3','4','5','6','7','8','9']
     >>> edges = []
+    >>> matching = []
     >>> nodes_attrs = {'1': {"priority":1},'2': {"priority":8},'3': {"priority":6},'4': {"priority":5},'5': {"priority":2},'6': {"priority":4},'7': {"priority":3},'8': {"priority":1},'9': {"priority":7}}
     >>> G.add_nodes_from(nodes)
     >>> G.add_edges_from(edges)
     >>> nx.set_node_attributes(G, nodes_attrs)
-    >>> find_priority_score(G)
+    >>> find_priority_score(G, matching)
     '000000000'
 
     # Test with a graph that has all matching edges
@@ -54,6 +63,7 @@ def find_priority_score(G: nx.Graph):
     >>> G.add_nodes_from(nodes)
     >>> G.add_edges_from(edges)
     >>> nx.set_node_attributes(G, nodes_attrs)
+    >>> matching = [('1', '2'), ('3', '4'), ('5', '6'), ('7', '8')]
     >>> find_priority_score(G)
     '211111010'
     """
@@ -62,7 +72,7 @@ def find_priority_score(G: nx.Graph):
     priority_size = G.number_of_nodes()
     score_list = temp * priority_size
     # find the maximum prioirty matching
-    matching = find_maximum_priority_matching(G)
+    # matching = find_maximum_priority_matching(G)
     # inilize all node attr (ismatched) to false
     for node in G.nodes:
         nx.set_node_attributes(G, {node: {"isMatched": False}})
