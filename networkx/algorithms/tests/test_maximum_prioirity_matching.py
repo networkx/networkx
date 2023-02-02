@@ -28,7 +28,21 @@ import networkx as nx
 # from .. import maximum_priority_matching
 #from  import maximum_priority_matching
 #import maximum_priority_matching
-from networkx.algorithms import *
+from networkx.algorithms.maximum_priority_matching import (
+    find_augmenting_paths,
+    find_blossom,
+    find_maximum_priority_matching,
+    find_path,
+    find_path_first_cond,
+    find_path_in_blossom,
+    find_path_to_root,
+    find_priority_score,
+    prepare_for_algo,
+    shrink_graph,
+    reverse_path,
+    paths_to_base,
+
+)
 
 
 class Test_maximum_priority_matching:
@@ -51,7 +65,7 @@ class Test_maximum_priority_matching:
         G.add_nodes_from(nodes)
         G.add_edges_from(edges)
         nx.set_node_attributes(G, nodes_attrs)
-        assert maximum_priority_matching.find_priority_score(G, matching) == "000000000"
+        assert find_priority_score(G, matching) == "000000000"
 
         # Test with a graph that has all matching edges
         G = nx.Graph()
@@ -82,7 +96,7 @@ class Test_maximum_priority_matching:
         G.add_edges_from(edges)
         nx.set_node_attributes(G, nodes_attrs)
         matching = [("1", "2"), ("3", "4"), ("5", "6"), ("7", "8")]
-        assert maximum_priority_matching.find_priority_score(G, matching) == "211111010"
+        assert find_priority_score(G, matching) == "211111010"
 
     def test_find_maximum_prioirity_matching(self):
         G = nx.Graph()
@@ -112,7 +126,7 @@ class Test_maximum_priority_matching:
         G.add_nodes_from(nodes)
         G.add_edges_from(edges)
         nx.set_node_attributes(G, nodes_attrs)
-        assert maximum_priority_matching.find_maximum_priority_matching(G) == [
+        assert find_maximum_priority_matching(G) == [
             ("1", "2"),
             ("3", "4"),
             ("5", "6"),
@@ -153,7 +167,7 @@ class Test_maximum_priority_matching:
         G.add_nodes_from(nodes)
         G.add_edges_from(edges)
         nx.set_node_attributes(G, nodes_attrs)
-        maximum_priority_matching.find_maximum_priority_matching(G) == [
+        find_maximum_priority_matching(G) == [
             ("1", "2"),
             ("3", "6"),
             ("4", "5"),
@@ -175,7 +189,7 @@ class Test_maximum_priority_matching:
             G.add_edge(str(u), str(v))
 
         G.add_edge("test", "1")
-        matching = maximum_priority_matching.find_maximum_priority_matching(G)
+        matching = find_maximum_priority_matching(G)
         check = False
         for element in matching:
             if "test" in element:
@@ -313,39 +327,39 @@ class Test_maximum_priority_matching:
         nx.set_node_attributes(G, nodes_attrs)
         nx.set_edge_attributes(G, edges_attrs)
 
-        assert maximum_priority_matching.prepare_for_algo(G, 1) == (
+        assert prepare_for_algo(G, 1) == (
             [("1", "2"), ("8", "7")],
             ["1", "8"],
         )
-        assert maximum_priority_matching.find_augmenting_paths(G, 1) == True
-        assert maximum_priority_matching.prepare_for_algo(G, 1) == ([("8", "7")], ["8"])
-        assert maximum_priority_matching.find_augmenting_paths(G, 1) == True
-        assert maximum_priority_matching.prepare_for_algo(G, 1) == ([], [])
-        assert maximum_priority_matching.find_augmenting_paths(G, 1) == False
-        assert maximum_priority_matching.prepare_for_algo(G, 2) == ([], [])
-        assert maximum_priority_matching.find_augmenting_paths(G, 2) == False
-        assert maximum_priority_matching.prepare_for_algo(G, 3) == ([], [])
-        assert maximum_priority_matching.find_augmenting_paths(G, 3) == False
-        assert maximum_priority_matching.prepare_for_algo(G, 4) == (
+        assert find_augmenting_paths(G, 1) == True
+        assert prepare_for_algo(G, 1) == ([("8", "7")], ["8"])
+        assert find_augmenting_paths(G, 1) == True
+        assert prepare_for_algo(G, 1) == ([], [])
+        assert find_augmenting_paths(G, 1) == False
+        assert prepare_for_algo(G, 2) == ([], [])
+        assert find_augmenting_paths(G, 2) == False
+        assert prepare_for_algo(G, 3) == ([], [])
+        assert find_augmenting_paths(G, 3) == False
+        assert prepare_for_algo(G, 4) == (
             [("6", "5"), ("6", "7")],
             ["6"],
         )
-        assert maximum_priority_matching.find_augmenting_paths(G, 4) == True
-        assert maximum_priority_matching.prepare_for_algo(G, 4) == ([], [])
-        assert maximum_priority_matching.find_augmenting_paths(G, 4) == False
-        assert maximum_priority_matching.prepare_for_algo(G, 5) == (
+        assert find_augmenting_paths(G, 4) == True
+        assert prepare_for_algo(G, 4) == ([], [])
+        assert find_augmenting_paths(G, 4) == False
+        assert prepare_for_algo(G, 5) == (
             [("4", "3"), ("4", "5")],
             ["4"],
         )
-        assert maximum_priority_matching.find_augmenting_paths(G, 5) == True
-        assert maximum_priority_matching.prepare_for_algo(G, 5) == ([], [])
-        assert maximum_priority_matching.find_augmenting_paths(G, 5) == False
-        assert maximum_priority_matching.prepare_for_algo(G, 6) == ([], [])
-        assert maximum_priority_matching.find_augmenting_paths(G, 6) == False
-        assert maximum_priority_matching.prepare_for_algo(G, 7) == ([("9", "7")], ["9"])
-        assert maximum_priority_matching.find_augmenting_paths(G, 7) == False
-        assert maximum_priority_matching.prepare_for_algo(G, 8) == ([], [])
-        assert maximum_priority_matching.find_augmenting_paths(G, 8) == False
+        assert find_augmenting_paths(G, 5) == True
+        assert prepare_for_algo(G, 5) == ([], [])
+        assert find_augmenting_paths(G, 5) == False
+        assert prepare_for_algo(G, 6) == ([], [])
+        assert find_augmenting_paths(G, 6) == False
+        assert prepare_for_algo(G, 7) == ([("9", "7")], ["9"])
+        assert find_augmenting_paths(G, 7) == False
+        assert prepare_for_algo(G, 8) == ([], [])
+        assert find_augmenting_paths(G, 8) == False
 
     def test_shrink_graph(self):
 
@@ -519,7 +533,7 @@ class Test_maximum_priority_matching:
         G.add_edges_from(edges)
         nx.set_node_attributes(G, nodes_attrs)
         nx.set_edge_attributes(G, edges_attrs)
-        assert maximum_priority_matching.shrink_graph(
+        assert shrink_graph(
             G, {"nodes": ["5", "4", "3", "6", "7"]}, "B0"
         ) == [
             (False, "B0"),
@@ -528,7 +542,7 @@ class Test_maximum_priority_matching:
             (False, "B0"),
             (False, "B0"),
         ]
-        assert maximum_priority_matching.shrink_graph(
+        assert shrink_graph(
             G, {"nodes": ["11", "10", "12"]}, "B1"
         ) == [
             (False, "B1"),
@@ -666,17 +680,17 @@ class Test_maximum_priority_matching:
         G.add_edges_from(edges)
         nx.set_node_attributes(G, nodes_attrs)
         nx.set_edge_attributes(G, edges_attrs)
-        assert maximum_priority_matching.prepare_for_algo(G, 1) == (
+        assert prepare_for_algo(G, 1) == (
             [("1", "2"), ("8", "7")],
             ["1", "8"],
         )
-        assert maximum_priority_matching.prepare_for_algo(G, 2) == ([], [])
-        assert maximum_priority_matching.prepare_for_algo(G, 3) == ([], [])
-        assert maximum_priority_matching.prepare_for_algo(G, 4) == ([], [])
-        assert maximum_priority_matching.prepare_for_algo(G, 5) == ([], [])
-        assert maximum_priority_matching.prepare_for_algo(G, 6) == ([], [])
-        assert maximum_priority_matching.prepare_for_algo(G, 7) == ([("9", "7")], ["9"])
-        assert maximum_priority_matching.prepare_for_algo(G, 8) == ([], [])
+        assert prepare_for_algo(G, 2) == ([], [])
+        assert prepare_for_algo(G, 3) == ([], [])
+        assert prepare_for_algo(G, 4) == ([], [])
+        assert prepare_for_algo(G, 5) == ([], [])
+        assert prepare_for_algo(G, 6) == ([], [])
+        assert prepare_for_algo(G, 7) == ([("9", "7")], ["9"])
+        assert prepare_for_algo(G, 8) == ([], [])
 
         G = nx.Graph()
         nodes = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
@@ -807,7 +821,7 @@ class Test_maximum_priority_matching:
         G.add_edges_from(edges)
         nx.set_node_attributes(G, nodes_attrs)
         nx.set_edge_attributes(G, edges_attrs)
-        assert maximum_priority_matching.prepare_for_algo(G, 1) == ([], [])
+        assert prepare_for_algo(G, 1) == ([], [])
 
     def test_find_path(self):
         G = nx.Graph()
@@ -980,7 +994,7 @@ class Test_maximum_priority_matching:
         G.add_edges_from(edges)
         nx.set_node_attributes(G, nodes_attrs)
         nx.set_edge_attributes(G, edges_attrs)
-        assert maximum_priority_matching.find_path(
+        assert find_path(
             G,
             {
                 "B0": {
@@ -1125,7 +1139,7 @@ class Test_maximum_priority_matching:
         G.add_edges_from(edges)
         nx.set_node_attributes(G, nodes_attrs)
         nx.set_edge_attributes(G, edges_attrs)
-        assert maximum_priority_matching.find_path_first_cond(G, "3") == ["1", "2", "3"]
+        assert find_path_first_cond(G, "3") == ["1", "2", "3"]
         # create a graph with a simple tree structure
         G = nx.Graph()
         nodes = ["1", "2", "3", "4", "5"]
@@ -1142,11 +1156,11 @@ class Test_maximum_priority_matching:
         nx.set_node_attributes(G, nodes_attrs)
 
         # test the function with various node ids
-        assert maximum_priority_matching.find_path_first_cond(G, "1") == ["1"]
-        assert maximum_priority_matching.find_path_first_cond(G, "2") == ["1", "2"]
-        assert maximum_priority_matching.find_path_first_cond(G, "3") == ["1", "3"]
-        assert maximum_priority_matching.find_path_first_cond(G, "4") == ["1", "2", "4"]
-        assert maximum_priority_matching.find_path_first_cond(G, "5") == ["1", "3", "5"]
+        assert find_path_first_cond(G, "1") == ["1"]
+        assert find_path_first_cond(G, "2") == ["1", "2"]
+        assert find_path_first_cond(G, "3") == ["1", "3"]
+        assert find_path_first_cond(G, "4") == ["1", "2", "4"]
+        assert find_path_first_cond(G, "5") == ["1", "3", "5"]
 
     def test_find_blossom(self):
         G = nx.Graph()
@@ -1310,7 +1324,7 @@ class Test_maximum_priority_matching:
         nx.set_node_attributes(G, nodes_attrs)
         nx.set_edge_attributes(G, edges_attrs)
         blossoms = {}
-        maximum_priority_matching.find_blossom(G, blossoms, "5", "7")
+        find_blossom(G, blossoms, "5", "7")
         (
             {
                 "nodes": ["5", "4", "3", "6", "7"],
@@ -1340,7 +1354,7 @@ class Test_maximum_priority_matching:
         assert blossoms_id["11"] == -1
         assert blossoms_id["12"] == -1
 
-        maximum_priority_matching.shrink_graph(G, blossoms["B0"], "B0") == [
+        shrink_graph(G, blossoms["B0"], "B0") == [
             (False, "B0"),
             (False, "B0"),
             (False, "B0"),
@@ -1360,7 +1374,7 @@ class Test_maximum_priority_matching:
         assert blossoms_id["6"] == "B0"
         assert blossoms_id["7"] == "B0"
 
-        assert maximum_priority_matching.find_blossom(G, blossoms, "10", "12") == (
+        assert find_blossom(G, blossoms, "10", "12") == (
             {
                 "nodes": ["10", "11", "12"],
                 "root": "8",
@@ -1370,7 +1384,7 @@ class Test_maximum_priority_matching:
             "B1",
         )
         assert len(blossoms) == 2
-        assert maximum_priority_matching.shrink_graph(G, blossoms["B1"], "B1") == [
+        assert shrink_graph(G, blossoms["B1"], "B1") == [
             (False, "B1"),
             (False, "B1"),
             (False, "B1"),
@@ -1553,14 +1567,14 @@ class Test_maximum_priority_matching:
         nx.set_node_attributes(G, nodes_attrs)
         nx.set_edge_attributes(G, edges_attrs)
         blossom = {"nodes": ["5", "4", "3", "6", "7"], "Base": "3"}
-        assert maximum_priority_matching.find_path_in_blossom(
+        assert find_path_in_blossom(
             G, blossom, False, "7"
         ) == (
             ["7", "6", "3"],
             "2",
         )
         blossom = {"nodes": ["11", "10", "12"], "Base": "10"}
-        assert maximum_priority_matching.find_path_in_blossom(
+        assert find_path_in_blossom(
             G, blossom, False, "11"
         ) == (
             ["11", "12", "10"],
@@ -1710,7 +1724,7 @@ class Test_maximum_priority_matching:
         nx.set_node_attributes(G1, nodes_attrs)
         nx.set_edge_attributes(G1, edges_attrs)
         blossom = {"nodes": ["5", "4", "3", "6", "7"], "Base": "6"}
-        assert maximum_priority_matching.find_path_in_blossom(
+        assert find_path_in_blossom(
             G1, blossom, False, "7"
         ) == (
             ["7", "5", "4", "3", "6"],
@@ -1718,7 +1732,7 @@ class Test_maximum_priority_matching:
         )
 
         blossom = {"nodes": ["11", "10", "12"], "Base": "12"}
-        assert maximum_priority_matching.find_path_in_blossom(
+        assert find_path_in_blossom(
             G1, blossom, False, "11"
         ) == (
             ["11", "10", "12"],
@@ -1729,62 +1743,62 @@ class Test_maximum_priority_matching:
         list = ["5", "4", "3", "6", "7"]
         u = "7"
         base = "3"
-        assert maximum_priority_matching.paths_to_base(list, u, base) == (
+        assert paths_to_base(list, u, base) == (
             ["7", "5", "4", "3"],
             ["7", "6", "3"],
         )
-        assert maximum_priority_matching.paths_to_base(
+        assert paths_to_base(
             ["5", "4", "3", "6", "7"], "7", "3"
         ) == (
             ["7", "5", "4", "3"],
             ["7", "6", "3"],
         )
-        assert maximum_priority_matching.paths_to_base(
+        assert paths_to_base(
             ["5", "4", "3", "6", "7"], "5", "3"
         ) == (
             ["5", "4", "3"],
             ["5", "7", "6", "3"],
         )
-        assert maximum_priority_matching.paths_to_base(
+        assert paths_to_base(
             ["5", "4", "3", "6", "7"], "4", "3"
         ) == (
             ["4", "3"],
             ["4", "5", "7", "6", "3"],
         )
-        assert maximum_priority_matching.paths_to_base(["1", "2", "3"], "2", "1") == (
+        assert paths_to_base(["1", "2", "3"], "2", "1") == (
             ["2", "3", "1"],
             ["2", "1"],
         )
-        assert maximum_priority_matching.paths_to_base(["1", "2", "3"], "1", "1") == (
+        assert paths_to_base(["1", "2", "3"], "1", "1") == (
             ["1"],
             ["1"],
         )
-        assert maximum_priority_matching.paths_to_base(["1", "2", "3"], "3", "1") == (
+        assert paths_to_base(["1", "2", "3"], "3", "1") == (
             ["3", "1"],
             ["3", "2", "1"],
         )
-        assert maximum_priority_matching.paths_to_base(
+        assert paths_to_base(
             ["1", "2", "3", "4"], "1", "1"
         ) == (["1"], ["1"])
-        assert maximum_priority_matching.paths_to_base(
+        assert paths_to_base(
             ["1", "2", "3", "4"], "2", "1"
         ) == (
             ["2", "3", "4", "1"],
             ["2", "1"],
         )
-        assert maximum_priority_matching.paths_to_base(
+        assert paths_to_base(
             ["1", "2", "3", "4"], "3", "1"
         ) == (
             ["3", "4", "1"],
             ["3", "2", "1"],
         )
-        assert maximum_priority_matching.paths_to_base(
+        assert paths_to_base(
             ["1", "2", "3", "4"], "4", "1"
         ) == (
             ["4", "1"],
             ["4", "3", "2", "1"],
         )
-        assert maximum_priority_matching.paths_to_base(
+        assert paths_to_base(
             ["1", "2", "3", "4", "5"], "5", "3"
         ) == (
             ["5", "1", "2", "3"],
@@ -1950,7 +1964,7 @@ class Test_maximum_priority_matching:
         G.add_edges_from(edges)
         nx.set_node_attributes(G, nodes_attrs)
         nx.set_edge_attributes(G, edges_attrs)
-        assert maximum_priority_matching.find_path_to_root(
+        assert find_path_to_root(
             G,
             {
                 "B0": {
@@ -1963,7 +1977,7 @@ class Test_maximum_priority_matching:
             "7",
             "11",
         ) == ["1", "2", "3", "6", "7"]
-        assert maximum_priority_matching.find_path_to_root(
+        assert find_path_to_root(
             G,
             {
                 "B1": {
@@ -2135,7 +2149,7 @@ class Test_maximum_priority_matching:
         G.add_edges_from(edges)
         nx.set_node_attributes(G, nodes_attrs)
         nx.set_edge_attributes(G, edges_attrs)
-        assert maximum_priority_matching.find_path_to_root(
+        assert find_path_to_root(
             G,
             {
                 "B0": {
@@ -2148,7 +2162,7 @@ class Test_maximum_priority_matching:
             "7",
             "11",
         ) == ["7", "5", "4", "3", "6"]
-        assert maximum_priority_matching.find_path_to_root(
+        assert find_path_to_root(
             G,
             {
                 "B1": {
@@ -2206,11 +2220,11 @@ class Test_maximum_priority_matching:
         G.add_edges_from(edges)
         nx.set_node_attributes(G, nodes_attrs)
         nx.set_edge_attributes(G, edges_attrs)
-        maximum_priority_matching.reverse_path(G, ["1", "2", "3"])
+        reverse_path(G, ["1", "2", "3"])
         matching_edges = nx.get_edge_attributes(G, "isMatched")
         assert matching_edges[("1", "2")] == True
         assert matching_edges[("2", "3")] == False
-        maximum_priority_matching.reverse_path(G, ["8", "7", "6"])
+        reverse_path(G, ["8", "7", "6"])
         matching_edges = nx.get_edge_attributes(G, "isMatched")
         assert matching_edges[("7", "8")] == True
         assert matching_edges[("6", "7")] == False
@@ -2267,7 +2281,7 @@ class Test_maximum_priority_matching:
         nx.set_edge_attributes(G, edges_attrs)
         matching_edges = nx.get_edge_attributes(G, "isMatched")
         matching_info = nx.get_edge_attributes(G, "isMatched")
-        maximum_priority_matching.reverse_path(
+        reverse_path(
             G, ["8", "9", "10", "12", "11", "7", "6", "3", "2", "1"]
         )
         matching_edges[("8", "9")] == True

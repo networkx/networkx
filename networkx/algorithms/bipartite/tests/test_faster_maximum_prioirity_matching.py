@@ -16,6 +16,7 @@ link to the article: "https://openscholarship.wustl.edu/cgi/viewcontent.cgi?arti
 more details about this algo can be found in the following link: "http://myusername.pythonanywhere.com/"
 
 """
+import pytest
 import unittest
 import random
 import random as rd
@@ -24,12 +25,17 @@ import networkx as nx
 
 # from networkx import convert_node_labels_to_integers as cnlti
 # from .. import faster_maximum_prioirity_matching
-from networkx.algorithms.bipartite import *
+from networkx.algorithms.bipartite.faster_maximum_prioirity_matching import (
+    find_maximum_priority_matching_bipartite,
+    augmenting_path_v1,
+    augmenting_path_v2,
+    reverse_path,
 
-class TestFasterMaximumPriorityMatching:
-    def find_maximum_priority_matching_bipartite(self):
+)
+
+class TestFasterMaximumPriorityMatching(unittest.TestCase):
+    def test_find_maximum_priority_matching_bipartite(self):
         G = nx.Graph()
-        nodes = ["1", "2", "3", "4", "5", "6"]
         edges = [
             ("1", "2"),
             ("1", "4"),
@@ -37,24 +43,24 @@ class TestFasterMaximumPriorityMatching:
             ("5", "6"),
         ]
         nodes_attrs = {
-            "1": {"priority": 1, "Group": 1},
-            "2": {"priority": 3, "Group": 2},
-            "3": {"priority": 2, "Group": 1},
-            "4": {"priority": 4, "Group": 2},
-            "5": {"priority": 5, "Group": 1},
-            "6": {"priority": 6, "Group": 2},
+            "1": {"priority": 1},
+            "2": {"priority": 3},
+            "3": {"priority": 2},
+            "4": {"priority": 4},
+            "5": {"priority": 5},
+            "6": {"priority": 6},
         }
-        G.add_nodes_from(nodes)
+        G.add_nodes_from(["1","3","5"], bipartite = 0)
+        G.add_nodes_from(["2","4","6"], bipartite = 1)
         G.add_edges_from(edges)
         nx.set_node_attributes(G, nodes_attrs)
         assert (
-            faster_maximum_prioirity_matching.find_maximum_priority_matching_bipartite(
+            find_maximum_priority_matching_bipartite(
                 G
             )
             == [("1", "2"), ("3", "6")]
         )
         G = nx.Graph()
-        nodes = ["1", "2", "3", "4", "5", "6"]
         edges = [
             ("1", "2"),
             ("1", "3"),
@@ -64,18 +70,19 @@ class TestFasterMaximumPriorityMatching:
             ("4", "6"),
         ]
         nodes_attrs = {
-            "1": {"priority": 1, "Group": 1},
-            "2": {"priority": 2, "Group": 1},
-            "3": {"priority": 3, "Group": 1},
-            "4": {"priority": 4, "Group": 2},
-            "5": {"priority": 5, "Group": 2},
-            "6": {"priority": 6, "Group": 2},
+            "1": {"priority": 1,},
+            "2": {"priority": 2,},
+            "3": {"priority": 3,},
+            "4": {"priority": 4,},
+            "5": {"priority": 5,},
+            "6": {"priority": 6,},
         }
-        G.add_nodes_from(nodes)
+        G.add_nodes_from(['1','2','3'],bipartite =0)
+        G.add_nodes_from(['4','5','6'],bipartite =1)
         G.add_edges_from(edges)
         nx.set_node_attributes(G, nodes_attrs)
         assert (
-            faster_maximum_prioirity_matching.find_maximum_priority_matching_bipartite(
+            find_maximum_priority_matching_bipartite(
                 G
             )
             == [("1", "2"), ("3", "4")]
@@ -91,14 +98,14 @@ class TestFasterMaximumPriorityMatching:
             if str(node) != "0":
                 G.nodes[node]["priority"] = random.randint(2, n)
         G.nodes["0"]["priority"] = 1
-        G.nodes["0"]["Group"] = 1
-        nx.set_node_attributes(G, {"1": {"Group": 2}})
+        G.nodes["0"]["bipartite"] = 1
+        nx.set_node_attributes(G, {"1": {"bipartite": 1}})
         G.add_edge("0", "1")
         for i in range(2, n):
             if i <= x:
-                nx.set_node_attributes(G, {str(i): {"Group": 1}})
+                nx.set_node_attributes(G, {str(i): {"bipartite": 0}})
             else:
-                nx.set_node_attributes(G, {str(i): {"Group": 2}})
+                nx.set_node_attributes(G, {str(i): {"bipartite": 1}})
 
         for u in range(x):
             for v in range(x + 1, n):
@@ -107,7 +114,7 @@ class TestFasterMaximumPriorityMatching:
                     G.add_edge(str(u), str(v))
 
         matching = (
-            faster_maximum_prioirity_matching.find_maximum_priority_matching_bipartite(
+            find_maximum_priority_matching_bipartite(
                 G
             )
         )
@@ -117,17 +124,17 @@ class TestFasterMaximumPriorityMatching:
                 check = True
         assert check == True
 
-    def augmenting_path_v1(self):
+    def test_augmenting_path_v1(self):
         G = nx.Graph()
         nodes = ["1", "2", "3", "4", "5", "6"]
         edges = [("1", "2"), ("1", "4"), ("3", "6"), ("5", "6")]
         nodes_attrs = {
-            "1": {"priority": 1, "Group": 1, "isMatched": True},
-            "2": {"priority": 3, "Group": 2, "isMatched": False},
-            "3": {"priority": 2, "Group": 1, "isMatched": False},
-            "4": {"priority": 4, "Group": 2, "isMatched": True},
-            "5": {"priority": 5, "Group": 1, "isMatched": True},
-            "6": {"priority": 6, "Group": 2, "isMatched": True},
+            "1": {"priority": 1, "bipartite": 0, "isMatched": True},
+            "2": {"priority": 3, "bipartite": 1, "isMatched": False},
+            "3": {"priority": 2, "bipartite": 0, "isMatched": False},
+            "4": {"priority": 4, "bipartite": 1, "isMatched": True},
+            "5": {"priority": 5, "bipartite": 0, "isMatched": True},
+            "6": {"priority": 6, "bipartite": 1, "isMatched": True},
         }
         edges_attrs = {
             ("1", "2"): {"isMatched": False, "flow": 0},
@@ -139,21 +146,21 @@ class TestFasterMaximumPriorityMatching:
         G.add_edges_from(edges)
         nx.set_node_attributes(G, nodes_attrs)
         nx.set_edge_attributes(G, edges_attrs)
-        assert faster_maximum_prioirity_matching.augmenting_path_v1(
+        assert augmenting_path_v1(
             G, [("1", "4"), ("5", "6")], 2
         ) == ([("1", "4"), ("3", "6")], True)
 
-    def augmenting_path_v2(self):
+    def test_augmenting_path_v2(self):
         G = nx.Graph()
         nodes = ["1", "2", "3", "4", "5", "6"]
         edges = [("1", "2"), ("1", "4"), ("3", "6"), ("5", "6")]
         nodes_attrs = {
-            "1": {"priority": 1, "Group": 1, "isMatched": True},
-            "2": {"priority": 3, "Group": 2, "isMatched": False},
-            "3": {"priority": 2, "Group": 1, "isMatched": False},
-            "4": {"priority": 4, "Group": 2, "isMatched": True},
-            "5": {"priority": 5, "Group": 1, "isMatched": True},
-            "6": {"priority": 6, "Group": 2, "isMatched": True},
+            "1": {"priority": 1, "bipartite": 0, "isMatched": True},
+            "2": {"priority": 3, "bipartite": 1, "isMatched": False},
+            "3": {"priority": 2, "bipartite": 0, "isMatched": False},
+            "4": {"priority": 4, "bipartite": 1, "isMatched": True},
+            "5": {"priority": 5, "bipartite": 0, "isMatched": True},
+            "6": {"priority": 6, "bipartite": 1, "isMatched": True},
         }
         edges_attrs = {
             ("1", "2"): {"isMatched": False, "flow": 0},
@@ -165,9 +172,10 @@ class TestFasterMaximumPriorityMatching:
         G.add_edges_from(edges)
         nx.set_node_attributes(G, nodes_attrs)
         nx.set_edge_attributes(G, edges_attrs)
-        assert faster_maximum_prioirity_matching.augmenting_path_v2(
+        assert augmenting_path_v2(
             G, [("1", "4"), ("5", "6")], 2
         ) == ([("1", "4"), ("5", "6")], False)
 
 if __name__ == '__main__':
     unittest.main()
+    
