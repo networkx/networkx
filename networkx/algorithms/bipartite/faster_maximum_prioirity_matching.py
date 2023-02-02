@@ -29,6 +29,7 @@ import networkx as nx
 logging.basicConfig(filename="my_logger.log", level=logging.INFO, filemode="w")
 logger = logging.getLogger()
 
+
 def find_maximum_priority_matching_bipartite(G: nx.Graph):
     """
     "Faster Maximium Priority Matchings in Bipartite Graphs" by Tarjan, Robert E.
@@ -437,6 +438,8 @@ def generate_diGraph(G: nx.Graph, m: list, priority: int, flag: bool):
                     ans.add_edges_from([(u, v)])
 
         return ans
+
+ 
     
 def reverse_path(G: nx.Graph, path):
     """

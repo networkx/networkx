@@ -64,7 +64,7 @@ def find_priority_score(G: nx.Graph, matching: list):
     >>> G.add_edges_from(edges)
     >>> nx.set_node_attributes(G, nodes_attrs)
     >>> matching = [('1', '2'), ('3', '4'), ('5', '6'), ('7', '8')]
-    >>> find_priority_score(G)
+    >>> find_priority_score(G, matching)
     '211111010'
     """
     #  n-ary

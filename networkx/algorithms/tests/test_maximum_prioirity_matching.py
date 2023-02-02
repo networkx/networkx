@@ -42,10 +42,11 @@ class Test_maximum_priority_matching:
             "8": {"priority": 1},
             "9": {"priority": 7},
         }
+        matching = []
         G.add_nodes_from(nodes)
         G.add_edges_from(edges)
         nx.set_node_attributes(G, nodes_attrs)
-        assert maximum_priority_matching.find_priority_score(G) == "000000000"
+        assert maximum_priority_matching.find_priority_score(G, matching) == "000000000"
 
         # Test with a graph that has all matching edges
         G = nx.Graph()
@@ -75,7 +76,8 @@ class Test_maximum_priority_matching:
         G.add_nodes_from(nodes)
         G.add_edges_from(edges)
         nx.set_node_attributes(G, nodes_attrs)
-        assert maximum_priority_matching.find_priority_score(G) == "211111010"
+        matching = [('1', '2'), ('3', '4'), ('5', '6'), ('7', '8')]
+        assert maximum_priority_matching.find_priority_score(G, matching) == "211111010"
 
     def test_find_maximum_prioirity_matching(self):
         G = nx.Graph()
