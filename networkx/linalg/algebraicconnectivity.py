@@ -585,3 +585,48 @@ def spectral_ordering(
             order.extend(component)
 
     return order
+
+
+def spectral_bisection(G, weight="weight"):
+    """Bisect the graph using the Laplacian eigenvectors.
+    This method calculates the eigenvector v associated with the second
+    largest eigenvalue of the Laplacian. The partition is defined by the
+    nodes which are associated with either positive or negative values in v.
+    Parameters
+    ----------
+    G : NetworkX Graph or MultiGraph
+    weight : dict key
+       Edge data key to use as weight.  If None the partition will use
+       unweighted edges.
+    Returns
+    --------
+    bisection : list of sets
+      List with two sets of nodes
+    Raises
+    ------
+    ImportError
+      If NumPy is not available
+
+    Examples
+    --------
+    >>> G = nx.karate_club_graph()
+    >>> nx.spectral_partition(G)
+    [set([9, 14, 15, 18, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33]),
+     set([0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 16, 17, 19, 21])]
+    Notes
+    -----
+    This algorithm splits the eigenvector at the value 0.
+    References
+    ----------
+    .. [1] M. E. J Newman 'Networks: An Introduction', pages 364-370
+       Oxford University Press 2011.
+    """
+    if not nx.is_connected(G):
+        raise nx.NetworkXError("graph is not connected")
+
+    v2 = laplacian_eigenvector(G, weight=weight)
+    cut_value = 0
+    return [
+        {n for n, v in v2 if v < cut_value},
+        {n for n, v in v2 if v >= cut_value},
+    ]
