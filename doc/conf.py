@@ -246,6 +246,9 @@ default_role = "obj"
 
 numpydoc_show_class_members = False
 
+# Make numpydoc to generate plots for example sections
+numpydoc_use_plots = True
+
 
 def setup(app):
     app.add_css_file("custom.css")
