@@ -55,7 +55,7 @@ class TestEdgelist:
             G.edges(data=True), [(1, 2, {"weight": 2.0}), (2, 3, {"weight": 3.0})]
         )
 
-    def test_read_edgelist_4(self):
+    def test_read_edgelist_isolated_node(self):
         s = b"""\
         # comment line
         1 
@@ -64,6 +64,7 @@ class TestEdgelist:
         """
         bytesIO = io.BytesIO(s)
         G = bipartite.read_edgelist(bytesIO, nodetype=int, data=False)
+        assert 1 not in G
         assert edges_equal(G.edges(), [(2, 3)])
 
         bytesIO = io.BytesIO(s)
