@@ -26,6 +26,7 @@ extensions = [
     "texext",
     "numpydoc",
     "matplotlib.sphinxext.plot_directive",
+    "numpydoc.plot_directives",
 ]
 
 # https://github.com/sphinx-gallery/sphinx-gallery
