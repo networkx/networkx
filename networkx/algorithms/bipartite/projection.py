@@ -185,33 +185,76 @@ def weighted_projected_graph(B, nodes, ratio=False):
         Networks". In Carrington, P. and Scott, J. (eds) The Sage Handbook
         of Social Network Analysis. Sage Publications.
     """
-    if B.is_directed():
+
+    
+
+
+    
+    
+
+    if not B.is_directed():
+        if type(nodes) != list:
+            top_nodes = []
+            for node in B.nodes():
+                if type(node) != type(nodes):
+                    top_nodes.append(node)
+                elif node not in nodes:
+                    top_nodes.append(node)
+        else:
+            top_nodes = [node for node in B.nodes() if node not in nodes]
+
+        if len(top_nodes) + len(nodes) != B.number_of_nodes():
+            raise NetworkXAlgorithmError(
+                f"the size of the nodes to project onto ({len(nodes)}) is >= the graph size ({len(B)}).\n"
+                "They are either not a valid bipartite partition or contain duplicates"
+            )
+
+
+        adj = nx.bipartite.biadjacency_matrix(B, row_order=nodes, column_order=top_nodes)
+        G = nx.Graph()
+        G.add_nodes_from(nodes)
+
+      
+
+        projected_adj = adj @ adj.T
+        projected_adj.setdiag(0)
+        
+
+
+
+        for row, col in zip(*projected_adj.nonzero()):
+            val = projected_adj[row, col]
+            if ratio:
+                G.add_edge(nodes[row], nodes[col], weight=val / len(top_nodes) )
+            else:
+                G.add_edge(nodes[row], nodes[col], weight=val)
+
+
+    else:
         pred = B.pred
         G = nx.DiGraph()
-    else:
-        pred = B.adj
-        G = nx.Graph()
-    G.graph.update(B.graph)
-    G.add_nodes_from((n, B.nodes[n]) for n in nodes)
-    n_top = len(B) - len(nodes)
 
-    if n_top < 1:
-        raise NetworkXAlgorithmError(
-            f"the size of the nodes to project onto ({len(nodes)}) is >= the graph size ({len(B)}).\n"
-            "They are either not a valid bipartite partition or contain duplicates"
-        )
+        G.graph.update(B.graph)
+        G.add_nodes_from((n, B.nodes[n]) for n in nodes)
+        n_top = len(B) - len(nodes)
 
-    for u in nodes:
-        unbrs = set(B[u])
-        nbrs2 = {n for nbr in unbrs for n in B[nbr]} - {u}
-        for v in nbrs2:
-            vnbrs = set(pred[v])
-            common = unbrs & vnbrs
-            if not ratio:
-                weight = len(common)
-            else:
-                weight = len(common) / n_top
-            G.add_edge(u, v, weight=weight)
+        if n_top < 1:
+            raise NetworkXAlgorithmError(
+                f"the size of the nodes to project onto ({len(nodes)}) is >= the graph size ({len(B)}).\n"
+                "They are either not a valid bipartite partition or contain duplicates"
+            )
+
+        for u in nodes:
+            unbrs = set(B[u])
+            nbrs2 = {n for nbr in unbrs for n in B[nbr]} - {u}
+            for v in nbrs2:
+                vnbrs = set(pred[v])
+                common = unbrs & vnbrs
+                if not ratio:
+                    weight = len(common)
+                else:
+                    weight = len(common) / n_top
+                G.add_edge(u, v, weight=weight)
     return G
 
 
