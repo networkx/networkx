@@ -64,4 +64,4 @@ networkx.venv
 # logging
 *.log
 
-temp.py
+.vs/
