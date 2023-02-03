@@ -17,7 +17,7 @@ PKEY = "partitions"
 CLUSTER_EVAL_CACHE_SIZE = 2048
 
 
-def _split_n_from(n: int, min_size_of_first_part: int):
+def _split_n_from(n, min_size_of_first_part):
     # splits j in two parts of which the first is at least
     # the second argument
     assert n >= min_size_of_first_part
@@ -25,7 +25,7 @@ def _split_n_from(n: int, min_size_of_first_part: int):
         yield p1, n - p1
 
 
-def lukes_partitioning(G, max_size: int, node_weight=None, edge_weight=None) -> list:
+def lukes_partitioning(G, max_size, node_weight=None, edge_weight=None):
 
     """Optimal partitioning of a weighted tree using the Lukes algorithm.
 
@@ -130,23 +130,23 @@ def lukes_partitioning(G, max_size: int, node_weight=None, edge_weight=None) -> 
                 return n
 
     @lru_cache(CLUSTER_EVAL_CACHE_SIZE)
-    def _value_of_cluster(cluster: frozenset):
+    def _value_of_cluster(cluster):
         valid_edges = [e for e in safe_G.edges if e[0] in cluster and e[1] in cluster]
-        return sum([safe_G.edges[e][edge_weight] for e in valid_edges])
+        return sum(safe_G.edges[e][edge_weight] for e in valid_edges)
 
-    def _value_of_partition(partition: list):
-        return sum([_value_of_cluster(frozenset(c)) for c in partition])
+    def _value_of_partition(partition):
+        return sum(_value_of_cluster(frozenset(c)) for c in partition)
 
     @lru_cache(CLUSTER_EVAL_CACHE_SIZE)
-    def _weight_of_cluster(cluster: frozenset):
-        return sum([safe_G.nodes[n][node_weight] for n in cluster])
+    def _weight_of_cluster(cluster):
+        return sum(safe_G.nodes[n][node_weight] for n in cluster)
 
-    def _pivot(partition: list, node):
+    def _pivot(partition, node):
         ccx = [c for c in partition if node in c]
         assert len(ccx) == 1
         return ccx[0]
 
-    def _concatenate_or_merge(partition_1: list, partition_2: list, x, i, ref_weigth):
+    def _concatenate_or_merge(partition_1, partition_2, x, i, ref_weigth):
 
         ccx = _pivot(partition_1, x)
         cci = _pivot(partition_2, i)

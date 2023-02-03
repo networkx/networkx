@@ -1,5 +1,5 @@
 """Katz centrality."""
-from math import sqrt
+import math
 
 import networkx as nx
 from networkx.utils import not_implemented_for
@@ -7,6 +7,7 @@ from networkx.utils import not_implemented_for
 __all__ = ["katz_centrality", "katz_centrality_numpy"]
 
 
+@nx._dispatch
 @not_implemented_for("multigraph")
 def katz_centrality(
     G,
@@ -157,18 +158,18 @@ def katz_centrality(
 
     try:
         b = dict.fromkeys(G, float(beta))
-    except (TypeError, ValueError, AttributeError) as e:
+    except (TypeError, ValueError, AttributeError) as err:
         b = beta
         if set(beta) != set(G):
             raise nx.NetworkXError(
                 "beta dictionary " "must have a value for every node"
-            ) from e
+            ) from err
 
     # make up to max_iter iterations
-    for i in range(max_iter):
+    for _ in range(max_iter):
         xlast = x
         x = dict.fromkeys(xlast, 0)
-        # do the multiplication y^T = Alpha * x^T A - Beta
+        # do the multiplication y^T = Alpha * x^T A + Beta
         for n in x:
             for nbr in G[n]:
                 x[nbr] += xlast[n] * G[n][nbr].get(weight, 1)
@@ -176,12 +177,12 @@ def katz_centrality(
             x[n] = alpha * x[n] + b[n]
 
         # check convergence
-        err = sum([abs(x[n] - xlast[n]) for n in x])
-        if err < nnodes * tol:
+        error = sum(abs(x[n] - xlast[n]) for n in x)
+        if error < nnodes * tol:
             if normalized:
                 # normalize vector
                 try:
-                    s = 1.0 / sqrt(sum(v ** 2 for v in x.values()))
+                    s = 1.0 / math.hypot(*x.values())
                 # this should never be zero?
                 except ZeroDivisionError:
                     s = 1.0
@@ -318,9 +319,9 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True, weight=None):
     except AttributeError:
         nodelist = list(G)
         try:
-            b = np.ones((len(nodelist), 1)) * float(beta)
-        except (TypeError, ValueError, AttributeError) as e:
-            raise nx.NetworkXError("beta must be a number") from e
+            b = np.ones((len(nodelist), 1)) * beta
+        except (TypeError, ValueError, AttributeError) as err:
+            raise nx.NetworkXError("beta must be a number") from err
 
     A = nx.adjacency_matrix(G, nodelist=nodelist, weight=weight).todense().T
     n = A.shape[0]

@@ -1,7 +1,7 @@
 """
-=====================
-Betweeness Centrality
-=====================
+======================
+Betweenness Centrality
+======================
 
 Betweenness centrality measures of positive gene functional associations
 using WormNet v.3-GS.
@@ -70,13 +70,13 @@ ax.text(
 ax.text(
     0.80,
     0.06,
-    "node size = betweeness centrality",
+    "node size = betweenness centrality",
     horizontalalignment="center",
     transform=ax.transAxes,
     fontdict=font,
 )
 
-# Resize figure for label readibility
+# Resize figure for label readability
 ax.margins(0.1, 0.05)
 fig.tight_layout()
 plt.axis("off")

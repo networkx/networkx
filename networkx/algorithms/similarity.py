@@ -13,12 +13,13 @@ At the same time, I encourage capable people to investigate
 alternative GED algorithms, in order to improve the choices available.
 """
 
-from functools import reduce
-from itertools import product
 import math
-from operator import mul
 import time
 import warnings
+from functools import reduce
+from itertools import product
+from operator import mul
+
 import networkx as nx
 
 __all__ = [
@@ -27,7 +28,6 @@ __all__ = [
     "optimize_graph_edit_distance",
     "optimize_edit_paths",
     "simrank_similarity",
-    "simrank_similarity_numpy",
     "panther_similarity",
     "generate_random_paths",
 ]
@@ -745,18 +745,30 @@ def optimize_edit_paths(
         N = len(pending_h)
         # assert Ce.C.shape == (M + N, M + N)
 
-        g_ind = [
-            i
-            for i in range(M)
-            if pending_g[i][:2] == (u, u)
-            or any(pending_g[i][:2] in ((p, u), (u, p)) for p, q in matched_uv)
-        ]
-        h_ind = [
-            j
-            for j in range(N)
-            if pending_h[j][:2] == (v, v)
-            or any(pending_h[j][:2] in ((q, v), (v, q)) for p, q in matched_uv)
-        ]
+        # only attempt to match edges after one node match has been made
+        # this will stop self-edges on the first node being automatically deleted
+        # even when a substitution is the better option
+        if matched_uv:
+            g_ind = [
+                i
+                for i in range(M)
+                if pending_g[i][:2] == (u, u)
+                or any(
+                    pending_g[i][:2] in ((p, u), (u, p), (p, p)) for p, q in matched_uv
+                )
+            ]
+            h_ind = [
+                j
+                for j in range(N)
+                if pending_h[j][:2] == (v, v)
+                or any(
+                    pending_h[j][:2] in ((q, v), (v, q), (q, q)) for p, q in matched_uv
+                )
+            ]
+        else:
+            g_ind = []
+            h_ind = []
+
         m = len(g_ind)
         n = len(h_ind)
 
@@ -782,9 +794,9 @@ def optimize_edit_paths(
                             for p, q in matched_uv
                         ):
                             continue
-                    if g == (u, u):
+                    if g == (u, u) or any(g == (p, p) for p, q in matched_uv):
                         continue
-                    if h == (v, v):
+                    if h == (v, v) or any(h == (q, q) for p, q in matched_uv):
                         continue
                     C[k, l] = inf
 
@@ -1421,12 +1433,12 @@ def _simrank_similarity_numpy(
 
     Returns
     -------
-    similarity : numpy matrix, numpy array or float
+    similarity : numpy array or float
         If ``source`` and ``target`` are both ``None``, this returns a
-        Matrix containing SimRank scores of the nodes.
+        2D array containing SimRank scores of the nodes.
 
         If ``source`` is not ``None`` but ``target`` is, this returns an
-        Array containing SimRank scores of ``source`` and that
+        1D array containing SimRank scores of ``source`` and that
         node.
 
         If neither ``source`` nor ``target`` is ``None``, this returns
@@ -1485,76 +1497,6 @@ def _simrank_similarity_numpy(
     if source is not None:
         return newsim[source]
     return newsim
-
-
-def simrank_similarity_numpy(
-    G,
-    source=None,
-    target=None,
-    importance_factor=0.9,
-    max_iterations=100,
-    tolerance=1e-4,
-):
-    """Calculate SimRank of nodes in ``G`` using matrices with ``numpy``.
-
-    .. deprecated:: 2.6
-        simrank_similarity_numpy is deprecated and will be removed in networkx 3.0.
-        Use simrank_similarity
-
-    """
-    warnings.warn(
-        (
-            "networkx.simrank_similarity_numpy is deprecated and will be removed"
-            "in NetworkX 3.0, use networkx.simrank_similarity instead."
-        ),
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    return _simrank_similarity_numpy(
-        G, source, target, importance_factor, max_iterations, tolerance
-    )
-
-
-# TODO replace w/ math.comb(n, k) for Python 3.8+
-def _n_choose_k(n, k):
-    """Pure Python implementation of the binomial coefficient
-
-    The general equation is n! / (k! * (n - k)!). The below
-    implementation is a more efficient version.
-
-    Note: this will be removed in favor of Python 3.8's ``math.comb(n, k)``.
-
-    Parameters
-    ----------
-    n : int
-        Set of ``n`` elements
-    k : int
-        Unordered chosen subset of length ``k``
-
-    Returns
-    -------
-    binomial_coeff : int
-        The number of ways (disregarding order) that k objects
-        can be chosen from among n objects.
-
-    Examples
-    --------
-    >>> _n_choose_k(5, 2)
-    10
-    >>> _n_choose_k(5, 4)
-    5
-    >>> _n_choose_k(100, 100)
-    1
-
-    """
-    if k > n:
-        return 0
-    if n == k:
-        return 1
-    elif k < n - k:
-        return reduce(mul, range(n - k + 1, n + 1)) // math.factorial(k)
-    else:
-        return reduce(mul, range(k + 1, n + 1)) // math.factorial(n - k)
 
 
 def panther_similarity(G, source, k=5, path_length=5, c=0.5, delta=0.1, eps=None):
@@ -1623,8 +1565,8 @@ def panther_similarity(G, source, k=5, path_length=5, c=0.5, delta=0.1, eps=None
 
     # Calculate the sample size ``R`` for how many paths
     # to randomly generate
-    t_choose_2 = _n_choose_k(path_length, 2)
-    sample_size = int((c / eps ** 2) * (np.log2(t_choose_2) + 1 + np.log(1 / delta)))
+    t_choose_2 = math.comb(path_length, 2)
+    sample_size = int((c / eps**2) * (np.log2(t_choose_2) + 1 + np.log(1 / delta)))
     index_map = {}
     _ = list(
         generate_random_paths(

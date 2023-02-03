@@ -2,6 +2,7 @@
 Unit tests for dedensification and graph summarization
 """
 import pytest
+
 import networkx as nx
 
 
@@ -340,12 +341,12 @@ class TestSNAPNoEdgeTypes(AbstractSNAP):
             G.add_edge(source, target)
 
         supernodes = {
-            "Supernode-0": set(["A", "B"]),
-            "Supernode-1": set(["C", "D"]),
-            "Supernode-2": set(["E", "F"]),
-            "Supernode-3": set(["G", "H"]),
-            "Supernode-4": set(["I", "J"]),
-            "Supernode-5": set(["K", "L"]),
+            "Supernode-0": {"A", "B"},
+            "Supernode-1": {"C", "D"},
+            "Supernode-2": {"E", "F"},
+            "Supernode-3": {"G", "H"},
+            "Supernode-4": {"I", "J"},
+            "Supernode-5": {"K", "L"},
         }
         nx.set_node_attributes(G, supernodes, "group")
         return G
@@ -418,12 +419,12 @@ class TestSNAPUndirected(AbstractSNAP):
             G.add_edge(source, target, types=[dict(type=type)])
 
         supernodes = {
-            "Supernode-0": set(["A", "B"]),
-            "Supernode-1": set(["C", "D"]),
-            "Supernode-2": set(["E", "F"]),
-            "Supernode-3": set(["G", "H"]),
-            "Supernode-4": set(["I", "J"]),
-            "Supernode-5": set(["K", "L"]),
+            "Supernode-0": {"A", "B"},
+            "Supernode-1": {"C", "D"},
+            "Supernode-2": {"E", "F"},
+            "Supernode-3": {"G", "H"},
+            "Supernode-4": {"I", "J"},
+            "Supernode-5": {"K", "L"},
         }
         nx.set_node_attributes(G, supernodes, "group")
         return G
@@ -488,12 +489,12 @@ class TestSNAPDirected(AbstractSNAP):
             G.add_edge(source, target, types=types)
 
         supernodes = {
-            "Supernode-0": set(["A", "B"]),
-            "Supernode-1": set(["C", "D"]),
-            "Supernode-2": set(["E", "F"]),
-            "Supernode-3": set(["G", "H"]),
-            "Supernode-4": set(["I", "J"]),
-            "Supernode-5": set(["K", "L"]),
+            "Supernode-0": {"A", "B"},
+            "Supernode-1": {"C", "D"},
+            "Supernode-2": {"E", "F"},
+            "Supernode-3": {"G", "H"},
+            "Supernode-4": {"I", "J"},
+            "Supernode-5": {"K", "L"},
         }
         nx.set_node_attributes(G, supernodes, "group")
         return G
@@ -559,12 +560,12 @@ class TestSNAPUndirectedMulti(AbstractSNAP):
                 G.add_edge(source, target, type=type)
 
         supernodes = {
-            "Supernode-0": set(["A", "B"]),
-            "Supernode-1": set(["C", "D"]),
-            "Supernode-2": set(["E", "F"]),
-            "Supernode-3": set(["G", "H"]),
-            "Supernode-4": set(["I", "J"]),
-            "Supernode-5": set(["K", "L"]),
+            "Supernode-0": {"A", "B"},
+            "Supernode-1": {"C", "D"},
+            "Supernode-2": {"E", "F"},
+            "Supernode-3": {"G", "H"},
+            "Supernode-4": {"I", "J"},
+            "Supernode-5": {"K", "L"},
         }
         nx.set_node_attributes(G, supernodes, "group")
         return G
@@ -631,10 +632,10 @@ class TestSNAPDirectedMulti(AbstractSNAP):
                 G.add_edge(source, target, type=type)
 
         supernodes = {
-            "Supernode-0": set(["A", "B"]),
-            "Supernode-1": set(["C", "D"]),
-            "Supernode-2": set(["E", "F"]),
-            "Supernode-3": set(["G", "H"]),
+            "Supernode-0": {"A", "B"},
+            "Supernode-1": {"C", "D"},
+            "Supernode-2": {"E", "F"},
+            "Supernode-3": {"G", "H"},
         }
         nx.set_node_attributes(G, supernodes, "group")
         return G

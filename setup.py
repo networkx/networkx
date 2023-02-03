@@ -3,9 +3,9 @@ import os
 import sys
 from setuptools import setup
 
-if sys.version_info[:2] < (3, 7):
+if sys.version_info[:2] < (3, 8):
     error = (
-        "NetworkX 2.6+ requires Python 3.7 or later (%d.%d detected). \n"
+        "NetworkX 2.7+ requires Python 3.8 or later (%d.%d detected). \n"
         "For Python 2.7, please install version 2.2 using: \n"
         "$ pip install 'networkx==2.2'" % sys.version_info[:2]
     )
@@ -45,9 +45,10 @@ classifiers = [
     "License :: OSI Approved :: BSD License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3 :: Only",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Scientific/Engineering :: Bio-Informatics",
@@ -67,7 +68,6 @@ packages = [
     "networkx.algorithms",
     "networkx.algorithms.assortativity",
     "networkx.algorithms.bipartite",
-    "networkx.algorithms.node_classification",
     "networkx.algorithms.centrality",
     "networkx.algorithms.community",
     "networkx.algorithms.components",
@@ -89,7 +89,6 @@ packages = [
     "networkx.readwrite",
     "networkx.readwrite.json_graph",
     "networkx.tests",
-    "networkx.testing",
     "networkx.utils",
 ]
 
@@ -123,13 +122,12 @@ dd = os.path.join(docdirbase, "examples", "javascript/force")
 pp = os.path.join("examples", "javascript/force")
 data.append((dd, glob(os.path.join(pp, "*"))))
 
-# add the tests
+# add the tests subpackage(s)
 package_data = {
     "networkx": ["tests/*.py"],
     "networkx.algorithms": ["tests/*.py"],
     "networkx.algorithms.assortativity": ["tests/*.py"],
     "networkx.algorithms.bipartite": ["tests/*.py"],
-    "networkx.algorithms.node_classification": ["tests/*.py"],
     "networkx.algorithms.centrality": ["tests/*.py"],
     "networkx.algorithms.community": ["tests/*.py"],
     "networkx.algorithms.components": ["tests/*.py"],
@@ -146,11 +144,10 @@ package_data = {
     "networkx.algorithms.tree": ["tests/*.py"],
     "networkx.classes": ["tests/*.py"],
     "networkx.generators": ["tests/*.py", "atlas.dat.gz"],
-    "networkx.drawing": ["tests/*.py"],
+    "networkx.drawing": ["tests/*.py", "tests/baseline/*png"],
     "networkx.linalg": ["tests/*.py"],
     "networkx.readwrite": ["tests/*.py"],
     "networkx.readwrite.json_graph": ["tests/*.py"],
-    "networkx.testing": ["tests/*.py"],
     "networkx.utils": ["tests/*.py"],
 }
 
@@ -168,7 +165,7 @@ extras_require = {
     for dep in ["default", "developer", "doc", "extra", "test"]
 }
 
-with open("README.rst", "r") as fh:
+with open("README.rst") as fh:
     long_description = fh.read()
 
 if __name__ == "__main__":
@@ -192,6 +189,6 @@ if __name__ == "__main__":
         package_data=package_data,
         install_requires=install_requires,
         extras_require=extras_require,
-        python_requires=">=3.7",
+        python_requires=">=3.8",
         zip_safe=False,
     )

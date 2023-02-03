@@ -1,12 +1,9 @@
 import pytest
+
 import networkx
 import networkx as nx
-
-from networkx.algorithms import find_cycle
-from networkx.algorithms import minimum_cycle_basis
-
-FORWARD = nx.algorithms.edgedfs.FORWARD
-REVERSE = nx.algorithms.edgedfs.REVERSE
+from networkx.algorithms import find_cycle, minimum_cycle_basis
+from networkx.algorithms.traversal.edgedfs import FORWARD, REVERSE
 
 
 class TestCycles:
@@ -52,6 +49,15 @@ class TestCycles:
         with pytest.raises(nx.NetworkXNotImplemented):
             G = nx.MultiGraph()
             cy = networkx.cycle_basis(G, 0)
+
+    def test_cycle_basis_self_loop(self):
+        """Tests the function for graphs with self loops"""
+        G = nx.Graph()
+        nx.add_cycle(G, [0, 1, 2, 3])
+        nx.add_cycle(G, [0, 0, 6, 2])
+        cy = nx.cycle_basis(G)
+        sort_cy = sorted(sorted(c) for c in cy)
+        assert sort_cy == [[0], [0, 1, 2], [0, 2, 3], [0, 2, 6]]
 
     def test_simple_cycles(self):
         edges = [(0, 0), (0, 1), (0, 2), (1, 2), (2, 0), (2, 1), (2, 2)]

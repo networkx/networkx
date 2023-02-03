@@ -1,15 +1,15 @@
 import pytest
 
 import networkx as nx
-from networkx.utils import nodes_equal, edges_equal, graphs_equal
 from networkx.convert import (
-    to_networkx_graph,
-    to_dict_of_dicts,
     from_dict_of_dicts,
-    to_dict_of_lists,
     from_dict_of_lists,
+    to_dict_of_dicts,
+    to_dict_of_lists,
+    to_networkx_graph,
 )
 from networkx.generators.classic import barbell_graph, cycle_graph
+from networkx.utils import edges_equal, graphs_equal, nodes_equal
 
 
 class TestConvert:
@@ -249,11 +249,11 @@ class TestConvert:
 
     def test_attribute_dict_integrity(self):
         # we must not replace dict-like graph data structures with dicts
-        G = nx.OrderedGraph()
+        G = nx.Graph()
         G.add_nodes_from("abc")
-        H = to_networkx_graph(G, create_using=nx.OrderedGraph)
+        H = to_networkx_graph(G, create_using=nx.Graph)
         assert list(H.nodes) == list(G.nodes)
-        H = nx.OrderedDiGraph(G)
+        H = nx.DiGraph(G)
         assert list(H.nodes) == list(G.nodes)
 
     def test_to_edgelist(self):

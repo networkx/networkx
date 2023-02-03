@@ -1,4 +1,5 @@
 import pytest
+
 import networkx as nx
 from networkx.utils import edges_equal
 
@@ -22,7 +23,7 @@ def test_union_attributes():
         assert gh.nodes[n] == eval(graph).nodes[int(node)]
 
     assert gh.graph["attr"] == "attr"
-    assert gh.graph["name"] == "h"  # h graph attributes take precendent
+    assert gh.graph["name"] == "h"  # h graph attributes take precedent
 
 
 def test_intersection():

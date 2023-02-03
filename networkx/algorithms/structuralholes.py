@@ -5,6 +5,7 @@ import networkx as nx
 __all__ = ["constraint", "local_constraint", "effective_size"]
 
 
+@nx._dispatch
 def mutual_weight(G, u, v, weight=None):
     """Returns the sum of the weights of the edge from `u` to `v` and
     the edge from `v` to `u` in `G`.
@@ -171,8 +172,8 @@ def constraint(G, nodes=None, weight=None):
 
        c(v) = \sum_{w \in N(v) \setminus \{v\}} \ell(v, w)
 
-    where `N(v)` is the subset of the neighbors of `v` that are either
-    predecessors or successors of `v` and `\ell(v, w)` is the local
+    where $N(v)$ is the subset of the neighbors of `v` that are either
+    predecessors or successors of `v` and $\ell(v, w)$ is the local
     constraint on `v` with respect to `w` [1]_. For the definition of local
     constraint, see :func:`local_constraint`.
 
@@ -228,7 +229,7 @@ def local_constraint(G, u, v, weight=None):
 
     .. math::
 
-       \ell(u, v) = \left(p_{uv} + \sum_{w \in N(v)} p_{uw} p{wv}\right)^2,
+       \ell(u, v) = \left(p_{uv} + \sum_{w \in N(v)} p_{uw} p_{wv}\right)^2,
 
     where $N(v)$ is the set of neighbors of $v$ and $p_{uv}$ is the
     normalized mutual weight of the (directed or undirected) edges

@@ -5,6 +5,7 @@ Bipartite Graph Algorithms
 """
 import networkx as nx
 from networkx.algorithms.components import connected_components
+from networkx.exception import AmbiguousSolution
 
 __all__ = [
     "is_bipartite",
@@ -81,6 +82,7 @@ def color(G):
     return color
 
 
+@nx._dispatch
 def is_bipartite(G):
     """Returns True if graph G is bipartite, False if not.
 
@@ -126,10 +128,21 @@ def is_bipartite_node_set(G, nodes):
 
     Notes
     -----
+    An exception is raised if the input nodes are not distinct, because in this
+    case some bipartite algorithms will yield incorrect results.
     For connected graphs the bipartite sets are unique.  This function handles
     disconnected graphs.
     """
     S = set(nodes)
+
+    if len(S) < len(nodes):
+        # this should maybe just return False?
+        raise AmbiguousSolution(
+            "The input node set contains duplicates.\n"
+            "This may lead to incorrect results when using it in bipartite algorithms.\n"
+            "Consider using set(nodes) as the input"
+        )
+
     for CC in (G.subgraph(c).copy() for c in connected_components(G)):
         X, Y = sets(CC)
         if not (
@@ -251,9 +264,9 @@ def density(B, nodes):
         d = 0.0
     else:
         if B.is_directed():
-            d = m / (2.0 * float(nb * nt))
+            d = m / (2 * nb * nt)
         else:
-            d = m / float(nb * nt)
+            d = m / (nb * nt)
     return d
 
 

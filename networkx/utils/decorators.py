@@ -1,22 +1,21 @@
+import bz2
+import collections
+import gzip
+import inspect
+import itertools
+import re
 from collections import defaultdict
-from os.path import splitext
 from contextlib import contextmanager
+from os.path import splitext
 from pathlib import Path
-import warnings
 
 import networkx as nx
-from networkx.utils import create_random_state, create_py_random_state
-
-import inspect, itertools, collections
-
-import re, gzip, bz2
+from networkx.utils import create_py_random_state, create_random_state
 
 __all__ = [
     "not_implemented_for",
     "open_file",
     "nodes_or_number",
-    "preserve_random_state",
-    "random_state",
     "np_random_state",
     "py_random_state",
     "argmap",
@@ -93,10 +92,12 @@ def not_implemented_for(*graph_types):
 
 # To handle new extensions, define a function accepting a `path` and `mode`.
 # Then add the extension to _dispatch_dict.
-_dispatch_dict = defaultdict(lambda: open)
-_dispatch_dict[".gz"] = gzip.open
-_dispatch_dict[".bz2"] = bz2.BZ2File
-_dispatch_dict[".gzip"] = gzip.open
+fopeners = {
+    ".gz": gzip.open,
+    ".gzip": gzip.open,
+    ".bz2": bz2.BZ2File,
+}
+_dispatch_dict = defaultdict(lambda: open, **fopeners)  # type: ignore
 
 
 def open_file(path_arg, mode="r"):
@@ -244,8 +245,7 @@ def nodes_or_number(which_args):
             nodes = tuple(n)
         else:
             if n < 0:
-                msg = "Negative number of nodes not valid: {n}"
-                raise nx.NetworkXError(msg)
+                raise nx.NetworkXError(f"Negative number of nodes not valid: {n}")
         return (n, nodes)
 
     try:
@@ -256,61 +256,7 @@ def nodes_or_number(which_args):
     return argmap(_nodes_or_number, *iter_wa)
 
 
-def preserve_random_state(func):
-    """Decorator to preserve the numpy.random state during a function.
-
-    .. deprecated:: 2.6
-        This is deprecated and will be removed in NetworkX v3.0.
-
-    Parameters
-    ----------
-    func : function
-        function around which to preserve the random state.
-
-    Returns
-    -------
-    wrapper : function
-        Function which wraps the input function by saving the state before
-        calling the function and restoring the function afterward.
-
-    Examples
-    --------
-    Decorate functions like this::
-
-        @preserve_random_state
-        def do_random_stuff(x, y):
-            return x + y * numpy.random.random()
-
-    Notes
-    -----
-    If numpy.random is not importable, the state is not saved or restored.
-    """
-    msg = "preserve_random_state is deprecated and will be removed in 3.0."
-    warnings.warn(msg, DeprecationWarning)
-
-    try:
-        import numpy as np
-
-        @contextmanager
-        def save_random_state():
-            state = np.random.get_state()
-            try:
-                yield
-            finally:
-                np.random.set_state(state)
-
-        def wrapper(*args, **kwargs):
-            with save_random_state():
-                np.random.seed(1234567890)
-                return func(*args, **kwargs)
-
-        wrapper.__name__ = func.__name__
-        return wrapper
-    except ImportError:
-        return func
-
-
-def random_state(random_state_argument):
+def np_random_state(random_state_argument):
     """Decorator to generate a `numpy.random.RandomState` instance.
 
     The decorator processes the argument indicated by `random_state_argument`
@@ -352,9 +298,6 @@ def random_state(random_state_argument):
     py_random_state
     """
     return argmap(create_random_state, random_state_argument)
-
-
-np_random_state = random_state
 
 
 def py_random_state(random_state_argument):
@@ -442,6 +385,9 @@ class argmap:
         for the finally block created by `func`. This is used when the map
         function constructs an object (like a file handle) that requires
         post-processing (like closing).
+
+        Note: try_finally decorators cannot be used to decorate generator
+        functions.
 
     Examples
     --------
@@ -584,6 +530,38 @@ class argmap:
         def fancy_reader(file=None):
             # this code doesn't need to worry about closing the file
             print(file.read())
+
+    Decorators with try_finally = True cannot be used with generator functions,
+    because the `finally` block is evaluated before the generator is exhausted::
+
+        @argmap(open_file, "file", try_finally=True)
+        def file_to_lines(file):
+            for line in file.readlines():
+                yield line
+
+    is equivalent to::
+
+        def file_to_lines_wrapped(file):
+            for line in file.readlines():
+                yield line
+
+        def file_to_lines_wrapper(file):
+            try:
+                file = open_file(file)
+                return file_to_lines_wrapped(file)
+            finally:
+                file.close()
+
+    which behaves similarly to::
+
+        def file_to_lines_whoops(file):
+            file = open_file(file)
+            file.close()
+            for line in file.readlines():
+                yield line
+
+    because the `finally` block of `file_to_lines_wrapper` is executed before
+    the caller has a chance to exhaust the iterator.
 
     Notes
     -----
@@ -784,15 +762,8 @@ class argmap:
         argmap._lazy_compile
         """
 
-        if inspect.isgeneratorfunction(f):
-
-            def func(*args, __wrapper=None, **kwargs):
-                yield from argmap._lazy_compile(__wrapper)(*args, **kwargs)
-
-        else:
-
-            def func(*args, __wrapper=None, **kwargs):
-                return argmap._lazy_compile(__wrapper)(*args, **kwargs)
+        def func(*args, __wrapper=None, **kwargs):
+            return argmap._lazy_compile(__wrapper)(*args, **kwargs)
 
         # standard function-wrapping stuff
         func.__name__ = f.__name__
@@ -821,6 +792,14 @@ class argmap:
 
         # this is used to variously call self.assemble and self.compile
         func.__argmap__ = self
+
+        if hasattr(f, "__argmap__"):
+            func.__is_generator = f.__is_generator
+        else:
+            func.__is_generator = inspect.isgeneratorfunction(f)
+
+        if self._finally and func.__is_generator:
+            raise nx.NetworkXError("argmap cannot decorate generators with try_finally")
 
         return func
 
@@ -1014,7 +993,7 @@ class argmap:
                 name = ", ".join(get_name(x, False) for x in arg)
                 return name if first else f"({name})"
             if arg in applied:
-                raise nx.NetworkXError(f"argument {name} is specified multiple times")
+                raise nx.NetworkXError(f"argument {arg} is specified multiple times")
             applied.add(arg)
             if arg in sig.names:
                 return sig.names[arg]
@@ -1061,7 +1040,7 @@ class argmap:
 
     @classmethod
     def signature(cls, f):
-        """Construct a Signature object describing `f`
+        r"""Construct a Signature object describing `f`
 
         Compute a Signature so that we can write a function wrapping f with
         the same signature and call-type.
@@ -1141,12 +1120,7 @@ class argmap:
         fname = cls._name(f)
         def_sig = f'def {fname}({", ".join(def_sig)}):'
 
-        if inspect.isgeneratorfunction(f):
-            _return = "yield from"
-        else:
-            _return = "return"
-
-        call_sig = f"{_return} {{}}({', '.join(call_sig)})"
+        call_sig = f"return {{}}({', '.join(call_sig)})"
 
         return cls.Signature(fname, sig, def_sig, call_sig, names, npos, args, kwargs)
 

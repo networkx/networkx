@@ -15,7 +15,7 @@ import seaborn as sns
 import networkx as nx
 
 
-# build low-bandwidth numpy matrix
+# build low-bandwidth matrix
 G = nx.grid_2d_graph(3, 3)
 rcm = list(nx.utils.reverse_cuthill_mckee_ordering(G))
 print("ordering", rcm)

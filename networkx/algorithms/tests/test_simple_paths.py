@@ -4,10 +4,11 @@ import pytest
 
 import networkx as nx
 from networkx import convert_node_labels_to_integers as cnlti
-from networkx.algorithms.simple_paths import _bidirectional_dijkstra
-from networkx.algorithms.simple_paths import _bidirectional_shortest_path
-from networkx.utils import arbitrary_element
-from networkx.utils import pairwise
+from networkx.algorithms.simple_paths import (
+    _bidirectional_dijkstra,
+    _bidirectional_shortest_path,
+)
+from networkx.utils import arbitrary_element, pairwise
 
 
 class TestIsSimplePath:
@@ -56,6 +57,10 @@ class TestIsSimplePath:
     def test_missing_node(self):
         G = nx.path_graph(2)
         assert not nx.is_simple_path(G, [0, 2])
+
+    def test_missing_starting_node(self):
+        G = nx.path_graph(2)
+        assert not nx.is_simple_path(G, [2, 0])
 
     def test_directed_path(self):
         G = nx.DiGraph([(0, 1), (1, 2)])
@@ -449,7 +454,7 @@ def test_shortest_simple_paths():
     assert next(paths) == [1, 2, 3, 4, 8, 12]
     assert next(paths) == [1, 5, 6, 7, 8, 12]
     assert [len(path) for path in nx.shortest_simple_paths(G, 1, 12)] == sorted(
-        [len(path) for path in nx.all_simple_paths(G, 1, 12)]
+        len(path) for path in nx.all_simple_paths(G, 1, 12)
     )
 
 
@@ -469,7 +474,7 @@ def test_shortest_simple_paths_directed_with_weight_fucntion():
     assert next(paths) == [1, 5, 6, 7, 8, 12]
     assert [
         len(path) for path in nx.shortest_simple_paths(G, 1, 12, weight=cost)
-    ] == sorted([len(path) for path in nx.all_simple_paths(G, 1, 12)])
+    ] == sorted(len(path) for path in nx.all_simple_paths(G, 1, 12))
 
 
 def test_shortest_simple_paths_with_weight_fucntion():

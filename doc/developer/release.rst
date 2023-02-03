@@ -42,14 +42,14 @@ Release Process
 
 - Push the new meta-data to github::
 
-   git push --tags upstream main
+   git push --tags origin main
 
-  (where ``upstream`` is the name of the
+  (where ``origin`` is the name of the
    ``github.com:networkx/networkx`` repository.)
 
 - Review the github release page::
 
-   https://github.com/networkx/networkx/releases
+   https://github.com/networkx/networkx/tags
 
 - Pin badges in ``README.rst``::
 
@@ -60,7 +60,7 @@ Release Process
 
    git clean -fxd
    pip install -r requirements/release.txt
-   python setup.py sdist bdist_wheel
+   python -m build --sdist --wheel
    twine upload -s dist/*
 
 - Unpin badges in ``README.rst``::
@@ -76,16 +76,13 @@ Release Process
     Assuming you are at the top-level of the ``documentation`` repo::
 
       # FIXME - use eol_banner.html
-      cp -a latest networkx-<major>.<minor>
+      cp -a latest ../networkx-<major>.<minor>
+      git reset --hard <commit from last release>
+      mv ../networkx-<major>.<minor> .
       ln -sfn networkx-<major>.<minor> stable
       git add networkx-<major>.<minor> stable
       git commit -m "Add <major>.<minor> docs"
-      # maybe squash all the Deploy GitHub Pages commits
-      # git rebase -i HEAD~XX where XX is the number of commits back
-      # check you didn't break anything
-      # diff -r latest networkx-<major>.<minor>
-      # you will then need to force the push so be careful!
-      git push
+      git push  # force push---be careful!
 
 - Update ``__version__`` in ``networkx/__init__.py``.
 
@@ -93,7 +90,7 @@ Release Process
 
     {% extends "!layout.html" %}
 
-    {% block document %}
+    {% block content %}
       {% include "dev_banner.html" %}
       {{ super() }}
     {% endblock %}
@@ -102,7 +99,7 @@ Release Process
 
     git add networkx/__init__.py doc/_templates/layout.html
     git commit -m "Bump release version"
-    git push upstream main
+    git push origin main
 
 - Update the web frontpage:
   The webpage is kept in a separate repo: networkx/website

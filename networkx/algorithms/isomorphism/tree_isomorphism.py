@@ -103,7 +103,7 @@ def generate_isomorphism(v, w, M, ordered_children):
 def rooted_tree_isomorphism(t1, root1, t2, root2):
     """
     Given two rooted trees `t1` and `t2`,
-    with roots `root1` and `root2` respectivly
+    with roots `root1` and `root2` respectively
     this routine will determine if they are isomorphic.
 
     These trees may be either directed or undirected,
@@ -175,7 +175,7 @@ def rooted_tree_isomorphism(t1, root1, t2, root2):
             if dT.out_degree(v) > 0:
                 # get all the pairs of labels and nodes of children
                 # and sort by labels
-                s = sorted([(label[u], u) for u in dT.successors(v)])
+                s = sorted((label[u], u) for u in dT.successors(v))
 
                 # invert to give a list of two tuples
                 # the sorted labels, and the corresponding children
@@ -183,10 +183,10 @@ def rooted_tree_isomorphism(t1, root1, t2, root2):
 
         # now collect and sort the sorted ordered_labels
         # for all nodes in L[i], carrying along the node
-        forlabel = sorted([(ordered_labels[v], v) for v in L[i]])
+        forlabel = sorted((ordered_labels[v], v) for v in L[i])
 
         # now assign labels to these nodes, according to the sorted order
-        # starting from 0, where idential ordered_labels get the same label
+        # starting from 0, where identical ordered_labels get the same label
         current = 0
         for i, (ol, v) in enumerate(forlabel):
             # advance to next label if not 0, and different from previous
@@ -249,8 +249,8 @@ def tree_isomorphism(t1, t2):
         return []
 
     # Another shortcut is that the sorted degree sequences need to be the same.
-    degree_sequence1 = sorted([d for (n, d) in t1.degree()])
-    degree_sequence2 = sorted([d for (n, d) in t2.degree()])
+    degree_sequence1 = sorted(d for (n, d) in t1.degree())
+    degree_sequence2 = sorted(d for (n, d) in t2.degree())
 
     if degree_sequence1 != degree_sequence2:
         return []

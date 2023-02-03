@@ -1,18 +1,17 @@
-import tempfile
 import os
 import pathlib
 import random
+import tempfile
 
 import pytest
 
 import networkx as nx
-from networkx.utils.decorators import open_file, not_implemented_for
 from networkx.utils.decorators import (
-    preserve_random_state,
-    py_random_state,
-    np_random_state,
-    random_state,
     argmap,
+    not_implemented_for,
+    np_random_state,
+    open_file,
+    py_random_state,
 )
 from networkx.utils.misc import PythonRandomInterface
 
@@ -205,27 +204,11 @@ class TestOpenFileDecorator:
         self.writer_kwarg(path=None)
 
 
-@preserve_random_state
-def test_preserve_random_state():
-    try:
-        import numpy.random
-
-        r = numpy.random.random()
-    except ImportError:
-        return
-    assert abs(r - 0.61879477158568) < 1e-16
-
-
 class TestRandomState:
     @classmethod
     def setup_class(cls):
         global np
         np = pytest.importorskip("numpy")
-
-    @random_state(1)
-    def instantiate_random_state(self, random_state):
-        assert isinstance(random_state, np.random.RandomState)
-        return random_state.random_sample()
 
     @np_random_state(1)
     def instantiate_np_random_state(self, random_state):
@@ -243,8 +226,6 @@ class TestRandomState:
         np.random.seed(42)
         rv = np.random.random_sample()
         np.random.seed(42)
-        assert rv == self.instantiate_random_state(None)
-        np.random.seed(42)
         assert rv == self.instantiate_np_random_state(None)
 
         random.seed(42)
@@ -255,8 +236,6 @@ class TestRandomState:
     def test_random_state_np_random(self):
         np.random.seed(42)
         rv = np.random.random_sample()
-        np.random.seed(42)
-        assert rv == self.instantiate_random_state(np.random)
         np.random.seed(42)
         assert rv == self.instantiate_np_random_state(np.random)
         np.random.seed(42)
@@ -270,10 +249,6 @@ class TestRandomState:
 
         np.random.seed(42)
         seed = 1
-        rval = self.instantiate_random_state(seed)
-        rval_expected = np.random.RandomState(seed).rand()
-        assert rval, rval_expected
-
         rval = self.instantiate_np_random_state(seed)
         rval_expected = np.random.RandomState(seed).rand()
         assert rval, rval_expected
@@ -294,10 +269,6 @@ class TestRandomState:
         np.random.seed(42)
         seed = 1
         rng = np.random.RandomState(seed)
-        rval = self.instantiate_random_state(rng)
-        rval_expected = np.random.RandomState(seed).rand()
-        assert rval, rval_expected
-
         rval = self.instantiate_np_random_state(seed)
         rval_expected = np.random.RandomState(seed).rand()
         assert rval, rval_expected
@@ -314,14 +285,13 @@ class TestRandomState:
         rv = self.instantiate_py_random_state(rng)
         assert rv, random.Random(seed).random()
 
-        pytest.raises(ValueError, self.instantiate_random_state, rng)
         pytest.raises(ValueError, self.instantiate_np_random_state, rng)
 
 
 def test_random_state_string_arg_index():
     with pytest.raises(nx.NetworkXError):
 
-        @random_state("a")
+        @np_random_state("a")
         def make_random_state(rs):
             pass
 
@@ -341,7 +311,7 @@ def test_py_random_state_string_arg_index():
 def test_random_state_invalid_arg_index():
     with pytest.raises(nx.NetworkXError):
 
-        @random_state(2)
+        @np_random_state(2)
         def make_random_state(rs):
             pass
 
@@ -398,29 +368,25 @@ class TestArgmap:
         # context exits are called in reverse
         assert container == ["c", "b", "a"]
 
-    def test_contextmanager_iterator(self):
+    def test_tryfinally_generator(self):
         container = []
 
-        def contextmanager(x):
-            nonlocal container
-            return x, lambda: container.append(x)
+        def singleton(x):
+            return (x,)
 
-        @argmap(contextmanager, 0, 1, 2, try_finally=True)
+        with pytest.raises(nx.NetworkXError):
+
+            @argmap(singleton, 0, 1, 2, try_finally=True)
+            def foo(x, y, z):
+                yield from (x, y, z)
+
+        @argmap(singleton, 0, 1, 2)
         def foo(x, y, z):
-            yield from (x, y, z)
+            return x + y + z
 
         q = foo("a", "b", "c")
-        assert next(q) == "a"
-        assert container == []
-        assert next(q) == "b"
-        assert container == []
-        assert next(q) == "c"
-        assert container == []
-        with pytest.raises(StopIteration):
-            next(q)
 
-        # context exits are called in reverse
-        assert container == ["c", "b", "a"]
+        assert q == ("a", "b", "c")
 
     def test_actual_vararg(self):
         @argmap(lambda x: -x, 4)
@@ -503,7 +469,25 @@ finally:
  pass#"""
         )
 
-    def nop(self):
-        print(foo.__argmap__.assemble(foo.__wrapped__))
-        argmap._lazy_compile(foo)
-        print(foo._code)
+    def test_immediate_raise(self):
+        @not_implemented_for("directed")
+        def yield_nodes(G):
+            yield from G
+
+        G = nx.Graph([(1, 2)])
+        D = nx.DiGraph()
+
+        # test first call (argmap is compiled and executed)
+        with pytest.raises(nx.NetworkXNotImplemented):
+            node_iter = yield_nodes(D)
+
+        # test second call (argmap is only executed)
+        with pytest.raises(nx.NetworkXNotImplemented):
+            node_iter = yield_nodes(D)
+
+        # ensure that generators still make generators
+        node_iter = yield_nodes(G)
+        next(node_iter)
+        next(node_iter)
+        with pytest.raises(StopIteration):
+            next(node_iter)

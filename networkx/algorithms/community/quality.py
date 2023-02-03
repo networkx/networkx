@@ -7,18 +7,18 @@ from itertools import combinations
 
 import networkx as nx
 from networkx import NetworkXError
+from networkx.algorithms.community.community_utils import is_partition
 from networkx.utils import not_implemented_for
 from networkx.utils.decorators import argmap
-from networkx.algorithms.community.community_utils import is_partition
 
-__all__ = ["coverage", "modularity", "performance", "partition_quality"]
+__all__ = ["modularity", "partition_quality"]
 
 
 class NotAPartition(NetworkXError):
     """Raised if a given collection is not a partition."""
 
     def __init__(self, G, collection):
-        msg = f"{G} is not a valid partition of the graph {collection}"
+        msg = f"{collection} is not a valid partition of the graph {G}"
         super().__init__(msg)
 
 
@@ -59,6 +59,7 @@ def _require_partition(G, partition):
 require_partition = argmap(_require_partition, (0, 1))
 
 
+@nx._dispatch
 def intra_community_edges(G, partition):
     """Returns the number of intra-community edges for a partition of `G`.
 
@@ -76,6 +77,7 @@ def intra_community_edges(G, partition):
     return sum(G.subgraph(block).size() for block in partition)
 
 
+@nx._dispatch
 def inter_community_edges(G, partition):
     """Returns the number of inter-community edges for a partition of `G`.
     according to the given
@@ -139,109 +141,6 @@ def inter_community_non_edges(G, partition):
     return inter_community_edges(nx.complement(G), partition)
 
 
-@not_implemented_for("multigraph")
-@require_partition
-def performance(G, partition):
-    """Returns the performance of a partition.
-
-    .. deprecated:: 2.6
-       Use `partition_quality` instead.
-
-    The *performance* of a partition is the number of
-    intra-community edges plus inter-community non-edges divided by the total
-    number of potential edges.
-
-    Parameters
-    ----------
-    G : NetworkX graph
-        A simple graph (directed or undirected).
-
-    partition : sequence
-        Partition of the nodes of `G`, represented as a sequence of
-        sets of nodes. Each block of the partition represents a
-        community.
-
-    Returns
-    -------
-    float
-        The performance of the partition, as defined above.
-
-    Raises
-    ------
-    NetworkXError
-        If `partition` is not a valid partition of the nodes of `G`.
-
-    References
-    ----------
-    .. [1] Santo Fortunato.
-           "Community Detection in Graphs".
-           *Physical Reports*, Volume 486, Issue 3--5 pp. 75--174
-           <https://arxiv.org/abs/0906.0612>
-
-    """
-    # Compute the number of intra-community edges and inter-community
-    # edges.
-    intra_edges = intra_community_edges(G, partition)
-    inter_edges = inter_community_non_edges(G, partition)
-    # Compute the number of edges in the complete graph (directed or
-    # undirected, as it depends on `G`) on `n` nodes.
-    #
-    # (If `G` is an undirected graph, we divide by two since we have
-    # double-counted each potential edge. We use integer division since
-    # `total_pairs` is guaranteed to be even.)
-    n = len(G)
-    total_pairs = n * (n - 1)
-    if not G.is_directed():
-        total_pairs //= 2
-    return (intra_edges + inter_edges) / total_pairs
-
-
-@require_partition
-def coverage(G, partition):
-    """Returns the coverage of a partition.
-
-    .. deprecated:: 2.6
-       Use `partition_quality` instead.
-
-    The *coverage* of a partition is the ratio of the number of
-    intra-community edges to the total number of edges in the graph.
-
-    Parameters
-    ----------
-    G : NetworkX graph
-
-    partition : sequence
-        Partition of the nodes of `G`, represented as a sequence of
-        sets of nodes. Each block of the partition represents a
-        community.
-
-    Returns
-    -------
-    float
-        The coverage of the partition, as defined above.
-
-    Raises
-    ------
-    NetworkXError
-        If `partition` is not a valid partition of the nodes of `G`.
-
-    Notes
-    -----
-    If `G` is a multigraph, the multiplicity of edges is counted.
-
-    References
-    ----------
-    .. [1] Santo Fortunato.
-           "Community Detection in Graphs".
-           *Physical Reports*, Volume 486, Issue 3--5 pp. 75--174
-           <https://arxiv.org/abs/0906.0612>
-
-    """
-    intra_edges = intra_community_edges(G, partition)
-    total_edges = G.number_of_edges()
-    return intra_edges / total_edges
-
-
 def modularity(G, communities, weight="weight", resolution=1):
     r"""Returns the modularity of the given partition of the graph.
 
@@ -283,9 +182,9 @@ def modularity(G, communities, weight="weight", resolution=1):
         These node sets must represent a partition of G's nodes.
 
     weight : string or None, optional (default="weight")
-            The edge attribute that holds the numerical value used
-            as a weight. If None or an edge does not have that attribute,
-            then that edge has weight 1.
+        The edge attribute that holds the numerical value used
+        as a weight. If None or an edge does not have that attribute,
+        then that edge has weight 1.
 
     resolution : float (default=1)
         If resolution is less than 1, modularity favors larger communities.
@@ -294,7 +193,7 @@ def modularity(G, communities, weight="weight", resolution=1):
     Returns
     -------
     Q : float
-        The modularity of the paritition.
+        The modularity of the partition.
 
     Raises
     ------
@@ -334,12 +233,12 @@ def modularity(G, communities, weight="weight", resolution=1):
         out_degree = dict(G.out_degree(weight=weight))
         in_degree = dict(G.in_degree(weight=weight))
         m = sum(out_degree.values())
-        norm = 1 / m ** 2
+        norm = 1 / m**2
     else:
         out_degree = in_degree = dict(G.degree(weight=weight))
         deg_sum = sum(out_degree.values())
         m = deg_sum / 2
-        norm = 1 / deg_sum ** 2
+        norm = 1 / deg_sum**2
 
     def community_contribution(community):
         comm = set(community)

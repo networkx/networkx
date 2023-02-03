@@ -12,11 +12,12 @@ See Also
 :mod:`edge_kcomponents` : algorithms for finding k-edge-connected components
 :mod:`connectivity` : algorithms for determening edge connectivity.
 """
-import math
 import itertools as it
+import math
+from collections import defaultdict, namedtuple
+
 import networkx as nx
 from networkx.utils import not_implemented_for, py_random_state
-from collections import defaultdict, namedtuple
 
 __all__ = ["k_edge_augmentation", "is_k_edge_connected", "is_locally_k_edge_connected"]
 
@@ -138,7 +139,7 @@ def k_edge_augmentation(G, k, avail=None, weight=None, partial=False):
     function available (depending on the value of k and if the problem is
     weighted or unweighted) to search for a minimum weight subset of available
     edges that k-edge-connects G. In general, finding a k-edge-augmentation is
-    NP-hard, so solutions are not garuenteed to be minimal. Furthermore, a
+    NP-hard, so solutions are not guaranteed to be minimal. Furthermore, a
     k-edge-augmentation may not exist.
 
     Parameters
@@ -261,7 +262,7 @@ def k_edge_augmentation(G, k, avail=None, weight=None, partial=False):
             aug_edges = greedy_k_edge_augmentation(
                 G, k=k, avail=avail, weight=weight, seed=0
             )
-        # Do eager evaulation so we can catch any exceptions
+        # Do eager evaluation so we can catch any exceptions
         # Before executing partial code.
         yield from list(aug_edges)
     except nx.NetworkXUnfeasible:
@@ -367,7 +368,7 @@ def partial_k_edge_augmentation(G, k, avail, weight=None):
             }
             # Remove potential augmenting edges
             C.remove_edges_from(sub_avail.keys())
-            # Find a subset of these edges that makes the compoment
+            # Find a subset of these edges that makes the component
             # k-edge-connected and ignore the rest
             yield from nx.k_edge_augmentation(C, k=k, avail=sub_avail)
 
@@ -541,7 +542,7 @@ def _lightest_meta_edges(mapping, avail_uv, avail_w):
     -----
     Each node in the metagraph is a k-edge-connected component in the original
     graph.  We don't care about any edge within the same k-edge-connected
-    component, so we ignore self edges.  We also are only intereseted in the
+    component, so we ignore self edges.  We also are only interested in the
     minimum weight edge bridging each k-edge-connected component so, we group
     the edges by meta-edge and take the lightest in each group.
 
@@ -808,7 +809,7 @@ def unconstrained_bridge_augmentation(G):
         v2 = [n for n in nx.dfs_preorder_nodes(T, root) if T.degree(n) == 1]
         # connecting first half of the leafs in pre-order to the second
         # half will bridge connect the tree with the fewest edges.
-        half = int(math.ceil(len(v2) / 2.0))
+        half = math.ceil(len(v2) / 2)
         A2 = list(zip(v2[:half], v2[-half:]))
 
     # collect the edges used to augment the original forest
@@ -985,9 +986,9 @@ def weighted_bridge_augmentation(G, avail, weight=None):
         # Note the original edges must be directed towards to root for the
         # branching to give us a bridge-augmentation.
         A = _minimum_rooted_branching(D, root)
-    except nx.NetworkXException as e:
+    except nx.NetworkXException as err:
         # If there is no branching then augmentation is not possible
-        raise nx.NetworkXUnfeasible("no 2-edge-augmentation possible") from e
+        raise nx.NetworkXUnfeasible("no 2-edge-augmentation possible") from err
 
     # For each edge e, in the branching that did not belong to the directed
     # tree T, add the corresponding edge that **GENERATED** it (this is not
@@ -1124,15 +1125,16 @@ def complement_edges(G):
     >>> sorted(complement_edges(G))
     []
     """
+    G_adj = G._adj  # Store as a variable to eliminate attribute lookup
     if G.is_directed():
         for u, v in it.combinations(G.nodes(), 2):
-            if v not in G.adj[u]:
+            if v not in G_adj[u]:
                 yield (u, v)
-            if u not in G.adj[v]:
+            if u not in G_adj[v]:
                 yield (v, u)
     else:
         for u, v in it.combinations(G.nodes(), 2):
-            if v not in G.adj[u]:
+            if v not in G_adj[u]:
                 yield (u, v)
 
 

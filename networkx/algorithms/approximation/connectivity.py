@@ -11,8 +11,6 @@ __all__ = [
     "all_pairs_node_connectivity",
 ]
 
-INF = float("inf")
-
 
 def local_node_connectivity(G, source, target, cutoff=None):
     """Compute node connectivity between source and target.
@@ -95,7 +93,7 @@ def local_node_connectivity(G, source, target, cutoff=None):
         return K
 
     if cutoff is None:
-        cutoff = INF
+        cutoff = float("inf")
 
     exclude = set()
     for i in range(min(possible, cutoff)):
@@ -245,6 +243,20 @@ def all_pairs_node_connectivity(G, nbunch=None, cutoff=None):
     -------
     K : dictionary
         Dictionary, keyed by source and target, of pairwise node connectivity
+
+    Examples
+    --------
+    A 3 node cycle with one extra node attached has connectivity 2 between all
+    nodes in the cycle and connectivity 1 between the extra node and the rest:
+
+    >>> G = nx.cycle_graph(3)
+    >>> G.add_edge(2, 3)
+    >>> import pprint  # for nice dictionary formatting
+    >>> pprint.pprint(nx.all_pairs_node_connectivity(G))
+    {0: {1: 2, 2: 2, 3: 1},
+     1: {0: 2, 2: 2, 3: 1},
+     2: {0: 2, 1: 2, 3: 1},
+     3: {0: 1, 1: 1, 2: 1}}
 
     See Also
     --------

@@ -1,15 +1,15 @@
 """
     Unit tests for edgelists.
 """
-import pytest
 import io
-import tempfile
 import os
+import tempfile
 import textwrap
 
-import networkx as nx
-from networkx.utils import nodes_equal, edges_equal, graphs_equal
+import pytest
 
+import networkx as nx
+from networkx.utils import edges_equal, graphs_equal, nodes_equal
 
 edges_no_data = textwrap.dedent(
     """
@@ -161,6 +161,14 @@ def test_parse_edgelist():
         nx.parse_edgelist(lines, nodetype=int, data=(("weight", float),))
 
 
+def test_comments_None():
+    edgelist = ["node#1 node#2", "node#2 node#3"]
+    # comments=None supported to ignore all comment characters
+    G = nx.parse_edgelist(edgelist, comments=None)
+    H = nx.Graph([e.split(" ") for e in edgelist])
+    assert edges_equal(G.edges, H.edges)
+
+
 class TestEdgelist:
     @classmethod
     def setup_class(cls):
@@ -175,7 +183,7 @@ class TestEdgelist:
 
     def test_write_edgelist_1(self):
         fh = io.BytesIO()
-        G = nx.OrderedGraph()
+        G = nx.Graph()
         G.add_edges_from([(1, 2), (2, 3)])
         nx.write_edgelist(G, fh, data=False)
         fh.seek(0)
@@ -183,7 +191,7 @@ class TestEdgelist:
 
     def test_write_edgelist_2(self):
         fh = io.BytesIO()
-        G = nx.OrderedGraph()
+        G = nx.Graph()
         G.add_edges_from([(1, 2), (2, 3)])
         nx.write_edgelist(G, fh, data=True)
         fh.seek(0)
@@ -191,7 +199,7 @@ class TestEdgelist:
 
     def test_write_edgelist_3(self):
         fh = io.BytesIO()
-        G = nx.OrderedGraph()
+        G = nx.Graph()
         G.add_edge(1, 2, weight=2.0)
         G.add_edge(2, 3, weight=3.0)
         nx.write_edgelist(G, fh, data=True)
@@ -200,7 +208,7 @@ class TestEdgelist:
 
     def test_write_edgelist_4(self):
         fh = io.BytesIO()
-        G = nx.OrderedGraph()
+        G = nx.Graph()
         G.add_edge(1, 2, weight=2.0)
         G.add_edge(2, 3, weight=3.0)
         nx.write_edgelist(G, fh, data=[("weight")])

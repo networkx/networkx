@@ -1,9 +1,10 @@
 """Functions for computing the Kernighan–Lin bipartition algorithm."""
 
-import networkx as nx
 from itertools import count
-from networkx.utils import not_implemented_for, py_random_state, BinaryHeap
+
+import networkx as nx
 from networkx.algorithms.community.community_utils import is_partition
+from networkx.utils import BinaryHeap, not_implemented_for, py_random_state
 
 __all__ = ["kernighan_lin_bisection"]
 
@@ -100,8 +101,8 @@ def kernighan_lin_bisection(G, partition=None, max_iter=10, weight="weight", see
     else:
         try:
             A, B = partition
-        except (TypeError, ValueError) as e:
-            raise nx.NetworkXError("partition must be two sets") from e
+        except (TypeError, ValueError) as err:
+            raise nx.NetworkXError("partition must be two sets") from err
         if not is_partition(G, (A, B)):
             raise nx.NetworkXError("partition invalid")
         side = [0] * n

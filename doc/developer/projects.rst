@@ -11,36 +11,6 @@ NumFOCUS Small Development Grants and university course/project credits (if
 your university allows contribution to open source for credit).
 
 
-Community Detection Algorithms
---------------------------------
-
-- Abstract: Community detection involves a set of algorithms in network science which
-  deal with grouping nodes from a network according to their similar properties
-  such as belonging to dense clusters. NetworkX already contains a
-  :mod:`variety of community detection algorithms <networkx.algorithms.community>`
-  dealing with computing the community structure of a network. There are also
-  multiple PRs/issues which deal with adding the Louvain community detection
-  algorithm to NetworkX, e.g. `#1090`_, `#1092`_ `#951`_. Users who want to work with
-  NetworkX and Louvain Community Detection often use
-  https://github.com/taynaud/python-louvain. This project would focus on getting
-  Louvain community detection algorithms implemented into NetworkX.
-
-- Recommended Skills: Python, graph algorithms
-
-- Expected Outcome: We would like to see Louvain community detection
-  implemented inside NetworkX, or construct code and documented examples
-  in NetworkX that would interface with other Louvain projects.
-
-- Complexity: Moderate
-
-- Interested Mentors: `@dschult <https://github.com/dschult/>`__,
-  `@MridulS <https://github.com/MridulS/>`__,
-
-.. _#1090: https://github.com/networkx/networkx/pull/1090
-.. _#1092: https://github.com/networkx/networkx/pull/1092
-.. _#951: https://github.com/networkx/networkx/issues/951
-
-
 Pedagogical Interactive Notebooks for Algorithms Implemented in NetworkX
 ------------------------------------------------------------------------
 
@@ -58,78 +28,75 @@ Pedagogical Interactive Notebooks for Algorithms Implemented in NetworkX
 - Expected Outcome: A collection of Interactive Jupyter notebooks which
   explain and explore network algorithms to readers and users of NetworkX.
   For example, see this notebook on
-  :doc:`Random Geometric Graphs <content/generators/geometric>`
+  :doc:`Geometric Generator Models <nx-guides:content/generators/geometric>`
 
 - Complexity: Depending on the algorithms you are interested to work on.
 
 - Interested Mentors: `@dschult <https://github.com/dschult/>`__,
   `@MridulS <https://github.com/MridulS/>`__,
   `@rossbar <https://github.com/rossbar/>`__
+  
+- Expected time commitment: This project can be either a medium project (~175 hours)
+  or a large project (~350 hours). The contributor is expected to contribute 2-3
+  pedagogical interactive notebooks for the medium duration project and 4-5 notebooks
+  for the long duration project.
 
-Directed Version of Traveling Salesman Problem
-----------------------------------------------
+Completed Projects
+==================
 
-- Abstract: NetworkX has recently added a couple methods for solving
-  the Traveling Salesman Problem (see `#4607`_). The best approximation
-  for undirected graphs is the Christofides method. But the best algorithm
-  for directed graphs is by `Asapour`_ et.al. and has not yet been implemented.
-  The goal of this project is to learn the API used for implemented methods
-  and then implement the Asadpour method for directed graphs with similar API.
-  Other even more recent papers discussing algorithm improvements for directed
-  TSP (also called Asymmetric TSP or ATSP) include `Svensson`_ and `Traub`_.
-  The Traub paper may be most useful for implementing the algorithm as all three
-  are focused on proving asymptotic computation requirements rather than coding.
+- `VF2++ algorithm for graph isomorphism`_
+    - Program: Google Summer of Code 2022
+    - Contributor: `@kpetridis24 <https://github.com/kpetridis24/>`__
+    - Link to Proposal: `GSoC 2022: VF2++ Algorithm <https://github.com/networkx/archive/blob/main/proposals-gsoc/GSoC-2022-VF2plusplus-isomorphism.pdf>`_
 
-- Recommended Skills: Python, graph algorithms
+- `Louvain community detection algorithm`_ 
+    - Program: Google Summer of Code 2021
+    - Contributor: `@z3y50n <https://github.com/z3y50n/>`__
+    - Link to Proposal:  `GSoC 2021: Community Detection Algorithms <https://github.com/networkx/archive/blob/main/proposals-gsoc/GSoC-2021-Community-Detection-Algorithms.pdf>`__ 
 
-- Expected Outcome: A new function in NetworkX which implements the Asapour algorithm.
+- `Asadpour algorithm for directed travelling salesman problem`_
+    - Program: Google Summer of Code 2021
+    - Contributor: `@mjschwenne <https://github.com/mjschwenne/>`__
+    - Link to Proposal:  `GSoC 2021: Asadpour algorithm <https://github.com/networkx/archive/blob/main/proposals-gsoc/GSoC-2021-Asadpour-Asymmetric-Traveling%20Salesman-Problem.pdf>`__ 
 
-- Complexity: Moderate
+- Pedagogical notebook: `Directed acyclic graphs and topological sort`_
+    - Program: Google Summer of Code 2021
+    - Contributor:  `@vdshk <https://github.com/vdshk>`__
 
-- Interested Mentors: `@dschult <https://github.com/dschult/>`__,
-  `@MridulS <https://github.com/MridulS/>`__, `@boothby <https://github.com/boothby/>`__,
+- Pedagogical notebooks: `Graph assortativity`_ & `Network flow analysis and Dinitz algorithm`_
+    - Program: Google Summer of Code 2021
+    - Contributor: `@harshal-dupare <https://github.com/harshal-dupare/>`__
 
-.. _#4607: https://github.com/networkx/networkx/pull/4607
-.. _Asapour: https://pubsonline.informs.org/doi/pdf/10.1287/opre.2017.1603
-.. _Svensson: https://doi.org/10.1109/FOCS.2015.10  (https://arxiv.org/abs/1502.02051)
-.. _Traub: https://doi.org/10.1145/3357713.3384233 (https://arxiv.org/abs/1912.00670)
+- Add On system for NetworkX: `NetworkX-Metis`_
+    - Program: Google Summer of Code 2015
+    - Contributor: `@OrkoHunter <https://github.com/OrkoHunter/>`__
+    - Link to Proposal:  `GSoC 2015: Add On System for NetworkX <https://github.com/networkx/archive/blob/main/proposals-gsoc/GSoC-2015-Add-on-system-for-NetworkX.md>`__
 
+- `NetworkX 2.0 API`_
+    - Program: Google Summer of Code 2015
+    - Contributor: `@MridulS <https://github.com/MridulS/>`__
+    - Link to Proposal: `GSoC 2015: NetworkX 2.0 API <https://github.com/networkx/archive/blob/main/proposals-gsoc/GSoC-2015-NetworkX-2.0-api.md>`__
 
-Implement the VF2++ Graph Isomorphism Algorithm
------------------------------------------------
+.. _`VF2++ algorithm for graph isomorphism`: https://github.com/networkx/networkx/pull/5788
+.. _`Louvain community detection algorithm`: https://github.com/networkx/networkx/pull/4929
+.. _`Asadpour algorithm for directed travelling salesman problem`: https://github.com/networkx/networkx/pull/4740
+.. _`Directed acyclic graphs and topological sort`: https://github.com/networkx/nx-guides/pull/44
+.. _`Graph assortativity`: https://github.com/networkx/nx-guides/pull/42
+.. _`Network flow analysis and Dinitz algorithm`: https://github.com/networkx/nx-guides/pull/46
+.. _`NetworkX-Metis`: https://github.com/networkx/networkx-metis
+.. _`NetworkX 2.0 API`: https://networkx.org/documentation/latest/release/migration_guide_from_1.x_to_2.0.html
 
-- Abstract: The `Graph Isomorphism Problem`_ is a famous difficult network problem at
-  the boundary between P and NP-Complete. The VF2 algorithm is included with NetworkX
-  in a recursive formulation. There is an improved version of this algorithm called
-  `VF2++`_ which we intend to implement. We have early attempts at a nonrecursive version
-  of the main algorithm that also address subgraph isomorphism and subgraph monomorphism.
-  This project involves fully implementing them and extending to directed and multigraph
-  settings.
-
-- Recommended Skills: Python, graph algorithms
-
-- Expected Outcome: A new set of functions in NetworkX that implement the VF2++
-  algorithm for all problem and graph types in a nonrecursive manner.
-
-- Complexity: Moderate
-
-- Interested Mentors: `@dschult <https://github.com/dschult/>`__,
-  `@MridulS <https://github.com/MridulS/>`__, `@boothby <https://github.com/boothby/>`__,
-
-.. _`Graph Isomorphism Problem`: https://en.wikipedia.org/wiki/Graph_isomorphism_problem
-.. _VF2++: https://doi.org/10.1016/j.dam.2018.02.018
-
-
-Project Idea Template
----------------------
-
-- Abstract:
-
-- Recommended Skills:
-
-- Expected Outcome:
-
-- Complexity;
-
-- Interested Mentors:
-
+..
+   Project Idea Template
+   ---------------------
+   
+   - Abstract:
+   
+   - Recommended Skills:
+   
+   - Expected Outcome:
+   
+   - Complexity;
+   
+   - Interested Mentors:
+   

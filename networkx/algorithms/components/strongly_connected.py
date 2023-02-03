@@ -12,6 +12,7 @@ __all__ = [
 ]
 
 
+@nx._dispatch
 @not_implemented_for("undirected")
 def strongly_connected_components(G):
     """Generate nodes in strongly connected components of graph.
@@ -75,6 +76,7 @@ def strongly_connected_components(G):
     scc_found = set()
     scc_queue = []
     i = 0  # Preorder counter
+    neighbors = {v: iter(G[v]) for v in G}
     for source in G:
         if source not in scc_found:
             queue = [source]
@@ -84,7 +86,7 @@ def strongly_connected_components(G):
                     i = i + 1
                     preorder[v] = i
                 done = True
-                for w in G[v]:
+                for w in neighbors[v]:
                     if w not in preorder:
                         queue.append(w)
                         done = False
@@ -282,6 +284,12 @@ def number_strongly_connected_components(G):
     NetworkXNotImplemented
         If G is undirected.
 
+    Examples
+    --------
+    >>> G = nx.DiGraph([(0, 1), (1, 2), (2, 0), (2, 3), (4, 5), (3, 4), (5, 6), (6, 3), (6, 7)])
+    >>> nx.number_strongly_connected_components(G)
+    3
+
     See Also
     --------
     strongly_connected_components
@@ -312,6 +320,15 @@ def is_strongly_connected(G):
     connected : bool
       True if the graph is strongly connected, False otherwise.
 
+    Examples
+    --------
+    >>> G = nx.DiGraph([(0, 1), (1, 2), (2, 3), (3, 0), (2, 4), (4, 2)])
+    >>> nx.is_strongly_connected(G)
+    True
+    >>> G.remove_edge(2, 3)
+    >>> nx.is_strongly_connected(G)
+    False
+
     Raises
     ------
     NetworkXNotImplemented
@@ -334,7 +351,7 @@ def is_strongly_connected(G):
             """Connectivity is undefined for the null graph."""
         )
 
-    return len(list(strongly_connected_components(G))[0]) == len(G)
+    return len(next(strongly_connected_components(G))) == len(G)
 
 
 @not_implemented_for("undirected")
@@ -369,6 +386,29 @@ def condensation(G, scc=None):
     ------
     NetworkXNotImplemented
         If G is undirected.
+
+    Examples
+    --------
+    Contracting two sets of strongly connected nodes into two distinct SCC
+    using the barbell graph.
+
+    >>> G = nx.barbell_graph(4, 0)
+    >>> G.remove_edge(3, 4)
+    >>> G = nx.DiGraph(G)
+    >>> H = nx.condensation(G)
+    >>> H.nodes.data()
+    NodeDataView({0: {'members': {0, 1, 2, 3}}, 1: {'members': {4, 5, 6, 7}}})
+    >>> H.graph['mapping']
+    {0: 0, 1: 0, 2: 0, 3: 0, 4: 1, 5: 1, 6: 1, 7: 1}
+
+    Contracting a complete graph into one single SCC.
+
+    >>> G = nx.complete_graph(7, create_using=nx.DiGraph)
+    >>> H = nx.condensation(G)
+    >>> H.nodes
+    NodeView((0,))
+    >>> H.nodes.data()
+    NodeDataView({0: {'members': {0, 1, 2, 3, 4, 5, 6}}})
 
     Notes
     -----

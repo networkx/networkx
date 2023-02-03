@@ -1,15 +1,19 @@
 """Unit tests for the :mod:`networkx.algorithms.tournament` module."""
 from itertools import combinations
+
 import pytest
+
 from networkx import DiGraph
-from networkx.algorithms.tournament import is_reachable
-from networkx.algorithms.tournament import is_strongly_connected
-from networkx.algorithms.tournament import is_tournament
-from networkx.algorithms.tournament import random_tournament
-from networkx.algorithms.tournament import hamiltonian_path
-from networkx.algorithms.tournament import score_sequence
-from networkx.algorithms.tournament import tournament_matrix
-from networkx.algorithms.tournament import index_satisfying
+from networkx.algorithms.tournament import (
+    hamiltonian_path,
+    index_satisfying,
+    is_reachable,
+    is_strongly_connected,
+    is_tournament,
+    random_tournament,
+    score_sequence,
+    tournament_matrix,
+)
 
 
 def test_condition_not_satisfied():
@@ -120,7 +124,8 @@ def test_score_sequence_triangle():
 
 def test_tournament_matrix():
     np = pytest.importorskip("numpy")
-    npt = pytest.importorskip("numpy.testing")
+    pytest.importorskip("scipy")
+    npt = np.testing
     G = DiGraph([(0, 1)])
     m = tournament_matrix(G)
     npt.assert_array_equal(m.todense(), np.array([[0, 1], [-1, 0]]))

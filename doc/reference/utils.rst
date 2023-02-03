@@ -12,16 +12,13 @@ Helper Functions
    :toctree: generated/
 
    arbitrary_element
-   is_string_like
    flatten
-   iterable
    make_list_of_ints
-   make_str
-   generate_unique_node
-   default_opener
+   dict_to_numpy_array
    pairwise
    groups
    create_random_state
+   create_py_random_state
    nodes_equal
    edges_equal
    graphs_equal
@@ -56,8 +53,8 @@ Decorators
    open_file
    not_implemented_for
    nodes_or_number
-   preserve_random_state
-   random_state
+   np_random_state
+   py_random_state
    argmap
 
 Cuthill-Mckee Ordering
@@ -68,3 +65,11 @@ Cuthill-Mckee Ordering
 
    cuthill_mckee_ordering
    reverse_cuthill_mckee_ordering
+
+Mapped Queue
+------------
+.. automodule:: networkx.utils.mapped_queue
+.. autosummary::
+   :toctree: generated/
+
+   MappedQueue

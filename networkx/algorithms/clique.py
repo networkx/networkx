@@ -7,13 +7,11 @@ see the Wikipedia article on the clique problem [1]_.
 .. [1] clique problem:: https://en.wikipedia.org/wiki/Clique_problem
 
 """
-from collections import deque
-from itertools import chain
-from itertools import combinations
-from itertools import islice
+from collections import defaultdict, deque
+from itertools import chain, combinations, islice
+
 import networkx as nx
 from networkx.utils import not_implemented_for
-
 
 __all__ = [
     "find_cliques",
@@ -102,27 +100,103 @@ def enumerate_all_cliques(G):
 
 
 @not_implemented_for("directed")
-def find_cliques(G):
+def find_cliques(G, nodes=None):
     """Returns all maximal cliques in an undirected graph.
 
-    For each node *v*, a *maximal clique for v* is a largest complete
-    subgraph containing *v*. The largest maximal clique is sometimes
+    For each node *n*, a *maximal clique for n* is a largest complete
+    subgraph containing *n*. The largest maximal clique is sometimes
     called the *maximum clique*.
 
     This function returns an iterator over cliques, each of which is a
     list of nodes. It is an iterative implementation, so should not
     suffer from recursion depth issues.
 
+    This function accepts a list of `nodes` and only the maximal cliques
+    containing all of these `nodes` are returned. It can considerably speed up
+    the running time if some specific cliques are desired.
+
     Parameters
     ----------
     G : NetworkX graph
         An undirected graph.
 
+    nodes : list, optional (default=None)
+        If provided, only yield *maximal cliques* containing all nodes in `nodes`.
+        If `nodes` isn't a clique itself, a ValueError is raised.
+
     Returns
     -------
     iterator
         An iterator over maximal cliques, each of which is a list of
-        nodes in `G`. The order of cliques is arbitrary.
+        nodes in `G`. If `nodes` is provided, only the maximal cliques
+        containing all the nodes in `nodes` are returned. The order of
+        cliques is arbitrary.
+
+    Raises
+    ------
+    ValueError
+        If `nodes` is not a clique.
+
+    Examples
+    --------
+    >>> from pprint import pprint  # For nice dict formatting
+    >>> G = nx.karate_club_graph()
+    >>> sum(1 for c in nx.find_cliques(G))  # The number of maximal cliques in G
+    36
+    >>> max(nx.find_cliques(G), key=len)  # The largest maximal clique in G
+    [0, 1, 2, 3, 13]
+
+    The size of the largest maximal clique is known as the *clique number* of
+    the graph, which can be found directly with:
+
+    >>> max(len(c) for c in nx.find_cliques(G))
+    5
+
+    One can also compute the number of maximal cliques in `G` that contain a given
+    node. The following produces a dictionary keyed by node whose
+    values are the number of maximal cliques in `G` that contain the node:
+
+    >>> pprint({n: sum(1 for c in nx.find_cliques(G) if n in c) for n in G})
+    {0: 13,
+     1: 6,
+     2: 7,
+     3: 3,
+     4: 2,
+     5: 3,
+     6: 3,
+     7: 1,
+     8: 3,
+     9: 2,
+     10: 2,
+     11: 1,
+     12: 1,
+     13: 2,
+     14: 1,
+     15: 1,
+     16: 1,
+     17: 1,
+     18: 1,
+     19: 2,
+     20: 1,
+     21: 1,
+     22: 1,
+     23: 3,
+     24: 2,
+     25: 2,
+     26: 1,
+     27: 3,
+     28: 2,
+     29: 2,
+     30: 2,
+     31: 4,
+     32: 9,
+     33: 14}
+
+    Or, similarly, the maximal cliques in `G` that contain a given node.
+    For example, the 4 maximal cliques that contain node 31:
+
+    >>> [c for c in nx.find_cliques(G) if 31 in c]
+    [[0, 31], [33, 32, 31], [33, 28, 31], [24, 25, 31]]
 
     See Also
     --------
@@ -174,13 +248,25 @@ def find_cliques(G):
         return
 
     adj = {u: {v for v in G[u] if v != u} for u in G}
-    Q = [None]
 
-    subg = set(G)
+    # Initialize Q with the given nodes and subg, cand with their nbrs
+    Q = nodes[:] if nodes is not None else []
     cand = set(G)
+    for node in Q:
+        if node not in cand:
+            raise ValueError(f"The given `nodes` {nodes} do not form a clique")
+        cand &= adj[node]
+
+    if not cand:
+        yield Q[:]
+        return
+
+    subg = cand.copy()
+    stack = []
+    Q.append(None)
+
     u = max(subg, key=lambda u: len(cand & adj[u]))
     ext_u = cand - adj[u]
-    stack = []
 
     try:
         while True:
@@ -209,7 +295,7 @@ def find_cliques(G):
 
 
 # TODO Should this also be not implemented for directed graphs?
-def find_cliques_recursive(G):
+def find_cliques_recursive(G, nodes=None):
     """Returns all maximal cliques in a graph.
 
     For each node *v*, a *maximal clique for v* is a largest complete
@@ -218,22 +304,38 @@ def find_cliques_recursive(G):
 
     This function returns an iterator over cliques, each of which is a
     list of nodes. It is a recursive implementation, so may suffer from
-    recursion depth issues.
+    recursion depth issues, but is included for pedagogical reasons.
+    For a non-recursive implementation, see :func:`find_cliques`.
+
+    This function accepts a list of `nodes` and only the maximal cliques
+    containing all of these `nodes` are returned. It can considerably speed up
+    the running time if some specific cliques are desired.
 
     Parameters
     ----------
     G : NetworkX graph
 
+    nodes : list, optional (default=None)
+        If provided, only yield *maximal cliques* containing all nodes in `nodes`.
+        If `nodes` isn't a clique itself, a ValueError is raised.
+
     Returns
     -------
     iterator
         An iterator over maximal cliques, each of which is a list of
-        nodes in `G`. The order of cliques is arbitrary.
+        nodes in `G`. If `nodes` is provided, only the maximal cliques
+        containing all the nodes in `nodes` are yielded. The order of
+        cliques is arbitrary.
+
+    Raises
+    ------
+    ValueError
+        If `nodes` is not a clique.
 
     See Also
     --------
     find_cliques
-        An iterative version of the same algorithm.
+        An iterative version of the same algorithm. See docstring for examples.
 
     Notes
     -----
@@ -278,7 +380,19 @@ def find_cliques_recursive(G):
         return iter([])
 
     adj = {u: {v for v in G[u] if v != u} for u in G}
-    Q = []
+
+    # Initialize Q with the given nodes and subg, cand with their nbrs
+    Q = nodes[:] if nodes is not None else []
+    cand_init = set(G)
+    for node in Q:
+        if node not in cand_init:
+            raise ValueError(f"The given `nodes` {nodes} do not form a clique")
+        cand_init &= adj[node]
+
+    if not cand_init:
+        return iter([Q])
+
+    subg_init = cand_init.copy()
 
     def expand(subg, cand):
         u = max(subg, key=lambda u: len(cand & adj[u]))
@@ -295,7 +409,7 @@ def find_cliques_recursive(G):
                     yield from expand(subg_q, cand_q)
             Q.pop()
 
-    return expand(set(G), set(G))
+    return expand(subg_init, cand_init)
 
 
 def make_max_clique_graph(G, create_using=None):
@@ -324,7 +438,7 @@ def make_max_clique_graph(G, create_using=None):
         import networkx as nx
         G = nx.make_clique_bipartite(G)
         cliques = [v for v in G.nodes() if G.nodes[v]['bipartite'] == 0]
-        G = nx.bipartite.project(G, cliques)
+        G = nx.bipartite.projected_graph(G, cliques)
         G = nx.relabel_nodes(G, {-v: v - 1 for v in G})
 
     It should be faster, though, since it skips all the intermediate
@@ -398,6 +512,14 @@ def graph_clique_number(G, cliques=None):
     The *clique number* of a graph is the size of the largest clique in
     the graph.
 
+    .. deprecated:: 3.0
+
+       graph_clique_number is deprecated in NetworkX 3.0 and will be removed
+       in v3.2. The graph clique number can be computed directly with::
+
+           max(len(c) for c in nx.find_cliques(G))
+
+
     Parameters
     ----------
     G : NetworkX graph
@@ -420,6 +542,16 @@ def graph_clique_number(G, cliques=None):
     maximal cliques.
 
     """
+    import warnings
+
+    warnings.warn(
+        (
+            "\n\ngraph_clique_number is deprecated and will be removed.\n"
+            "Use: ``max(len(c) for c in nx.find_cliques(G))`` instead."
+        ),
+        DeprecationWarning,
+        stacklevel=2,
+    )
     if len(G.nodes) < 1:
         return 0
     if cliques is None:
@@ -429,6 +561,13 @@ def graph_clique_number(G, cliques=None):
 
 def graph_number_of_cliques(G, cliques=None):
     """Returns the number of maximal cliques in the graph.
+
+    .. deprecated:: 3.0
+
+       graph_number_of_cliques is deprecated and will be removed in v3.2.
+       The number of maximal cliques can be computed directly with::
+
+           sum(1 for _ in nx.find_cliques(G))
 
     Parameters
     ----------
@@ -452,68 +591,110 @@ def graph_number_of_cliques(G, cliques=None):
     maximal cliques.
 
     """
+    import warnings
+
+    warnings.warn(
+        (
+            "\n\ngraph_number_of_cliques is deprecated and will be removed.\n"
+            "Use: ``sum(1 for _ in nx.find_cliques(G))`` instead."
+        ),
+        DeprecationWarning,
+        stacklevel=2,
+    )
     if cliques is None:
         cliques = list(find_cliques(G))
     return len(cliques)
 
 
-def node_clique_number(G, nodes=None, cliques=None):
-    """Returns the size of the largest maximal clique containing
-    each given node.
+def node_clique_number(G, nodes=None, cliques=None, separate_nodes=False):
+    """Returns the size of the largest maximal clique containing each given node.
 
     Returns a single or list depending on input nodes.
-    Optional list of cliques can be input if already computed.
+    An optional list of cliques can be input if already computed.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        An undirected graph.
+
+    cliques : list, optional (default=None)
+        A list of cliques, each of which is itself a list of nodes.
+        If not specified, the list of all cliques will be computed
+        using :func:`find_cliques`.
+
+    Returns
+    -------
+    int or dict
+        If `nodes` is a single node, returns the size of the
+        largest maximal clique in `G` containing that node.
+        Otherwise return a dict keyed by node to the size
+        of the largest maximal clique containing that node.
+
+    See Also
+    --------
+    find_cliques
+        find_cliques yields the maximal cliques of G.
+        It accepts a `nodes` argument which restricts consideration to
+        maximal cliques containing all the given `nodes`.
+        The search for the cliques is optimized for `nodes`.
     """
     if cliques is None:
         if nodes is not None:
             # Use ego_graph to decrease size of graph
-            if isinstance(nodes, list):
-                d = {}
-                for n in nodes:
-                    H = nx.ego_graph(G, n)
-                    d[n] = max(len(c) for c in find_cliques(H))
-            else:
-                H = nx.ego_graph(G, nodes)
-                d = max(len(c) for c in find_cliques(H))
-            return d
+            # check for single node
+            if nodes in G:
+                return max(len(c) for c in find_cliques(nx.ego_graph(G, nodes)))
+            # handle multiple nodes
+            return {
+                n: max(len(c) for c in find_cliques(nx.ego_graph(G, n))) for n in nodes
+            }
+
         # nodes is None--find all cliques
         cliques = list(find_cliques(G))
 
+    # single node requested
+    if nodes in G:
+        return max(len(c) for c in cliques if nodes in c)
+
+    # multiple nodes requested
+    # preprocess all nodes (faster than one at a time for even 2 nodes)
+    size_for_n = defaultdict(int)
+    for c in cliques:
+        size_of_c = len(c)
+        for n in c:
+            if size_for_n[n] < size_of_c:
+                size_for_n[n] = size_of_c
     if nodes is None:
-        nodes = list(G.nodes())  # none, get entire graph
-
-    if not isinstance(nodes, list):  # check for a list
-        v = nodes
-        # assume it is a single value
-        d = max([len(c) for c in cliques if v in c])
-    else:
-        d = {}
-        for v in nodes:
-            d[v] = max([len(c) for c in cliques if v in c])
-    return d
-
-    # if nodes is None:                 # none, use entire graph
-    #     nodes=G.nodes()
-    # elif  not isinstance(nodes, list):    # check for a list
-    #     nodes=[nodes]             # assume it is a single value
-
-    # if cliques is None:
-    #     cliques=list(find_cliques(G))
-    # d={}
-    # for v in nodes:
-    #     d[v]=max([len(c) for c in cliques if v in c])
-
-    # if nodes in G:
-    #     return d[v] #return single value
-    # return d
+        return size_for_n
+    return {n: size_for_n[n] for n in nodes}
 
 
 def number_of_cliques(G, nodes=None, cliques=None):
     """Returns the number of maximal cliques for each node.
 
+    .. deprecated:: 3.0
+
+       number_of_cliques is deprecated and will be removed in v3.2.
+       Use the result of `find_cliques` directly to compute the number of
+       cliques containing each node::
+
+           {n: sum(1 for c in nx.find_cliques(G) if n in c) for n in G}
+
     Returns a single or list depending on input nodes.
     Optional list of cliques can be input if already computed.
     """
+    import warnings
+
+    warnings.warn(
+        (
+            "\n\nnumber_of_cliques is deprecated and will be removed.\n"
+            "Use the result of find_cliques directly to compute the number\n"
+            "of cliques containing each node:\n\n"
+            "    {n: sum(1 for c in nx.find_cliques(G) if n in c) for n in G}\n\n"
+        ),
+        DeprecationWarning,
+        stacklevel=2,
+    )
     if cliques is None:
         cliques = list(find_cliques(G))
 
@@ -534,9 +715,29 @@ def number_of_cliques(G, nodes=None, cliques=None):
 def cliques_containing_node(G, nodes=None, cliques=None):
     """Returns a list of cliques containing the given node.
 
+    .. deprecated:: 3.0
+
+       cliques_containing_node is deprecated and will be removed in 3.2.
+       Use the result of `find_cliques` directly to compute the cliques that
+       contain each node::
+
+           {n: [c for c in nx.find_cliques(G) if n in c] for n in G}
+
     Returns a single list or list of lists depending on input nodes.
     Optional list of cliques can be input if already computed.
     """
+    import warnings
+
+    warnings.warn(
+        (
+            "\n\ncliques_containing_node is deprecated and will be removed.\n"
+            "Use the result of find_cliques directly to compute maximal cliques\n"
+            "containing each node:\n\n"
+            "    {n: [c for c in nx.find_cliques(G) if n in c] for n in G}\n\n"
+        ),
+        DeprecationWarning,
+        stacklevel=2,
+    )
     if cliques is None:
         cliques = list(find_cliques(G))
 
@@ -554,7 +755,7 @@ def cliques_containing_node(G, nodes=None, cliques=None):
     return vcliques
 
 
-class MaxWeightClique(object):
+class MaxWeightClique:
     """A class for the maximum weight clique algorithm.
 
     This class is a helper for the `max_weight_clique` function.  The class

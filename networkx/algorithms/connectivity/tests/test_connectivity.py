@@ -1,10 +1,13 @@
 import itertools
+
 import pytest
 
 import networkx as nx
 from networkx.algorithms import flow
-from networkx.algorithms.connectivity import local_edge_connectivity
-from networkx.algorithms.connectivity import local_node_connectivity
+from networkx.algorithms.connectivity import (
+    local_edge_connectivity,
+    local_node_connectivity,
+)
 
 flow_funcs = [
     flow.boykov_kolmogorov,

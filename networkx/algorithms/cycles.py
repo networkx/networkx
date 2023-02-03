@@ -111,28 +111,26 @@ def simple_cycles(G):
     G : NetworkX DiGraph
        A directed graph
 
-    Returns
-    -------
-    cycle_generator: generator
-       A generator that produces elementary cycles of the graph.
+    Yields
+    ------
+    list of nodes
        Each cycle is represented by a list of nodes along the cycle.
 
     Examples
     --------
     >>> edges = [(0, 0), (0, 1), (0, 2), (1, 2), (2, 0), (2, 1), (2, 2)]
     >>> G = nx.DiGraph(edges)
-    >>> len(list(nx.simple_cycles(G)))
-    5
+    >>> sorted(nx.simple_cycles(G))
+    [[0], [0, 1, 2], [0, 2], [1, 2], [2]]
 
     To filter the cycles so that they don't include certain nodes or edges,
-    copy your graph and eliminate those nodes or edges before calling
+    copy your graph and eliminate those nodes or edges before calling.
+    For example, to exclude self-loops from the above example:
 
-    >>> copyG = G.copy()
-    >>> copyG.remove_nodes_from([1])
-    >>> copyG.remove_edges_from([(0, 1)])
-    >>> len(list(nx.simple_cycles(copyG)))
-    3
-
+    >>> H = G.copy()
+    >>> H.remove_edges_from(nx.selfloop_edges(G))
+    >>> sorted(nx.simple_cycles(H))
+    [[0, 1, 2], [0, 2], [1, 2]]
 
     Notes
     -----
@@ -235,6 +233,7 @@ def recursive_simple_cycles(G):
     This version uses a recursive algorithm to build a list of cycles.
     You should probably use the iterator version called simple_cycles().
     Warning: This recursive version uses lots of RAM!
+    It appears in NetworkX for pedagogical value.
 
     Parameters
     ----------
@@ -252,10 +251,6 @@ def recursive_simple_cycles(G):
     >>> G = nx.DiGraph(edges)
     >>> nx.recursive_simple_cycles(G)
     [[0], [2], [0, 1, 2], [0, 2], [1, 2]]
-
-    See Also
-    --------
-    cycle_basis (for undirected graphs)
 
     Notes
     -----
@@ -534,7 +529,7 @@ def minimum_cycle_basis(G, weight=None):
     --------
     simple_cycles, cycle_basis
     """
-    # We first split the graph in commected subgraphs
+    # We first split the graph in connected subgraphs
     return sum(
         (_min_cycle_basis(G.subgraph(c), weight) for c in nx.connected_components(G)),
         [],

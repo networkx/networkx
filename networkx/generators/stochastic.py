@@ -3,8 +3,7 @@ graph.
 
 """
 
-from networkx.classes import DiGraph
-from networkx.classes import MultiDiGraph
+from networkx.classes import DiGraph, MultiDiGraph
 from networkx.utils import not_implemented_for
 
 __all__ = ["stochastic_graph"]

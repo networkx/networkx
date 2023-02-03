@@ -55,6 +55,7 @@ Advanced Interface
    bellman_ford_predecessor_and_distance
 
    negative_edge_cycle
+   find_negative_cycle
    goldberg_radzik
    johnson
 

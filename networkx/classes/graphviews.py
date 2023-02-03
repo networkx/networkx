@@ -8,7 +8,7 @@ a graph to reverse directed edges, or treat a directed graph
 as undirected, etc. This module provides those graph views.
 
 The resulting views are essentially read-only graphs that
-report data from the orignal graph object. We provide an
+report data from the original graph object. We provide an
 attribute G._graph which points to the underlying graph object.
 
 Note: Since graphviews look like graphs, one can end up with
@@ -23,18 +23,17 @@ the chain is tricky and much harder with restricted_views than
 with induced subgraphs.
 Often it is easiest to use .copy() to avoid chains.
 """
+import networkx as nx
 from networkx.classes.coreviews import (
+    FilterAdjacency,
+    FilterAtlas,
+    FilterMultiAdjacency,
     UnionAdjacency,
     UnionMultiAdjacency,
-    FilterAtlas,
-    FilterAdjacency,
-    FilterMultiAdjacency,
 )
 from networkx.classes.filters import no_filter
 from networkx.exception import NetworkXError
 from networkx.utils import not_implemented_for
-
-import networkx as nx
 
 __all__ = ["generic_graph_view", "subgraph_view", "reverse_view"]
 
@@ -57,11 +56,11 @@ def generic_graph_view(G, create_using=None):
         if G.is_directed():
             newG._succ = G._succ
             newG._pred = G._pred
-            newG._adj = G._succ
+            # newG._adj is synced with _succ
         else:
             newG._succ = G._adj
             newG._pred = G._adj
-            newG._adj = G._adj
+            # newG._adj is synced with _succ
     elif G.is_directed():
         if G.is_multigraph():
             newG._adj = UnionMultiAdjacency(G._succ, G._pred)
@@ -153,19 +152,19 @@ def subgraph_view(G, filter_node=no_filter, filter_edge=no_filter):
     if G.is_multigraph():
         Adj = FilterMultiAdjacency
 
-        def reverse_edge(u, v, k):
+        def reverse_edge(u, v, k=None):
             return filter_edge(v, u, k)
 
     else:
         Adj = FilterAdjacency
 
-        def reverse_edge(u, v):
+        def reverse_edge(u, v, k=None):
             return filter_edge(v, u)
 
     if G.is_directed():
         newG._succ = Adj(G._succ, filter_node, filter_edge)
         newG._pred = Adj(G._pred, filter_node, reverse_edge)
-        newG._adj = newG._succ
+        # newG._adj is synced with _succ
     else:
         newG._adj = Adj(G._adj, filter_node, filter_edge)
     return newG
@@ -202,5 +201,5 @@ def reverse_view(G):
     """
     newG = generic_graph_view(G)
     newG._succ, newG._pred = G._pred, G._succ
-    newG._adj = newG._succ
+    # newG._adj is synced with _succ
     return newG

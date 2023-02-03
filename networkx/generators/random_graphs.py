@@ -78,28 +78,12 @@ def fast_gnp_random_graph(n, p, seed=None, directed=False):
     if p <= 0 or p >= 1:
         return nx.gnp_random_graph(n, p, seed=seed, directed=directed)
 
-    w = -1
     lp = math.log(1.0 - p)
 
     if directed:
         G = nx.DiGraph(G)
-        # Nodes in graph are from 0,n-1 (start with v as the first node index).
-        v = 0
-        while v < n:
-            lr = math.log(1.0 - seed.random())
-            w = w + 1 + int(lr / lp)
-            if v == w:  # avoid self loops
-                w = w + 1
-            while v < n <= w:
-                w = w - n
-                v = v + 1
-                if v == w:  # avoid self loops
-                    w = w + 1
-            if v < n:
-                G.add_edge(v, w)
-    else:
-        # Nodes in graph are from 0,n-1 (start with v as the second node index).
         v = 1
+        w = -1
         while v < n:
             lr = math.log(1.0 - seed.random())
             w = w + 1 + int(lr / lp)
@@ -107,7 +91,19 @@ def fast_gnp_random_graph(n, p, seed=None, directed=False):
                 w = w - v
                 v = v + 1
             if v < n:
-                G.add_edge(v, w)
+                G.add_edge(w, v)
+
+    # Nodes in graph are from 0,n-1 (start with v as the second node index).
+    v = 1
+    w = -1
+    while v < n:
+        lr = math.log(1.0 - seed.random())
+        w = w + 1 + int(lr / lp)
+        while w >= v and v < n:
+            w = w - v
+            v = v + 1
+        if v < n:
+            G.add_edge(v, w)
     return G
 
 
@@ -210,7 +206,7 @@ def dense_gnm_random_graph(n, m, seed=None):
     .. [1] Donald E. Knuth, The Art of Computer Programming,
         Volume 2/Seminumerical algorithms, Third Edition, Addison-Wesley, 1997.
     """
-    mmax = n * (n - 1) / 2
+    mmax = n * (n - 1) // 2
     if m >= mmax:
         G = complete_graph(n)
     else:
@@ -491,6 +487,8 @@ def connected_watts_strogatz_graph(n, k, p, tries=100, seed=None):
 def random_regular_graph(d, n, seed=None):
     r"""Returns a random $d$-regular graph on $n$ nodes.
 
+    A regular graph is a graph where each node has the same number of neighbors.
+
     The resulting graph has no self-loops or parallel edges.
 
     Parameters
@@ -522,7 +520,7 @@ def random_regular_graph(d, n, seed=None):
     .. [1] A. Steger and N. Wormald,
        Generating random regular graphs quickly,
        Probability and Computing 8 (1999), 377-396, 1999.
-       http://citeseer.ist.psu.edu/steger99generating.html
+       https://doi.org/10.1017/S0963548399003867
 
     .. [2] Jeong Han Kim and Van H. Vu,
        Generating random regular graphs,
@@ -1214,12 +1212,12 @@ def random_powerlaw_tree_sequence(n, gamma=3, seed=None, tries=100):
     # get trial sequence
     z = nx.utils.powerlaw_sequence(n, exponent=gamma, seed=seed)
     # round to integer values in the range [0,n]
-    zseq = [min(n, max(int(round(s)), 0)) for s in z]
+    zseq = [min(n, max(round(s), 0)) for s in z]
 
     # another sequence to swap values from
     z = nx.utils.powerlaw_sequence(tries, exponent=gamma, seed=seed)
     # round to integer values in the range [0,n]
-    swap = [min(n, max(int(round(s)), 0)) for s in z]
+    swap = [min(n, max(round(s), 0)) for s in z]
 
     for deg in swap:
         # If this degree sequence can be the degree sequence of a tree, return
@@ -1315,6 +1313,6 @@ def random_kernel_graph(n, kernel_integral, kernel_root=None, seed=None):
         if kernel_integral(i / n, j / n, 1) <= r:
             i, j = i + 1, i + 1
         else:
-            j = int(math.ceil(n * kernel_root(i / n, j / n, r)))
+            j = math.ceil(n * kernel_root(i / n, j / n, r))
             graph.add_edge(i - 1, j - 1)
     return graph

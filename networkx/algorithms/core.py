@@ -34,7 +34,6 @@ from networkx.utils import not_implemented_for
 
 __all__ = [
     "core_number",
-    "find_cores",
     "k_core",
     "k_shell",
     "k_crust",
@@ -44,6 +43,7 @@ __all__ = [
 ]
 
 
+@nx._dispatch
 @not_implemented_for("multigraph")
 def core_number(G):
     """Returns the core number for each vertex.
@@ -115,9 +115,6 @@ def core_number(G):
     return core
 
 
-find_cores = core_number
-
-
 def _core_subgraph(G, k_filter, k=None, core=None):
     """Returns the subgraph induced by nodes passing filter `k_filter`.
 
@@ -145,6 +142,7 @@ def _core_subgraph(G, k_filter, k=None, core=None):
     return G.subgraph(nodes).copy()
 
 
+@nx._dispatch
 def k_core(G, k=None, core_number=None):
     """Returns the k-core of G.
 
@@ -308,7 +306,7 @@ def k_crust(G, k=None, core_number=None):
     # Default for k is one less than in _core_subgraph, so just inline.
     #    Filter is c[v] <= k
     if core_number is None:
-        core_number = find_cores(G)
+        core_number = nx.core_number(G)
     if k is None:
         k = max(core_number.values()) - 1
     nodes = (v for v in core_number if core_number[v] <= k)
@@ -369,6 +367,7 @@ def k_corona(G, k, core_number=None):
     return _core_subgraph(G, func, k, core_number)
 
 
+@nx._dispatch
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def k_truss(G, k):

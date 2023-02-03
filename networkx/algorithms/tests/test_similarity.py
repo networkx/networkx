@@ -5,7 +5,6 @@ from networkx.algorithms.similarity import (
     graph_edit_distance,
     optimal_edit_paths,
     optimize_graph_edit_distance,
-    _n_choose_k,
 )
 from networkx.generators.classic import (
     circular_ladder_graph,
@@ -524,7 +523,10 @@ class TestSimilarity:
         assert graph_edit_distance(G1, G2, node_match=nmatch, edge_match=ematch) == 1
 
     # note: nx.simrank_similarity_numpy not included because returns np.array
-    simrank_algs = [nx.simrank_similarity, nx.similarity._simrank_similarity_python]
+    simrank_algs = [
+        nx.simrank_similarity,
+        nx.algorithms.similarity._simrank_similarity_python,
+    ]
 
     @pytest.mark.parametrize("simrank_similarity", simrank_algs)
     def test_simrank_no_source_no_target(self, simrank_similarity):
@@ -791,18 +793,6 @@ class TestSimilarity:
         actual = nx.similarity._simrank_similarity_numpy(G, source=0, target=0)
         np.testing.assert_allclose(expected, actual, atol=1e-7)
 
-    def test_n_choose_k_small_k(self):
-        assert _n_choose_k(10, 4) == 210
-
-    def test_n_choose_k_big_k(self):
-        assert _n_choose_k(10, 8) == 45
-
-    def test_n_choose_k_same(self):
-        assert _n_choose_k(10, 10) == 1
-
-    def test_n_choose_k_k_bigger_than_n(self):
-        assert _n_choose_k(5, 10) == 0
-
     def test_panther_similarity_unweighted(self):
         np.random.seed(42)
 
@@ -907,3 +897,27 @@ class TestSimilarity:
 
         assert expected_paths == list(paths)
         assert expected_map == index_map
+
+    def test_symmetry_with_custom_matching(self):
+        print("G2 is edge (a,b) and G3 is edge (a,a)")
+        print("but node order for G2 is (a,b) while for G3 it is (b,a)")
+
+        a, b = "A", "B"
+        G2 = nx.Graph()
+        G2.add_nodes_from((a, b))
+        G2.add_edges_from([(a, b)])
+        G3 = nx.Graph()
+        G3.add_nodes_from((b, a))
+        G3.add_edges_from([(a, a)])
+        for G in (G2, G3):
+            for n in G:
+                G.nodes[n]["attr"] = n
+            for e in G.edges:
+                G.edges[e]["attr"] = e
+        match = lambda x, y: x == y
+
+        print("Starting G2 to G3 GED calculation")
+        assert nx.graph_edit_distance(G2, G3, node_match=match, edge_match=match) == 1
+
+        print("Starting G3 to G2 GED calculation")
+        assert nx.graph_edit_distance(G3, G2, node_match=match, edge_match=match) == 1

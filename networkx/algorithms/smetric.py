@@ -3,6 +3,7 @@ import networkx as nx
 __all__ = ["s_metric"]
 
 
+@nx._dispatch
 def s_metric(G, normalized=True):
     """Returns the s-metric of graph.
 
@@ -35,4 +36,4 @@ def s_metric(G, normalized=True):
     #        Gmax = li_smax_graph(list(G.degree().values()))
     #        return s_metric(G,normalized=False)/s_metric(Gmax,normalized=False)
     #    else:
-    return float(sum([G.degree(u) * G.degree(v) for (u, v) in G.edges()]))
+    return float(sum(G.degree(u) * G.degree(v) for (u, v) in G.edges()))
