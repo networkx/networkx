@@ -269,6 +269,12 @@ def eppstein_matching(G, top_nodes=None):
 
         # did we finish layering without finding any alternating paths?
         if not unmatched:
+            # unlayered = {}
+            # for u in G:
+            #     TODO Why is extra inner loop necessary?
+            #     for v in G[u]:
+            #         if v not in preds:
+            #             unlayered[v] = None
             # All the matched nodes must be a key in the dictionary
             for key in matching.copy():
                 matching[matching[key]] = key
