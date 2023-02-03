@@ -56,7 +56,7 @@ Reporting nodes edges and neighbors
    MultiDiGraph.successors
    MultiDiGraph.succ
    MultiDiGraph.predecessors
-   MultiDiGraph.succ
+   MultiDiGraph.pred
    MultiDiGraph.adjacency
    MultiDiGraph.nbunch_iter
 
