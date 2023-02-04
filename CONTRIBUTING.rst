@@ -55,7 +55,7 @@ Development Workflow
          # Build and install networkx from source
          pip install -e .
          # Test your installation
-         PYTHONPATH=. pytest networkx
+         pytest --pyargs networkx
 
      * ``conda`` (Anaconda or Miniconda)
 
@@ -76,9 +76,7 @@ Development Workflow
          # Install networkx from source
          pip install -e .
          # Test your installation
-         PYTHONPATH=. pytest networkx
-         # If using Anaconda Prompt, just enter ``pytest networkx`` to run the
-         # test suite.
+         pytest --pyargs networkx
 
    * Finally, we recommend you use a pre-commit hook, which runs black when
      you type ``git commit``::
