@@ -269,12 +269,17 @@ def eppstein_matching(G, top_nodes=None):
 
         # did we finish layering without finding any alternating paths?
         if not unmatched:
-            unlayered = {}
-            for u in G:
-                # TODO Why is extra inner loop necessary?
-                for v in G[u]:
-                    if v not in preds:
-                        unlayered[v] = None
+            # TODO - The lines between --- were unused and were thus commented
+            # out. This whole commented chunk should be reviewed to determine
+            # whether it should be built upon or completely removed.
+            # ---
+            # unlayered = {}
+            # for u in G:
+            #     # TODO Why is extra inner loop necessary?
+            #     for v in G[u]:
+            #         if v not in preds:
+            #             unlayered[v] = None
+            # ---
             # TODO Originally, this function returned a three-tuple:
             #
             #     return (matching, list(pred), list(unlayered))
