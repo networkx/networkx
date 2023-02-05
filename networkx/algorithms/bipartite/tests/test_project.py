@@ -69,7 +69,7 @@ class TestBipartiteProject:
         assert edges_equal(list(P.edges()), [(0, 2)])
         P[0][2]["weight"] = 1
 
-    def test_digraph_conversion(self):
+    def test_digraph_weighted_projection(self):
         G = nx.DiGraph([(0, 1), (1, 2), (2, 3), (3, 4)])
         P = bipartite.overlap_weighted_projected_graph(G, [1, 3])
         assert nx.get_edge_attributes(P, "weight") == {(1, 3): 1.0}
