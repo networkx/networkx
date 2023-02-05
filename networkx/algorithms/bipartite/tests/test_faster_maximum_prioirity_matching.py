@@ -144,8 +144,7 @@ class TestFasterMaximumPriorityMatching(unittest.TestCase):
         G.add_edges_from(edges)
         nx.set_node_attributes(G, nodes_attrs)
         nx.set_edge_attributes(G, edges_attrs)
-        assert augmenting_path_v1(G, [("1", "4"), ("5", "6")], 2) == 
-        (
+        assert augmenting_path_v1(G, [("1", "4"), ("5", "6")], 2) == (
             [("1", "4"), ("3", "6")],
             True,
         )

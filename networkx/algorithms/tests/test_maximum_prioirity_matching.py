@@ -16,18 +16,16 @@ link to the article: "https://openscholarship.wustl.edu/cgi/viewcontent.cgi?arti
 more details about this algo can be found in the following link: "http://myusername.pythonanywhere.com/"
 
 """
-import pytest
-import unittest
+
 import random
 import random as rd
+import unittest
+
+import pytest
 
 import networkx as nx
 
 
-# from networkx import convert_node_labels_to_integers as cnlti
-# from .. import maximum_priority_matching
-#from  import maximum_priority_matching
-#import maximum_priority_matching
 from networkx.algorithms.maximum_priority_matching import (
     find_augmenting_paths,
     find_blossom,
@@ -37,11 +35,10 @@ from networkx.algorithms.maximum_priority_matching import (
     find_path_in_blossom,
     find_path_to_root,
     find_priority_score,
-    prepare_for_algo,
-    shrink_graph,
-    reverse_path,
     paths_to_base,
-
+    prepare_for_algo,
+    reverse_path,
+    shrink_graph,
 )
 
 
@@ -534,17 +531,14 @@ class Test_maximum_priority_matching:
         nx.set_node_attributes(G, nodes_attrs)
         nx.set_edge_attributes(G, edges_attrs)
         assert shrink_graph(
-            G, {"nodes": ["5", "4", "3", "6", "7"]}, "B0"
-        ) == [
+            G, {"nodes": ["5", "4", "3", "6", "7"]}, "B0") == [
             (False, "B0"),
             (False, "B0"),
             (False, "B0"),
             (False, "B0"),
             (False, "B0"),
         ]
-        assert shrink_graph(
-            G, {"nodes": ["11", "10", "12"]}, "B1"
-        ) == [
+        assert shrink_graph(G, {"nodes": ["11", "10", "12"]}, "B1") == [
             (False, "B1"),
             (False, "B1"),
             (False, "B1"),
@@ -1567,16 +1561,12 @@ class Test_maximum_priority_matching:
         nx.set_node_attributes(G, nodes_attrs)
         nx.set_edge_attributes(G, edges_attrs)
         blossom = {"nodes": ["5", "4", "3", "6", "7"], "Base": "3"}
-        assert find_path_in_blossom(
-            G, blossom, False, "7"
-        ) == (
+        assert find_path_in_blossom( G, blossom, False, "7") == (
             ["7", "6", "3"],
             "2",
         )
         blossom = {"nodes": ["11", "10", "12"], "Base": "10"}
-        assert find_path_in_blossom(
-            G, blossom, False, "11"
-        ) == (
+        assert find_path_in_blossom(G, blossom, False, "11") == (
             ["11", "12", "10"],
             "9",
         )
@@ -1724,17 +1714,13 @@ class Test_maximum_priority_matching:
         nx.set_node_attributes(G1, nodes_attrs)
         nx.set_edge_attributes(G1, edges_attrs)
         blossom = {"nodes": ["5", "4", "3", "6", "7"], "Base": "6"}
-        assert find_path_in_blossom(
-            G1, blossom, False, "7"
-        ) == (
+        assert find_path_in_blossom(G1, blossom, False, "7") == (
             ["7", "5", "4", "3", "6"],
             None,
         )
 
         blossom = {"nodes": ["11", "10", "12"], "Base": "12"}
-        assert find_path_in_blossom(
-            G1, blossom, False, "11"
-        ) == (
+        assert find_path_in_blossom(G1, blossom, False, "11") == (
             ["11", "10", "12"],
             None,
         )
@@ -1747,21 +1733,15 @@ class Test_maximum_priority_matching:
             ["7", "5", "4", "3"],
             ["7", "6", "3"],
         )
-        assert paths_to_base(
-            ["5", "4", "3", "6", "7"], "7", "3"
-        ) == (
+        assert paths_to_base(["5", "4", "3", "6", "7"], "7", "3") == (
             ["7", "5", "4", "3"],
             ["7", "6", "3"],
         )
-        assert paths_to_base(
-            ["5", "4", "3", "6", "7"], "5", "3"
-        ) == (
+        assert paths_to_base(["5", "4", "3", "6", "7"], "5", "3") == (
             ["5", "4", "3"],
             ["5", "7", "6", "3"],
         )
-        assert paths_to_base(
-            ["5", "4", "3", "6", "7"], "4", "3"
-        ) == (
+        assert paths_to_base(["5", "4", "3", "6", "7"], "4", "3") == (
             ["4", "3"],
             ["4", "5", "7", "6", "3"],
         )
@@ -1777,30 +1757,23 @@ class Test_maximum_priority_matching:
             ["3", "1"],
             ["3", "2", "1"],
         )
-        assert paths_to_base(
-            ["1", "2", "3", "4"], "1", "1"
-        ) == (["1"], ["1"])
-        assert paths_to_base(
-            ["1", "2", "3", "4"], "2", "1"
-        ) == (
+        assert paths_to_base(["1", "2", "3", "4"], "1", "1") == (
+            ["1"],
+            ["1"],
+        )
+        assert paths_to_base(["1", "2", "3", "4"], "2", "1") == (
             ["2", "3", "4", "1"],
             ["2", "1"],
         )
-        assert paths_to_base(
-            ["1", "2", "3", "4"], "3", "1"
-        ) == (
+        assert paths_to_base(["1", "2", "3", "4"], "3", "1") == (
             ["3", "4", "1"],
             ["3", "2", "1"],
         )
-        assert paths_to_base(
-            ["1", "2", "3", "4"], "4", "1"
-        ) == (
+        assert paths_to_base(["1", "2", "3", "4"], "4", "1") == (
             ["4", "1"],
             ["4", "3", "2", "1"],
         )
-        assert paths_to_base(
-            ["1", "2", "3", "4", "5"], "5", "3"
-        ) == (
+        assert paths_to_base(["1", "2", "3", "4", "5"], "5", "3") == (
             ["5", "1", "2", "3"],
             ["5", "4", "3"],
         )
@@ -2281,9 +2254,7 @@ class Test_maximum_priority_matching:
         nx.set_edge_attributes(G, edges_attrs)
         matching_edges = nx.get_edge_attributes(G, "isMatched")
         matching_info = nx.get_edge_attributes(G, "isMatched")
-        reverse_path(
-            G, ["8", "9", "10", "12", "11", "7", "6", "3", "2", "1"]
-        )
+        reverse_path(G, ["8", "9", "10", "12", "11", "7", "6", "3", "2", "1"])
         matching_edges[("8", "9")] == True
         matching_edges[("9", "10")] == False
         matching_edges[("10", "12")] == True
@@ -2294,5 +2265,6 @@ class Test_maximum_priority_matching:
         matching_edges[("2", "3")] == False
         matching_edges[("1", "2")] == True
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()
