@@ -440,7 +440,6 @@ def generate_diGraph(G: nx.Graph, m: list, priority: int, flag: bool):
         return ans
 
 
-
 def reverse_path(G: nx.Graph, path):
     """
     Programmers: Roi Meshulam and Liroy Melamed
