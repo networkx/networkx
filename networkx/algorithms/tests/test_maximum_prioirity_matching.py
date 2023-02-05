@@ -24,8 +24,6 @@ import unittest
 import pytest
 
 import networkx as nx
-
-
 from networkx.algorithms.maximum_priority_matching import (
     find_augmenting_paths,
     find_blossom,
