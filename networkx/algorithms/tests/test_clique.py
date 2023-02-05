@@ -242,7 +242,7 @@ class TestCliques:
         G = nx.Graph([(1, 2), (3, 1), (4, 1), (5, 6)])
         E = nx.Graph([(0, 1), (0, 2), (1, 2)])
         E.add_node(3)
-        assert nx.is_isomorphic(nx.make_max_clique_graph(G, nx.Graph), E)
+        assert nx.is_isomorphic(nx.make_max_clique_graph(G, create_using=nx.Graph), E)
 
 
 class TestEnumerateAllCliques:
