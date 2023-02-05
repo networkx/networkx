@@ -530,8 +530,7 @@ class Test_maximum_priority_matching:
         G.add_edges_from(edges)
         nx.set_node_attributes(G, nodes_attrs)
         nx.set_edge_attributes(G, edges_attrs)
-        assert shrink_graph(
-            G, {"nodes": ["5", "4", "3", "6", "7"]}, "B0") == [
+        assert shrink_graph(G, {"nodes": ["5", "4", "3", "6", "7"]}, "B0") == [
             (False, "B0"),
             (False, "B0"),
             (False, "B0"),
@@ -1561,7 +1560,7 @@ class Test_maximum_priority_matching:
         nx.set_node_attributes(G, nodes_attrs)
         nx.set_edge_attributes(G, edges_attrs)
         blossom = {"nodes": ["5", "4", "3", "6", "7"], "Base": "3"}
-        assert find_path_in_blossom( G, blossom, False, "7") == (
+        assert find_path_in_blossom(G, blossom, False, "7") == (
             ["7", "6", "3"],
             "2",
         )

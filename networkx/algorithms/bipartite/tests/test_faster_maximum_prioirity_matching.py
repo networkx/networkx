@@ -66,15 +66,27 @@ class TestFasterMaximumPriorityMatching(unittest.TestCase):
             ("4", "6"),
         ]
         nodes_attrs = {
-            "1": {"priority": 1,},
-            "2": {"priority": 2,},
-            "3": {"priority": 3,},
-            "4": {"priority": 4,},
-            "5": {"priority": 5,},
-            "6": {"priority": 6,},
+            "1": {
+                "priority": 1,
+            },
+            "2": {
+                "priority": 2,
+            },
+            "3": {
+                "priority": 3,
+            },
+            "4": {
+                "priority": 4,
+            },
+            "5": {
+                "priority": 5,
+            },
+            "6": {
+                "priority": 6,
+            },
         }
         G.add_nodes_from(["1", "2", "3"], bipartite=0)
-        G.add_nodes_from(["4" ,"5", "6"], bipartite=1)
+        G.add_nodes_from(["4", "5", "6"], bipartite=1)
         G.add_edges_from(edges)
         nx.set_node_attributes(G, nodes_attrs)
         assert find_maximum_priority_matching_bipartite(G) == [("1", "2"), ("3", "4")]
