@@ -25,8 +25,6 @@ extensions = [
     "nb2plots",
     "texext",
     "numpydoc",
-    "matplotlib.sphinxext.plot_directive",
-    "numpydoc.plot_directives",
 ]
 
 # https://github.com/sphinx-gallery/sphinx-gallery
@@ -249,35 +247,6 @@ numpydoc_show_class_members = False
 
 # Make numpydoc to generate plots for example sections
 numpydoc_use_plots = True
-
-# Plots conf
-plot_pre_code = """
-import networkx as nx
-np.random.seed(0)
-"""
-
-plot_include_source = True
-plot_formats = [("png", 100), "pdf"]
-
-import math
-
-phi = (math.sqrt(5) + 1) / 2
-
-plot_rcparams = {
-    "font.size": 8,
-    "axes.titlesize": 8,
-    "axes.labelsize": 8,
-    "xtick.labelsize": 8,
-    "ytick.labelsize": 8,
-    "legend.fontsize": 8,
-    "figure.figsize": (3 * phi, 3),
-    "figure.subplot.bottom": 0.2,
-    "figure.subplot.left": 0.2,
-    "figure.subplot.right": 0.9,
-    "figure.subplot.top": 0.85,
-    "figure.subplot.wspace": 0.4,
-    "text.usetex": False,
-}
 
 
 def setup(app):
