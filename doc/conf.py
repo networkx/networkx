@@ -251,11 +251,12 @@ numpydoc_show_class_members = False
 numpydoc_use_plots = True
 
 plot_pre_code = """
-import numpy as np
+import networkx as nx
 np.random.seed(0)
 """
-plot_include_source = True
-plot_formats = [("png", 100), "pdf"]
+
+# plot_include_source = True
+# plot_formats = [("png", 100), "pdf"]
 
 import math
 
