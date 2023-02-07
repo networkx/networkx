@@ -470,22 +470,21 @@ def spring_layout(
         if None, the random number generator is the RandomState instance used
         by numpy.random.
 
-    frame: tuple of array_like or None (default: None)
-        Specifies the size of the frame.
-        The number of elements in the arrays has to match the dimension of
-        the layout.
-        The frame consists of a starting point called `origin` and
-        the extend from that starting point called `dom_size`.
-        If None the frame is calculated automatically.
-        If `pos` is not given, then it defaults to a frame from `(0,..,0)` to
-        `(1, ..., 1)`.
-        If `pos` is given, and `x` is the largest extend of `pos` in any
-        dimension, then `dom_size` is `(x, ..., x)`.
+    frame: 2-tuple (origin, dom_size) or None (default: None)
+        Specifies the size of the within which to layout the frame.
+        The `origin` and `dom_size` values are tuples or arrays with
+        length `dim`.
+        The frame values consist of a starting point called `origin` indicating
+        the lower-left corner of the frame and the side length called `dom_size`.
+        If None the frame is calculated automatically as follows.
+        If `pos` is not given, then the frame defaults a unit-square.
+        That is with `origin` ``(0,..,0)`` and `dom_size` ``(1, ..., 1)``.
+        If `pos` is given, and `x` is the largest extent of `pos` in any
+        dimension, then `dom_size` is `(2*x, ..., 2*x)`.
         `origin` is set such, that the frame is spaced evenly around all
         given positions.
         If `frame is not None` and `pos is not None`, then all positions in
-        `pos` have to be within `frame`.
-        Otherwise an error is thrown.
+        `pos` have to be within `frame`. Otherwise a ValueError is thrown.
 
     C: float (default = 0.2)
         A constant used to scale the optimal edge length k.
