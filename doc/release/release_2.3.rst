@@ -40,7 +40,7 @@ Improvements
 
 - Change default colors to be color-blind friendly
 - Many bug fixes and documentation improvements
-- Speed up of simple_cycles
+- Speed up of simple_cycles_le_k
 - Improvements for reading various formats like GML, GEXF, Graphml
 - Allow subclassing to access node_attr_dict_factory
 
