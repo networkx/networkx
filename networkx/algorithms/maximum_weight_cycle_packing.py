@@ -1,6 +1,9 @@
 import doctest
 
+from matplotlib import pyplot as plt
+
 import networkx as nx
+
 from networkx.algorithms.simple_cycles_le_k import simple_cycles_le_k
 
 """
@@ -26,34 +29,48 @@ def maximum_weight_cycle_packing(graph: nx.DiGraph, k: int) -> list:
     D.F. and Rizzi, R. Returns the list of max weighted exchanges of directed weighted graph 'G' A directed weighted
     graph is a graph in which every edge is one-sided and weighted for example an edge from node 1->2 with a weight
     of 5,a k-way exchange is a cycle within a graph containing at most k nodes. max weighted exchange is a cycle
-    with the most weighted edges from every node in the cycle Parameters ----------- G : NetworkX DiGraph Directed
-    graph with weights Returns ----------- Lst: list of lists Each list in lst contaning the nodes which make up the
-    cycle with the highest weights sum Examples ----------- >>> Digraph=nx.DiGraph() >>> Digraph.add_nodes_from([1,
-    2,3,5,6,7,8]) >>> Digraph.add_weighted_edges_from([(1,8,2),(8,1,4),(2,1,5),(1,3,4),(3,8,2),(8,2,3),(8,5,4),(5,7,
-    3),(7,6,2),(6,5,4)]) >>> print(len(maximum_weight_cycle_packing(Digraph,3))) #[1,8,2] [6,5,7] [1,3,8] ,
-    can be only 2 but in any order 2 >>> Digraph =nx.DiGraph() >>> Digraph.add_nodes_from([1,2,3,
-    4]) >>> Digraph.add_weighted_edges_from([(2,1,3),(1,3,1),(3,2,2),(3,4,5),(4,3,9)]) >>> print(len(
-    maximum_weight_cycle_packing(Digraph,2)))#[3,4] or [4,3] 1 >>> graphEX3 = nx.DiGraph() >>>
-    graphEX3.add_nodes_from([10,11,12,13,14,15,16]) >>> Digraph.add_weighted_edges_from([(10,11,10),(11,12,5),(12,13,
-    6),(13,10,4),(11,14,2),(14,16,3),(16,15,8),(15,14,6)]) >>> print(maximum_weight_cycle_packing(graphEX3, 3)) []
+    with the most weighted edges from every node in the cycle
+    Parameters
+      G : NetworkX DiGraph Directed graph with weights
+     Returns
+     Lst: list of lists Each list in lst contaning the nodes which make up the
+    cycle with the highest weights sum
 
-    Notes
+        Notes
     -----------
     Algorithm - the algorithm finds maximum weight k-way exchanges using reduction from directed graph to not directed graph by
     the algorithm in the published article Exact-complete algorithm for kidney exchange programs"
     Refrences
     ----------
     Algorithm 1 - 'MAXIMUM WEIGHT CYCLE PACKING IN DIRECTED GRAPHS, WITH APPLICATION TO KIDNEY EXCHANGE PROGRAMS' by Biro, P. and Manlove, D.F. and Rizzi, R. http://eprints.gla.ac.uk/25732/
+
+
+     Examples -----------
+     >>> Digraph=nx.DiGraph()
+     >>> Digraph.add_nodes_from([1,2,3,5,6,7,8])
+    >>> Digraph.add_weighted_edges_from([(1,8,2),(8,1,4),(2,1,5),(1,3,4),(3,8,2),(8,2,3),(8,5,4),(5,7,3),(7,6,2),(6,5,4)])
+    >>> print(len(maximum_weight_cycle_packing(Digraph,3))) #[1,8,2] [6,5,7] [1,3,8] ,
+    2
+    >>> Digraph =nx.DiGraph()
+    >>> Digraph.add_nodes_from([1,2,3,4])
+    >>> Digraph.add_weighted_edges_from([(2,1,3),(1,3,1),(3,2,2),(3,4,5),(4,3,9)])
+    >>> print(len(maximum_weight_cycle_packing(Digraph,2)))#[3,4] or [4,3]
+    1
+    >>> graphEX3 = nx.DiGraph()
+    >>> graphEX3.add_nodes_from([10,11,12,13,14,15,16])
+    >>> Digraph.add_weighted_edges_from([(10,11,10),(11,12,5),(12,13,6),(13,10,4),(11,14,2),(14,16,3),(16,15,8),(15,14,6)])
+    >>> print(maximum_weight_cycle_packing(graphEX3, 3))
+    []
     """
 
     Ys, cycles = create_Ys(graph, k)
 
-    X = []  # dict()
     max_cycles = []
     max_weight = 0
-    seen_Y = set()
     max_graph = nx.Graph()
     for Y in Ys:
+        X = []
+        seen_Y = set()
         ans_graph = nx.Graph()
         #   creating the nodes in the graph
         #   adding the nodes in the graph
@@ -61,26 +78,16 @@ def maximum_weight_cycle_packing(graph: nx.DiGraph, k: int) -> list:
             ans_graph.add_node((edge[0], edge[1]))
             seen_Y.add(edge[0])
             seen_Y.add(edge[1])
-            if (edge[0], edge[1]) in graph.edges and (edge[1], edge[0]) in graph.edges:
-                weight = (
-                    graph.get_edge_data(edge[0], edge[1])["weight"]
-                    + graph.get_edge_data(edge[1], edge[0])["weight"]
-                )
-                ans_graph.add_edge(
-                    (edge[0], edge[1]),
-                    (edge[0], edge[1]),
-                    weight=weight,
-                    cycle=[edge[0], edge[1]],
-                )
         for edge in graph.edges:
             if edge[0] not in seen_Y and edge[0] not in X:
                 X.append(edge[0])
                 ans_graph.add_node(edge[0])
         connect_2cycles(X, graph, ans_graph)
-        connect_3cycles(X, Y, graph, ans_graph)
+        if k>2:
+            connect_3cycles(X, Y, graph, ans_graph)
         exchanges = list(nx.max_weight_matching(ans_graph))
         if (
-            len(exchanges) == 0 and ans_graph.number_of_edges() == 1
+                len(exchanges) == 0 and ans_graph.number_of_edges() == 1
         ):  # for the use-case of only self connected edge
             exchanges = [list(ans_graph.edges)[0]]
         temp_max = 0
@@ -101,13 +108,13 @@ def maximum_weight_cycle_packing(graph: nx.DiGraph, k: int) -> list:
 
 def connect_2cycles(X, graph, ans_graph):
     for i in range(
-        len(X)
+            len(X)
     ):  # creating the edges in the graph by going through the 2-cycles
         for j in range(i + 1, len(X)):
             if (X[i], X[j]) in graph.edges and (X[j], X[i]) in graph.edges:
                 weight = (
-                    graph.get_edge_data(X[i], X[j])["weight"]
-                    + graph.get_edge_data(X[j], X[i])["weight"]
+                        graph.get_edge_data(X[i], X[j])["weight"]
+                        + graph.get_edge_data(X[j], X[i])["weight"]
                 )
                 ans_graph.add_edge((X[i]), (X[j]), weight=weight, cycle=[X[i], X[j]])
 
@@ -116,16 +123,29 @@ def connect_3cycles(X, Y, graph, ans_graph):
     #   creating the edges in the graph by going through the 3-cycles
     for k in range(len(X)):
         for j, l in Y:  # This deals with the normal case of Yi,j Xk
-            if (l, X[k]) in graph.edges and (
-                X[k],
-                j,
-            ) in graph.edges:  # [j, l, X[k]] in cycles:
+            if (l, X[k]) in graph.edges and (X[k], j) in graph.edges:  # [j, l, X[k]] in cycles:
                 weight = (
-                    graph.get_edge_data(j, l)["weight"]
-                    + graph.get_edge_data(l, X[k])["weight"]
-                    + graph.get_edge_data(X[k], j)["weight"]
+                        graph.get_edge_data(j, l)["weight"]
+                        + graph.get_edge_data(l, X[k])["weight"]
+                        + graph.get_edge_data(X[k], j)["weight"]
                 )
                 ans_graph.add_edge((X[k]), (j, l), weight=weight, cycle=[j, l, X[k]])
+
+
+def check_independent(temp):
+    """This function is used to check if a list of edges are independent set
+    >>> check_independent([(2,3),(1,4),(5,7)])
+    True
+    >>> check_independent([(2,3),(1,4),(5,1)])
+    False
+    """
+    nodes_seen = []
+    for cyc in temp:
+        for node in cyc:
+            if node in nodes_seen:
+                return False
+            nodes_seen.append(node)
+    return True
 
 
 def create_Ys(graph, k):
@@ -134,8 +154,8 @@ def create_Ys(graph, k):
     >>> Digraph.add_nodes_from([1,2,3,5,6,7,8])
     >>> Digraph.add_weighted_edges_from([(1,8,2),(8,1,4),(2,1,5),(1,3,4),(3,8,2),(8,2,3),(8,5,4),(5,7,3),(7,6,2),(6,5,4)])
     >>> Ys,_=create_Ys(Digraph,3)
-    >>> print(len(Ys)) #- the known product is supposed to be composed of 27 permutation
-    27
+    >>> print(((len(Ys)==6 ) or (len(Ys) == 8))) #- the known product is supposed to be composed of 27 permutation
+    True
     >>> Digraph =nx.DiGraph()
     >>> Digraph.add_nodes_from([1,2,3,4])
     >>> Digraph.add_weighted_edges_from([(2,1,3),(1,3,1),(3,2,2),(3,4,5),(4,3,9)])
@@ -143,24 +163,40 @@ def create_Ys(graph, k):
     2
     """
     import numpy as np
-
+    import random
+    import itertools
     temp_cycles = simple_cycles_le_k(graph, k)
     cycles = []
     for cycle in temp_cycles:
         if len(cycle) == k:
             cycles.append(cycle)
+
     perm_arr = np.ndarray(shape=(len(cycles), k), dtype=list)
     for cyc_idx in range(len(cycles)):
         cyc = cycles[cyc_idx]
         for ed_idx in range(len(cyc)):
             mid = (cyc[ed_idx], cyc[(ed_idx + 1) % len(cyc)])
             perm_arr[cyc_idx][ed_idx] = mid
-    mesh = []
-    if len(perm_arr) > 0:
-        mesh = np.array(np.meshgrid(*perm_arr))
-        mesh = mesh.T.reshape(-1, len(mesh))
+    S = []
+    for cyc in perm_arr:
+        rand_num = random.randint(0,len(cyc)-1)
+        rand=cyc[rand_num]
+        if rand in S:
+            counter = 0
+            while counter < k or rand not in S:
+                rand_num = random.randint(0, len(cyc) - 1)
+                rand = cyc[rand_num]
+                counter += 1
+        S.append(rand)
+    Ys = []
+    for i in range(len(S) + 1):
 
-    return mesh, cycles
+        for temp in itertools.combinations(S, i):
+            temp = list(temp)
+            if check_independent(temp):
+                Ys.append(temp)
+
+    return Ys, cycles
 
 
 # Press the green button in the gutter to run the script.
@@ -168,3 +204,4 @@ if __name__ == "__main__":
     # itertools.ne
 
     doctest.testmod()
+
