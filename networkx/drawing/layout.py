@@ -422,12 +422,11 @@ def spring_layout(
         A position will be assigned to every node in G.
 
     k : float (default=None)
-        Optimal distance between nodes. If None the distance is set to
-        C*1/sqrt(area/n) where n is the number of nodes and area is the
-        area of the frame.
-        Increase this value to move nodes farther apart.
-        If you want to keep the property of the default value to scale to
-        the size of the frame and number of nodes, consider keeping `k=None`
+        Optimal distance between nodes. Increase this value to move nodes farther apart.
+        If `None`, the distance is set to $C/\sqrt(A/n)$ where $n$ is the number of nodes
+        and $A$ is the area of the frame.
+        If you want to adjust the distance between nodes while scaling to a fixed
+        size of the frame and number of nodes, consider keeping `k=None`
         and adjust the parameter `C` instead.
 
     pos : dict or None  optional (default=None)
@@ -512,7 +511,7 @@ def spring_layout(
     if len(G) == 0:
         return {}
     if len(G) == 1:
-        return {nx.utils.arbitrary_element(G.nodes()): center}
+        return {nx.utils.arbitrary_element(G): center}
 
     # derive the frame size
     origin, dom_size = _initialize_frame(pos, frame, dim)
