@@ -255,8 +255,8 @@ import networkx as nx
 np.random.seed(0)
 """
 
-# plot_include_source = True
-# plot_formats = [("png", 100), "pdf"]
+plot_include_source = True
+plot_formats = [("png", 100), "pdf"]
 
 import math
 
