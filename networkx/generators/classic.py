@@ -257,9 +257,8 @@ def complete_graph(n, create_using=None):
     of distinct nodes have an edge connecting them.
 
     .. plot::
-        >>> import networkx as nx
-        >>> nx.draw(nx.complete_graph(5))
 
+        >>> nx.draw(nx.complete_graph(5))
 
     Parameters
     ----------
