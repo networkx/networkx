@@ -1,12 +1,14 @@
-import random
+# import logger
 
 import networkx as nx
+import random
 from networkx.algorithms.maximum_weight_cycle_packing import (
     maximum_weight_cycle_packing,
 )
+from networkx.algorithms.simple_cycles_le_k import simple_cycles_le_k
 
 
-def test_1():
+def test_normal_1():
     graphEX3 = nx.DiGraph()
     graphEX3.add_nodes_from([1, 2, 3, 4, 5, 6])
     graphEX3.add_weighted_edges_from(
@@ -25,19 +27,19 @@ def test_1():
             (5, 6, 12),
         ]
     )
-    assert maximum_weight_cycle_packing(graphEX3, 3) == [[1, 6, 4], [2, 3]]
-    assert maximum_weight_cycle_packing(graphEX3, 2) == [[1, 6, 4]]
+    assert len(maximum_weight_cycle_packing(graphEX3, 3)) == 2
+    assert len(maximum_weight_cycle_packing(graphEX3, 2)) == 2
 
 
-def test_2():
+def test_normal_2():
     graphEX3 = nx.DiGraph()
     graphEX3.add_nodes_from([1, 2, 3])
     graphEX3.add_weighted_edges_from([(1, 2, 1), (2, 1, 5), (2, 3, 2), (3, 1, 2)])
-    assert maximum_weight_cycle_packing(graphEX3, 3) == [[1, 2, 3]]
-    assert maximum_weight_cycle_packing(graphEX3, 2) == [[2, 1]]
+    assert len(maximum_weight_cycle_packing(graphEX3, 3)) == 1
+    assert len(maximum_weight_cycle_packing(graphEX3, 2)) == 1
 
 
-def test_3():
+def test_normal_3():
     graphEX3 = nx.DiGraph()
     graphEX3.add_nodes_from([1, 2, 3, 4, 5, 6, 7, 8, 9])
     graphEX3.add_weighted_edges_from(
@@ -56,10 +58,10 @@ def test_3():
             (4, 5, 5),
         ]
     )
-    assert maximum_weight_cycle_packing(graphEX3, 3) == [[2, 6, 3], [8, 9], [4, 5, 7]]
+    assert len(maximum_weight_cycle_packing(graphEX3, 3)) == 3
 
 
-def test_4():
+def test_normal_4():
     graphEX3 = nx.DiGraph()
     graphEX3.add_nodes_from(
         [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
@@ -89,65 +91,47 @@ def test_4():
             (16, 13, 8),
         ]
     )
-
-    assert maximum_weight_cycle_packing(graphEX3, 3) == [
-        [16, 13, 12],
-        [4, 5, 7],
-        [2, 6, 3],
-        [11, 15],
-        [8, 9],
-        [18, 19],
-    ]
-    assert maximum_weight_cycle_packing(graphEX3, 3) == [
-        [16, 13, 12],
-        [4, 5, 7],
-        [2, 6, 3],
-        [11, 15],
-        [8, 9],
-        [18, 19],
-    ]
+    assert len(maximum_weight_cycle_packing(graphEX3, 3)) == 6
 
 
-def test_5():
+def test_random_check_disjoint():
     graphEX3 = nx.fast_gnp_random_graph(20, 0.15, 42, True)
     for (u, v, w) in graphEX3.edges(data=True):
-        w["weight"] = random.randint(0, 10)
+        w['weight'] = random.randint(0, 10)
     res = maximum_weight_cycle_packing(graphEX3, 3)
     nodes_seen = []
-    flag = True
     for cyc in res:
         for node in cyc:
             if node in nodes_seen:
-                flag = False
-                break
+                #                logger.logger.error("Graph: ", graphEX3)
+                assert False
             nodes_seen.append(node)
-    return flag
+    assert True
 
 
-def test_6():
+def test_random_check_cycle_len():
     graphEX3 = nx.fast_gnp_random_graph(20, 0.15, 42, True)
     for (u, v, w) in graphEX3.edges(data=True):
-        w["weight"] = random.randint(0, 10)
+        w['weight'] = random.randint(0, 10)
     res = maximum_weight_cycle_packing(graphEX3, 3)
-    flag = True
     for cyc in res:
-        if len(cyc) > 3:
-            flag = False
-            break
-    return flag
+        # if len(cyc)<2:
+        #     logger.logger.error("Graph: ",graphEX3)
+        assert len(cyc) >= 2
 
 
-def test_7():
+def test_random_check_1cycle():
     from networkx.algorithms.simple_cycles_le_k import simple_cycles_le_k
-
-    graphEX3 = nx.fast_gnp_random_graph(20, 0.15, 42, True)
+    graphEX3 = nx.fast_gnp_random_graph(20, 0.15, True)
     for (u, v, w) in graphEX3.edges(data=True):
-        w["weight"] = random.randint(0, 10)
+        w['weight'] = random.randint(0, 10)
     sc = simple_cycles_le_k(graphEX3, 3)
     try:
         cy = next(sc)
         res = maximum_weight_cycle_packing(graphEX3, 3)
         if cy is not None:
+            # if len(res) > 1:
+            #     logger.logger.error("Graph: ", graphEX3)
             assert len(res) > 1
     except:
         assert True

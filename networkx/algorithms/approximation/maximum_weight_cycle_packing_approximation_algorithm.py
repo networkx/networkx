@@ -75,7 +75,9 @@ def maximum_weight_cycle_packing_approximation_algorithm(graph: nx.DiGraph, k: i
 
     # Find all cycles of size at most {k} in the graph
     sc = simple_cycles_le_k(graph, k)
-    cycles = [tuple(cycle) for cycle in sc]
+    cycles = []
+    for cycle in sc:
+        cycles.append(tuple(cycle))
 
     if len(cycles) == 0:
         return []
