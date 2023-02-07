@@ -11,7 +11,13 @@ from math import comb
 import networkx as nx
 from networkx.algorithms.genetic_isomorphism.fitness import fitness
 
-__all__ = ["find_subgraph_isomorphism_with_genetic_algorithm"]
+__all__ = [
+    "find_subgraph_isomorphism_with_genetic_algorithm",
+    "count_equal_size_combinations",
+    "generate_solutions",
+    "evaluate_solutions",
+    "crossover",
+]
 
 WORKERS = 4
 
@@ -25,12 +31,25 @@ logger = logging.getLogger()
 
 def count_equal_size_combinations(G1_nodes, G2_nodes):
     """
-    this is helper method for calculating the number of distinct groups of nodes in equal size
-    parameter:
+    This is helper method for calculating the number of distinct groups of nodes in equal size
+
+    Parameters
+    ---------
     G1_nodes: list of Graph1 nodes
     G2_nodes: list of Graph2 nodes
-    return:
+
+    Returns
+    -------
+    The total number of equal size combinations
+
+    Programmers
+    -----------
+    Stu L.Akirav & B.Schtalman
+
+    Example
+    -------
     number of disticint possible options
+    >>> import networkx as nx
     >>> g1 = nx.gnm_random_graph(3, 3)
     >>> g2 = nx.gnm_random_graph(5, 10)
     >>> g3 = nx.gnm_random_graph(9, 7)
@@ -65,6 +84,23 @@ def count_equal_size_combinations(G1_nodes, G2_nodes):
 
 
 def generate_solutions(G1, G2, num_solutions):
+    """
+    Generate solutions for matching subgraphs of two given graphs.
+
+    Parameters
+    ----------
+    - G1 (networkx.Graph): The first graph.
+    - G2 (networkx.Graph): The second graph.
+    - num_solutions (int): The number of solutions to generate.
+
+    Returns
+    -------
+    - solutions (list): A list of tuples, each tuple containing two subgraphs (sub1, sub2) from G1 and G2, respectively.
+
+    Programmers
+    -----------
+    Stu L.Akirav & B.Schtalman
+    """
     # Generate solutions
     solutions = []
     min_nodes = min(len(G1.nodes), len(G2.nodes))
@@ -77,6 +113,38 @@ def generate_solutions(G1, G2, num_solutions):
 
 
 def evaluate_solutions(G1, G2, solutions, ALPHA):
+    """
+    Evaluate the solutions for matching subgraphs of two given graphs.
+
+    Parameters
+    ----------
+    G1 (networkx.Graph): The first graph.
+    G2 (networkx.Graph): The second graph.
+    solutions (list): A list of tuples, each tuple containing two subgraphs (sub1, sub2) from G1 and G2, respectively.
+    ALPHA (float): The threshold value for the fitness score of the solutions.
+
+    Returns
+    -------
+    flag (bool): A boolean value indicating whether a solution with fitness score less than or equal to ALPHA was found (True) or not (False).
+    solutions_with_fitness (list or None): A list of tuples, each tuple containing a solution and its fitness score, if flag is False. If flag is True, it returns None.
+
+    Programmers
+    -----------
+    Stu L.Akirav & B.Schtalman
+
+    Example:
+    >>> import networkx as nx
+    >>> G1 = nx.Graph()
+    >>> G1.add_nodes_from([1, 2, 3, 4, 5])
+    >>> G1.add_edges_from([(1, 2), (2, 3), (3, 4), (4, 5)])
+    >>> G2 = nx.Graph()
+    >>> G2.add_nodes_from([6, 7, 8, 9, 10])
+    >>> G2.add_edges_from([(6, 7), (7, 8), (8, 9), (9, 10)])
+    >>> solutions = [(1, 6), (2, 7), (3, 8), (4, 9), (5, 10)]
+    >>> ALPHA = 0.7
+    >>> evaluate_solutions(G1, G2, solutions, ALPHA)
+    (False, [((1, 6), 2.0), ((2, 7), 2.0), ((3, 8), 2.0), ((4, 9), 2.0), ((5, 10), 2.0)])
+    """
     solutions_with_fitness = []
     for i, solution in enumerate(solutions):
         # Calculate the fitness score for the current solution
@@ -99,6 +167,35 @@ def evaluate_solutions(G1, G2, solutions, ALPHA):
 
 
 def crossover(G1_nodes, G2_nodes, G1_sublists, G2_sublists, num_solutions):
+    """
+    Perform crossover operation to generate new solutions.
+
+    Given two graphs `G1` and `G2` and their sublists of subgraphs `G1_sublists` and `G2_sublists`,
+    this function generates `num_solutions` new solutions by performing a crossover operation on the
+    sublists. The algorithm first chooses a random sub_graph size from the sublists. Then it chooses
+    two subgraphs with the same size randomly from each of the sublists, and combine them to form a
+    new solution. If a solution with the same combination already exists, the algorithm generates a
+    new pair of subgraphs with the same size and add them to the new solutions.
+
+    Parameters
+    ----------
+    G1_nodes: A set of nodes in the graph G1.
+    G2_nodes: A set of nodes in the graph G2.
+    G1_sublists: A dictionary that maps sub_graph_size to a list of subgraphs with the same size
+    in G1.
+    G2_sublists: A dictionary that maps sub_graph_size to a list of subgraphs with the same size
+    in G2.
+    num_solutions: An integer that specifies the number of new solutions to generate.
+
+    Returns
+    -------
+    A list of new solutions, where each solution is a tuple of two subgraphs, one from G1 and one
+    from G2.
+
+    Programmers
+    -----------
+    Stu L.Akirav & B.Schtalman
+    """
     new_solutions = []
     count_new_solutions = 0
     while count_new_solutions < num_solutions:
@@ -160,7 +257,6 @@ def find_subgraph_isomorphism_with_genetic_algorithm(G1, G2, ALPHA):
     ----------
     "Malware detection based on dependency graph using hybrid genetic algorithm",
     by K.Kim and B.Moon (2010)
-    Algorithm 1, page 5.
     http://rosaec.snu.ac.kr/publish/2010/T2/KiMo-GECCO-2010.pdf
 
     Programmers
@@ -214,7 +310,6 @@ def find_subgraph_isomorphism_with_genetic_algorithm(G1, G2, ALPHA):
         if found_solution:
             return True
 
-        solutions_with_fitness
         # Sort the solutions by their fitness scores
         rankedsolutions = sorted(solutions_with_fitness, key=lambda x: x[1])
         if NUM_OF_SOLUTIONS == 1:
