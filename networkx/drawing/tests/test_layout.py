@@ -145,9 +145,14 @@ class TestLayout:
 
     def test_adjacency_interface_numpy(self):
         A = nx.to_numpy_array(self.Gs)
-        pos = nx.drawing.layout._fruchterman_reingold(A)
+        frame_2d = (np.zeros(2), np.ones(2))
+        frame_3d = (np.zeros(3), np.ones(3))
+        pos_2d = np.array([np.zeros(2) for _ in range(len(self.Gs))])
+        pos_3d = np.array([np.zeros(3) for _ in range(len(self.Gs))])
+        k = 0.1
+        pos = nx.drawing.layout._fruchterman_reingold(A, k, frame_2d, pos_2d)
         assert pos.shape == (6, 2)
-        pos = nx.drawing.layout._fruchterman_reingold(A, dim=3)
+        pos = nx.drawing.layout._fruchterman_reingold(A, k, frame_3d, pos_3d, dim=3)
         assert pos.shape == (6, 3)
         pos = nx.drawing.layout._sparse_fruchterman_reingold(A)
         assert pos.shape == (6, 2)
@@ -472,8 +477,6 @@ def test_multipartite_layout_layer_order():
 
 def test_get_fr_repulsion():
 
-    import numpy as np
-
     from networkx.drawing.layout import _get_fr_repulsion
 
     k = 0.2
@@ -500,8 +503,6 @@ def test_get_fr_repulsion():
 
 def test_get_fr_attraction():
 
-    import numpy as np
-
     from networkx.drawing.layout import _get_fr_attraction
 
     k = 0.2
@@ -524,3 +525,93 @@ def test_get_fr_attraction():
     )
 
     assert np.allclose(expected, attraction)
+
+
+def test_initialize_frame_no_inputs():
+
+    from numpy.testing import assert_almost_equal
+
+    from networkx.drawing.layout import _initialize_frame
+
+    # 2D
+    origin, dom_size = _initialize_frame(None, None, 2)
+    assert_almost_equal(origin, np.zeros(2))
+    assert_almost_equal(dom_size, np.ones(2))
+
+    # 3D
+    origin, dom_size = _initialize_frame(None, None, 3)
+    assert_almost_equal(origin, np.zeros(3))
+    assert_almost_equal(dom_size, np.ones(3))
+
+
+def test_initialize_frame_frame_given():
+
+    from numpy.testing import assert_almost_equal
+
+    from networkx.drawing.layout import _initialize_frame
+
+    frame = (np.array([-1.0, -2.0]), np.array([4, 3]))
+
+    # no position
+    origin, dom_size = _initialize_frame(None, frame, 2)
+    assert_almost_equal(origin, frame[0])
+    assert_almost_equal(dom_size, frame[1])
+
+    # all positions inside
+    pos_inside = {
+        0: (0.0, 0.0),
+        1: (-0.5, 1),
+        2: (2.0, 0.75),
+        3: (3.0, 0.0),
+    }
+
+    origin, dom_size = _initialize_frame(pos_inside, frame, 2)
+    assert_almost_equal(origin, frame[0])
+    assert_almost_equal(dom_size, frame[1])
+
+    # one position outside
+    pos_outside = pos_inside
+    pos_outside[4] = (-2.0, 3.0)
+
+    with pytest.raises(ValueError):
+        origin, dom_size = _initialize_frame(pos_outside, frame, 2)
+
+
+def test_initialize_frame_pos_given():
+
+    from numpy.testing import assert_almost_equal
+
+    from networkx.drawing.layout import _initialize_frame
+
+    pos = {0: (-1.0, -1.0), 1: (1.0, 1)}
+
+    expected_origin = np.array((-2.0, -2.0))
+    expected_dom_size = np.array((4.0, 4.0))
+
+    origin, dom_size = _initialize_frame(pos, None, 2)
+    assert_almost_equal(origin, expected_origin)
+    assert_almost_equal(dom_size, expected_dom_size)
+
+
+def test_initialize_frame_single_pos_given():
+
+    from numpy.testing import assert_almost_equal
+
+    from networkx.drawing.layout import _initialize_frame
+
+    expected_dom_size = np.array((1.0, 1.0))
+
+    pos = {0: (0.0, 0.0)}
+
+    expected_origin = np.array((-0.5, -0.5))
+
+    origin, dom_size = _initialize_frame(pos, None, 2)
+    assert_almost_equal(origin, expected_origin)
+    assert_almost_equal(dom_size, expected_dom_size)
+
+    pos = {0: (0.5, -0.5)}
+    expected_origin = np.array((0.0, -1.0))
+
+    origin, dom_size = _initialize_frame(pos, None, 2)
+    assert_almost_equal(origin, expected_origin)
+    assert_almost_equal(dom_size, expected_dom_size)

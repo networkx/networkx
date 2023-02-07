@@ -343,6 +343,48 @@ def bipartite_layout(
     return pos
 
 
+def _initialize_frame(pos, frame, dim):
+    import numpy as np
+
+    if frame is None:
+
+        origin = np.zeros(dim)
+        dom_size = np.ones(dim)
+
+        if pos is not None:
+            pos_vector = np.asarray([pos_tuple for pos_tuple in pos.values()])
+
+            min_pos = np.min(pos_vector, axis=0)
+            dom_extend = np.max(pos_vector, axis=0) - min_pos
+            max_extend = np.max(dom_extend)
+
+            dom_center = min_pos + (dom_extend / 2.0)
+
+            if max_extend == 0:  # all nodes had an identical position
+                max_extend = 0.5
+
+            # make the domain size a square twice as big as the maximum
+            # extend of the given positions
+            dom_size *= 2 * max_extend
+
+            origin = dom_center - (dom_size / 2.0)
+
+    else:
+        origin, dom_size = frame
+
+        # verify that all given positions fit into the specified frame
+        if pos is not None:
+            for node, pos_tuple in pos.items():
+                node_pos = np.array(pos_tuple)
+                if (
+                    np.min(node_pos - origin) < 0
+                    or np.max(node_pos - origin - dom_size) > 0
+                ):
+                    raise ValueError(f"Node { node } is not within the frame")
+
+    return origin, dom_size
+
+
 @np_random_state(10)
 def spring_layout(
     G,
@@ -356,6 +398,8 @@ def spring_layout(
     center=None,
     dim=2,
     seed=None,
+    frame=None,
+    C=0.2,
 ):
     """Position nodes using Fruchterman-Reingold force-directed algorithm.
 
@@ -378,9 +422,13 @@ def spring_layout(
         A position will be assigned to every node in G.
 
     k : float (default=None)
-        Optimal distance between nodes.  If None the distance is set to
-        1/sqrt(n) where n is the number of nodes.  Increase this value
-        to move nodes farther apart.
+        Optimal distance between nodes. If None the distance is set to
+        C*1/sqrt(area/n) where n is the number of nodes and area is the
+        area of the frame.
+        Increase this value to move nodes farther apart.
+        If you want to keep the property of the default value to scale to
+        the size of the frame and number of nodes, consider keeping `k=None`
+        and adjust the parameter `C` instead.
 
     pos : dict or None  optional (default=None)
         Initial positions for nodes as a dictionary with node as keys
@@ -423,6 +471,27 @@ def spring_layout(
         if None, the random number generator is the RandomState instance used
         by numpy.random.
 
+    frame: tuple of array_like or None (default: None)
+        Specifies the size of the frame.
+        The number of elements in the arrays has to match the dimension of
+        the layout.
+        The frame consists of a starting point called `origin` and
+        the extend from that starting point called `dom_size`.
+        If None the frame is calculated automatically.
+        If `pos` is not given, then it defaults to a frame from `(0,..,0)` to
+        `(1, ..., 1)`.
+        If `pos` is given, and `x` is the largest extend of `pos` in any
+        dimension, then `dom_size` is `(x, ..., x)`.
+        `origin` is set such, that the frame is spaced evenly around all
+        given positions.
+        If `frame is not None` and `pos is not None`, then all positions in
+        `pos` have to be within `frame`.
+        Otherwise an error is thrown.
+
+    C: float (default = 0.2)
+        A constant used to scale the optimal edge length k.
+        This is only used if k is not specified directly.
+
     Returns
     -------
     pos : dict
@@ -440,6 +509,15 @@ def spring_layout(
 
     G, center = _process_params(G, center, dim)
 
+    if len(G) == 0:
+        return {}
+    if len(G) == 1:
+        return {nx.utils.arbitrary_element(G.nodes()): center}
+
+    # derive the frame size
+    origin, dom_size = _initialize_frame(pos, frame, dim)
+
+    # gather the indices of the fixed nodes.
     if fixed is not None:
         if pos is None:
             raise ValueError("nodes are fixed without positions given")
@@ -449,50 +527,80 @@ def spring_layout(
         nfixed = {node: i for i, node in enumerate(G)}
         fixed = np.asarray([nfixed[node] for node in fixed if node in nfixed])
 
+    # calculate initial positions
+    pos_arr = seed.rand(len(G), dim) * dom_size + origin
+
     if pos is not None:
-        # Determine size of existing domain to adjust initial positions
-        dom_size = max(coord for pos_tup in pos.values() for coord in pos_tup)
-        if dom_size == 0:
-            dom_size = 1
-        pos_arr = seed.rand(len(G), dim) * dom_size + center
+        for i, node in enumerate(G):
+            if node in pos:
+                pos_arr[i] = np.asarray(pos[node])
 
-        for i, n in enumerate(G):
-            if n in pos:
-                pos_arr[i] = np.asarray(pos[n])
-    else:
-        pos_arr = None
-        dom_size = 1
+    # calculate the optimal edge length
+    if k is None:
+        area = np.product(dom_size)
+        assert area > 0, "the frame has area 0!"
+        k = C * np.sqrt(area / len(G))
 
-    if len(G) == 0:
-        return {}
-    if len(G) == 1:
-        return {nx.utils.arbitrary_element(G.nodes()): center}
+    # run the iterations
+    A = nx.to_numpy_array(G, weight=weight)
+    frame = origin, dom_size
 
-    try:
-        # Sparse matrix
-        if len(G) < 500:  # sparse solver for large graphs
-            raise ValueError
-        A = nx.to_scipy_sparse_array(G, weight=weight, dtype="f")
-        if k is None and fixed is not None:
-            # We must adjust k by domain size for layouts not near 1x1
-            nnodes, _ = A.shape
-            k = dom_size / np.sqrt(nnodes)
-        pos = _sparse_fruchterman_reingold(
-            A, k, pos_arr, fixed, iterations, threshold, dim, seed
-        )
-    except ValueError:
-        A = nx.to_numpy_array(G, weight=weight)
-        if k is None and fixed is not None:
-            # We must adjust k by domain size for layouts not near 1x1
-            nnodes, _ = A.shape
-            k = dom_size / np.sqrt(nnodes)
-        pos = _fruchterman_reingold(
-            A, k, pos_arr, fixed, iterations, threshold, dim, seed
-        )
+    pos = _fruchterman_reingold(
+        A, k, frame, pos_arr, fixed, iterations, threshold, dim, seed
+    )
+
+    if fixed is None and scale is not None:
+        pos = rescale_layout(pos, scale=scale) + center
+
+    # scale the result
     if fixed is None and scale is not None:
         pos = rescale_layout(pos, scale=scale) + center
     pos = dict(zip(G, pos))
     return pos
+
+
+#    G, center = _process_params(G, center, dim)
+#
+#    if pos is not None:
+#        # Determine size of existing domain to adjust initial positions
+#        dom_size = max(coord for pos_tup in pos.values() for coord in pos_tup)
+#        if dom_size == 0:
+#            dom_size = 1
+#        pos_arr = seed.rand(len(G), dim) * dom_size + center
+#
+#        for i, n in enumerate(G):
+#            if n in pos:
+#                pos_arr[i] = np.asarray(pos[n])
+#    else:
+#        pos_arr = None
+#        dom_size = 1
+#
+#    if len(G) == 0:
+#        return {}
+#    if len(G) == 1:
+#        return {nx.utils.arbitrary_element(G.nodes()): center}
+#
+#    try:
+#        # Sparse matrix
+#        if len(G) < 500:  # sparse solver for large graphs
+#            raise ValueError
+#        A = nx.to_scipy_sparse_array(G, weight=weight, dtype="f")
+#        if k is None and fixed is not None:
+#            # We must adjust k by domain size for layouts not near 1x1
+#            nnodes, _ = A.shape
+#            k = dom_size / np.sqrt(nnodes)
+#        pos = _sparse_fruchterman_reingold(
+#            A, k, pos_arr, fixed, iterations, threshold, dim, seed
+#        )
+#    except ValueError:
+#        A = nx.to_numpy_array(G, weight=weight)
+#        if k is None and fixed is not None:
+#            # We must adjust k by domain size for layouts not near 1x1
+#            nnodes, _ = A.shape
+#            k = dom_size / np.sqrt(nnodes)
+#        pos = _fruchterman_reingold(
+#            A, k, pos_arr, fixed, iterations, threshold, dim, seed
+#        )
 
 
 fruchterman_reingold_layout = spring_layout
@@ -500,11 +608,17 @@ fruchterman_reingold_layout = spring_layout
 
 @np_random_state(7)
 def _fruchterman_reingold(
-    A, k=None, pos=None, fixed=None, iterations=50, threshold=1e-4, dim=2, seed=None
+    A, k, frame, pos, fixed=None, iterations=50, threshold=1e-4, dim=2, seed=None
 ):
     # Position nodes in adjacency matrix A using Fruchterman-Reingold
     # Entry point for NetworkX graph is fruchterman_reingold_layout()
     import numpy as np
+
+    _, dom_size = frame
+
+    max_extend = np.max(dom_size)
+    t = 0.1 * max_extend
+    dt = t / (iterations + 1)
 
     try:
         nnodes, _ = A.shape
@@ -512,38 +626,11 @@ def _fruchterman_reingold(
         msg = "fruchterman_reingold() takes an adjacency matrix as input"
         raise nx.NetworkXError(msg) from err
 
-    if pos is None:
-        # random initial positions
-        pos = np.asarray(seed.rand(nnodes, dim), dtype=A.dtype)
-    else:
-        # make sure positions are of same type as matrix
-        pos = pos.astype(A.dtype)
-
-    # calculate the size of the frame
-    min_pos = np.min(pos, axis=0)
-    max_pos = np.max(pos, axis=0)
-    scale = max_pos - min_pos
-    area = np.product(scale)
-
-    # optimal distance between nodes
-    if k is None:
-        k = 1.0 * np.sqrt(area / nnodes)
-
-    # the initial "temperature"  is about .1 of domain area (=1x1)
-    # this is the largest step allowed in the dynamics.
-    # We need to calculate this in case our fixed positions force our domain
-    # to be much bigger than 1x1
-    t = max(scale) * 0.1
-
-    # simple cooling scheme.
-    # linearly step down by dt on each iteration so last iteration is size dt.
-    dt = t / (iterations + 1)
-
     # the inscrutable (but fast) version
     # this is still O(V^2)
     # could use multilevel methods to speed this up significantly
     for iteration in range(iterations):
-        end, pos = fruchterman_reingold_iteration(pos, A, fixed, k, t, threshold)
+        end, pos = fruchterman_reingold_iteration(A, k, frame, pos, fixed, t, threshold)
 
         if end:
             break
@@ -553,7 +640,7 @@ def _fruchterman_reingold(
     return pos
 
 
-def fruchterman_reingold_iteration(pos, A, fixed, k, t, threshold):
+def fruchterman_reingold_iteration(A, k, frame, pos, fixed, t, threshold):
     import numpy as np
 
     # difference between point i and j (vector from j to i)
@@ -592,7 +679,7 @@ def fruchterman_reingold_iteration(pos, A, fixed, k, t, threshold):
     new_pos = pos + displacement
 
     # inelastic collision
-    in_bbox = is_in_bbox(new_pos)
+    in_bbox = is_in_bbox(new_pos, frame)
     pos[in_bbox] = new_pos[in_bbox]
 
     # collisions as used by FR, does not account for fixed nodes
@@ -603,14 +690,12 @@ def fruchterman_reingold_iteration(pos, A, fixed, k, t, threshold):
     return (end, pos)
 
 
-def is_in_bbox(pos):
+def is_in_bbox(pos, frame):
     import numpy as np
 
-    dims = pos.shape[-1]
+    origin, dim_size = frame
 
-    return np.all(
-        np.logical_and(pos >= np.zeros(shape=dims), pos <= np.ones(shape=dims)), axis=1
-    )
+    return np.all(np.logical_and(pos >= origin, pos <= origin + dim_size), axis=1)
 
 
 @np_random_state(7)
