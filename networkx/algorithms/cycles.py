@@ -60,7 +60,7 @@ def cycle_basis(G, root=None):
 
     See Also
     --------
-    simple_cycles
+    simple_cycles_le_k
     """
     gnodes = set(G.nodes())
     cycles = []
@@ -120,7 +120,7 @@ def simple_cycles(G):
     --------
     >>> edges = [(0, 0), (0, 1), (0, 2), (1, 2), (2, 0), (2, 1), (2, 2)]
     >>> G = nx.DiGraph(edges)
-    >>> sorted(nx.simple_cycles(G))
+    >>> sorted(nx.simple_cycles_le_k(G))
     [[0], [0, 1, 2], [0, 2], [1, 2], [2]]
 
     To filter the cycles so that they don't include certain nodes or edges,
@@ -129,7 +129,7 @@ def simple_cycles(G):
 
     >>> H = G.copy()
     >>> H.remove_edges_from(nx.selfloop_edges(G))
-    >>> sorted(nx.simple_cycles(H))
+    >>> sorted(nx.simple_cycles_le_k(H))
     [[0, 1, 2], [0, 2], [1, 2]]
 
     Notes
@@ -231,7 +231,7 @@ def recursive_simple_cycles(G):
     are not cyclic permutations of each other.
 
     This version uses a recursive algorithm to build a list of cycles.
-    You should probably use the iterator version called simple_cycles().
+    You should probably use the iterator version called simple_cycles_le_k().
     Warning: This recursive version uses lots of RAM!
     It appears in NetworkX for pedagogical value.
 
@@ -267,7 +267,7 @@ def recursive_simple_cycles(G):
 
     See Also
     --------
-    simple_cycles, cycle_basis
+    simple_cycles_le_k, cycle_basis
     """
     # Jon Olav Vik, 2010-08-09
     def _unblock(thisnode):
@@ -396,7 +396,7 @@ def find_cycle(G, source=None, orientation=None):
 
     See Also
     --------
-    simple_cycles
+    simple_cycles_le_k
     """
     if not G.is_directed() or orientation in (None, "original"):
 
@@ -527,7 +527,7 @@ def minimum_cycle_basis(G, weight=None):
 
     See Also
     --------
-    simple_cycles, cycle_basis
+    simple_cycles_le_k, cycle_basis
     """
     # We first split the graph in connected subgraphs
     return sum(
