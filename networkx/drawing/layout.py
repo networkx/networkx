@@ -423,7 +423,7 @@ def spring_layout(
 
     k : float (default=None)
         Optimal distance between nodes. Increase this value to move nodes farther apart.
-        If `None`, the distance is set to $C/\sqrt(A/n)$ where $n$ is the number of nodes
+        If `None`, the distance is set to $C/\\sqrt(A/n)$ where $n$ is the number of nodes
         and $A$ is the area of the frame.
         If you want to adjust the distance between nodes while scaling to a fixed
         size of the frame and number of nodes, consider keeping `k=None`
