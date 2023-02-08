@@ -3,7 +3,6 @@ import doctest
 from matplotlib import pyplot as plt
 
 import networkx as nx
-
 from networkx.algorithms.simple_cycles_le_k import simple_cycles_le_k
 
 """
@@ -123,7 +122,10 @@ def connect_3cycles(X, Y, graph, ans_graph):
     #   creating the edges in the graph by going through the 3-cycles
     for k in range(len(X)):
         for j, l in Y:  # This deals with the normal case of Yi,j Xk
-            if (l, X[k]) in graph.edges and (X[k], j) in graph.edges:  # [j, l, X[k]] in cycles:
+            if (l, X[k]) in graph.edges and (
+                    X[k],
+                    j
+            ) in graph.edges:
                 weight = (
                     graph.get_edge_data(j, l)["weight"]
                     + graph.get_edge_data(l, X[k])["weight"]
@@ -164,7 +166,6 @@ def create_Ys(graph, k):
     """
 
     import itertools
-
     import random
 
     import numpy as np
@@ -205,6 +206,6 @@ def create_Ys(graph, k):
 
 # Press the green button in the gutter to run the script.
 if __name__ == "__main__":
-    # itertools.ne
+
 
     doctest.testmod()
