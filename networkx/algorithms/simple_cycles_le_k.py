@@ -23,7 +23,7 @@ def simple_cycles_le_k(graph, k):
     >>> print(Ys)
     [[1, 3, 2], [3, 4]]
     >>> graphEX3 = nx.DiGraph()
-    >>> graphEX3.add_nodes_from([10,11,12,13,14,15,16,17])
+    >>> graphEX3.add_nodes_from([10,11,12,13,14,15,16])
     >>> Digraph.add_weighted_edges_from([(10,11,10),(11,12,5),(12,13,6),(13,10,4),(11,14,2),(14,16,3),(16,15,8),(15,14,6)])
     >>> Ys=list(simple_cycles_le_k(Digraph,3))
     >>> print(Ys)
