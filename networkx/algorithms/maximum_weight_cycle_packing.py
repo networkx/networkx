@@ -122,10 +122,7 @@ def connect_3cycles(X, Y, graph, ans_graph):
     #   creating the edges in the graph by going through the 3-cycles
     for k in range(len(X)):
         for j, l in Y:  # This deals with the normal case of Yi,j Xk
-            if (l, X[k]) in graph.edges and (
-                    X[k],
-                    j
-            ) in graph.edges:
+            if (l, X[k]) in graph.edges and (X[k], j) in graph.edges:
                 weight = (
                     graph.get_edge_data(j, l)["weight"]
                     + graph.get_edge_data(l, X[k])["weight"]
@@ -206,6 +203,4 @@ def create_Ys(graph, k):
 
 # Press the green button in the gutter to run the script.
 if __name__ == "__main__":
-
-
-    doctest.testmod()
+    print(doctest.testmod())
