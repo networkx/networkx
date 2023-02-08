@@ -3,11 +3,9 @@
 import random
 
 import networkx as nx
-
 from networkx.algorithms.maximum_weight_cycle_packing import (
     maximum_weight_cycle_packing,
 )
-from networkx.algorithms.simple_cycles_le_k import simple_cycles_le_k
 
 
 def test_normal_1():
@@ -124,6 +122,7 @@ def test_random_check_cycle_len():
 
 def test_random_check_1cycle():
     from networkx.algorithms.simple_cycles_le_k import simple_cycles_le_k
+
     graphEX3 = nx.fast_gnp_random_graph(20, 0.15, True)
     for (u, v, w) in graphEX3.edges(data=True):
         w["weight"] = random.randint(0, 10)
