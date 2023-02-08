@@ -83,11 +83,11 @@ def maximum_weight_cycle_packing(graph: nx.DiGraph, k: int) -> list:
                 X.append(edge[0])
                 ans_graph.add_node(edge[0])
         connect_2cycles(X, graph, ans_graph)
-        if k>2:
+        if k > 2:
             connect_3cycles(X, Y, graph, ans_graph)
         exchanges = list(nx.max_weight_matching(ans_graph))
         if (
-                len(exchanges) == 0 and ans_graph.number_of_edges() == 1
+            len(exchanges) == 0 and ans_graph.number_of_edges() == 1
         ):  # for the use-case of only self connected edge
             exchanges = [list(ans_graph.edges)[0]]
         temp_max = 0
@@ -108,13 +108,13 @@ def maximum_weight_cycle_packing(graph: nx.DiGraph, k: int) -> list:
 
 def connect_2cycles(X, graph, ans_graph):
     for i in range(
-            len(X)
+        len(X)
     ):  # creating the edges in the graph by going through the 2-cycles
         for j in range(i + 1, len(X)):
             if (X[i], X[j]) in graph.edges and (X[j], X[i]) in graph.edges:
                 weight = (
-                        graph.get_edge_data(X[i], X[j])["weight"]
-                        + graph.get_edge_data(X[j], X[i])["weight"]
+                    graph.get_edge_data(X[i], X[j])["weight"]
+                    + graph.get_edge_data(X[j], X[i])["weight"]
                 )
                 ans_graph.add_edge((X[i]), (X[j]), weight=weight, cycle=[X[i], X[j]])
 
@@ -125,9 +125,9 @@ def connect_3cycles(X, Y, graph, ans_graph):
         for j, l in Y:  # This deals with the normal case of Yi,j Xk
             if (l, X[k]) in graph.edges and (X[k], j) in graph.edges:  # [j, l, X[k]] in cycles:
                 weight = (
-                        graph.get_edge_data(j, l)["weight"]
-                        + graph.get_edge_data(l, X[k])["weight"]
-                        + graph.get_edge_data(X[k], j)["weight"]
+                    graph.get_edge_data(j, l)["weight"]
+                    + graph.get_edge_data(l, X[k])["weight"]
+                    + graph.get_edge_data(X[k], j)["weight"]
                 )
                 ans_graph.add_edge((X[k]), (j, l), weight=weight, cycle=[j, l, X[k]])
 
@@ -162,9 +162,13 @@ def create_Ys(graph, k):
     >>> print(len(create_Ys(Digraph,3))) #- the known product is supposed to be composed of 1 permutation
     2
     """
-    import numpy as np
-    import random
+
     import itertools
+
+    import random
+
+    import numpy as np
+
     temp_cycles = simple_cycles_le_k(graph, k)
     cycles = []
     for cycle in temp_cycles:
@@ -179,8 +183,8 @@ def create_Ys(graph, k):
             perm_arr[cyc_idx][ed_idx] = mid
     S = []
     for cyc in perm_arr:
-        rand_num = random.randint(0,len(cyc)-1)
-        rand=cyc[rand_num]
+        rand_num = random.randint(0, len(cyc) - 1)
+        rand = cyc[rand_num]
         if rand in S:
             counter = 0
             while counter < k or rand not in S:
@@ -204,4 +208,3 @@ if __name__ == "__main__":
     # itertools.ne
 
     doctest.testmod()
-

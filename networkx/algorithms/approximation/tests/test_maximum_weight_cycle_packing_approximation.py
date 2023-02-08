@@ -1,5 +1,7 @@
-import networkx as nx
 import random
+
+import networkx as nx
+
 from networkx.algorithms.approximation.maximum_weight_cycle_packing_approximation_algorithm import (
     maximum_weight_cycle_packing_approximation_algorithm,
 )
@@ -39,6 +41,7 @@ def test_normal_1():
     #     (2, 3),
     # ]
 
+
 def test_normal_2():
     graphEX3 = nx.DiGraph()
     graphEX3.add_nodes_from([1, 2, 3])
@@ -46,6 +49,7 @@ def test_normal_2():
     assert (1, 2) or (2, 1) in maximum_weight_cycle_packing_approximation_algorithm(
         graphEX3, 2
     )
+
 
 def test_normal_3():
     graphEX3 = nx.DiGraph()
@@ -69,6 +73,8 @@ def test_normal_3():
     assert (1, 6) or (6, 1) in maximum_weight_cycle_packing_approximation_algorithm(
         graphEX3, 3
     )
+
+
 
 
 def test_normal_4():
@@ -108,10 +114,12 @@ def test_normal_4():
         graphEX3, 2
     )
 
+
 def test_random_check_disjoint():
     graphEX3 = nx.fast_gnp_random_graph(20, 0.15, 42, True)
     for (u, v, w) in graphEX3.edges(data=True):
-        w['weight'] = random.randint(0, 10)
+
+        w["weight"] = random.randint(0, 10)
     res = maximum_weight_cycle_packing_approximation_algorithm(graphEX3, 3)
     nodes_seen = []
     for cyc in res:
@@ -125,7 +133,7 @@ def test_random_check_disjoint():
 def test_random_check_cycle_len():
     graphEX3 = nx.fast_gnp_random_graph(20, 0.15, 42, True)
     for (u, v, w) in graphEX3.edges(data=True):
-        w['weight'] = random.randint(0, 10)
+        w["weight"] = random.randint(0, 10)
     res = maximum_weight_cycle_packing_approximation_algorithm(graphEX3, 3)
     for cyc in res:
         assert 2 <= len(cyc) <= 3
@@ -135,7 +143,7 @@ def test_random_check_1cycle():
     from networkx.algorithms.simple_cycles_le_k import simple_cycles_le_k
     graphEX3 = nx.fast_gnp_random_graph(20, 0.15, True)
     for (u, v, w) in graphEX3.edges(data=True):
-        w['weight'] = random.randint(0, 10)
+        w["weight"] = random.randint(0, 10)
     sc = simple_cycles_le_k(graphEX3, 3)
     try:
         cy = next(sc)
