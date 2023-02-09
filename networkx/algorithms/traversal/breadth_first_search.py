@@ -37,8 +37,8 @@ def generic_bfs_edges(G, source, neighbors=None, depth_limit=None, sort_neighbor
         that returns an iterator over some or all of the neighbors of a
         given node, in any order.
 
-    depth_limit : int
-        Specify the maximum search depth, by default it searches the all graph.
+    depth_limit : int, optional(default=len(G))
+        Specify the maximum search depth.
 
     sort_neighbors : function
         A function that takes the list of neighbors of given node as input, and
@@ -73,7 +73,7 @@ def generic_bfs_edges(G, source, neighbors=None, depth_limit=None, sort_neighbor
         _neighbors = neighbors
         neighbors = lambda node: iter(sort_neighbors(_neighbors(node)))
     if depth_limit is None:
-        depth_limit = float("inf")
+        depth_limit = len(G)
 
     seen = {source}
     n = len(G)
