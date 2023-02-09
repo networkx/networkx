@@ -52,4 +52,4 @@ class TestIsomorph:
         with pytest.raises(
             nx.NetworkXError, match="Graphs G1 and G2 are not of the same type."
         ):
-            iso.is_isomorphic(self.DG1, self.G1) is NetworkXError
+            iso.is_isomorphic(self.DG1, self.G1)
