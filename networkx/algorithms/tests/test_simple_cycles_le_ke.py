@@ -1,6 +1,7 @@
 import networkx as nx
 from networkx.algorithms.simple_cycles_le_k import simple_cycles_le_k
 
+
 def test_normal_1():
     graphEX3 = nx.DiGraph()
     graphEX3.add_nodes_from([1, 2, 3, 4, 5, 6])
@@ -22,7 +23,6 @@ def test_normal_1():
     )
     assert len(list(simple_cycles_le_k(graphEX3, 3))) == 6
     assert len(list(simple_cycles_le_k(graphEX3, 2))) == 4
-
 
 
 def test_normal_2():
