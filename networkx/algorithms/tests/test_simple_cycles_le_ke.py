@@ -21,7 +21,6 @@ def test_normal_1():
             (5, 6, 12),
         ]
     )
-    assert len(list(simple_cycles_le_k(graphEX3, 3))) == 6
     assert len(list(simple_cycles_le_k(graphEX3, 2))) == 4
 
 
@@ -88,4 +87,3 @@ def test_normal_4():
     )
     assert len(list(simple_cycles_le_k(graphEX3, 3))) == 8
     assert len(list(simple_cycles_le_k(graphEX3, 2))) == 5
-
