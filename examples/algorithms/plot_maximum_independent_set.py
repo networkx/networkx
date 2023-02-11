@@ -33,6 +33,7 @@ G = nx.Graph(
 )
 
 I = approx.maximum_independent_set(G)
+print(f"Maximum independent set of G: {I}")
 
 pos = nx.spring_layout(G, seed=39299899)
 nx.draw(
