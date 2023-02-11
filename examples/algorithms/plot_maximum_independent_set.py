@@ -11,59 +11,33 @@ possible size for a given graph.
 import numpy as np
 import matplotlib.pyplot as plt
 import networkx as nx
+from networkx.algorithms import approximation as approx
 
-G = nx.Graph()
-
-G.add_nodes_from(
+G = nx.Graph(
     [
-        ("1"),
-        ("2"),
-        ("3"),
-        ("4"),
-        ("5"),
-        ("6"),
-        ("7"),
-        ("9"),
-        ("10"),
+        (1, 2),
+        (7, 2),
+        (3, 9),
+        (3, 2),
+        (7, 6),
+        (5, 2),
+        (1, 5),
+        (2, 8),
+        (10, 2),
+        (1, 7),
+        (6, 1),
+        (6, 9),
+        (8, 4),
+        (9, 4),
     ]
 )
 
-G.add_edges_from(
-    [
-        ("1", "2"),
-        ("7", "2"),
-        ("3", "9"),
-        ("3", "2"),
-        ("7", "6"),
-        ("5", "2"),
-        ("1", "5"),
-        ("2", "8"),
-        ("10", "2"),
-        ("1", "7"),
-        ("6", "1"),
-        ("6", "9"),
-        ("8", "4"),
-        ("9", "4"),
-    ]
-)
+I = approx.maximum_independent_set(G)
 
-from networkx.algorithms import approximation as apxa
-
-I = apxa.maximum_independent_set(G)
-
-color_map_1 = []
-for node in G:
-    if node in I:
-        color_map_1.append("red")
-    else:
-        color_map_1.append("grey")
+pos = nx.spring_layout(G, seed=39299899)
 nx.draw(
     G,
+    pos=pos,
     with_labels=True,
-    node_size=50,
-    font_size=25,
-    edge_color="grey",
-    node_color=color_map_1,
+    node_color=["tab:red" if n in I else "tab:blue" for n in G],
 )
-
-plt.show()
