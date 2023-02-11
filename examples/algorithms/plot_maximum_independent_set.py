@@ -1,3 +1,13 @@
+"""
+=======================
+Maximum Independent Set
+=======================
+
+An independent set is a set of vertices in a graph where no two vertices in the
+set are adjacent. The maximum independent set is the independent set of largest
+possible size for a given graph.
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 import networkx as nx
