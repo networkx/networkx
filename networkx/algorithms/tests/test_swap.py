@@ -2,14 +2,43 @@ import pytest
 
 import networkx as nx
 
-
 def test_directed_edge_swap():
-    graph = nx.path_graph(200, create_using=nx.DiGraph)
-    in_degrees = sorted((n, d) for n, d in graph.in_degree())
-    out_degrees = sorted((n, d) for n, d in graph.out_degree())
-    G = nx.directed_edge_swap(graph, nswap=40, max_tries=500, seed=1)
-    assert in_degrees == sorted((n, d) for n, d in G.in_degree())
-    assert out_degrees == sorted((n, d) for n, d in G.out_degree())
+    ## Testing a path graph
+    G=nx.DiGraph()
+    G.add_nodes_from([1,200])
+    for i in range(200):
+        if(i!=0):
+            G.add_edges_from([(i,i+1)])
+
+    G_orig=G.copy() 
+    directed_edge_swap(G)
+    in_degrees_orig = sorted((n, d) for n, d in G_orig.in_degree())
+    out_degrees_orig = sorted((n, d) for n, d in G_orig.out_degree())
+
+    assert in_degrees_orig == sorted((n, d) for n, d in G.in_degree())
+    assert out_degrees_orig == sorted((n, d) for n, d in G.out_degree())
+    assert sorted((n, d) for n, d in G_orig.edges)!=sorted((n, d) for n, d in G.edges)
+
+    
+    ## Testing a complete graph with one directed edge for each pair
+    graph=nx.DiGraph()
+    no_of_nodes=200
+    graph.add_nodes_from([1,no_of_nodes])
+    temp=2
+    for i in range(1,no_of_nodes-1):
+        if(i!=no_of_nodes and i!=no_of_nodes-1):
+            graph.add_edge(i,temp)
+            temp+=1
+            graph.add_edge(i,temp)
+    graph.add_edges_from([(no_of_nodes-1,no_of_nodes),(no_of_nodes-1,1),(no_of_nodes,1),(no_of_nodes,2)])
+
+    H=graph.copy()
+    directed_edge_swap(graph)
+    in_degrees_orig = sorted((n, d) for n, d in H.in_degree())
+    out_degrees_orig = sorted((n, d) for n, d in H.out_degree())
+    assert in_degrees_orig == sorted((n, d) for n, d in graph.in_degree())
+    assert out_degrees_orig == sorted((n, d) for n, d in graph.out_degree())
+    assert sorted((n, d) for n, d in graph.edges)!=sorted((n, d) for n, d in H.edges)
 
 
 def test_edge_cases_directed_edge_swap():
