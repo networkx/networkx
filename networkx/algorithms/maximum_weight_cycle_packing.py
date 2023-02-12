@@ -1,7 +1,5 @@
 import doctest
 
-from matplotlib import pyplot as plt
-
 import networkx as nx
 from networkx.algorithms.simple_cycles_le_k import simple_cycles_le_k
 
@@ -60,7 +58,7 @@ def maximum_weight_cycle_packing(graph: nx.DiGraph, k: int) -> list:
     []
     """
 
-    Ys, cycles = create_Ys(graph, k)
+    Ys = create_Ys(graph, k)
 
     max_cycles = []
     max_weight = 0
@@ -177,17 +175,8 @@ def create_Ys(graph, k):
         for ed_idx in range(len(cyc)):
             mid = (cyc[ed_idx], cyc[(ed_idx + 1) % len(cyc)])
             perm_arr[cyc_idx][ed_idx] = mid
-    S = []
-    for cyc in perm_arr:
-        rand_num = random.randint(0, len(cyc) - 1)
-        rand = cyc[rand_num]
-        if rand in S:
-            counter = 0
-            while counter < k or rand not in S:
-                rand_num = random.randint(0, len(cyc) - 1)
-                rand = cyc[rand_num]
-                counter += 1
-        S.append(rand)
+    S = set()
+    S.add(cyc[0] for cyc in perm_arr)
     Ys = []
     for i in range(len(S) + 1):
 
@@ -196,7 +185,7 @@ def create_Ys(graph, k):
             if check_independent(temp):
                 Ys.append(temp)
 
-    return Ys, cycles
+    return Ys
 
 
 # Press the green button in the gutter to run the script.
