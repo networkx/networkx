@@ -176,7 +176,8 @@ def create_Ys(graph, k):
             mid = (cyc[ed_idx], cyc[(ed_idx + 1) % len(cyc)])
             perm_arr[cyc_idx][ed_idx] = mid
     S = set()
-    S.add(cyc[0] for cyc in perm_arr)
+    for cyc in perm_arr:
+        S.add(cyc[0])
     Ys = []
     for i in range(len(S) + 1):
 
