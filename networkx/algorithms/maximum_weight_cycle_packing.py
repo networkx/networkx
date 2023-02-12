@@ -148,7 +148,7 @@ def create_Ys(graph, k):
     >>> Digraph=nx.DiGraph()
     >>> Digraph.add_nodes_from([1,2,3,5,6,7,8])
     >>> Digraph.add_weighted_edges_from([(1,8,2),(8,1,4),(2,1,5),(1,3,4),(3,8,2),(8,2,3),(8,5,4),(5,7,3),(7,6,2),(6,5,4)])
-    >>> Ys,_=create_Ys(Digraph,3)
+    >>> Ys=create_Ys(Digraph,3)
     >>> print(((len(Ys)==6 ) or (len(Ys) == 8))) #- the known product is supposed to be composed of 27 permutation
     True
     >>> Digraph =nx.DiGraph()
