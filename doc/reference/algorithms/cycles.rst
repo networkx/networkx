@@ -7,7 +7,7 @@ Cycles
    :toctree: generated/
 
    cycle_basis
-   simple_cycles_le_k
+   simple_cycles
    recursive_simple_cycles
    find_cycle
    minimum_cycle_basis
