@@ -25,9 +25,7 @@ def test_normal_1():
             (5, 6, 12),
         ]
     )
-    res = maximum_weight_cycle_packing_approximation_algorithm(
-        graphEX3, 3
-    )
+    res = maximum_weight_cycle_packing_approximation_algorithm(graphEX3, 3)
     assert (2, 3) in res or (3, 2) in res
     # assert maximum_weight_cycle_packing_approximation_algorithm(graphEX3, 3) == [
     #     (1, 6, 4),
@@ -44,9 +42,7 @@ def test_normal_2():
     graphEX3 = nx.DiGraph()
     graphEX3.add_nodes_from([1, 2, 3])
     graphEX3.add_weighted_edges_from([(1, 2, 1), (2, 1, 5), (2, 3, 2), (3, 1, 2)])
-    res = maximum_weight_cycle_packing_approximation_algorithm(
-        graphEX3, 2
-    )
+    res = maximum_weight_cycle_packing_approximation_algorithm(graphEX3, 2)
     assert (1, 2) in res or (2, 1) in res
 
 
@@ -69,9 +65,7 @@ def test_normal_3():
             (4, 5, 5),
         ]
     )
-    res = maximum_weight_cycle_packing_approximation_algorithm(
-        graphEX3, 3
-    )
+    res = maximum_weight_cycle_packing_approximation_algorithm(graphEX3, 3)
     assert (1, 6) in res or (6, 1) in res
 
 
@@ -105,9 +99,7 @@ def test_normal_4():
             (16, 13, 8),
         ]
     )
-    res = maximum_weight_cycle_packing_approximation_algorithm(
-        graphEX3, 3
-    )
+    res = maximum_weight_cycle_packing_approximation_algorithm(graphEX3, 3)
     assert (1, 6) in res or (6, 1) in res
     assert (1, 6) in res or (6, 1) in res
 
