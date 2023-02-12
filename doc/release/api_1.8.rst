@@ -30,6 +30,6 @@ API changes
 
 * is_directed_acyclic_graph() now returns false on undirected graphs (instead of raising exception)
 
-* cycles returned from simple_cycles_le_k() do not include repeated last node
+* cycles returned from simple_cycles() do not include repeated last node
 
 

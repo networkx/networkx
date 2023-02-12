@@ -31,7 +31,7 @@ Merged PRs
 - Add default value p=2 for minkowski distance metric. (#5700)
 - Update inline code to inline math in docstring (#5701)
 - Update multigraph docstrings to reflect `remove_edges_from` behavior. (#5699)
-- Update simple_cycles_le_k docstring w/ yields and examples (#5709)
+- Update simple_cycles docstring w/ yields and examples (#5709)
 - Chromatic polynomial (#5675)
 - Catch ':' explicitly while working with pydot (#5710)
 - Revert "Add workaround for pytest failures on 3.11b2" (#5717)
