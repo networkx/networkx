@@ -653,10 +653,7 @@ def spectral_bisection(
     import numpy as np
 
     v = nx.fiedler_vector(G, weight=weight)
-    node_list = list(G)
-    x, y = np.where(v < 0)[0], np.where(v >= 0)[0]
-
-    return [
-        {node_list[i] for i in x},
-        {node_list[i] for i in y},
-    ]
+    nodes = np.array(list(G))
+    pos_vals = v >= 0
+    
+    return [set(nodes[~pos_vals]), set(nodes[pos_vals])]
