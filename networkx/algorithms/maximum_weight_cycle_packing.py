@@ -168,16 +168,7 @@ def create_Ys(graph, k):
     for cycle in temp_cycles:
         if len(cycle) == k:
             cycles.append(cycle)
-
-    perm_arr = np.ndarray(shape=(len(cycles), k), dtype=list)
-    for cyc_idx in range(len(cycles)):
-        cyc = cycles[cyc_idx]
-        for ed_idx in range(len(cyc)):
-            mid = (cyc[ed_idx], cyc[(ed_idx + 1) % len(cyc)])
-            perm_arr[cyc_idx][ed_idx] = mid
-    S = set()
-    for cyc in perm_arr:
-        S.add(cyc[0])
+    S=set((cyc[0], cyc[1]) for cyc in cycles)
     Ys = []
     for i in range(len(S) + 1):
 
