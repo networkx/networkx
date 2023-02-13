@@ -317,7 +317,8 @@ def is_minimal_d_separator(G, u, v, z):
     Returns
     -------
     bool
-        Whether or not the `z` separating set is minimal.
+        Whether or not the `z` is a minimal d-separating set. This
+        checks that `z` is a d-separator and is minimal.
 
     Raises
     ------
@@ -358,6 +359,9 @@ def is_minimal_d_separator(G, u, v, z):
     """
     if not nx.is_directed_acyclic_graph(G):
         raise nx.NetworkXError("graph should be directed acyclic")
+
+    if not nx.d_separated(G, {u}, {v}, z):
+        return False
 
     union_uv = {u, v}
     union_uv.update(z)

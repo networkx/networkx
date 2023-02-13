@@ -200,3 +200,23 @@ def test_minimal_d_separator():
     # the minimal separating set should pass the test for minimality
     assert nx.is_minimal_d_separator(G, "A", "C", Zmin)
     assert Zmin == {"B"}
+
+
+def test_minimal_d_separator_checks_dsep():
+    g = nx.DiGraph()
+    g.add_edges_from(
+        [
+            ("A", "B"),
+            ("A", "E"),
+            ("B", "C"),
+            ("B", "D"),
+            ("D", "C"),
+            ("D", "F"),
+            ("E", "D"),
+            ("E", "F"),
+        ]
+    )
+
+    assert not nx.d_separated(g, {"C"}, {"F"}, {"D"})
+    assert not nx.is_minimal_d_separator(g, "C", "F", {"D"})
+    assert not nx.is_minimal_d_separator(g, "C", "F", {})
