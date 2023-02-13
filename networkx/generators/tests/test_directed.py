@@ -70,20 +70,23 @@ class TestGeneratorsDirected:
         assert nx.is_isomorphic(gnr_graph(1, 0.5), G)
 
 
-def test_scale_free_errors():
+def test_scale_free_graph_create_using_with_initial_graph():
+    G = nx.MultiGraph()
     with pytest.raises(
         ValueError,
         match="Cannot set both create_using and initial_graph. Set create_using=None.",
     ):
-        G = nx.MultiDiGraph()
-        scale_free_graph(10, create_using=Graph, initial_graph=G)
+        scale_free_graph(10, create_using=nx.Graph, initial_graph=G)
+
+
+def test_scale_free_graph_negative_delta():
     with pytest.raises(ValueError, match="delta_in must be >= 0."):
         scale_free_graph(10, create_using=None, delta_in=-1)
+    with pytest.raises(ValueError, match="delta_out must be >= 0."):
+        scale_free_graph(10, create_using=None, delta_out=-1)
 
 
 def test_non_numeric_ordering():
-    with pytest.raises(ValueError, match="delta_out must be >= 0."):
-        scale_free_graph(10, create_using=None, delta_out=-1)
     G = MultiDiGraph([("a", "b"), ("b", "c"), ("c", "a")])
     s = scale_free_graph(3, initial_graph=G)
     assert len(s) == 3
