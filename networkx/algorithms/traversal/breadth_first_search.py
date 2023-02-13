@@ -73,7 +73,7 @@ def generic_bfs_edges(G, source, neighbors=None, depth_limit=None, sort_neighbor
         warnings.warn(
             (
                 "sort_neighbors parameter is deprecated and will be removed "
-                "in NetworkX 3.0, use neighbors parameter instead."
+                "in NetworkX 3.2, use neighbors parameter instead."
             ),
             DeprecationWarning,
             stacklevel=2,
