@@ -636,14 +636,14 @@ def spectral_bisection(
 
     Returns
     --------
-    bisection : list of sets
-        List with two sets of nodes
+    bisection : tuple of sets
+        Sets with the bisection of nodes
 
     Examples
     --------
-    >>> G = nx.karate_club_graph()
+    >>> G = nx.barbell_graph(3, 0)
     >>> nx.spectral_bisection(G)
-    [{0, 1, 2, 3, 4, 5, 6, 7, 10, 11, 12, 13, 16, 17, 19, 21}, {32, 33, 8, 9, 14, 15, 18, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31}]
+    ({0, 1, 2}, {3, 4, 5})
 
     References
     ----------
@@ -652,8 +652,8 @@ def spectral_bisection(
     """
     import numpy as np
 
-    v = nx.fiedler_vector(G, weight=weight)
+    v = nx.fiedler_vector(G, weight, normalized, tol, method, seed)
     nodes = np.array(list(G))
     pos_vals = v >= 0
-    
-    return [set(nodes[~pos_vals]), set(nodes[pos_vals])]
+
+    return set(nodes[~pos_vals]), set(nodes[pos_vals])
