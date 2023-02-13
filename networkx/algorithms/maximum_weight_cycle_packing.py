@@ -82,7 +82,7 @@ def maximum_weight_cycle_packing(graph: nx.DiGraph, k: int) -> list:
             connect_3cycles(X, Y, graph, ans_graph)
         exchanges = list(nx.max_weight_matching(ans_graph))
         if (
-                len(exchanges) == 0 and ans_graph.number_of_edges() == 1
+            len(exchanges) == 0 and ans_graph.number_of_edges() == 1
         ):  # for the use-case of only self connected edge
             exchanges = [list(ans_graph.edges)[0]]
         temp_max = 0
@@ -103,13 +103,13 @@ def maximum_weight_cycle_packing(graph: nx.DiGraph, k: int) -> list:
 
 def connect_2cycles(X, graph, ans_graph):
     for i in range(
-            len(X)
+        len(X)
     ):  # creating the edges in the graph by going through the 2-cycles
         for j in range(i + 1, len(X)):
             if (X[i], X[j]) in graph.edges and (X[j], X[i]) in graph.edges:
                 weight = (
-                        graph.get_edge_data(X[i], X[j])["weight"]
-                        + graph.get_edge_data(X[j], X[i])["weight"]
+                    graph.get_edge_data(X[i], X[j])["weight"]
+                    + graph.get_edge_data(X[j], X[i])["weight"]
                 )
                 ans_graph.add_edge((X[i]), (X[j]), weight=weight, cycle=[X[i], X[j]])
 
@@ -120,9 +120,9 @@ def connect_3cycles(X, Y, graph, ans_graph):
         for j, l in Y:  # This deals with the normal case of Yi,j Xk
             if (l, X[k]) in graph.edges and (X[k], j) in graph.edges:
                 weight = (
-                        graph.get_edge_data(j, l)["weight"]
-                        + graph.get_edge_data(l, X[k])["weight"]
-                        + graph.get_edge_data(X[k], j)["weight"]
+                    graph.get_edge_data(j, l)["weight"]
+                    + graph.get_edge_data(l, X[k])["weight"]
+                    + graph.get_edge_data(X[k], j)["weight"]
                 )
                 ans_graph.add_edge((X[k]), (j, l), weight=weight, cycle=[j, l, X[k]])
 
@@ -168,7 +168,7 @@ def create_Ys(graph, k):
     for cycle in temp_cycles:
         if len(cycle) == k:
             cycles.append(cycle)
-    S = set((cyc[0], cyc[1]) for cyc in cycles)
+    S = {(cyc[0], cyc[1]) for cyc in cycles}
     Ys = []
     for i in range(len(S) + 1):
 
